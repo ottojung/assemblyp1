@@ -8,7 +8,8 @@ These guides are the operational playbooks for AI-assisted research in assemblyp
 - [`proof-search.md`](proof-search.md) — decompose conjectures, derive lemmas, and keep positive proof search disciplined.
 - [`counterexample-search.md`](counterexample-search.md) — perform bounded finite search, symmetry reduction, witness minimization, and certificate production.
 - [`reconciliation.md`](reconciliation.md) — compare partial outputs, resolve assumption mismatches, and maintain the research dependency graph.
-- [`scheduled.md`](scheduled.md) — durable mechanics for recurring scheduled work.
-- [`itinerary-assemblyp1.md`](itinerary-assemblyp1.md) — project-specific work selection and completion policy for scheduled invocations.
+- [`scheduled.md`](scheduled.md) — reusable mechanics for recurring scheduled work.
+- [`itenerary-assemblyp1.md`](itenerary-assemblyp1.md) — **canonical sole entry point** for AssemblyP1 scheduled work; owns project-specific work selection, integration, verification, and completion policy.
+- [`itinerary-assemblyp1.md`](itinerary-assemblyp1.md) — compatibility pointer retained for older links; policy lives in `itenerary-assemblyp1.md`.
 
 The conceptual protocol shared by all of these skills is [`../research-orchestration.md`](../research-orchestration.md).
