@@ -21,6 +21,18 @@ The distinction between the biological/sequencing model and the theorem proved a
 - In particular, do not silently assume whether “the maximum-likelihood sequence is the true sequence” means merely that the truth is a maximizer or that it is unique up to cyclic shift. Resolve that from the cited model.
 - A formally proved statement only counts as settling the published open problem after the repository documents why the formal assumptions and conclusion match the published statement.
 
+## Research orchestration
+
+Substantial research work should follow `docs/research-orchestration.md`. Operational worker guides live under `docs/skills/`, with `docs/skills/research-orchestrator.md` as the entry point for broad tasks.
+
+- Decompose broad questions into narrow research packets with explicit assumptions, non-goals, evidence requirements, and handoff criteria.
+- Parallel workers may explore different proof directions, source interpretations, or counterexample searches, but write-capable workers must use separate branches/worktrees.
+- Keep source facts, modeling decisions, conjectures, computational evidence, mathematical proofs, and kernel-checked results distinct. Agreement among agents does not promote a claim to a stronger epistemic class.
+- Reconcile partial results proposition-by-proposition before integrating them. Check quantifiers, hypotheses, model version, candidate genome class, genome equivalence, likelihood definition, and tie semantics rather than trusting prose summaries.
+- Preserve useful failed approaches and counterexamples in durable issues/PRs when they rule out tempting directions.
+- The orchestrator owns final reconciliation and PR review. A worker's own summary is not independent verification of its result.
+- Prefer durable GitHub state—issues, branches, PRs, commits, and repository docs—over conversation-only state so another invocation can recover the research graph.
+
 ## Git is good
 
 If you have access to `git`:
