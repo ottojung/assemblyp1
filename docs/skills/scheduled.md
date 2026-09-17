@@ -1,6 +1,6 @@
 # Scheduled research orchestrator
 
-This guide is adapted from Lubko's reusable scheduled-orchestrator protocol. It defines the durable coordination mechanics for recurring ChatGPT invocations working on assemblyp1. Project-specific work selection and completion policy live in `docs/skills/itinerary-assemblyp1.md`.
+This guide is adapted from Lubko's reusable scheduled-orchestrator protocol. It defines the durable coordination mechanics for recurring ChatGPT invocations working on assemblyp1. Project-specific work selection and completion policy live in `docs/skills/itinerary-assemblyp1.md`; research decomposition and reconciliation live in `docs/research-orchestration.md` and `docs/skills/research-orchestrator.md`.
 
 Canonical Lubko references:
 
@@ -41,12 +41,14 @@ On every scheduled run, assume an earlier invocation may have been interrupted. 
 - branches, commits, and open PRs;
 - CI status;
 - Lubko jobs, managed agents, worktrees, and logs when present;
-- the formalization plan and intent records.
+- the formalization plan, research graph, and intent records.
 
 Preserve useful partial work. Never rely on remembered agent IDs, branches, or completion state without checking them.
 
 ## Research discipline
 
 A scheduled agent must continue doing useful work rather than merely reporting that work exists. However, formalization fidelity is a completion condition, not an inconvenience: when a source definition is unclear, record the ambiguity and cite it rather than silently choosing a convenient theorem.
+
+For broad or multi-worker research, apply `docs/skills/research-orchestrator.md`: create narrow work packets, keep epistemic classes explicit, run genuinely independent tracks in parallel when useful, reconcile exact propositions before integration, and preserve useful negative results. Scheduled recurrence is a transport/lifecycle mechanism; it does not replace the research protocol.
 
 Push work branches early, open a draft PR early for substantial changes, keep recovery state current, and verify the exact proposed head with `lake build` and repository CI.
