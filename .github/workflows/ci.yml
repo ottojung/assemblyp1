@@ -10,7 +10,18 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
+  research-docs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check research documentation integrity
+        run: python3 scripts/check-research-docs.py
+
   build:
     runs-on: ubuntu-latest
     steps:
