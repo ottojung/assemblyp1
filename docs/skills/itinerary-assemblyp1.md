@@ -12,11 +12,12 @@ Before acting, study and obey:
 
 - `AGENTS.md`;
 - `docs/open-problem.md`;
-- `docs/formalization-plan.md`;
 - `docs/research-orchestration.md`;
 - `docs/skills/scheduled.md`;
 - `docs/skills/research-orchestrator.md` when the selected work is broad or benefits from multiple workers;
 - the narrower skill under `docs/skills/` appropriate to the selected packet.
+
+Consult `docs/formalization-plan.md` when the current work concerns formalization. It is a checklist of formalization obligations, **not** the project's research strategy or a fallback work queue.
 
 When Lubko is the execution platform, also obey its canonical execution skill:
 
@@ -24,39 +25,29 @@ When Lubko is the execution platform, also obey its canonical execution skill:
 
 `docs/skills/scheduled.md` owns reusable scheduled-orchestrator mechanics. `docs/research-orchestration.md` owns the generic research graph, delegation, epistemic-status, and reconciliation protocol. This itinerary contains only AssemblyP1-specific work selection, integration, and completion policy; do not restate those shared mechanics here.
 
-**Never stop or disable the recurring scheduled task merely because one research direction fails or one item is blocked.** Preserve useful negative results and recovery state, then continue with another actionable node on the research frontier. A failed conjectural lemma, a counterexample, or a source ambiguity is research progress when recorded precisely.
+**Never stop or disable the recurring scheduled task merely because one research direction fails or one item is blocked.** Preserve useful negative results and recovery state, then continue with another way to advance the research frontier. A failed conjectural lemma, a counterexample, a source ambiguity, or evidence that a proposed method is unproductive is research progress when recorded precisely.
 
-The mathematical target is the published open problem, not a theorem chosen for convenience. Source/model ambiguity blocks dependent proof claims but does not block unrelated useful work.
+The ultimate goal is to settle the published open problem faithfully. The orchestrator should continuously choose work by how much it can advance that goal, not by mechanically consuming a predetermined checklist or methodology.
 
 ## Work selection
 
 Apply `docs/skills/scheduled.md` and `docs/research-orchestration.md`, with these AssemblyP1-specific choices.
 
-Prefer work in this order:
+Prefer existing durable work before inventing duplicate work:
 
 1. **Recover abandoned issue-tracked work** that has useful partial results, an existing branch/PR, unfinished formalization, or unreconciled worker output.
-2. **Advance an existing open AssemblyP1 PR** that needs implementation, source-fidelity verification, Lean repair, reconciliation, or review preparation.
+2. **Advance an existing open AssemblyP1 PR** when doing so can move the research toward a trustworthy integrated result.
 3. **Select an actionable open issue on the current research frontier** whose dependencies are satisfied and which is not actively owned under the scheduled-work protocol.
-4. **If no suitable issue exists, create one for the earliest actionable unresolved item in `docs/formalization-plan.md`** or for a concrete dependency exposed by current research.
 
-Within equally actionable work, prefer nodes that reduce uncertainty or unblock several downstream nodes. In the current early phase, prioritize source-model recovery and validation before large speculative proof attempts.
+If none of those provides useful actionable work, **derive the next research node from the current state of the problem**. Do not fall back to a fixed plan. Reconstruct the frontier from the published target, intent records, literature ground truth, current formal definitions, established lemmas, computational evidence, failed approaches, unresolved ambiguities, and recently completed work. Then identify a concrete question whose resolution is expected to make meaningful progress toward settlement, create a focused issue for it, and work that issue.
 
-Good scheduled packets include:
+The orchestrator has discretion over what kind of question is most valuable. Depending on the current state, progress may come from literature recovery, model clarification, proving or refuting a lemma, discovering a new reduction, constructing or excluding examples, computational exploration, formalization, validating correspondence with the source problem, repairing an earlier assumption, or a method not anticipated by this repository. These are examples, not a prescribed menu, ordering, or proof strategy.
 
-- resolving one precise source-model ambiguity with primary citations;
-- formalizing one stable definition or small family of closely related definitions;
-- proving one reusable mathematical/Lean lemma;
-- independently checking a central conjectural lemma;
-- running and documenting a bounded counterexample search with exact scope;
-- minimizing and formalizing a discovered witness;
-- reconciling two overlapping or conflicting research outputs;
-- adding small examples that validate Lean definitions against the source papers.
+When choosing among plausible frontier questions, use research judgment. Useful considerations include whether a result would remove a major uncertainty, unlock several dependent questions, decisively test a central assumption, expose a flaw in the current model, simplify the target, or convert informal understanding into independently checkable knowledge. Do not optimize for producing commits, Lean code, or completed checklist items when another kind of work would advance the mathematical problem more.
 
-Do not select a giant task such as “solve the conjecture” when it can be decomposed into narrower nodes with explicit dependencies.
+The orchestrator may decompose a broad frontier question into multiple independent or competing packets when that is useful. It may also abandon or redirect a methodology when evidence suggests a better route. Repository documents must not be treated as authority for a proof method merely because they were written earlier.
 
-For central uncertain lemmas, maintain positive and negative pressure: pair proof search with literature or counterexample search when doing so can cheaply falsify a bad direction.
-
-If the selected issue has a genuine external or upstream blocker, record enough durable state for later recovery, update its dependencies, and choose other actionable work. A blocked node is not a reason to terminate the recurring orchestrator.
+If the selected issue has a genuine external or upstream blocker, record enough durable state for later recovery, update its dependencies, and choose other useful work. A blocked node is not a reason to terminate the recurring orchestrator.
 
 ## Research integration
 
@@ -66,11 +57,11 @@ AssemblyP1 does **not** use Lubko's `release/*` integration scheme. Research bra
 - Start new work from current `main` unless the packet explicitly depends on an unmerged research branch; in that case record the dependency and avoid pretending the dependent result is already part of the stable project model.
 - Open a draft PR to `main` early once there is durable work worth recovering or reviewing.
 - Scheduled orchestrators **must not merge their own research/task PRs into `main`** merely to keep the loop moving. Human promotion into `main` is the integration boundary unless an authoritative intent record changes this policy.
-- Multiple independent research PRs may coexist. Do not serialize independent proof, literature, and counterexample work unnecessarily.
+- Multiple independent research PRs may coexist. Do not serialize independent work unnecessarily.
 - When two PRs overlap mathematically, reconcile their exact propositions and assumption surfaces before treating either as a dependency of later work.
 - If a PR changes a source-sensitive definition, theorem statement, likelihood model, repeat/bridging predicate, candidate-genome class, or equivalence relation, downstream work must explicitly identify which version it assumes until the change is integrated.
 - Before declaring a packet complete, reconcile its branch with current `main` when necessary to establish that the exact proposed head still builds and its documentation remains coherent. Never overwrite concurrent work to achieve this.
-- Preserve useful failed approaches, counterexamples, and source ambiguities in durable issues/docs even when no code from that branch should merge.
+- Preserve useful failed approaches, counterexamples, source ambiguities, and methodological dead ends in durable issues/docs when they change what future workers should try.
 
 A scheduled invocation may prepare several independent PRs over time. It should not create an artificial omnibus branch that hides which results depend on which assumptions.
 
@@ -86,9 +77,9 @@ For source/model work:
 
 For computation:
 
-- record the exact finite search space, pruning/symmetry assumptions, and whether completeness was proved;
-- preserve explicit witnesses/certificates for discovered counterexamples;
-- never promote “no counterexample found” into a proof.
+- record the exact scope, assumptions, and limitations of the computation;
+- preserve reproducible evidence for material discoveries;
+- do not promote computational evidence into a proof unless the required completeness argument is itself established.
 
 For Lean work:
 
@@ -103,15 +94,15 @@ The orchestrator owns final reconciliation and PR review. A worker's own summary
 
 A scheduled AssemblyP1 work item is complete when:
 
-- its scoped research question has reached a terminal useful state: proved, refuted, source-resolved, formally implemented, or explicitly blocked with durable evidence;
+- its scoped research question has reached a terminal useful state such as resolved, refuted, formally implemented, source-resolved, or explicitly blocked with durable evidence;
 - all delegated packets for that item are terminal and their outputs have been reconciled;
 - every material claim is labeled at the strongest epistemic level actually supported by its evidence;
-- useful results, including negative results, are preserved in issues, docs, commits, or a PR;
+- useful results, including negative results and failed approaches that affect future strategy, are preserved durably;
 - the proposed branch is reconciled with relevant current repository state;
 - `lake build` succeeds on the exact proposed head when Lean code changed;
 - repository CI is green, or any remaining failure is clearly demonstrated to be external and unrelated to the proposed work;
 - no unresolved source-fidelity, mathematical-correctness, or review blocker is hidden;
-- the next research frontier or downstream dependencies are explicit.
+- the current research state makes clear what is known, what remains uncertain, and how another orchestrator can continue making progress.
 
 Completion does **not** require the PR to be merged into `main`. A reviewed, green, ready-for-human-review PR may remain open while future scheduled invocations select other independent actionable work.
 
