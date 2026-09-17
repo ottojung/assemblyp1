@@ -1,6 +1,6 @@
 # Scheduled research orchestrator
 
-This guide is adapted from Lubko's reusable scheduled-orchestrator protocol. It defines the durable coordination mechanics for recurring ChatGPT invocations working on assemblyp1. Project-specific work selection and completion policy live in `docs/skills/itinerary-assemblyp1.md`; research decomposition and reconciliation live in `docs/research-orchestration.md` and `docs/skills/research-orchestrator.md`.
+This guide is adapted from Lubko's reusable scheduled-orchestrator protocol. It defines the durable coordination mechanics for recurring ChatGPT invocations working on assemblyp1. Project-specific work selection and completion policy live in `docs/skills/itenerary-assemblyp1.md`; research decomposition and reconciliation live in `docs/research-orchestration.md` and `docs/skills/research-orchestrator.md`.
 
 Canonical Lubko references:
 
