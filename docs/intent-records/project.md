@@ -45,3 +45,13 @@ source: @ottojung
 kind: preference
 
 The initial repository should be seeded and made ready for research. The first work is to formalize the open problem accurately; the bootstrap should not pretend the conjecture has already been proved or refuted.
+
+---
+
+$id-8841362759042187
+title: Orchestrate research and proof work through cooperating agents
+date: 2026/09/17
+source: @ottojung
+kind: requirement
+
+The repository should provide AI-facing research skills, instructions, and guides for an agentic loop that can distribute literature research, mathematical exploration, counterexample search, lemma formalization, and proof work across multiple workers, then reconcile partial results, guide subsequent search, and integrate trustworthy progress into the formal project. The workflow should preserve durable state and make disagreements, assumptions, and evidence explicit rather than merely aggregating agent summaries.
