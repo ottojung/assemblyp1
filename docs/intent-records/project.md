@@ -65,3 +65,13 @@ source: @ottojung
 kind: requirement
 
 The literature work must lock down the ground truth of the exact mathematical statement that the accepted literature leaves open. Before a proof or counterexample is treated as addressing the published problem, the repository should establish from primary sources the intended model, hypotheses, optimization objective, admissible competitors, equivalence and tie semantics, and other statement-defining conventions. Genuine source ambiguity should be recorded explicitly and investigated rather than resolved for convenience. Incremental or provisional formalizations are useful research artifacts, but no convenient interpretation should become the canonical target without literature-grounded justification.
+
+---
+
+$id-7412038659146728
+title: Keep proof-discovery strategy adaptive
+date: 2026/09/17
+source: @ottojung
+kind: constraint
+
+Repository plans and agent instructions must not prescribe a proof or counterexample methodology in advance merely because it seems plausible now. The orchestrator should choose and revise methods from the live research state, evidence, and opportunities it discovers, always with the ultimate goal of faithfully settling the published conjecture. Formalization checklists may record representation work that remains to be done, but they must not become a surrogate research roadmap or force the orchestrator to follow a predetermined sequence, positive/negative split, search technique, or proof architecture.
