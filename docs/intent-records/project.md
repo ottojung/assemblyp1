@@ -59,12 +59,16 @@ The repository should provide AI-facing research skills, instructions, and guide
 ---
 
 $id-4318762045197832
-title: Establish the literature ground truth for the formal statement
+title: Follow the locked literature ground-truth document
 date: 2026/09/17
 source: @ottojung
 kind: requirement
 
-The literature work must lock down the ground truth of the exact mathematical statement that the accepted literature leaves open. Before a proof or counterexample is treated as addressing the published problem, the repository should establish from primary sources the intended model, hypotheses, optimization objective, admissible competitors, equivalence and tie semantics, and other statement-defining conventions. Genuine source ambiguity should be recorded explicitly and investigated rather than resolved for convenience. Incremental or provisional formalizations are useful research artifacts, but no convenient interpretation should become the canonical target without literature-grounded justification.
+The authoritative literature ground truth for this project is the following locked document:
+
+<https://github.com/ottojung/assemblyp1/blob/99c158c59aa374ea3898ec4658b6eec52fbad342/docs/literature-status.md>
+
+The project must follow that document when determining what formal statement is being investigated. If the authoritative literature ground truth needs to change, update this intent explicitly to point to the new locked document version.
 
 ---
 
