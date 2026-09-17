@@ -68,7 +68,7 @@ The authoritative literature ground truth for this project is the following lock
 
 <https://github.com/ottojung/assemblyp1/blob/99c158c59aa374ea3898ec4658b6eec52fbad342/docs/literature-status.md>
 
-The project must follow that document when determining what formal statement is being investigated. If the authoritative literature ground truth needs to change, update this intent explicitly to point to the new locked document version.
+The project must follow that document when determining what formal statement is being investigated. The authoritative literature ground truth must not change.
 
 ---
 
