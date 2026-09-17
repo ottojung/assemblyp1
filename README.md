@@ -14,8 +14,7 @@ See:
 ## Build
 
 ```sh
-lake update
 lake build
 ```
 
-The project pins Lean and Mathlib to matching `v4.34.0` releases.
+The repository commits `lake-manifest.json` and pins matching Lean and Mathlib `v4.34.0` releases. Run `lake update` only when intentionally changing or regenerating dependency pins.
