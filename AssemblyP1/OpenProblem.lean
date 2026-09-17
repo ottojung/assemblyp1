@@ -2,7 +2,7 @@ import AssemblyP1.Model
 
 namespace AssemblyP1
 
-/--
+/-
 A namespace for the theorem statement that this project is intended to reach.
 
 At bootstrap time we deliberately do not assert a theorem or axiom here. The
