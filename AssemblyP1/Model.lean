@@ -36,7 +36,7 @@ def IsUniqueMaximumLikelihoodUpToEquiv
   M.IsMaximumLikelihood truth reads ∧
     ∀ candidate : M.Genome,
       M.likelihood candidate reads = M.likelihood truth reads →
-        M.genomeEquiv.Rel candidate truth
+        M.genomeEquiv.r candidate truth
 
 /-- Abstract implication corresponding to the weak, maximizer-only reading. -/
 def BridgingImpliesMaximumLikelihood : Prop :=
