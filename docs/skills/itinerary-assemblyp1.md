@@ -25,7 +25,9 @@ When Lubko is the execution platform, also obey its canonical execution skill:
 
 `docs/skills/scheduled.md` owns reusable scheduled-orchestrator mechanics. `docs/research-orchestration.md` owns the generic research graph, delegation, epistemic-status, and reconciliation protocol. This itinerary contains only AssemblyP1-specific work selection, integration, and completion policy; do not restate those shared mechanics here.
 
-**Never stop or disable the recurring scheduled task merely because one research direction fails or one item is blocked.** Preserve useful negative results and recovery state, then continue with another way to advance the research frontier. A failed conjectural lemma, a counterexample, a source ambiguity, or evidence that a proposed method is unproductive is research progress when recorded precisely.
+**The scheduled ChatGPT task must never be paused, stopped, or disabled. There will always be useful work to do until the published open problem is faithfully settled, whether by advancing the current frontier, recovering or reconciling prior work, testing assumptions, improving the formal model, investigating literature, or discovering a better research direction.**
+
+Never stop or disable the recurring scheduled task merely because one research direction fails or one item is blocked. Preserve useful negative results and recovery state, then continue with another way to advance the research frontier. A failed conjectural lemma, a counterexample, a source ambiguity, or evidence that a proposed method is unproductive is research progress when recorded precisely.
 
 The ultimate goal is to settle the published open problem faithfully. The orchestrator should continuously choose work by how much it can advance that goal, not by mechanically consuming a predetermined checklist or methodology.
 
