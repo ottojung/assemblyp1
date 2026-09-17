@@ -8,8 +8,16 @@ See:
 
 - [`docs/open-problem.md`](docs/open-problem.md) — source and informal statement;
 - [`docs/formalization-plan.md`](docs/formalization-plan.md) — staged formalization plan;
+- [`docs/research-orchestration.md`](docs/research-orchestration.md) — multi-agent research/proof loop;
+- [`docs/skills/README.md`](docs/skills/README.md) — operational AI research skills;
 - [`AssemblyP1/OpenProblem.lean`](AssemblyP1/OpenProblem.lean) — current formal theorem schema;
 - [`docs/intent-records/`](docs/intent-records/) — durable project intent.
+
+## Research workflow
+
+Substantial research work is organized as a durable graph of narrow questions. The orchestrator may distribute source research, model auditing, positive proof search, counterexample search, and Lean formalization to independent workers, then reconciles their exact propositions and evidence before integration. Source facts, conjectures, computational evidence, paper proofs, and kernel-checked Lean results remain explicitly distinct.
+
+Start broad agentic work with [`docs/skills/research-orchestrator.md`](docs/skills/research-orchestrator.md).
 
 ## Build
 
