@@ -23,6 +23,8 @@ REQUIRED = [
     "docs/skills/proof-search.md",
     "docs/skills/counterexample-search.md",
     "docs/skills/reconciliation.md",
+    "docs/skills/scheduled.md",
+    "docs/skills/itinerary-assemblyp1.md",
 ]
 
 MARKDOWN_LINK = re.compile(r"\[[^\]]*\]\(([^)]+)\)")
