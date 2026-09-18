@@ -33,10 +33,14 @@ def window (g : CircularGenome α) (readLength start : ℕ) : List α :=
 /--
 Exact multiplicity of a read type in a candidate circular genome: the number of
 start positions in one traversal whose circular window equals the read.
+
+The traversal domain is represented intrinsically as `Fin g.length`. This is the
+same set of starts as naturals below `g.length`, while exposing the canonical
+finite cyclic permutations needed for rotation arguments.
 -/
 def occurrenceCount [DecidableEq α] (g : CircularGenome α) (read : List α) : ℕ :=
-  ((Finset.range g.length).filter fun start =>
-    g.window read.length start = read).card
+  ((Finset.univ : Finset (Fin g.length)).filter fun start =>
+    g.window read.length (start : ℕ) = read).card
 
 /-- A read type cannot occur at more start positions than the genome has positions. -/
 theorem occurrenceCount_le_length [DecidableEq α]
@@ -44,10 +48,10 @@ theorem occurrenceCount_le_length [DecidableEq α]
     g.occurrenceCount read ≤ g.length := by
   unfold occurrenceCount
   calc
-    ((Finset.range g.length).filter fun start =>
-      g.window read.length start = read).card ≤ (Finset.range g.length).card :=
-        Finset.card_filter_le _ _
-    _ = g.length := Finset.card_range g.length
+    ((Finset.univ : Finset (Fin g.length)).filter fun start =>
+      g.window read.length (start : ℕ) = read).card ≤
+        (Finset.univ : Finset (Fin g.length)).card := Finset.card_filter_le _ _
+    _ = g.length := by simp
 
 /-- A tiny hand-checkable circular genome `A B A`. -/
 def aba : CircularGenome Bool where
