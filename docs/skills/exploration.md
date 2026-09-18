@@ -93,7 +93,11 @@ Do not delete refuted or blocked approaches when their failure is informative. P
 
 ## Parallel workers and Lubko
 
-When delegation is useful and Lubko is available, **prefer `lubko-agent` for substantive subjobs**. Give each agent a narrow packet and isolated write surface when it writes.
+Broad exploration should normally use Lubko as a **fan-out engine**, not as an occasional fallback. When multiple materially different approaches, evaluators, counterexample families, reductions, or interpretations are worth testing and worker slots are available, dispatch several narrow `lubko-agent` packets in parallel and let their results compete or complement one another.
+
+Use the orchestrator primarily to generate/diversify packets, steer workers, notice duplication, compare exact claims, and synthesize the next frontier. Do not spend the whole cycle doing substantive exploratory mathematics directly while useful Lubko slots sit idle unless there is a concrete reason the work is better kept local or serial.
+
+Prefer diversity over replication by default. Independent replication is useful when a claim is important or suspicious, but several agents should not receive vague near-identical "solve it" prompts.
 
 AssemblyP1 has a project-specific concurrency limit: **no more than 5 agents may be actively working in parallel**. This overrides Lubko's generic advice to use as many agents as useful. If more than five packets are ready, keep the remainder in the portfolio/frontier and launch them in later waves as slots free up.
 
