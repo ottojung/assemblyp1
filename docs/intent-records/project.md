@@ -83,12 +83,12 @@ Repository plans and agent instructions must not prescribe a proof or counterexa
 ---
 
 $id-6502748193614207
-title: Prefer Lubko subagents with bounded parallelism
+title: Use Lubko broadly for parallel exploration with bounded concurrency
 date: 2026/09/17
 source: @ottojung
 kind: constraint
 
-AssemblyP1 orchestrators should prefer `lubko-agent` for substantive delegated subjobs when delegation is useful. Across all concurrent AssemblyP1 orchestrators, no more than five delegated agents may be actively working in parallel at once; additional ready work should remain queued until capacity is available.
+Broad AssemblyP1 exploration should commonly be delegated through `lubko-agent`, especially when several materially different proof ideas, counterexample families, reductions, computations, source checks, or adversarial evaluations can be pursued independently. When useful worker capacity is available, orchestrators should normally fan such packets out rather than doing all substantive exploration themselves; their primary role is to choose, steer, compare, reconcile, and synthesize the workers' results. Direct work remains appropriate for tiny deterministic tasks, inherently serial coordination, and final review/reconciliation. Across all concurrent AssemblyP1 orchestrators, no more than five delegated agents may be actively working in parallel at once; additional ready work should remain queued until capacity is available.
 
 ---
 

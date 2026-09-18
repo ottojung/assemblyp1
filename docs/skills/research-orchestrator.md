@@ -40,9 +40,13 @@ Each delegated packet must specify an objective, permitted assumptions, non-goal
 
 Prefer sharply different packets, targeted independent replications, or cheap evaluators over several workers all asked to "solve" the same thing.
 
-### Prefer Lubko for substantive subjobs
+### Use Lubko broadly for exploration
 
-When Lubko is available, **prefer `lubko-agent` for substantial delegated research, implementation, or investigation subjobs**. Use direct operations for tiny deterministic work.
+When Lubko is available, the orchestrator should normally **delegate broad substantive exploration rather than perform it all itself**. If the live frontier contains several worthwhile distinct approaches or evaluators and slots are free, turn them into narrow packets and launch multiple `lubko-agent` workers. Available capacity is a research resource to use, not something to preserve by default.
+
+The orchestrator's comparative advantage is coordination: choose and diversify packets, steer agents, stop unproductive duplication, compare exact propositions and evidence, reconcile results, and decide the next wave. Direct work is appropriate for tiny deterministic operations, inherently serial coordination, cheap spot checks, and final review/reconciliation.
+
+If substantial exploratory research is done directly while useful Lubko slots remain free, record or be able to state the concrete reason delegation would not help. Do not create agents merely to satisfy a quota, and do not send several agents near-identical vague prompts.
 
 AssemblyP1 imposes a hard **repository-wide** cap: **no more than 5 delegated agents may be actively working in parallel across all concurrent orchestrators**. Before launching a new `lubko-agent`, inspect durable worker/status state and account for already-active AssemblyP1 agents. If five are active, keep additional packets queued in the shared portfolio/frontier and launch them only after a slot is durably known to be free.
 
