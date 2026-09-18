@@ -7,7 +7,21 @@ Canonical Lubko references:
 - <https://github.com/ottojung/lubko/blob/main/docs/SKILL.md>
 - <https://github.com/ottojung/lubko/blob/main/docs/skills/scheduled.md>
 
-When operating through Lubko, obey those canonical instructions as well as this repository's `AGENTS.md`.
+Every scheduled AssemblyP1 run operates through Lubko for worker-pool discovery even if its eventual local task is tiny. Read and obey the canonical Lubko instructions as well as this repository's `AGENTS.md`.
+
+## Mandatory startup: reconcile and fill the Lubko pool
+
+This is a **required startup gate on every scheduled run**, before substantive issue work, PR repair, proof work, or repository editing.
+
+1. Through Lubko's Supabase transport, run `lubko-agent list --running --json` on `phoebe-dev` and poll that root job to terminal.
+2. Identify running AssemblyP1 agents. New agents are identified by a title beginning `AssemblyP1:`. For legacy sessions created before this rule, also count a running agent whose cwd clearly belongs to AssemblyP1 (for example `/workspace/assemblyp1-...`).
+3. Reconcile that live list with any agent handles mentioned in issue/status comments. Live Lubko state is authoritative for whether an agent is actually running; durable comments provide recovery context.
+4. Compute the number of free slots under the repository-wide cap of five.
+5. If useful slots are free, **generate non-overlapping packets from the whole live research frontier and actually launch managed agents into those slots before spending the run on substantive local work**. Do not limit packet generation to open issues/PRs.
+6. Create new agents with titles of the form `AssemblyP1: <short packet name>`. A created-but-idle agent does not count toward saturation; start it with a prompt and verify it is running.
+7. If a slot cannot be filled, the run must have a concrete reason: no genuinely useful independent packet after actively broadening the frontier, or a demonstrated Lubko execution/transport blocker. Record that reason durably when it matters. Merely having useful local work, an open PR, or an owned issue is **not** a reason to leave slots idle.
+
+The orchestrator must not treat “I can do useful work myself” as satisfying this gate. The pool check and launch attempt happen first.
 
 ## Disposable invocations, durable state
 
