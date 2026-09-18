@@ -193,4 +193,4 @@ A good loop shrinks uncertainty and improves the frontier. It does not merely ge
 
 ## Integration rule
 
-A result belongs on `main` when it improves durable research state without overstating what is known. Source notes may land while ambiguities remain if the ambiguity is explicit. Exploratory code may land when reproducible and clearly labeled. Lean theorems must compile without trust escapes. Claims that the published problem is solved require both a kernel-checkable result and a documented correspondence between the formal theorem and the published statement.
+Integration goes directly through PRs targeting `main`; AssemblyP1 does not use `release/*` branches. The orchestrator may merge a PR into `main` after independently reviewing the diff and completing the verification appropriate to its claims. Source notes may land while ambiguities remain if the ambiguity is explicit. Exploratory code may land when reproducible and clearly labeled. Lean theorems must compile without trust escapes. Claims that the published problem is solved require both a kernel-checkable result and a documented correspondence between the formal theorem and the published statement.
