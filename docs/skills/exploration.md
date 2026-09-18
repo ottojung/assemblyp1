@@ -2,7 +2,7 @@
 
 Use this skill when the research frontier is uncertain and several materially different approaches, lemmas, model interpretations, experiments, or reductions could plausibly advance the published open problem.
 
-The purpose is to manage **search effort**, not to decide mathematical truth. Portfolio priority never upgrades a claim's epistemic status.
+The purpose is to manage **search effort**, not to decide mathematical truth. Portfolio priority never upgrades a claim's epistemic status. This is the project's default mode after the initial statement is pinned down and before a mature proof or counterexample is ready for final formal verification.
 
 ## Maintain an approach portfolio
 
@@ -34,14 +34,14 @@ Before spending substantial effort, run the cheapest evaluator that can change t
 - tiny hand-worked examples;
 - bounded exact computation;
 - counterexample search;
-- Lean typechecking or a small formal lemma;
+- a deliberately tiny Lean typecheck or micro-lemma when it is cheaper than resolving the question informally;
 - theorem-strength/assumption comparison;
 - dimensional or invariance sanity checks;
 - independent derivation.
 
 Evaluator failure is feedback. Feed the exact failure back into the approach and either revise it, weaken it, split it, or retire it.
 
-Tests and scores are evidence about **where to search next**, not evidence that the conjecture is true.
+Tests and scores are evidence about **where to search next**, not evidence that the conjecture is true. Do not escalate a successful evaluator into broad Lean formalization unless the initial statement or a mature final argument actually requires it.
 
 ## Best-first allocation
 
