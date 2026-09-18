@@ -44,9 +44,9 @@ Prefer sharply different packets, targeted independent replications, or cheap ev
 
 When Lubko is available, the orchestrator should normally **delegate broad substantive exploration rather than perform it all itself**. Across all concurrent AssemblyP1 orchestrators, aim to keep the shared pool close to **5 useful active agents** whenever the live frontier supports that many independent packets.
 
-Before launching anything, reconcile durable worker records with observable Lubko state and count already-active AssemblyP1 agents. Fill only free slots. Do not interpret the target as "five per orchestrator."
+Before launching anything, run the scheduled preflight's live discovery command (`lubko-agent list --running --json` on `phoebe-dev`) through the canonical Lubko transport, reconcile the result with durable worker records, and count already-active AssemblyP1 agents. New AssemblyP1 agents must use an `AssemblyP1:` title prefix. Fill only free slots. Do not interpret the target as "five per orchestrator."
 
-If useful capacity is idle, broaden the frontier rather than assuming the current open issue/PR is the only work available. Generate materially different packets from the published target and live portfolio. Agent packets do not require pre-existing GitHub issues; promote them into durable issues/docs/PRs only when their question, result, obstruction, dependency, or recovery state deserves persistence.
+If useful capacity is idle, broaden the frontier rather than assuming the current open issue/PR is the only work available. Generate materially different packets from the published target and live portfolio, and **launch them before beginning substantive local work**. Agent packets do not require pre-existing GitHub issues; promote them into durable issues/docs/PRs only when their question, result, obstruction, dependency, or recovery state deserves persistence.
 
 The orchestrator's comparative advantage is coordination: choose and diversify packets, steer agents, stop unproductive duplication, compare exact propositions and evidence, reconcile results, and decide the next wave. Direct work is appropriate for tiny deterministic operations, inherently serial coordination, cheap spot checks, and final review/reconciliation.
 
