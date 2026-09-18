@@ -16,13 +16,12 @@ Before acting, study and obey:
 - `docs/skills/scheduled.md`;
 - `docs/skills/research-orchestrator.md` when the selected work is broad or benefits from multiple workers;
 - `docs/skills/exploration.md` whenever the best next direction is uncertain or several approaches deserve comparison;
-- the narrower skill under `docs/skills/` appropriate to the selected packet.
+- the narrower skill under `docs/skills/` appropriate to the selected packet;
+- **when Lubko is available for delegated execution or any `lubko-agent` subjob may be used, read and obey Lubko's canonical execution skill before launching or managing that work:** <https://github.com/ottojung/lubko/blob/main/docs/SKILL.md>.
 
 Consult `docs/formalization-plan.md` when the current work concerns formalization. It is a checklist of formalization obligations, **not** the project's research strategy or a fallback work queue.
 
-When Lubko is the execution platform, also obey its canonical execution skill:
-
-<https://github.com/ottojung/lubko/blob/main/docs/SKILL.md>
+Lubko's canonical skill is the operational authority for reaching `lubko://phoebe-dev`: follow its Supabase job transport, `lubko-agent` lifecycle, polling/liveness, and execution-safety rules rather than improvising a direct shell connection. AssemblyP1-specific rules in this itinerary still govern research selection, the repository-wide five-agent cap, and the `main` integration boundary.
 
 `docs/skills/scheduled.md` owns reusable scheduled-orchestrator mechanics. `docs/research-orchestration.md` owns the generic research graph, delegation, epistemic-status, and reconciliation protocol. This itinerary contains only AssemblyP1-specific work selection, integration, and completion policy; do not restate those shared mechanics here.
 
