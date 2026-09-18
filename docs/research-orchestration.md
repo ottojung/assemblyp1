@@ -67,7 +67,7 @@ Workers should attack the packet, not redefine it to make it easy.
 
 When delegation is useful and Lubko is available, **prefer `lubko-agent` for substantive subjobs**. Use direct operations for tiny deterministic work that does not justify a delegated agent.
 
-AssemblyP1 has a hard project-specific concurrency limit: **no more than 5 delegated agents may be actively working in parallel**. This overrides generic Lubko guidance that would otherwise allow more. If more than five packets are ready, rank them using the live portfolio/frontier and launch later waves as slots free up.
+AssemblyP1 has a hard **repository-wide** concurrency limit: **no more than 5 delegated agents may be actively working in parallel across all concurrent orchestrators**. This overrides generic Lubko guidance that would otherwise allow more. Before launching a delegated agent, account for currently active AssemblyP1 agent jobs recorded in durable status/worker state. If five are already active, leave additional packets queued in the shared portfolio/frontier until a slot is durably known to be free.
 
 Do not give two write-capable workers the same branch or worktree. The orchestrator retains final reconciliation, PR review, and integration responsibility.
 
@@ -112,7 +112,7 @@ These considerations are scheduling heuristics, not truth scores.
 
 ### 5. Execute bounded parallel work
 
-Launch at most five active delegated agents. Prefer distinct packets or deliberately independent replications over several agents paraphrasing the same task.
+Launch delegated work only while the repository-wide active-agent count remains below five. Prefer distinct packets or deliberately independent replications over several agents paraphrasing the same task.
 
 When a worker finishes, update the portfolio before filling the freed slot. New evidence may make a previously queued packet obsolete.
 
