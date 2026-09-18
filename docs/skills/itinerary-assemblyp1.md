@@ -21,7 +21,7 @@ Before acting, study and obey:
 
 Consult `docs/formalization-plan.md` when the current work concerns formalization. It is a checklist of formalization obligations, **not** the project's research strategy or a fallback work queue.
 
-Lubko's canonical skill is the operational authority for reaching `lubko://phoebe-dev`: follow its Supabase job transport, `lubko-agent` lifecycle, polling/liveness, and execution-safety rules rather than improvising a direct shell connection. AssemblyP1-specific rules in this itinerary still govern research selection, the repository-wide five-agent cap, and the `main` integration boundary.
+Lubko's canonical skill is the operational authority for reaching `lubko://phoebe-dev`: follow its Supabase job transport, `lubko-agent` lifecycle, polling/liveness, and execution-safety rules rather than improvising a direct shell connection. AssemblyP1-specific rules in this itinerary still govern research selection, the repository-wide five-agent cap, and direct integration into `main`.
 
 `docs/skills/scheduled.md` owns reusable scheduled-orchestrator mechanics. `docs/research-orchestration.md` owns the generic research graph, delegation, epistemic-status, and reconciliation protocol. This itinerary contains only AssemblyP1-specific work selection, integration, and completion policy; do not restate those shared mechanics here.
 
@@ -57,12 +57,12 @@ If the selected issue has a genuine external or upstream blocker, record enough 
 
 ## Research integration
 
-AssemblyP1 does **not** use Lubko's `release/*` integration scheme. Research branches and PRs integrate directly toward `main`, but `main` remains the human review boundary.
+AssemblyP1 integrates directly into `main`. **Do not create or use `release/*` branches.**
 
 - Each write-capable packet uses an isolated branch/worktree, normally `agent/<short-topic>`.
 - Start new work from current `main` unless the packet explicitly depends on an unmerged research branch; in that case record the dependency and avoid pretending the dependent result is already part of the stable project model.
 - Open a draft PR to `main` early once there is durable work worth recovering or reviewing.
-- Scheduled orchestrators **must not merge their own research/task PRs into `main`** merely to keep the loop moving. Human promotion into `main` is the integration boundary unless an authoritative intent record changes this policy.
+- After independently reviewing the PR diff and completing the verification required by its epistemic claims, a scheduled orchestrator may merge the PR into `main` itself. There is no human-only merge boundary.
 - Multiple independent research PRs may coexist. Do not serialize independent work unnecessarily.
 - When two PRs overlap mathematically, reconcile their exact propositions and assumption surfaces before treating either as a dependency of later work.
 - If a PR changes a source-sensitive definition, theorem statement, likelihood model, repeat/bridging predicate, candidate-genome class, or equivalence relation, downstream work must explicitly identify which version it assumes until the change is integrated.
@@ -110,6 +110,6 @@ A scheduled AssemblyP1 work item is complete when:
 - no unresolved source-fidelity, mathematical-correctness, or review blocker is hidden;
 - the current research state makes clear what is known, what remains uncertain, and how another orchestrator can continue making progress.
 
-Completion does **not** require the PR to be merged into `main`. A reviewed, green, ready-for-human-review PR may remain open while future scheduled invocations select other independent actionable work.
+Completion does not mechanically require a merge when there is a concrete reason to leave a PR open, but a reviewed and verified PR may be merged directly into `main` by the orchestrator; it need not wait for separate human promotion.
 
 After those conditions hold, complete the shared scheduled-orchestrator bookkeeping according to `docs/skills/scheduled.md` and continue the recurring task on future invocations.

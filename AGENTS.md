@@ -34,6 +34,7 @@ Substantial research work should follow `docs/research-orchestration.md`. Operat
 - When the frontier is uncertain, use `docs/skills/exploration.md` to maintain and evolve a portfolio of materially different approaches; portfolio priority allocates effort and is never evidence of truth.
 - When delegation is useful and Lubko is available, prefer `lubko-agent` for substantive subjobs. Across all concurrent AssemblyP1 orchestrators, no more than five delegated agents may be actively working in parallel; additional ready packets remain queued until capacity is free.
 - Prefer durable GitHub state—issues, branches, PRs, commits, and repository docs—over conversation-only state so another invocation can recover the research graph.
+- Integration targets `main` directly. Do not create or use `release/*` branches. After the orchestrator has independently reviewed and verified a PR at the level required by its claims, it may merge that PR into `main` itself.
 
 ## Git is good
 
