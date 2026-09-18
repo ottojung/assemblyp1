@@ -30,7 +30,7 @@ The portfolio is for allocating effort, not judging truth.
 
 ### Establish or generate the frontier
 
-If one blocking question is clearly dominant, state it precisely. Otherwise generate several genuinely different candidate approaches or scaffold questions and use `exploration.md` to compare them.
+Once the initial source-faithful statement is sufficiently pinned down, treat mathematical exploration rather than intermediate formalization as the default research mode. If one blocking question is clearly dominant, state it precisely. Otherwise generate several genuinely different candidate approaches or scaffold questions and use `exploration.md` to compare them.
 
 Do not force a predetermined proof/counterexample split or reuse a static roadmap merely because it already exists.
 
@@ -96,7 +96,9 @@ Record parent/descendant relationships when the history is useful.
 
 The orchestrator's most important output is not a prose summary; it is a better next research state.
 
-Promote stable definitions to Lean, turn unresolved structural ideas into focused issues, turn suspicious lemmas into cheap evaluator packets, generate scaffold problems when they would reveal structure, and retire routes whose failures are now understood.
+Preserve stable discoveries in notes/issues, turn unresolved structural ideas into focused issues, turn suspicious lemmas into cheap evaluator packets, generate scaffold problems when they would reveal structure, and retire routes whose failures are now understood.
+
+Do not promote stable definitions or lemmas to Lean by default. Substantial formalization is reserved for pinning down the initial published statement and verifying a plausible complete proof or counterexample. Tiny Lean experiments may be used as bounded evaluators without creating a formalization queue.
 
 ### Verify and review
 
