@@ -93,15 +93,15 @@ Do not delete refuted or blocked approaches when their failure is informative. P
 
 ## Parallel workers and Lubko
 
-Broad exploration should normally use Lubko as a **fan-out engine**, not as an occasional fallback. When multiple materially different approaches, evaluators, counterexample families, reductions, or interpretations are worth testing and worker slots are available, dispatch several narrow `lubko-agent` packets in parallel and let their results compete or complement one another.
+Broad exploration should normally use Lubko as a **fan-out engine**, not as an occasional fallback. The shared AssemblyP1 pool should stay **close to 5 useful active agents** whenever the frontier supports five non-overlapping packets.
 
-Use the orchestrator primarily to generate/diversify packets, steer workers, notice duplication, compare exact claims, and synthesize the next frontier. Do not spend the whole cycle doing substantive exploratory mathematics directly while useful Lubko slots sit idle unless there is a concrete reason the work is better kept local or serial.
+The target is useful saturation, not mechanical occupancy. Never invent filler work or duplicate an active agent just to reach five. If fewer than five obvious packets exist, broaden the search: generate alternate approaches, counterexample families, reductions, computations, source checks, adversarial tests, or scaffold questions and launch the best independent ones.
 
-Prefer diversity over replication by default. Independent replication is useful when a claim is important or suspicious, but several agents should not receive vague near-identical "solve it" prompts.
+Agent packets are **not restricted to GitHub issues**. An issue is durable coordination state, not an admission ticket for research. A packet may explore an untracked frontier idea; create or update an issue when its question, result, dependency, obstruction, or recovery state becomes worth preserving across runs.
 
-AssemblyP1 has a project-specific concurrency limit: **no more than 5 agents may be actively working in parallel**. This overrides Lubko's generic advice to use as many agents as useful. If more than five packets are ready, keep the remainder in the portfolio/frontier and launch them in later waves as slots free up.
+Use the orchestrator primarily to generate/diversify packets, steer workers, notice duplication, compare exact claims, reconcile outputs, and synthesize the next frontier. Prefer diversity over replication by default. Independent replication is useful when a claim is important or suspicious, but several agents should not receive vague near-identical "solve it" prompts.
 
-The cap applies to actively working delegated agents, not to dormant issues, completed agents, or queued portfolio entries.
+AssemblyP1 has a project-specific concurrency limit: **no more than 5 agents may be actively working in parallel repository-wide**. Every orchestrator must count already-live AssemblyP1 agents before launching and fill only genuinely free slots. When a slot opens, refresh the portfolio and refill it promptly if useful work exists.
 
 ## Handoff
 
