@@ -39,8 +39,8 @@ same set of starts as naturals below `g.length`, while exposing the canonical
 finite cyclic permutations needed for rotation arguments.
 -/
 def occurrenceCount [DecidableEq α] (g : CircularGenome α) (read : List α) : ℕ :=
-  ((Finset.univ : Finset (Fin g.length)).filter fun start =>
-    g.window read.length (start : ℕ) = read).card
+  ((Finset.univ : Finset (Fin g.length)).filter fun start : Fin g.length =>
+    g.window read.length start.val = read).card
 
 /-- A read type cannot occur at more start positions than the genome has positions. -/
 theorem occurrenceCount_le_length [DecidableEq α]
@@ -48,8 +48,8 @@ theorem occurrenceCount_le_length [DecidableEq α]
     g.occurrenceCount read ≤ g.length := by
   unfold occurrenceCount
   calc
-    ((Finset.univ : Finset (Fin g.length)).filter fun start =>
-      g.window read.length (start : ℕ) = read).card ≤
+    ((Finset.univ : Finset (Fin g.length)).filter fun start : Fin g.length =>
+      g.window read.length start.val = read).card ≤
         (Finset.univ : Finset (Fin g.length)).card := Finset.card_filter_le _ _
     _ = g.length := by simp
 
