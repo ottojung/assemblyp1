@@ -35,13 +35,17 @@ The ultimate goal is to settle the published open problem faithfully. The orches
 
 Apply `docs/skills/scheduled.md` and `docs/research-orchestration.md`, with these AssemblyP1-specific choices.
 
-Prefer existing durable work before inventing duplicate work:
+Prefer existing durable work before inventing duplicate work for the orchestrator's own coordination/recovery attention:
 
 1. **Recover abandoned issue-tracked work** that has useful partial results, an existing branch/PR, unfinished formalization, or unreconciled worker output.
 2. **Advance an existing open AssemblyP1 PR** when doing so can move the research toward a trustworthy integrated result.
 3. **Select an actionable open issue on the current research frontier** whose dependencies are satisfied and which is not actively owned under the scheduled-work protocol.
 
-If none of those provides useful actionable work, **derive the next research node from the current state of the problem**. Do not fall back to a fixed plan. Reconstruct the frontier from the published target, intent records, literature ground truth, current formal definitions, established lemmas, computational evidence, failed approaches, unresolved ambiguities, and recently completed work. Then identify a concrete question whose resolution is expected to make meaningful progress toward settlement, create a focused issue for it, and work that issue.
+This ordering does **not** mean all delegated agents must work on the first open issue or PR. Open issues are durable research nodes, not the boundary of allowed exploration. Give an existing node only the worker capacity it can use independently and productively; fill remaining free agent slots from the broader live frontier.
+
+Exploratory agent packets may begin without an issue. When a packet produces a question, result, dependency, obstruction, or recovery state that should survive across invocations, promote it into an issue, document, branch/PR, or other durable repository state.
+
+If existing durable work does not consume all useful research capacity, **derive additional frontier packets from the current state of the problem**. Do not fall back to a fixed plan. Reconstruct the frontier from the published target, intent records, literature ground truth, current formal definitions, established lemmas, computational evidence, failed approaches, unresolved ambiguities, and recently completed work.
 
 The orchestrator has discretion over what kind of question is most valuable. Depending on the current state, progress may come from literature recovery, model clarification, proving or refuting a lemma in notes, discovering a new reduction, constructing or excluding examples, computational exploration, validating correspondence with the source problem, repairing an earlier assumption, or a method not anticipated by this repository. Substantial formalization is normally reserved for the initial statement or a mature final result. These are examples, not a prescribed menu, ordering, or proof strategy.
 
@@ -51,7 +55,11 @@ When choosing among plausible frontier questions, use research judgment. Useful 
 
 The orchestrator may decompose a broad frontier question into multiple independent or competing packets when that is useful. Prefer narrow leaf packets with explicit ownership over claiming a broad umbrella issue exclusively; concurrent scheduled orchestrators should be able to choose other unowned frontier leaves. It may also abandon, mutate, combine, or redirect a methodology when evaluator feedback suggests a better route. Repository documents must not be treated as authority for a proof method merely because they were written earlier.
 
-For broad exploration, **actively use `lubko-agent` fan-out when useful slots are available**. If several materially different approaches or evaluators deserve attention, normally dispatch several narrow packets rather than having the orchestrator pursue them all itself. The orchestrator should concentrate on packet choice, steering, comparison, reconciliation, and the next wave. Tiny deterministic work, inherently serial coordination, and final review can remain direct. AssemblyP1 has a **repository-wide maximum of 5 actively working delegated agents across all concurrent orchestrators**. Before launching another agent, account for active AssemblyP1 workers in durable status. If five are active, keep additional packets queued in the shared frontier until a slot is known to be free.
+For broad exploration, actively maintain **near-saturation of the shared Lubko pool** when useful work exists. The repository-wide maximum is **5 actively working delegated agents across all concurrent orchestrators**, and five useful active agents is the normal target rather than merely a ceiling. Before launching, reconcile active AssemblyP1 workers and fill only free slots.
+
+Do not manufacture filler work or duplicate active packets to hit five. Instead, if the selected issue/PR cannot use all available slots independently, generate materially different packets from the wider research frontier and run those alongside it. When an agent finishes, fails, stalls, or is stopped, reconcile its output and refill the slot promptly when another useful packet exists.
+
+The orchestrator should concentrate on packet choice, steering, comparison, reconciliation, and the next wave. Tiny deterministic work, inherently serial coordination, and final review can remain direct.
 
 If the selected issue has a genuine external or upstream blocker, record enough durable state for later recovery, update its dependencies, and choose other useful work. A blocked node is not a reason to terminate the recurring orchestrator.
 

@@ -23,10 +23,10 @@ Recover existing issues, active PRs, worker status, failed approaches, and unres
 
 Maintain two views:
 
-- the durable dependency graph of questions/results; and
-- a live portfolio of materially different research approaches.
+- the durable dependency graph of questions/results, often represented by issues; and
+- a live portfolio of materially different research approaches, including temporary packets that may not yet have issues.
 
-The portfolio is for allocating effort, not judging truth.
+The issue graph is durable memory. The portfolio is the larger search surface from which agents are allocated. The portfolio is for allocating effort, not judging truth.
 
 ### Establish or generate the frontier
 
@@ -40,9 +40,13 @@ Each delegated packet must specify an objective, permitted assumptions, non-goal
 
 Prefer sharply different packets, targeted independent replications, or cheap evaluators over several workers all asked to "solve" the same thing.
 
-### Use Lubko broadly for exploration
+### Keep the shared Lubko pool near useful saturation
 
-When Lubko is available, the orchestrator should normally **delegate broad substantive exploration rather than perform it all itself**. If the live frontier contains several worthwhile distinct approaches or evaluators and slots are free, turn them into narrow packets and launch multiple `lubko-agent` workers. Available capacity is a research resource to use, not something to preserve by default.
+When Lubko is available, the orchestrator should normally **delegate broad substantive exploration rather than perform it all itself**. Across all concurrent AssemblyP1 orchestrators, aim to keep the shared pool close to **5 useful active agents** whenever the live frontier supports that many independent packets.
+
+Before launching anything, reconcile durable worker records with observable Lubko state and count already-active AssemblyP1 agents. Fill only free slots. Do not interpret the target as "five per orchestrator."
+
+If useful capacity is idle, broaden the frontier rather than assuming the current open issue/PR is the only work available. Generate materially different packets from the published target and live portfolio. Agent packets do not require pre-existing GitHub issues; promote them into durable issues/docs/PRs only when their question, result, obstruction, dependency, or recovery state deserves persistence.
 
 The orchestrator's comparative advantage is coordination: choose and diversify packets, steer agents, stop unproductive duplication, compare exact propositions and evidence, reconcile results, and decide the next wave. Direct work is appropriate for tiny deterministic operations, inherently serial coordination, cheap spot checks, and final review/reconciliation.
 
