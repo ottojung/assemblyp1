@@ -37,9 +37,7 @@ private def starts : List Nat := [0, 0, 2]
 
 /-- Every true position is covered by at least one realized length-two read. -/
 private def covered : Prop :=
-  (List.range truth.length).all (fun i =>
-      starts.any (fun s =>
-        (List.range 2).any (fun d => i == (s + d) % truth.length))) = true
+  ∀ i : Fin truth.length, ∃ s ∈ starts, ∃ d < 2, i.val = (s + d) % truth.length
 
 /--
 For the concrete truth `ACGT`, distinct circular starts already disagree in
@@ -48,9 +46,7 @@ This is stronger than the repeat absence needed to make the triple-repeat and
 interleaved-repeat bridging obligations vacuous.
 -/
 private def noPositiveRepeat : Prop :=
-  (List.range truth.length).all (fun i =>
-      (List.range truth.length).all (fun j =>
-        (i == j) || (base truth i != base truth j))) = true
+  ∀ i j : Fin truth.length, i ≠ j → base truth i.val ≠ base truth j.val
 
 /--
 The concrete finite information-feasibility facts needed by the counterexample:
@@ -68,9 +64,13 @@ def IsMaximumLikelihood (g : Genome) : Prop :=
   ∀ candidate : Genome, candidate ≠ [] →
     sampleLikelihood candidate ≤ sampleLikelihood g
 
-theorem truth_covered : covered := by decide
+theorem truth_covered : covered := by
+  unfold covered
+  decide
 
-theorem truth_has_no_positive_repeat : noPositiveRepeat := by decide
+theorem truth_has_no_positive_repeat : noPositiveRepeat := by
+  unfold noPositiveRepeat
+  decide
 
 theorem truth_information_feasible : informationFeasible :=
   ⟨truth_covered, truth_has_no_positive_repeat⟩
