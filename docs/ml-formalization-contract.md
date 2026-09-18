@@ -6,12 +6,12 @@ _Status: modeling contract for issue #9, derived from the locked literature grou
 
 The authoritative literature ground truth is the locked `docs/literature-status.md` at commit `99c158c59aa374ea3898ec4658b6eec52fbad342`, as required by `$id-4318762045197832`.
 
-Two unmerged source-note branches sharpen that ground truth and are dependencies of this contract, not facts assumed to be on `main`:
+The integrated source notes from PR #6 and PR #8 sharpen that ground truth:
 
-- PR #6, head `10edfce502bc4ccbb24a2e9def002fa4f606a260`, distinguishes the exact Medvedev–Brudno likelihood, its fixed-length approximation, and the Section 6.2 flow feasible set.
-- PR #8, head `a21f51113d1b4d88909daa30111ee859f8ab7abc`, records that the accepted Shomorony et al. (2016) text does not select among those levels and does not resolve the competitor-length or tie-semantics questions.
+- `docs/source-notes/medvedev-brudno-candidate-class.md` distinguishes the exact Medvedev–Brudno likelihood, its fixed-length approximation, and the Section 6.2 flow feasible set.
+- `docs/source-notes/shomorony-ml-reference.md` records that the accepted Shomorony et al. (2016) text does not select among those levels and does not resolve the competitor-length or tie-semantics questions.
 
-If either dependency changes before integration, this contract must be reconciled proposition-by-proposition rather than treating the PR summaries as authority.
+This contract remains subordinate to the locked literature ground truth; later source work must be reconciled proposition-by-proposition rather than treating summaries as authority.
 
 ## Epistemic classification
 
