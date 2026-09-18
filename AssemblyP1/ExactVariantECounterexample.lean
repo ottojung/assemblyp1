@@ -12,7 +12,7 @@ private def base (g : Genome) (i : Nat) : DNA :=
   g[i % g.length]!
 
 private def dinucleotideCount (g : Genome) (x y : DNA) : Nat :=
-  (List.range g.length).countP fun i => base g i = x && base g (i + 1) = y
+  (List.range g.length).countP fun i => base g i == x && base g (i + 1) == y
 
 /-- Exact multinomial likelihood for the concrete observed multiset `AC, AC, GT`.
 The multinomial coefficient is `3! / (2! 1!) = 3`; each read probability is
