@@ -18,6 +18,7 @@ REQUIRED = [
     "docs/research-orchestration.md",
     "docs/skills/README.md",
     "docs/skills/research-orchestrator.md",
+    "docs/skills/exploration.md",
     "docs/skills/literature-search.md",
     "docs/skills/formalization.md",
     "docs/skills/proof-search.md",

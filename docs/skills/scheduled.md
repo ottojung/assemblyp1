@@ -29,6 +29,8 @@ The status should make these facts unambiguous:
 
 Do not put credentials or unnecessary logs in the comment.
 
+When an orchestrator has delegated subjobs, the canonical status must also list the currently active AssemblyP1 delegated-agent handles/resources well enough for another scheduled invocation to account for them. Remove or mark workers terminal as soon as their status is known. Before launching a new delegated agent, reconcile this durable worker state with observable Lubko job status and obey the repository-wide concurrency cap from the AssemblyP1 itinerary/intent records.
+
 If multiple marked comments exist because of a race, the most recently updated marked comment is canonical. Immediately after claiming or inheriting work, re-read it; if another owner won the race, yield.
 
 While retaining ownership, refresh the canonical status at least once every five minutes. A `working` status with no update for ten minutes may be treated as abandoned and inherited according to the project itinerary. Before every refresh, re-read ownership and yield if another invocation has taken over.

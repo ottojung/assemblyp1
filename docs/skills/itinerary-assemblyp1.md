@@ -15,6 +15,7 @@ Before acting, study and obey:
 - `docs/research-orchestration.md`;
 - `docs/skills/scheduled.md`;
 - `docs/skills/research-orchestrator.md` when the selected work is broad or benefits from multiple workers;
+- `docs/skills/exploration.md` whenever the best next direction is uncertain or several approaches deserve comparison;
 - the narrower skill under `docs/skills/` appropriate to the selected packet.
 
 Consult `docs/formalization-plan.md` when the current work concerns formalization. It is a checklist of formalization obligations, **not** the project's research strategy or a fallback work queue.
@@ -45,9 +46,13 @@ If none of those provides useful actionable work, **derive the next research nod
 
 The orchestrator has discretion over what kind of question is most valuable. Depending on the current state, progress may come from literature recovery, model clarification, proving or refuting a lemma, discovering a new reduction, constructing or excluding examples, computational exploration, formalization, validating correspondence with the source problem, repairing an earlier assumption, or a method not anticipated by this repository. These are examples, not a prescribed menu, ordering, or proof strategy.
 
+When the frontier is genuinely uncertain, maintain a shared portfolio of distinct approaches and allocate effort best-first according to current evidence and expected information value. Portfolio priority is only a scheduling device; it must never be treated as evidence that an approach is mathematically correct.
+
 When choosing among plausible frontier questions, use research judgment. Useful considerations include whether a result would remove a major uncertainty, unlock several dependent questions, decisively test a central assumption, expose a flaw in the current model, simplify the target, or convert informal understanding into independently checkable knowledge. Do not optimize for producing commits, Lean code, or completed checklist items when another kind of work would advance the mathematical problem more.
 
-The orchestrator may decompose a broad frontier question into multiple independent or competing packets when that is useful. It may also abandon or redirect a methodology when evidence suggests a better route. Repository documents must not be treated as authority for a proof method merely because they were written earlier.
+The orchestrator may decompose a broad frontier question into multiple independent or competing packets when that is useful. Prefer narrow leaf packets with explicit ownership over claiming a broad umbrella issue exclusively; concurrent scheduled orchestrators should be able to choose other unowned frontier leaves. It may also abandon, mutate, combine, or redirect a methodology when evaluator feedback suggests a better route. Repository documents must not be treated as authority for a proof method merely because they were written earlier.
+
+When delegation is useful and Lubko is available, prefer `lubko-agent` for substantive subjobs. AssemblyP1 has a **repository-wide maximum of 5 actively working delegated agents across all concurrent orchestrators**. Before launching another agent, account for active AssemblyP1 workers in durable status. If five are active, keep additional packets queued in the shared frontier until a slot is known to be free.
 
 If the selected issue has a genuine external or upstream blocker, record enough durable state for later recovery, update its dependencies, and choose other useful work. A blocked node is not a reason to terminate the recurring orchestrator.
 
