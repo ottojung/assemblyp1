@@ -1,47 +1,77 @@
 # Formalization plan
 
-This document records formalization obligations that are currently visible from the published problem and the repository's source analysis. It is **not** the project's research strategy, not a priority queue, and not a prescribed route to a proof or counterexample.
+This document defines **when** AssemblyP1 should use Lean. It is not the research roadmap and it is deliberately much smaller than a conventional bottom-up formalization plan.
 
-The ordering below is organizational only. The research orchestrator may formalize objects in a different order, interleave formalization with mathematical discovery, postpone work whose semantics are unstable, or introduce different intermediate abstractions when that better serves the ultimate goal. Any formalization must still preserve source fidelity.
+## Principle
 
-## 1. Recover the exact paper model
+AssemblyP1 is exploration-first.
 
-- [ ] Formalize the Shomorony et al. circular, error-free, fixed-read-length sampling model.
-- [ ] Read the cited Medvedev–Brudno maximum-likelihood formulation and transcribe its admissible candidate sequences and objective exactly.
-- [ ] Determine from the literature whether the open question asks for an ML maximizer result, uniqueness up to cyclic shift, or another precise statement.
-- [ ] Record any mismatch between the source papers' modeling conventions rather than silently reconciling it.
+Lean has two primary jobs:
 
-## 2. Strings and circular genomes
+1. **Formalize the initial published statement faithfully.**
+2. **Formalize the final result once there is a plausible, coherent proof or counterexample in mathematical notes.**
 
-- [ ] Define the string/genome objects needed by the source-faithful model.
-- [ ] Define circular indexing and the relevant genome equivalence.
-- [ ] Prove the basic equivalence/invariance facts required by later statements.
-- [ ] Define fixed-length circular reads/windows and occurrence multiplicity as required by the model.
+The project should not eagerly formalize intermediate objects, definitions, invariance lemmas, or proof infrastructure merely because they appear stable or might be useful later. During discovery, ordinary mathematical notes, executable experiments, literature work, toy examples, reductions, and proof sketches are the default media.
 
-## 3. Sequencing observations and likelihood
+## Phase A — pin down the initial statement
 
-- [ ] Represent the observed sequencing data with the multiplicity information required by the source model.
-- [ ] Define the probability/likelihood of an observation under an admissible candidate genome exactly as required by the literature-grounded model.
-- [ ] Prove normalization, invariance, and other elementary facts that later arguments actually need.
-- [ ] Formalize the maximum-likelihood and tie/uniqueness semantics established by the literature work.
+Formalize only enough source-faithful structure to make the target proposition precise and typecheckable.
 
-## 4. Repeats and bridging
+The initial statement must expose every distinction that materially changes the published question, including where relevant:
 
-- [ ] Formalize repeat occurrences and the repeat classes actually used by the paper.
-- [ ] Formalize the source-faithful bridging predicates.
-- [ ] Formalize triple-repeat and interleaving conditions where required.
-- [ ] Formalize coverage and the complete hypothesis of the published question.
+- the circular/error-free sequencing model;
+- observed read multiplicity;
+- admissible candidate-genome universe;
+- exact versus approximate maximum-likelihood variants left unresolved by the literature;
+- bridging/repeat hypotheses used by the published question;
+- genome equivalence and maximizer-versus-uniqueness conclusions.
 
-## 5. Validate the transcription
+When the literature genuinely leaves a choice unresolved, preserve parallel statement variants or explicit parameters. Do not resolve ambiguity by choosing whichever formulation is easiest to formalize.
 
-- [ ] Encode source examples or other hand-checkable instances useful for validating the definitions.
-- [ ] Check that the Lean definitions classify those instances consistently with the source mathematics.
-- [ ] Maintain a prose correspondence argument from the formal hypotheses/conclusion to the literature-grounded statement.
+This phase is complete when the repository has a defensible formal target, or explicit family of target variants, whose correspondence to the accepted literature is documented. It does **not** require a reusable formal library of every intermediate biological or combinatorial notion.
 
-## Boundary of this document
+## Exploration phase — default research mode
 
-This checklist ends at the boundary between **representing the problem faithfully** and **deciding how to solve it**.
+After the initial statement is sufficiently pinned down, stop expanding Lean infrastructure by default.
 
-It intentionally does not prescribe how to prove or refute the conjecture. Proof discovery belongs to the live research graph and the orchestration process in `docs/research-orchestration.md`. Agents and orchestrators should choose, revise, combine, or abandon methods in response to evidence. A proof, counterexample, reduction, computation, structural classification, imported theorem, or other sound route may be appropriate; this document does not privilege any of them in advance.
+Research should proceed primarily through:
 
-Do not weaken or strengthen the published statement merely because a particular method becomes easier.
+- mathematical notes and proof sketches;
+- examples and counterexamples;
+- exact or bounded computation;
+- structural conjectures and reductions;
+- literature connections and adjacent theorems;
+- competing proof architectures;
+- adversarial checking of assumptions and equality cases.
+
+Stable intermediate facts should normally be preserved in notes/issues. They do not automatically earn a Lean implementation.
+
+If an intermediate formalization branch or PR already exists, bring it to a coherent and useful stopping point rather than expanding its scope merely to make the formalization feel complete. Preserve what it established, then merge, close, or park it according to its actual value.
+
+## Phase B — formalize a mature result
+
+Return to substantial Lean development once there is a **plausible complete notes proof or counterexample**: an argument whose main structure is understood, whose essential lemmas are identified, and which has survived serious informal and adversarial checking.
+
+Then:
+
+- formalize the exact target variant being settled;
+- formalize only the definitions and lemmas actually required by that argument;
+- use Lean failures to repair the notes proof when they expose a genuine gap;
+- run the full repository verification and axiom audit;
+- maintain a prose correspondence argument showing that the verified theorem really addresses the published problem.
+
+If formalization reveals that the notes proof has a substantive gap, return to exploration rather than compensating by building large speculative formal infrastructure.
+
+## Exception — tiny Lean evaluators
+
+A small Lean experiment is appropriate when it is the cheapest way to answer a concrete question such as:
+
+- whether a proposed lemma is well-typed under the current model;
+- whether an apparently obvious finite or invariance fact needs an extra hypothesis;
+- whether a key reduction matches the exact target statement.
+
+Keep these experiments tightly bounded. Their purpose is to inform exploration, not to create a permanent bottom-up formalization queue.
+
+## Source fidelity
+
+At both formalization boundaries, do not weaken or strengthen the published statement merely because a different theorem is easier to encode or prove.

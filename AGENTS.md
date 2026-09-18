@@ -1,13 +1,21 @@
 # Development rules
 
-This repository is a formal-mathematics research project. Its purpose is to formalize and, if possible, settle the genome-assembly open problem documented in `docs/open-problem.md`.
+This repository is a mathematical research project with a Lean verification boundary. Its purpose is to state the genome-assembly open problem documented in `docs/open-problem.md` faithfully, explore it aggressively, and, if a plausible proof or counterexample is found, formally verify the final result.
 
 ## Lean
+
+Lean is **not** the default medium for proof discovery. The intended cadence is:
+
+1. formalize the source-faithful initial statement;
+2. do the middle research phase primarily through mathematical notes, computation, examples, counterexamples, reductions, and proof sketches;
+3. return to substantial Lean formalization once there is a plausible, coherent proof or counterexample in notes that is worth verifying.
+
+Small Lean experiments are still welcome when they are the cheapest way to test a delicate claim. Keep them bounded; do not turn a successful micro-check into an eager bottom-up formalization program merely because intermediate definitions or lemmas look stable.
 
 - Use the Lean toolchain pinned by `lean-toolchain` and the Mathlib revision pinned in `lakefile.lean`.
 - Run `lake build` before committing Lean changes.
 - Keep `autoImplicit` disabled.
-- Prefer small definitions and lemmas whose mathematical meaning can be checked against the source papers.
+- Formalize only what is needed to state the published problem faithfully, what a mature final argument actually needs, or what a deliberately tiny evaluator needs. Do not build intermediate Lean infrastructure merely because it may be useful later.
 - Do not change definitions merely to make a desired theorem provable.
 - Do not introduce `axiom`, `sorry`, or `admit` into the library to claim progress on the open problem. A conjecture should be represented as a `Prop` until it is actually proved.
 - Computational searches for counterexamples are welcome, but a finite search is evidence unless its completeness is itself proved.
@@ -31,7 +39,7 @@ Substantial research work should follow `docs/research-orchestration.md`. Operat
 - Reconcile partial results proposition-by-proposition before integrating them. Check quantifiers, hypotheses, model version, candidate genome class, genome equivalence, likelihood definition, and tie semantics rather than trusting prose summaries.
 - Preserve useful failed approaches and counterexamples in durable issues/PRs when they rule out tempting directions.
 - The orchestrator owns final reconciliation and PR review. A worker's own summary is not independent verification of its result.
-- When the frontier is uncertain, use `docs/skills/exploration.md` to maintain and evolve a portfolio of materially different approaches; portfolio priority allocates effort and is never evidence of truth.
+- Between the initial statement and a mature final argument, exploration is the default research mode. Use `docs/skills/exploration.md` to maintain and evolve materially different approaches; portfolio priority allocates effort and is never evidence of truth.
 - When delegation is useful and Lubko is available, prefer `lubko-agent` for substantive subjobs. Across all concurrent AssemblyP1 orchestrators, no more than five delegated agents may be actively working in parallel; additional ready packets remain queued until capacity is free.
 - Prefer durable GitHub state—issues, branches, PRs, commits, and repository docs—over conversation-only state so another invocation can recover the research graph.
 - Integration targets `main` directly. Do not create or use `release/*` branches. After the orchestrator has independently reviewed and verified a PR at the level required by its claims, it may merge that PR into `main` itself.

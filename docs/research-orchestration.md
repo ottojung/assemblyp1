@@ -6,9 +6,22 @@ Read `AGENTS.md`, `docs/open-problem.md`, the locked literature ground truth ide
 
 ## Goal
 
-The loop should make parallel work useful without letting parallelism corrupt the mathematical target. It should continuously search for the most informative next work: literature recovery, model reconstruction, exploratory mathematics, proof attempts, counterexample search, formalization, computation, or another route discovered during research.
+The loop should make parallel work useful without letting parallelism corrupt the mathematical target. Once the source-faithful statement is pinned down, the default middle phase is exploration: literature connections, model analysis, hand mathematics, proof attempts, counterexample search, computation, reductions, toy cases, and other routes discovered during research. Substantial Lean formalization is intentionally deferred until a plausible complete proof or counterexample exists in notes.
 
 The orchestrator owns both the durable research graph and the **live exploration portfolio**. It should not pretend that every branch is compatible or that an earlier plan remains optimal after new evidence arrives.
+
+## Formalization cadence
+
+Lean has two primary roles in AssemblyP1:
+
+1. **initial statement** — formalize enough of the source model to state the published open problem faithfully, preserving genuine literature ambiguities as explicit variants or parameters;
+2. **final verification** — once the project has a plausible, coherent proof or counterexample in mathematical notes, formalize that result and only the supporting machinery the mature argument actually needs.
+
+Between those boundaries, exploration is the default. Stable-looking intermediate definitions and lemmas should normally remain in notes/issues rather than being promoted automatically into Lean.
+
+A small Lean typecheck or micro-lemma is allowed when it is the cheapest evaluator for a specific uncertainty. Treat such experiments as research instruments unless the eventual statement or mature proof needs them.
+
+If an intermediate formalization already exists, do not expand it indefinitely merely to finish a formalization checklist. Bring it to a coherent, useful stopping point, preserve the mathematical insight it contains, and then merge, close, or park it as appropriate.
 
 ## Epistemic classes
 
@@ -141,9 +154,11 @@ Do not simply repeat a promising route. Improve it using evaluator feedback:
 
 Keep provenance between parent and descendant approaches.
 
-### 8. Formalize stable knowledge
+### 8. Preserve discoveries without eager formalization
 
-Once a definition or lemma is sufficiently stable, translate it into Lean. Prefer executable definitions and small lemmas with source correspondence. If a proposition is still conjectural, represent it as a `Prop` or issue, not as an axiom or theorem with `sorry`.
+Record stable mathematical discoveries durably in notes, issues, computations, or proof sketches. Do **not** translate them into Lean merely because they look stable.
+
+Use substantial Lean work only when the source-faithful initial statement still needs to be pinned down or when a plausible complete proof/counterexample is ready for formal verification. A tiny Lean experiment may still be used as a cheap evaluator for one delicate step, but keep it bounded unless the mature final argument genuinely needs it.
 
 ### 9. Verify independently
 
@@ -169,7 +184,7 @@ Roles are modes, not identities:
 - **model auditor** — compares conventions across papers and the Lean model;
 - **mathematical explorer** — develops and mutates candidate arguments;
 - **counterexample hunter** — searches finite instances and minimizes witnesses;
-- **formalizer** — implements stable definitions/lemmas in Lean;
+- **formalizer** — pins down the initial source-faithful statement or verifies a mature final proof/counterexample in Lean;
 - **evaluator** — cheaply tests portfolio entries and returns discriminating evidence;
 - **reconciler** — compares partial results and maintains the dependency graph;
 - **orchestrator** — owns prioritization, delegation, reconciliation, review, and integration.

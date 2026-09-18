@@ -9,12 +9,12 @@ The purpose of this repository is to formalize the published open problem about 
 ---
 
 $id-6292990609556170
-title: Use a Lean project as the formal research substrate
+title: Use Lean for the initial statement and final verification
 date: 2026/09/17
 source: @ottojung
 kind: requirement
 
-The repository should contain a Lean project and use formalization as the durable representation of the mathematical problem and any eventual proof or counterexample.
+The repository should contain a Lean project, but formalization should not be the default medium for the middle research phase. Use Lean first to pin down the published open problem faithfully. Then prioritize mathematical exploration in notes, computation, examples, counterexamples, reductions, and proof sketches. Return to substantial Lean formalization when there is a plausible, coherent final proof or counterexample worth verifying. Small Lean experiments may still be used as bounded evaluators when they are the cheapest way to test a specific claim.
 
 ---
 
@@ -54,7 +54,7 @@ date: 2026/09/17
 source: @ottojung
 kind: requirement
 
-The repository should provide AI-facing research skills, instructions, and guides for an agentic loop that can distribute literature research, mathematical exploration, counterexample search, lemma formalization, and proof work across multiple workers, then reconcile partial results, guide subsequent search, and integrate trustworthy progress into the formal project. The workflow should preserve durable state and make disagreements, assumptions, and evidence explicit rather than merely aggregating agent summaries.
+The repository should provide AI-facing research skills, instructions, and guides for an agentic loop that can distribute literature research, mathematical exploration, counterexample search, proof work, computation, and bounded formal checks across multiple workers, then reconcile partial results, guide subsequent search, and integrate trustworthy progress into the project. The workflow should preserve durable state and make disagreements, assumptions, and evidence explicit rather than merely aggregating agent summaries.
 
 ---
 
