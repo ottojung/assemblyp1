@@ -44,7 +44,7 @@ Prefer sharply different packets, targeted independent replications, or cheap ev
 
 When Lubko is available, **prefer `lubko-agent` for substantial delegated research, implementation, or investigation subjobs**. Use direct operations for tiny deterministic work.
 
-AssemblyP1 imposes a hard cap: **no more than 5 delegated agents may be actively working in parallel**. If more than five packets are ready, rank them by current expected research value and launch them in waves as slots become available.
+AssemblyP1 imposes a hard **repository-wide** cap: **no more than 5 delegated agents may be actively working in parallel across all concurrent orchestrators**. Before launching a new `lubko-agent`, inspect durable worker/status state and account for already-active AssemblyP1 agents. If five are active, keep additional packets queued in the shared portfolio/frontier and launch them only after a slot is durably known to be free.
 
 This project-specific limit overrides Lubko's generic "use as many agents as useful" guidance.
 
