@@ -19,9 +19,11 @@ This is a **required startup gate on every scheduled run**, before substantive i
 4. Compute the number of free slots under the repository-wide cap of five.
 5. If useful slots are free, **generate non-overlapping packets from the whole live research frontier and actually launch managed agents into those slots before spending the run on substantive local work**. Do not limit packet generation to open issues/PRs.
 6. Create new agents with titles of the form `AssemblyP1: <short packet name>`. A created-but-idle agent does not count toward saturation; start it with a prompt and verify it is running.
-7. If a slot cannot be filled, the run must have a concrete reason: no genuinely useful independent packet after actively broadening the frontier, or a demonstrated Lubko execution/transport blocker. Record that reason durably when it matters. Merely having useful local work, an open PR, or an owned issue is **not** a reason to leave slots idle.
+7. Launch sequentially and re-run `lubko-agent list --running --json` after each successful start. Stop launching as soon as five AssemblyP1 agents are observed running. This re-count is required because another orchestrator may have filled slots concurrently.
+8. If a concurrent race temporarily produces more than five running AssemblyP1 agents, this invocation must stop enough of **its own newly launched agents** to restore the cap, then re-list to verify the pool. Never stop another orchestrator's agent merely to repair the race.
+9. If a slot cannot be filled, the run must have a concrete **current-run** reason: either no genuinely useful independent packet remains after actively broadening the frontier, or a Lubko execution/transport blocker was reproduced during this run. A stale issue comment or earlier failed Lubko attempt is not a valid blocker. Record the current-run reason durably when it matters. Merely having useful local work, an open PR, or an owned issue is **not** a reason to leave slots idle.
 
-The orchestrator must not treat “I can do useful work myself” as satisfying this gate. The pool check and launch attempt happen first.
+The orchestrator must not treat “I can do useful work myself” as satisfying this gate. The pool check and launch attempt happen first, and saturation is verified by a post-launch live re-count.
 
 ## Disposable invocations, durable state
 
@@ -59,7 +61,7 @@ On every scheduled run, assume an earlier invocation may have been interrupted. 
 - Lubko jobs, managed agents, worktrees, and logs when present;
 - the formalization plan, research graph, and intent records.
 
-Preserve useful partial work. Never rely on remembered agent IDs, branches, or completion state without checking them.
+Preserve useful partial work. Never rely on remembered agent IDs, branches, completion state, or a remembered Lubko blocker without checking them again in the current run.
 
 ## Research discipline
 
