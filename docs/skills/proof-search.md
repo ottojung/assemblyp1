@@ -87,9 +87,11 @@ A proof of (1) does not imply (2). When deriving inequalities, track equality co
 
 ## Lean interaction
 
-Once a lemma has a stable mathematical idea—or when a tiny Lean experiment is the cheapest useful evaluator—use Lean early.
+Do **not** formalize a route merely because one lemma has become mathematically stable. Proof discovery should normally remain in notes until there is a plausible complete argument.
 
-Lean failures often expose missing side conditions or overstrong statements. Conversely, do not spend large formalization effort on an approach that has not earned that effort through evidence or leverage.
+Use Lean during exploration only for a tightly scoped evaluator when it is genuinely the cheapest way to test a delicate statement. Keep that experiment small and disposable.
+
+Once a coherent notes proof or counterexample exists and has survived adversarial checking, switch modes: formalize the final result and the supporting machinery that argument actually needs. If Lean exposes a substantive gap, feed it back into proof search rather than expanding speculative infrastructure around the gap.
 
 If a proof attempt fails, preserve the exact obstruction. "Could not prove" is weak; a precise failure can become the next portfolio entry or evaluator.
 
