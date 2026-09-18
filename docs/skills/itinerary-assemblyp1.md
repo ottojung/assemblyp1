@@ -19,7 +19,7 @@ Before acting, study and obey:
 - the narrower skill under `docs/skills/` appropriate to the selected packet;
 - **when Lubko is available for delegated execution or any `lubko-agent` subjob may be used, read and obey Lubko's canonical execution skill before launching or managing that work:** <https://github.com/ottojung/lubko/blob/main/docs/SKILL.md>.
 
-Consult `docs/formalization-plan.md` when the current work concerns formalization. It is a checklist of formalization obligations, **not** the project's research strategy or a fallback work queue.
+Consult `docs/formalization-plan.md` when the current work concerns formalization. It defines the project's formalization cadence: pin down the initial statement, explore primarily outside Lean, then formalize a mature final proof/counterexample. It is **not** the research strategy or a fallback work queue.
 
 Lubko's canonical skill is the operational authority for reaching `lubko://phoebe-dev`: follow its Supabase job transport, `lubko-agent` lifecycle, polling/liveness, and execution-safety rules rather than improvising a direct shell connection. AssemblyP1-specific rules in this itinerary still govern research selection, the repository-wide five-agent cap, and direct integration into `main`.
 
@@ -43,7 +43,7 @@ Prefer existing durable work before inventing duplicate work:
 
 If none of those provides useful actionable work, **derive the next research node from the current state of the problem**. Do not fall back to a fixed plan. Reconstruct the frontier from the published target, intent records, literature ground truth, current formal definitions, established lemmas, computational evidence, failed approaches, unresolved ambiguities, and recently completed work. Then identify a concrete question whose resolution is expected to make meaningful progress toward settlement, create a focused issue for it, and work that issue.
 
-The orchestrator has discretion over what kind of question is most valuable. Depending on the current state, progress may come from literature recovery, model clarification, proving or refuting a lemma, discovering a new reduction, constructing or excluding examples, computational exploration, formalization, validating correspondence with the source problem, repairing an earlier assumption, or a method not anticipated by this repository. These are examples, not a prescribed menu, ordering, or proof strategy.
+The orchestrator has discretion over what kind of question is most valuable. Depending on the current state, progress may come from literature recovery, model clarification, proving or refuting a lemma in notes, discovering a new reduction, constructing or excluding examples, computational exploration, validating correspondence with the source problem, repairing an earlier assumption, or a method not anticipated by this repository. Substantial formalization is normally reserved for the initial statement or a mature final result. These are examples, not a prescribed menu, ordering, or proof strategy.
 
 When the frontier is genuinely uncertain, maintain a shared portfolio of distinct approaches and allocate effort best-first according to current evidence and expected information value. Portfolio priority is only a scheduling device; it must never be treated as evidence that an approach is mathematically correct.
 
@@ -87,7 +87,7 @@ For computation:
 - preserve reproducible evidence for material discoveries;
 - do not promote computational evidence into a proof unless the required completeness argument is itself established.
 
-For Lean work:
+For Lean work, when the initial-statement or mature-final-result threshold justifies doing it:
 
 - run `lake build` on the exact proposed head;
 - require repository CI to pass, including warning-as-error and axiom audit;
