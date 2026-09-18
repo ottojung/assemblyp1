@@ -50,7 +50,9 @@ Use GitHub issues as research nodes and PRs/commits as implementation artifacts.
 
 Keep issues narrow enough that independent workers can finish or refute them. Prefer a dependency graph of small questions over one giant "solve the conjecture" task.
 
-The issue graph records durable obligations and discoveries. It is **not** a FIFO queue. The orchestrator may change priorities whenever evidence changes.
+The issue graph records durable obligations and discoveries. It is **not** a FIFO queue, and it is **not the universe of allowed research**. A delegated exploratory packet does not need a pre-existing issue. Agents may test new proof ideas, counterexample families, reductions, computations, source interpretations, or evaluators directly from the live frontier.
+
+Create or update a GitHub issue when a question, dependency, result, obstruction, or recovery state has become durable enough that another invocation should be able to find and continue it. Several temporary agent packets may sit under one broader issue, and some exploratory packets may remain issue-less if they terminate quickly without producing durable state.
 
 ## Exploration portfolio
 
@@ -78,13 +80,15 @@ Workers should attack the packet, not redefine it to make it easy.
 
 ## Parallelism and Lubko
 
-For **broad exploratory work**, Lubko delegation is the normal execution mode when capacity is available. Decompose the frontier into materially different packets and dispatch them through `lubko-agent` so the orchestrator spends its attention on selecting questions, steering workers, comparing evidence, reconciling disagreements, and deciding what to try next.
+For **broad exploratory work**, Lubko delegation is the normal execution mode when capacity is available. The shared repository-wide pool should normally stay **near the five-agent cap** whenever there are useful, non-overlapping packets available. Free capacity is an invitation to broaden the search.
 
-Do not reserve free worker capacity merely because the orchestrator could perform the research itself. When several genuinely distinct approaches or evaluators are worth trying, normally run several of them concurrently. The point is breadth and independent evidence, not parallel paraphrases of the same prompt.
+Five is a saturation target, not a quota. Do not manufacture low-value work, duplicate another active packet, or start several agents on essentially the same question merely to reach five. Instead, when capacity is free, generate materially different frontier packets: alternate proof ideas, counterexample families, reductions, model variants, source checks, computations, adversarial tests, or scaffold questions.
+
+Agents draw from the **whole live research frontier**, not only from open GitHub issues. An existing issue or PR should receive only as many workers as can contribute independently without stepping on one another. Remaining capacity should explore other useful frontier directions even while that issue/PR remains open.
 
 Direct orchestrator work remains appropriate for tiny deterministic operations, inherently serial coordination, cheap spot checks, and final reconciliation/review. If the orchestrator chooses to do substantial exploratory research itself while useful Lubko capacity is free, there should be a concrete reason why delegation would not improve the search.
 
-AssemblyP1 has a hard **repository-wide** concurrency limit: **no more than 5 delegated agents may be actively working in parallel across all concurrent orchestrators**. This overrides generic Lubko guidance that would otherwise allow more. Before launching a delegated agent, account for currently active AssemblyP1 agent jobs recorded in durable status/worker state. If five are already active, leave additional packets queued in the shared portfolio/frontier until a slot is durably known to be free.
+AssemblyP1 has a hard **repository-wide** concurrency limit: **no more than 5 delegated agents may be actively working in parallel across all concurrent orchestrators**. This overrides generic Lubko guidance that would otherwise allow more. Before launching a delegated agent, reconcile currently active AssemblyP1 workers from durable status and observable Lubko state. Launch only into genuinely free slots. As workers finish, fail, stall, or are stopped, reconcile their output and refill useful capacity promptly from the best current frontier.
 
 Do not give two write-capable workers the same branch or worktree. The orchestrator retains final reconciliation, PR review, and integration responsibility.
 
@@ -127,11 +131,13 @@ Useful considerations include:
 
 These considerations are scheduling heuristics, not truth scores.
 
-### 5. Execute bounded parallel work
+### 5. Keep useful parallel work saturated
 
-Launch delegated work only while the repository-wide active-agent count remains below five. Prefer distinct packets or deliberately independent replications over several agents paraphrasing the same task.
+Treat five active delegated agents as the normal shared saturation target when the frontier contains enough useful independent work. Before launching, count live AssemblyP1 agents repository-wide and fill only free slots.
 
-When a worker finishes, update the portfolio before filling the freed slot. New evidence may make a previously queued packet obsolete.
+Prefer materially distinct packets or deliberately justified independent replications. Do not let one open issue, PR, Lean proof, or currently fashionable approach absorb all slots unless it genuinely has several independent high-value packets.
+
+When a worker finishes, fails, stalls, or is stopped, reconcile the result, refresh the portfolio, and refill the slot promptly if another useful packet exists. If the frontier appears too narrow to use available capacity, actively generate new exploratory or scaffold packets rather than assuming the open-issue list is exhaustive.
 
 ### 6. Reconcile
 
