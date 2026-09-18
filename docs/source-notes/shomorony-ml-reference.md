@@ -81,6 +81,42 @@ must also have length `G`.
 Consequently, transferring `|D| = G` to every ML competitor would be an
 additional modeling decision unless another source passage establishes it.
 
+## Author-hosted version and appended supplementary material
+
+An author-hosted 23-page manuscript is available from Stanford as “Optimal
+Sequence Assembly via Sparse Read-Overlap Graphs”:
+
+<https://web.stanford.edu/~gkamath/nsgIlan.pdf>
+
+This is useful **version evidence**, not a substitute for the accepted article.
+Its first two pages give more explicit historical context than the accepted
+Introduction: it says that Medvedev–Brudno proposed an ML formulation to avoid
+over-collapsing repeats, and that algorithms for finding the ML sequence are
+difficult and existing approaches rely on high coverage. It still does not
+write the likelihood formula, identify exact versus approximate likelihood, fix
+a candidate-genome class, or say that all competitors have the true genome
+length. Recoverable location: manuscript pp. 1–2 (PDF pages 0–1), especially
+the paragraph beginning “In light of all these computational hardness
+results”.
+
+The same PDF contains an appended “Supplementary Material” beginning on PDF
+page 18 (printed section 6). Searches over the complete 23-page text for
+`likelihood` and `Medvedev` find no later definition of the ML objective. The
+only substantive ML discussion is the introductory passage above; the appended
+supplement develops the Not-So-Greedy implementation/proofs and the Bresler et
+al. repeat/bridging conditions. In particular, its later likelihood statement
+is the adjacent Bresler result that an unbridged problematic repeat yields a
+distinct sequence with the same likelihood; it does not define the
+Medvedev–Brudno optimization target. Recoverable location: Supplementary
+Material section 6 begins at PDF p. 18; the Bresler statement is Theorem 2 on
+PDF p. 23.
+
+This strengthens the ambiguity conclusion across a substantial author-hosted
+version that includes supplementary material. It does **not** prove that the
+publisher's accepted supplementary ZIP is byte-for-byte or proposition-for-
+proposition identical to this manuscript's appended supplement, so that final
+accepted-supplement check remains explicit below.
+
 ## Formalization consequence
 
 Until stronger primary-source evidence resolves the reference, AssemblyP1
@@ -99,10 +135,13 @@ and separately justify why that variant corresponds to the 2016 question.
 
 ## What remains to check
 
-This note establishes what the accepted **main text** does and does not say.
-Issue #7 requested inspection of supplementary/version material as well. Such
-material can strengthen or resolve the ambiguity if it explicitly defines the
-cited maximum-likelihood target, but absence of such a definition cannot be
-proved from the main text alone. Until that inspection is complete, the
-strongest justified status is: **main-text ambiguity demonstrated; broader
-source reconciliation still open**.
+The accepted main-text ambiguity is demonstrated, and an author-hosted version
+with appended supplementary material independently fails to select among the
+Medvedev–Brudno objectives. Oxford Academic exposes the accepted supplementary
+data as `bioinformatics_32_17_i494_s1.zip`, but the retrieval paths available in
+these scheduled runs have rejected the ZIP content type, so its contents have
+not yet been independently inspected.
+
+The strongest justified status is therefore: **accepted-main-text ambiguity
+demonstrated and corroborated by author-hosted version/supplement evidence;
+accepted publisher-supplement verification still open**.
