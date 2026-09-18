@@ -34,9 +34,9 @@ For a circular genome this interval formula is a **modeling normalization**, not
 
 Combining those clauses, an interleaved pair is bridged iff at least one selected copy among the two repeats is bridged by some read.
 
-**Source fact.** For two repeats with selected starts `t₁,t₃` and `t₂,t₄`, respectively, Bresler et al. call the pair interleaved when their starts alternate around the sequence, written in their linearized convention as either `t₁ < t₂ < t₃ < t₄` or `t₂ < t₁ < t₄ < t₃`. The length of an interleaved pair is the shorter repeat length.
+**Source fact.** For two repeats with selected starts `t₁,t₃` and `t₂,t₄`, respectively, Bresler et al. call the pair interleaved when their starts alternate, written as either `t₁ < t₂ < t₃ < t₄` or `t₂ < t₁ < t₄ < t₃`. The length of an interleaved pair is the shorter repeat length.
 
-Because the genome is circular, the inequalities depend on choosing an origin. The source-level invariant is cyclic alternation of the four selected starts. A Lean definition should therefore either use a cyclic-order predicate directly or prove that an existential choice of rotation/linearization is equivalent. Treating the displayed inequalities as absolute natural-number order without rotation would introduce an origin artifact.
+**Modeling interpretation.** Because the genome model is circular, a Lean transcription should not make interleaving depend on an arbitrary choice of origin. A natural normalization is cyclic alternation of the four selected starts, implemented either with a cyclic-order predicate or by an existential rotation/linearization. This correspondence should be checked against the exact 2016 supplement before the representation is stabilized.
 
 ## All-bridged triple repeats
 
