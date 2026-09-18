@@ -4,7 +4,7 @@ namespace AssemblyP1.ExactVariantECounterexample
 
 inductive DNA where
   | A | C | G | T
-  deriving DecidableEq, Repr, Inhabited
+  deriving DecidableEq, BEq, Repr, Inhabited
 
 abbrev Genome := List DNA
 
