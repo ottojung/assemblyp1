@@ -83,12 +83,12 @@ Repository plans and agent instructions must not prescribe a proof or counterexa
 ---
 
 $id-6502748193614207
-title: Use Lubko broadly for parallel exploration with bounded concurrency
+title: Keep the shared Lubko pool near five useful active agents
 date: 2026/09/17
 source: @ottojung
 kind: constraint
 
-Broad AssemblyP1 exploration should commonly be delegated through `lubko-agent`, especially when several materially different proof ideas, counterexample families, reductions, computations, source checks, or adversarial evaluations can be pursued independently. When useful worker capacity is available, orchestrators should normally fan such packets out rather than doing all substantive exploration themselves; their primary role is to choose, steer, compare, reconcile, and synthesize the workers' results. Direct work remains appropriate for tiny deterministic tasks, inherently serial coordination, and final review/reconciliation. Across all concurrent AssemblyP1 orchestrators, no more than five delegated agents may be actively working in parallel at once; additional ready work should remain queued until capacity is available.
+Across all concurrent AssemblyP1 orchestrators, no more than five delegated agents may be actively working in parallel at once, and the system should normally stay close to that shared cap whenever there are useful non-overlapping research packets available. Five is a saturation target, not a quota: do not create filler work or duplicate active packets merely to occupy slots. When capacity is free, orchestrators should broaden the search across materially different proof ideas, counterexample families, reductions, computations, source checks, adversarial evaluations, or scaffold questions, then steer, compare, reconcile, and synthesize the workers' results.
 
 ---
 
@@ -99,3 +99,13 @@ source: @ottojung
 kind: requirement
 
 AssemblyP1 must not use release branches or a human-only merge boundary. Research and implementation PRs should target `main` directly, and orchestrators may merge validated PRs into `main` themselves after completing the required independent review and verification.
+
+---
+
+$id-4827061539048172
+title: Let agents explore beyond the open issue list
+date: 2026/09/18
+source: @ottojung
+kind: requirement
+
+GitHub issues are durable coordination and recovery nodes, not the universe of work that agents are allowed to do. Delegated agents may pursue useful temporary packets directly from the live research frontier without a pre-existing issue. An existing issue or PR should receive only as many agents as can work on it independently without stepping on each other; remaining useful agent capacity should explore other frontier directions. When an exploratory packet produces a question, result, dependency, obstruction, or recovery state worth carrying across runs, preserve it in an issue, document, branch/PR, or other durable repository state.
