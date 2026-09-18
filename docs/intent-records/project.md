@@ -89,3 +89,13 @@ source: @ottojung
 kind: constraint
 
 AssemblyP1 orchestrators should prefer `lubko-agent` for substantive delegated subjobs when delegation is useful. Across all concurrent AssemblyP1 orchestrators, no more than five delegated agents may be actively working in parallel at once; additional ready work should remain queued until capacity is available.
+
+---
+
+$id-3574186209471538
+title: Allow orchestrators to merge directly into main
+date: 2026/09/18
+source: @ottojung
+kind: requirement
+
+AssemblyP1 must not use release branches or a human-only merge boundary. Research and implementation PRs should target `main` directly, and orchestrators may merge validated PRs into `main` themselves after completing the required independent review and verification.
