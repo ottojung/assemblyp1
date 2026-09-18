@@ -31,6 +31,8 @@ Substantial research work should follow `docs/research-orchestration.md`. Operat
 - Reconcile partial results proposition-by-proposition before integrating them. Check quantifiers, hypotheses, model version, candidate genome class, genome equivalence, likelihood definition, and tie semantics rather than trusting prose summaries.
 - Preserve useful failed approaches and counterexamples in durable issues/PRs when they rule out tempting directions.
 - The orchestrator owns final reconciliation and PR review. A worker's own summary is not independent verification of its result.
+- When the frontier is uncertain, use `docs/skills/exploration.md` to maintain and evolve a portfolio of materially different approaches; portfolio priority allocates effort and is never evidence of truth.
+- When delegation is useful and Lubko is available, prefer `lubko-agent` for substantive subjobs. Across all concurrent AssemblyP1 orchestrators, no more than five delegated agents may be actively working in parallel; additional ready packets remain queued until capacity is free.
 - Prefer durable GitHub state—issues, branches, PRs, commits, and repository docs—over conversation-only state so another invocation can recover the research graph.
 
 ## Git is good
