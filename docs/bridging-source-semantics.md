@@ -15,6 +15,8 @@ Primary sources:
 
 This is important for Lean: a repeat/triple-repeat object should identify selected occurrences and carry the relevant maximality condition, rather than being defined only by the total number of occurrences of a word.
 
+**Source correspondence.** Shomorony et al. do not introduce a competing repeat definition around Eq. (1). Instead they explicitly attribute the information-feasible set and its repeat conditions to Bresler et al. (2013), saying that the set is “shown by Bresler et al. (2013) (and summarized in supp. material G).” Therefore the strongest source-faithful reading available from the accepted paper is that `repeat`, `triple repeat`, and `interleaved repeat` in Eq. (1) inherit the Bresler definitions above, including maximality. If a distinct definition is ever recovered from the exact 2016 supplement, it must be recorded as a source fork rather than silently substituted.
+
 ## Bridging a copy
 
 **Source fact.** Bresler et al. define a length-`ℓ` substring occurrence to be bridged iff at least one observed read covers at least one base on **both** sides of that occurrence (Fig. 5 and the paragraph immediately before Theorem 1). Shomorony et al. use the same strict extension convention in §3/Fig. 6: a read extends at least one base before and at least one base after the repeat segment.
@@ -36,7 +38,7 @@ Combining those clauses, an interleaved pair is bridged iff at least one selecte
 
 **Source fact.** For two repeats with selected starts `t₁,t₃` and `t₂,t₄`, respectively, Bresler et al. call the pair interleaved when their starts alternate, written as either `t₁ < t₂ < t₃ < t₄` or `t₂ < t₁ < t₄ < t₃`. The length of an interleaved pair is the shorter repeat length.
 
-**Modeling interpretation.** Because the genome model is circular, a Lean transcription should not make interleaving depend on an arbitrary choice of origin. A natural normalization is cyclic alternation of the four selected starts, implemented either with a cyclic-order predicate or by an existential rotation/linearization. This correspondence should be checked against the exact 2016 supplement before the representation is stabilized.
+**Modeling interpretation with checked correspondence.** Because the genome model is circular, a Lean transcription should not make interleaving depend on an arbitrary choice of origin. Cyclic alternation of the four selected starts is equivalent to Bresler's two linear inequalities after choosing any cut that avoids the four starts: rotating the cut only cyclically permutes the four-start order, and alternation of the two repeat labels is invariant under cyclic permutation. Thus an origin-independent `Interleaved` predicate may safely be represented by cyclic alternation (or, equivalently, existence of a linearization satisfying one of Bresler's two displayed orders). This is a mathematical normalization of the source predicate, not a claim that the papers themselves use cyclic-order notation.
 
 ## All-bridged triple repeats
 
@@ -74,11 +76,8 @@ The following is **modeling organization**, not quoted source notation. It keeps
 
 The observed read strings/multiplicities and the latent start positions used to witness coverage/bridging must not be conflated. PR #10 already records this distinction on the likelihood side: likelihood is a function of the observable read multiset, whereas bridging is a property of the realized placements relative to the true genome.
 
-## Remaining source-fidelity checks
+## Source-fidelity status
 
-Before these predicates become stable Lean API, independently verify two details against the exact primary-source text/supplement used by Shomorony et al.:
+The proposition surface above is now stable enough for downstream formalization. The accepted 2016 paper explicitly delegates the information-feasible repeat conditions to Bresler et al. (2013), whose repeat definitions include maximality, and the cyclic-order normalization of interleaving is mathematically equivalent to Bresler's displayed alternating orders on a circular genome.
 
-1. whether every repeat object relevant to Eq. (1) inherits Bresler et al.'s maximal-repeat convention or whether the 2016 supplement restates a broader occurrence notion; and
-2. the cleanest origin-independent treatment of interleaving when a selected repeat occurrence crosses the arbitrary circular cut.
-
-These are representation/correspondence checks, not evidence against the high-level `I_s` conjunction above. Any mismatch discovered in the supplement should be preserved as an explicit source fork rather than silently normalized away.
+One archival limitation remains: the exact publisher-hosted 2016 supplementary text has not been independently recovered through the available execution path. This does **not** justify inventing a second repeat convention; absent contrary primary-source text, the accepted paper's explicit attribution to Bresler is the controlling source evidence. If the supplement is later recovered and materially differs, reopen this source decision and preserve the discrepancy explicitly.
