@@ -88,7 +88,7 @@ Agents draw from the **whole live research frontier**, not only from open GitHub
 
 Direct orchestrator work remains appropriate for tiny deterministic operations, inherently serial coordination, cheap spot checks, and final reconciliation/review. If the orchestrator chooses to do substantial exploratory research itself while useful Lubko capacity is free, there should be a concrete reason why delegation would not improve the search.
 
-AssemblyP1 has a hard **repository-wide** concurrency limit: **no more than 5 delegated agents may be actively working in parallel across all concurrent orchestrators**. This overrides generic Lubko guidance that would otherwise allow more. Before launching a delegated agent, reconcile currently active AssemblyP1 workers from durable status and observable Lubko state. Launch only into genuinely free slots. As workers finish, fail, stall, or are stopped, reconcile their output and refill useful capacity promptly from the best current frontier.
+AssemblyP1 has a hard **repository-wide** concurrency limit: **no more than 5 delegated agents may be actively working in parallel across all concurrent orchestrators**. This overrides generic Lubko guidance that would otherwise allow more. Scheduled runs must discover live workers with `lubko-agent list --running --json` on `phoebe-dev` through the canonical Lubko transport, rather than relying only on scattered GitHub comments. New AssemblyP1 agents must use an `AssemblyP1:` title prefix. Reconcile the live list with durable status, launch only into genuinely free slots, and verify newly prompted agents are actually running. As workers finish, fail, stall, or are stopped, reconcile their output and refill useful capacity promptly from the best current frontier.
 
 Do not give two write-capable workers the same branch or worktree. The orchestrator retains final reconciliation, PR review, and integration responsibility.
 
@@ -133,7 +133,7 @@ These considerations are scheduling heuristics, not truth scores.
 
 ### 5. Keep useful parallel work saturated
 
-Treat five active delegated agents as the normal shared saturation target when the frontier contains enough useful independent work. Before launching, count live AssemblyP1 agents repository-wide and fill only free slots.
+Treat five active delegated agents as the normal shared saturation target when the frontier contains enough useful independent work. This is an execution step, not just a planning preference: every scheduled run must perform live pool discovery and, when useful free slots exist, launch agents into them before substantive local work.
 
 Prefer materially distinct packets or deliberately justified independent replications. Do not let one open issue, PR, Lean proof, or currently fashionable approach absorb all slots unless it genuinely has several independent high-value packets.
 

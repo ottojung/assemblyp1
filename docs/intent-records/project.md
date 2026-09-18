@@ -109,3 +109,13 @@ source: @ottojung
 kind: requirement
 
 GitHub issues are durable coordination and recovery nodes, not the universe of work that agents are allowed to do. Delegated agents may pursue useful temporary packets directly from the live research frontier without a pre-existing issue. An existing issue or PR should receive only as many agents as can work on it independently without stepping on each other; remaining useful agent capacity should explore other frontier directions. When an exploratory packet produces a question, result, dependency, obstruction, or recovery state worth carrying across runs, preserve it in an issue, document, branch/PR, or other durable repository state.
+
+---
+
+$id-7314082651974063
+title: Make agent-pool saturation a mandatory scheduled preflight
+date: 2026/09/18
+source: @ottojung
+kind: requirement
+
+Every scheduled AssemblyP1 orchestrator run must actively inspect the live Lubko agent pool and try to fill useful free capacity before spending the run on substantive local work. This is not merely a preference to delegate when convenient. The live pool should be discovered through Lubko itself, and new AssemblyP1 agents should be machine-identifiable. An open issue, PR, CI failure, or locally useful task is not by itself a reason to leave useful worker slots idle. If fewer than five useful AssemblyP1 agents are running, the orchestrator should broaden the frontier and launch independent packets unless it has a concrete reason that another useful non-overlapping packet cannot be formed or Lubko execution is demonstrably blocked.
