@@ -79,3 +79,13 @@ source: @ottojung
 kind: constraint
 
 Repository plans and agent instructions must not prescribe a proof or counterexample methodology in advance merely because it seems plausible now. The orchestrator should choose and revise methods from the live research state, evidence, and opportunities it discovers, always with the ultimate goal of faithfully settling the published conjecture. Formalization checklists may record representation work that remains to be done, but they must not become a surrogate research roadmap or force the orchestrator to follow a predetermined sequence, positive/negative split, search technique, or proof architecture.
+
+---
+
+$id-6502748193614207
+title: Prefer Lubko subagents with bounded parallelism
+date: 2026/09/17
+source: @ottojung
+kind: constraint
+
+AssemblyP1 orchestrators should prefer `lubko-agent` for substantive delegated subjobs when delegation is useful. Across all concurrent AssemblyP1 orchestrators, no more than five delegated agents may be actively working in parallel at once; additional ready work should remain queued until capacity is available.
