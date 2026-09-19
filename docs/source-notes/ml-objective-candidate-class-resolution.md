@@ -35,20 +35,29 @@ displayed equations quoted below were read from the PMC image assets `M26.gif`,
 images in the HTML. This makes the formula claims in §3–§5 below independently
 verified rather than transcription-dependent.
 
-### 1.2 Shomorony et al. (2016) — accepted version not independently re-fetched
+### 1.2 Shomorony et al. (2016) — accepted version independently retrieved (2026-09-19 update)
 
 Ilan Shomorony, Samuel H. Kim, Thomas A. Courtade, and David N. C. Tse,
 "Information-optimal genome assembly via sparse read-overlap graphs,"
 *Bioinformatics* 32(17), 2016, i494–i502,
 DOI [10.1093/bioinformatics/btw450](https://doi.org/10.1093/bioinformatics/btw450).
 
-The accepted version is Open Access at Oxford (Unpaywall reports a CC-BY-NC
-publisher PDF), but the publisher endpoint returns HTTP 403 to automated
-retrieval (Cloudflare bot verification), and no PMC/Europe PMC deposit exists.
-The open-question sentence used by this repository
-(`docs/open-problem.md:9`) therefore could **not** be re-verified from the
-publisher text in this run. It continues to rest on the repository's earlier
-source recovery.
+**Update (2026-09-19, superseding the original "not re-fetched" status):** the
+publisher (Oxford) still returns HTTP 403 to the available retrieval paths, but
+the accepted **main text** was independently retrieved from author-hosted
+copies and read end to end: the publisher-formatted accepted article
+`https://people.eecs.berkeley.edu/~courtade/pdfs/InfoOptimalAssy.pdf`
+(SHA-256 `ec17b16f8e0e5c9e4cf876980361dce89063362970e3cbb4a7043ac3fce3c4da`)
+and the author accepted manuscript
+`https://people.eecs.berkeley.edu/~courtade/pdfs/NSG.pdf`
+(SHA-256 `daeb5b3163d92643affc2398a387217cb57e5e33ce0dd5ebbfccabf621454f2c`).
+The open-question sentence and its full surrounding paragraph were re-verified
+verbatim, and a full-text scan confirms the accepted main text contains no
+likelihood formula and no exact/approximation/flow selection. Details,
+quotations, and the `N`/`G` versus `n`/`N(D)` notation collision are recorded in
+[`ml-accepted-text-source-verification.md`](ml-accepted-text-source-verification.md).
+The accepted **supplement** (Supplementary Material A–G) remains unretrieved
+(HTTP 403 at both the Oxford and silverchair-cdn endpoints).
 
 ### 1.3 Shomorony et al. — author-hosted early preprint (retrieved and read)
 
@@ -305,8 +314,10 @@ supplies a tie convention.
    second strand is identified is not resolved by the 2016 text.
 4. **Conclusion semantics:** truth-is-a-maximizer vs all-maximizers-are-truth.
 5. **Tie-breaking:** absent from both papers.
-6. **Accepted-text provenance:** the exact accepted open-question wording and
-   the publisher supplement were not independently re-retrieved.
+6. **Accepted-text provenance:** the exact accepted open-question wording has
+   been independently re-retrieved and verified (2026-09-19; see §1.2 and
+   `ml-accepted-text-source-verification.md`). The accepted publisher
+   **supplement** has still not been independently retrieved.
 
 ## 12. Epistemic classification
 
@@ -323,7 +334,7 @@ supplies a tie convention.
 | Ties exist; Bresler competitor has same length | Source fact | Bresler Theorem 1 |
 | Tie/uniqueness conclusion unresolved | Source-analysis | Absence of tie rules in both papers |
 | Author-hosted preprint lacks accepted ML open-question sentence | Source fact (verified extraction) | `nsgIlan.pdf` SHA-256 above, Discussion §5 |
-| Accepted open-question wording | Not independently re-verified this run | Oxford HTTP 403 |
+| Accepted open-question wording | Independently re-verified 2026-09-19 | Author-hosted accepted article/PDF (see §1.2); OUP still 403 |
 
 ## 13. Consequences for formalization
 

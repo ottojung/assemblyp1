@@ -10,7 +10,7 @@ Near the end of the paper the authors state:
 
 The maximum-likelihood formulation they refer to is attributed to Medvedev and Brudno (2009). The exact definitions from that formulation must be incorporated before this repository claims to contain the final formal statement.
 
-The primary-source resolution of the objective, candidate class, length convention, circular equivalence, sampling model, and tie semantics is recorded in [`docs/source-notes/ml-objective-candidate-class-resolution.md`](source-notes/ml-objective-candidate-class-resolution.md), including the source-version fork between the accepted article and the author-hosted early preprint.
+The primary-source resolution of the objective, candidate class, length convention, circular equivalence, sampling model, and tie semantics is recorded in [`docs/source-notes/ml-objective-candidate-class-resolution.md`](source-notes/ml-objective-candidate-class-resolution.md), including the source-version fork between the accepted article and the author-hosted early preprint. The accepted 2016 main text has been independently re-retrieved and verified, and the exact `§6.1` (exact multinomial) → binomial approximation → `§6.2` (read-overlap biflow) relation recorded, in [`docs/source-notes/ml-accepted-text-source-verification.md`](source-notes/ml-accepted-text-source-verification.md).
 
 ## Assembly model used by Shomorony et al.
 
