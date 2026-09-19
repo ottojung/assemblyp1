@@ -10,6 +10,8 @@ Near the end of the paper the authors state:
 
 The maximum-likelihood formulation they refer to is attributed to Medvedev and Brudno (2009). The exact definitions from that formulation must be incorporated before this repository claims to contain the final formal statement.
 
+An independent primary-source tracing of the published provenance and a ranked analysis of which Medvedev–Brudno formulation the 2016 sentence most plausibly denotes is recorded in [`docs/source-notes/shomorony-open-question-denotation.md`](source-notes/shomorony-open-question-denotation.md). Its ranking is source analysis, not a source statement; the accepted text still names the formulation only by bibliography, and the accepted supplement remains unretrieved.
+
 ## Assembly model used by Shomorony et al.
 
 The paper works, for exposition, with a circular sequence `s` of length `G`. A sequencing experiment produces `N` error-free reads of common length `L`; reads are drawn independently and uniformly from the `G` possible length-`L` substrings of `s`, with circular indexing.
