@@ -114,6 +114,18 @@ is verified exactly for both `S` and `D`, matching the source's `c_i` form.
 
 ## 4. Fixed external `N` is not a candidate-length constraint
 
+> **Qualification (2026-09-19, end-to-end audit).** The reading in this section
+> is narrowed by [`docs/audit-issue32-end-to-end.md`](audit-issue32-end-to-end.md)
+> §3. The §6.1 replacement of `N(D)` by `N` is justified in the source by
+> declaring the candidate length "a constant … the length of the actual
+> genome"; the source-faithful reading therefore restricts the approximation to
+> length-`N` candidates (`Σ_i d_i = N`), which automatically gives `d_i <= N`.
+> The length-`≠N` admissibility claimed below is an extension of the bare
+> displayed product beyond its derivation and is **not source-supported**.
+> The witness itself has `|S| = |D| = N = 5`, so its conclusion is unaffected.
+> `docs/source-notes/candidate-genome-class-resolution.md` §2.2 states the
+> fixed-length reading; the conflict should be resolved toward that reading.
+
 The literal objective uses `N` only as a probability denominator. Nothing in the
 formula restricts the candidate `D` to length `N`. The only domain requirement
 is that each factor be a valid binomial probability, i.e. `0 <= d_i/N <= 1`, so
