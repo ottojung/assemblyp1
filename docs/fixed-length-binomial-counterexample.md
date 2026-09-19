@@ -52,6 +52,16 @@ Thus truth is not a maximizer for this fixed-length literal Section 6.1 binomial
 
 The arithmetic was independently reproduced twice in issue #32, including a full-type-space calculation. The source reading was independently checked against the open Medvedev–Brudno text.
 
+The finite instance and this ratio are kernel-checked by
+`AssemblyP1.FixedLengthBinomialCounterexample.fixed_length_binomial_counterexample`
+in `AssemblyP1/FixedLengthBinomialCounterexample.lean`. The Lean file defines the
+literal full-type-space product of binomial marginals, proves that the types
+outside the six observed-or-positive-multiplicity types contribute factor one,
+and evaluates the exact rational likelihoods `452984832/30517578125`,
+`7962624/244140625`, and ratio `1125/512`. It also kernel-checks the same
+coverage and all-bridged-triple-repeat certificate as the exact-multinomial
+note, so the zero-count factors are genuinely what changes the ratio.
+
 ## Bridging hypothesis
 
 This is the `AAABB / AAAAB` witness from issue #31 with `B` relabeled to `C`. The relabeling preserves the equality pattern on which repeats, coverage, and bridging depend. The source-faithful certificate established for #31 therefore transfers directly:
@@ -73,4 +83,4 @@ Most importantly, this does not by itself resolve which Medvedev–Brudno formul
 
 ## Remaining verification boundary
 
-The finite arithmetic and source interpretation above are independently checked and durable. Issue #32 remains the coordination point for the smallest appropriate kernel check of this distinct approximate objective and for any further source-correspondence work needed before changing its epistemic status.
+The finite arithmetic and source interpretation above are independently checked and durable, and the finite instance and likelihood ratio are now kernel-checked (see `AssemblyP1/FixedLengthBinomialCounterexample.lean`). What the kernel check does **not** establish is the source-correspondence claim that this literal product-of-binomial-marginals expression is the objective Shomorony et al. intended, nor that the `I_s` bridging hypothesis transfers to this candidate universe. The absence of interleaved repeat pairs for the instance is recorded in this note and in the source-semantics note rather than formalized in Lean, so no general repeat/interleaving infrastructure is introduced. Issue #32 remains the coordination point for any further source-correspondence work needed before changing the epistemic status of the scoped negative result.
