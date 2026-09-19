@@ -89,15 +89,16 @@ universe examined is **bounded, not exhaustive**.
   optimization optimum. The likelihood objective and the candidate class are referenced only by
   citation, not restated in the sentence.
 
-- **Versioning finding (new to this audit).** The 23-page extended report
-  (`nsgIlan.pdf`, "Optimal Sequence Assembly via Sparse Read-Overlap Graphs") contains the same
-  broader question but **does not contain the words "maximum-likelihood" or "open question"** and
-  does not state the ML problem. Its Discussion ends by replacing the ML avenue with a genie-aided
-  formulation: "... consider a genie-aided formulation where the target genome length `G` is given
-  ... provides a better setting to analyze the computational complexity ... of reconstructing the
-  true sequence," then discusses GHC NP-hardness. The open sentence is therefore a feature of the
-  accepted ISMB/*Bioinformatics* version, not of the extended technical report. A future statement
-  must not silently attribute it to both versions.
+- **Versioning finding (new to this audit).**   The 23-page extended report
+  (`nsgIlan.pdf`, "Optimal Sequence Assembly via Sparse Read-Overlap Graphs") mentions the
+  maximum-likelihood formulation only in passing in its related-work introduction, and its
+  Discussion **does not contain the phrase "open question"** and does not pose the ML implication.
+  Instead it ends by replacing the ML avenue with a genie-aided formulation: "... consider a
+  genie-aided formulation where the target genome length `G` is given ... provides a better setting
+  to analyze the computational complexity ... of reconstructing the true sequence," then discusses
+  GHC NP-hardness. The open sentence is therefore a feature of the accepted
+  ISMB/*Bioinformatics* version, not of the extended technical report. A future statement must not
+  silently attribute it to both versions.
 
 ### Medvedev–Brudno 2009
 
