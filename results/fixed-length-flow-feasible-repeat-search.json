@@ -1,0 +1,5419 @@
+{
+  "model": "fixed-length exact Variant E, circular genomes, candidate length = G",
+  "objective": "L(D|x) proportional to prod_w d_D(w)^{x_w} (multinomial coefficient cancels at fixed length)",
+  "hypothesis": "I_s = coverage AND all-bridged maximal triple repeats AND bridged interleaved repeat pairs (Bresler et al. via Shomorony et al. Eq. (1))",
+  "candidate_universes": {
+    "U0": "all circular candidates of length G",
+    "U1": "supp(D) subset of supp(S)",
+    "U2": "supp(D) subset of supp(S) and d_D(w) >= x_w for every observed type (per-occurrence F*)"
+  },
+  "truth_side_assumption": "S in F*(R): supp(R) = supp(S) and x_w <= d_S(w) for all w",
+  "primary_scope": {
+    "alphabet": "binary {A,B}",
+    "G": "4..8",
+    "L": "2..G-1",
+    "max_reads": "n <= G (automatic from S in F*)"
+  },
+  "extended_scope": "binary G=9 L<=4; ternary G=5..6 L<=3",
+  "control": "same search with I_s dropped, showing bridging is load-bearing",
+  "summary": {
+    "primary_Is": {
+      "instances": 753,
+      "repeated_truth_instances": 602,
+      "U0_counterexamples": 0,
+      "U1_counterexamples": 0,
+      "U2_counterexamples": 0
+    },
+    "extended_Is": {
+      "instances": 462,
+      "repeated_truth_instances": 323,
+      "U0_counterexamples": 0,
+      "U1_counterexamples": 0,
+      "U2_counterexamples": 0
+    },
+    "control_no_Is": {
+      "instances": 651,
+      "repeated_truth_instances": 582,
+      "U0_counterexamples": 100,
+      "U1_counterexamples": 94,
+      "U2_counterexamples": 94
+    },
+    "elapsed_seconds": 144.76413226127625
+  },
+  "control_U2_witnesses": [
+    {
+      "S": "AAAAB",
+      "D": "AABAB",
+      "G": 5,
+      "L": 2,
+      "x": {
+        "AA": 1,
+        "AB": 1,
+        "BA": 1
+      },
+      "n": 3,
+      "truth_score": "3",
+      "cand_score": "4",
+      "repeat_free": false
+    },
+    {
+      "S": "ABBBB",
+      "D": "ABABB",
+      "G": 5,
+      "L": 2,
+      "x": {
+        "AB": 1,
+        "BB": 1,
+        "BA": 1
+      },
+      "n": 3,
+      "truth_score": "3",
+      "cand_score": "4",
+      "repeat_free": false
+    },
+    {
+      "S": "AAAAAB",
+      "D": "AAABAB",
+      "G": 6,
+      "L": 2,
+      "x": {
+        "AA": 1,
+        "AB": 1,
+        "BA": 1
+      },
+      "n": 3,
+      "truth_score": "4",
+      "cand_score": "8",
+      "repeat_free": false
+    },
+    {
+      "S": "AAAAAB",
+      "D": "AABAAB",
+      "G": 6,
+      "L": 2,
+      "x": {
+        "AA": 1,
+        "AB": 1,
+        "BA": 1
+      },
+      "n": 3,
+      "truth_score": "4",
+      "cand_score": "8",
+      "repeat_free": false
+    },
+    {
+      "S": "AAAABB",
+      "D": "AAABBB",
+      "G": 6,
+      "L": 2,
+      "x": {
+        "AA": 1,
+        "AB": 1,
+        "BB": 1,
+        "BA": 1
+      },
+      "n": 4,
+      "truth_score": "3",
+      "cand_score": "4",
+      "repeat_free": false
+    },
+    {
+      "S": "AAAABB",
+      "D": "AABABB",
+      "G": 6,
+      "L": 2,
+      "x": {
+        "AA": 1,
+        "AB": 1,
+        "BB": 1,
+        "BA": 1
+      },
+      "n": 4,
+      "truth_score": "3",
+      "cand_score": "4",
+      "repeat_free": false
+    },
+    {
+      "S": "AAAABB",
+      "D": "AABBAB",
+      "G": 6,
+      "L": 2,
+      "x": {
+        "AA": 1,
+        "AB": 1,
+        "BB": 1,
+        "BA": 1
+      },
+      "n": 4,
+      "truth_score": "3",
+      "cand_score": "4",
+      "repeat_free": false
+    },
+    {
+      "S": "AAABBB",
+      "D": "AABBBB",
+      "G": 6,
+      "L": 2,
+      "x": {
+        "AA": 1,
+        "AB": 1,
+        "BB": 2,
+        "BA": 1
+      },
+      "n": 5,
+      "truth_score": "8",
+      "cand_score": "9",
+      "repeat_free": false
+    },
+    {
+      "S": "AAABBB",
+      "D": "AAAABB",
+      "G": 6,
+      "L": 2,
+      "x": {
+        "AA": 2,
+        "AB": 1,
+        "BB": 1,
+        "BA": 1
+      },
+      "n": 5,
+      "truth_score": "8",
+      "cand_score": "9",
+      "repeat_free": false
+    },
+    {
+      "S": "AABBBB",
+      "D": "AAABBB",
+      "G": 6,
+      "L": 2,
+      "x": {
+        "AA": 1,
+        "AB": 1,
+        "BB": 1,
+        "BA": 1
+      },
+      "n": 4,
+      "truth_score": "3",
+      "cand_score": "4",
+      "repeat_free": false
+    },
+    {
+      "S": "AABBBB",
+      "D": "AABABB",
+      "G": 6,
+      "L": 2,
+      "x": {
+        "AA": 1,
+        "AB": 1,
+        "BB": 1,
+        "BA": 1
+      },
+      "n": 4,
+      "truth_score": "3",
+      "cand_score": "4",
+      "repeat_free": false
+    },
+    {
+      "S": "AABBBB",
+      "D": "AABBAB",
+      "G": 6,
+      "L": 2,
+      "x": {
+        "AA": 1,
+        "AB": 1,
+        "BB": 1,
+        "BA": 1
+      },
+      "n": 4,
+      "truth_score": "3",
+      "cand_score": "4",
+      "repeat_free": false
+    },
+    {
+      "S": "ABBBBB",
+      "D": "ABABBB",
+      "G": 6,
+      "L": 2,
+      "x": {
+        "AB": 1,
+        "BB": 1,
+        "BA": 1
+      },
+      "n": 3,
+      "truth_score": "4",
+      "cand_score": "8",
+      "repeat_free": false
+    },
+    {
+      "S": "ABBBBB",
+      "D": "ABBABB",
+      "G": 6,
+      "L": 2,
+      "x": {
+        "AB": 1,
+        "BB": 1,
+        "BA": 1
+      },
+      "n": 3,
+      "truth_score": "4",
+      "cand_score": "8",
+      "repeat_free": false
+    },
+    {
+      "S": "AAAAAAB",
+      "D": "AAAABAB",
+      "G": 7,
+      "L": 2,
+      "x": {
+        "AA": 1,
+        "AB": 1,
+        "BA": 1
+      },
+      "n": 3,
+      "truth_score": "5",
+      "cand_score": "12",
+      "repeat_free": false
+    },
+    {
+      "S": "AAAAAAB",
+      "D": "AAABAAB",
+      "G": 7,
+      "L": 2,
+      "x": {
+        "AA": 1,
+        "AB": 1,
+        "BA": 1
+      },
+      "n": 3,
+      "truth_score": "5",
+      "cand_score": "12",
+      "repeat_free": false
+    },
+    {
+      "S": "AAAAAAB",
+      "D": "AABABAB",
+      "G": 7,
+      "L": 2,
+      "x": {
+        "AA": 1,
+        "AB": 1,
+        "BA": 1
+      },
+      "n": 3,
+      "truth_score": "5",
+      "cand_score": "9",
+      "repeat_free": false
+    },
+    {
+      "S": "AAAAAAB",
+      "D": "AAAABAB",
+      "G": 7,
+      "L": 2,
+      "x": {
+        "AA": 2,
+        "AB": 1,
+        "BA": 1
+      },
+      "n": 4,
+      "truth_score": "25",
+      "cand_score": "36",
+      "repeat_free": false
+    },
+    {
+      "S": "AAAAAAB",
+      "D": "AAABAAB",
+      "G": 7,
+      "L": 2,
+      "x": {
+        "AA": 2,
+        "AB": 1,
+        "BA": 1
+      },
+      "n": 4,
+      "truth_score": "25",
+      "cand_score": "36",
+      "repeat_free": false
+    },
+    {
+      "S": "AAAAABB",
+      "D": "AAAABBB",
+      "G": 7,
+      "L": 2,
+      "x": {
+        "AA": 1,
+        "AB": 1,
+        "BB": 1,
+        "BA": 1
+      },
+      "n": 4,
+      "truth_score": "4",
+      "cand_score": "6",
+      "repeat_free": false
+    }
+  ],
+  "results_primary": [
+    {
+      "params": {
+        "G": 4,
+        "L": 2,
+        "alphabet_size": 2,
+        "max_reads": 4
+      },
+      "instances_Is_SinFstar": 10,
+      "repeat_truth_instances": 9,
+      "stricter_than_truth": [],
+      "U1_counterexamples": [],
+      "U2_counterexamples": [],
+      "minscore_by_universe": {}
+    },
+    {
+      "params": {
+        "G": 4,
+        "L": 3,
+        "alphabet_size": 2,
+        "max_reads": 4
+      },
+      "instances_Is_SinFstar": 13,
+      "repeat_truth_instances": 10,
+      "stricter_than_truth": [],
+      "U1_counterexamples": [],
+      "U2_counterexamples": [],
+      "minscore_by_universe": {}
+    },
+    {
+      "params": {
+        "G": 5,
+        "L": 2,
+        "alphabet_size": 2,
+        "max_reads": 5
+      },
+      "instances_Is_SinFstar": 6,
+      "repeat_truth_instances": 6,
+      "stricter_than_truth": [],
+      "U1_counterexamples": [],
+      "U2_counterexamples": [],
+      "minscore_by_universe": {}
+    },
+    {
+      "params": {
+        "G": 5,
+        "L": 3,
+        "alphabet_size": 2,
+        "max_reads": 5
+      },
+      "instances_Is_SinFstar": 14,
+      "repeat_truth_instances": 12,
+      "stricter_than_truth": [],
+      "U1_counterexamples": [],
+      "U2_counterexamples": [],
+      "minscore_by_universe": {}
+    },
+    {
+      "params": {
+        "G": 5,
+        "L": 4,
+        "alphabet_size": 2,
+        "max_reads": 5
+      },
+      "instances_Is_SinFstar": 14,
+      "repeat_truth_instances": 8,
+      "stricter_than_truth": [],
+      "U1_counterexamples": [],
+      "U2_counterexamples": [],
+      "minscore_by_universe": {}
+    },
+    {
+      "params": {
+        "G": 6,
+        "L": 2,
+        "alphabet_size": 2,
+        "max_reads": 6
+      },
+      "instances_Is_SinFstar": 14,
+      "repeat_truth_instances": 14,
+      "stricter_than_truth": [],
+      "U1_counterexamples": [],
+      "U2_counterexamples": [],
+      "minscore_by_universe": {}
+    },
+    {
+      "params": {
+        "G": 6,
+        "L": 3,
+        "alphabet_size": 2,
+        "max_reads": 6
+      },
+      "instances_Is_SinFstar": 28,
+      "repeat_truth_instances": 27,
+      "stricter_than_truth": [],
+      "U1_counterexamples": [],
+      "U2_counterexamples": [],
+      "minscore_by_universe": {}
+    },
+    {
+      "params": {
+        "G": 6,
+        "L": 4,
+        "alphabet_size": 2,
+        "max_reads": 6
+      },
+      "instances_Is_SinFstar": 42,
+      "repeat_truth_instances": 35,
+      "stricter_than_truth": [],
+      "U1_counterexamples": [],
+      "U2_counterexamples": [],
+      "minscore_by_universe": {}
+    },
+    {
+      "params": {
+        "G": 6,
+        "L": 5,
+        "alphabet_size": 2,
+        "max_reads": 6
+      },
+      "instances_Is_SinFstar": 44,
+      "repeat_truth_instances": 35,
+      "stricter_than_truth": [],
+      "U1_counterexamples": [],
+      "U2_counterexamples": [],
+      "minscore_by_universe": {}
+    },
+    {
+      "params": {
+        "G": 7,
+        "L": 2,
+        "alphabet_size": 2,
+        "max_reads": 7
+      },
+      "instances_Is_SinFstar": 8,
+      "repeat_truth_instances": 8,
+      "stricter_than_truth": [],
+      "U1_counterexamples": [],
+      "U2_counterexamples": [],
+      "minscore_by_universe": {}
+    },
+    {
+      "params": {
+        "G": 7,
+        "L": 3,
+        "alphabet_size": 2,
+        "max_reads": 7
+      },
+      "instances_Is_SinFstar": 12,
+      "repeat_truth_instances": 12,
+      "stricter_than_truth": [],
+      "U1_counterexamples": [],
+      "U2_counterexamples": [],
+      "minscore_by_universe": {}
+    },
+    {
+      "params": {
+        "G": 7,
+        "L": 4,
+        "alphabet_size": 2,
+        "max_reads": 7
+      },
+      "instances_Is_SinFstar": 32,
+      "repeat_truth_instances": 24,
+      "stricter_than_truth": [],
+      "U1_counterexamples": [],
+      "U2_counterexamples": [],
+      "minscore_by_universe": {}
+    },
+    {
+      "params": {
+        "G": 7,
+        "L": 5,
+        "alphabet_size": 2,
+        "max_reads": 7
+      },
+      "instances_Is_SinFstar": 32,
+      "repeat_truth_instances": 20,
+      "stricter_than_truth": [],
+      "U1_counterexamples": [],
+      "U2_counterexamples": [],
+      "minscore_by_universe": {}
+    },
+    {
+      "params": {
+        "G": 7,
+        "L": 6,
+        "alphabet_size": 2,
+        "max_reads": 7
+      },
+      "instances_Is_SinFstar": 30,
+      "repeat_truth_instances": 12,
+      "stricter_than_truth": [],
+      "U1_counterexamples": [],
+      "U2_counterexamples": [],
+      "minscore_by_universe": {}
+    },
+    {
+      "params": {
+        "G": 8,
+        "L": 2,
+        "alphabet_size": 2,
+        "max_reads": 8
+      },
+      "instances_Is_SinFstar": 20,
+      "repeat_truth_instances": 20,
+      "stricter_than_truth": [],
+      "U1_counterexamples": [],
+      "U2_counterexamples": [],
+      "minscore_by_universe": {}
+    },
+    {
+      "params": {
+        "G": 8,
+        "L": 3,
+        "alphabet_size": 2,
+        "max_reads": 8
+      },
+      "instances_Is_SinFstar": 30,
+      "repeat_truth_instances": 30,
+      "stricter_than_truth": [],
+      "U1_counterexamples": [],
+      "U2_counterexamples": [],
+      "minscore_by_universe": {}
+    },
+    {
+      "params": {
+        "G": 8,
+        "L": 4,
+        "alphabet_size": 2,
+        "max_reads": 8
+      },
+      "instances_Is_SinFstar": 74,
+      "repeat_truth_instances": 66,
+      "stricter_than_truth": [],
+      "U1_counterexamples": [],
+      "U2_counterexamples": [],
+      "minscore_by_universe": {}
+    },
+    {
+      "params": {
+        "G": 8,
+        "L": 5,
+        "alphabet_size": 2,
+        "max_reads": 8
+      },
+      "instances_Is_SinFstar": 114,
+      "repeat_truth_instances": 94,
+      "stricter_than_truth": [],
+      "U1_counterexamples": [],
+      "U2_counterexamples": [],
+      "minscore_by_universe": {}
+    },
+    {
+      "params": {
+        "G": 8,
+        "L": 6,
+        "alphabet_size": 2,
+        "max_reads": 8
+      },
+      "instances_Is_SinFstar": 108,
+      "repeat_truth_instances": 82,
+      "stricter_than_truth": [],
+      "U1_counterexamples": [],
+      "U2_counterexamples": [],
+      "minscore_by_universe": {}
+    },
+    {
+      "params": {
+        "G": 8,
+        "L": 7,
+        "alphabet_size": 2,
+        "max_reads": 8
+      },
+      "instances_Is_SinFstar": 108,
+      "repeat_truth_instances": 78,
+      "stricter_than_truth": [],
+      "U1_counterexamples": [],
+      "U2_counterexamples": [],
+      "minscore_by_universe": {}
+    }
+  ],
+  "results_extended": [
+    {
+      "params": {
+        "G": 9,
+        "L": 2,
+        "alphabet_size": 2,
+        "max_reads": 9
+      },
+      "instances_Is_SinFstar": 10,
+      "repeat_truth_instances": 10,
+      "stricter_than_truth": [],
+      "U1_counterexamples": [],
+      "U2_counterexamples": [],
+      "minscore_by_universe": {},
+      "alphabet_size": 2
+    },
+    {
+      "params": {
+        "G": 9,
+        "L": 3,
+        "alphabet_size": 2,
+        "max_reads": 9
+      },
+      "instances_Is_SinFstar": 20,
+      "repeat_truth_instances": 20,
+      "stricter_than_truth": [],
+      "U1_counterexamples": [],
+      "U2_counterexamples": [],
+      "minscore_by_universe": {},
+      "alphabet_size": 2
+    },
+    {
+      "params": {
+        "G": 9,
+        "L": 4,
+        "alphabet_size": 2,
+        "max_reads": 9
+      },
+      "instances_Is_SinFstar": 102,
+      "repeat_truth_instances": 96,
+      "stricter_than_truth": [],
+      "U1_counterexamples": [],
+      "U2_counterexamples": [],
+      "minscore_by_universe": {},
+      "alphabet_size": 2
+    },
+    {
+      "params": {
+        "G": 5,
+        "L": 2,
+        "alphabet_size": 3,
+        "max_reads": 5
+      },
+      "instances_Is_SinFstar": 33,
+      "repeat_truth_instances": 21,
+      "stricter_than_truth": [],
+      "U1_counterexamples": [],
+      "U2_counterexamples": [],
+      "minscore_by_universe": {},
+      "alphabet_size": 3
+    },
+    {
+      "params": {
+        "G": 5,
+        "L": 3,
+        "alphabet_size": 3,
+        "max_reads": 5
+      },
+      "instances_Is_SinFstar": 60,
+      "repeat_truth_instances": 24,
+      "stricter_than_truth": [],
+      "U1_counterexamples": [],
+      "U2_counterexamples": [],
+      "minscore_by_universe": {},
+      "alphabet_size": 3
+    },
+    {
+      "params": {
+        "G": 6,
+        "L": 2,
+        "alphabet_size": 3,
+        "max_reads": 6
+      },
+      "instances_Is_SinFstar": 63,
+      "repeat_truth_instances": 58,
+      "stricter_than_truth": [],
+      "U1_counterexamples": [],
+      "U2_counterexamples": [],
+      "minscore_by_universe": {},
+      "alphabet_size": 3
+    },
+    {
+      "params": {
+        "G": 6,
+        "L": 3,
+        "alphabet_size": 3,
+        "max_reads": 6
+      },
+      "instances_Is_SinFstar": 174,
+      "repeat_truth_instances": 94,
+      "stricter_than_truth": [],
+      "U1_counterexamples": [],
+      "U2_counterexamples": [],
+      "minscore_by_universe": {},
+      "alphabet_size": 3
+    }
+  ],
+  "results_control": [
+    {
+      "params": {
+        "G": 5,
+        "L": 2,
+        "alphabet_size": 2,
+        "max_reads": 5
+      },
+      "instances_Is_SinFstar": 28,
+      "repeat_truth_instances": 28,
+      "stricter_than_truth": [
+        {
+          "S": "AAAAB",
+          "D": "AABAB",
+          "G": 5,
+          "L": 2,
+          "x": {
+            "AA": 1,
+            "AB": 1,
+            "BA": 1
+          },
+          "n": 3,
+          "truth_score": "3",
+          "cand_score": "4",
+          "repeat_free": false
+        },
+        {
+          "S": "ABBBB",
+          "D": "ABABB",
+          "G": 5,
+          "L": 2,
+          "x": {
+            "AB": 1,
+            "BB": 1,
+            "BA": 1
+          },
+          "n": 3,
+          "truth_score": "3",
+          "cand_score": "4",
+          "repeat_free": false
+        }
+      ],
+      "U1_counterexamples": [
+        {
+          "S": "AAAAB",
+          "D": "AABAB",
+          "G": 5,
+          "L": 2,
+          "x": {
+            "AA": 1,
+            "AB": 1,
+            "BA": 1
+          },
+          "n": 3,
+          "truth_score": "3",
+          "cand_score": "4",
+          "repeat_free": false
+        },
+        {
+          "S": "ABBBB",
+          "D": "ABABB",
+          "G": 5,
+          "L": 2,
+          "x": {
+            "AB": 1,
+            "BB": 1,
+            "BA": 1
+          },
+          "n": 3,
+          "truth_score": "3",
+          "cand_score": "4",
+          "repeat_free": false
+        }
+      ],
+      "U2_counterexamples": [
+        {
+          "S": "AAAAB",
+          "D": "AABAB",
+          "G": 5,
+          "L": 2,
+          "x": {
+            "AA": 1,
+            "AB": 1,
+            "BA": 1
+          },
+          "n": 3,
+          "truth_score": "3",
+          "cand_score": "4",
+          "repeat_free": false
+        },
+        {
+          "S": "ABBBB",
+          "D": "ABABB",
+          "G": 5,
+          "L": 2,
+          "x": {
+            "AB": 1,
+            "BB": 1,
+            "BA": 1
+          },
+          "n": 3,
+          "truth_score": "3",
+          "cand_score": "4",
+          "repeat_free": false
+        }
+      ],
+      "minscore_by_universe": {}
+    },
+    {
+      "params": {
+        "G": 5,
+        "L": 3,
+        "alphabet_size": 2,
+        "max_reads": 5
+      },
+      "instances_Is_SinFstar": 20,
+      "repeat_truth_instances": 18,
+      "stricter_than_truth": [],
+      "U1_counterexamples": [],
+      "U2_counterexamples": [],
+      "minscore_by_universe": {}
+    },
+    {
+      "params": {
+        "G": 5,
+        "L": 4,
+        "alphabet_size": 2,
+        "max_reads": 5
+      },
+      "instances_Is_SinFstar": 16,
+      "repeat_truth_instances": 10,
+      "stricter_than_truth": [],
+      "U1_counterexamples": [],
+      "U2_counterexamples": [],
+      "minscore_by_universe": {}
+    },
+    {
+      "params": {
+        "G": 6,
+        "L": 2,
+        "alphabet_size": 2,
+        "max_reads": 6
+      },
+      "instances_Is_SinFstar": 79,
+      "repeat_truth_instances": 79,
+      "stricter_than_truth": [
+        {
+          "S": "AAAAAB",
+          "D": "AAABAB",
+          "G": 6,
+          "L": 2,
+          "x": {
+            "AA": 1,
+            "AB": 1,
+            "BA": 1
+          },
+          "n": 3,
+          "truth_score": "4",
+          "cand_score": "8",
+          "repeat_free": false
+        },
+        {
+          "S": "AAAAAB",
+          "D": "AABAAB",
+          "G": 6,
+          "L": 2,
+          "x": {
+            "AA": 1,
+            "AB": 1,
+            "BA": 1
+          },
+          "n": 3,
+          "truth_score": "4",
+          "cand_score": "8",
+          "repeat_free": false
+        },
+        {
+          "S": "AAAABB",
+          "D": "AAABBB",
+          "G": 6,
+          "L": 2,
+          "x": {
+            "AA": 1,
+            "AB": 1,
+            "BB": 1,
+            "BA": 1
+          },
+          "n": 4,
+          "truth_score": "3",
+          "cand_score": "4",
+          "repeat_free": false
+        },
+        {
+          "S": "AAAABB",
+          "D": "AABABB",
+          "G": 6,
+          "L": 2,
+          "x": {
+            "AA": 1,
+            "AB": 1,
+            "BB": 1,
+            "BA": 1
+          },
+          "n": 4,
+          "truth_score": "3",
+          "cand_score": "4",
+          "repeat_free": false
+        },
+        {
+          "S": "AAAABB",
+          "D": "AABBAB",
+          "G": 6,
+          "L": 2,
+          "x": {
+            "AA": 1,
+            "AB": 1,
+            "BB": 1,
+            "BA": 1
+          },
+          "n": 4,
+          "truth_score": "3",
+          "cand_score": "4",
+          "repeat_free": false
+        },
+        {
+          "S": "AAABBB",
+          "D": "AABBBB",
+          "G": 6,
+          "L": 2,
+          "x": {
+            "AA": 1,
+            "AB": 1,
+            "BB": 2,
+            "BA": 1
+          },
+          "n": 5,
+          "truth_score": "8",
+          "cand_score": "9",
+          "repeat_free": false
+        },
+        {
+          "S": "AAABBB",
+          "D": "AAAABB",
+          "G": 6,
+          "L": 2,
+          "x": {
+            "AA": 2,
+            "AB": 1,
+            "BB": 1,
+            "BA": 1
+          },
+          "n": 5,
+          "truth_score": "8",
+          "cand_score": "9",
+          "repeat_free": false
+        },
+        {
+          "S": "AABBBB",
+          "D": "AAABBB",
+          "G": 6,
+          "L": 2,
+          "x": {
+            "AA": 1,
+            "AB": 1,
+            "BB": 1,
+            "BA": 1
+          },
+          "n": 4,
+          "truth_score": "3",
+          "cand_score": "4",
+          "repeat_free": false
+        },
+        {
+          "S": "AABBBB",
+          "D": "AABABB",
+          "G": 6,
+          "L": 2,
+          "x": {
+            "AA": 1,
+            "AB": 1,
+            "BB": 1,
+            "BA": 1
+          },
+          "n": 4,
+          "truth_score": "3",
+          "cand_score": "4",
+          "repeat_free": false
+        },
+        {
+          "S": "AABBBB",
+          "D": "AABBAB",
+          "G": 6,
+          "L": 2,
+          "x": {
+            "AA": 1,
+            "AB": 1,
+            "BB": 1,
+            "BA": 1
+          },
+          "n": 4,
+          "truth_score": "3",
+          "cand_score": "4",
+          "repeat_free": false
+        },
+        {
+          "S": "ABBBBB",
+          "D": "ABABBB",
+          "G": 6,
+          "L": 2,
+          "x": {
+            "AB": 1,
+            "BB": 1,
+            "BA": 1
+          },
+          "n": 3,
+          "truth_score": "4",
+          "cand_score": "8",
+          "repeat_free": false
+        },
+        {
+          "S": "ABBBBB",
+          "D": "ABBABB",
+          "G": 6,
+          "L": 2,
+          "x": {
+            "AB": 1,
+            "BB": 1,
+            "BA": 1
+          },
+          "n": 3,
+          "truth_score": "4",
+          "cand_score": "8",
+          "repeat_free": false
+        }
+      ],
+      "U1_counterexamples": [
+        {
+          "S": "AAAAAB",
+          "D": "AAABAB",
+          "G": 6,
+          "L": 2,
+          "x": {
+            "AA": 1,
+            "AB": 1,
+            "BA": 1
+          },
+          "n": 3,
+          "truth_score": "4",
+          "cand_score": "8",
+          "repeat_free": false
+        },
+        {
+          "S": "AAAAAB",
+          "D": "AABAAB",
+          "G": 6,
+          "L": 2,
+          "x": {
+            "AA": 1,
+            "AB": 1,
+            "BA": 1
+          },
+          "n": 3,
+          "truth_score": "4",
+          "cand_score": "8",
+          "repeat_free": false
+        },
+        {
+          "S": "AAAABB",
+          "D": "AAABBB",
+          "G": 6,
+          "L": 2,
+          "x": {
+            "AA": 1,
+            "AB": 1,
+            "BB": 1,
+            "BA": 1
+          },
+          "n": 4,
+          "truth_score": "3",
+          "cand_score": "4",
+          "repeat_free": false
+        },
+        {
+          "S": "AAAABB",
+          "D": "AABABB",
+          "G": 6,
+          "L": 2,
+          "x": {
+            "AA": 1,
+            "AB": 1,
+            "BB": 1,
+            "BA": 1
+          },
+          "n": 4,
+          "truth_score": "3",
+          "cand_score": "4",
+          "repeat_free": false
+        },
+        {
+          "S": "AAAABB",
+          "D": "AABBAB",
+          "G": 6,
+          "L": 2,
+          "x": {
+            "AA": 1,
+            "AB": 1,
+            "BB": 1,
+            "BA": 1
+          },
+          "n": 4,
+          "truth_score": "3",
+          "cand_score": "4",
+          "repeat_free": false
+        },
+        {
+          "S": "AAABBB",
+          "D": "AABBBB",
+          "G": 6,
+          "L": 2,
+          "x": {
+            "AA": 1,
+            "AB": 1,
+            "BB": 2,
+            "BA": 1
+          },
+          "n": 5,
+          "truth_score": "8",
+          "cand_score": "9",
+          "repeat_free": false
+        },
+        {
+          "S": "AAABBB",
+          "D": "AAAABB",
+          "G": 6,
+          "L": 2,
+          "x": {
+            "AA": 2,
+            "AB": 1,
+            "BB": 1,
+            "BA": 1
+          },
+          "n": 5,
+          "truth_score": "8",
+          "cand_score": "9",
+          "repeat_free": false
+        },
+        {
+          "S": "AABBBB",
+          "D": "AAABBB",
+          "G": 6,
+          "L": 2,
+          "x": {
+            "AA": 1,
+            "AB": 1,
+            "BB": 1,
+            "BA": 1
+          },
+          "n": 4,
+          "truth_score": "3",
+          "cand_score": "4",
+          "repeat_free": false
+        },
+        {
+          "S": "AABBBB",
+          "D": "AABABB",
+          "G": 6,
+          "L": 2,
+          "x": {
+            "AA": 1,
+            "AB": 1,
+            "BB": 1,
+            "BA": 1
+          },
+          "n": 4,
+          "truth_score": "3",
+          "cand_score": "4",
+          "repeat_free": false
+        },
+        {
+          "S": "AABBBB",
+          "D": "AABBAB",
+          "G": 6,
+          "L": 2,
+          "x": {
+            "AA": 1,
+            "AB": 1,
+            "BB": 1,
+            "BA": 1
+          },
+          "n": 4,
+          "truth_score": "3",
+          "cand_score": "4",
+          "repeat_free": false
+        },
+        {
+          "S": "ABBBBB",
+          "D": "ABABBB",
+          "G": 6,
+          "L": 2,
+          "x": {
+            "AB": 1,
+            "BB": 1,
+            "BA": 1
+          },
+          "n": 3,
+          "truth_score": "4",
+          "cand_score": "8",
+          "repeat_free": false
+        },
+        {
+          "S": "ABBBBB",
+          "D": "ABBABB",
+          "G": 6,
+          "L": 2,
+          "x": {
+            "AB": 1,
+            "BB": 1,
+            "BA": 1
+          },
+          "n": 3,
+          "truth_score": "4",
+          "cand_score": "8",
+          "repeat_free": false
+        }
+      ],
+      "U2_counterexamples": [
+        {
+          "S": "AAAAAB",
+          "D": "AAABAB",
+          "G": 6,
+          "L": 2,
+          "x": {
+            "AA": 1,
+            "AB": 1,
+            "BA": 1
+          },
+          "n": 3,
+          "truth_score": "4",
+          "cand_score": "8",
+          "repeat_free": false
+        },
+        {
+          "S": "AAAAAB",
+          "D": "AABAAB",
+          "G": 6,
+          "L": 2,
+          "x": {
+            "AA": 1,
+            "AB": 1,
+            "BA": 1
+          },
+          "n": 3,
+          "truth_score": "4",
+          "cand_score": "8",
+          "repeat_free": false
+        },
+        {
+          "S": "AAAABB",
+          "D": "AAABBB",
+          "G": 6,
+          "L": 2,
+          "x": {
+            "AA": 1,
+            "AB": 1,
+            "BB": 1,
+            "BA": 1
+          },
+          "n": 4,
+          "truth_score": "3",
+          "cand_score": "4",
+          "repeat_free": false
+        },
+        {
+          "S": "AAAABB",
+          "D": "AABABB",
+          "G": 6,
+          "L": 2,
+          "x": {
+            "AA": 1,
+            "AB": 1,
+            "BB": 1,
+            "BA": 1
+          },
+          "n": 4,
+          "truth_score": "3",
+          "cand_score": "4",
+          "repeat_free": false
+        },
+        {
+          "S": "AAAABB",
+          "D": "AABBAB",
+          "G": 6,
+          "L": 2,
+          "x": {
+            "AA": 1,
+            "AB": 1,
+            "BB": 1,
+            "BA": 1
+          },
+          "n": 4,
+          "truth_score": "3",
+          "cand_score": "4",
+          "repeat_free": false
+        },
+        {
+          "S": "AAABBB",
+          "D": "AABBBB",
+          "G": 6,
+          "L": 2,
+          "x": {
+            "AA": 1,
+            "AB": 1,
+            "BB": 2,
+            "BA": 1
+          },
+          "n": 5,
+          "truth_score": "8",
+          "cand_score": "9",
+          "repeat_free": false
+        },
+        {
+          "S": "AAABBB",
+          "D": "AAAABB",
+          "G": 6,
+          "L": 2,
+          "x": {
+            "AA": 2,
+            "AB": 1,
+            "BB": 1,
+            "BA": 1
+          },
+          "n": 5,
+          "truth_score": "8",
+          "cand_score": "9",
+          "repeat_free": false
+        },
+        {
+          "S": "AABBBB",
+          "D": "AAABBB",
+          "G": 6,
+          "L": 2,
+          "x": {
+            "AA": 1,
+            "AB": 1,
+            "BB": 1,
+            "BA": 1
+          },
+          "n": 4,
+          "truth_score": "3",
+          "cand_score": "4",
+          "repeat_free": false
+        },
+        {
+          "S": "AABBBB",
+          "D": "AABABB",
+          "G": 6,
+          "L": 2,
+          "x": {
+            "AA": 1,
+            "AB": 1,
+            "BB": 1,
+            "BA": 1
+          },
+          "n": 4,
+          "truth_score": "3",
+          "cand_score": "4",
+          "repeat_free": false
+        },
+        {
+          "S": "AABBBB",
+          "D": "AABBAB",
+          "G": 6,
+          "L": 2,
+          "x": {
+            "AA": 1,
+            "AB": 1,
+            "BB": 1,
+            "BA": 1
+          },
+          "n": 4,
+          "truth_score": "3",
+          "cand_score": "4",
+          "repeat_free": false
+        },
+        {
+          "S": "ABBBBB",
+          "D": "ABABBB",
+          "G": 6,
+          "L": 2,
+          "x": {
+            "AB": 1,
+            "BB": 1,
+            "BA": 1
+          },
+          "n": 3,
+          "truth_score": "4",
+          "cand_score": "8",
+          "repeat_free": false
+        },
+        {
+          "S": "ABBBBB",
+          "D": "ABBABB",
+          "G": 6,
+          "L": 2,
+          "x": {
+            "AB": 1,
+            "BB": 1,
+            "BA": 1
+          },
+          "n": 3,
+          "truth_score": "4",
+          "cand_score": "8",
+          "repeat_free": false
+        }
+      ],
+      "minscore_by_universe": {}
+    },
+    {
+      "params": {
+        "G": 6,
+        "L": 3,
+        "alphabet_size": 2,
+        "max_reads": 6
+      },
+      "instances_Is_SinFstar": 54,
+      "repeat_truth_instances": 51,
+      "stricter_than_truth": [],
+      "U1_counterexamples": [],
+      "U2_counterexamples": [],
+      "minscore_by_universe": {}
+    },
+    {
+      "params": {
+        "G": 6,
+        "L": 4,
+        "alphabet_size": 2,
+        "max_reads": 6
+      },
+      "instances_Is_SinFstar": 48,
+      "repeat_truth_instances": 41,
+      "stricter_than_truth": [],
+      "U1_counterexamples": [],
+      "U2_counterexamples": [],
+      "minscore_by_universe": {}
+    },
+    {
+      "params": {
+        "G": 6,
+        "L": 5,
+        "alphabet_size": 2,
+        "max_reads": 6
+      },
+      "instances_Is_SinFstar": 46,
+      "repeat_truth_instances": 37,
+      "stricter_than_truth": [],
+      "U1_counterexamples": [],
+      "U2_counterexamples": [],
+      "minscore_by_universe": {}
+    },
+    {
+      "params": {
+        "G": 7,
+        "L": 2,
+        "alphabet_size": 2,
+        "max_reads": 7
+      },
+      "instances_Is_SinFstar": 158,
+      "repeat_truth_instances": 158,
+      "stricter_than_truth": [
+        {
+          "S": "AAAAAAB",
+          "D": "AAAABAB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AA": 1,
+            "AB": 1,
+            "BA": 1
+          },
+          "n": 3,
+          "truth_score": "5",
+          "cand_score": "12",
+          "repeat_free": false
+        },
+        {
+          "S": "AAAAAAB",
+          "D": "AAABAAB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AA": 1,
+            "AB": 1,
+            "BA": 1
+          },
+          "n": 3,
+          "truth_score": "5",
+          "cand_score": "12",
+          "repeat_free": false
+        },
+        {
+          "S": "AAAAAAB",
+          "D": "AAABABB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AA": 1,
+            "AB": 1,
+            "BA": 1
+          },
+          "n": 3,
+          "truth_score": "5",
+          "cand_score": "8",
+          "repeat_free": false
+        },
+        {
+          "S": "AAAAAAB",
+          "D": "AAABBAB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AA": 1,
+            "AB": 1,
+            "BA": 1
+          },
+          "n": 3,
+          "truth_score": "5",
+          "cand_score": "8",
+          "repeat_free": false
+        },
+        {
+          "S": "AAAAAAB",
+          "D": "AABAABB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AA": 1,
+            "AB": 1,
+            "BA": 1
+          },
+          "n": 3,
+          "truth_score": "5",
+          "cand_score": "8",
+          "repeat_free": false
+        },
+        {
+          "S": "AAAAAAB",
+          "D": "AABABAB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AA": 1,
+            "AB": 1,
+            "BA": 1
+          },
+          "n": 3,
+          "truth_score": "5",
+          "cand_score": "9",
+          "repeat_free": false
+        },
+        {
+          "S": "AAAAAAB",
+          "D": "AAAABAB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AA": 2,
+            "AB": 1,
+            "BA": 1
+          },
+          "n": 4,
+          "truth_score": "25",
+          "cand_score": "36",
+          "repeat_free": false
+        },
+        {
+          "S": "AAAAAAB",
+          "D": "AAABAAB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AA": 2,
+            "AB": 1,
+            "BA": 1
+          },
+          "n": 4,
+          "truth_score": "25",
+          "cand_score": "36",
+          "repeat_free": false
+        },
+        {
+          "S": "AAAAABB",
+          "D": "AAAABBB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AA": 1,
+            "AB": 1,
+            "BB": 1,
+            "BA": 1
+          },
+          "n": 4,
+          "truth_score": "4",
+          "cand_score": "6",
+          "repeat_free": false
+        },
+        {
+          "S": "AAAAABB",
+          "D": "AAABABB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AA": 1,
+            "AB": 1,
+            "BB": 1,
+            "BA": 1
+          },
+          "n": 4,
+          "truth_score": "4",
+          "cand_score": "8",
+          "repeat_free": false
+        },
+        {
+          "S": "AAAAABB",
+          "D": "AAABBAB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AA": 1,
+            "AB": 1,
+            "BB": 1,
+            "BA": 1
+          },
+          "n": 4,
+          "truth_score": "4",
+          "cand_score": "8",
+          "repeat_free": false
+        },
+        {
+          "S": "AAAAABB",
+          "D": "AAABBBB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AA": 1,
+            "AB": 1,
+            "BB": 1,
+            "BA": 1
+          },
+          "n": 4,
+          "truth_score": "4",
+          "cand_score": "6",
+          "repeat_free": false
+        },
+        {
+          "S": "AAAAABB",
+          "D": "AABAABB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AA": 1,
+            "AB": 1,
+            "BB": 1,
+            "BA": 1
+          },
+          "n": 4,
+          "truth_score": "4",
+          "cand_score": "8",
+          "repeat_free": false
+        },
+        {
+          "S": "AAAAABB",
+          "D": "AABABBB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AA": 1,
+            "AB": 1,
+            "BB": 1,
+            "BA": 1
+          },
+          "n": 4,
+          "truth_score": "4",
+          "cand_score": "8",
+          "repeat_free": false
+        },
+        {
+          "S": "AAAAABB",
+          "D": "AABBABB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AA": 1,
+            "AB": 1,
+            "BB": 1,
+            "BA": 1
+          },
+          "n": 4,
+          "truth_score": "4",
+          "cand_score": "8",
+          "repeat_free": false
+        },
+        {
+          "S": "AAAAABB",
+          "D": "AABBBAB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AA": 1,
+            "AB": 1,
+            "BB": 1,
+            "BA": 1
+          },
+          "n": 4,
+          "truth_score": "4",
+          "cand_score": "8",
+          "repeat_free": false
+        },
+        {
+          "S": "AAAAABB",
+          "D": "AAAABBB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AA": 2,
+            "AB": 1,
+            "BB": 1,
+            "BA": 1
+          },
+          "n": 5,
+          "truth_score": "16",
+          "cand_score": "18",
+          "repeat_free": false
+        },
+        {
+          "S": "AAAABAB",
+          "D": "AABABAB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AA": 1,
+            "AB": 1,
+            "BA": 2
+          },
+          "n": 4,
+          "truth_score": "24",
+          "cand_score": "27",
+          "repeat_free": false
+        },
+        {
+          "S": "AAAABAB",
+          "D": "AABABAB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AA": 1,
+            "AB": 2,
+            "BA": 1
+          },
+          "n": 4,
+          "truth_score": "24",
+          "cand_score": "27",
+          "repeat_free": false
+        },
+        {
+          "S": "AAAABAB",
+          "D": "AABABAB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AA": 1,
+            "AB": 2,
+            "BA": 2
+          },
+          "n": 5,
+          "truth_score": "48",
+          "cand_score": "81",
+          "repeat_free": false
+        },
+        {
+          "S": "AAAABAB",
+          "D": "AAAAAAB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AA": 3,
+            "AB": 1,
+            "BA": 1
+          },
+          "n": 5,
+          "truth_score": "108",
+          "cand_score": "125",
+          "repeat_free": false
+        },
+        {
+          "S": "AAAABBB",
+          "D": "AAABABB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AA": 1,
+            "AB": 1,
+            "BB": 1,
+            "BA": 1
+          },
+          "n": 4,
+          "truth_score": "6",
+          "cand_score": "8",
+          "repeat_free": false
+        },
+        {
+          "S": "AAAABBB",
+          "D": "AAABBAB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AA": 1,
+            "AB": 1,
+            "BB": 1,
+            "BA": 1
+          },
+          "n": 4,
+          "truth_score": "6",
+          "cand_score": "8",
+          "repeat_free": false
+        },
+        {
+          "S": "AAAABBB",
+          "D": "AABAABB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AA": 1,
+            "AB": 1,
+            "BB": 1,
+            "BA": 1
+          },
+          "n": 4,
+          "truth_score": "6",
+          "cand_score": "8",
+          "repeat_free": false
+        },
+        {
+          "S": "AAAABBB",
+          "D": "AABABBB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AA": 1,
+            "AB": 1,
+            "BB": 1,
+            "BA": 1
+          },
+          "n": 4,
+          "truth_score": "6",
+          "cand_score": "8",
+          "repeat_free": false
+        },
+        {
+          "S": "AAAABBB",
+          "D": "AABBABB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AA": 1,
+            "AB": 1,
+            "BB": 1,
+            "BA": 1
+          },
+          "n": 4,
+          "truth_score": "6",
+          "cand_score": "8",
+          "repeat_free": false
+        },
+        {
+          "S": "AAAABBB",
+          "D": "AABBBAB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AA": 1,
+            "AB": 1,
+            "BB": 1,
+            "BA": 1
+          },
+          "n": 4,
+          "truth_score": "6",
+          "cand_score": "8",
+          "repeat_free": false
+        },
+        {
+          "S": "AAAABBB",
+          "D": "AAABBBB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AA": 1,
+            "AB": 1,
+            "BB": 2,
+            "BA": 1
+          },
+          "n": 5,
+          "truth_score": "12",
+          "cand_score": "18",
+          "repeat_free": false
+        },
+        {
+          "S": "AAAABBB",
+          "D": "AABABBB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AA": 1,
+            "AB": 1,
+            "BB": 2,
+            "BA": 1
+          },
+          "n": 5,
+          "truth_score": "12",
+          "cand_score": "16",
+          "repeat_free": false
+        },
+        {
+          "S": "AAAABBB",
+          "D": "AABBABB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AA": 1,
+            "AB": 1,
+            "BB": 2,
+            "BA": 1
+          },
+          "n": 5,
+          "truth_score": "12",
+          "cand_score": "16",
+          "repeat_free": false
+        },
+        {
+          "S": "AAAABBB",
+          "D": "AABBBAB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AA": 1,
+            "AB": 1,
+            "BB": 2,
+            "BA": 1
+          },
+          "n": 5,
+          "truth_score": "12",
+          "cand_score": "16",
+          "repeat_free": false
+        },
+        {
+          "S": "AAAABBB",
+          "D": "AABBBBB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AA": 1,
+            "AB": 1,
+            "BB": 2,
+            "BA": 1
+          },
+          "n": 5,
+          "truth_score": "12",
+          "cand_score": "16",
+          "repeat_free": false
+        },
+        {
+          "S": "AAAABBB",
+          "D": "AAAAABB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AA": 3,
+            "AB": 1,
+            "BB": 1,
+            "BA": 1
+          },
+          "n": 6,
+          "truth_score": "54",
+          "cand_score": "64",
+          "repeat_free": false
+        },
+        {
+          "S": "AAABAAB",
+          "D": "AABABAB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AA": 1,
+            "AB": 1,
+            "BA": 2
+          },
+          "n": 4,
+          "truth_score": "24",
+          "cand_score": "27",
+          "repeat_free": false
+        },
+        {
+          "S": "AAABAAB",
+          "D": "AABABAB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AA": 1,
+            "AB": 2,
+            "BA": 1
+          },
+          "n": 4,
+          "truth_score": "24",
+          "cand_score": "27",
+          "repeat_free": false
+        },
+        {
+          "S": "AAABAAB",
+          "D": "AABABAB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AA": 1,
+            "AB": 2,
+            "BA": 2
+          },
+          "n": 5,
+          "truth_score": "48",
+          "cand_score": "81",
+          "repeat_free": false
+        },
+        {
+          "S": "AAABAAB",
+          "D": "AAAAAAB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AA": 3,
+            "AB": 1,
+            "BA": 1
+          },
+          "n": 5,
+          "truth_score": "108",
+          "cand_score": "125",
+          "repeat_free": false
+        },
+        {
+          "S": "AAABABB",
+          "D": "AAAABBB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AA": 2,
+            "AB": 1,
+            "BB": 1,
+            "BA": 1
+          },
+          "n": 5,
+          "truth_score": "16",
+          "cand_score": "18",
+          "repeat_free": false
+        },
+        {
+          "S": "AAABBAB",
+          "D": "AAAABBB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AA": 2,
+            "BB": 1,
+            "AB": 1,
+            "BA": 1
+          },
+          "n": 5,
+          "truth_score": "16",
+          "cand_score": "18",
+          "repeat_free": false
+        },
+        {
+          "S": "AAABBBB",
+          "D": "AAABABB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AA": 1,
+            "AB": 1,
+            "BB": 1,
+            "BA": 1
+          },
+          "n": 4,
+          "truth_score": "6",
+          "cand_score": "8",
+          "repeat_free": false
+        },
+        {
+          "S": "AAABBBB",
+          "D": "AAABBAB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AA": 1,
+            "AB": 1,
+            "BB": 1,
+            "BA": 1
+          },
+          "n": 4,
+          "truth_score": "6",
+          "cand_score": "8",
+          "repeat_free": false
+        },
+        {
+          "S": "AAABBBB",
+          "D": "AABAABB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AA": 1,
+            "AB": 1,
+            "BB": 1,
+            "BA": 1
+          },
+          "n": 4,
+          "truth_score": "6",
+          "cand_score": "8",
+          "repeat_free": false
+        },
+        {
+          "S": "AAABBBB",
+          "D": "AABABBB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AA": 1,
+            "AB": 1,
+            "BB": 1,
+            "BA": 1
+          },
+          "n": 4,
+          "truth_score": "6",
+          "cand_score": "8",
+          "repeat_free": false
+        },
+        {
+          "S": "AAABBBB",
+          "D": "AABBABB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AA": 1,
+            "AB": 1,
+            "BB": 1,
+            "BA": 1
+          },
+          "n": 4,
+          "truth_score": "6",
+          "cand_score": "8",
+          "repeat_free": false
+        },
+        {
+          "S": "AAABBBB",
+          "D": "AABBBAB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AA": 1,
+            "AB": 1,
+            "BB": 1,
+            "BA": 1
+          },
+          "n": 4,
+          "truth_score": "6",
+          "cand_score": "8",
+          "repeat_free": false
+        },
+        {
+          "S": "AAABBBB",
+          "D": "AAAAABB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AA": 2,
+            "AB": 1,
+            "BB": 1,
+            "BA": 1
+          },
+          "n": 5,
+          "truth_score": "12",
+          "cand_score": "16",
+          "repeat_free": false
+        },
+        {
+          "S": "AAABBBB",
+          "D": "AAAABBB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AA": 2,
+            "AB": 1,
+            "BB": 1,
+            "BA": 1
+          },
+          "n": 5,
+          "truth_score": "12",
+          "cand_score": "18",
+          "repeat_free": false
+        },
+        {
+          "S": "AAABBBB",
+          "D": "AAABABB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AA": 2,
+            "AB": 1,
+            "BB": 1,
+            "BA": 1
+          },
+          "n": 5,
+          "truth_score": "12",
+          "cand_score": "16",
+          "repeat_free": false
+        },
+        {
+          "S": "AAABBBB",
+          "D": "AAABBAB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AA": 2,
+            "AB": 1,
+            "BB": 1,
+            "BA": 1
+          },
+          "n": 5,
+          "truth_score": "12",
+          "cand_score": "16",
+          "repeat_free": false
+        },
+        {
+          "S": "AAABBBB",
+          "D": "AABAABB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AA": 2,
+            "AB": 1,
+            "BB": 1,
+            "BA": 1
+          },
+          "n": 5,
+          "truth_score": "12",
+          "cand_score": "16",
+          "repeat_free": false
+        },
+        {
+          "S": "AAABBBB",
+          "D": "AABBBBB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AA": 1,
+            "AB": 1,
+            "BB": 3,
+            "BA": 1
+          },
+          "n": 6,
+          "truth_score": "54",
+          "cand_score": "64",
+          "repeat_free": false
+        },
+        {
+          "S": "AABAABB",
+          "D": "AAAABBB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AA": 2,
+            "AB": 1,
+            "BB": 1,
+            "BA": 1
+          },
+          "n": 5,
+          "truth_score": "16",
+          "cand_score": "18",
+          "repeat_free": false
+        },
+        {
+          "S": "AABABAB",
+          "D": "AAAABAB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AA": 1,
+            "AB": 1,
+            "BA": 1
+          },
+          "n": 3,
+          "truth_score": "9",
+          "cand_score": "12",
+          "repeat_free": false
+        },
+        {
+          "S": "AABABAB",
+          "D": "AAABAAB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AA": 1,
+            "AB": 1,
+            "BA": 1
+          },
+          "n": 3,
+          "truth_score": "9",
+          "cand_score": "12",
+          "repeat_free": false
+        },
+        {
+          "S": "AABABBB",
+          "D": "AAABBBB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AA": 1,
+            "AB": 1,
+            "BB": 2,
+            "BA": 1
+          },
+          "n": 5,
+          "truth_score": "16",
+          "cand_score": "18",
+          "repeat_free": false
+        },
+        {
+          "S": "AABBABB",
+          "D": "AAABBBB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AA": 1,
+            "AB": 1,
+            "BB": 2,
+            "BA": 1
+          },
+          "n": 5,
+          "truth_score": "16",
+          "cand_score": "18",
+          "repeat_free": false
+        },
+        {
+          "S": "AABBBAB",
+          "D": "AAABBBB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AA": 1,
+            "BB": 2,
+            "AB": 1,
+            "BA": 1
+          },
+          "n": 5,
+          "truth_score": "16",
+          "cand_score": "18",
+          "repeat_free": false
+        },
+        {
+          "S": "AABBBBB",
+          "D": "AAAABBB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AA": 1,
+            "AB": 1,
+            "BB": 1,
+            "BA": 1
+          },
+          "n": 4,
+          "truth_score": "4",
+          "cand_score": "6",
+          "repeat_free": false
+        },
+        {
+          "S": "AABBBBB",
+          "D": "AAABABB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AA": 1,
+            "AB": 1,
+            "BB": 1,
+            "BA": 1
+          },
+          "n": 4,
+          "truth_score": "4",
+          "cand_score": "8",
+          "repeat_free": false
+        },
+        {
+          "S": "AABBBBB",
+          "D": "AAABBAB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AA": 1,
+            "AB": 1,
+            "BB": 1,
+            "BA": 1
+          },
+          "n": 4,
+          "truth_score": "4",
+          "cand_score": "8",
+          "repeat_free": false
+        },
+        {
+          "S": "AABBBBB",
+          "D": "AAABBBB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AA": 1,
+            "AB": 1,
+            "BB": 1,
+            "BA": 1
+          },
+          "n": 4,
+          "truth_score": "4",
+          "cand_score": "6",
+          "repeat_free": false
+        },
+        {
+          "S": "AABBBBB",
+          "D": "AABAABB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AA": 1,
+            "AB": 1,
+            "BB": 1,
+            "BA": 1
+          },
+          "n": 4,
+          "truth_score": "4",
+          "cand_score": "8",
+          "repeat_free": false
+        },
+        {
+          "S": "AABBBBB",
+          "D": "AABABBB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AA": 1,
+            "AB": 1,
+            "BB": 1,
+            "BA": 1
+          },
+          "n": 4,
+          "truth_score": "4",
+          "cand_score": "8",
+          "repeat_free": false
+        },
+        {
+          "S": "AABBBBB",
+          "D": "AABBABB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AA": 1,
+            "AB": 1,
+            "BB": 1,
+            "BA": 1
+          },
+          "n": 4,
+          "truth_score": "4",
+          "cand_score": "8",
+          "repeat_free": false
+        },
+        {
+          "S": "AABBBBB",
+          "D": "AABBBAB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AA": 1,
+            "AB": 1,
+            "BB": 1,
+            "BA": 1
+          },
+          "n": 4,
+          "truth_score": "4",
+          "cand_score": "8",
+          "repeat_free": false
+        },
+        {
+          "S": "AABBBBB",
+          "D": "AAABBBB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AA": 1,
+            "AB": 1,
+            "BB": 2,
+            "BA": 1
+          },
+          "n": 5,
+          "truth_score": "16",
+          "cand_score": "18",
+          "repeat_free": false
+        },
+        {
+          "S": "ABABABB",
+          "D": "ABABBBB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AB": 1,
+            "BB": 1,
+            "BA": 1
+          },
+          "n": 3,
+          "truth_score": "9",
+          "cand_score": "12",
+          "repeat_free": false
+        },
+        {
+          "S": "ABABABB",
+          "D": "ABBABBB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AB": 1,
+            "BB": 1,
+            "BA": 1
+          },
+          "n": 3,
+          "truth_score": "9",
+          "cand_score": "12",
+          "repeat_free": false
+        },
+        {
+          "S": "ABABBBB",
+          "D": "ABABABB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AB": 1,
+            "BB": 1,
+            "BA": 2
+          },
+          "n": 4,
+          "truth_score": "24",
+          "cand_score": "27",
+          "repeat_free": false
+        },
+        {
+          "S": "ABABBBB",
+          "D": "ABABABB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AB": 2,
+            "BB": 1,
+            "BA": 1
+          },
+          "n": 4,
+          "truth_score": "24",
+          "cand_score": "27",
+          "repeat_free": false
+        },
+        {
+          "S": "ABABBBB",
+          "D": "ABBBBBB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AB": 1,
+            "BB": 3,
+            "BA": 1
+          },
+          "n": 5,
+          "truth_score": "108",
+          "cand_score": "125",
+          "repeat_free": false
+        },
+        {
+          "S": "ABABBBB",
+          "D": "ABABABB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AB": 2,
+            "BB": 1,
+            "BA": 2
+          },
+          "n": 5,
+          "truth_score": "48",
+          "cand_score": "81",
+          "repeat_free": false
+        },
+        {
+          "S": "ABBABBB",
+          "D": "ABABABB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AB": 1,
+            "BB": 1,
+            "BA": 2
+          },
+          "n": 4,
+          "truth_score": "24",
+          "cand_score": "27",
+          "repeat_free": false
+        },
+        {
+          "S": "ABBABBB",
+          "D": "ABABABB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AB": 2,
+            "BB": 1,
+            "BA": 1
+          },
+          "n": 4,
+          "truth_score": "24",
+          "cand_score": "27",
+          "repeat_free": false
+        },
+        {
+          "S": "ABBABBB",
+          "D": "ABBBBBB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AB": 1,
+            "BB": 3,
+            "BA": 1
+          },
+          "n": 5,
+          "truth_score": "108",
+          "cand_score": "125",
+          "repeat_free": false
+        },
+        {
+          "S": "ABBABBB",
+          "D": "ABABABB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AB": 2,
+            "BB": 1,
+            "BA": 2
+          },
+          "n": 5,
+          "truth_score": "48",
+          "cand_score": "81",
+          "repeat_free": false
+        },
+        {
+          "S": "ABBBBBB",
+          "D": "AABABBB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AB": 1,
+            "BB": 1,
+            "BA": 1
+          },
+          "n": 3,
+          "truth_score": "5",
+          "cand_score": "8",
+          "repeat_free": false
+        },
+        {
+          "S": "ABBBBBB",
+          "D": "AABBABB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AB": 1,
+            "BB": 1,
+            "BA": 1
+          },
+          "n": 3,
+          "truth_score": "5",
+          "cand_score": "8",
+          "repeat_free": false
+        },
+        {
+          "S": "ABBBBBB",
+          "D": "AABBBAB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AB": 1,
+            "BB": 1,
+            "BA": 1
+          },
+          "n": 3,
+          "truth_score": "5",
+          "cand_score": "8",
+          "repeat_free": false
+        },
+        {
+          "S": "ABBBBBB",
+          "D": "ABABABB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AB": 1,
+            "BB": 1,
+            "BA": 1
+          },
+          "n": 3,
+          "truth_score": "5",
+          "cand_score": "9",
+          "repeat_free": false
+        },
+        {
+          "S": "ABBBBBB",
+          "D": "ABABBBB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AB": 1,
+            "BB": 1,
+            "BA": 1
+          },
+          "n": 3,
+          "truth_score": "5",
+          "cand_score": "12",
+          "repeat_free": false
+        },
+        {
+          "S": "ABBBBBB",
+          "D": "ABBABBB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AB": 1,
+            "BB": 1,
+            "BA": 1
+          },
+          "n": 3,
+          "truth_score": "5",
+          "cand_score": "12",
+          "repeat_free": false
+        },
+        {
+          "S": "ABBBBBB",
+          "D": "ABABBBB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AB": 1,
+            "BB": 2,
+            "BA": 1
+          },
+          "n": 4,
+          "truth_score": "25",
+          "cand_score": "36",
+          "repeat_free": false
+        },
+        {
+          "S": "ABBBBBB",
+          "D": "ABBABBB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AB": 1,
+            "BB": 2,
+            "BA": 1
+          },
+          "n": 4,
+          "truth_score": "25",
+          "cand_score": "36",
+          "repeat_free": false
+        }
+      ],
+      "U1_counterexamples": [
+        {
+          "S": "AAAAAAB",
+          "D": "AAAABAB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AA": 1,
+            "AB": 1,
+            "BA": 1
+          },
+          "n": 3,
+          "truth_score": "5",
+          "cand_score": "12",
+          "repeat_free": false
+        },
+        {
+          "S": "AAAAAAB",
+          "D": "AAABAAB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AA": 1,
+            "AB": 1,
+            "BA": 1
+          },
+          "n": 3,
+          "truth_score": "5",
+          "cand_score": "12",
+          "repeat_free": false
+        },
+        {
+          "S": "AAAAAAB",
+          "D": "AABABAB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AA": 1,
+            "AB": 1,
+            "BA": 1
+          },
+          "n": 3,
+          "truth_score": "5",
+          "cand_score": "9",
+          "repeat_free": false
+        },
+        {
+          "S": "AAAAAAB",
+          "D": "AAAABAB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AA": 2,
+            "AB": 1,
+            "BA": 1
+          },
+          "n": 4,
+          "truth_score": "25",
+          "cand_score": "36",
+          "repeat_free": false
+        },
+        {
+          "S": "AAAAAAB",
+          "D": "AAABAAB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AA": 2,
+            "AB": 1,
+            "BA": 1
+          },
+          "n": 4,
+          "truth_score": "25",
+          "cand_score": "36",
+          "repeat_free": false
+        },
+        {
+          "S": "AAAAABB",
+          "D": "AAAABBB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AA": 1,
+            "AB": 1,
+            "BB": 1,
+            "BA": 1
+          },
+          "n": 4,
+          "truth_score": "4",
+          "cand_score": "6",
+          "repeat_free": false
+        },
+        {
+          "S": "AAAAABB",
+          "D": "AAABABB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AA": 1,
+            "AB": 1,
+            "BB": 1,
+            "BA": 1
+          },
+          "n": 4,
+          "truth_score": "4",
+          "cand_score": "8",
+          "repeat_free": false
+        },
+        {
+          "S": "AAAAABB",
+          "D": "AAABBAB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AA": 1,
+            "AB": 1,
+            "BB": 1,
+            "BA": 1
+          },
+          "n": 4,
+          "truth_score": "4",
+          "cand_score": "8",
+          "repeat_free": false
+        },
+        {
+          "S": "AAAAABB",
+          "D": "AAABBBB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AA": 1,
+            "AB": 1,
+            "BB": 1,
+            "BA": 1
+          },
+          "n": 4,
+          "truth_score": "4",
+          "cand_score": "6",
+          "repeat_free": false
+        },
+        {
+          "S": "AAAAABB",
+          "D": "AABAABB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AA": 1,
+            "AB": 1,
+            "BB": 1,
+            "BA": 1
+          },
+          "n": 4,
+          "truth_score": "4",
+          "cand_score": "8",
+          "repeat_free": false
+        },
+        {
+          "S": "AAAAABB",
+          "D": "AABABBB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AA": 1,
+            "AB": 1,
+            "BB": 1,
+            "BA": 1
+          },
+          "n": 4,
+          "truth_score": "4",
+          "cand_score": "8",
+          "repeat_free": false
+        },
+        {
+          "S": "AAAAABB",
+          "D": "AABBABB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AA": 1,
+            "AB": 1,
+            "BB": 1,
+            "BA": 1
+          },
+          "n": 4,
+          "truth_score": "4",
+          "cand_score": "8",
+          "repeat_free": false
+        },
+        {
+          "S": "AAAAABB",
+          "D": "AABBBAB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AA": 1,
+            "AB": 1,
+            "BB": 1,
+            "BA": 1
+          },
+          "n": 4,
+          "truth_score": "4",
+          "cand_score": "8",
+          "repeat_free": false
+        },
+        {
+          "S": "AAAAABB",
+          "D": "AAAABBB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AA": 2,
+            "AB": 1,
+            "BB": 1,
+            "BA": 1
+          },
+          "n": 5,
+          "truth_score": "16",
+          "cand_score": "18",
+          "repeat_free": false
+        },
+        {
+          "S": "AAAABAB",
+          "D": "AABABAB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AA": 1,
+            "AB": 1,
+            "BA": 2
+          },
+          "n": 4,
+          "truth_score": "24",
+          "cand_score": "27",
+          "repeat_free": false
+        },
+        {
+          "S": "AAAABAB",
+          "D": "AABABAB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AA": 1,
+            "AB": 2,
+            "BA": 1
+          },
+          "n": 4,
+          "truth_score": "24",
+          "cand_score": "27",
+          "repeat_free": false
+        },
+        {
+          "S": "AAAABAB",
+          "D": "AABABAB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AA": 1,
+            "AB": 2,
+            "BA": 2
+          },
+          "n": 5,
+          "truth_score": "48",
+          "cand_score": "81",
+          "repeat_free": false
+        },
+        {
+          "S": "AAAABAB",
+          "D": "AAAAAAB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AA": 3,
+            "AB": 1,
+            "BA": 1
+          },
+          "n": 5,
+          "truth_score": "108",
+          "cand_score": "125",
+          "repeat_free": false
+        },
+        {
+          "S": "AAAABBB",
+          "D": "AAABABB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AA": 1,
+            "AB": 1,
+            "BB": 1,
+            "BA": 1
+          },
+          "n": 4,
+          "truth_score": "6",
+          "cand_score": "8",
+          "repeat_free": false
+        },
+        {
+          "S": "AAAABBB",
+          "D": "AAABBAB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AA": 1,
+            "AB": 1,
+            "BB": 1,
+            "BA": 1
+          },
+          "n": 4,
+          "truth_score": "6",
+          "cand_score": "8",
+          "repeat_free": false
+        },
+        {
+          "S": "AAAABBB",
+          "D": "AABAABB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AA": 1,
+            "AB": 1,
+            "BB": 1,
+            "BA": 1
+          },
+          "n": 4,
+          "truth_score": "6",
+          "cand_score": "8",
+          "repeat_free": false
+        },
+        {
+          "S": "AAAABBB",
+          "D": "AABABBB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AA": 1,
+            "AB": 1,
+            "BB": 1,
+            "BA": 1
+          },
+          "n": 4,
+          "truth_score": "6",
+          "cand_score": "8",
+          "repeat_free": false
+        },
+        {
+          "S": "AAAABBB",
+          "D": "AABBABB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AA": 1,
+            "AB": 1,
+            "BB": 1,
+            "BA": 1
+          },
+          "n": 4,
+          "truth_score": "6",
+          "cand_score": "8",
+          "repeat_free": false
+        },
+        {
+          "S": "AAAABBB",
+          "D": "AABBBAB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AA": 1,
+            "AB": 1,
+            "BB": 1,
+            "BA": 1
+          },
+          "n": 4,
+          "truth_score": "6",
+          "cand_score": "8",
+          "repeat_free": false
+        },
+        {
+          "S": "AAAABBB",
+          "D": "AAABBBB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AA": 1,
+            "AB": 1,
+            "BB": 2,
+            "BA": 1
+          },
+          "n": 5,
+          "truth_score": "12",
+          "cand_score": "18",
+          "repeat_free": false
+        },
+        {
+          "S": "AAAABBB",
+          "D": "AABABBB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AA": 1,
+            "AB": 1,
+            "BB": 2,
+            "BA": 1
+          },
+          "n": 5,
+          "truth_score": "12",
+          "cand_score": "16",
+          "repeat_free": false
+        },
+        {
+          "S": "AAAABBB",
+          "D": "AABBABB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AA": 1,
+            "AB": 1,
+            "BB": 2,
+            "BA": 1
+          },
+          "n": 5,
+          "truth_score": "12",
+          "cand_score": "16",
+          "repeat_free": false
+        },
+        {
+          "S": "AAAABBB",
+          "D": "AABBBAB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AA": 1,
+            "AB": 1,
+            "BB": 2,
+            "BA": 1
+          },
+          "n": 5,
+          "truth_score": "12",
+          "cand_score": "16",
+          "repeat_free": false
+        },
+        {
+          "S": "AAAABBB",
+          "D": "AABBBBB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AA": 1,
+            "AB": 1,
+            "BB": 2,
+            "BA": 1
+          },
+          "n": 5,
+          "truth_score": "12",
+          "cand_score": "16",
+          "repeat_free": false
+        },
+        {
+          "S": "AAAABBB",
+          "D": "AAAAABB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AA": 3,
+            "AB": 1,
+            "BB": 1,
+            "BA": 1
+          },
+          "n": 6,
+          "truth_score": "54",
+          "cand_score": "64",
+          "repeat_free": false
+        },
+        {
+          "S": "AAABAAB",
+          "D": "AABABAB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AA": 1,
+            "AB": 1,
+            "BA": 2
+          },
+          "n": 4,
+          "truth_score": "24",
+          "cand_score": "27",
+          "repeat_free": false
+        },
+        {
+          "S": "AAABAAB",
+          "D": "AABABAB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AA": 1,
+            "AB": 2,
+            "BA": 1
+          },
+          "n": 4,
+          "truth_score": "24",
+          "cand_score": "27",
+          "repeat_free": false
+        },
+        {
+          "S": "AAABAAB",
+          "D": "AABABAB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AA": 1,
+            "AB": 2,
+            "BA": 2
+          },
+          "n": 5,
+          "truth_score": "48",
+          "cand_score": "81",
+          "repeat_free": false
+        },
+        {
+          "S": "AAABAAB",
+          "D": "AAAAAAB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AA": 3,
+            "AB": 1,
+            "BA": 1
+          },
+          "n": 5,
+          "truth_score": "108",
+          "cand_score": "125",
+          "repeat_free": false
+        },
+        {
+          "S": "AAABABB",
+          "D": "AAAABBB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AA": 2,
+            "AB": 1,
+            "BB": 1,
+            "BA": 1
+          },
+          "n": 5,
+          "truth_score": "16",
+          "cand_score": "18",
+          "repeat_free": false
+        },
+        {
+          "S": "AAABBAB",
+          "D": "AAAABBB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AA": 2,
+            "BB": 1,
+            "AB": 1,
+            "BA": 1
+          },
+          "n": 5,
+          "truth_score": "16",
+          "cand_score": "18",
+          "repeat_free": false
+        },
+        {
+          "S": "AAABBBB",
+          "D": "AAABABB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AA": 1,
+            "AB": 1,
+            "BB": 1,
+            "BA": 1
+          },
+          "n": 4,
+          "truth_score": "6",
+          "cand_score": "8",
+          "repeat_free": false
+        },
+        {
+          "S": "AAABBBB",
+          "D": "AAABBAB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AA": 1,
+            "AB": 1,
+            "BB": 1,
+            "BA": 1
+          },
+          "n": 4,
+          "truth_score": "6",
+          "cand_score": "8",
+          "repeat_free": false
+        },
+        {
+          "S": "AAABBBB",
+          "D": "AABAABB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AA": 1,
+            "AB": 1,
+            "BB": 1,
+            "BA": 1
+          },
+          "n": 4,
+          "truth_score": "6",
+          "cand_score": "8",
+          "repeat_free": false
+        },
+        {
+          "S": "AAABBBB",
+          "D": "AABABBB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AA": 1,
+            "AB": 1,
+            "BB": 1,
+            "BA": 1
+          },
+          "n": 4,
+          "truth_score": "6",
+          "cand_score": "8",
+          "repeat_free": false
+        },
+        {
+          "S": "AAABBBB",
+          "D": "AABBABB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AA": 1,
+            "AB": 1,
+            "BB": 1,
+            "BA": 1
+          },
+          "n": 4,
+          "truth_score": "6",
+          "cand_score": "8",
+          "repeat_free": false
+        },
+        {
+          "S": "AAABBBB",
+          "D": "AABBBAB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AA": 1,
+            "AB": 1,
+            "BB": 1,
+            "BA": 1
+          },
+          "n": 4,
+          "truth_score": "6",
+          "cand_score": "8",
+          "repeat_free": false
+        },
+        {
+          "S": "AAABBBB",
+          "D": "AAAAABB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AA": 2,
+            "AB": 1,
+            "BB": 1,
+            "BA": 1
+          },
+          "n": 5,
+          "truth_score": "12",
+          "cand_score": "16",
+          "repeat_free": false
+        },
+        {
+          "S": "AAABBBB",
+          "D": "AAAABBB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AA": 2,
+            "AB": 1,
+            "BB": 1,
+            "BA": 1
+          },
+          "n": 5,
+          "truth_score": "12",
+          "cand_score": "18",
+          "repeat_free": false
+        },
+        {
+          "S": "AAABBBB",
+          "D": "AAABABB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AA": 2,
+            "AB": 1,
+            "BB": 1,
+            "BA": 1
+          },
+          "n": 5,
+          "truth_score": "12",
+          "cand_score": "16",
+          "repeat_free": false
+        },
+        {
+          "S": "AAABBBB",
+          "D": "AAABBAB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AA": 2,
+            "AB": 1,
+            "BB": 1,
+            "BA": 1
+          },
+          "n": 5,
+          "truth_score": "12",
+          "cand_score": "16",
+          "repeat_free": false
+        },
+        {
+          "S": "AAABBBB",
+          "D": "AABAABB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AA": 2,
+            "AB": 1,
+            "BB": 1,
+            "BA": 1
+          },
+          "n": 5,
+          "truth_score": "12",
+          "cand_score": "16",
+          "repeat_free": false
+        },
+        {
+          "S": "AAABBBB",
+          "D": "AABBBBB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AA": 1,
+            "AB": 1,
+            "BB": 3,
+            "BA": 1
+          },
+          "n": 6,
+          "truth_score": "54",
+          "cand_score": "64",
+          "repeat_free": false
+        },
+        {
+          "S": "AABAABB",
+          "D": "AAAABBB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AA": 2,
+            "AB": 1,
+            "BB": 1,
+            "BA": 1
+          },
+          "n": 5,
+          "truth_score": "16",
+          "cand_score": "18",
+          "repeat_free": false
+        },
+        {
+          "S": "AABABAB",
+          "D": "AAAABAB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AA": 1,
+            "AB": 1,
+            "BA": 1
+          },
+          "n": 3,
+          "truth_score": "9",
+          "cand_score": "12",
+          "repeat_free": false
+        },
+        {
+          "S": "AABABAB",
+          "D": "AAABAAB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AA": 1,
+            "AB": 1,
+            "BA": 1
+          },
+          "n": 3,
+          "truth_score": "9",
+          "cand_score": "12",
+          "repeat_free": false
+        },
+        {
+          "S": "AABABBB",
+          "D": "AAABBBB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AA": 1,
+            "AB": 1,
+            "BB": 2,
+            "BA": 1
+          },
+          "n": 5,
+          "truth_score": "16",
+          "cand_score": "18",
+          "repeat_free": false
+        },
+        {
+          "S": "AABBABB",
+          "D": "AAABBBB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AA": 1,
+            "AB": 1,
+            "BB": 2,
+            "BA": 1
+          },
+          "n": 5,
+          "truth_score": "16",
+          "cand_score": "18",
+          "repeat_free": false
+        },
+        {
+          "S": "AABBBAB",
+          "D": "AAABBBB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AA": 1,
+            "BB": 2,
+            "AB": 1,
+            "BA": 1
+          },
+          "n": 5,
+          "truth_score": "16",
+          "cand_score": "18",
+          "repeat_free": false
+        },
+        {
+          "S": "AABBBBB",
+          "D": "AAAABBB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AA": 1,
+            "AB": 1,
+            "BB": 1,
+            "BA": 1
+          },
+          "n": 4,
+          "truth_score": "4",
+          "cand_score": "6",
+          "repeat_free": false
+        },
+        {
+          "S": "AABBBBB",
+          "D": "AAABABB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AA": 1,
+            "AB": 1,
+            "BB": 1,
+            "BA": 1
+          },
+          "n": 4,
+          "truth_score": "4",
+          "cand_score": "8",
+          "repeat_free": false
+        },
+        {
+          "S": "AABBBBB",
+          "D": "AAABBAB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AA": 1,
+            "AB": 1,
+            "BB": 1,
+            "BA": 1
+          },
+          "n": 4,
+          "truth_score": "4",
+          "cand_score": "8",
+          "repeat_free": false
+        },
+        {
+          "S": "AABBBBB",
+          "D": "AAABBBB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AA": 1,
+            "AB": 1,
+            "BB": 1,
+            "BA": 1
+          },
+          "n": 4,
+          "truth_score": "4",
+          "cand_score": "6",
+          "repeat_free": false
+        },
+        {
+          "S": "AABBBBB",
+          "D": "AABAABB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AA": 1,
+            "AB": 1,
+            "BB": 1,
+            "BA": 1
+          },
+          "n": 4,
+          "truth_score": "4",
+          "cand_score": "8",
+          "repeat_free": false
+        },
+        {
+          "S": "AABBBBB",
+          "D": "AABABBB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AA": 1,
+            "AB": 1,
+            "BB": 1,
+            "BA": 1
+          },
+          "n": 4,
+          "truth_score": "4",
+          "cand_score": "8",
+          "repeat_free": false
+        },
+        {
+          "S": "AABBBBB",
+          "D": "AABBABB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AA": 1,
+            "AB": 1,
+            "BB": 1,
+            "BA": 1
+          },
+          "n": 4,
+          "truth_score": "4",
+          "cand_score": "8",
+          "repeat_free": false
+        },
+        {
+          "S": "AABBBBB",
+          "D": "AABBBAB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AA": 1,
+            "AB": 1,
+            "BB": 1,
+            "BA": 1
+          },
+          "n": 4,
+          "truth_score": "4",
+          "cand_score": "8",
+          "repeat_free": false
+        },
+        {
+          "S": "AABBBBB",
+          "D": "AAABBBB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AA": 1,
+            "AB": 1,
+            "BB": 2,
+            "BA": 1
+          },
+          "n": 5,
+          "truth_score": "16",
+          "cand_score": "18",
+          "repeat_free": false
+        },
+        {
+          "S": "ABABABB",
+          "D": "ABABBBB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AB": 1,
+            "BB": 1,
+            "BA": 1
+          },
+          "n": 3,
+          "truth_score": "9",
+          "cand_score": "12",
+          "repeat_free": false
+        },
+        {
+          "S": "ABABABB",
+          "D": "ABBABBB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AB": 1,
+            "BB": 1,
+            "BA": 1
+          },
+          "n": 3,
+          "truth_score": "9",
+          "cand_score": "12",
+          "repeat_free": false
+        },
+        {
+          "S": "ABABBBB",
+          "D": "ABABABB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AB": 1,
+            "BB": 1,
+            "BA": 2
+          },
+          "n": 4,
+          "truth_score": "24",
+          "cand_score": "27",
+          "repeat_free": false
+        },
+        {
+          "S": "ABABBBB",
+          "D": "ABABABB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AB": 2,
+            "BB": 1,
+            "BA": 1
+          },
+          "n": 4,
+          "truth_score": "24",
+          "cand_score": "27",
+          "repeat_free": false
+        },
+        {
+          "S": "ABABBBB",
+          "D": "ABBBBBB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AB": 1,
+            "BB": 3,
+            "BA": 1
+          },
+          "n": 5,
+          "truth_score": "108",
+          "cand_score": "125",
+          "repeat_free": false
+        },
+        {
+          "S": "ABABBBB",
+          "D": "ABABABB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AB": 2,
+            "BB": 1,
+            "BA": 2
+          },
+          "n": 5,
+          "truth_score": "48",
+          "cand_score": "81",
+          "repeat_free": false
+        },
+        {
+          "S": "ABBABBB",
+          "D": "ABABABB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AB": 1,
+            "BB": 1,
+            "BA": 2
+          },
+          "n": 4,
+          "truth_score": "24",
+          "cand_score": "27",
+          "repeat_free": false
+        },
+        {
+          "S": "ABBABBB",
+          "D": "ABABABB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AB": 2,
+            "BB": 1,
+            "BA": 1
+          },
+          "n": 4,
+          "truth_score": "24",
+          "cand_score": "27",
+          "repeat_free": false
+        },
+        {
+          "S": "ABBABBB",
+          "D": "ABBBBBB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AB": 1,
+            "BB": 3,
+            "BA": 1
+          },
+          "n": 5,
+          "truth_score": "108",
+          "cand_score": "125",
+          "repeat_free": false
+        },
+        {
+          "S": "ABBABBB",
+          "D": "ABABABB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AB": 2,
+            "BB": 1,
+            "BA": 2
+          },
+          "n": 5,
+          "truth_score": "48",
+          "cand_score": "81",
+          "repeat_free": false
+        },
+        {
+          "S": "ABBBBBB",
+          "D": "ABABABB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AB": 1,
+            "BB": 1,
+            "BA": 1
+          },
+          "n": 3,
+          "truth_score": "5",
+          "cand_score": "9",
+          "repeat_free": false
+        },
+        {
+          "S": "ABBBBBB",
+          "D": "ABABBBB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AB": 1,
+            "BB": 1,
+            "BA": 1
+          },
+          "n": 3,
+          "truth_score": "5",
+          "cand_score": "12",
+          "repeat_free": false
+        },
+        {
+          "S": "ABBBBBB",
+          "D": "ABBABBB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AB": 1,
+            "BB": 1,
+            "BA": 1
+          },
+          "n": 3,
+          "truth_score": "5",
+          "cand_score": "12",
+          "repeat_free": false
+        },
+        {
+          "S": "ABBBBBB",
+          "D": "ABABBBB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AB": 1,
+            "BB": 2,
+            "BA": 1
+          },
+          "n": 4,
+          "truth_score": "25",
+          "cand_score": "36",
+          "repeat_free": false
+        },
+        {
+          "S": "ABBBBBB",
+          "D": "ABBABBB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AB": 1,
+            "BB": 2,
+            "BA": 1
+          },
+          "n": 4,
+          "truth_score": "25",
+          "cand_score": "36",
+          "repeat_free": false
+        }
+      ],
+      "U2_counterexamples": [
+        {
+          "S": "AAAAAAB",
+          "D": "AAAABAB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AA": 1,
+            "AB": 1,
+            "BA": 1
+          },
+          "n": 3,
+          "truth_score": "5",
+          "cand_score": "12",
+          "repeat_free": false
+        },
+        {
+          "S": "AAAAAAB",
+          "D": "AAABAAB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AA": 1,
+            "AB": 1,
+            "BA": 1
+          },
+          "n": 3,
+          "truth_score": "5",
+          "cand_score": "12",
+          "repeat_free": false
+        },
+        {
+          "S": "AAAAAAB",
+          "D": "AABABAB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AA": 1,
+            "AB": 1,
+            "BA": 1
+          },
+          "n": 3,
+          "truth_score": "5",
+          "cand_score": "9",
+          "repeat_free": false
+        },
+        {
+          "S": "AAAAAAB",
+          "D": "AAAABAB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AA": 2,
+            "AB": 1,
+            "BA": 1
+          },
+          "n": 4,
+          "truth_score": "25",
+          "cand_score": "36",
+          "repeat_free": false
+        },
+        {
+          "S": "AAAAAAB",
+          "D": "AAABAAB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AA": 2,
+            "AB": 1,
+            "BA": 1
+          },
+          "n": 4,
+          "truth_score": "25",
+          "cand_score": "36",
+          "repeat_free": false
+        },
+        {
+          "S": "AAAAABB",
+          "D": "AAAABBB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AA": 1,
+            "AB": 1,
+            "BB": 1,
+            "BA": 1
+          },
+          "n": 4,
+          "truth_score": "4",
+          "cand_score": "6",
+          "repeat_free": false
+        },
+        {
+          "S": "AAAAABB",
+          "D": "AAABABB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AA": 1,
+            "AB": 1,
+            "BB": 1,
+            "BA": 1
+          },
+          "n": 4,
+          "truth_score": "4",
+          "cand_score": "8",
+          "repeat_free": false
+        },
+        {
+          "S": "AAAAABB",
+          "D": "AAABBAB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AA": 1,
+            "AB": 1,
+            "BB": 1,
+            "BA": 1
+          },
+          "n": 4,
+          "truth_score": "4",
+          "cand_score": "8",
+          "repeat_free": false
+        },
+        {
+          "S": "AAAAABB",
+          "D": "AAABBBB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AA": 1,
+            "AB": 1,
+            "BB": 1,
+            "BA": 1
+          },
+          "n": 4,
+          "truth_score": "4",
+          "cand_score": "6",
+          "repeat_free": false
+        },
+        {
+          "S": "AAAAABB",
+          "D": "AABAABB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AA": 1,
+            "AB": 1,
+            "BB": 1,
+            "BA": 1
+          },
+          "n": 4,
+          "truth_score": "4",
+          "cand_score": "8",
+          "repeat_free": false
+        },
+        {
+          "S": "AAAAABB",
+          "D": "AABABBB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AA": 1,
+            "AB": 1,
+            "BB": 1,
+            "BA": 1
+          },
+          "n": 4,
+          "truth_score": "4",
+          "cand_score": "8",
+          "repeat_free": false
+        },
+        {
+          "S": "AAAAABB",
+          "D": "AABBABB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AA": 1,
+            "AB": 1,
+            "BB": 1,
+            "BA": 1
+          },
+          "n": 4,
+          "truth_score": "4",
+          "cand_score": "8",
+          "repeat_free": false
+        },
+        {
+          "S": "AAAAABB",
+          "D": "AABBBAB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AA": 1,
+            "AB": 1,
+            "BB": 1,
+            "BA": 1
+          },
+          "n": 4,
+          "truth_score": "4",
+          "cand_score": "8",
+          "repeat_free": false
+        },
+        {
+          "S": "AAAAABB",
+          "D": "AAAABBB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AA": 2,
+            "AB": 1,
+            "BB": 1,
+            "BA": 1
+          },
+          "n": 5,
+          "truth_score": "16",
+          "cand_score": "18",
+          "repeat_free": false
+        },
+        {
+          "S": "AAAABAB",
+          "D": "AABABAB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AA": 1,
+            "AB": 1,
+            "BA": 2
+          },
+          "n": 4,
+          "truth_score": "24",
+          "cand_score": "27",
+          "repeat_free": false
+        },
+        {
+          "S": "AAAABAB",
+          "D": "AABABAB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AA": 1,
+            "AB": 2,
+            "BA": 1
+          },
+          "n": 4,
+          "truth_score": "24",
+          "cand_score": "27",
+          "repeat_free": false
+        },
+        {
+          "S": "AAAABAB",
+          "D": "AABABAB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AA": 1,
+            "AB": 2,
+            "BA": 2
+          },
+          "n": 5,
+          "truth_score": "48",
+          "cand_score": "81",
+          "repeat_free": false
+        },
+        {
+          "S": "AAAABAB",
+          "D": "AAAAAAB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AA": 3,
+            "AB": 1,
+            "BA": 1
+          },
+          "n": 5,
+          "truth_score": "108",
+          "cand_score": "125",
+          "repeat_free": false
+        },
+        {
+          "S": "AAAABBB",
+          "D": "AAABABB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AA": 1,
+            "AB": 1,
+            "BB": 1,
+            "BA": 1
+          },
+          "n": 4,
+          "truth_score": "6",
+          "cand_score": "8",
+          "repeat_free": false
+        },
+        {
+          "S": "AAAABBB",
+          "D": "AAABBAB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AA": 1,
+            "AB": 1,
+            "BB": 1,
+            "BA": 1
+          },
+          "n": 4,
+          "truth_score": "6",
+          "cand_score": "8",
+          "repeat_free": false
+        },
+        {
+          "S": "AAAABBB",
+          "D": "AABAABB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AA": 1,
+            "AB": 1,
+            "BB": 1,
+            "BA": 1
+          },
+          "n": 4,
+          "truth_score": "6",
+          "cand_score": "8",
+          "repeat_free": false
+        },
+        {
+          "S": "AAAABBB",
+          "D": "AABABBB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AA": 1,
+            "AB": 1,
+            "BB": 1,
+            "BA": 1
+          },
+          "n": 4,
+          "truth_score": "6",
+          "cand_score": "8",
+          "repeat_free": false
+        },
+        {
+          "S": "AAAABBB",
+          "D": "AABBABB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AA": 1,
+            "AB": 1,
+            "BB": 1,
+            "BA": 1
+          },
+          "n": 4,
+          "truth_score": "6",
+          "cand_score": "8",
+          "repeat_free": false
+        },
+        {
+          "S": "AAAABBB",
+          "D": "AABBBAB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AA": 1,
+            "AB": 1,
+            "BB": 1,
+            "BA": 1
+          },
+          "n": 4,
+          "truth_score": "6",
+          "cand_score": "8",
+          "repeat_free": false
+        },
+        {
+          "S": "AAAABBB",
+          "D": "AAABBBB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AA": 1,
+            "AB": 1,
+            "BB": 2,
+            "BA": 1
+          },
+          "n": 5,
+          "truth_score": "12",
+          "cand_score": "18",
+          "repeat_free": false
+        },
+        {
+          "S": "AAAABBB",
+          "D": "AABABBB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AA": 1,
+            "AB": 1,
+            "BB": 2,
+            "BA": 1
+          },
+          "n": 5,
+          "truth_score": "12",
+          "cand_score": "16",
+          "repeat_free": false
+        },
+        {
+          "S": "AAAABBB",
+          "D": "AABBABB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AA": 1,
+            "AB": 1,
+            "BB": 2,
+            "BA": 1
+          },
+          "n": 5,
+          "truth_score": "12",
+          "cand_score": "16",
+          "repeat_free": false
+        },
+        {
+          "S": "AAAABBB",
+          "D": "AABBBAB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AA": 1,
+            "AB": 1,
+            "BB": 2,
+            "BA": 1
+          },
+          "n": 5,
+          "truth_score": "12",
+          "cand_score": "16",
+          "repeat_free": false
+        },
+        {
+          "S": "AAAABBB",
+          "D": "AABBBBB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AA": 1,
+            "AB": 1,
+            "BB": 2,
+            "BA": 1
+          },
+          "n": 5,
+          "truth_score": "12",
+          "cand_score": "16",
+          "repeat_free": false
+        },
+        {
+          "S": "AAAABBB",
+          "D": "AAAAABB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AA": 3,
+            "AB": 1,
+            "BB": 1,
+            "BA": 1
+          },
+          "n": 6,
+          "truth_score": "54",
+          "cand_score": "64",
+          "repeat_free": false
+        },
+        {
+          "S": "AAABAAB",
+          "D": "AABABAB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AA": 1,
+            "AB": 1,
+            "BA": 2
+          },
+          "n": 4,
+          "truth_score": "24",
+          "cand_score": "27",
+          "repeat_free": false
+        },
+        {
+          "S": "AAABAAB",
+          "D": "AABABAB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AA": 1,
+            "AB": 2,
+            "BA": 1
+          },
+          "n": 4,
+          "truth_score": "24",
+          "cand_score": "27",
+          "repeat_free": false
+        },
+        {
+          "S": "AAABAAB",
+          "D": "AABABAB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AA": 1,
+            "AB": 2,
+            "BA": 2
+          },
+          "n": 5,
+          "truth_score": "48",
+          "cand_score": "81",
+          "repeat_free": false
+        },
+        {
+          "S": "AAABAAB",
+          "D": "AAAAAAB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AA": 3,
+            "AB": 1,
+            "BA": 1
+          },
+          "n": 5,
+          "truth_score": "108",
+          "cand_score": "125",
+          "repeat_free": false
+        },
+        {
+          "S": "AAABABB",
+          "D": "AAAABBB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AA": 2,
+            "AB": 1,
+            "BB": 1,
+            "BA": 1
+          },
+          "n": 5,
+          "truth_score": "16",
+          "cand_score": "18",
+          "repeat_free": false
+        },
+        {
+          "S": "AAABBAB",
+          "D": "AAAABBB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AA": 2,
+            "BB": 1,
+            "AB": 1,
+            "BA": 1
+          },
+          "n": 5,
+          "truth_score": "16",
+          "cand_score": "18",
+          "repeat_free": false
+        },
+        {
+          "S": "AAABBBB",
+          "D": "AAABABB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AA": 1,
+            "AB": 1,
+            "BB": 1,
+            "BA": 1
+          },
+          "n": 4,
+          "truth_score": "6",
+          "cand_score": "8",
+          "repeat_free": false
+        },
+        {
+          "S": "AAABBBB",
+          "D": "AAABBAB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AA": 1,
+            "AB": 1,
+            "BB": 1,
+            "BA": 1
+          },
+          "n": 4,
+          "truth_score": "6",
+          "cand_score": "8",
+          "repeat_free": false
+        },
+        {
+          "S": "AAABBBB",
+          "D": "AABAABB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AA": 1,
+            "AB": 1,
+            "BB": 1,
+            "BA": 1
+          },
+          "n": 4,
+          "truth_score": "6",
+          "cand_score": "8",
+          "repeat_free": false
+        },
+        {
+          "S": "AAABBBB",
+          "D": "AABABBB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AA": 1,
+            "AB": 1,
+            "BB": 1,
+            "BA": 1
+          },
+          "n": 4,
+          "truth_score": "6",
+          "cand_score": "8",
+          "repeat_free": false
+        },
+        {
+          "S": "AAABBBB",
+          "D": "AABBABB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AA": 1,
+            "AB": 1,
+            "BB": 1,
+            "BA": 1
+          },
+          "n": 4,
+          "truth_score": "6",
+          "cand_score": "8",
+          "repeat_free": false
+        },
+        {
+          "S": "AAABBBB",
+          "D": "AABBBAB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AA": 1,
+            "AB": 1,
+            "BB": 1,
+            "BA": 1
+          },
+          "n": 4,
+          "truth_score": "6",
+          "cand_score": "8",
+          "repeat_free": false
+        },
+        {
+          "S": "AAABBBB",
+          "D": "AAAAABB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AA": 2,
+            "AB": 1,
+            "BB": 1,
+            "BA": 1
+          },
+          "n": 5,
+          "truth_score": "12",
+          "cand_score": "16",
+          "repeat_free": false
+        },
+        {
+          "S": "AAABBBB",
+          "D": "AAAABBB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AA": 2,
+            "AB": 1,
+            "BB": 1,
+            "BA": 1
+          },
+          "n": 5,
+          "truth_score": "12",
+          "cand_score": "18",
+          "repeat_free": false
+        },
+        {
+          "S": "AAABBBB",
+          "D": "AAABABB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AA": 2,
+            "AB": 1,
+            "BB": 1,
+            "BA": 1
+          },
+          "n": 5,
+          "truth_score": "12",
+          "cand_score": "16",
+          "repeat_free": false
+        },
+        {
+          "S": "AAABBBB",
+          "D": "AAABBAB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AA": 2,
+            "AB": 1,
+            "BB": 1,
+            "BA": 1
+          },
+          "n": 5,
+          "truth_score": "12",
+          "cand_score": "16",
+          "repeat_free": false
+        },
+        {
+          "S": "AAABBBB",
+          "D": "AABAABB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AA": 2,
+            "AB": 1,
+            "BB": 1,
+            "BA": 1
+          },
+          "n": 5,
+          "truth_score": "12",
+          "cand_score": "16",
+          "repeat_free": false
+        },
+        {
+          "S": "AAABBBB",
+          "D": "AABBBBB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AA": 1,
+            "AB": 1,
+            "BB": 3,
+            "BA": 1
+          },
+          "n": 6,
+          "truth_score": "54",
+          "cand_score": "64",
+          "repeat_free": false
+        },
+        {
+          "S": "AABAABB",
+          "D": "AAAABBB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AA": 2,
+            "AB": 1,
+            "BB": 1,
+            "BA": 1
+          },
+          "n": 5,
+          "truth_score": "16",
+          "cand_score": "18",
+          "repeat_free": false
+        },
+        {
+          "S": "AABABAB",
+          "D": "AAAABAB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AA": 1,
+            "AB": 1,
+            "BA": 1
+          },
+          "n": 3,
+          "truth_score": "9",
+          "cand_score": "12",
+          "repeat_free": false
+        },
+        {
+          "S": "AABABAB",
+          "D": "AAABAAB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AA": 1,
+            "AB": 1,
+            "BA": 1
+          },
+          "n": 3,
+          "truth_score": "9",
+          "cand_score": "12",
+          "repeat_free": false
+        },
+        {
+          "S": "AABABBB",
+          "D": "AAABBBB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AA": 1,
+            "AB": 1,
+            "BB": 2,
+            "BA": 1
+          },
+          "n": 5,
+          "truth_score": "16",
+          "cand_score": "18",
+          "repeat_free": false
+        },
+        {
+          "S": "AABBABB",
+          "D": "AAABBBB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AA": 1,
+            "AB": 1,
+            "BB": 2,
+            "BA": 1
+          },
+          "n": 5,
+          "truth_score": "16",
+          "cand_score": "18",
+          "repeat_free": false
+        },
+        {
+          "S": "AABBBAB",
+          "D": "AAABBBB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AA": 1,
+            "BB": 2,
+            "AB": 1,
+            "BA": 1
+          },
+          "n": 5,
+          "truth_score": "16",
+          "cand_score": "18",
+          "repeat_free": false
+        },
+        {
+          "S": "AABBBBB",
+          "D": "AAAABBB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AA": 1,
+            "AB": 1,
+            "BB": 1,
+            "BA": 1
+          },
+          "n": 4,
+          "truth_score": "4",
+          "cand_score": "6",
+          "repeat_free": false
+        },
+        {
+          "S": "AABBBBB",
+          "D": "AAABABB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AA": 1,
+            "AB": 1,
+            "BB": 1,
+            "BA": 1
+          },
+          "n": 4,
+          "truth_score": "4",
+          "cand_score": "8",
+          "repeat_free": false
+        },
+        {
+          "S": "AABBBBB",
+          "D": "AAABBAB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AA": 1,
+            "AB": 1,
+            "BB": 1,
+            "BA": 1
+          },
+          "n": 4,
+          "truth_score": "4",
+          "cand_score": "8",
+          "repeat_free": false
+        },
+        {
+          "S": "AABBBBB",
+          "D": "AAABBBB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AA": 1,
+            "AB": 1,
+            "BB": 1,
+            "BA": 1
+          },
+          "n": 4,
+          "truth_score": "4",
+          "cand_score": "6",
+          "repeat_free": false
+        },
+        {
+          "S": "AABBBBB",
+          "D": "AABAABB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AA": 1,
+            "AB": 1,
+            "BB": 1,
+            "BA": 1
+          },
+          "n": 4,
+          "truth_score": "4",
+          "cand_score": "8",
+          "repeat_free": false
+        },
+        {
+          "S": "AABBBBB",
+          "D": "AABABBB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AA": 1,
+            "AB": 1,
+            "BB": 1,
+            "BA": 1
+          },
+          "n": 4,
+          "truth_score": "4",
+          "cand_score": "8",
+          "repeat_free": false
+        },
+        {
+          "S": "AABBBBB",
+          "D": "AABBABB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AA": 1,
+            "AB": 1,
+            "BB": 1,
+            "BA": 1
+          },
+          "n": 4,
+          "truth_score": "4",
+          "cand_score": "8",
+          "repeat_free": false
+        },
+        {
+          "S": "AABBBBB",
+          "D": "AABBBAB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AA": 1,
+            "AB": 1,
+            "BB": 1,
+            "BA": 1
+          },
+          "n": 4,
+          "truth_score": "4",
+          "cand_score": "8",
+          "repeat_free": false
+        },
+        {
+          "S": "AABBBBB",
+          "D": "AAABBBB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AA": 1,
+            "AB": 1,
+            "BB": 2,
+            "BA": 1
+          },
+          "n": 5,
+          "truth_score": "16",
+          "cand_score": "18",
+          "repeat_free": false
+        },
+        {
+          "S": "ABABABB",
+          "D": "ABABBBB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AB": 1,
+            "BB": 1,
+            "BA": 1
+          },
+          "n": 3,
+          "truth_score": "9",
+          "cand_score": "12",
+          "repeat_free": false
+        },
+        {
+          "S": "ABABABB",
+          "D": "ABBABBB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AB": 1,
+            "BB": 1,
+            "BA": 1
+          },
+          "n": 3,
+          "truth_score": "9",
+          "cand_score": "12",
+          "repeat_free": false
+        },
+        {
+          "S": "ABABBBB",
+          "D": "ABABABB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AB": 1,
+            "BB": 1,
+            "BA": 2
+          },
+          "n": 4,
+          "truth_score": "24",
+          "cand_score": "27",
+          "repeat_free": false
+        },
+        {
+          "S": "ABABBBB",
+          "D": "ABABABB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AB": 2,
+            "BB": 1,
+            "BA": 1
+          },
+          "n": 4,
+          "truth_score": "24",
+          "cand_score": "27",
+          "repeat_free": false
+        },
+        {
+          "S": "ABABBBB",
+          "D": "ABBBBBB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AB": 1,
+            "BB": 3,
+            "BA": 1
+          },
+          "n": 5,
+          "truth_score": "108",
+          "cand_score": "125",
+          "repeat_free": false
+        },
+        {
+          "S": "ABABBBB",
+          "D": "ABABABB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AB": 2,
+            "BB": 1,
+            "BA": 2
+          },
+          "n": 5,
+          "truth_score": "48",
+          "cand_score": "81",
+          "repeat_free": false
+        },
+        {
+          "S": "ABBABBB",
+          "D": "ABABABB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AB": 1,
+            "BB": 1,
+            "BA": 2
+          },
+          "n": 4,
+          "truth_score": "24",
+          "cand_score": "27",
+          "repeat_free": false
+        },
+        {
+          "S": "ABBABBB",
+          "D": "ABABABB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AB": 2,
+            "BB": 1,
+            "BA": 1
+          },
+          "n": 4,
+          "truth_score": "24",
+          "cand_score": "27",
+          "repeat_free": false
+        },
+        {
+          "S": "ABBABBB",
+          "D": "ABBBBBB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AB": 1,
+            "BB": 3,
+            "BA": 1
+          },
+          "n": 5,
+          "truth_score": "108",
+          "cand_score": "125",
+          "repeat_free": false
+        },
+        {
+          "S": "ABBABBB",
+          "D": "ABABABB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AB": 2,
+            "BB": 1,
+            "BA": 2
+          },
+          "n": 5,
+          "truth_score": "48",
+          "cand_score": "81",
+          "repeat_free": false
+        },
+        {
+          "S": "ABBBBBB",
+          "D": "ABABABB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AB": 1,
+            "BB": 1,
+            "BA": 1
+          },
+          "n": 3,
+          "truth_score": "5",
+          "cand_score": "9",
+          "repeat_free": false
+        },
+        {
+          "S": "ABBBBBB",
+          "D": "ABABBBB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AB": 1,
+            "BB": 1,
+            "BA": 1
+          },
+          "n": 3,
+          "truth_score": "5",
+          "cand_score": "12",
+          "repeat_free": false
+        },
+        {
+          "S": "ABBBBBB",
+          "D": "ABBABBB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AB": 1,
+            "BB": 1,
+            "BA": 1
+          },
+          "n": 3,
+          "truth_score": "5",
+          "cand_score": "12",
+          "repeat_free": false
+        },
+        {
+          "S": "ABBBBBB",
+          "D": "ABABBBB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AB": 1,
+            "BB": 2,
+            "BA": 1
+          },
+          "n": 4,
+          "truth_score": "25",
+          "cand_score": "36",
+          "repeat_free": false
+        },
+        {
+          "S": "ABBBBBB",
+          "D": "ABBABBB",
+          "G": 7,
+          "L": 2,
+          "x": {
+            "AB": 1,
+            "BB": 2,
+            "BA": 1
+          },
+          "n": 4,
+          "truth_score": "25",
+          "cand_score": "36",
+          "repeat_free": false
+        }
+      ],
+      "minscore_by_universe": {}
+    },
+    {
+      "params": {
+        "G": 7,
+        "L": 3,
+        "alphabet_size": 2,
+        "max_reads": 7
+      },
+      "instances_Is_SinFstar": 80,
+      "repeat_truth_instances": 76,
+      "stricter_than_truth": [
+        {
+          "S": "AAAAAAB",
+          "D": "AAABAAB",
+          "G": 7,
+          "L": 3,
+          "x": {
+            "AAA": 1,
+            "AAB": 1,
+            "ABA": 1,
+            "BAA": 1
+          },
+          "n": 4,
+          "truth_score": "4",
+          "cand_score": "8",
+          "repeat_free": false
+        },
+        {
+          "S": "ABBBBBB",
+          "D": "ABBABBB",
+          "G": 7,
+          "L": 3,
+          "x": {
+            "ABB": 1,
+            "BBB": 1,
+            "BBA": 1,
+            "BAB": 1
+          },
+          "n": 4,
+          "truth_score": "4",
+          "cand_score": "8",
+          "repeat_free": false
+        }
+      ],
+      "U1_counterexamples": [
+        {
+          "S": "AAAAAAB",
+          "D": "AAABAAB",
+          "G": 7,
+          "L": 3,
+          "x": {
+            "AAA": 1,
+            "AAB": 1,
+            "ABA": 1,
+            "BAA": 1
+          },
+          "n": 4,
+          "truth_score": "4",
+          "cand_score": "8",
+          "repeat_free": false
+        },
+        {
+          "S": "ABBBBBB",
+          "D": "ABBABBB",
+          "G": 7,
+          "L": 3,
+          "x": {
+            "ABB": 1,
+            "BBB": 1,
+            "BBA": 1,
+            "BAB": 1
+          },
+          "n": 4,
+          "truth_score": "4",
+          "cand_score": "8",
+          "repeat_free": false
+        }
+      ],
+      "U2_counterexamples": [
+        {
+          "S": "AAAAAAB",
+          "D": "AAABAAB",
+          "G": 7,
+          "L": 3,
+          "x": {
+            "AAA": 1,
+            "AAB": 1,
+            "ABA": 1,
+            "BAA": 1
+          },
+          "n": 4,
+          "truth_score": "4",
+          "cand_score": "8",
+          "repeat_free": false
+        },
+        {
+          "S": "ABBBBBB",
+          "D": "ABBABBB",
+          "G": 7,
+          "L": 3,
+          "x": {
+            "ABB": 1,
+            "BBB": 1,
+            "BBA": 1,
+            "BAB": 1
+          },
+          "n": 4,
+          "truth_score": "4",
+          "cand_score": "8",
+          "repeat_free": false
+        }
+      ],
+      "minscore_by_universe": {}
+    },
+    {
+      "params": {
+        "G": 7,
+        "L": 4,
+        "alphabet_size": 2,
+        "max_reads": 7
+      },
+      "instances_Is_SinFstar": 52,
+      "repeat_truth_instances": 44,
+      "stricter_than_truth": [],
+      "U1_counterexamples": [],
+      "U2_counterexamples": [],
+      "minscore_by_universe": {}
+    },
+    {
+      "params": {
+        "G": 7,
+        "L": 5,
+        "alphabet_size": 2,
+        "max_reads": 7
+      },
+      "instances_Is_SinFstar": 38,
+      "repeat_truth_instances": 26,
+      "stricter_than_truth": [],
+      "U1_counterexamples": [],
+      "U2_counterexamples": [],
+      "minscore_by_universe": {}
+    },
+    {
+      "params": {
+        "G": 7,
+        "L": 6,
+        "alphabet_size": 2,
+        "max_reads": 7
+      },
+      "instances_Is_SinFstar": 32,
+      "repeat_truth_instances": 14,
+      "stricter_than_truth": [],
+      "U1_counterexamples": [],
+      "U2_counterexamples": [],
+      "minscore_by_universe": {}
+    }
+  ]
+}
