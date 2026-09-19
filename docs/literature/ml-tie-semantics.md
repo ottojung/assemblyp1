@@ -16,7 +16,7 @@ Source: Ilan Shomorony, Samuel H. Kim, Thomas A. Courtade, David N. C. Tse, “I
 
 The relevant passage does **not** define a tie-breaking rule, say that the likelihood optimum is unique, quantify over every optimum, or state an equivalence relation under which uniqueness is intended. The singular phrase “the maximum-likelihood sequence” therefore cannot by itself distinguish a selected maximizer from a unique maximizer.
 
-The author-hosted manuscript version inspected during the repository's earlier source recovery uses the same substantive open-question wording and likewise does not add a tie convention at that point. Searches of the paper/version material for optimizer-selection or uniqueness language did not produce a source statement resolving this distinction.
+The earlier author-hosted preprint (`nsgIlan.pdf`, "Optimal Sequence Assembly via Sparse Read-Overlap Graphs", 2016-01-23) does **not** contain the accepted open-question sentence at all: its Discussion poses a different question, and its only "likelihood" content is the appended Bresler same-likelihood theorem. It likewise adds no tie convention, so it does not resolve this distinction either. See `../source-notes/shomorony-open-question-referent.md` §3.4. Searches of the accepted article and version material for optimizer-selection or uniqueness language did not produce a source statement resolving the distinction.
 
 ### Medvedev and Brudno (2009)
 

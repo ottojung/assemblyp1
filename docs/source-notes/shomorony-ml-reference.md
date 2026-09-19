@@ -145,3 +145,12 @@ not yet been independently inspected.
 The strongest justified status is therefore: **accepted-main-text ambiguity
 demonstrated and corroborated by author-hosted version/supplement evidence;
 accepted publisher-supplement verification still open**.
+
+For the closest source-supported reading of the bare citation — which ranks the
+exact multinomial objective as most plausible while keeping the ambiguity
+explicit — and for the candidate-universe/length, genome-equivalence, and
+tie-semantics findings, see
+[`shomorony-open-question-referent.md`](shomorony-open-question-referent.md).
+That note also independently re-verifies the accepted main text through
+author-hosted copies (the Oxford endpoints still return HTTP 403); the accepted
+publisher supplement remains the one unexamined artifact.
