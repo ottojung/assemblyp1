@@ -133,11 +133,11 @@ These considerations are scheduling heuristics, not truth scores.
 
 ### 5. Keep useful parallel work saturated
 
-Treat five active delegated agents as the normal shared saturation target when the frontier contains enough useful independent work. This is an execution step, not just a planning preference: every scheduled run must perform live pool discovery and, when useful free slots exist, launch agents into them before substantive local work.
+Treat five active delegated agents as the normal shared saturation target when the frontier contains enough useful independent work. This is a **soft utilization target serving the research**, not a synchronization barrier. A scheduled run should usually inspect the pool and launch useful work when capacity is obvious, but it should continue substantive research even if pool observation, recounting, or launch verification becomes temporarily unavailable.
 
 Prefer materially distinct packets or deliberately justified independent replications. Do not let one open issue, PR, Lean proof, or currently fashionable approach absorb all slots unless it genuinely has several independent high-value packets.
 
-When a worker finishes, fails, stalls, or is stopped, reconcile the result, refresh the portfolio, and refill the slot promptly if another useful packet exists. If the frontier appears too narrow to use available capacity, actively generate new exploratory or scaffold packets rather than assuming the open-issue list is exhaustive.
+When a worker finishes, fails, stalls, or is stopped, reconcile the result, refresh the portfolio, and refill useful capacity when practical. If the frontier appears too narrow to use available capacity, actively generate new exploratory or scaffold packets rather than assuming the open-issue list is exhaustive. Do not spend disproportionate effort proving that every slot is occupied at every instant.
 
 ### 6. Reconcile
 
