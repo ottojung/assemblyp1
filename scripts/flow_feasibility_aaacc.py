@@ -289,6 +289,29 @@ def check_witnesses():
     return a, b
 
 
+def omin_sensitivity(S=("A", "A", "A", "C", "C"), starts=(0, 1, 4), L=3,
+                     D=("A", "A", "A", "A", "C")):
+    """The witness needs overlap threshold omin = 1.  With omin = 2 the truth
+    itself is not flow-feasible, so the model is ill-posed there."""
+    print("=" * 72)
+    print("OVERLAP-THRESHOLD (omin) SENSITIVITY")
+    print("=" * 72)
+    reads = [tuple(S[(r + j) % len(S)] for j in range(L)) for r in starts]
+    rd = sorted(set(reads))
+    dS = tuple(windows(S, L).get(r, 0) for r in rd)
+    dD = tuple(windows(D, L).get(r, 0) for r in rd)
+    all_edges = build_overlap_graph(rd, loops=True)
+    result = {}
+    for omin in (1, 2):
+        edges = [e for e in all_edges if e[2] >= omin]
+        dvs = feasible_copy_vectors(len(rd), edges, 5)
+        result[omin] = (dS in dvs, dD in dvs)
+        print(f"  omin={omin}: |E|={len(edges)}, truth feasible={dS in dvs}, "
+              f"D feasible={dD in dvs}, #feasible copy vectors={len(dvs)}")
+    assert result[1] == (True, True) and result[2] == (False, False)
+    return result
+
+
 def smallest_counterexample(maxG=4, cap=4, alphabet=("A", "C")):
     """Search for the smallest same-length flow-feasible counterexample under
     the full Section 6.1 binomial objective.  G=3 has none; G=4 first hit is
@@ -353,6 +376,7 @@ def smallest_counterexample(maxG=4, cap=4, alphabet=("A", "C")):
 
 if __name__ == "__main__":
     check_witnesses()
+    omin_sensitivity()
     smallest_counterexample()
     print()
     print("ALL CHECKS PASSED")

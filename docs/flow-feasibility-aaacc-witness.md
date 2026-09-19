@@ -68,11 +68,15 @@ The checks use this model with the following explicitly named decisions:
 
 1. **Vertices are the distinct observed read types.** Duplicated reads collapse
    to one vertex with lower bound 1.
-2. **Edges are all overlaps of length `1..L-1`.** The paper allows `omin` as a
-   parameter; taking it small only adds candidate flows. **Self-overlaps
-   (loops) are included**, because Section 3.2 of the paper explicitly allows
-   loops in the multigraph. This is the decision that makes the witness work;
-   see Section 5.
+2. **Edges are all overlaps of length `1..L-1`** (i.e. `omin = 1`). The paper
+   allows `omin` as a parameter. For the witness the threshold is
+   load-bearing: with `omin = 2` the `AAC -> CAA` overlap of length 1 is
+   dropped and **no** feasible circulation exists at all, so even the truth
+   becomes flow-infeasible and the instance is ill-posed. `omin = 1` is
+   therefore the only coherent threshold for this finite instance.
+   **Self-overlaps (loops) are included**, because Section 3.2 of the paper
+   explicitly allows loops in the multigraph. This is the decision that makes
+   the witness work; see Section 5.
 3. **Transitive reduction is not applied before the feasibility check.** The
    paper states that transitive reduction leaves the set of spelled molecules
    unchanged, so it cannot change copy-vector feasibility. The witness walk
