@@ -113,9 +113,9 @@ GitHub issues are durable coordination and recovery nodes, not the universe of w
 ---
 
 $id-7314082651974063
-title: Make agent-pool saturation a mandatory scheduled preflight
+title: Keep pool saturation lightweight and subordinate to research
 date: 2026/09/18
 source: @ottojung
 kind: requirement
 
-Every scheduled AssemblyP1 orchestrator run must actively inspect the live Lubko agent pool and try to fill useful free capacity before spending the run on substantive local work. This is not merely a preference to delegate when convenient. The live pool should be discovered through Lubko itself, and new AssemblyP1 agents should be machine-identifiable. An open issue, PR, CI failure, or locally useful task is not by itself a reason to leave useful worker slots idle. If fewer than five useful AssemblyP1 agents are running, the orchestrator should broaden the frontier and launch independent packets unless it has a concrete reason that another useful non-overlapping packet cannot be formed or Lubko execution is demonstrably blocked.
+Scheduled AssemblyP1 orchestrators should actively inspect the live Lubko agent pool and use clearly free capacity for useful independent packets, with five active delegated agents as the shared utilization target and hard maximum. Pool management must remain lightweight infrastructure: use a startup snapshot and small launch batches, refresh periodically or before another wave rather than after every individual launch, and never make successful saturation verification a prerequisite for substantive research. If Lubko recounting, polling, or launch verification becomes uncertain or blocked, stop launching additional uncertain agents, record the uncertainty briefly when useful for recovery, and continue safe mathematical/repository work.

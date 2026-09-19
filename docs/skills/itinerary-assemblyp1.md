@@ -17,7 +17,7 @@ Before acting, study and obey:
 - `docs/skills/research-orchestrator.md` when the selected work is broad or benefits from multiple workers;
 - `docs/skills/exploration.md` whenever the best next direction is uncertain or several approaches deserve comparison;
 - the narrower skill under `docs/skills/` appropriate to the selected packet;
-- **on every scheduled run, read and obey Lubko's canonical execution skill:** <https://github.com/ottojung/lubko/blob/main/docs/SKILL.md>. The mandatory saturation preflight in `docs/skills/scheduled.md` always uses Lubko, even when the selected foreground task is small.
+- **on every scheduled run, read and obey Lubko's canonical execution skill:** <https://github.com/ottojung/lubko/blob/main/docs/SKILL.md>. The lightweight pool check in `docs/skills/scheduled.md` uses Lubko, but it must not dominate or block the research run.
 
 Consult `docs/formalization-plan.md` when the current work concerns formalization. It defines the project's formalization cadence: pin down the initial statement, explore primarily outside Lean, then formalize a mature final proof/counterexample. It is **not** the research strategy or a fallback work queue.
 
@@ -33,9 +33,9 @@ The ultimate goal is to settle the published open problem faithfully. The orches
 
 ## Work selection
 
-**First complete the mandatory Lubko saturation preflight in `docs/skills/scheduled.md`.** Do not select an issue, repair a PR, inspect CI in depth, or begin substantive local research as a substitute for that startup gate. The preflight may itself generate issue-less exploration packets from the live frontier.
+Near startup, perform the lightweight Lubko pool snapshot from `docs/skills/scheduled.md` and opportunistically launch a useful batch when capacity is clearly available. Then proceed with the research run; pool bookkeeping is not a gate on issue work, PR repair, proof search, CI diagnosis, or local exploration.
 
-Then apply `docs/skills/scheduled.md` and `docs/research-orchestration.md`, with these AssemblyP1-specific choices.
+Apply `docs/skills/scheduled.md` and `docs/research-orchestration.md`, with these AssemblyP1-specific choices.
 
 Prefer existing durable work before inventing duplicate work for the orchestrator's own coordination/recovery attention:
 
@@ -57,7 +57,7 @@ When choosing among plausible frontier questions, use research judgment. Useful 
 
 The orchestrator may decompose a broad frontier question into multiple independent or competing packets when that is useful. Prefer narrow leaf packets with explicit ownership over claiming a broad umbrella issue exclusively; concurrent scheduled orchestrators should be able to choose other unowned frontier leaves. It may also abandon, mutate, combine, or redirect a methodology when evaluator feedback suggests a better route. Repository documents must not be treated as authority for a proof method merely because they were written earlier.
 
-For broad exploration, actively maintain **near-saturation of the shared Lubko pool** when useful work exists. The repository-wide maximum is **5 actively working delegated agents across all concurrent orchestrators**, and five useful active agents is the normal target rather than merely a ceiling. The mandatory startup preflight uses `lubko-agent list --running --json` on `phoebe-dev` to establish the live count; do not infer the count only from GitHub issue comments. Re-count after every launch so concurrent orchestrators cannot intentionally overfill the pool, and treat only a blocker reproduced in the current run as a valid reason to leave useful capacity idle.
+For broad exploration, aim for **near-saturation of the shared Lubko pool** when useful work exists. The repository-wide maximum is **5 actively working delegated agents across all concurrent orchestrators**. Use `lubko-agent list --running --json` on `phoebe-dev` for a live snapshot when practical; do not infer the count only from GitHub issue comments. Launch into clearly free capacity in small batches, refresh periodically or before another wave, and keep the research run moving if pool telemetry becomes temporarily unavailable.
 
 Do not manufacture filler work or duplicate active packets to hit five. Instead, if the selected issue/PR cannot use all available slots independently, generate materially different packets from the wider research frontier and run those alongside it. When an agent finishes, fails, stalls, or is stopped, reconcile its output and refill the slot promptly when another useful packet exists.
 
