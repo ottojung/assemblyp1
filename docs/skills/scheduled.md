@@ -9,21 +9,21 @@ Canonical Lubko references:
 
 Every scheduled AssemblyP1 run operates through Lubko for worker-pool discovery even if its eventual local task is tiny. Read and obey the canonical Lubko instructions as well as this repository's `AGENTS.md`.
 
-## Mandatory startup: reconcile and fill the Lubko pool
+## Lightweight startup: inspect and opportunistically fill the Lubko pool
 
-This is a **required startup gate on every scheduled run**, before substantive issue work, PR repair, proof work, or repository editing.
+Every scheduled run should take a quick live snapshot of the AssemblyP1 Lubko pool near startup. This is infrastructure support for the research run, **not a blocking gate and not the main task**.
 
-1. Through Lubko's Supabase transport, run `lubko-agent list --running --json` on `phoebe-dev` and poll that root job to terminal.
+1. Through Lubko's Supabase transport, run `lubko-agent list --running --json` on `phoebe-dev` and poll that root job to terminal when the transport allows it.
 2. Identify running AssemblyP1 agents. New agents are identified by a title beginning `AssemblyP1:`. For legacy sessions created before this rule, also count a running agent whose cwd clearly belongs to AssemblyP1 (for example `/workspace/assemblyp1-...`).
-3. Reconcile that live list with any agent handles mentioned in issue/status comments. Live Lubko state is authoritative for whether an agent is actually running; durable comments provide recovery context.
-4. Compute the number of free slots under the repository-wide cap of five.
-5. If useful slots are free, **generate non-overlapping packets from the whole live research frontier and actually launch managed agents into those slots before spending the run on substantive local work**. Do not limit packet generation to open issues/PRs.
-6. Create new agents with titles of the form `AssemblyP1: <short packet name>`. A created-but-idle agent does not count toward saturation; start it with a prompt and verify it is running.
-7. Launch sequentially and re-run `lubko-agent list --running --json` after each successful start. Stop launching as soon as five AssemblyP1 agents are observed running. This re-count is required because another orchestrator may have filled slots concurrently.
-8. If a concurrent race temporarily produces more than five running AssemblyP1 agents, this invocation must stop enough of **its own newly launched agents** to restore the cap, then re-list to verify the pool. Never stop another orchestrator's agent merely to repair the race.
-9. If a slot cannot be filled, the run must have a concrete **current-run** reason: either no genuinely useful independent packet remains after actively broadening the frontier, or a Lubko execution/transport blocker was reproduced during this run. A stale issue comment or earlier failed Lubko attempt is not a valid blocker. Record the current-run reason durably when it matters. Merely having useful local work, an open PR, or an owned issue is **not** a reason to leave slots idle.
+3. Reconcile that snapshot with any agent handles mentioned in durable status. Live Lubko state is authoritative for whether an agent is actually running; durable comments provide recovery context.
+4. Compute an approximate number of clearly free slots under the repository-wide cap of five.
+5. If useful slots are available, generate materially different packets from the whole live frontier and launch a **small batch** into clearly free capacity. Do not limit packet generation to open issues/PRs.
+6. Create new agents with titles of the form `AssemblyP1: <short packet name>`. A created-but-idle agent does not count toward saturation; start it with a substantive prompt.
+7. Do **not** re-list after every launch. Re-count after a batch, before a later launch wave, or when there is specific reason to suspect the shared count changed materially. If a race temporarily overfills the pool, stop only this invocation's own excess newly launched agents when that can be determined safely.
+8. If live recounting or polling becomes unavailable, uncertain, or blocked, **stop launching additional agents whose capacity cannot be established, record the uncertainty briefly, and continue useful research/reconciliation/local work that does not risk exceeding the cap**. Pool bookkeeping failure must not terminate the research run.
+9. Saturation is a soft operational target. Prefer keeping useful capacity occupied, but never let agent-management plumbing consume the run or displace higher-value mathematical work.
 
-The orchestrator must not treat “I can do useful work myself” as satisfying this gate. The pool check and launch attempt happen first, and saturation is verified by a post-launch live re-count.
+The purpose of this check is to keep parallel research healthy with low overhead. It is not a proof obligation that must be fully discharged before useful research can proceed.
 
 ## Disposable invocations, durable state
 
@@ -45,7 +45,7 @@ The status should make these facts unambiguous:
 
 Do not put credentials or unnecessary logs in the comment.
 
-When an orchestrator has delegated subjobs, the canonical status must also list the currently active AssemblyP1 delegated-agent handles/resources well enough for another scheduled invocation to account for them. Remove or mark workers terminal as soon as their status is known. Before launching a new delegated agent, reconcile this durable worker state with observable Lubko job status and obey the repository-wide concurrency cap from the AssemblyP1 itinerary/intent records.
+When an orchestrator has delegated subjobs, the canonical status should list active AssemblyP1 delegated-agent handles/resources compactly enough for recovery and counting. Do not turn the status comment into a transport transcript: omit routine root-job chatter and polling detail unless a specific handle is actually needed for recovery. Before a new launch wave, reconcile durable worker state with observable Lubko status as practical and obey the repository-wide cap.
 
 If multiple marked comments exist because of a race, the most recently updated marked comment is canonical. Immediately after claiming or inheriting work, re-read it; if another owner won the race, yield.
 
