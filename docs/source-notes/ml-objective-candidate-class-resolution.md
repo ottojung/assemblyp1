@@ -79,8 +79,8 @@ Author-hosted manuscript, §1 (Introduction), on the Bresler framework:
 > possible to characterize the pairs `(N,L)` that guarantee that these bridging
 > conditions are met …"
 
-Author-hosted manuscript, appended Supplementary Material "Bridging Conditions
-and Information Limits":
+Author-hosted manuscript, appended Supplementary Material §6.4 "Bridging
+Conditions and Information Limits":
 
 > "Under the uniform sampling model described in Section 2, and given a known
 > genome sequence `s`, one can compute the pairs `(N,L)` …"
