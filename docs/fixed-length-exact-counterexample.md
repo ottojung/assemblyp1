@@ -160,9 +160,13 @@ an overrepresented observed type and improve likelihood while the bridging
 hypothesis constrains only reconstructibility of the realized reads.
 
 It does **not** refute unrestricted-length exact Variant E (already addressed
-separately by issue #24 / PR #25), the Medvedev–Brudno separable/binomial
-approximation, or the Section 6.2 bidirected-flow feasible set, and it does not
-resolve which interpretation Shomorony et al. intended.
+separately by issue #24 / PR #25) or the Medvedev–Brudno separable/binomial
+approximation, and it does not resolve which interpretation Shomorony et al.
+intended. For the Section 6.2 bidirected-flow feasible set, the sibling
+`AAABB`/`AAAAB` instance (the same witness with `B` relabelled) **is**
+flow-feasible under the loop-inclusive reading and beats the truth there too;
+see `docs/flow-feasibility-aaacc-witness.md`, which also exhibits the smallest
+same-length flow-feasible counterexample found.
 
 Primary source for the open question and the `I_s` hypothesis:
 Ilan Shomorony, Samuel H. Kim, Thomas A. Courtade, and David N. C. Tse,
