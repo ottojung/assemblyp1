@@ -28,6 +28,15 @@ terminology. The right status for this repository is therefore:
 
 > **No resolution found as of 2026-09-17; the problem appears to remain open.**
 
+_Update 2026-09-19:_ an independent forward-citation audit
+([`literature-audit-forward-citations-2026-09-19.md`](literature-audit-forward-citations-2026-09-19.md))
+re-derived the citation universe from the primary-source DOI (OpenAlex: 33 citing
+works, 30 since 2017; Semantic Scholar: 38) and triaged every post-2016 citer.
+The conclusion above is unchanged. The one substantive post-2016 addition is
+Mahajan–Jain–Kashyap's diploid coverage analysis, which keeps the *necessary*
+equal-likelihood direction; no post-2016 proof, refutation, or counterexample of
+the bridging→ML implication was located.
+
 There is substantial adjacent theory. The closest result is actually older than
 the 2016 question: Bresler, Bresler, and Tse (2013) prove a likelihood-based
 **necessary** condition. If a problematic interleaved pair or triple repeat has
