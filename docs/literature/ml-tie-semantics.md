@@ -16,7 +16,9 @@ Source: Ilan Shomorony, Samuel H. Kim, Thomas A. Courtade, David N. C. Tse, “I
 
 The relevant passage does **not** define a tie-breaking rule, say that the likelihood optimum is unique, quantify over every optimum, or state an equivalence relation under which uniqueness is intended. The singular phrase “the maximum-likelihood sequence” therefore cannot by itself distinguish a selected maximizer from a unique maximizer.
 
-The author-hosted manuscript version inspected during the repository's earlier source recovery uses the same substantive open-question wording and likewise does not add a tie convention at that point. Searches of the paper/version material for optimizer-selection or uniqueness language did not produce a source statement resolving this distinction.
+The author-hosted manuscript available at <https://web.stanford.edu/~gkamath/nsgIlan.pdf> is an **earlier version** (PDF `CreationDate` `2016-01-23`, SHA-256 `f2a9f6a64f75cbf4c2cfaec6f794c779907f165c986261bec7a2aa72a3e6954a`, title "Optimal Sequence Assembly…") and does **not** contain the accepted open-question sentence. Its complete Discussion instead asks "whether this approach is also solving some combinatorial optimization problem" and discusses a genie-aided formulation with the target genome length `G` given; the only likelihood statement in that version is the appended Bresler same-likelihood theorem. The exact accepted wording could not be re-fetched in a later run (publisher HTTP 403). Either way, neither version supplies a tie convention, and searches for optimizer-selection or uniqueness language produced no source statement resolving the distinction. See `docs/source-notes/ml-objective-candidate-class-resolution.md` §9.
+
+**Unresolved version ambiguity.** The accepted Oxford text is the controlling source for the open problem, but it is not independently re-retrievable through the available environment; the accessible preprint is an earlier version and must not be treated as equivalent to the accepted Discussion.
 
 ### Medvedev and Brudno (2009)
 
