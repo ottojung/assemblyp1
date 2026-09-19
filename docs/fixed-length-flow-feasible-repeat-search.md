@@ -4,13 +4,13 @@ _Status: bounded exhaustive computational search with exact rational arithmetic.
 
 ## Purpose and relationship to existing work
 
-`docs/bridging-schemas-and-flow-feasibility-gaps.md` proves **Proposition D**: for a *repeat-free* circular truth `S` whose read collection `R` satisfies `S ∈ F*(R)`, the truth is a fixed-length exact maximum-likelihood maximizer (not unique). That note leaves an explicit open question (its Open Question 1):
+The note `bridging-schemas-and-flow-feasibility-gaps.md` (currently on the unmerged branch `analysis/bridging-schemas-and-flow-gaps`) proves **Proposition D**: for a *repeat-free* circular truth `S` whose read collection `R` satisfies `S ∈ F*(R)`, the truth is a fixed-length exact maximum-likelihood maximizer (not unique). That note leaves an explicit open question (its Open Question 1):
 
 > Does Proposition D extend from repeat-free `S` to truths with bridged repeats, under `F*`?
 
 This note answers that question in the negative direction — no counterexample was found, even against a *strictly larger* candidate universe than `F*` — for an exhaustively searched finite scope. It also isolates the role of the bridging hypothesis `I_s`: dropping `I_s` while keeping `S ∈ F*(R)` immediately produces counterexamples, so `I_s` is load-bearing rather than cosmetic.
 
-This carries over the deliverable of the `AssemblyP1: fixed-length competitor search` packet. It does **not** duplicate the AAACC/AAAAB Section 6.2 flow-feasibility certificate (`docs/flow-feasibility-aaacc-witness.md`), which concerns the different **walk-spelled `F_flow`** reading; see §6 for why the two readings give opposite answers here.
+This carries over the deliverable of the `AssemblyP1: fixed-length competitor search` packet. It does **not** duplicate the AAACC/AAAAB Section 6.2 flow-feasibility certificate in `flow-feasibility-aaacc-witness.md` (on the unmerged branch `agent/flow-model-0919b`), which concerns the different **walk-spelled `F_flow`** reading; see §6 for why the two readings give opposite answers here.
 
 ## Model (exact)
 
@@ -76,7 +76,7 @@ Uniqueness is *not* claimed: the tandem `k·d_S` tie class of Proposition D is p
 The repository now has two distinct candidate-set readings of Medvedev–Brudno §6.2, and they give opposite answers to the persistence question:
 
 - **`F*` (per-occurrence, used here and in Proposition D):** every length-`L` window of the candidate must occur as an observed read (`supp(D) ⊆ supp(R)`), and `d_D(w) ≥ x_w`. Under this reading the known fixed-length exact witnesses are eliminated: `S = AAABB` with `R = {AAA,AAB,BAA}` is not even in `F*` (its windows `ABB`, `BBA` are unobserved), and the fixed-length interleaved witness `S = ABACABC` has only two observed types out of six.
-- **`F_flow` (walk-spelled):** a candidate is accepted when it is spelled by a closed walk in the read overlap graph (loops allowed). `docs/flow-feasibility-aaacc-witness.md` shows the `AAACC/AAAAC` witness *is* `F_flow`-feasible, because the walk `AAA → AAA → AAC → CAA → AAA` spells `AAAAC` even though `D`'s window `ACA` is not an observed read.
+- **`F_flow` (walk-spelled):** a candidate is accepted when it is spelled by a closed walk in the read overlap graph (loops allowed). The `agent/flow-model-0919b` certificate shows the `AAACC/AAAAC` witness *is* `F_flow`-feasible, because the walk `AAA → AAA → AAC → CAA → AAA` spells `AAAAC` even though `D`'s window `ACA` is not an observed read.
 
 So "do counterexamples persist under flow-related constraints?" has no single answer until the source selects one reading: **yes under `F_flow`, no under `F*` (with `I_s`)**. This is a modeling fork, not a mathematical contradiction; the source notes (`docs/source-notes/medvedev-brudno-candidate-class.md` §3) already warn that the §6.2 flow object is not definitionally the §6.1 circular-genome universe.
 
@@ -99,12 +99,12 @@ Runtime is about two minutes on the current development host. The script re-deri
 
 ## Cross-references
 
-| Fact | Repository anchor |
-|------|-------------------|
-| Proposition D (repeat-free `F*` maximizer) and its open question | `docs/bridging-schemas-and-flow-feasibility-gaps.md` §4 |
-| Walk-spelled `F_flow` and the AAACC certificate | `docs/flow-feasibility-aaacc-witness.md` |
-| Source semantics for repeats/bridging | `docs/bridging-source-semantics.md` |
-| Fixed-length exact counterexample (`AAABB`) | `docs/fixed-length-exact-counterexample.md` |
-| Interleaved-clause counterexample | `docs/fixed-length-interleaved-counterexample.md` |
+| Fact | Repository anchor (and integration status) |
+|------|--------------------------------------------|
+| Proposition D (repeat-free `F*` maximizer) and its open question | `bridging-schemas-and-flow-feasibility-gaps.md` §4 (branch `analysis/bridging-schemas-and-flow-gaps`, unmerged) |
+| Walk-spelled `F_flow` and the AAACC certificate | `flow-feasibility-aaacc-witness.md` (branch `agent/flow-model-0919b`, unmerged) |
+| Source semantics for repeats/bridging | `docs/bridging-source-semantics.md` (on `main`) |
+| Fixed-length exact counterexample (`AAABB`) | `docs/fixed-length-exact-counterexample.md` (on `main`) |
+| Interleaved-clause counterexample | `fixed-length-interleaved-counterexample.md` (branch `agent/fixed-length-interleaved-counterexample`, unmerged) |
 | Candidate-universe discipline | `docs/ml-formalization-contract.md`; `docs/source-notes/medvedev-brudno-candidate-class.md` |
 | Reproducible evidence | `scripts/fixed_length_flow_feasible_repeat_search.py`; `results/fixed-length-flow-feasible-repeat-search.json` |
