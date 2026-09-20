@@ -298,10 +298,18 @@ fixed-N 6.1 (N=5)        L(D)/L(S) = 81/64 > 1
   (coverage); `S`'s only maximal triple repeat is the length-`1` `A` at
   `{0,1,2}` and it is all-bridged by reads at `4, 0, 1`; there is no interleaved
   pair. The copy length `1 = L-2` is bridgeable. [verified computation]
-- **Both are §6.2 spelled circuits.** Each is its own cyclic length-`3` window
-  walk; consecutive windows overlap in `L-1 = 2` symbols, the maximal proper
-  overlap, and every observed read vertex is visited (per-vertex lower bound
-  `1`); the circulations are balanced. [verified computation]
+- **Both are §6.2 spelled circuits** in the consecutive-window (spelled
+  molecule) formulation: each is its own cyclic length-`3` window walk;
+  consecutive windows overlap in `L-1 = 2` symbols, the maximal proper overlap,
+  and every observed read vertex is visited (per-vertex lower bound `1`); the
+  circulations are balanced. The explicit **transitively reduced** overlap-graph
+  certificate is not re-checked under the strict oriented labelling here; the
+  same `AAATT → AAAATT` pair is graph-audited and kernel-checked on `main` under
+  the reverse-complement reading (`docs/section62-mb09-bidirected-graph-audit.md`,
+  `AssemblyP1/Section62BridgingCounterexample.lean`), and all overlaps used are
+  maximal (`L-1`), so no direct edge is shorter than an available path.
+  [verified computation; reduced-graph certificate inherited by analogy and
+  flagged as the one unformally-checked link of this instance]
 - **The same-length theorem is not violated.** `|D| = 6 ≠ 5`, so `D` is not a
   positive circulation of total `G = 5` on `X_S`. The theorem says nothing here.
 - **The witness violates the per-occurrence strengthening.** `d_S(AAA) = 1 <
