@@ -373,7 +373,10 @@ optional.
    none; this note narrows the ranking but does not prove a denotation.
 2. **Competitor universe / length:** §6.1 imposes no fixed competitor length;
    "known `N`" is a likelihood parameter, not stated as a candidate-length
-   constraint. Fixed length remains an added restriction.
+   constraint. Fixed length remains an added restriction. A dedicated
+   equation/variable-level resolution of this axis, including why the binomial
+   approximation drops the simplex coupling rather than adding `|D| = N`, is
+   [`candidate-length-vs-likelihood-parameter.md`](candidate-length-vs-likelihood-parameter.md).
 3. **Controlling source:** the publisher supplement (sections A–G) is still
    unretrieved (HTTP 403); no cross-reference in the accepted text points to a
    likelihood/objective section.

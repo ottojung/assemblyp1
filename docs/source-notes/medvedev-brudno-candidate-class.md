@@ -121,6 +121,17 @@ What is not established by this source alone is:
 Those questions must remain explicit until resolved from the locked literature
 ground truth and additional primary-source correspondence work.
 
+**Update (2026-09-20).** The *candidate-length* sub-question is now resolved on
+the Medvedev–Brudno side in
+[`candidate-length-vs-likelihood-parameter.md`](candidate-length-vs-likelihood-parameter.md):
+no MB09 layer constrains candidates to length `N`. The exact multinomial uses the
+candidate-intrinsic `N(D)`; the separable/binomial approximation replaces the
+constant `N(D)` by an external `N` and drops the coupling `Σ_i d_i = N(D)`; and
+the §6.2 flow has only per-vertex/per-edge bounds. `N` is therefore an external
+likelihood parameter, not a candidate-length constraint, and a restriction
+`|D| = N` is an added subproblem. What remains open is only which MB09 layer the
+2016 sentence intends.
+
 ## 5. Formalization impact
 
 For later Lean work, this note supports separating at least these concepts:

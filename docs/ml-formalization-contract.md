@@ -123,7 +123,10 @@ These are not interchangeable. If a restricted universe is useful for an interme
 This document intentionally does not decide:
 
 - which ML variant Shomorony et al. intended;
-- whether competitors must have length `G`;
+- whether competitors must have length `G` (on the Medvedev–Brudno equations
+  themselves no layer imposes this; the open part is which variant the 2016
+  sentence intends or whether an independent restriction is added — see
+  `docs/source-notes/candidate-length-vs-likelihood-parameter.md`);
 - whether the published conclusion is existence/maximality or uniqueness;
 - whether reverse-complement equivalence belongs in the final theorem;
 - which proof or counterexample strategy should be attempted.
