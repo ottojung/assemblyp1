@@ -223,6 +223,26 @@ The well-posed sequence-level question therefore remains open:
 > Does `I_s` together with `S ∈ F_flow(R)` imply that `S` is a maximizer of the
 > §6.2 (or §6.1) objective over sequence-level flow-feasible `D`?
 
+**Update (2026-09-20): the per-type reading resolves this negatively for
+fixed-length candidates.** The claim above that no counterexample has both the
+truth and the competitor sequence-level feasible is a statement about the
+*per-occurrence* reading. Under the **per-type** lower bound (`d_D(w) ≥ 1` for
+every observed molecule), which is the literal reading of the source's “set of
+reads … which are DNA molecules”, the statement is false. At `G = 6`, `L = 3`
+there are 4608 fixed-length witnesses over 12 truths (the rotation/complement
+orbit of `AAATAT`), e.g.
+
+```
+truth S = AAATAT   competitor D = AAAAAT   L = 3   starts (0,0,1,3,5)
+observed molecules { AAA:2, AAT:1, ATA:1, TAA:1 }
+I_s holds; both are §6.2-feasible; exact ratio 3, §6.1 binomial ratio 5.
+```
+
+Under the per-occurrence reading the fixed-length question remains open (zero
+counterexamples for `G ≤ 7`, `L ≤ 4`). See
+`docs/section62-fixed-length-bidirected-counterexample.md` and
+`scripts/se62_fixed_length_bidirected_search.py`.
+
 Two partial results are already known in the repository:
 
 - **Tandem invariance** (`docs/bridging-schemas-and-flow-feasibility-gaps.md`,

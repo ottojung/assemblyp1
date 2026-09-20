@@ -426,3 +426,35 @@ All four are proved by `decide` over the fixed length-`7` instance; no `sorry`,
 | Positive sequence-level §6.2 statement | **open** |
 
 Reproduce: `lake build AssemblyP1.Section62FlowObstruction`.
+
+---
+
+## 11. Addendum (2026-09-20): per-type reading admits fixed-length counterexamples
+
+Sections 5 and 6 recorded zero sequence-level §6.2 counterexamples under the
+**per-occurrence** lower bound (`d_D(w) ≥ x_w`) and `N = G`. That zero result
+does not extend to the **per-type** lower bound (`d_D(w) ≥ 1` for every observed
+molecule), which is the literal reading of the source's “set of reads … which
+are DNA molecules”.
+
+`scripts/se62_fixed_length_bidirected_search.py` fixes `|D| = G` and searches
+both readings and both lower-bound readings. Under the bidirected (reverse
+complement) reading with the per-type lower bound it finds 4608 fixed-length
+likelihood-improving witnesses at `G = 6, L = 3` (over the rotation/complement
+orbit of `AAATAT`; exact ratios `3`–`81`, every binomial ratio `> 1`). The
+minimal member is
+
+```
+S = AAATAT   D = AAAAAT   L = 3   starts (0,0,1,3,5)
+observed molecules x = { AAA:2, AAT:1, ATA:1, TAA:1 }
+d_S = {AAA:1, AAT:1, ATA:3, TAA:1}     (TAT ~ ATA raises ATA to 3)
+d_D = {AAA:3, AAT:1, ATA:1, TAA:1}
+I_s holds; both spectra have support supp(x); L_exact(D)/L_exact(S) = 3.
+```
+
+For every other recorded scope — single-strand (either lower bound) and
+bidirected per-occurrence — the counterexample count is zero. Full scope,
+exact-rational reproduction, and the reading-dependence argument are in
+`docs/section62-fixed-length-bidirected-counterexample.md`. This refutes the
+fixed-length statement under the per-type bidirected reading and leaves the
+per-occurrence statement open.
