@@ -10,7 +10,7 @@ Near the end of the paper the authors state:
 
 The maximum-likelihood formulation they refer to is attributed to Medvedev and Brudno (2009). The exact definitions from that formulation must be incorporated before this repository claims to contain the final formal statement.
 
-A primary-source trace of what the phrase “the maximum-likelihood formulation of the AP (Medvedev and Brudno, 2009)” does and does not denote is recorded in [`docs/source-notes/shomorony-mb-formulation-provenance.md`](source-notes/shomorony-mb-formulation-provenance.md); it separates the source facts from the reading and keeps the candidate-universe choice explicit.
+A primary-source trace of what the phrase “the maximum-likelihood formulation of the AP (Medvedev and Brudno, 2009)” does and does not denote is recorded in [`docs/source-notes/shomorony-mb-formulation-provenance.md`](source-notes/shomorony-mb-formulation-provenance.md); it separates the source facts from the reading and keeps the candidate-universe choice explicit. A focused determination that reconciles the conflicting prior readings, and names the §6.1 exact global read-count likelihood as the most faithful concrete referent while keeping the fixed-`N` rival live, is recorded in [`docs/source-notes/shomorony-ml-layer-determination.md`](source-notes/shomorony-ml-layer-determination.md).
 
 ## Assembly model used by Shomorony et al.
 
