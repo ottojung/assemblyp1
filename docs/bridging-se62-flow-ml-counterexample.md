@@ -362,6 +362,10 @@ witness only) was run over the `n < N` regime:
   computation, bounded; **not** a proof of absence]
 
 The single-strand bounded zero is evidence only and is stated as such.
+For a 2026-09-20 adversarial audit separating the sequence-level §6.1 objective
+(which is **not** strand-contingent for this instance: oriented ratios `9/8`
+and `125/108`) from §6.2 spellability (which **is**), see
+[`source-notes/aaatt-strand-senses-settlement-audit-2026-09-20.md`](source-notes/aaatt-strand-senses-settlement-audit-2026-09-20.md).
 
 ---
 
