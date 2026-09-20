@@ -260,9 +260,12 @@ the same values, so the *certificates* were right and only the prose was wrong.
 ## 6. Note on the remaining scope
 
 The graph certificate here does **not** claim anything about genuinely
-non-spellable §6.2 flows, nor about the single-strand reading, nor about
-candidates restricted to `|D| = N`. It only places the existing PR #39 witness
-on the exact source object, which it survives. The structural mechanism
+non-spellable §6.2 flows, nor about the single-strand reading. It only places the
+existing PR #39 witness on the exact source object, which it survives. The
+fixed-length sub-case (`|D| = N`) is treated separately and is **refuted** under
+the source per-vertex reading by a same-length spelled witness
+(`S = AAATAT`, `D = AAAAAT`); see
+[`section62-same-length-bidirected-counterexample.md`](section62-same-length-bidirected-counterexample.md). The structural mechanism
 (separability of the §6.1 objective versus the support/bridging nature of
 `I_s`) remains the reason the witness works, and it is independent of the
 graph bookkeeping.
