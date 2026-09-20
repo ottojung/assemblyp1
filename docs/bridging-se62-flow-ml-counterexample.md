@@ -303,6 +303,20 @@ The `n = |S| = N` zero count is a theorem (the separable §6.1 objective is
 coordinate-wise maximized at `d = x` when `n = N`), not evidence about
 bridging. [mathematical argument]
 
+### 5.1 Relation to the concurrent KKT/descent packet
+
+An independent, unmerged branch packet
+(`analysis/issue36-se62-source-semantics-verify-0920`,
+`docs/section62-kkt-and-bridging-family.md`, commit `705e427`) derives a KKT
+characterization of §6.2 optimality and an **infinite single-strand family**
+`S = 0^(G-1)1`, `D = 0^(G-2)1`, `L = G−2`, `N = G` (`G ≥ 6`) with ratio in
+`(1, e/2]`. That family is strictly more general than the single instance here
+and does not need reverse complementarity; its evidence is an exact-rational
+script, not a kernel check. This note is complementary: it is a small
+`G = 5`, `L = 3` instance under the bidirected (reverse-complement) reading,
+and it is **kernel-checked** in Lean. Both arrive at the same conclusion, and
+neither depends on the other. [mathematical argument + verified computation]
+
 ---
 
 ## 6. Bounded search context
