@@ -282,8 +282,9 @@ independently of the reviewed searches:
 | Main theorem: `I_s`-realizable **and** non-rigid (the oriented S62 witnesses) | `0` in every scope |
 
 Quick scopes (about half a minute): binary `(G,L) ∈ {(12,3),(14,3),(12,4)}`,
-ternary `(10,3)`. `--full` adds binary up to `G = 18`, ternary up to `G = 12`,
-four-letter up to `G = 10`. The scans are exhaustive over all `σ^G` circular
+ternary `(10,3)`. `--full` (several minutes) widens to binary up to `G = 16`
+(`L = 3,4,5`), ternary up to `G = 11`, and four-letter up to `G = 9`. The scans
+are exhaustive over all `σ^G` circular
 words; the non-rigidity test groups words by window support and detects supports
 carrying more than one spectrum (equivalent to carrying a same-length
 same-support different-spectrum competitor). [verified computation, exact and

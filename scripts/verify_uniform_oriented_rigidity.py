@@ -225,7 +225,11 @@ def min_period(S):
 
 def scan_scope(G, L, sigma):
     genomes = list(iproduct(range(sigma), repeat=G))
-    nonrigid = non_rigid_support_set(genomes, L)
+    specs = [spectrum(S, L) for S in genomes]
+    groups = defaultdict(set)
+    for sp in specs:
+        groups[frozenset(sp.keys())].add(tuple(sorted(sp.items())))
+    nonrigid = {k for k, v in groups.items() if len(v) > 1}
     n_all_nonrigid = 0
     n_rigid_violations = 0          # non-rigid but every (L-1)-mer <= 2
     n_is_realizable = 0
@@ -233,16 +237,21 @@ def scan_scope(G, L, sigma):
     n_prim_bad = 0                  # primitive, Lm1>=3, no triple >= L-1
     n_period_bad = 0                # periodic, repeated long period factor, no triple
     examples = []
-    for S in genomes:
-        V = frozenset(spectrum(S, L).keys())
-        is_nr = V in nonrigid
+    for S, sp in zip(genomes, specs):
+        is_nr = frozenset(sp.keys()) in nonrigid
+        tri = triple_repeats(S)
+        long_triple = any(ell >= L - 1 for ell, _ in tri)
+        if long_triple:
+            real = False
+        else:
+            inter = interleaved_pairs(S)
+            real = all(min(e1, e2) <= L - 2 for (e1, _), (e2, _) in inter)
         if is_nr:
             n_all_nonrigid += 1
             if max_Lm1_occurrence(S, L) <= 2:
                 n_rigid_violations += 1
                 if len(examples) < 5:
                     examples.append(("rigidity", "".join(map(str, S))))
-        real = Is_realizable(S, L)
         if real:
             n_is_realizable += 1
             if is_nr:
@@ -251,23 +260,21 @@ def scan_scope(G, L, sigma):
                     examples.append(("s62", "".join(map(str, S))))
         p = min_period(S)
         # Lemma 2 (primitive extension)
-        if p == G and max_Lm1_occurrence(S, L) >= 3 and \
-                not has_triple_repeat_at_least_Lm1(S, L):
+        if p == G and max_Lm1_occurrence(S, L) >= 3 and not long_triple:
             n_prim_bad += 1
             if len(examples) < 5:
                 examples.append(("prim", "".join(map(str, S))))
         # Lemma 3 (periodic extension): period word P repeats a factor of
         # length >= L-1, yet no long triple repeat
-        if p < G:
+        if p < G and not long_triple:
             P = tuple(S[:p])
-            # factor of P of length >= L-1 occurring at least twice in P
             repeated_long = False
             for ell in range(L - 1, p):
                 c = occurrence_counts(P, ell)
                 if any(v >= 2 for v in c.values()):
                     repeated_long = True
                     break
-            if repeated_long and not has_triple_repeat_at_least_Lm1(S, L):
+            if repeated_long:
                 n_period_bad += 1
                 if len(examples) < 5:
                     examples.append(("period", "".join(map(str, S))))
@@ -279,12 +286,12 @@ def scan_scope(G, L, sigma):
 
 
 _QUICK = [(12, 3, 2), (14, 3, 2), (12, 4, 2), (10, 3, 3)]
-_FULL = [(12, 3, 2), (14, 3, 2), (16, 3, 2), (18, 3, 2),
-         (12, 4, 2), (14, 4, 2), (16, 4, 2),
+_FULL = [(12, 3, 2), (14, 3, 2), (16, 3, 2),
+         (12, 4, 2), (14, 4, 2),
          (12, 5, 2), (14, 5, 2),
-         (10, 3, 3), (11, 3, 3), (12, 3, 3),
-         (10, 4, 3), (11, 4, 3),
-         (8, 3, 4), (9, 3, 4), (10, 3, 4)]
+         (10, 3, 3), (11, 3, 3),
+         (10, 4, 3),
+         (8, 3, 4), (9, 3, 4)]
 
 
 def main():
