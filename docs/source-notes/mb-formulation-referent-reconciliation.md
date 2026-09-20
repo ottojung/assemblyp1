@@ -155,8 +155,12 @@ optimizes; the thesis itself says so (§2.1).
 - **Shomorony et al. earlier author-hosted preprint** (source fact, verified
   independently): the discussion of optimization formulations said the way to
   avoid repeat over-collapsing “is to consider a genie-aided formulation where
-  the target genome length `G` is given.” The accepted text replaced this
-  passage with the paper-level Medvedev–Brudno open-question sentence.
+  the target genome length `G` is given.” The accepted text's corresponding
+  passage instead carries the parsimony-vs-maximum-likelihood contrast and the
+  paper-level Medvedev–Brudno open-question sentence; its only “genie-aided”
+  occurrence concerns tuning the string-graph overlap parameter, not the ML
+  formulation. (The version relationship is thus version evidence about the
+  authors' framing, not a claim about a precise edit history.)
 
 **Interpretation.** The same authors, one version earlier, framed the relevant
 combinatorial optimization as a fixed-`G` problem. That does not make the
