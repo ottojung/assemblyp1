@@ -42,3 +42,7 @@ Two candidate conclusion schemas currently live in `AssemblyP1/Model.lean`: trut
 A positive settlement is a Lean proof of a formally justified version of the published implication. A negative settlement is a mathematically valid counterexample satisfying the faithfully formalized bridging hypotheses while violating the faithfully formalized maximum-likelihood conclusion.
 
 A computationally discovered counterexample is useful, but the final repository should contain a kernel-checkable proof that the finite instance has the required properties.
+
+## Related repository results
+
+- [`docs/variable-length-exact-ml-frontier.md`](variable-length-exact-ml-frontier.md): for the kernel-checked fixed-length witness `S = AAABB` (`L = 3`), allowing the candidate genome length to vary does not restore the truth. It strictly strengthens the counterexample (best same-length ratio `2`, best unrestricted ratio `500/243`), and the non-vacuous coverage/all-bridged-triple-repeat certificate is refuted for the unrestricted candidate class in Lean.

@@ -3,3 +3,4 @@ import AssemblyP1.OpenProblem
 import AssemblyP1.ExactVariantECounterexample
 import AssemblyP1.FixedLengthExactCounterexample
 import AssemblyP1.FixedLengthBinomialCounterexample
+import AssemblyP1.VariableLengthExactCounterexample

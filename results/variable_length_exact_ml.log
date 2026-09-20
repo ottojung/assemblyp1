@@ -1,0 +1,80 @@
+==========================================================================
+A. Fixed-length baseline: S = AAABB, L = 3, G = 5
+==========================================================================
+   max same-length ratio over all 4^5 circular genomes: 2
+   maximizers: ['AAAAB', 'AAABA', 'AABAA', 'ABAAA', 'BAAAA']
+
+==========================================================================
+B. Variable-length search for S = AAABB (any candidate length)
+==========================================================================
+   exhaustive binary n <= 22: max ratio = 500/243 = 2.057613169
+   first maximizer: n=9 word=BAABAAAAA
+   exhaustive ternary (A,B,C) per length:
+      n= 1 max ratio = 0 = 0.000000
+      n= 2 max ratio = 0 = 0.000000
+      n= 3 max ratio = 0 = 0.000000
+      n= 4 max ratio = 125/64 = 1.953125
+      n= 5 max ratio = 2 = 2.000000
+      n= 6 max ratio = 125/72 = 1.736111
+      n= 7 max ratio = 500/343 = 1.457726
+      n= 8 max ratio = 125/64 = 1.953125
+      n= 9 max ratio = 500/243 = 2.057613
+
+   proof-support run identities over all binary circular words n <= 18:
+      violations of n >= alpha + 3 x: 0
+      relaxed AM-GM optimum max alpha*x^2 s.t. alpha+3x<=n is 4n^3/243,
+      hence ratio <= 125*4/243 = 500/243
+
+   maximizer family D_k = (A^3 B A^4 B)^k, ratio exactly 500/243:
+      k= 1 len=  9 d(AAA)= 3 d(AAB)= 2 d(BAA)= 2 ratio=500/243
+      k= 2 len= 18 d(AAA)= 6 d(AAB)= 4 d(BAA)= 4 ratio=500/243
+      k= 3 len= 27 d(AAA)= 9 d(AAB)= 6 d(BAA)= 6 ratio=500/243
+      k= 4 len= 36 d(AAA)=12 d(AAB)= 8 d(BAA)= 8 ratio=500/243
+      k= 5 len= 45 d(AAA)=15 d(AAB)=10 d(BAA)=10 ratio=500/243
+      k=10 len= 90 d(AAA)=30 d(AAB)=20 d(BAA)=20 ratio=500/243
+
+==========================================================================
+D. L = 2 exploratory instance S = AACAGG, sample {AA:5, CA:1, GG:1}
+==========================================================================
+   truth L=2 spectrum: {'AA': 1, 'AC': 1, 'CA': 1, 'AG': 1, 'GG': 1, 'GA': 1}
+   fixed-length competitor AAAGGC ratio: 32
+   exhaustive connected-Eulerian n=13  max ratio = 18345885696/62748517 = 292.371622
+   exhaustive connected-Eulerian n=14  max ratio = 258280326/823543 = 313.620935
+   exhaustive connected-Eulerian n=15  max ratio = 8192/25 = 327.680000
+   exhaustive connected-Eulerian n=16  max ratio = 352218537/1048576 = 335.901772
+   exhaustive connected-Eulerian n=17  max ratio = 139314069504/410338673 = 339.509967
+   exhaustive connected-Eulerian n=18  max ratio = 1024/3 = 341.333333
+   exhaustive connected-Eulerian n=19  max ratio = 311814831744/893871739 = 348.836212
+   exhaustive connected-Eulerian n=20  max ratio = 110270727/312500 = 352.866326
+   exhaustive connected-Eulerian n=21  max ratio = 291600000/823543 = 354.079872
+
+   structural bound n >= a+g+2c+1 over connected Eulerian matrices:
+      violations for n <= 14: 0
+   growth family M(a,g,c): AA=a, GG=g, CA=c, AC=c-1, GC=1, AG=1
+   (n = a+g+2c+1, connected and balanced), ratio -> supremum:
+      n=   9 (a,g,c)=(5,1,1) ratio=182.898948
+      n=  21 (a,g,c)=(15,3,1) ratio=354.079872
+      n=  40 (a,g,c)=(27,6,3) ratio=441.296151
+      n= 100 (a,g,c)=(71,14,7) ratio=494.967373
+      n= 500 (a,g,c)=(356,71,36) ratio=523.696368
+      n=2000 (a,g,c)=(1427,286,143) ratio=529.262007
+   supremum (not attained by any finite candidate) = 437400000/823543 = 531.1198079517402
+
+==========================================================================
+E. Well-definedness checks
+==========================================================================
+   (1) each factor (d_i/N)^x_i <= 1, so the likelihood part f(D) <= 1:
+       bounded; no unbounded-likelihood candidate.
+   (2) short candidates for the AAABB sample (0 when a type is missing):
+         A          f = 0  ratio = 0
+         AA         f = 0  ratio = 0
+         AAA        f = 0  ratio = 0
+         AAAB       f = 1/64  ratio = 125/64
+         AAAAB      f = 2/125  ratio = 2
+         AAABAAAAB  f = 4/243  ratio = 500/243
+   (3) AAABB: 500/243 is attained, at lengths 9,18,27,... (plateau).
+       Truth is not a maximiser: variable length does not restore it.
+   (4) AACAGG: supremum 437400000/823543 is approached but not attained, so the
+       variable-length exact-ML maximum does not exist for that sample.
+
+all assertions passed.
