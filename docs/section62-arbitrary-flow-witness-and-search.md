@@ -268,6 +268,7 @@ computation + open]
 |---|---|
 | `docs/independent-se62-bidirected-model.md` | it enumerated **spelled** competitors and found `AAATT → AAAATT`; this note searches **arbitrary** flows and shows the relaxation is strict |
 | `docs/section62-bidirected-lowerbound1-determination.md` | provides the source-faithful §6.2 reading and the `AAATT` witness this note extends |
+| `docs/se62-ml-cycle-obstruction.md` | proves the structural reason (profitable elementary cycle, self-loop primitive, multiplicity-blindness) and already notes the self-loop ratio `9/4` at `x=(2,1,1)`; this note adds the **global** optimum and the **non-spellability** of it |
 | `docs/section62-aaatt-reduced-flow-cone-and-spectra.md` | supplies the cone `{(a,k,k)}` and the single-molecule run-structure fact used for non-spellability |
 | `docs/section62-edge-and-transitive-reduction-rules.md` | independent audit of the corrected Myers rule; this search conforms to it |
 | `FeasibleType` Lean predicate | not used here; it does not encode conservation and admits `(2,2,1)`, which this corrected cone forbids |
@@ -279,9 +280,12 @@ computation + open]
 **Does.** It produces a finite exact witness under the corrected §6.2 object in
 which a strict-`I_s` truth is a genuine feasible flow but is beaten by an
 arbitrary feasible flow that is not any genome spectrum — so the §6.2 optimum is
-not the truth even after restricting to §6.2-feasible objects. It also records
-the corrected Myers reduction and its effect on the `o_min = 1` cone, plus an
-explicit negative boundary for the searched box.
+not the truth even after restricting to §6.2-feasible objects. This is the
+sharpening over `docs/se62-ml-cycle-obstruction.md`, which isolates the
+profitable self-loop at `x=(2,1,1)` but evaluates only the self-loop increment;
+here the resulting global optimum is computed and shown to be non-spellable. The
+note also records the corrected Myers reduction and its effect on the `o_min = 1`
+cone, plus an explicit negative boundary for the searched box.
 
 **Does not.** It is a finite computation, not a kernel-checked theorem, and it
 makes no global claim. It does not settle which Medvedev–Brudno layer the 2016
