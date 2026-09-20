@@ -1,15 +1,15 @@
 import Mathlib
 
 /-!
-# A sequence-level Section 6.2 counterexample under bridging conditions
+# A finite Section 6.2 bridging counterexample (sequence-level certificate)
 
 This file kernel-checks the finite witness recorded in
 `docs/bridging-se62-flow-ml-counterexample.md`.  Under the Medvedev–Brudno §6.2
 reading in which the vertices of the bidirected read-overlap graph are read
-*DNA molecules* (so a word and its reverse complement are one vertex) and the
-lower bound `1` is per read occurrence, the truth-induced flow need not be a
-maximum-likelihood maximizer, even when the source-faithful bridging hypothesis
-`I_s` holds and the truth is an admissible §6.2 candidate.
+*DNA molecules* (so a word and its reverse complement are one vertex), the
+truth-induced flow need not be a maximum-likelihood maximizer, even when the
+source-faithful bridging hypothesis `I_s` holds and the truth is an admissible
+§6.2 candidate.
 
 Instance:
 
@@ -18,16 +18,25 @@ Instance:
 * read length `L = 3`, realized starts `(0, 1, 4)` (`n = 3` reads);
 * external known genome size `N = 5` (Medvedev–Brudno §6.1);
 * observed read-molecule classes `x = { AAA:1, AAT:1, TAA:1 }`;
-* truth spectrum `d_S = { AAA:2, AAT:2, TAA:1 }`;
+* truth spectrum `d_S = { AAA:1, AAT:2, TAA:2 }`;
 * competitor `D = AAAATT` (length `6`), `d_D = { AAA:2, AAT:2, TAA:2 }`.
 
-Both `truth` and `competitor` satisfy the sequence-level §6.2 feasibility
-criterion `supp(spec_L(·)) = supp(x) ∧ x ≤ d_·`; both are spelled by their
-cyclic length-`3` window walks.  The `I_s` certificate (coverage, the maximal
-triple repeat of `A` all-bridged, and the interleaving conjunct vacuous) is
-checked below.  The literal §6.1 product-of-binomial-marginals objective with
-the fixed external `N = 5` and `n = 3` is strictly larger for the competitor:
-ratio `9/8`.
+Scope of the kernel check.  This file proves a *sequence-level
+support/lower-bound* condition `SeqSupportLB` (`supp(spec_L(·)) = supp(x)` and
+`x ≤ d_·`) for `truth` and `competitor`, together with the `I_s` certificate
+(coverage, the maximal triple repeat of `A` all-bridged, interleaving vacuous)
+and the literal §6.1 product-of-binomial-marginals ratio `9/8`.
+
+`SeqSupportLB` is **not** the Medvedev–Brudno §6.2 feasibility definition. The
+source condition is a bidirected flow on the transitively reduced overlap graph
+with vertex lower bound `1`, edge lower bounds `0`, signed-incidence balance, and
+a supersource/sink. The exact graph/flow certificate for this instance (both
+`truth` and `competitor` are bidirected circuits with zero vertex balance and no
+supersource/sink usage) is verified computationally in
+`docs/section62-mb09-bidirected-graph-audit.md` and
+`scripts/verify_se62_mb09_bidirected_graph.py`; it is not reproduced in Lean
+here.  `SeqSupportLB` is a stronger finite sufficient certificate that happens
+to hold for this instance.
 
 Scope.  This file is about the finite instance only.  It does not settle which
 Medvedev–Brudno object the Shomorony et al. (2016) sentence intends, nor the
@@ -121,19 +130,22 @@ def dS (c : Fin 8) : Nat := spec5 truth c
 /-- Competitor spectrum `d_D`. -/
 def dD (c : Fin 8) : Nat := spec6 competitor c
 
-/-! ## Sequence-level §6.2 feasibility -/
+/-! ## Sequence-level support/lower-bound certificate -/
 
-/-- Sequence-level §6.2 feasibility of a molecule spectrum `d` against observed
-counts `x`: support equality together with the per-occurrence lower bound. -/
-def Feasible (d x : Fin 8 → Nat) : Prop :=
+/-- Sequence-level support/lower-bound certificate for a molecule spectrum `d`
+against observed counts `x`: support equality together with the per-occurrence
+lower bound `x ≤ d`.  This is a finite *sufficient* condition that holds for
+this witness; it is not the Medvedev–Brudno §6.2 flow feasibility definition
+(see the module docstring and `docs/section62-mb09-bidirected-graph-audit.md`). -/
+def SeqSupportLB (d x : Fin 8 → Nat) : Prop :=
   (∀ c, 0 < d c ↔ 0 < x c) ∧ ∀ c, x c ≤ d c
 
-theorem truth_feasible : Feasible dS obs := by
-  unfold Feasible dS obs spec5 window5 cyc5 cls code rc bitA comp truth readStarts
+theorem truth_feasible : SeqSupportLB dS obs := by
+  unfold SeqSupportLB dS obs spec5 window5 cyc5 cls code rc bitA comp truth readStarts
   decide
 
-theorem competitor_feasible : Feasible dD obs := by
-  unfold Feasible dD obs spec6 window6 window5 cyc6 cyc5 cls code rc bitA comp
+theorem competitor_feasible : SeqSupportLB dD obs := by
+  unfold SeqSupportLB dD obs spec6 window6 window5 cyc6 cyc5 cls code rc bitA comp
     truth competitor readStarts
   decide
 
@@ -323,12 +335,13 @@ theorem competitor_strictly_better : lik obs dS < lik obs dD := by
 /-! ## Main finite theorem -/
 
 /-- Kernel-checked finite counterexample to statement (P): the instance
-satisfies the source-faithful `I_s` certificate, the truth is a sequence-level
-§6.2 feasible candidate, a competitor is also a sequence-level §6.2 feasible
-candidate, and the competitor strictly beats the truth-induced flow under the
-literal §6.1 objective. -/
+satisfies the source-faithful `I_s` certificate, the truth and a competitor
+satisfy the sequence-level support/lower-bound certificate, and the competitor
+strictly beats the truth under the literal §6.1 objective.  The exact §6.2
+bidirected-flow admissibility of both is checked computationally in
+`scripts/verify_se62_mb09_bidirected_graph.py`, not here. -/
 theorem se62_bridging_flow_counterexample :
-    SourceCertificate ∧ Feasible dS obs ∧ Feasible dD obs ∧ lik obs dS < lik obs dD :=
+    SourceCertificate ∧ SeqSupportLB dS obs ∧ SeqSupportLB dD obs ∧ lik obs dS < lik obs dD :=
   ⟨truth_source_certificate, truth_feasible, competitor_feasible,
     competitor_strictly_better⟩
 

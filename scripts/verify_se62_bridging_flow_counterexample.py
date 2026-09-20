@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-Self-contained exact verification of a Section 6.2 sequence-level counterexample
-to "bridging conditions force the truth-induced flow to be maximum-likelihood".
+Self-contained exact verification of a Section 6.2 counterexample to
+"bridging conditions force the truth-induced flow to be maximum-likelihood".
 
 Instance (2026-09-20):
 
@@ -11,7 +11,7 @@ Instance (2026-09-20):
     realized starts   (0, 1, 4)          (n = 3 reads)
     external size     N = |S| = 5        (Medvedev-Brudno known genome size)
     observed          x = { AAA:1, AAT:1, TAA:1 }   (read *molecule* classes)
-    truth spectrum    d_S = { AAA:2, AAT:2, TAA:1 }
+    truth spectrum    d_S = { AAA:1, AAT:2, TAA:2 }
     competitor        D = AAAATT         (|D| = 6)
     competitor spec   d_D = { AAA:2, AAT:2, TAA:2 }
 
@@ -20,8 +20,10 @@ Claims checked (all exact, fractions.Fraction):
   (1) The realized reads cover S.
   (2) Every maximal triple repeat of S is all-bridged by the reads,
       and the interleaved-repeat condition is vacuous: R in I_s.
-  (3) Both S and D are *sequence-level* Section 6.2 feasible w.r.t. R:
-      supp(spec_L(.)) == supp(x) and d_w >= x_w for every observed w.
+  (3) Both S and D satisfy the *sequence-level support/lower-bound certificate*
+      w.r.t. R: supp(spec_L(.)) == supp(x) and d_w >= x_w for every observed w.
+      This is a stronger finite sufficient condition; it is NOT the Medvedev-
+      Brudno section 6.2 feasibility definition (see the audit note below).
   (4) Each of S and D is spelled by a cyclic walk in the read-overlap graph
       (consecutive L-windows overlap in L-1 symbols), so the flow is a circuit
       and uses every observed read molecule at least once.
@@ -32,6 +34,12 @@ Claims checked (all exact, fractions.Fraction):
 Consequently, under the source-faithful Section 6.2 reading in which the
 truth-induced flow is an admissible candidate, the truth-induced flow is not a
 maximum-likelihood maximizer.  Bridging (I_s) does not force it to be one.
+
+The exact section 6.2 bidirected-graph and flow admissibility certificate is a
+separate script: `verify_se62_mb09_bidirected_graph.py` (see
+`docs/section62-mb09-bidirected-graph-audit.md`).  The `d_S` printed here is the
+corrected value; an earlier prose table in the note printed `{AAA:2, AAT:2,
+TAA:1}`, which was a start-3 indexing error (the window is TTA, class TAA).
 
 Scope / caveats (see docs/bridging-se62-flow-ml-counterexample.md):
   * The candidate D has length 6 != N = 5.  Section 6.2 does not constrain the
@@ -168,7 +176,7 @@ def check_I_s(S, starts, L):
 
 
 def feasible(x, sp):
-    """Sequence-level Section 6.2 feasibility (branch Observation-7 criterion)."""
+    """Sequence-level support/lower-bound certificate (a sufficient, not the source section 6.2, condition)."""
     return set(sp) == set(x) and all(sp[w] >= c for w, c in x.items())
 
 
@@ -218,11 +226,11 @@ def main():
     checks.append((f"(3) supp(spec(S)) == supp(x); supp(S)={sorted(dS)}",
                    set(dS) == set(x)))
     checks.append((f"(3) d_S >= x; d_S={dict(dS)}", all(dS[w] >= c for w, c in x.items())))
-    checks.append(("(3) S is sequence-level Section 6.2 feasible", feasible(x, dS)))
+    checks.append(("(3) S satisfies the support/lower-bound certificate", feasible(x, dS)))
     checks.append((f"(3) supp(spec(D)) == supp(x); supp(D)={sorted(dD)}",
                    set(dD) == set(x)))
     checks.append((f"(3) d_D >= x; d_D={dict(dD)}", all(dD[w] >= c for w, c in x.items())))
-    checks.append(("(3) D is sequence-level Section 6.2 feasible", feasible(x, dD)))
+    checks.append(("(3) D satisfies the support/lower-bound certificate", feasible(x, dD)))
 
     checks.append(("(4) S spelled by a cyclic overlap walk", spelled_by_circuit(S, L)))
     checks.append(("(4) D spelled by a cyclic overlap walk", spelled_by_circuit(D, L)))

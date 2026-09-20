@@ -1,13 +1,26 @@
-# Bridging conditions do not force the truth-induced §6.2 flow to be maximum-likelihood: a sequence-level counterexample
+# Bridging conditions do not force the truth-induced §6.2 flow to be maximum-likelihood: a bidirected circuit counterexample
 
 _Status: source reading + mathematical argument + exact-rational certificate,
 2026-09-20. Independent of the computational-search and source-audit packets.
 All claims are labelled **source fact**, **mathematical argument**,
 **verified computation**, **conjecture**, or **open**._
 
+_Audit correction (2026-09-20). This note originally printed the truth spectrum
+as `d_S = { AAA:2, AAT:2, TAA:1 }`; that is a table error (the start-3 window of
+`AAATT` is `TTA`, class `TAA`, not `TTT`). The correct occurrence counts are
+`d_S = { AAA:1, AAT:2, TAA:2 }`, which the Lean module and the companion Python
+script already compute. The ratio `9/8` is unchanged. The note also presented
+"support equality plus `x ≤ d`" as §6.2 feasibility; that is a strictly stronger
+sequence-level certificate, not the MB09 §6.2 flow definition. The exact
+bidirected graph, transitive reduction, balance, and supersource/sink checks are
+in [`docs/section62-mb09-bidirected-graph-audit.md`](section62-mb09-bidirected-graph-audit.md)
+and `scripts/verify_se62_mb09_bidirected_graph.py`. The witness survives that
+check._
+
 _Reproduction: `python3 scripts/verify_se62_bridging_flow_counterexample.py`
 (self-contained, exact `fractions.Fraction`, deterministic, under a second;
-exits non-zero on any assertion failure)._
+exits non-zero on any assertion failure). The exact §6.2 graph/flow certificate
+is `python3 scripts/verify_se62_mb09_bidirected_graph.py`._
 
 _Relation to prior work: this note resolves, in the negative, the
 per-occurrence variable-length case left **open** by the issue-#36 branch
@@ -26,9 +39,10 @@ The well-posed source-faithful statement
 > candidate ⇒ the truth-induced flow maximizes the §6.1 objective over the
 > §6.2 feasible set,
 
-is **false** under the Section 6.2 reading in which vertices are read molecules
-(bidirected / reverse-complement reading) and the lower bound `1` is
-per-occurrence.
+is **false** under the Section 6.2 reading in which vertices are read DNA
+molecules (bidirected / reverse-complement reading), the candidate is a
+bidirected flow, and the source's lower bound is the per-vertex `1` (not a
+per-occurrence `x_w`).
 
 The witness is
 
@@ -39,14 +53,14 @@ read length       L = 3
 realized starts   (0, 1, 4)          (n = 3 reads)
 external size     N = |S| = 5
 observed          x = { AAA:1, AAT:1, TAA:1 }        (read-molecule classes)
-truth spectrum    d_S = { AAA:2, AAT:2, TAA:1 }      (|S| = 5)
+truth spectrum    d_S = { AAA:1, AAT:2, TAA:2 }      (|S| = 5)
 competitor        D = AAAATT         (|D| = 6)
 competitor spec   d_D = { AAA:2, AAT:2, TAA:2 }      (|D| = 6)
 ```
 
-`I_s` holds; both `S` and `D` are sequence-level §6.2 feasible (their window
-supports both equal `supp(x)`, and both dominate `x` per occurrence); each is a
-spelled cyclic molecule, hence a §6.2 circuit; and the literal §6.1
+`I_s` holds; both `S` and `D` induce admissible §6.2 bidirected circuits on the
+transitively reduced read-overlap graph (the explicit graph and flow checks are
+in `docs/section62-mb09-bidirected-graph-audit.md`); and the literal §6.1
 product-of-binomial-marginals objective with external `N = 5` satisfies
 
 ```text
@@ -125,33 +139,41 @@ Medvedev–Brudno (2009), §6.2: the candidate object is a convex min-cost
 
 ---
 
-## 2. The well-posed statement (P) and the sequence-level feasibility criterion
+## 2. The statement under test and the sequence-level certificate
 
 Because §6.2’s candidates are *flows*, the truth is a candidate only if its
-window walk is a legal flow. The branch analysis
-`docs/section62-bidirected-flow-feasibility.md` §2 derives (from Observation 7
-and the consecutive-window overlap, and the fact that transitive reduction
-preserves spelled molecules) the criterion:
+window walk is a legal flow. The exact §6.2 feasibility condition is the
+bidirected-flow one of §1.3 (vertex lower bound `1`, edge lower bounds `0`,
+signed-incidence balance, supersource/sink), **not** support equality or
+`x ≤ d`. For the `G = 5` witness below, exact flow feasibility is established
+directly by exhibiting the truth and competitor as bidirected circuits on the
+explicit transitively reduced graph
+(`docs/section62-mb09-bidirected-graph-audit.md`).
 
-> A circular molecule `D` is **sequence-level §6.2 feasible** with respect to the
-> observed read-molecule multiset `x` iff
+The branch analysis `docs/section62-bidirected-flow-feasibility.md` §2 derives a
+*sufficient sequence-level certificate* (stronger than §6.2 feasibility):
+
+> A circular molecule `D` satisfies the **sequence-level support/lower-bound
+> certificate** with respect to the observed read-molecule multiset `x` iff
 > **(1)** `supp(spec_L(D)) = supp(x)`, and
-> **(2)** `d_D(w) ≥ x_w` for every observed type `w` (per-occurrence lower bound).
+> **(2)** `d_D(w) ≥ x_w` for every observed type `w`.
 
-The proof is short: necessity is Observation 7 plus the lower bound `1` at each
-read occurrence; sufficiency is the cyclic window walk, whose consecutive
-windows overlap in `L−1` symbols. [mathematical argument; citation, not
-re-derived here]
+The consecutive-window walk gives feasibility at the flow level; the
+support/lower-bound certificate is a convenient finite sufficient condition
+(exact as a *sequence-level* characterization only at `o_min = L−1`, and using a
+per-occurrence lower bound that is stronger than the source's per-vertex `1`).
+The witness satisfies it, but the certificate is not the source definition.
 
-With that criterion, the precise statement under test is:
+A precise statement under test is:
 
 > **(P)** For every finite instance `(S, R)` with `R ∈ I_s` for which the truth
-> `S` is sequence-level §6.2 feasible, and every sequence-level §6.2 feasible
-> `D`, `L_{6.1}(D) ≤ L_{6.1}(S)`.
+> `S` is an admissible §6.2 flow, and every admissible §6.2 flow `D`,
+> `L_{6.1}(D) ≤ L_{6.1}(S)`.
 
 Statement (P) is the natural formalization of “bridging guarantees the
 maximum-likelihood sequence is the true sequence” once the §6.2 flow layer is
-fixed. [modeling choice]
+fixed. The witness refutes it already on the spelled-circuit (single-molecule)
+sub-case. [modeling choice]
 
 ---
 
@@ -172,10 +194,10 @@ Circular windows of `S` (length-5, positions `0..4`):
 | 0 | `AAA` | `AAA` |
 | 1 | `AAT` | `AAT` |
 | 2 | `ATT` | `AAT` |
-| 3 | `TTT` | `AAA` |
+| 3 | `TTA` | `TAA` |
 | 4 | `TAA` | `TAA` |
 
-So `d_S = {AAA:2, AAT:2, TAA:1}` and the realized reads at `(0,1,4)` give
+So `d_S = {AAA:1, AAT:2, TAA:2}` and the realized reads at `(0,1,4)` give
 `x = {AAA:1, AAT:1, TAA:1}`. [verified computation]
 
 ### 3.1 `I_s` holds
@@ -191,7 +213,7 @@ So `d_S = {AAA:2, AAT:2, TAA:1}` and the realized reads at `(0,1,4)` give
   length-2 pair `AA@(0,1)`; no two have four cyclically alternating starts, so
   the interleaving conjunct is vacuous. [verified computation]
 
-### 3.2 Both `S` and `D` are sequence-level §6.2 feasible
+### 3.2 Both `S` and `D` are admissible §6.2 flows
 
 For `D = AAAATT` (length 6):
 
@@ -208,11 +230,15 @@ So `d_D = {AAA:2, AAT:2, TAA:2}`. Hence `supp(spec_3(S)) = supp(spec_3(D)) =
 supp(x) = {AAA, AAT, TAA}`, and `d_S(w), d_D(w) ≥ x_w` for each observed `w`.
 Both `S` and `D` are spelled by their cyclic length-3 window walks
 (consecutive windows overlap in `L−1 = 2` symbols), each visiting all three
-observed read-molecule vertices. [verified computation]
+observed read-molecule vertices; on the explicit transitively reduced
+bidirected graph these walks are valid bidirected circuits with vertex lower
+bound `1`, edge lower bounds `0`, zero read-vertex balance, and no
+supersource/supersink usage (`docs/section62-mb09-bidirected-graph-audit.md`).
+[verified computation]
 
-Note the collapse that makes the truth feasible: `ATT ~ AAT` and `TTT ~ AAA`
+Note the collapse that makes the truth feasible: `ATT ~ AAT` and `TTA ~ TAA`
 under `A ↔ T`, so `S`’s spectrum support is exactly the three observed classes
-even though `S` also contains the (non-observed as such) words `ATT`, `TTT`.
+even though `S` also contains the (non-observed as such) words `ATT`, `TTA`.
 
 ### 3.3 The competitor strictly wins
 
@@ -246,18 +272,22 @@ The finite instance is kernel-checked in
 
 ```text
 AssemblyP1.Section62BridgingCounterexample.se62_bridging_flow_counterexample
-  : SourceCertificate ∧ Feasible dS obs ∧ Feasible dD obs ∧ lik obs dS < lik obs dD
+  : SourceCertificate ∧ SeqSupportLB dS obs ∧ SeqSupportLB dD obs ∧ lik obs dS < lik obs dD
 ```
 
 proves, for the concrete data above: the `I_s` certificate (`Covers`,
 `TripleAllBridged`, and `¬ HasInterleaving`, the last by explicit finite
-enumeration), sequence-level §6.2 feasibility of both `S` and `D` (support
-equality plus per-occurrence lower bounds over the `Fin 8` molecule-class
-space), and the strict likelihood inequality. The `§6.1` product is reduced to
-the three-element class support and evaluated with `norm_num`; the file contains
-no `sorry`, `axiom`, `admit`, or `native_decide`, and the main theorem depends
-only on the three standard Lean axioms (`propext`, `Classical.choice`,
-`Quot.sound`). [verified computation, kernel-checked]
+enumeration), the sequence-level support/lower-bound certificate of both `S`
+and `D` (support equality plus per-occurrence lower bounds over the `Fin 8`
+molecule-class space), and the strict likelihood inequality. The `§6.1` product
+is reduced to the three-element class support and evaluated with `norm_num`; the
+file contains no `sorry`, `axiom`, `admit`, or `native_decide`, and the main
+theorem depends only on the three standard Lean axioms (`propext`,
+`Classical.choice`, `Quot.sound`). The Lean file does **not** model the
+bidirected graph, transitive reduction, balance, or supersource/sink; that
+source-level certificate is checked separately in
+`scripts/verify_se62_mb09_bidirected_graph.py` (verified computation, not
+kernel-checked). [verified computation, kernel-checked]
 
 ---
 
@@ -268,16 +298,15 @@ The mechanism is structural and uses only source-level features:
 1. **Reverse complementarity creates multiplicity.** A molecule can contain
    more copies of a read *molecule class* than the number of times that class
    was sampled, because a window and the reverse complement of another window
-   coincide. Here `ATT ~ AAT` and `TTT ~ AAA`.
+   coincide. Here `ATT ~ AAT` and `TTA ~ TAA`.
 2. **Per-occurrence lower bounds under `n < N`.** With `n = 3 < N = 5` reads,
-   per-occurrence feasibility does not force `d_S = x` (that collapse needs
-   `n = N = G`; see `docs/section62-conditional-conservation-lemma.md` §2). Here
-   `S` is feasible (`d_S ≥ x`) with genuine slack in `AAT` and `TAA`.
-3. **Support equality permits reallocation.** Since feasibility is support
-   equality plus lower bounds, `D` may move units of multiplicity onto an
-   observed type with `x_w > 0` while keeping the same support. Increasing
-   `d(AAA)` from `1` to `2` multiplies that type’s §6.1 factor by `9/8`, and the
-   other two types are unchanged.
+   the support/lower-bound certificate does not force `d_S = x` (that collapse
+   needs `n = N = G`; see `docs/section62-conditional-conservation-lemma.md` §2).
+   Here the certificate gives `d_S ≥ x` with genuine slack in `AAT` and `TAA`.
+3. **Support equality permits reallocation.** In the certificate, `D` may move
+   units of multiplicity onto an observed type with `x_w > 0` while keeping the
+   same support. Increasing `d(AAA)` from `1` to `2` multiplies that type’s
+   §6.1 factor by `9/8`, and the other two types are unchanged.
 
 The same mechanism, at `G = 6`, gives further witnesses (e.g. `S = AAATAT`,
 `D = AAAATAT`, ratio `128/125`); the `G = 5` instance is the smallest with a
@@ -293,7 +322,7 @@ clean integer ratio. [verified computation, bounded]
 | §6.2 statement **open under per-occurrence**, bounded zero counterexamples | same, §7.1 | **resolved negatively** in the variable-length case by §3 here |
 | No sequence-level §6.2 counterexample over 85 572 instances | `docs/section62-bidirected-flow-feasibility.md` §5 | explained: that search fixed `n = |S| = N`; the collapse there is the `n = N` slice, not bridging |
 | `I_s` unused in the `n = N` slice collapse | `docs/section62-conditional-conservation-lemma.md` §2, Theorem 3 | consistent: §3 here uses `n ≠ N` |
-| Per-occurrence, `I_s`, truth-feasible `AAATT → AAAATT`, ratio 9/8 | `docs/section62-conditional-conservation-lemma.md` §5 (branch commit `03a695e`) | same numerical witness; this note adds the **§6.2 sequence-level** reading, the spelled-circuit checks, and the resolution of the branch’s open item |
+| Per-occurrence, `I_s`, truth-feasible `AAATT → AAAATT`, ratio 9/8 | `docs/section62-conditional-conservation-lemma.md` §5 (branch commit `03a695e`) | same numerical witness; this note adds the explicit §6.2 bidirected-graph/flow certificate, the spelled-circuit checks, and the resolution of the branch’s open item |
 
 The important correction to the branch’s bounded search is analytic, not
 computational: for a **per-occurrence** feasible truth one necessarily has
@@ -342,10 +371,11 @@ The single-strand bounded zero is evidence only and is stated as such.
 |---|---|
 | Shomorony `I_s` definition and the 2016 open-question sentence | source fact (Shomorony et al. 2016, Eq. (1), §5) |
 | MB §6.1 objective and §6.2 bidirected flow | source fact (MB09 §6.1–6.2, PMC3154397) |
-| Sequence-level §6.2 feasibility = support equality ∧ per-occurrence lower bound | mathematical argument (branch derivation, Observation 7) |
-| `S = AAATT`, `D = AAAATT`: `I_s`; truth and competitor §6.2-feasible; spelled circuits | **kernel-checked** (`AssemblyP1.Section62BridgingCounterexample`), plus verified computation (exact rationals) |
+| Sequence-level support/lower-bound certificate = support equality ∧ per-occurrence lower bound | mathematical/verified finite condition; **not** the §6.2 definition |
+| `S = AAATT`, `D = AAAATT`: `I_s`; both are admissible bidirected §6.2 circuits (vertex LB 1, edge LB 0, balance 0, no supersource/sink) | **verified computation** (`scripts/verify_se62_mb09_bidirected_graph.py`) + mathematical proof (`docs/section62-mb09-bidirected-graph-audit.md`) |
+| `SeqSupportLB dS obs ∧ SeqSupportLB dD obs` | **kernel-checked** (`AssemblyP1.Section62BridgingCounterexample`) |
 | Literal §6.1 ratio `9/8 > 1` | mathematical argument + **kernel-checked** (`AssemblyP1.Section62BridgingCounterexample`) |
-| Statement (P) is false under the bidirected per-occurrence reading | follows |
+| Statement (P) is false for the bidirected spelled-circuit sub-case | follows |
 | Statement (P) under the single-strand reading | **open** (bounded zero evidence) |
 | Statement (P) under the fixed-length restriction `|D| = N` | **open** (bounded zero evidence in the branch) |
 | Which §6.1/§6.2 object and strand convention the 2016 sentence intends | source ambiguity, unchanged |
@@ -372,14 +402,19 @@ source/model questions, not consequences of this witness.
 
 ```sh
 python3 scripts/verify_se62_bridging_flow_counterexample.py
+python3 scripts/verify_se62_mb09_bidirected_graph.py
 lake build AssemblyP1.Section62BridgingCounterexample
 ```
 
-The Python script re-derives `x`, `d_S`, `d_D`, the `I_s` certificate, both
-sequence-level feasibility claims, both spelled-circuit checks, and the exact
+The first Python script re-derives `x`, `d_S`, `d_D`, the `I_s` certificate, both
+sequence-level certificate claims, both spelled-circuit checks, and the exact
 `9/8` ratio; it exits non-zero on any failure and uses only exact
-`fractions.Fraction` arithmetic. The Lean module kernel-checks the finite
-`I_s` certificate, the two feasibility claims, and the strict likelihood
+`fractions.Fraction` arithmetic. The second Python script builds the explicit
+transitively reduced bidirected overlap graph, checks the reduction, and
+verifies that both `S` and `D` are admissible bidirected circuits (vertex
+lower bound `1`, edge lower bounds `0`, zero read-vertex balance, no
+supersource/sink usage). The Lean module kernel-checks the finite `I_s`
+certificate, the two `SeqSupportLB` claims, and the strict likelihood
 inequality (see §3.4).
 
 ---
