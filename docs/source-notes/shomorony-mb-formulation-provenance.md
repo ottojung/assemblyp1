@@ -369,7 +369,7 @@ This is why the §6.2 feasibility work remains essential rather than optional.
 
 The existing issue #36 comment cites the Shomorony paper as
 "DOI 10.1093/bioinformatics/btw267". Source fact (Crossref): `btw267` is
-"Genome assembly from synthetic long read clouds," *Bioinformatics* 32(17),
+"Genome assembly from synthetic long read clouds," *Bioinformatics* 32(12),
 i216–i224. The Shomorony et al. paper under discussion is
 `10.1093/bioinformatics/btw450` (Bioinformatics 32(17), i494–i502), matching the
 Reference section of the accepted PDF. The `btw267` DOI in that comment is a
