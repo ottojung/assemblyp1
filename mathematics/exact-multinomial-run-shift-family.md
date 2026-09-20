@@ -209,24 +209,26 @@ A single read bridges the copy only if its window contains both `p` and
 `p+q-1`. On a circle there are exactly two arcs joining these positions.
 
 - **`C`-side arc** (through the `C`-run): the window contains positions
-  `p, p+1, ..., p+q-1`, hence exactly `q` `C`'s (any extension that still
-  contains the whole `C`-run also has `c = q`, or more if it wraps). `D` has
-  `C`-run `q-1`, so no window of `D` has `q` `C`'s.
-- **`A`-side arc** (through the `A`-run): the window has the form
-  `C^a A^p C^b` with `a, b >= 1` (it must traverse all `p` `A`'s of the
-  `A`-run and hit the two `C`-run ends). Its `C`'s form two blocks separated by
-  `A`'s. Every window of `D` meets `D`'s single `C`-run in a single contiguous
-  block, so no window of `D` has two separated `C`-blocks.
+  `p, p+1, ..., p+q-1`, hence at least `q` `C`'s. `D` has `C`-run `q-1`, so
+  no window of `D` has `q` or more `C`'s.
+- **`A`-side arc** (through the `A`-run): the window must traverse the
+  entire `A`-run (it leaves the `C`-run at `p+q-1`, crosses all `p` `A`'s, and
+  re-enters at `p`), so it contains exactly `p` `A`'s and has the form
+  `C^a A^p C^b` with `a, b >= 1` (two separated `C`-blocks). The analogous
+  two-block windows of `D`, which traverse `D`'s whole `A`-run, contain
+  exactly `p+1` `A`'s. Since a read type is a linear word, `C^a A^p C^b` and
+  `C^a A^(p+1) C^b` are distinct types, and `D` has no two-block type with
+  exactly `p` `A`'s.
 
 Every window bridging the middle copy is therefore absent from `D`; since
 `I_s` requires at least one such window to be observed, the observed sample
 assigns `D` a zero factor. ∎
 
-(*The `C`-side count `c = q` is an exact equality because `D`'s maximum
-`C`-count is `q-1`; the `A`-side two-block shape is impossible in a two-run
-word with a single `C`-run. The probe part (C) of the verification script
-enumerates all bridging types for several `(p,q)` and confirms every one has
-`d_D = 0`.*)
+(*The `C`-side count satisfies `c >= q`, and `D`'s maximum `C`-count is
+`q-1`. On the `A`-side the `A`-count is forced to be exactly `p` in `S` but
+exactly `p+1` in `D`. Thus in both cases the bridging type is absent. The probe
+part (C) of the verification script enumerates all bridging types for several
+`(p,q)` and confirms every one has `d_D = 0`.*)
 
 ## 5. The remaining cases: `q = 1` and `q = 2, p != L`
 
