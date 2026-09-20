@@ -101,12 +101,18 @@ multiplicity one in both. Hence for the sample
 L(D)/L(S) = 2^x.                                                (2.2)
 ```
 
-**Observation (parameter range of the clean regime).** Formula (2.1) can
-exceed `1` for many `(p, q, L)` with `p, q >= L`; but such parameters
-**cannot** satisfy `I_s`, because the `A`-run of length `p >= 3` then contains
-a maximal triple repeat `A^(p-2)` whose all-bridged clause requires a read of
-length at least `p` containing both its neighbours. This is the subject of
-§4.
+**Observation (why the clean regime does not give counterexamples).** Formula
+(2.1) is correct likelihood algebra for all `p, q >= L`, but no clean-regime
+member is an `I_s`-feasible counterexample. The `A`-run of length `p >= 3`
+contains the maximal triple repeat `A^(p-2)`, whose middle copy has neighbours
+`0` and `p-1`. A bridging read either stays on the `A`-side (which requires
+length at least `p`, and to stay `D`-admissible must not enclose the whole
+`C`-run, so needs `L >= p`) or takes the `C`-side arc, which contains the
+entire `C`-run (all `q` `C`'s) and is therefore absent from `D`, whose `C`-run
+is `q-1`. For `q >= 3` the separate obstruction of Theorem 4 rules out every
+`I_s`-feasible `D`-admissible sample; for `q <= 2` the only surviving
+parameters are the slice of §3. Hence the `I_s`-feasible slice is the opposite
+boundary `p = L`, `q = 2`, not the clean regime.
 
 ## 3. The infinite slice `q = 2`, `p = L`
 
