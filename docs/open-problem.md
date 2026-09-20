@@ -10,7 +10,7 @@ Near the end of the paper the authors state:
 
 The maximum-likelihood formulation they refer to is attributed to Medvedev and Brudno (2009). The exact definitions from that formulation must be incorporated before this repository claims to contain the final formal statement.
 
-A primary-source trace of what the phrase “the maximum-likelihood formulation of the AP (Medvedev and Brudno, 2009)” does and does not denote is recorded in [`docs/source-notes/shomorony-mb-formulation-provenance.md`](source-notes/shomorony-mb-formulation-provenance.md); it separates the source facts from the reading and keeps the candidate-universe choice explicit.
+A primary-source trace of what the phrase “the maximum-likelihood formulation of the AP (Medvedev and Brudno, 2009)” does and does not denote is recorded in [`docs/source-notes/shomorony-mb-formulation-provenance.md`](source-notes/shomorony-mb-formulation-provenance.md); it separates the source facts from the reading and keeps the candidate-universe choice explicit. An independent reconciliation of the four candidate referents, the witness-sufficiency question, and the existing notes is [`docs/source-notes/mb-formulation-referent-reconciliation.md`](source-notes/mb-formulation-referent-reconciliation.md). The accepted text selects none of them; the repository must keep the referent, the candidate class, and the tie semantics explicit rather than silently choosing.
 
 ## Assembly model used by Shomorony et al.
 
