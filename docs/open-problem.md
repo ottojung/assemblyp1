@@ -10,6 +10,8 @@ Near the end of the paper the authors state:
 
 The maximum-likelihood formulation they refer to is attributed to Medvedev and Brudno (2009). The exact definitions from that formulation must be incorporated before this repository claims to contain the final formal statement.
 
+A primary-source trace of what the phrase “the maximum-likelihood formulation of the AP (Medvedev and Brudno, 2009)” does and does not denote is recorded in [`docs/source-notes/shomorony-mb-formulation-provenance.md`](source-notes/shomorony-mb-formulation-provenance.md); it separates the source facts from the reading and keeps the candidate-universe choice explicit.
+
 ## Assembly model used by Shomorony et al.
 
 The paper works, for exposition, with a circular sequence `s` of length `G`. A sequencing experiment produces `N` error-free reads of common length `L`; reads are drawn independently and uniformly from the `G` possible length-`L` substrings of `s`, with circular indexing.
