@@ -12,10 +12,10 @@ kernel-checked witnesses do and do not reach._
 
 1. The three 2016 Shomorony artifacts and the Medvedev–Brudno (2009) full text
    were re-retrieved independently for this note; the PDF hashes match the
-   ledger already recorded in
-   [`primary-provenance-verification.md`](primary-provenance-verification.md)
-   and [`shomorony-mb-formulation-provenance.md`](shomorony-mb-formulation-provenance.md),
-   so the readings below are of byte-identical artifacts.
+   ledger already recorded in `shomorony-mb-formulation-provenance.md` and in
+   `primary-provenance-verification.md` on the unmerged branch
+   `analysis/issue36-se62-bidirected-flow`, so the readings below are of
+   byte-identical artifacts.
 
 2. The source facts in `shomorony-mb-formulation-provenance.md` are
    independently corroborated: the accepted 2016 text names the
@@ -150,17 +150,19 @@ feasibility. Under reading 3 (§6.2), `D` is not a sequence-level feasible objec
 (windows `ABA` resp. `ACA` are unobserved), so the same pair says nothing there.
 Likewise, the exact multinomial candidate class is single-versus-double-strand
 parameterized: `AAABB` uses an abstract alphabet, while the real double-stranded
-reading changes which objects are §6.2-spellable (see
-[`../section62-bidirected-flow-feasibility.md`](../section62-bidirected-flow-feasibility.md)).
+reading changes which objects are §6.2-spellable (see the unmerged branch
+artifact `docs/section62-bidirected-flow-feasibility.md` on
+`analysis/issue36-se62-bidirected-flow`).
 The length axis, however, is closed.
 
 ## 5. What still blocks settlement
 
 1. **Reading 3, the §6.2 flow-feasible class.** No current witness has both the
    truth and the competitor in the sequence-level §6.2 feasible set. The
-   membership table in
-   [`../section-6-2-feasible-set-membership.md`](../section-6-2-feasible-set-membership.md)
-   §3 shows that in every witness either the competitor or the truth carries an
+   membership table in the unmerged branch artifact
+   `docs/section-6-2-feasible-set-membership.md` on
+   `analysis/issue36-se62-bidirected-flow` §3 shows that in every witness either
+   the competitor or the truth carries an
    unobserved length-`L` window; in the read-tiled witness only the competitor is
    spellable, so the truth is not even a candidate and the implication is not
    tested. This is a genuine gap, not a length gap.
