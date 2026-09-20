@@ -50,18 +50,21 @@ development host; `--quick` runs a small subset)._
    graph is *transitively reduced*, so this edge is exactly one that the
    reduction removes.
 
-5. **On the transitively reduced (Myers string) graph, the answer is NO in the
-   searched scope.** Over 7 552 per-occurrence truth-feasible instances per
-   `o_min` for binary `G = 5,6,7`, `L = 3`, single-strand, both `o_min = 1,2`,
-   there are **zero** flows (spellable or not) beating the truth. So the
-   previously-open non-spellable gap does **not** produce a counterexample once
-   the source's transitive reduction is applied, at least in this bounded scope.
+5. **On a transitive reduction that preserves spelled molecules (the
+   junction-containment string graph), the answer is NO in the searched
+   scope.** Over 6 134 per-occurrence truth-feasible instances per `o_min` for
+   binary `G = 5,6,7`, `L = 3`, single-strand, both `o_min = 1,2`, there are
+   **zero** flows (spellable or not) beating the truth; in every instance the
+   truth spectrum `d_S` is itself a feasible flow of the reduced graph, so the
+   comparison is well-posed. So the previously-open non-spellable gap does
+   **not** produce a counterexample once the source's transitive reduction is
+   applied, at least in this bounded scope.
 
 6. **Per-type counterexamples persist and are spellable.** Under the per-type
-   lower bound (`d_w ≥ 1` for every observed molecule), the reduced graph at
-   `o_min = 2` still has counterexamples (`G = 6`: 48 instances); the smallest is
-   the spectrum of the spelled molecule `0000101`. These are not a new
-   non-spellable phenomenon and lie outside the per-occurrence statement.
+   lower bound (`d_w ≥ 1` for every observed molecule), the reduced graph still
+   has counterexamples at `G = 6` (48 instances at each of `o_min = 1,2`); the
+   smallest is the spectrum of the spelled molecule `0000101`. These are not a
+   new non-spellable phenomenon and lie outside the per-occurrence statement.
 
 ---
 
@@ -96,12 +99,16 @@ special case of a single closed walk whose overlaps are consistent; a
 non-spellable flow is a general cone element.
 
 **Transitive reduction.** The source does not give a reduction algorithm. This
-note uses the standard Myers string-graph condition: remove `u → v` when some
-observed read `w` spans the junction, i.e.
-`overlap(u,w) + overlap(w,v) ≥ L`. This is order-independent and yields a
-subgraph of the raw overlap graph. A naive "drop every edge with any 2-hop
-path" rule was also tested in the exploration; it is stricter (it empties these
-small graphs) and only strengthens the negative result in §0.5.
+note uses a spelled-molecule-preserving reduction: remove `u → v` when some
+observed read `w` spans the `u`-`v` junction, i.e.
+`overlap(u,w) + overlap(w,v) ≥ L + overlap(u,v)`. This is order-independent,
+yields a subgraph of the raw overlap graph, and never removes the
+overlap-`(L-1)` edges of a spelled molecule's circuit, so the truth remains an
+admissible flow. A reachability-style "drop every edge with any 2-hop path"
+rule is stricter and can remove the truth's own circuit (making the question
+ill-posed); it was tested but is not used here. (The script additionally
+asserts, for every searched instance, that `d_S` is a feasible flow of the
+graph, so the per-occurrence comparison is well-posed.)
 
 ---
 
@@ -142,7 +149,7 @@ complete because the binomial domain requires `d_w ≤ N`.
 | string | per-occurrence | 2 | 5,6,7 | 422 / 1776 / 3936 | 0 |
 | full | per-type | 1 | 5,6 | 482 / 2508 | 660 / 7032 |
 | full | per-type | 2 | 5,6 | 482 / 2508 | 0 / 48 |
-| string | per-type | 1 | 5,6 | 482 / 2508 | 0 / 0 |
+| string | per-type | 1 | 5,6 | 482 / 2508 | 0 / 48 |
 | string | per-type | 2 | 5,6 | 482 / 2508 | 0 / 48 |
 
 Single-strand, binary alphabet, `L = 3`. Full counts are deterministic and
@@ -202,7 +209,7 @@ dies under that reduction.
 | `n ≤ G` under per-occurrence truth-feasibility | mathematical argument |
 | `S = 01011` full-graph non-spellable witness (ratio `32/27`) | verified computation, exact rationals, hand-checkable |
 | `d = x` is not any molecule's spectrum | verified computation (exhaustive over length-`4` words) |
-| Raw `o_min=1` winning edge is Myers-reducible | mathematical argument |
+| Raw `o_min=1` winning edge is junction-reducible (removed by the reduction) | mathematical argument |
 | String-graph per-occurrence zero over the printed scope | verified computation, bounded |
 | Per-type `o_min=2` witness `0000101` spellable | verified computation |
 

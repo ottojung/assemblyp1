@@ -40,12 +40,13 @@ Model (explicit assumptions)
 Two graph readings are compared, because the source says the graph is
 *transitively reduced* but reduction conventions differ:
 * "full": the raw overlap graph with threshold o_min, no reduction;
-* "string": Myers' string-graph reduction -- remove edge u->v when some read w
-  has u->w and w->v with overlap(u,w) + overlap(w,v) >= L, so that w spans the
-  u-v junction.  This is an order-independent, source-defensible reading, and
-  the string graph is a subgraph of the full graph.  (A naive "any 2-hop path"
-  rule is also tested in the analysis note; it is stricter and empties these
-  small graphs, which is why the junction condition is used here.)
+* "string": a source-defensible transitive reduction that preserves spelled
+  molecules -- remove edge u->v when some read w spans the u-v junction, i.e.
+  overlap(u,w) + overlap(w,v) >= L + overlap(u,v).  This is order-independent,
+  yields a subgraph of the full graph, and never removes the overlap-(L-1)
+  edges of a spelled molecule's own circuit, so the truth stays a candidate.
+  (A reachability or "any 2-hop path" reduction is stricter and can remove the
+  truth's own circuit; it is not used here.)
 
 Results (reproduced and asserted below)
 ---------------------------------------
@@ -238,16 +239,25 @@ def full_edges(types, L, omin):
 
 
 def string_reduce(types, L, omin):
-    """Myers string-graph reduction: drop u->v when a read w spans the
-    junction, i.e. overlap(u,w) + overlap(w,v) >= L."""
+    """String-graph reduction preserving spelled molecules.
+
+    Drop u->v when some read w lies inside the spelled u-v junction: with
+    ov = overlap(u,v), a length-L read w that starts s positions into the
+    junction has overlap(u,w) = L-s and overlap(w,v) = s+ov, so
+    overlap(u,w) + overlap(w,v) = L + ov.  The condition
+    overlap(u,w) + overlap(w,v) >= L + overlap(u,v) therefore says exactly
+    that w spans the junction, and it never removes the overlap-(L-1) edges of
+    a spelled molecule's own circuit.
+    """
     E = full_edges(types, L, omin)
     ov = overlap_length
     rem = set()
     for (u, v) in E:
+        thr = L + ov(u, v, L)
         for w in types:
             if (u, w) in E and (w, v) in E \
                     and (u, w) != (u, v) and (w, v) != (u, v):
-                if ov(u, w, L) + ov(w, v, L) >= L:
+                if ov(u, w, L) + ov(w, v, L) >= thr:
                     rem.add((u, v))
                     break
     return E - rem
@@ -372,6 +382,7 @@ def search(G, L, sigma, comp, per_occ, omin, mode, nmax=None, cap=None):
     N = G
     out = []
     inst = 0
+    truth_not_in_cone = 0
     if nmax is None:
         nmax = G
     for S in product(range(sigma), repeat=G):
@@ -393,6 +404,11 @@ def search(G, L, sigma, comp, per_occ, omin, mode, nmax=None, cap=None):
                 E = full_edges(types, L, omin)
                 if mode == "string":
                     E = string_reduce(types, L, omin)
+                # The truth must itself be a feasible flow, otherwise the
+                # comparison is ill-posed.  (Always true on the full graph;
+                # checked on the reduced graph too.)
+                if not flow_feasible(dict(spS), types, E):
+                    truth_not_in_cone += 1
                 lo = {w: (x[w] if per_occ else 1) for w in types}
                 for combo in product(*[range(lo[w], N + 1) for w in types]):
                     d = dict(zip(types, combo))
@@ -406,6 +422,10 @@ def search(G, L, sigma, comp, per_occ, omin, mode, nmax=None, cap=None):
                         out.append((S, starts, n, x, spS, d, r, frozenset(E)))
                         if cap is not None and len(out) >= cap:
                             return inst, out
+    if truth_not_in_cone:
+        raise AssertionError(
+            f"{truth_not_in_cone}/{inst} truth-feasible instances had d_S "
+            "outside the cycle cone of the searched graph")
     return inst, out
 
 
@@ -476,6 +496,7 @@ RECORDED = {
     (6, 3, "occ", "string", 2): 0,
     (7, 3, "occ", "string", 1): 0,
     (7, 3, "occ", "string", 2): 0,
+    (6, 3, "type", "string", 1): 48,
     (6, 3, "type", "string", 2): 48,
     (5, 3, "occ", "full", 1): 20,
     (5, 3, "occ", "full", 2): 0,
