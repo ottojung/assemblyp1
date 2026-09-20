@@ -35,6 +35,13 @@ replacement, which is the source model.  With distinct starts (n <= G) the
 smallest witness is G = 5 (AAATT, ratio 9/8; AATAT, ratio 243/128).  G = 3 has
 no witness (proved below).
 
+This G = 4 witness is an independent reproduction of "Witness C" in the
+parallel branch analysis/issue36-se62-minimality-audit-0920; the additional
+content here is (a) the exact global-optimum check (the componentwise integer
+target, not a bounded search) and (b) the exact feasible-flow enumeration
+showing the unmerged non-spellable (1,2,1) flow is infeasible on the
+maximal-overlap reduced graph.  It is not claimed as novel in isolation.
+
 Epistemic status
 ================
 Source facts are the Section 6.2/6.1 definitions (MB09 PMC3154397).  The
