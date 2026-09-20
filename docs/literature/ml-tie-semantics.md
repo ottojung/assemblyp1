@@ -28,6 +28,18 @@ Source: Paul Medvedev and Michael Brudno, “Maximum Likelihood Genome Assembly,
 
 The paper defines optimization of the likelihood but does not, in the relevant formulation, provide a tie-breaking rule or a theorem that the optimizer is unique. Its algorithmic language therefore does not supply the missing semantics in Shomorony et al.'s later sentence.
 
+### Ghodsi (2013/2016): an explicit equal-likelihood-tours remark
+
+A later, independent formulation of maximum-likelihood assembly records the tie phenomenon directly:
+
+> “Note that the resulting Eulerian graph may have many tours, all of which will have equal likelihood. Therefore any final solution (assembled sequence) is, by itself, only one of many possible solutions.”
+
+Source: Mohammadreza Ghodsi, “Constructing a genome assembly that has the maximum likelihood,” arXiv:1302.4391 (v1 2013; v3 2016), §constructing the integer program / prefix graph, <https://arxiv.org/abs/1302.4391>.
+
+The peer-reviewed journal version of the same line proves the stronger statement that the score is maximized by the true genome and that the optimum set is exactly the candidates inducing the observed read distribution, plus the same tie remark. See Ghodsi, Hill, Astrovskaya, Lin, Sommer, Koren, Pop, “De novo likelihood-based measures for comparing genome assemblies,” *BMC Research Notes* 6:334, 2013, DOI `10.1186/1756-0500-6-334`, Methods §“True genome obtains the maximum likelihood,” and the dedicated note [`ghodsi-2013-truth-maximizes-2026-09-20.md`](ghodsi-2013-truth-maximizes-2026-09-20.md).
+
+This is a source fact about that paper's own model (uniform, error-free, equal-length reads, known genome length). It shows that equal-likelihood multiple optima are a known, acknowledged feature of maximum-likelihood assembly objectives rather than an artifact of the repository's modeling. It concerns neither the Shomorony bridging hypotheses nor the 2016 question, so it does not resolve the intended semantics of the 2016 sentence; it does corroborate keeping the two schemas below distinct.
+
 ## Source-faithful conclusion
 
 The primary literature inspected here does **not resolve** whether the 2016 open question asks only for the truth to attain the maximum likelihood or for all maximum-likelihood solutions to represent the truth (equivalently, uniqueness modulo whatever genome equivalence the final source-faithful model adopts).

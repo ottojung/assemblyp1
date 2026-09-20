@@ -28,6 +28,41 @@ terminology. The right status for this repository is therefore:
 
 > **No resolution found as of 2026-09-17; the problem appears to remain open.**
 
+An independent citation-graph search on 2026-09-19 reached the same conclusion by
+intersecting the forward-citation sets of Shomorony et al. (2016), Medvedev–Brudno
+(2009), and Bresler–Bresler–Tse (2013); the only works citing both the bridging and
+ML lines are safe-and-complete papers and SAMA 2025. See
+[`literature-search-citation-graph-2026-09-19.md`](literature-search-citation-graph-2026-09-19.md)
+for the method, the exact intersections, and newly recorded adjacent citations.
+
+A further independent search on 2026-09-20 of the 2016 authors' own post-2016 output found that the
+Shomorony group continued the **identifiability / flow-decomposition** line (information-optimal
+multi-sample flow decomposition; sharp thresholds for reconstruction from substring sets) without
+addressing the maximum-likelihood question. See
+[`literature/shomorony-group-post2016-identifiability-2026-09-20.md`](literature/shomorony-group-post2016-identifiability-2026-09-20.md).
+
+A targeted search on 2026-09-20 of the **substring-spectrum reconstruction** literature found that
+the combinatorial half of the question — whether the complete `L`-mer spectrum determines the
+genome — is an old, fully characterized problem (Ukkonen 1992 conjecture; Pevzner 1995 proof),
+restated with an explicit necessary-and-sufficient theorem in Çelikkanat et al., NeurIPS 2024,
+Theorem 3.1. That characterization appears to coincide with the repository's Conjecture 4
+(`I_s`-admissibility ⇒ spectrum uniqueness). This **relocates the open content to the statistical
+layer**: a finite random sample need not rank the true spectrum first, even when the spectrum
+determines the genome. See
+[`literature/substring-spectrum-identifiability-2026-09-20.md`](literature/substring-spectrum-identifiability-2026-09-20.md).
+
+A further targeted search on 2026-09-20 of the **post-2009 likelihood-assembly** literature found a
+previously unrecorded primary source that *proves* the "truth is a maximizer" direction for the
+Medvedev–Brudno fixed-length read-count objective: Ghodsi, Hill, Astrovskaya, Lin, Sommer, Koren,
+Pop, *BMC Research Notes* 6:334, 2013 (`10.1186/1756-0500-6-334`). Their proof gives the KL identity
+`Σ_s q_s log p_s = −D_KL(Q‖P) − H(Q)`, so the maximizer set is exactly the candidates whose induced
+read-type distribution equals the observed one, and the true genome is a maximizer precisely when the
+observed distribution equals the true spectrum. The same paper explicitly notes equal-likelihood
+non-true optima can exist. This sharpens the tie semantics and shows the "truth-is-a-maximizer"
+property is an empirical-spectrum-equality statement, not a consequence of repeat bridging alone, in
+the unrestricted finite-sample exact objective. It does not settle the 2016 implication. See
+[`literature/ghodsi-2013-truth-maximizes-2026-09-20.md`](literature/ghodsi-2013-truth-maximizes-2026-09-20.md).
+
 There is substantial adjacent theory. The closest result is actually older than
 the 2016 question: Bresler, Bresler, and Tse (2013) prove a likelihood-based
 **necessary** condition. If a problematic interleaved pair or triple repeat has
