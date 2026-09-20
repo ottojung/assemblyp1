@@ -426,7 +426,14 @@ inequality (see §3.4).
    `G ≤ 6`, `L = 3`, but this is not a proof.
 2. **Fixed length.** Is (P) true when candidates are restricted to `|D| = N`?
    The branch’s bounded per-occurrence search found zero; the `n < N` regime was
-   not systematically covered.
+   not systematically covered. Update:
+   [`section62-same-length-lift-obstruction.md`](section62-same-length-lift-obstruction.md)
+   shows this witness cannot be same-lengthified while its truth, read multiset,
+   and `N` are held fixed (uniform-observation I-projection obstruction), that
+   length padding does not escape (bounded), and that under the per-vertex
+   bidirected reading a same-length witness exists once the sample is made
+   non-uniform (`AAATAT → AAAAAT`); the per-occurrence same-length sub-case
+   remains open.
 3. **Poincaré / certificate form.** Is there a clean invariant (e.g. a
    potential on the bidirected overlap graph) that characterizes when the
    truth-induced flow is the §6.1 optimum, beyond the complete-spectrum case?
