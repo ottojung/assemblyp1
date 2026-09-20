@@ -269,3 +269,12 @@ infeasible-truth witness); `docs/section-6-2-feasible-set-membership.md` (the
 membership table and the open question); `docs/section62-bidirected-flow-feasibility.md`
 (the `N = G` search); `docs/bridging-source-semantics.md` (predicate
 transcription); `docs/ml-formalization-contract.md` (variant discipline).
+
+_Note on cross-references._ `docs/read-tiled-counterexample.md`,
+`docs/section-6-2-feasible-set-membership.md`, and
+`docs/section62-bidirected-flow-feasibility.md` are currently branch artifacts
+and not yet on `main`. The finite claims of this note do not depend on them:
+`AssemblyP1/SequenceLevel62Counterexample.lean` and
+`scripts/verify_sequence_level_62_counterexample.py` are self-contained. The
+general-mechanism corollary in §4 does rely on the read-tiled dominance theorem
+stated in the branch artifact and should be re-checked if that theorem changes.
