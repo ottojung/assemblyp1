@@ -165,7 +165,13 @@ The length axis, however, is closed.
    the competitor or the truth carries an
    unobserved length-`L` window; in the read-tiled witness only the competitor is
    spellable, so the truth is not even a candidate and the implication is not
-   tested. This is a genuine gap, not a length gap.
+   tested. This is a genuine gap, not a length gap. **Update (same-length
+   packet).** Under the source-faithful per-vertex reading (support equality) the
+   gap is now closed for the same-length sub-case: `S = AAATAT`, `D = AAAAAT`
+   (`G = 6`) are both sequence-level §6.2-feasible and same-length, and `D`
+   strictly improves the §6.1 objective; see
+   [`../section62-same-length-bidirected-counterexample.md`](../section62-same-length-bidirected-counterexample.md).
+   The gap remains under the per-occurrence strengthening.
 2. **Reading 4, the broad ML principle.** If the phrase denotes an
    objective family rather than one formula, no finite witness settles it,
    because the objective is not fixed by the source.

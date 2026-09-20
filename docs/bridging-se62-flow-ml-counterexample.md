@@ -377,7 +377,7 @@ The single-strand bounded zero is evidence only and is stated as such.
 | Literal §6.1 ratio `9/8 > 1` | mathematical argument + **kernel-checked** (`AssemblyP1.Section62BridgingCounterexample`) |
 | Statement (P) is false for the bidirected spelled-circuit sub-case | follows |
 | Statement (P) under the single-strand reading | **open** (bounded zero evidence) |
-| Statement (P) under the fixed-length restriction `|D| = N` | **open** (bounded zero evidence in the branch) |
+| Statement (P) under the fixed-length restriction `|D| = N` | **false** under the source per-vertex reading (same-length witness `AAATAT → AAAAAT`, [`section62-same-length-bidirected-counterexample.md`](section62-same-length-bidirected-counterexample.md)); **open** under the per-occurrence strengthening (bounded zero evidence) |
 | Which §6.1/§6.2 object and strand convention the 2016 sentence intends | source ambiguity, unchanged |
 
 ---
@@ -425,8 +425,12 @@ inequality (see §3.4).
    variable-length regime? The bounded search is consistent with “true” for
    `G ≤ 6`, `L = 3`, but this is not a proof.
 2. **Fixed length.** Is (P) true when candidates are restricted to `|D| = N`?
-   The branch’s bounded per-occurrence search found zero; the `n < N` regime was
-   not systematically covered.
+   The branch's bounded per-occurrence search found zero; the `n < N` regime was
+   not systematically covered. Under the source-faithful per-vertex reading this
+   is now **refuted** by a same-length spelled witness (`S = AAATAT`,
+   `D = AAAAAT`, `G = 6`, ratio `5`); see
+   [`section62-same-length-bidirected-counterexample.md`](section62-same-length-bidirected-counterexample.md).
+   Under the per-occurrence strengthening it remains open in scope.
 3. **Poincaré / certificate form.** Is there a clean invariant (e.g. a
    potential on the bidirected overlap graph) that characterizes when the
    truth-induced flow is the §6.1 optimum, beyond the complete-spectrum case?
