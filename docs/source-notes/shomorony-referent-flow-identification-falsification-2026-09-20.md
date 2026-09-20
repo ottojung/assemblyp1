@@ -27,8 +27,9 @@ binomial product (Variant A) a close and, for the citation, equally live variant
 The §6.2 flow identification is a *consequential* reading — does ML optimality
 survive restriction to MB09’s algorithm/feasible set? — not the denotation of the
 phrase. That consequential reading is separately refuted by a kernel-checked
-same-length §6.2 witness, so the negative settlement does not depend on this
-adjudication.
+same-length §6.2 witness under the repository’s single-strand `I_s` panel (the
+strand-model caveat of §5.2 is tracked on issue #36), so the negative settlement
+does not depend on this adjudication.
 
 [source fact + source-supported inference + repository fact; §1–§6]
 
@@ -210,6 +211,12 @@ objective under an approximation; it is a legitimate *restriction* to test, but 
 is not what “the maximum-likelihood formulation” denotes in a sentence whose
 subject is a sequence.
 
+The one remaining escape is that the phrase denotes a *broad, formula-unspecified
+ML principle* rather than any MB09 object. That reading also does not select §6.2,
+and it fixes no objective, so it is not a definite mathematical statement to
+refute. It is the residual qualitative reading, not a competing identification of
+the flow.
+
 ## 5. Two refinements the model-match argument needs
 
 ### 5.1 MB09’s §6.1 is internally split; the match selects the formula
@@ -269,8 +276,9 @@ already refuted by same-length kernel-checked witnesses (Variant E by
 `AssemblyP1/FixedLengthExactCounterexample.lean`, Variant A by
 `AssemblyP1/FixedLengthBinomialCounterexample.lean`). Independently, the strongest
 consequential flow reading is refuted by the same-length §6.2 witness
-(`AssemblyP1/SameLengthSection62Counterexample.lean`). [repository fact +
-kernel-checked]
+(`AssemblyP1/SameLengthSection62Counterexample.lean`) under the repository’s
+single-strand `I_s` panel; the §5.2 strand caveat is tracked on issue #36.
+[repository fact + kernel-checked]
 
 Thus the identification question is now *decision-relevant only* for exposition:
 the published negative answer is robust whether “the maximum-likelihood
