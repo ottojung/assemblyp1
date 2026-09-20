@@ -90,11 +90,11 @@ Consequently in the clean regime, for a sample concentrated on `A^L`
 L(D)/L(S) = ((p-L+2)/(p-L+1))^{x_A} * ((q-L)/(q-L+1))^{x_C}.     (2.1)
 ```
 
-In the boundary regime `p = L`, `q = L-1` (the slice of interest), the
-spectra differ by `d_D(A^L) = 2` versus `d_S(A^L) = 1`, `D` drops the two
-types `A C^(L-1)` and `C^(L-1) A`, and creates the wrap type
-`A C^(L-2) A`; the common observed types `A^(L-1) C`, `C A^(L-1)` keep
-multiplicity one in both. Hence for the sample
+In the slice `p = L`, `q = 2` (the slice of §3), the spectra differ by
+`d_D(A^L) = 2` versus `d_S(A^L) = 1`; `D = A^(L+1) C` drops every
+`S`-window that contains both `C`s, namely the `L-1` types
+`A^a C^2 A^(L-2-a)` for `a = 0, ..., L-2`; the common observed types
+`A^(L-1) C`, `C A^(L-1)` keep multiplicity one in both. Hence for the sample
 `{A^L : x, A^(L-1) C : 1, C A^(L-1) : 1}`,
 
 ```text
