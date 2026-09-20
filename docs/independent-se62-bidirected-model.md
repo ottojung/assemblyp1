@@ -99,6 +99,16 @@ Assembly*, *J. Comput. Biol.* 16(8) (2009) 1101–1116,
   `l = l1 + l2 − L` with orientation consistency at the middle read. For
   `L = 3`, `l = 2` would need `l1 + l2 = 5` with `l1,l2 < 2`, impossible, so no
   maximal-overlap edge is ever removed; the script also asserts this.
+  **Correction (2026-09-20):** the implemented inequality
+  `e1.length < e.length and e2.length < e.length` is unsatisfiable together
+  with `l = l1+l2−L` for proper overlaps (it forces `l >= L+2 > L−1`), so the
+  function removes nothing for *any* input. The source-supported reading is
+  "spelled by two **proper** overlaps" (`l1,l2 < L`, which forces
+  `l1,l2 > l`), as pinned in
+  [`source-notes/se62-edge-and-transitive-reduction-rules.md`](source-notes/se62-edge-and-transitive-reduction-rules.md).
+  At `o_min = 2` the true reduction is also empty, so the certificate here is
+  unaffected; the `o_min = 1` edge count printed below is the *unreduced*
+  graph.
 
 **What is deliberately not claimed.** The model does not settle which MB09
 layer the 2016 Shomorony sentence denotes; it does not model the
