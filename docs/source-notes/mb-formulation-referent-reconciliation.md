@@ -247,6 +247,14 @@ Consequences:
    by another feasible flow, and the live source residue is whether the 2016
    sentence can be shown to intend reading (3) or (4).
 
+   **Update (2026-09-20).** The first (mathematical) half of that residue is now
+   closed: [`se62-feasibility-necessity-determination.md`](se62-feasibility-necessity-determination.md)
+   records a kernel-checked sequence-level §6.2-feasible instance in which a
+   competitor beats the truth under the literal §6.1 objective, so imposing §6.2
+   feasibility does not preserve the implication. The remaining source residue is
+   only whether the sentence intends reading (3) or (4); §6.2 feasibility is not
+   a separate necessary obligation.
+
 ## 8. Unresolved register
 
 1. **Referent.** No primary source selects among readings (1)–(4). The accepted

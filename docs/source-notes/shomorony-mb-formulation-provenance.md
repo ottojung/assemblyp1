@@ -366,6 +366,15 @@ universes (and the objective/strand/tie choices), not the length of the
 competitors. This is why the §6.2 feasibility work remains essential rather than
 optional.
 
+> **Update (2026-09-20), see
+> [`se62-feasibility-necessity-determination.md`](se62-feasibility-necessity-determination.md).**
+> The “essential” conclusion above predates the sequence-quantifier/version-edit
+> argument and the kernel-checked §6.2 determination (commit `65d9ea6`). Under
+> those, §6.2 is MB09’s *algorithm*, the accepted sentence is sequence-valued,
+> and the §6.2-restricted sequence-level implication is already false. The §6.2
+> packet was therefore valuable but is **not logically necessary** to settle the
+> published question as phrased.
+
 ## 8. Unresolved register
 
 1. **Which MB object the phrase intends:** exact multinomial vs fixed-`N`
