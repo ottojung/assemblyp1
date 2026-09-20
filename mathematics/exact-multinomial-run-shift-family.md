@@ -165,9 +165,10 @@ at `t` is bridged by a single read containing `t-1` and `t+ell`:
 - `t >= 2`: the read at `1` covers `1, ..., L`, containing `t-1 >= 1` and
   `t+ell <= L`.
 
-Every copy of every maximal triple repeat is thus bridged. (The maximal triple
-repeat selects the three copies `0, 1, L-ell`; the argument covers all of
-them, and `L = 2` has no triple repeat at all.)
+Every copy of `A^ell` (and hence every copy of every maximal triple repeat)
+is thus bridged. (A maximal triple repeat of `A^ell` selects three of the
+copies `0, 1, ..., L-ell`; the case split above covers every such copy, and
+`L = 2` has no triple repeat at all.)
 
 *Interleaved pairs.* Every `A`-pair `{0, L-ell}` contains the start `0`, so no
 two distinct `A`-pairs have four distinct starts. The `C`-pair `{L, L+1}` is
