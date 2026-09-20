@@ -85,6 +85,7 @@ DOI [10.1089/cmb.2009.0047](https://doi.org/10.1089/cmb.2009.0047),
 |---|---|---|
 | Published article PDF (typeset, `pdftotext -layout`) | cached `jcb09.pdf` | `bfeaec37de55e87c35438108c33a8052f0fd6eb56f2903bb1d50d2793d8a5aa3` |
 | PMC HTML body (re-read this run) | `PMC3154397` | HTML body + display equations `M26`–`M33` |
+| Author's thesis, Chapter 4 (same text; corroborates the `4^k` wording) | cached `medvedev_thesis.txt` | text extraction |
 
 The PDF hash is byte-identical to the artifact independently used in the
 unmerged branch artifact `docs/source-notes/mb09-se62-relations-independent-audit-2026-09-20.md`
@@ -170,6 +171,15 @@ Since §6.1 twice uses the phrase "the `k`-molecule" for the outcome and the
 `d_i`, and the paper separates `k`-mer from `k`-molecule throughout §3.1, the
 counting sentence and the `1..4^k` formula indices are the inconsistent half.
 [source fact + source-supported inference]
+
+**Corroboration in the author's thesis.** The same chapter is reproduced in
+Paul Medvedev's thesis (Chapter 4, "Maximum likelihood genome assembly"), where
+the identical sentences and the identical `4^k` indices appear: "the outcome of
+the trial is the `k`-molecule beginning at that position … There are `4^k` such
+variables" and `P[X_1 = x_1, …, X_{4^k} = x_{4^k}]`,
+`L[d_1, …, d_{4^k} | x_1, …, x_{4^k}]`. The inconsistency therefore also lives
+in the source text, not merely in a journal typesetting or OCR artifact.
+[source fact]
 
 ---
 
