@@ -118,9 +118,21 @@ observed molecule by `p =` its class representative and `n = rc(p)`:
 | `TAA` | `TAA` | `TTA` |
 
 Taking `o_min = 2 = L−1` (the source's own experiments use `o_min < L−1`; `L=3`
-gives only the values `o_min ∈ {1,2}`), the graph has **10 bidirected edges**.
-Each row is one strand overlap; `sign(x)`/`sign(y)` are the incidences per
-§3.3. Every edge has overlap length `2`.
+gives only the values `o_min ∈ {1,2}`), the graph has **10 strand-overlap
+realizations**, listed below. Each row is one strand overlap; `sign(x)`/`sign(y)`
+are the incidences per §3.3. Every row has overlap length `2`.
+
+Under MB09's §3.3 construction an overlap and its reverse-complement
+realization are the **same** bidirected edge: `p(x)` overlapping `p(y)` (case 1
+at `(x,y)`, incidences `(x+, y−)`) and `n(y)` overlapping `n(x)` (case 4 at
+`(y,x)`, incidences `(y−, x+)`) carry the identical incidence data. This is the
+double-stranded identification of §4.1 ("the choice of `z` does not affect the
+orientation of the edge") and Fig. 1B ("each read can be in either of two
+orientations, but two of the cases … are symmetric"). Quotienting by it, the ten
+rows are **6 distinct bidirected edges**. Every edge the two witness walks
+employ is a genuine edge of this `6`-edge graph, so the duplicated listing is
+immaterial to the certificate; `scripts/verify_se62_mb09_bidirected_graph.py`
+now reports both counts.
 
 ```text
 AAA -[p/p len 2]-> AAA   sign(+1, -1)
@@ -247,7 +259,7 @@ the same values, so the *certificates* were right and only the prose was wrong.
 | Claim | Status |
 |---|---|
 | §6.2 vertices = read DNA molecules; edges = bidirected overlaps `≥ o_min`; transitive reduction; vertex LB `1`, edge LB `0`, `u = ∞`; supersource/sink with large cost; `d_i` = vertex flow | **source fact** (MB09 §3.3–3.4, §5.2, §6.2) |
-| The 10-edge graph on `{AAA, AAT, TAA}` at `o_min = 2` and the two explicit circuits | **mathematical proof + verified computation** |
+| The graph on `{AAA, AAT, TAA}` at `o_min = 2` (10 strand-overlap realizations, 6 distinct bidirected edges) and the two explicit circuits | **mathematical proof + verified computation** |
 | Transitively-reduced graph retains every employed edge (both reduction readings) | **mathematical proof + verified computation** |
 | `d_S = {AAA:1, AAT:2, TAA:2}`, `d_D = {AAA:2, AAT:2, TAA:2}` are admissible §6.2 flows (LB1, LB0, balance 0, no source/sink) | **mathematical proof + verified computation** |
 | `L_{6.1}(D)/L_{6.1}(S) = 9/8 > 1` | **mathematical proof + verified computation** |

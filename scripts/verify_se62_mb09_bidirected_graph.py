@@ -127,6 +127,25 @@ def build_graph():
     return edges
 
 
+def edge_key(e):
+    """Incidence column and length of an edge (MB09 section 3.2 incidence
+    matrix I: V x E -> {-2,-1,0,1,2}).
+
+    MB09 section 3.3 defines an edge by its incidence pattern, not by the strand
+    pairing witnessing it.  A strand overlap and its reverse-complement
+    realization therefore have the same key (e.g. case 1 at (x,y) and case 4 at
+    (y,x) both give (x+, y-)), matching the double-stranded identification of
+    section 4.1 ("the choice of z does not affect the orientation of the edge")
+    and Fig. 1B's symmetry remark.  Realizations sharing a key are one edge, so
+    the count of distinct keys is the number of distinct bidirected edges.
+    """
+    col = {}
+    col[e["x"]] = col.get(e["x"], 0) + e["sign_x"]
+    col[e["y"]] = col.get(e["y"], 0) + e["sign_y"]
+    return (e["len"],
+            tuple(sorted((m.rep, s) for m, s in col.items() if s != 0)))
+
+
 # ---------------------------------------------------------------------------
 # (R) Transitive reduction.
 # ---------------------------------------------------------------------------
@@ -261,12 +280,20 @@ def main():
 
     # (G) graph
     graph = build_graph()
-    print(f"(G) explicit graph: {len(graph)} bidirected overlap edges among "
+    distinct = {}
+    for e in graph:
+        distinct.setdefault(edge_key(e), []).append(e)
+    print(f"(G) explicit graph: {len(graph)} strand-overlap realizations = "
+          f"{len(distinct)} distinct bidirected edges (after the MB09 "
+          f"sections 3.3/4.1 reverse-complement identification) among "
           f"{[word(m.rep) for m in OBSERVED]}")
     for e in graph:
         print(f"    {str(e['x']):>3} -[{strand_label(e['x'], e['sx'])}/"
               f"{strand_label(e['y'], e['sy'])} len {e['len']}]-> {str(e['y']):<3}"
               f"  sign(x)={e['sign_x']:+d} sign(y)={e['sign_y']:+d}")
+    checks.append((f"(G) {len(graph)} strand-overlap realizations reduce to "
+                   f"{len(distinct)} distinct bidirected edges",
+                   len(distinct) == 6))
     print()
 
     # (R) reduction
