@@ -50,3 +50,13 @@ This ambiguity should remain explicit in downstream theorem names, issue depende
 - The quoted/paraphrased statements about what the papers say are **source facts** from the primary papers cited above.
 - The conclusion that the inspected sources leave tie semantics unresolved is a **source-analysis result**.
 - The two-schema organization is a **modeling organization decision** designed to prevent an unsupported strengthening or weakening of the published question.
+
+## Related robustness audit
+
+[`../source-notes/candidate-equivalence-tie-robustness.md`](../source-notes/candidate-equivalence-tie-robustness.md)
+audits how the cyclic-shift / reverse-complement candidate equivalence and this
+tie dichotomy interact with the repository's integrated strict-improvement
+counterexamples. It shows (with a kernel-checked pure-logic file) that a strict
+improvement refutes the maximizer schema and every uniqueness-up-to-equivalence
+schema simultaneously, while a tie-only uniqueness refutation is relative to the
+equivalence chosen.

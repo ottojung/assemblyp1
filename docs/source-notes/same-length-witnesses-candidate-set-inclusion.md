@@ -183,6 +183,14 @@ The length axis, however, is closed.
    truth-is-a-maximizer from all-maximizers-are-truth; #31/#32 refute both for
    their objectives, but the schemas remain distinct for reading 3.
 
+**Update (equivalence/tie audit).** Items 3 and 4 above concern the *positive*
+direction and tie-only refutations. A strict-improvement witness is inert to
+them: the maximizer predicate never mentions the genome equivalence, and a
+strict winner lies outside every invariant quotient. See
+[`candidate-equivalence-tie-robustness.md`](candidate-equivalence-tie-robustness.md),
+which kernel-checks this separation and machine-checks that every integrated
+witness is strict and outside its truth's shift/dihedral orbit.
+
 ## 6. Exact corrections issued
 
 - `docs/source-notes/shomorony-mb-formulation-provenance.md` §7, first bullet:
