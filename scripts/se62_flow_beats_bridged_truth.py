@@ -382,8 +382,16 @@ W2 = dict(S=(0, 0, 0, 1, 1, 1), L=4, starts=(0, 1, 3, 4),
 W2MIN = dict(S=(0, 0, 1, 0, 1), L=3, starts=(0, 2, 4),
              d={(0, 0, 1): 1, (0, 1, 0): 2, (1, 0, 0): 1})
 
+# W3: a literal-lower-bound witness with a genuine length-3 triple repeat.
+# The truth is NOT per-occurrence feasible (its 0010 count is 1 < x_0010 = 2),
+# which is exactly what the literal Section 6.2 lower bound of 1 permits.
+W3 = dict(S=(0, 0, 0, 0, 0, 1), L=4, starts=(0, 2, 3, 3, 4, 5),
+          d={(0, 0, 0, 0): 1, (0, 0, 0, 1): 1, (0, 0, 1, 0): 2,
+             (0, 1, 0, 0): 2, (1, 0, 0, 0): 1})
+
 EXPECT_RATIO = {"W1": Fraction(128, 81), "W2": Fraction(16384, 15625),
-                "W2MIN": Fraction(3, 2)}
+                "W2MIN": Fraction(3, 2), "W3": Fraction(1024, 625)}
+PER_OCC = {"W1": True, "W2": True, "W2MIN": True, "W3": False}
 
 
 def report_witness(name, W, comp, sigma):
@@ -395,7 +403,7 @@ def report_witness(name, W, comp, sigma):
     types = sorted(dS)
     print("=" * 78)
     print(f"{name}: S = {lit(S)}  G = {G}  L = {L}  starts = {starts}  "
-          f"n = {sum(x.values())} < G")
+          f"n = {sum(x.values())}  per_occ = {PER_OCC[name]}")
     print(f"  I_s holds (and {len(trips)} triple-repeat classes) : "
           f"{check_I_s(S, starts, L, trips, inter)}")
     print(f"  d_S = { {lit(k): v for k, v in sorted(dS.items())} }")
@@ -403,7 +411,9 @@ def report_witness(name, W, comp, sigma):
     print(f"  d   = { {lit(k): v for k, v in sorted(d.items())} }")
     assert check_I_s(S, starts, L, trips, inter)
     assert set(x) == set(dS), "support equality (truth is a candidate)"
-    assert all(dS.get(w, 0) >= x[w] for w in x), "per-occurrence truth feasible"
+    if PER_OCC[name]:
+        assert all(dS.get(w, 0) >= x[w] for w in x), \
+            "per-occurrence truth feasible"
     # truth feasible on both graph readings
     for gname, E in [("reduced(rep)", graph_reduced(types, L, 1, comp)),
                      ("folded(o_min=1)", graph_folded(types, L, 1, comp))]:
@@ -426,8 +436,8 @@ def sensitivity(comp):
     """o_min sensitivity of the witnessed beats on the two graph readings."""
     print()
     print("o_min sensitivity (feasible + ratio > 1 on both sides)")
-    for name in ("W1", "W2", "W2MIN"):
-        W = {"W1": W1, "W2": W2, "W2MIN": W2MIN}[name]
+    for name in ("W1", "W2", "W2MIN", "W3"):
+        W = {"W1": W1, "W2": W2, "W2MIN": W2MIN, "W3": W3}[name]
         S, L, starts, d = W["S"], W["L"], W["starts"], W["d"]
         G = len(S)
         dS, x = spec_mol(S, L, comp), observed(S, starts, L, comp)
@@ -509,7 +519,7 @@ def main():
     a = ap.parse_args()
     sigma, comp = 2, make_comp(2)
 
-    for name, W in (("W1", W1), ("W2", W2), ("W2MIN", W2MIN)):
+    for name, W in (("W1", W1), ("W2", W2), ("W2MIN", W2MIN), ("W3", W3)):
         report_witness(name, W, comp, sigma)
     sensitivity(comp)
 
@@ -524,17 +534,17 @@ def main():
         (5, 3, 2, graph_reduced, True),
         (6, 3, 1, graph_reduced, True),
         (6, 3, 2, graph_reduced, True),
-        (5, 3, 1, graph_folded, True),
-        (5, 3, 2, graph_folded, True),
-        (6, 3, 1, graph_folded, True),
-        (6, 3, 2, graph_folded, True),
-        (5, 3, 1, graph_reduced, False),
-        (6, 3, 1, graph_reduced, False),
-        (5, 3, 1, graph_folded, False),
-        (6, 3, 1, graph_folded, False),
     ]
     if not a.quick:
         plans += [
+            (5, 3, 1, graph_folded, True),
+            (5, 3, 2, graph_folded, True),
+            (6, 3, 1, graph_folded, True),
+            (6, 3, 2, graph_folded, True),
+            (5, 3, 1, graph_reduced, False),
+            (6, 3, 1, graph_reduced, False),
+            (5, 3, 1, graph_folded, False),
+            (6, 3, 1, graph_folded, False),
             (5, 4, 1, graph_folded, True),
         ]
     for (G, L, omin, graph, po) in plans:

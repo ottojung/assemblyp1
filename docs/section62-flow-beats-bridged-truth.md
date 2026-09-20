@@ -10,8 +10,8 @@ Shomorony et al. open question; it closes the concrete residue recorded in
 that is not any single molecule.”_
 
 _Reproduction: `python3 scripts/se62_flow_beats_bridged_truth.py`
-(self-contained, exact `fractions.Fraction`, deterministic, ~47 s; exits non-zero
-on any failed assertion)._
+(self-contained, exact `fractions.Fraction`, deterministic, ~2.5 min; exits
+non-zero on any failed assertion)._
 
 _Relationship to prior work. The unmerged branch `analysis/issue36-nonspellable-broader`
 (commit `6b22d48`) contains witnesses for the same residue. This note was written
@@ -39,7 +39,8 @@ arithmetic._
 3. **The winning flow in each witness is small and hand-checkable.** The smallest
    beat in the searched scope is `S = 00101` (`G = 5`, `L = 3`), with
    `d = {001:1, 010:2, 100:1}`, objective ratio `3/2`. The witness with a
-   genuine length-3 triple repeat is `S = 000001` (`G = 6`, `L = 4`).
+   genuine length-3 triple repeat is `S = 000001` (`G = 6`, `L = 4`), ratio
+   `1024/625` under the literal lower-bound-1 reading.
 
 4. **The `o_min` dependence is a convention, not a theorem.** On the
    repository's representative-overlap graph the non-spellable beats exist only
@@ -198,6 +199,25 @@ ratio     L(d)/L(d_S) = 3/2
 Realized by the cycle `001 → 010 → 100 → 001` plus the tandem self-loop
 `010 → 010`.
 
+### W3 — `G = 6`, `L = 4`, a genuine length-3 triple repeat, literal reading
+
+```text
+S         = 000001,  G = 6,  L = 4,  starts = (0, 2, 3, 3, 4, 5),  n = 6 = G
+d_S       = {0000:2, 0001:1, 0010:1, 0100:1, 1000:1}
+x         = {0000:1, 0001:1, 0010:2, 0100:1, 1000:1}
+d         = {0000:1, 0001:1, 0010:2, 0100:2, 1000:1}
+I_s       holds; triple repeats include the length-3 class (000 at {0,1,2})
+nonspell  sum(d) = 7
+ratio     L(d)/L(d_S) = 1024/625 = 1.6384
+```
+
+Here `d_S(0010) = 1 < x(0010) = 2`: the observed count of read `0010` exceeds
+its copy number in the truth, which the literal lower-bound-1 model permits
+(reads are sampled with replacement) but the per-occurrence reading forbids.
+`S` has a genuine length-3 triple repeat, all of whose copies are bridged, so
+`I_s` is non-vacuous in the strongest sense. The same literal-reading phenomenon
+is abundant in the scope table below.
+
 ---
 
 ## 4. Exhaustive bounded scopes
@@ -272,7 +292,8 @@ folded graph remains a separate open modeling question (§6).
 |---|---|
 | §6.2 optimizes over flows / non-contiguous assemblies; vertex lower bound `1`; objective is the §6.1 binomial with external `N` | **source fact** |
 | A truth `S` is an admissible candidate iff `d_S` is a feasible flow; forces `supp(d_S)=supp(x)` | **mathematical argument** |
-| W1/W2/W2MIN are `I_s`-bridged, their truths are feasible flows, and their competitors are feasible, non-spellable flows with ratio `>1` | **verified computation** (exact rationals) |
+| W1/W2/W2MIN/W3 are `I_s`-bridged, their truths are feasible flows, and their competitors are feasible, non-spellable flows with ratio `>1` | **verified computation** (exact rationals) |
+| W1/W2/W2MIN truths are per-occurrence feasible; W3 is literal-only | **verified computation** |
 | Every non-spellable beat in the printed scopes has a triple-repeat truth | **verified computation**, bounded |
 | Representative-graph `per-occurrence` counts match the unmerged branch | **verified computation** (independent reproduction) |
 | On the folded bidirected relation the beats persist for all `o_min < L` | **verified computation + modeling argument** |
@@ -291,10 +312,11 @@ this note makes no claim about it.
 ## 7. Reproduce
 
 ```sh
-python3 scripts/se62_flow_beats_bridged_truth.py
+python3 scripts/se62_flow_beats_bridged_truth.py          # full, ~2.5 min
+python3 scripts/se62_flow_beats_bridged_truth.py --quick  # witness + 4 scopes, ~10 s
 ```
 
-The script verifies the three witnesses, prints the `o_min` sensitivity table,
+The script verifies the four witnesses, prints the `o_min` sensitivity table,
 runs the exhaustive scopes, and exits non-zero on any failed assertion. All
 arithmetic is exact `fractions.Fraction`.
 
