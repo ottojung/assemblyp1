@@ -374,6 +374,14 @@ this does not change the determination. [open]
 | `docs/section62-kkt-and-bridging-family.md` Theorem 3 (branch) | infinite family satisfying `I_s` | **refuted under strict bridging**; ratio identity itself correct |
 | `docs/section62-nonspellable-flow-counterexample.md` (branch) | per-occurrence string-graph zero | consistent: it uses per-occurrence truth feasibility, which excludes Witness 2; does not bear on the corrected lower bound `1` |
 | `docs/section62-bidirected-flow-source-fidelity-audit.md` (branch) | no source-faithful bidirected model exists | this note is a determination at the sequence/circuit level via Observation 7, which is reduction- and orientation-robust |
+| `docs/section62-aaatt-reduced-flow-cone-and-spectra.md` (this branch) | exact §6.2 copy-count cone of Witness 1's reads | **extends** the witness check: with Myers transitive reduction every closed §6.2 flow on `{AAA, AAT, TAA}` has `d_AAT = d_TAA`, so the feasible cone is `{(a,k,k)}`, `(1,2,2)` and `(2,2,2)` are real, and `(2,2,1)` is **not** a closed flow; also isolates that the finite `FeasibleType` predicate does not encode conservation |
+
+The last row matters for the scope of the kernel-checked witness: `FeasibleType`
+(support equality plus `d_w ≥ 1`) admits `(2,2,1)`, so it is a sufficient
+finite certificate, not §6.2 feasibility. The witness itself is unaffected — its
+`d_S = (1,2,2)` and `d_D = (2,2,2)` are genuine circuits — but the phrase
+"admissible §6.2 flow" must be justified by the graph/flow certificate (or by
+Lemma 3 of the new note), not by `FeasibleType`.
 
 ---
 
