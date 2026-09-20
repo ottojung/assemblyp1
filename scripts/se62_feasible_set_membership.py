@@ -14,10 +14,10 @@ docs/section-6-2-feasible-set-membership.md):
   * sequence (walk-spelling) level: a circular genome D every length-L window
     of which is an observed read type (so a closed walk spells D), with each
     observed read occurrence used at least once.  Equivalently
-    supp(spec(D)) subseteq supp(x) and d_D(w) >= x_w for all observed w.
-    This is the level at which Observation 7 of the source holds: the number
-    of times the walk visits a read equals the number of times it occurs as a
-    submolecule of the spelled molecule.
+    supp(spec(D)) = supp(x) and d_D(w) >= x_w for all observed w (the
+    per-occurrence reading).  This is the level at which Observation 7 of the
+    source holds: the number of times the walk visits a read equals the number
+    of times it occurs as a submolecule of the spelled molecule.
 
 All arithmetic is exact (fractions.Fraction).  Exits non-zero if any assertion
 fails.

@@ -21,7 +21,7 @@ assertions pass; exact `fractions.Fraction` arithmetic)._
 2. The sequence-level sub-case — the one relevant to "the maximum-likelihood
    **sequence** is the true sequence" — is exactly: `D` is a circular genome
    every length-`L` window of which is an observed read type, with each observed
-   read vertex used at least once. Equivalently `supp(spec(D)) ⊆ supp(x)` and
+   read vertex used at least once. Equivalently `supp(spec(D)) = supp(x)` and
    (per-occurrence reading) `d_D(w) ≥ x_w`. This is the set on which
    Observation 7 of the source holds (walk visits = submolecules of the spelled
    molecule).
@@ -95,20 +95,26 @@ sequence-level §6.2-feasible iff
 
 1. every length-`L` window of `D` is an observed read type
    (`supp(spec(D)) ⊆ supp(x)`); and
-2. every observed read occurrence is used at least once
-   (per-occurrence reading: `d_D(w) ≥ x_w`; per-*type* reading: only
-   `supp(spec(D)) ⊆ supp(x)`).
+2. every observed read is used at least once — per-**occurrence** reading:
+   `d_D(w) ≥ x_w`; per-**type** reading (duplicate reads collapsed to one
+   vertex): `d_D(w) ≥ 1` for every `w ∈ supp(x)`.
+
+Because condition (1) already gives `supp(spec(D)) ⊆ supp(x)` and condition (2)
+gives `supp(x) ⊆ supp(spec(D))`, **both** source readings force support
+equality `supp(spec(D)) = supp(x)`; they differ only in the multiplicity lower
+bound. Support containment alone (`SC`) is therefore a strict *relaxation* of
+the source feasible set, retained below as a convenient outer bound.
 
 **Why the criterion is exact (mathematical argument).** Condition (1) makes
 every step of `D`'s own cyclic window sequence a visited observed-read vertex;
-condition (2) makes each observed occurrence visited. All occurrences of a
-given read type have identical overlap neighbourhoods in the read-overlap graph,
-so the type-level closed walk of `D` lifts to an occurrence-level closed walk
-using each of the `x_w` occurrences at least once. Conversely any walk-spelled
+condition (2) makes each observed read visited. All occurrences of a given read
+type have identical overlap neighbourhoods in the read-overlap graph, so the
+type-level closed walk of `D` lifts to an occurrence-level closed walk using
+each of the `x_w` occurrences at least once. Conversely any walk-spelled
 molecule has windows among the vertices (Observation 7), so (1)–(2) are
 necessary. Hence the walk-spelling set is exactly
-`{D : supp(spec(D)) ⊆ supp(x) ∧ d_D ≥ x}` (per-occurrence) or its support-only
-version (per-type).
+`{D : supp(spec(D)) = supp(x) ∧ d_D ≥ x}` (per-occurrence) or its per-type
+counterpart.
 
 This is the same set called `F*(R)` in
 `docs/bridging-schemas-and-flow-feasibility-gaps.md` §4, here given a
@@ -121,8 +127,11 @@ walk-spelling derivation from Observation 7.
 
 ## 3. Membership of the repository's counterexamples
 
-`SC` = support containment `supp(spec(D)) ⊆ supp(x)`; `F*` = `SC` plus
-`d_D(w) ≥ x_w`. Reproduced by `scripts/se62_feasible_set_membership.py`.
+`SC` = support containment `supp(spec(D)) ⊆ supp(x)` (a relaxation of the
+source set, which forces equality); `F*` = `SC` plus `d_D(w) ≥ x_w` (the
+per-occurrence condition). The first four competitors below fail even `SC`;
+the last two satisfy the stronger `F*`. Reproduced by
+`scripts/se62_feasible_set_membership.py`.
 
 | witness | `D` feasible? | `S` feasible? | reason |
 |---|---|---|---|
