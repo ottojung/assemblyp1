@@ -10,7 +10,8 @@ intended)._
 
 _Reproduction:
 `python3 scripts/verify_sequence_level_62_counterexample.py` (all assertions
-pass; exact `fractions.Fraction`; deterministic)._
+pass; exact `fractions.Fraction`; deterministic) and
+`lake build AssemblyP1.SequenceLevel62Counterexample` (kernel check)._
 
 ---
 
@@ -150,6 +151,26 @@ The literal §6.1 separable binomial ratio is
 The sign of the comparison is therefore robust to the exact-vs-binomial
 objective fork.
 
+### 2.4 Kernel check
+
+`AssemblyP1/SequenceLevel62Counterexample.lean` kernel-checks the finite
+instance, using only `decide`/`norm_num`:
+
+| theorem | content |
+|---|---|
+| `truth_information_feasible` | coverage, all maximal triple repeats all-bridged, all interleaved pairs bridged (quantified over the finite instance) |
+| `truth_section62_feasible` | `supp(spec_4(S)) = supp(x)` and `d_S ≥ x` |
+| `competitor_read_tiled` | `spec_4(D) = x` |
+| `competitor_beats_truth` | `likelihoodTruth < likelihoodCompetitor`; `likelihood_ratio` gives `3888/3125` |
+| `sequence_level_section62_counterexample` | conjunction of the above |
+
+Axiom audit (`#print axioms`) reports only `propext`, `Classical.choice`,
+`Quot.sound`; no `sorry`, `admit`, or new axioms. The Lean `Interleaved`
+predicate checks cyclic alternation of the two selected starts by sorting the
+four positions and testing the label sequence, and `Bridged` uses the strict
+one-base-each-side extension convention; these match the source transcription in
+`docs/bridging-source-semantics.md`.
+
 ---
 
 ## 3. Why the earlier exhaustive search missed it
@@ -223,7 +244,7 @@ truth can be feasible simultaneously.
 |---|---|
 | `I_s` predicate transcription | source-supported (Bresler 2013 via Shomorony 2016; `docs/bridging-source-semantics.md`) |
 | Observation-7 sequence-level `F_flow` criterion | mathematical argument (source note `docs/section-6-2-feasible-set-membership.md` §2) |
-| the finite instance's predicates and ratios | verified computation (exact rationals) |
+| the finite instance's predicates and ratios | verified computation (exact rationals) + kernel-checked (`AssemblyP1/SequenceLevel62Counterexample.lean`) |
 | the general corollary | mathematical proof (repository Theorem 1) |
 | published-problem settlement | open |
 
