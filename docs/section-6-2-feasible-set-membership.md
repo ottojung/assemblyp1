@@ -243,10 +243,16 @@ The repeated-truth, truth-feasible regime is the remaining gap.
 3. **Transitive reduction and bidirectedness.** The strict sequence-level
    obstruction appears single-strand-robust (the truth's observed placements
    leave a cyclic gap larger than `L − 1`), but a fully explicit bidirected
-   formulation is not written down.
+   formulation is not written down. **Addressed for the #31/#32 witnesses in
+   `docs/section62-bidirected-flow-feasibility.md`:** under the real
+   double-stranded reading the #31 *truth* becomes feasible and its competitor
+   does not, so that witness inverts rather than transfers.
 4. **Re-run the `I_s` + truth-feasible search under the Observation-7
    criterion** to replace the loose-walk bounded evidence with an exact,
-   durably verified boundary.
+   durably verified boundary. **Done in
+   `docs/section62-bidirected-flow-feasibility.md` §5** for single-molecule
+   candidates (variable length up to `3G`, single-strand and revcomp readings):
+   zero counterexamples over 85 572 instances.
 5. **Which MB layer the 2016 sentence intends** (exact multinomial vs binomial
    approximation vs §6.2 flow) — unchanged.
 
