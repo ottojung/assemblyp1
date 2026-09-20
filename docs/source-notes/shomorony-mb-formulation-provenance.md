@@ -6,6 +6,12 @@ settle, the source ambiguity in
 [`../open-problem.md`](../open-problem.md) and reconciles the reading against
 [`../ml-formalization-contract.md`](../ml-formalization-contract.md)._
 
+_See also the independent reconciliation
+[`mb-formulation-referent-reconciliation.md`](mb-formulation-referent-reconciliation.md),
+which re-verifies these source facts, adds the sequence-vs-flow structural
+argument and the fixed-`N` domain refinement, and gives the witness-sufficiency
+matrix across the four readings._
+
 This note is deliberately about one phrase. It asks: when Shomorony et al.
 (2016) write "the maximum-likelihood formulation of the AP (Medvedev and Brudno,
 2009)", what does that phrase actually denote, given (a) Shomorony's own
