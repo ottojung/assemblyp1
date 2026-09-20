@@ -225,3 +225,26 @@ Cross-references: `docs/section62-bidirected-flow-feasibility.md` (§6 residue,
 §7 open questions); `docs/section-6-2-feasible-set-membership.md`;
 `docs/bridging-schemas-and-flow-feasibility-gaps.md` (Propositions A, D);
 `scripts/se62_nonspellable_flow_search.py` (reproduction).
+
+---
+
+## 7. Addendum (2026-09-20): the residue, broadened
+
+The central zero of §3–§4 (single-strand, binary, `L = 3`, `G <= 7`) is
+unchanged.  Two axes this note did not cover are attacked in
+`docs/section62-nonspellable-flow-counterexample-broadened.md`:
+
+1. **`n < G`.** The sequence-level searches (here and in
+   `docs/section62-bidirected-flow-feasibility.md` §5) fixed the number of
+   reads at `n = G`.  Allowing `n < G` produces a source-faithful single-strand
+   counterexample at `G = 6, L = 4`: `S = 000001`, `starts (0,2,3,4,5)`,
+   `n = 5`, competitor `D = 00001`, binomial ratio `625/512`.  The competitor
+   is a spelled molecule; both circuits use only overlap-`(L-1)` edges, so the
+   comparison is `o_min`-independent.
+2. **The bidirected reading.**  Under reverse-complement identification with
+   `o_min = 1`, a genuinely non-spellable feasible flow beats a §6.2-feasible
+   bridging truth at `G = 6, L = 4` (`S = 000111`, throughput `2` on each of
+   four observed molecules, ratio `16384/15625`).  The phenomenon is
+   `o_min = 1` only.
+
+Reproduction: `python3 scripts/se62_nonspellable_broader_search.py`.
