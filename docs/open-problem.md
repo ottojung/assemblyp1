@@ -12,6 +12,8 @@ The maximum-likelihood formulation they refer to is attributed to Medvedev and B
 
 A primary-source trace of what the phrase “the maximum-likelihood formulation of the AP (Medvedev and Brudno, 2009)” does and does not denote is recorded in [`docs/source-notes/shomorony-mb-formulation-provenance.md`](source-notes/shomorony-mb-formulation-provenance.md); it separates the source facts from the reading and keeps the candidate-universe choice explicit. An independent reconciliation of the four candidate referents, the witness-sufficiency question, and the existing notes is [`docs/source-notes/mb-formulation-referent-reconciliation.md`](source-notes/mb-formulation-referent-reconciliation.md). The accepted text selects none of them; the repository must keep the referent, the candidate class, and the tie semantics explicit rather than silently choosing.
 
+A focused primary-source audit of the sequence-vs-flow/assembly boundary and of the tie/equivalence semantics, together with an explicit verdict on whether the merged PR #40 §6.2 witness is sufficient to falsify the published sentence, is [`docs/source-notes/sequence-flow-and-tie-equivalence-audit-2026-09-20.md`](source-notes/sequence-flow-and-tie-equivalence-audit-2026-09-20.md). Its verdict is that PR #40 refutes one named conjunction of conventions but does not by itself settle the published question.
+
 ## Assembly model used by Shomorony et al.
 
 The paper works, for exposition, with a circular sequence `s` of length `G`. A sequencing experiment produces `N` error-free reads of common length `L`; reads are drawn independently and uniformly from the `G` possible length-`L` substrings of `s`, with circular indexing.
