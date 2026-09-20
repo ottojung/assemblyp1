@@ -213,9 +213,10 @@ per-type binomials. The thesis gives the resulting per-type cost verbatim:
 
 where `x_i` is the observed count of read type `i`, `n` the number of reads, and
 `N` the external genome size. **Source facts.** So `x_i` enters the cost as the
-exponent/weight of type `i`; `d_i` enters as the flow variable; the domain
-requires `0 < d_i < N`. The `x_i = 0` types contribute the factor
-`(1 − d_i/N)^{n}` in the literal product.
+exponent/weight of type `i`; `d_i` enters as the flow variable; the cost is
+finite on `0 < d_i < N` (the binomial factor is well defined there). Types with
+`x_i = 0` contribute the factor `(1 − d_i/N)^{n}` in the literal product, and
+types with `x_i > 0` require `d_i > 0`.
 
 ### 1.7 The output need not be a sequence
 
