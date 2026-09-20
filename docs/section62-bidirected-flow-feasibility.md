@@ -458,3 +458,33 @@ exact-rational reproduction, and the reading-dependence argument are in
 `docs/section62-fixed-length-bidirected-counterexample.md`. This refutes the
 fixed-length statement under the per-type bidirected reading and leaves the
 per-occurrence statement open.
+
+---
+
+## 12. Addendum (2026-09-20): the §5 zero is a theorem about its parameter slice
+
+The §5 search fixes the number of reads `n`, the external binomial denominator
+`N`, and the true genome length `G` all equal to `G`. In that slice the
+per-occurrence feasibility of the truth forces `d_S = x` (the truth is
+*read-tiled*), and the literal §6.1 binomial is coordinatewise maximized at
+`d_w = N x_w / n = x_w`. Hence **no** support-equal, lower-bounded candidate of
+any length can strictly beat the truth; the asserted `cex == 0` is a theorem and
+the enumeration was unnecessary. The bridging hypothesis `I_s` is not used.
+
+This means the §5 zero is **not** evidence for the generic §6.2 regime, in which
+the number of reads `n` is independent of the external `N = G`. Outside the slice
+explicit sequence-level §6.2 per-occurrence counterexamples with `I_s` exist, e.g.
+under the `A ↔ T` reading
+
+```
+G = 5, L = 3, n = 3, N = 5
+truth S = AAATT, observed x = {AAA:1, AAT:1, TAA:1}, competitor D = AAAATT
+I_s holds, truth and competitor per-occurrence feasible, §6.1 ratio 9/8.
+```
+
+Proofs, the read-tiling reduction, the explicit witnesses, and the exact
+reproduction script are in
+`mathematics/section62-peroccurrence-search-degeneracy.md` and
+`scripts/verify_se62_peroccurrence_slice.py`. The fixed-length per-occurrence
+statement at `n < G` remains open (there read-tiling is unavailable, since it
+requires `|D| = n < G`).
