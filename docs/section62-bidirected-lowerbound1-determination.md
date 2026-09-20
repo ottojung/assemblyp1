@@ -254,10 +254,14 @@ Hence `d_S = {000:1, 001:2, 100:2}` and, for the realised starts,
 flank `A,T` differ). Its copies are bridged by reads at starts `4` (contains
 `4,0,1`, strictly containing copy `0` at `-1,0,1` on the lift), `0` (contains
 `0,1,2`, copy `1` at `1` strictly inside), and `1` (contains `1,2,3`, copy `2`
-strictly inside). The length-`2` repeats (`00` at `{0,1}`, `11` at `{3,4}`) are
-ordinary pairs; the four starts `0,1,3,4` do not cyclically alternate between
-the two pairs, so the interleaving conjunct is vacuous. No other triple repeat
-exists. [mathematical proof + verified computation + kernel-checked]
+strictly inside). The maximal repeat pairs are `AA` at `{0,1}` (length `2`),
+`A` at `{0,2}` and `T` at `{3,4}` (both length `1`). The only candidate with
+four distinct starts is `A@{0,2}` with `T@{3,4}`, whose cyclic label order is
+`A,A,T,T` (adjacent, not alternating); the other pairings share a start. So no
+pair is interleaved and the interleaving conjunct is vacuous. (An earlier
+revision of this note mislabelled `T@{3,4}` as a length-`2` repeat `11`; it is
+the length-`1` repeat `T`. The correction is harmless to `I_s`.) No other triple
+repeat exists. [mathematical proof + verified computation + kernel-checked]
 
 **Truth and competitor are feasible.** `S` is spelled by its cyclic window
 walk; `D = 000011` is spelled by its cyclic window walk
