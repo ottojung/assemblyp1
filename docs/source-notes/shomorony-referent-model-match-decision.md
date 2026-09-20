@@ -15,8 +15,8 @@ circular sequence through its own length-`L` substring copy counts (issue readin
 (1), with the §6.1 fixed-`N` binomial product (2) a close variant). **MB09 §6.2
 flow feasibility is algorithmic machinery, not part of the referent.**
 
-The decisive argument is a source-model match that the existing notes do not
-state: Shomorony et al.'s own sequencing model — `N` error-free reads drawn
+The decisive argument is a source-model match that the current main-branch notes
+do not state: Shomorony et al.'s own sequencing model — `N` error-free reads drawn
 independently and uniformly from the `G` length-`L` substrings of a circular
 sequence `s` — *is* the probability model of MB09 §6.1's exact multinomial, whose
 displayed formula literally indexes `4^k` oriented read types. §6.2's
@@ -172,9 +172,9 @@ whose competitor wins under each well-posed reading:
 
 | Reading | Objective / class | Refuting witness |
 |---|---|---|
-| (1) | §6.1 exact multinomial, candidate-intrinsic `N(D)`, oriented types | #31 (`AAABB → AAAAB`, exact ratio `2`); #43 also gives ratio `3` |
-| (2) | §6.1 fixed-`N` binomial product | #32 (`AAACC → AAAAC`, ratio `1125/512`); #43 gives fixed-`N` ratio `5` |
-| (3) | §6.2 read-molecule flow/circuit class | #43 (`AAATAT → AAAAAT`), both sides admissible §6.2 circuits |
+| (1) | §6.1 exact multinomial, candidate-intrinsic `N(D)`, same-length oriented strings | #31 (`AAABB → AAAAB`, exact ratio `2`) |
+| (2) | §6.1 fixed-`N` product of binomials | #32 (`AAACC → AAAAC`, ratio `1125/512`) |
+| (3) | §6.2 read-molecule flow/circuit class | #43 (`AAATAT → AAAAAT`), both sides admissible §6.2 circuits, exact ratio `3` / fixed-`N` ratio `5` |
 | (4) | broad, objective-undetermined ML principle | not a definite mathematical statement |
 
 [repository fact + kernel-checked for the listed witnesses]
