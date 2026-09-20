@@ -219,7 +219,13 @@ source-fixing the probability model and the length/tie conventions.
    accepted text does not state it. [open]
 3. **Tie semantics:** truth is *a* maximizer vs every maximizer is the truth up
    to genome equivalence. [open]
-4. **Publisher supplement:** the accepted supplementary ZIP (sections A–G)
+4. **Sample-size quantifier:** per-instance over `R ∈ I_s` versus high-coverage
+   consistency. The sentence is phrased per read set, and the witnesses are
+   low-coverage, so they settle the per-instance reading only; under fixed-length
+   high coverage the truth is asymptotically the unique maximizer. See
+   [`issue36-finite-vs-asymptotic-regime.md`](issue36-finite-vs-asymptotic-regime.md).
+   [open]
+5. **Publisher supplement:** the accepted supplementary ZIP (sections A–G)
    remains uninspected (HTTP 403); it is the only unexamined accepted artifact
    that could name a §6.2/likelihood object. If it did, the §6.2 question would
    have to be revisited — though §6 already shows it would not by itself save the
@@ -238,7 +244,7 @@ source-fixing the probability model and the length/tie conventions.
 | §6.2 is not the direct referent of “maximum-likelihood sequence” | source-supported inference | §4–§5 |
 | The §6.2-restricted sequence-level implication is false | mathematical fact + kernel-checked | §6, `65d9ea6` |
 | §6.2 feasibility is not genuinely necessary for the published question | source reading + interpretation | §7 |
-| Probability model, length, tie semantics remain open | source gap | §9 |
+| Probability model, length, tie semantics, sample-size regime remain open | source gap | §9 |
 
 ## 11. Locators
 
