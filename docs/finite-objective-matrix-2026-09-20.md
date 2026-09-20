@@ -91,7 +91,7 @@ denotes the candidate-intrinsic exact multinomial.
 |---|---|---|---|---|---|---|
 | W1 `AAABB → AAAAB` | `FixedLengthExactCounterexample` | `E` | `5→5` | `1125/512` / `2` | n/a (abstract alphabet) | no |
 | W2 `AAACC → AAAAC` | `FixedLengthBinomialCounterexample` | `R` | `5→5` | `1125/512` / `2` | `1125/512` / `2` | no |
-| W3 `AAATT → AAAATT` | `Section62BridgingCounterexample` | `R` | `5→6` | `9/8` / `125/108` | `9/8` / `125/108` | **yes** |
+| W3 `AAATT → AAAATT` | `Section62BridgingCounterexample` | `R`, `E` | `5→6` | `9/8` / `125/108` | `9/8` / `125/108` | **yes** |
 | W4 `AAATAT → AAAAAT` | `SameLengthSection62Counterexample` | `R`, `E` | `6→6` | `0` / `0` | `5` / `3` | **yes** |
 
 Notes on the table:
