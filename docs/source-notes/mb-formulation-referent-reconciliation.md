@@ -39,6 +39,18 @@ It does not select a referent by fiat. Every claim is labelled **source fact**,
    (the §6.2 feasible class) or settles reading 4 (the unspecified broad
    principle). (Mathematical fact + verified computation; §7.)
 
+   **Update (2026-09-20, PR #40/#43).** Reading 3 is now negatively witnessed.
+   The integrated same-length witness `S = AAATAT → D = AAAAAT` has both `S` and
+   `D` as admissible §6.2 spelled circuits under the source per-vertex lower
+   bound `1`, `I_s` holds, and `D` strictly improves both same-length objectives
+   (literal §6.1 binomial ratio `5`, exact multinomial ratio `3`). Since a
+   spelled circuit is a special feasible flow, the truth is not ML over the
+   §6.2 feasible set either. The claims in §7 row (3) and in §0 item 5 that
+   reading 3 “is not refuted” are therefore stale; the remaining source gap is
+   the referent choice itself (no source selects §6.2), not the existence of a
+   feasible witness. See
+   [`se62-witness-sufficiency-reconciliation-2026-09-20.md`](se62-witness-sufficiency-reconciliation-2026-09-20.md).
+
 This agrees with the earlier provenance note’s caution and adds one refinement
 (§6) and one structural argument (§4).
 
@@ -234,7 +246,7 @@ holding, a candidate strictly more likely than the truth exists.
 |---|---|---|
 | (1) | exact multinomial, candidate-intrinsic `N(D)` | **Refuted** by #31 (`AAABB → AAAAB`, ratio 2) and the read-tiled witness, over all nonempty circular candidates, by candidate-set inclusion |
 | (2) | fixed-`N` product of binomial marginals | **Refuted** by #32 (`AAACC → AAAAC`, ratio `1125/512`) on reading (2)’s domain; same-length pair, so inclusion transfers |
-| (3) | §6.2 flow feasible set | **Not refuted.** No witness has both the truth and the competitor in the sequence-level §6.2 feasible set; and the phrase is sequence-level (§4), so even a feasible *flow* would need a flow→sequence bridge |
+| (3) | §6.2 flow feasible set | **Refuted at the per-instance level** by the integrated same-length witness (`S = AAATAT`, `D = AAAAAT`): both are admissible spelled §6.2 circuits and `D` improves both objectives; a spelled circuit is a special flow, so flow-level optimality fails too. **Still not selected by any source**, and the source supplies no flow→sequence bridge, so this refutes a well-posed sub-statement, not the paper-level question. See [`se62-witness-sufficiency-reconciliation-2026-09-20.md`](se62-witness-sufficiency-reconciliation-2026-09-20.md) |
 | (4) | broad principle | **Not refuted and not refutable by one witness**; the objective itself is not fixed by the source |
 
 Consequences:

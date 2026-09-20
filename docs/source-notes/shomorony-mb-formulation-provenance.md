@@ -366,6 +366,16 @@ universes (and the objective/strand/tie choices), not the length of the
 competitors. This is why the §6.2 feasibility work remains essential rather than
 optional.
 
+**Update (2026-09-20, PR #40/#43).** The last sentence is superseded. The §6.2
+flow-feasible class is no longer an unexamined alternative that could rescue the
+implication: under MB09’s own reading (vertices are DNA molecules, per-vertex
+lower bound `1`) both the variable-length witness `AAATT → AAAATT` and the
+same-length witness `AAATAT → AAAAAT` have admissible §6.2 circuits on both
+sides, so §6.2 feasibility is not a necessary condition for a negative answer.
+The genuinely remaining source choices are the referent itself, the
+sample-size regime, and the tie/strand conventions. See
+[`se62-witness-sufficiency-reconciliation-2026-09-20.md`](se62-witness-sufficiency-reconciliation-2026-09-20.md).
+
 ## 8. Unresolved register
 
 1. **Which MB object the phrase intends:** exact multinomial vs fixed-`N`

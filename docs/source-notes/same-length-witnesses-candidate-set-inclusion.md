@@ -207,8 +207,8 @@ repository’s decision to keep the exact/binomial/flow variants distinct.
 | MB (2009) contains the three distinct objects | source fact |
 | Negative results transfer from a candidate subclass to any superclass | mathematical proof (§3) |
 | #31/#32/read-tiled witnesses refute the maximizer claim over all circular candidates for readings 1/2 | mathematical proof + kernel-checked finite instances + §3 |
-| No current witness has both truth and competitor sequence-level §6.2-feasible | verified computation (membership table) |
-| The published question remains unresolved because readings 3–4 and strand/tie are open | source-analysis / open |
+| No current witness has both truth and competitor sequence-level §6.2-feasible | **false under the source per-vertex reading** (PR #43 same-length witness `AAATAT → AAAAAT` is feasible for both); true only under the per-occurrence strengthening |
+| The published question remains unresolved because readings 3–4 and strand/tie are open | source-analysis / open; reading 3 is now negatively witnessed at the per-instance level (see §5 item 1 update and [`se62-witness-sufficiency-reconciliation-2026-09-20.md`](se62-witness-sufficiency-reconciliation-2026-09-20.md)) |
 
 Primary sources: Paul Medvedev, Michael Brudno, *Maximum Likelihood Genome
 Assembly*, J. Comput. Biol. 16(8) (2009) 1101–1116, §6.1–6.2, PMC3154397; Ilan
