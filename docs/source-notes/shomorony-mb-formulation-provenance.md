@@ -325,13 +325,18 @@ Their bearing on the published question depends entirely on which reading of the
 phrase holds (interpretation):
 
 - If the phrase denotes the **candidate-intrinsic-`N` exact multinomial over
-  arbitrary circular candidates** (reading 1), the fixed-length exact witness is
-  a *restricted* result (competitors constrained to length `G`) and does not by
-  itself answer the unrestricted question.
+  arbitrary circular candidates** (reading 1), the same-length exact witness
+  refutes the unrestricted-length maximizer claim as well: it is a counterexample
+  inside the length-`G` subclass, which is a subset of the arbitrary-length
+  class, so it is also a counterexample in the larger class. (The length
+  restriction is therefore not what limits this reading; see
+  [`same-length-witnesses-candidate-set-inclusion.md`](same-length-witnesses-candidate-set-inclusion.md)
+  §3–§4.)
 - If the phrase denotes the **fixed-`N` binomial approximation over circular
-  candidates** (reading 2), the fixed-length binomial witness is directly
-  relevant — but still only after one decides that the competitor universe is
-  the circular-sequence class rather than MB's §6.2 read-overlap-graph flows.
+  candidates** (reading 2), the same-length binomial witness is directly
+  relevant in the same way — but still only after one decides that the
+  competitor universe is the circular-sequence class rather than MB's §6.2
+  read-overlap-graph flows.
 - If the phrase denotes the **§6.2 flow feasible optimization** (reading 3), the
   witnesses settle nothing unless they are shown to lie in the §6.2 feasible
   class (or a theorem relates that class to circular candidates).
@@ -339,17 +344,21 @@ phrase holds (interpretation):
   finite witness settles it, because the objective itself is not fixed by the
   source.
 
-Therefore the source trace *does not* validate the claim that the existing
-same-length witnesses already suffice to answer the published question
-negatively. Two things are still needed, and at least one of them:
+Therefore the source trace *does not* by itself validate the claim that the
+existing same-length witnesses already suffice to answer the published question
+negatively. At least one further step is needed:
 
 1. a source argument fixing the phrase's competitor universe to the
-   circular-sequence class (with the exact or fixed-`N` objective), not the
-   §6.2 flow class; or
+   circular-sequence class with reading 1 or reading 2 (rather than the §6.2
+   flow class) — **after which the existing same-length witnesses already supply
+   the negative answer**, by candidate-set inclusion; or
 2. a proof/construction placing a violating instance inside MB's §6.2
    flow-feasible class.
 
-This is why the §6.2 feasibility work remains essential rather than optional.
+So the residual gap is the choice between the circular-candidate and §6.2-flow
+universes (and the objective/strand/tie choices), not the length of the
+competitors. This is why the §6.2 feasibility work remains essential rather than
+optional.
 
 ## 8. Unresolved register
 
