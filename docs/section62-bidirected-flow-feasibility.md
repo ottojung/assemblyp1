@@ -351,3 +351,78 @@ the witnesses in the support/sequence sets); `docs/read-tiled-counterexample.md`
 and `docs/fixed-length-binomial-counterexample.md` (the #31/#32 witnesses);
 `docs/source-notes/medvedev-brudno-candidate-class.md` (candidate-class
 separation).
+
+---
+
+## 10. Addendum (2026-09-20): current canonical read-tiled witness
+
+Sections 1–9 above analyse the #31 (`AAABB → AAAAB`) and #32 (`AAACC → AAAAC`)
+witnesses.  The repository's **current canonical** fixed-length witness is the
+read-tiled instance
+
+```
+truth S = AAABCBC   competitor D = AAAAABC   L = 3
+observed x = {AAA:3, AAB:1, ABC:1, BCA:1, CAA:1}
+```
+
+kernel-checked in `AssemblyP1/ReadTiledCounterexample.lean` and documented in
+`docs/read-tiled-counterexample.md`.  It is the strongest fixed-length witness
+because the competitor is *read-tiled*, i.e. its length-`3` spectrum is exactly
+the observed spectrum `x`.  This addendum records whether that witness transfers
+to §6.2 and kernel-checks the answer in
+`AssemblyP1/Section62FlowObstruction.lean`.
+
+### 10.1 Reconstructed feasibility predicate
+
+The §6.2 sequence-level criterion used here is the Observation-7 criterion of
+§2, not re-derived: a circular molecule `D` is sequence-level §6.2 feasible iff
+
+1. every length-`L` window of `D` is an observed read type
+   (`WindowSupported`); and
+2. every observed read occurrence is used, i.e. `d_D(w) ≥ x_w`
+   (`LowerBounded`).
+
+For the canonical instance the observed counts are `AAA:3` and
+`AAB, ABC, BCA, CAA:1`.
+
+### 10.2 Kernel-checked result
+
+| theorem (`AssemblyP1.Section62FlowObstruction`) | content |
+|---|---|
+| `competitor_section62_feasible` | `AAAAABC` satisfies `WindowSupported ∧ LowerBounded` |
+| `truth_not_section62_feasible` | `AAABCBC` does **not** satisfy it |
+| `truth_unobserved_windows` | `occ truth BCB = 1`, `occ truth CBC = 1`, and neither is observed |
+| `canonical_witness_section62_obstruction` | `Section62Feasible competitor ∧ ¬ Section62Feasible truth` |
+
+All four are proved by `decide` over the fixed length-`7` instance; no `sorry`,
+`axiom`, or `admit`.
+
+### 10.3 Interpretation and preserved assumptions
+
+- The **competitor is §6.2-feasible**: read-tiling makes it the cyclic read
+  order, a legitimate walk in the read-overlap graph, and the flow vertex cost
+  strictly prefers it to the truth count vector (`docs/read-tiled-counterexample.md`
+  Theorem 1; §4 above).
+- The **truth is not §6.2-feasible**: its windows `BCB` and `CBC` are
+  unobserved, so no closed walk on read vertices spells `S`.  Hence the truth is
+  not an admissible §6.2 *sequence* candidate at all.
+- **Obstruction.** Because the truth is not a candidate, the canonical witness
+  cannot refute the well-posed statement “`I_s` ∧ `S ∈ F_flow(R)` ⇒ `S` is ML
+  over `F_flow(R)`.”  This matches the #31/#32 conclusion of §3–§4 and the
+  membership table of `docs/section-6-2-feasible-set-membership.md` §3.
+- **Assumptions preserved.** Fixed read length `L = 3`; single-strand reading;
+  fixed candidate length `7`; per-occurrence lower bounds.  The
+  reverse-complement reading (which inverts witness #31, §3.2), the
+  non-spellable flow-level gap (§6), and the unresolved choice of §6.1 layer
+  are untouched.
+
+### 10.4 Epistemic status of the addendum
+
+| claim | status |
+|---|---|
+| Reconstruction of the Observation-7 feasibility predicate | source fact + source-note (`docs/section-6-2-feasible-set-membership.md` §2); not re-derived here |
+| `competitor` §6.2-feasible, `truth` not | **kernel-checked** (`Section62FlowObstruction.lean`) |
+| Obstruction to transferring the canonical witness | **kernel-checked** |
+| Positive sequence-level §6.2 statement | **open** |
+
+Reproduce: `lake build AssemblyP1.Section62FlowObstruction`.

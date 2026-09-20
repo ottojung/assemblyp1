@@ -1,10 +1,14 @@
 # Do the bridging counterexamples live in the Medvedev–Brudno §6.2 feasible set?
 
 _Status: source reading + mathematical argument + exact-rational computation,
-2026-09-20. Not a Lean result. All claims are classified as **source fact**,
-**source-supported inference**, **mathematical argument**, **verified
-computation**, or **open**. This note reconciles three unmerged §6.2 analyses
-and does not settle the source-ambiguous Shomorony et al. open question._
+2026-09-20. Not itself a Lean result; the canonical read-tiled row of the §3
+membership table is additionally kernel-checked in
+`AssemblyP1/Section62FlowObstruction.lean` (see §10 of
+`docs/section62-bidirected-flow-feasibility.md`). All claims are classified as
+**source fact**, **source-supported inference**, **mathematical argument**,
+**verified computation**, or **open**. This note reconciles three unmerged §6.2
+analyses and does not settle the source-ambiguous Shomorony et al. open
+question._
 
 _Reproduction: `python3 scripts/se62_feasible_set_membership.py` (all
 assertions pass; exact `fractions.Fraction` arithmetic)._
