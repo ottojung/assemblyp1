@@ -125,9 +125,9 @@ determination of this note.
 **Determination.** The literal §6.2 lower bound is **per read vertex/type**:
 `d_i ≥ 1` for every observed read molecule. The condition `d_D(w) ≥ x_w` for
 every sampled occurrence is a strictly stronger **variant**, not a co-equal
-reading. This agrees with the repository’s
-[`reverse-complement-strand-convention.md`](reverse-complement-strand-convention.md)
-(§2.3 item 2) and with the fixed-length per-type witness family.
+reading. This agrees with the branch artifact
+`docs/source-notes/reverse-complement-strand-convention.md` (§2.3 item 2) and
+with the fixed-length per-type witness family.
 
 **Consequence.** Any claim that the §6.2 candidate set excludes the `AAATAT`
 family must either use the per-occurrence strengthening or the `o_min = L−1`
