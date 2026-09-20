@@ -159,10 +159,16 @@ read-type frequencies, so a same-length competitor can duplicate contexts for
 an overrepresented observed type and improve likelihood while the bridging
 hypothesis constrains only reconstructibility of the realized reads.
 
-It does **not** refute unrestricted-length exact Variant E (already addressed
-separately by issue #24 / PR #25), the Medvedev–Brudno separable/binomial
-approximation, or the Section 6.2 bidirected-flow feasible set, and it does not
-resolve which interpretation Shomorony et al. intended.
+Because `S` and `D` have the same length, this refutes the maximizer claim for
+unrestricted-length exact Variant E as well: the length-`G` candidates are a
+subclass of the arbitrary-length candidates, and a counterexample in a subclass
+is a counterexample in the superclass. (The separate `ACGT → ACACGT` witness of
+issue #24 / PR #25 still has independent value: it exhibits an
+unrestricted-length competitor and the length-dependence mechanism.) It does
+**not** refute the Medvedev–Brudno separable/binomial approximation or the
+Section 6.2 bidirected-flow feasible set, and it does not resolve which
+interpretation Shomorony et al. intended. See
+[`source-notes/same-length-witnesses-candidate-set-inclusion.md`](source-notes/same-length-witnesses-candidate-set-inclusion.md).
 
 Primary source for the open question and the `I_s` hypothesis:
 Ilan Shomorony, Samuel H. Kim, Thomas A. Courtade, and David N. C. Tse,
