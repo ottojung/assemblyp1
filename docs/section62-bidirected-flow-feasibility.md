@@ -458,3 +458,29 @@ exact-rational reproduction, and the reading-dependence argument are in
 `docs/section62-fixed-length-bidirected-counterexample.md`. This refutes the
 fixed-length statement under the per-type bidirected reading and leaves the
 per-occurrence statement open.
+
+---
+
+## 12. Addendum (2026-09-20): the non-spellable-flow gap (§6, §7.1)
+
+Section 6 left open whether a *spellable* truth can be beaten by a §6.2 flow
+that is not any single molecule. `scripts/se62_nonspellable_flow_search.py`
+enumerates the full integer **cycle cone** of the read-overlap graph (so
+non-spellable flows are included) rather than single spelled molecules.
+
+- On the **full (unreduced)** overlap graph with `o_min = 1`, the answer is
+  yes under the per-occurrence reading: `S = 01011`, `G = 5`, `L = 3`, starts
+  `(0,1,2,3)`, non-spellable flow `d = x = {010:1,101:1,011:1,110:1}`, cycle
+  `010 → 101 → 011 → 110 → 010` (step overlaps `2,2,2,1`), binomial ratio
+  `32/27 > 1`.
+- That witness uses the overlap-`1` edge `110 → 010`, which is transitively
+  reducible (the read `101` spans the junction), so it does **not** survive the
+  source's transitive reduction.
+- On the **Myers-string-reduced** graph, exhaustive search finds **zero**
+  per-occurrence counterexamples (spellable or not) for binary `G = 5,6,7`,
+  `L = 3`, `o_min = 1,2`.
+
+Hence the §6 residue is resolved in the negative for the source-faithful
+reduced model in the bounded scope; the positive full-graph witness isolates
+the phenomenon as an artifact of retaining transitively reducible edges. Details,
+assumptions, and epistemic status: `docs/section62-nonspellable-flow-counterexample.md`.
