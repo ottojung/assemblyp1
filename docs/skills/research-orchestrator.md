@@ -44,13 +44,13 @@ Prefer sharply different packets, targeted independent replications, or cheap ev
 
 When Lubko is available, the orchestrator should normally **delegate broad substantive exploration rather than perform it all itself**. Across all concurrent AssemblyP1 orchestrators, aim to keep the shared pool close to **5 useful active agents** whenever the live frontier supports that many independent packets.
 
-Before launching anything, run the scheduled preflight's live discovery command (`lubko-agent list --running --json` on `phoebe-dev`) through the canonical Lubko transport, reconcile the result with durable worker records, and count already-active AssemblyP1 agents. New AssemblyP1 agents must use an `AssemblyP1:` title prefix. Fill only free slots, re-count after each launch, and stop if another orchestrator filled the pool first. Do not interpret the target as "five per orchestrator."
+Use the scheduled skill's lightweight live pool snapshot when practical. New AssemblyP1 agents must use an `AssemblyP1:` title prefix. Launch only into clearly free shared capacity; do not turn per-agent recounting into the research task. Do not interpret the target as "five per orchestrator."
 
 If useful capacity is idle, broaden the frontier rather than assuming the current open issue/PR is the only work available. Generate materially different packets from the published target and live portfolio and launch a sensible batch when capacity is clearly available. Agent packets do not require pre-existing GitHub issues; promote them into durable issues/docs/PRs only when their question, result, obstruction, dependency, or recovery state deserves persistence.
 
 The orchestrator's comparative advantage is coordination: choose and diversify packets, steer agents, stop unproductive duplication, compare exact propositions and evidence, reconcile results, and decide the next wave. Direct work is appropriate for tiny deterministic operations, inherently serial coordination, cheap spot checks, and final review/reconciliation.
 
-If substantial exploratory research is done directly while useful Lubko slots remain free, record or be able to state the concrete current-run reason delegation would not help. A historical Lubko failure or stale status note does not count. Do not create agents merely to satisfy a quota, and do not send several agents near-identical vague prompts.
+Do not create agents merely to satisfy a quota, and do not send several agents near-identical vague prompts. Pool utilization is secondary to making and integrating research progress.
 
 AssemblyP1 imposes a hard **repository-wide** cap: **no more than 5 delegated agents may be actively working in parallel across all concurrent orchestrators**. Before launching a new `lubko-agent`, inspect durable worker/status state and account for already-active AssemblyP1 agents. If five are active, keep additional packets queued in the shared portfolio/frontier and launch them only after a slot is durably known to be free.
 
@@ -149,6 +149,6 @@ Preserve useful negative results before stopping.
 
 ## Completion
 
-A research-orchestration cycle is complete when dispatched work is terminal or durably handed off, outputs are reconciled, material claims are independently verified at the appropriate level, the portfolio has been updated, and the next frontier is explicit.
+A research-orchestration cycle is complete when it has materially improved the durable research state: for example by reconciling results, establishing or refuting a claim, improving the model/source interpretation, integrating trustworthy work, or otherwise shrinking uncertainty.
 
-Merely collecting worker summaries is not completion.
+Launching workers, filling the pool, or merely collecting worker summaries is not by itself completion.

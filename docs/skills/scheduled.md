@@ -41,11 +41,12 @@ The status should make these facts unambiguous:
 
 - `state`: `working` or `completed`;
 - `owner`: a fresh short identifier for the current invocation;
-- useful recovery resources: branch, PR, Lubko agent/job IDs, worktree/cwd, and other durable handles.
+- the **research/repository progress that matters**;
+- only those recovery handles needed for another invocation to continue safely.
 
-Do not put credentials or unnecessary logs in the comment.
+Do not put credentials, routine pool counts, launch/recount narration, root-job chatter, or other orchestration plumbing in the comment unless it is materially needed to recover blocked work.
 
-When an orchestrator has delegated subjobs, the canonical status should list active AssemblyP1 delegated-agent handles/resources compactly enough for recovery and counting. Do not turn the status comment into a transport transcript: omit routine root-job chatter and polling detail unless a specific handle is actually needed for recovery. Before a new launch wave, reconcile durable worker state with observable Lubko status as practical and obey the repository-wide cap.
+When an orchestrator has delegated subjobs, mention workers only when their identity/result/recovery handle matters to the research state. A report whose main accomplishment is that workers were launched, counted, or verified running is not useful progress reporting. Before a new launch wave, reconcile durable worker state with observable Lubko status as practical and obey the repository-wide cap.
 
 If multiple marked comments exist because of a race, the most recently updated marked comment is canonical. Immediately after claiming or inheriting work, re-read it; if another owner won the race, yield.
 
