@@ -83,7 +83,7 @@ level the maximizer statement is free; the entire content of a uniqueness theore
 is then \emph{spectrum identifiability}: for which candidate classes is
 $p_D=p_S$ equivalent to $D\approx S$?
 
-\subsection{Primitivity reduces normalized to ordinary spectra}
+\subsection{Primitive P2 spectra: normalized to ordinary}
 
 Population equality compares \emph{normalized} spectra. The project uses two
 candidate-intrinsic admissibility predicates to cross the gap to ordinary
@@ -91,7 +91,7 @@ spectrum equality.
 
 \begin{definition}[P1 and P2]
 \label{def:P1P2}
-Fix the read length $L$. An oriented circular word $D$ satisfies
+Fix the read length $L$. An oriented circular word $D$ with $L\le|D|$ satisfies
 \begin{itemize}[leftmargin=*]
   \item \textbf{P1} if no length-$(L-1)$ word occurs more than once in $D$;
   \item \textbf{P2} if $D$ has no triple repeat of length $\ge L-1$ and every
@@ -123,29 +123,33 @@ Balance is a homogeneous linear condition, so it is preserved by division;
 the support is unchanged ($c'(w)>0\iff c(w)>0$), so weak connectivity on
 the support is preserved as well. Hence $c'$ is a balanced connected edge
 multiset and spells an Eulerian closed trail $W$ with
-$\spec_L(W)=c'$ and $|W|=|S|/g$.
+$\spec_L(W)=c'$ and $|W|=|S|/g$ (windows of $W$ read cyclically, which is
+also meaningful when $|W|<L$).
 Repeating $W$ gives $W^g$ with $|W^g|=|S|$ and
 $\spec_L(W^g)=g\cdot\spec_L(W)=c=\spec_L(S)$: each cyclic length-$L$
-window of $W$ lifts to exactly $g$ windows of $W^g$.
+window of $W$ lifts to exactly $g$ windows of $W^g$ by $|W|$-periodicity,
+including when $|W|<L$.
 Thus $S$ and $W^g$ share the same ordinary $L$-spectrum.
 $S$ satisfies P2, hence Ukkonen's condition at $K=L-1$, so
 Theorem~\ref{thm:BBT} applied to $S$ forces $S\sim W^g$ up to rotation.
 But $W^g$ is a nontrivial whole-genome power while $S$ is primitive, and
-primitivity is rotation-invariant --- a contradiction. So $g=1$.
+primitivity is rotation-invariant (a rotation of a $|W|$-periodic word is
+again $|W|$-periodic) --- a contradiction. So $g=1$.
 Crucially, uniqueness is applied only to $S$; nothing requires $W^g$
 itself to satisfy P2.
 \end{proof}
 
 \begin{corollary}[Normalized equality implies ordinary equality for primitive P2]
-Let $S,D$ be primitive P2-admissible with $p_D=p_S$ for some $L\ge2$.
-Then $\spec_L(D)=\spec_L(S)$.
+Let $S,D$ be primitive P2-admissible with $L\le|S|$ and $L\le|D|$, and
+suppose $p_D=p_S$. Then $\spec_L(D)=\spec_L(S)$.
 \end{corollary}
 
 \begin{proof}[Proof sketch]
-$p_D=p_S$ rewrites as $|S|\,\spec_L(D)=|D|\,\spec_L(S)$, so the two
+$p_D=p_S$ first gives equal supports, then rewrites as
+$|S|\,\spec_L(D)=|D|\,\spec_L(S)$ on that support, so the two
 integer spectrum vectors are proportional. By the lemma both have gcd
 $1$ over their positive entries, and proportional gcd-one vectors are
-equal (indeed $|S|\mid|D|$ and $|D|\mid|S|$, so $|S|=|D|$).
+equal (indeed $|S|\mid|D|$ and $|D|\mid|S|$ by B\'ezout, so $|S|=|D|$).
 \end{proof}
 
 \begin{remark}[Why primitivity alone is not enough]
@@ -179,13 +183,15 @@ has a constituent of length at most $L-2$.
 
 \begin{theorem}[Population uniqueness, oriented primitive P2]
 \label{thm:population}
-Let $L\ge2$. Among primitive P2-admissible oriented circular candidates, the
-true genome $S$ is the unique population maximum-likelihood genome up to cyclic
-rotation.
+Let $L\ge2$ and let the truth $S$ be primitive P2-admissible with
+$L\le|S|$. Among primitive P2-admissible oriented circular candidates
+$D$ with $L\le|D|$, the true genome $S$ is the unique population
+maximum-likelihood genome up to cyclic rotation.
 \end{theorem}
 
 \begin{proof}
-Let $D$ be primitive and P2-admissible with $\ellpop_S(D)=\ellpop_S(S)$. By
+Let $D$ be primitive and P2-admissible with $L\le|D|$ and
+$\ellpop_S(D)=\ellpop_S(S)$. By
 Lemma~\ref{lem:gibbs}, $p_D=p_S$; by Lemma~\ref{lem:scaling} both spectra
 have gcd one, hence the corollary gives
 $\spec_L(D)=\spec_L(S)$. Both $S$ and $D$ satisfy P2, hence Ukkonen's condition
