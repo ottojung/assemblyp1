@@ -189,18 +189,18 @@ recoverable from the window content:
 | 1 | yes | `B C A^(L-3)` | `L` |
 | 0 | yes | `C A^(L-2)` | `L+1` |
 
-The first four rows are distinct by `(#B, C)`; within the fourth row the
-leading-`A` count `p` is recovered from the content, so the start `L-1-p` is
-recovered; within each of the remaining rows the content determines the start.
-(For `L = 3` the fourth row is empty, `A^(L-3) B^2 = B^2`, and the table is the
-four windows `AA, AB, BB, BC, CA` of `AABBC`.) Hence every `(L-1)`-mer occurs
-once.
+All six rows carry distinct `(#B, C)` labels, so windows from different rows
+differ; within the fourth row the leading-`A` count `p` is recovered from the
+content, so the start `L-1-p` is recovered; within each remaining row the
+content determines the start. (For `L = 3` the fourth row is empty,
+`A^(L-3) B^2 = B^2`, and the table is the windows `AA, AB, BB, BC, CA` of
+`AABBC`.) Hence every `(L-1)`-mer occurs once.
 
 *`P1` for `D`.* `D = A^(L-1) B C` has one `B` and one `C`; its length-`(L-1)`
 windows are `A^(L-1)` (start `0`), `A^(L-2) B` (start `1`), `B C A^(L-3)`
 (start `L-1`), and `C A^(L-2)` (start `L`), classified by `(#B, C)` and
-distinct. Hence `P1`, and by issue #48 comment 1 §3, `P2` and primitivity follow
-(`P1 => primitive`), though primitivity was proved directly above.
+distinct. Hence `P1`, so by issue #48 comment 1 §3 the word is also `P2` and
+primitive.
 
 *`I_s`.* Coverage: the read at `0` covers `0..L-1`; the read at `L` covers
 `L, L+1, 0, ..., L-3`; their union is `{0, ..., L+1}`. Repeated windows of `S`
@@ -220,10 +220,11 @@ A copy at start `t` is bridged by a single read containing `t-1` and `t+ℓ`:
 * `t = 0`: the read at `L` covers `L, L+1, 0, ..., L-3`, containing
   `t-1 = L+1` and `t+ℓ = ℓ <= L-3`.
 
-So every copy of every maximal triple repeat is bridged. For `L >= 4` we have
-`ℓ = 1 <= L-3`, so `A^1` is a maximal triple repeat (its three copies have
-non-equal preceding and following symbols) and the clause is non-vacuous. For
-`L = 3` there is no triple repeat and `I_s` reduces to coverage.
+So every copy of every maximal triple repeat is bridged. For `L >= 4` the
+window `A^1` has at least three copies in the `A`-run; the triple of copies at
+starts `0, 1, L-2` is Bresler-maximal (preceding symbols `C, A, A`, following
+symbols `A, A, B`), so the triple-repeat clause is non-vacuous. For `L = 3`
+there is no triple repeat and `I_s` reduces to coverage.
 
 *Ratio.* The two observed types, from starts `0` and `L`, are
 
