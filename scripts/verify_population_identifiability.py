@@ -147,10 +147,19 @@ def has_long_interleaved_pair(word, L):
     return False
 
 
+def trf_admissible(word, L):
+    """No Bresler triple repeat of length >= L-1 (triple-repeat-free)."""
+    return not has_long_triple_repeat(word, L)
+
+
+def ilf_admissible(word, L):
+    """No interleaved maximal-repeat pair with both legs >= L-1."""
+    return not has_long_interleaved_pair(word, L)
+
+
 def weak_admissible(word, L):
-    """Candidate-intrinsic I_s shadow (full-read-set admissibility)."""
-    return not has_long_triple_repeat(word, L) and \
-        not has_long_interleaved_pair(word, L)
+    """Candidate-intrinsic I_s shadow = TRF & ILF (full-read-set admissibility)."""
+    return trf_admissible(word, L) and ilf_admissible(word, L)
 
 
 def strong_admissible(word, L):
@@ -223,14 +232,14 @@ def _enumerate_primitive_canonicals(alpha, maxG, L):
 
 
 def check_B_lemma_Lstar(alpha, maxG, maxL):
-    """Primitive WEAK => every (L-1)-mer occurs at most twice."""
+    """Primitive TRF => every (L-1)-mer occurs at most twice."""
     max_seen = 0
     for L in range(2, maxL + 1):
         for n in range(L, maxG + 1):
             for w in product(alpha, repeat=n):
                 if w != tuple(canonical(w)) or not primitive(w):
                     continue
-                if not weak_admissible(w, L):
+                if not trf_admissible(w, L):
                     continue
                 m = max(windows(w, L - 1).values())
                 max_seen = max(max_seen, m)
@@ -238,8 +247,29 @@ def check_B_lemma_Lstar(alpha, maxG, maxL):
     return max_seen
 
 
-def check_C_cross_length(alpha, maxG, maxL):
-    """No two primitive WEAK words share a normalized L-spectrum."""
+def check_C1_cross_length_trf(alpha, maxG, maxL):
+    """No two primitive TRF words have proportional spectra of different lengths."""
+    words = 0
+    spectra = 0
+    for L in range(2, maxL + 1):
+        byn = defaultdict(dict)
+        for w in _enumerate_primitive_canonicals(alpha, maxG, L):
+            if not trf_admissible(w, L):
+                continue
+            words += 1
+            byn[len(w)][w] = normalized_spectrum(w, L)
+        seen = {}
+        for n, table in byn.items():
+            for w, key in table.items():
+                spectra += 1
+                if key in seen and seen[key][0] != n:
+                    assert False, ("cross-length TRF collision", L, seen[key][1], w)
+                seen[key] = (n, w)
+    return words, spectra
+
+
+def check_C2_same_length_weak(alpha, maxG, maxL):
+    """No two primitive WEAK words of equal length share a normalized spectrum."""
     words = 0
     spectra = 0
     for L in range(2, maxL + 1):
@@ -254,7 +284,7 @@ def check_C_cross_length(alpha, maxG, maxL):
             if len(ws) < 2:
                 continue
             for a, b in combinations(ws, 2):
-                assert False, ("both-WEAK collision", L, a, b)
+                assert False, ("same-length WEAK collision", L, a, b)
     return words, spectra
 
 
@@ -289,8 +319,17 @@ def check_D2_candidate_admissibility_necessary():
         assert weak_admissible(S, L), S
         assert primitive(D), D
         assert not weak_admissible(D, L), D
+        assert not trf_admissible(D, L), D
         assert normalized_spectrum(S, L) == normalized_spectrum(D, L)
         assert canonical(S) != canonical(D)
+    # A primitive TRF & ILF word need not have a proportional spectrum: the
+    # finite-support failure S=AAAB, D=AAABAB (L=3) is not a population
+    # collision (it has an extra type and a doubly counted type).
+    S, D, L = tuple("AAAB"), tuple("AAABAB"), 3
+    assert primitive(S) and primitive(D)
+    assert trf_admissible(S, L) and ilf_admissible(S, L)
+    assert trf_admissible(D, L) and ilf_admissible(D, L)
+    assert normalized_spectrum(S, L) != normalized_spectrum(D, L)
     return True
 
 
@@ -345,12 +384,17 @@ def main():
     m2 = check_B_lemma_Lstar(("A", "B", "C"), 11, 4)
     results["B"] = f"(L-1)-mer multiplicity bound = {max(m1, m2)}"
 
-    # C: cross-length exclusion
-    c1 = check_C_cross_length(("A", "B"), 15, 5)
-    c2 = check_C_cross_length(("A", "B", "C"), 11, 4)
-    c3 = check_C_cross_length(("A", "B", "C", "D"), 8, 3)
-    results["C"] = (f"{c1[0] + c2[0] + c3[0]} primitive WEAK words, "
-                    f"{c1[1] + c2[1] + c3[1]} distinct normalized spectra, 0 collisions")
+    # C1: cross-length exclusion (needs only TRF)
+    c1 = check_C1_cross_length_trf(("A", "B"), 16, 5)
+    c2 = check_C1_cross_length_trf(("A", "B", "C"), 11, 4)
+    c3 = check_C1_cross_length_trf(("A", "B", "C", "D"), 8, 3)
+    results["C1"] = (f"{c1[0] + c2[0] + c3[0]} primitive TRF words, "
+                     f"0 cross-length proportional collisions")
+    # C2: equal-length uniqueness (needs WEAK)
+    d1 = check_C2_same_length_weak(("A", "B"), 15, 5)
+    d2 = check_C2_same_length_weak(("A", "B", "C"), 11, 4)
+    results["C2"] = (f"{d1[0] + d2[0]} primitive WEAK words, "
+                     f"{d1[1] + d2[1]} distinct normalized spectra, 0 collisions")
 
     # D: sharpness
     assert check_D1_primitivity_necessary()

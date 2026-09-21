@@ -61,6 +61,9 @@ The exact structural hypothesis is therefore:
 > selected genome equivalence matches the panel** (cyclic shift for oriented
 > reads).
 
+The cross-length exclusion needs only the triple-repeat half of the intrinsic
+condition; the equal-length residue needs the interleaved half as well (§3–§5).
+
 ---
 
 ## 1. Model, definitions, conventions
@@ -77,15 +80,21 @@ length-`L` windows (its `L`-mer spectrum); see
 
 **Intrinsic predicates on a single circular word `D` (and `L`).**
 
+- `TRF(D, L)` (**triple-repeat-free**): no Bresler triple repeat of `D` has
+  length `≥ L−1` (equivalently, every triple repeat has length `≤ L−2`).
+- `ILF(D, L)` (**interleaving-free**): no interleaved maximal-repeat pair of `D`
+  has both constituent repeats of length `≥ L−1`.
+- `WEAK(D, L) = TRF(D, L) ∧ ILF(D, L)`: the candidate-intrinsic shadow of the
+  source condition `I_s` at the full read set. A copy of length `ℓ` is
+  bridgeable by a length-`L` read (strictly on both sides) only if `ℓ ≤ L−2`, so
+  "the full read set lies in `I_s`" is exactly `TRF ∧ ILF`.
 - `STRONG(D, L)`: no `(L−1)`-mer of `D` occurs twice.
-- `WEAK(D, L)`: every Bresler triple repeat of `D` has length `≤ L−2`, and every
-  interleaved maximal-repeat pair has a constituent repeat of length `≤ L−2`.
-  This is the candidate-intrinsic shadow of the source condition `I_s` at the
-  full read set: a copy of length `ℓ` is bridgeable by a length-`L` read
-  (strictly on both sides) only if `ℓ ≤ L−2`, so "the full read set lies in
-  `I_s`" is exactly `WEAK`. `STRONG ⇒ WEAK` (a long triple or interleaved
-  obstruction contains a repeated `(L−1)`-mer).
 - `primitive(D)`: `D ≠ C^k` for every `k ≥ 2` and shorter circular `C`.
+
+Implications: `STRONG ⇒ TRF` and `STRONG ⇒ ILF` (a long triple or interleaved
+obstruction forces a repeated `(L−1)`-mer), hence `STRONG ⇒ WEAK`. The
+cross-length theorem below needs only `TRF`; the equal-length residue needs the
+full `WEAK`.
 
 **Normalized spectrum.** Two words have the same population read distribution
 iff `d_T(w)/|T| = d_S(w)/|S|` for every `w`, equivalently `d_T = c · d_S` for
@@ -134,8 +143,8 @@ recorded for issue #45.
 
 ## 3. Lemma L* (the key structural bound)
 
-**Lemma L*.** If `D` is primitive and `WEAK`-admissible at read length `L`, then
-every `(L−1)`-mer of `D` occurs at most twice.
+**Lemma L*.** If `D` is primitive and `TRF`-admissible at read length `L`, then
+every `(L−1)`-mer of `D` occurs at most twice. (A fortiori for `WEAK`.)
 
 **Proof.** Suppose an `(L−1)`-mer `v` occurs at three distinct starts
 `t₁, t₂, t₃`. Let `ℓ ≥ L−1` be the length of the maximal common right extension
@@ -153,22 +162,23 @@ At `j*`, the three equal windows have length `ℓ + j* ≥ L−1`; their **follo
 symbols (at `tᵢ + ℓ`) are not all equal by maximality of `ℓ`, and their
 **preceding** symbols (at `tᵢ − j* − 1`) are not all equal because `j*` is
 maximal on the left. This is a Bresler triple repeat of length `≥ L−1`, i.e. of
-length `> L−2`, contradicting `WEAK(D, L)`. ∎
+length `> L−2`, contradicting `TRF(D, L)`. ∎
 
 _Epistemic class: mathematical proof. Exhaustively verified for the stated
 ranges by section B of the verifier (max observed `(L−1)`-mer multiplicity
-among primitive `WEAK` words is exactly `2`, and `2` is attained, e.g. `AA` in
+among primitive `TRF` words is exactly `2`, and `2` is attained, e.g. `AA` in
 `AAAB` at `L = 3`). This lemma is the candidate-intrinsic reason the normalized
 spectrum cannot scale: it caps the `(L−1)`-mer multiplicities at `2`, which is
-incompatible with a scale factor `c > 1` unless the word is a power._
+incompatible with a scale factor `c > 1` unless the word is a power. Only the
+triple-repeat half of the intrinsic condition is used._
 
 ---
 
 ## 4. Theorem P (cross-length exclusion)
 
-**Theorem P.** Let `S, T` be primitive circular words, both `WEAK`-admissible at
+**Theorem P.** Let `S, T` be primitive circular words, both `TRF`-admissible at
 read length `L`, with `d_T = c · d_S` for a rational `c > 0`. Then `c = 1`; in
-particular `|T| = |S|`.
+particular `|T| = |S|`. (A fortiori with `WEAK` in place of `TRF`.)
 
 **Proof.** Assume `c > 1`. Write `a_v, b_v` for the multiplicity of an
 `(L−1)`-mer `v` in `S`, `T`, so `b_v = c a_v`. By Lemma L*, `a_v ≤ 2` and
@@ -187,14 +197,16 @@ still has a **unique distinct outgoing edge**, so the Eulerian circuit is forced
 and `T` is the corresponding power of that cycle word up to rotation — a
 nontrivial power, contradicting primitivity of `T`. Hence `c = 1`. ∎
 
-_Epistemic class: mathematical proof. Independently verified by section C of the
-verifier: over `37 021` primitive `WEAK` words (alphabets `{A,B}`, `{A,B,C}`,
-`{A,B,C,D}`; stated ranges), every word has a **distinct normalized spectrum**,
-so there is no cross-length or same-length collision at all. This is evidence
-for the bounded ranges, but the proof above is unconditional._
+_Epistemic class: mathematical proof. Independently verified by section C1 of
+the verifier: `46 517` primitive `TRF` words (alphabets `{A,B}`, `{A,B,C}`,
+`{A,B,C,D}`; stated ranges) have **no cross-length proportional collision**.
+This is evidence for the bounded ranges, but the proof above is unconditional.
+Note that `TRF` alone does allow same-length spectral ties (e.g.
+`AABABB`/`AABBAB` at `L=3`, which fail `ILF`), so `TRF` is exactly enough for the
+cross-length step and not for the equal-length one._
 
 **Corollary (cross-length part of the positive answer).** For primitive
-`WEAK`-admissible `S`, any primitive `WEAK`-admissible `T` with the same
+`TRF`-admissible `S`, any primitive `TRF`-admissible `T` with the same
 population read distribution has the same length and the same `L`-mer spectrum.
 
 ---
@@ -217,6 +229,12 @@ and a heuristic reduction, but **not yet pinned to a circular primary statement
 and not kernel-checked**. The note therefore states the equal-length conclusion
 conditionally, while the cross-length conclusion is unconditional.
 
+Here the interleaved half `ILF` is genuinely needed: the same-length pair
+`AABABB` / `AABBAB` (`L = 3`) is primitive and `TRF` (no long triple repeat) but
+not `ILF`, has the same `L`-mer spectrum, and the two are not rotations. So
+`TRF` alone does not force equal-length uniqueness, while `WEAK = TRF ∧ ILF`
+is exactly the classical obstruction-exclusion hypothesis.
+
 **Claim (conditional on the classical circular characterization).** For
 primitive `WEAK`-admissible circular genomes on the oriented panel, equal
 population read distributions imply cyclic-shift equivalence.
@@ -233,12 +251,16 @@ Each hypothesis of §4/§5 is necessary; the verifier checks all three exactly
    `WEAK` and has the same population law, but is a nontrivial power and not a
    rotation of `S`. (Shorter: `AB` / `ABAB` at `L = 2`.) So `WEAK` alone does
    not exclude the tandem/scale ambiguity.
-2. **Candidate-side `WEAK`-admissibility cannot be dropped.** The primitive
-   `WEAK` truth `S = AAAB` (`L = 3`) and the **primitive but not `WEAK`**
-   `T = AAAABAAB` have the same population law and are not rotations. (Shorter:
-   `AAB` / `AAABAB` at `L = 2`.) The scale factor here is `2` and the `WEAK`
+2. **Candidate-side admissibility cannot be dropped.** The primitive `WEAK`
+   truth `S = AAAB` (`L = 3`) and the **primitive but not `TRF`** (hence not
+   `WEAK`) `T = AAAABAAB` have the same population law and are not rotations.
+   (Shorter: `AAB` / `AAABAB` at `L = 2`.) The scale factor here is `2` and the
    obstruction is a triple repeat of length `L−1`; Lemma L* is exactly what
-   fails for `T`.
+   fails for `T`. A separate reminder that population and finite-support
+   failures differ: `S = AAAB` / `T = AAABAB` (`L = 3`) are both primitive
+   `WEAK` but have *different* population laws (extra type and doubled `ABA`),
+   yet the shorter `T` wins a skewed finite sample — a finite-support effect,
+   not a population non-identifiability.
 3. **`STRONG` makes the whole statement unconditional.** If `S` has no
    repeated `(L−1)`-mer then its de Bruijn support is a simple directed cycle
    (one incoming and one outgoing distinct edge per vertex), `S` is that cycle
@@ -292,6 +314,19 @@ the exact words and the exact class spectrum._
   that the classical circular `q`-gram characterization is new or that it is
   fully settled; no claim about non-uniform or non-i.i.d. sampling. The
   equal-length step is conditional as stated in §5.
+- **Concurrent-work reconciliation (named branch artifacts, not links).** The
+  independent synthesis packet `docs/synthesis-finite-rows-and-repairs-2026-09-21.md`
+  states the same population consistency (its Lemma 4.1) and the same cross-length
+  conclusion ("population ties ⇔ proportional spectra; cross-length `c>1`
+  impossible for primitive `P2`"), attributing the latter to the issue-#48
+  Theorem P. This note independently re-proves it and sharpens the hypothesis to
+  `TRF` (the interleaved clause is not needed for the cross-length step), adds
+  the sharpness counterexamples and the molecule-panel boundary, and makes no
+  claim about the finite-data branch. The independent packet
+  `docs/source-notes/candidate-intrinsic-admissibility.md` reaches the
+  finite-support conclusion that `S=AAAB`, `D=AAABAB` (`L=3`) is not excluded by
+  intrinsic checks; that pair is **not** a population collision (its spectra are
+  not proportional), consistent with Theorem P.
 
 ---
 
@@ -302,14 +337,15 @@ the exact words and the exact class spectrum._
 | Section | Check | Scope | Result |
 |---|---|---|---|
 | A | population objective maximized at `d_S` | `|Σ|≤3`, `G ≤ 6` | pass |
-| B | Lemma L*: `(L−1)`-multiplicity `≤ 2` | `{A,B}` `n ≤ 15`, `L ≤ 5`; `{A,B,C}` `n ≤ 11`, `L ≤ 4` | max `= 2` |
-| C | no two primitive `WEAK` words share a normalized spectrum | `37 021` words over alphabets 2–4 | 0 collisions |
-| D | primitivity and candidate `WEAK` both necessary | explicit exact witnesses | pass |
+| B | Lemma L*: `(L−1)`-multiplicity `≤ 2` under `TRF` | `{A,B}` `n ≤ 15`, `L ≤ 5`; `{A,B,C}` `n ≤ 11`, `L ≤ 4` | max `= 2` |
+| C1 | no cross-length proportional collision, primitive `TRF` | `46 517` words over alphabets 2–4 | 0 collisions |
+| C2 | no same-length collision, primitive `WEAK` | `26 991` words, `26 991` spectra | 0 collisions |
+| D | primitivity and candidate admissibility both necessary | explicit exact witnesses | pass |
 | E | molecule panel `AACAGT`/`AACTGT` | exact rationals | same law, dihedrally inequivalent |
 | F | `STRONG` truth ⇒ proportional partners are powers | `{A,B}` `n ≤ 10`, `L ≤ 3` | pass |
 
-The exhaustive ranges are bounded, so B/C are finite evidence; Lemma L* and
-Theorem P are proved above, and A and F are proved (Proposition 1; §6.3).
+The exhaustive ranges are bounded, so B/C1/C2 are finite evidence; Lemma L*
+and Theorem P are proved above, and A and F are proved (Proposition 1; §6.3).
 
 ---
 
@@ -318,11 +354,12 @@ Theorem P are proved above, and A and F are proved (Proposition 1; §6.3).
 | Claim | Status | Basis |
 |---|---|---|
 | Proposition 1: infinite-read spectrum optimum is `d_S` | **Proven** | Gibbs/KL |
-| Lemma L*: primitive `WEAK` ⇒ `(L−1)`-multiplicity `≤ 2` | **Proven** + bounded check | maximal-extension triple-repeat argument |
-| Theorem P: primitive `WEAK` + proportional spectra ⇒ `c = 1` | **Proven** + bounded check | Lemma L* + forced Eulerian circuit |
+| Lemma L*: primitive `TRF` ⇒ `(L−1)`-multiplicity `≤ 2` | **Proven** + bounded check | maximal-extension triple-repeat argument |
+| Theorem P: primitive `TRF` + proportional spectra ⇒ `c = 1` | **Proven** + bounded check | Lemma L* + forced Eulerian circuit |
 | Equal length ⇒ cyclic shift (oriented) | **Conditional** on classical circular `q`-gram characterization | Ukkonen 1992 / Pevzner 1995; Çelikkanat et al. 2024 Thm 3.1; repo Conjecture 4 |
+| `TRF` alone is not enough for equal length | **Refuted** | `AABABB` / `AABBAB`, `L=3` (fail `ILF`) |
 | Primitivity necessary | **Refuted without it** | `AAB` / `AABAAB`, `L=3` |
-| Candidate `WEAK` necessary | **Refuted without it** | `AAAB` / `AAAABAAB`, `L=3` |
+| Candidate admissibility necessary | **Refuted without it** | `AAAB` / `AAAABAAB`, `L=3` |
 | Molecule-panel positive transfer | **False** | `AACAGT` / `AACTGT`, `L=3` |
 | Population is the primary repair | **Not claimed** | §8 |
 
