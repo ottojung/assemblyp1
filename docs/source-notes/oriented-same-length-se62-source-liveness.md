@@ -112,6 +112,20 @@ The integrated conclusion-semantics note already records the same point
 §2.5; [`shomorony-mb-formulation-provenance.md`](shomorony-mb-formulation-provenance.md)
 §6.3). [source fact + repository fact]
 
+**The strongest attempt to derive `|D| = N` from “known `N`”, and why it
+fails.** One might reason: the exact multinomial carries the constraint
+`N(D) = Σ_i d_i`; fixing `N(D) = N` therefore forces `Σ_i d_i = N`, i.e. a total-
+copy/length constraint on candidates. This inference is *not* MB09’s text. The
+approximation paragraph says the opposite — that in the binomial approximation
+`N(D)` “is a constant that is independent of each `d_i`” — precisely because the
+coupling `Σ_i d_i = N(D)` is being dropped for separability. The external `N` is
+then only the denominator in each marginal; `Σ_i d_i` is left unconstrained, and
+§6.2 consequently states no total-flow or candidate-length equation. Under the
+exact model, `N(D)` remains the candidate’s own length and is free across
+candidates. So the *only* way to obtain `|D| = N` is to add it as a new
+constraint; the source substitution does not supply it. [source fact + source-
+supported inference]
+
 ### 2.3 Why same-length is attractive anyway (and why that is not source-liveness)
 
 If candidate length is **free** under the exact multinomial, the objective is
@@ -119,8 +133,9 @@ exactly invariant under tandem repetition `D ↦ D^k` (`N(D^k) = k N(D)`,
 `occ(D^k, w) = k·occ(D, w)`, so `occ/N` is unchanged). Every truth `S` is then
 tied by `S²`, a distinct and longer candidate, with **no bridging hypothesis at
 all**; the strong “unique-up-to-equivalence” schema is false for every truth.
-[mathematical fact; recorded in `conclusion-semantics-equivalence-and-length.md`
-§3] Same-length is therefore a *repair that makes the strong-schema question
+[mathematical fact] (The tandem-invariance observation is worked out in the
+unmerged branch note `conclusion-semantics-equivalence-and-length.md`.)
+Same-length is therefore a *repair that makes the strong-schema question
 non-vacuous*, and the known-genome-size reading makes it operationally natural.
 But “the question is more interesting with a length restriction” is not evidence
 that the published sentence *has* that restriction. [interpretation]
@@ -262,6 +277,7 @@ not the published formulation. [source gap]
 | MB09 §6.1 exact objective has candidate-intrinsic `N(D)` and no fixed competitor length | source fact | MB09 §6.1 |
 | MB09 §6.1 approximation replaces `N(D)` by external known `N`; `N` is a likelihood parameter | source fact | MB09 §6.1, §8.2 |
 | `\|D\| = G` is not stated by any cited source | source gap | absence in MB09 §6.1–6.2, §8.2 and accepted 2016 text |
+| Fixing external `N` does not turn `Σ_i d_i = N(D)` into `Σ_i d_i = N`; the approximation drops the coupling | source fact + source-supported inference | MB09 §6.1 |
 | Free length makes the strong schema false by tandem invariance, no bridging needed | mathematical fact | `conclusion-semantics-equivalence-and-length.md` §3 |
 | `oriented + same-length + §6.2` is a cross-source hybrid, not a source-live reading | interpretation | §§3–4 |
 | The rigidity theorem is a narrowing/control, not a settlement of a source-live reading | interpretation | §§4–5 |
