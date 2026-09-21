@@ -235,7 +235,9 @@ interleaved pair of maximal repeats of length `≥ L−1`", the hypothesis of th
 theorem; the conclusion is a unique Eulerian cycle spelling `S`. The
 interleaving must be read as a pair of maximal repeats that may be **different**
 words; §7 shows this convention is essential. [source theorem + reading;
-see [`circular-qgram-identifiability-and-Is-threshold-2026-09-21.md`](../literature/circular-qgram-identifiability-and-Is-threshold-2026-09-21.md)]
+see the branch artifact
+`docs/literature/circular-qgram-identifiability-and-Is-threshold-2026-09-21.md`
+on `agent/issue48-population-independent-0921`]
 
 ---
 
@@ -440,7 +442,7 @@ Repository: [`open-problem.md`](../open-problem.md),
 [`ml-formalization-contract.md`](../ml-formalization-contract.md),
 [`source-notes/equivalence-and-tie-wellposedness.md`](equivalence-and-tie-wellposedness.md),
 [`source-notes/medvedev-brudno-candidate-class.md`](medvedev-brudno-candidate-class.md),
-[`source-notes/oriented-se62-rigidity-theorem.md`](oriented-se62-rigidity-theorem.md),
-[`literature/circular-qgram-identifiability-and-Is-threshold-2026-09-21.md`](../literature/circular-qgram-identifiability-and-Is-threshold-2026-09-21.md)
-(branch artifact), `docs/population-identifiability-intrinsic-genomes.md`
-(branch `agent/issue48-population-independent-0921`).
+[`source-notes/oriented-se62-rigidity-theorem.md`](oriented-se62-rigidity-theorem.md).
+Branch artifacts on `agent/issue48-population-independent-0921`:
+`docs/literature/circular-qgram-identifiability-and-Is-threshold-2026-09-21.md`
+and `docs/population-identifiability-intrinsic-genomes.md`.
