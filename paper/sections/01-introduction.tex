@@ -1,0 +1,155 @@
+\section{Introduction}
+\label{sec:intro}
+
+\subsection{The question}
+
+Modern genome assembly reconstructs an unknown genome from many short
+overlapping reads. Two lines of theory ask two different questions about this
+problem. \emph{Information-feasibility} asks whether the reads contain enough
+information to determine the genome; the answer depends on the repeat structure
+of the genome and on the read length, and Shomorony, Kim, Courtade, and Tse
+\cite{shomorony2016} gave repeat-bridging conditions under which a specific
+algorithm recovers the true circular sequence up to cyclic shift. \emph{Maximum
+likelihood} instead asks which genome is the most probable source of the
+observed reads; Medvedev and Brudno \cite{medvedev2009} formulated this as an
+optimization problem over candidate genomes and solved a relaxed version by
+min-cost flow.
+
+Shomorony et al.\ close their Discussion with a question that sits between the
+two lines \cite[Discussion]{shomorony2016}:
+
+\begin{quote}
+``Understanding whether bridging conditions can be used to guarantee that the
+maximum-likelihood sequence is the true sequence is currently an open
+question.''
+\end{quote}
+
+This manuscript studies that question as a mathematical problem --- but not by
+pretending it is a single well-posed theorem. The sentence names a likelihood
+formulation only by citation and leaves several choices open. Our first
+contribution is to make those choices explicit; our second is to report what is
+provable or refutable for each resulting formulation.
+
+\subsection{Why maximum likelihood is not automatic}
+
+A naive argument says the question should be trivial. The reads were generated
+from the true genome, so the true genome should maximize their likelihood. The
+argument fails for a structural reason: the read distribution can be
+\emph{non-identifiable}. The reads are drawn from the multiset of length-$L$
+windows of the genome, so two genomes with the same window spectrum induce
+exactly the same read distribution and always tie.
+
+\begin{example}[Structural ambiguity before the repeat boundary]
+\label{ex:ABAB}
+Let the alphabet be $\{A,B\}$ and let $L=2$. The circular genomes
+\[
+  S = AAABAB, \qquad D = AABAAB
+\]
+of length $6$ are not cyclic rotations of one another, yet their circular
+$2$-mer spectra agree:
+\[
+  \spec_2(S) = \spec_2(D) = \{\,AA:2,\ AB:2,\ BA:2\,\}.
+\]
+Indeed $S$ has windows $AA,AA,AB,BA,AB,BA$ and $D$ has windows
+$AA,AB,BA,AA,AB,BA$. Under uniform-start error-free sampling the observed read
+distribution is the same for both genomes, so \emph{no} likelihood objective
+--- exact, approximate, or flow-based --- can prefer $S$ to $D$ here.
+\statusline{\srcfact{} for the spectra and the rotation claim;
+\mathfact{} for the resulting tie. This is the ``$AAABAB/AABAAB$''
+example recorded in the project synthesis.}
+\end{example}
+
+The lesson of Example~\ref{ex:ABAB} is that maximum likelihood cannot manufacture
+identifiability. Bridging conditions exist precisely to remove the structural
+ambiguity: they are hypotheses on the repeat structure and read coverage of the
+\emph{true} genome that, in Shomorony et al.'s theorem, force the true genome to
+be the unique Eulerian object consistent with the reads. The published question
+asks whether those same hypotheses also make the true genome optimal for a
+likelihood objective. It is therefore a question about whether a
+\emph{reconstruction} guarantee transfers to an \emph{optimization} guarantee.
+
+\subsection{What the question does not say}
+
+Before any theorem can be attributed to the published sentence, four modeling
+axes must be fixed, and we will argue in Section~\ref{sec:open} that the
+sentence fixes none of them conclusively. The named formulation of
+\cite{medvedev2009} contains at least four distinct objects:
+
+\begin{enumerate}[label=(\roman*)]
+  \item the exact global read-count multinomial with candidate-intrinsic length;
+  \item its separable product-of-binomial-marginals approximation, which replaces
+        the candidate length by an external genome size;
+  \item the Section~6.2 bidirected read-overlap-graph flow, whose feasible
+        objects are flows and need not be sequences; and
+  \item the underlying broad ``maximum-likelihood principle.''
+\end{enumerate}
+
+Independently, the sentence does not say whether reads are oriented strings or
+reverse-complement molecule classes; whether candidate genomes are restricted to
+the true length; or whether the conclusion asserts that the truth is \emph{some}
+maximizer or that \emph{every} maximizer is the truth up to a genome equivalence.
+These axes matter, and we treat them as part of the mathematical object rather
+than as notation.
+
+\subsection{Contributions}
+
+This manuscript does four things.
+
+\paragraph{Negative finite results.}
+We exhibit kernel-checked finite counterexamples showing that the
+information-feasibility hypothesis does \emph{not} force the truth to be a
+likelihood maximizer under several precise readings of the 2016 question: the
+exact multinomial over all circular candidates (Theorem~\ref{thm:cex-exact}), the
+fixed-length binomial approximation over all circular candidates
+(Theorem~\ref{thm:cex-binomial}), and the reverse-complement molecule reading of
+the Section~6.2 flow (Theorem~\ref{thm:cex-molecule}). A candidate-set inclusion
+lemma (Lemma~\ref{lem:negative-transfer}) shows that a same-length refutation
+transfers to every superclass of candidates, so these results are not confined
+to length-restricted comparisons.
+
+\paragraph{A positive same-length rigidity theorem.}
+Under \emph{strict oriented} read types, Shomorony's $\Is$, and the
+same-length spelled-candidate restriction, the truth's spectrum is the unique
+positive circulation of its window-support graph (Theorem~\ref{thm:rigidity}).
+Consequently every same-length Section~6.2 spelled candidate ties the truth under
+any spectrum-based objective, and no strict same-length counterexample exists for
+\emph{any} genome length, read length, or alphabet. The equal-length restriction
+is essential: allowing one extra symbol reintroduces a strict witness
+(Example~\ref{ex:variable-length}).
+
+\paragraph{A repaired population model.}
+We present a new model, motivated by the finite failures rather than by the
+historical papers: replace empirical read counts by the exact population read
+distribution. A Gibbs/KL identity (Lemma~\ref{lem:gibbs}) makes the truth a
+population maximizer \emph{unconditionally}. Uniqueness then reduces to spectrum
+identifiability, and for the project's oriented, primitive, P2-admissible
+candidate class this is supplied by a complete-spectrum uniqueness theorem of
+Bresler, Bresler, and Tse \cite{bresler2013}. The resulting
+Theorem~\ref{thm:population} is the current positive high point of the project.
+It does not settle the finite 2016 question, and we state the gap explicitly.
+
+\paragraph{Exposition as a first-class concern.}
+Because the mathematical content is an interface between under-specified
+sources and project-level repairs, correctness includes keeping the epistemic
+layers separate. Theorem statements name their assumption surface; every
+nontrivial claim carries a status tag (\statuslegend); and
+Appendices~\ref{app:modeling} and~\ref{app:ledger} explain the modeling choices
+and consolidate the status of each claim.
+
+\subsection{How to read this paper}
+
+Section~\ref{sec:model} fixes notation and the source-faithful sequencing and
+bridging model. Section~\ref{sec:open} states the published question and
+determines what the sources do and do not fix. Section~\ref{sec:finite} reports
+the results about the literature-derived finite formulations.
+Section~\ref{sec:population} introduces the population model and its uniqueness
+theorem. Section~\ref{sec:discussion} draws the two failure modes together and
+lists what remains open. Appendix~\ref{app:modeling} explains the modeling
+choices deliberately; Appendix~\ref{app:ledger} is the consolidated epistemic
+ledger; Appendix~\ref{app:reproduction} records how to rebuild the paper and
+re-run every computational certificate.
+
+A reader who wants only the mathematical story can read
+Sections~\ref{sec:model}--\ref{sec:discussion} and treat the appendices as
+reference. A reader who wants to scrutinize the source correspondence should
+read Appendix~\ref{app:modeling} first.

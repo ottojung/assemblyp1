@@ -1,0 +1,191 @@
+\section{Population maximum likelihood and a repaired uniqueness theorem}
+\label{sec:population}
+
+The finite failures of Section~\ref{sec:finite} have two different causes, and
+separating them is what motivates the model of this section.
+
+\emph{Structural non-identifiability} (Example~\ref{ex:ABAB}) is the failure to
+determine the genome from the read distribution at all. Bridging conditions
+address it, and Theorem~\ref{thm:rigidity} shows how far they go on the
+same-length slice.
+
+\emph{Finite-sampling fluctuation} is a different phenomenon. Even a candidate
+that is structurally admissible can beat the truth because the realized sample
+is unrepresentative. The next example isolates this mechanism in its purest
+form.
+
+\begin{example}[Finite frequencies can beat structural admissibility]
+\label{ex:frequencies}
+Let $S=AABBC$ ($G=5$) be a primitive circular genome and $L=3$. Realize the
+starts $(0,3)$, giving the observed reads $\{AAB,BCA\}$. Let $D=AABC$ and note
+$|D|=4$. Both $S$ and $D$ are primitive and satisfy P1 (no repeated
+$(L-1)=2$-mer). The realized sample satisfies the truth-side
+information-feasibility condition, yet under the candidate-intrinsic exact
+multinomial objective
+\[
+  \frac{\Lik_{\mathrm{ex}}(D;x)}{\Lik_{\mathrm{ex}}(S;x)}
+  = \frac{(1/4)^2}{(1/5)^2} = \frac{25}{16} > 1 .
+\]
+The wrong genome wins because the realized sample consists only of reads to
+which the shorter candidate assigns probability $1/4$ while the truth assigns
+$1/5$. Structural admissibility has not failed; the empirical frequencies have
+fluctuated.
+\statusline{\computed{}, exact rational arithmetic. This is the project's
+finite witness for the sampling mechanism; it is not a counterexample to any
+historical statement, since the candidate restrictions are project-level.}
+\end{example}
+
+The lesson is that strengthening the repeat axioms again would target the wrong
+mechanism. The repair that removes empirical fluctuation is to replace the
+finite sample by its population limit.
+
+\subsection{Population likelihood}
+
+\begin{definition}[Population read distribution and likelihood]
+\label{def:population}
+For a circular word $D$ and read length $L\le|D|$, the population read
+distribution is
+\[
+  p_D(w) \;=\; \frac{\spec_L(D)(w)}{|D|},
+\]
+a probability distribution on length-$L$ words. For a fixed truth $S$, the
+\emph{population log-likelihood} of a candidate $D$ is
+\[
+  \ellpop_S(D) \;=\; \sum_{w} p_S(w)\log p_D(w),
+\]
+with $\ellpop_S(D)=-\infty$ if some word with $p_S(w)>0$ has $p_D(w)=0$.
+\statusline{\projchoice. This is the infinite-read (population) analogue of the
+Medvedev--Brudno exact objective; it is a project-level formulation motivated by
+the finite analysis, not an assumption of either historical paper.}
+\end{definition}
+
+\begin{lemma}[Gibbs/KL identity; the truth is always a population maximizer]
+\label{lem:gibbs}
+For any candidate $D$,
+\[
+  \ellpop_S(D)-\ellpop_S(S) = -\KL(p_S\,\|\,p_D) \;\le\; 0,
+\]
+with equality if and only if $p_D=p_S$. Consequently, over \emph{any} candidate
+class containing $S$, the truth is a population maximum-likelihood genome, with
+no repeat condition required.
+\end{lemma}
+
+\begin{proof}
+$\ellpop_S(S)=\sum_w p_S(w)\log p_S(w)$, so
+$\ellpop_S(D)-\ellpop_S(S)=\sum_w p_S(w)\log(p_D(w)/p_S(w))=-\KL(p_S\|p_D)$,
+where the right side is $+\infty$ precisely when $\ellpop_S(D)=-\infty$. Gibbs'
+inequality \cite{cover2006} gives $\KL\ge0$ with equality iff the distributions
+agree. The last claim is immediate since $S$ is in the class.
+\end{proof}
+
+Lemma~\ref{lem:gibbs} is the conceptual heart of the repair. At the population
+level the maximizer statement is free; the entire content of a uniqueness theorem
+is then \emph{spectrum identifiability}: for which candidate classes is
+$p_D=p_S$ equivalent to $D\approx S$?
+
+\subsection{Primitivity reduces normalized to ordinary spectra}
+
+Population equality compares \emph{normalized} spectra. The project uses two
+candidate-intrinsic admissibility predicates to cross the gap to ordinary
+spectrum equality.
+
+\begin{definition}[P1 and P2]
+\label{def:P1P2}
+Fix the read length $L$. An oriented circular word $D$ satisfies
+\begin{itemize}[leftmargin=*]
+  \item \textbf{P1} if no length-$(L-1)$ word occurs more than once in $D$;
+  \item \textbf{P2} if $D$ has no triple repeat of length $\ge L-1$ and every
+        interleaved maximal repeat pair has a constituent of length
+        $\le L-2$.
+\end{itemize}
+P1 is stronger than P2 (no repeated $(L-1)$-mer implies the P2 repeat bounds).
+Both are project-level, candidate-intrinsic conditions; neither is a historical
+assumption.
+\statusline{\projchoice. The threshold in P2 is chosen to match the
+complete-spectrum uniqueness theorem at $K=L-1$ below.}
+\end{definition}
+
+\begin{lemma}[Scaling plus primitivity]
+\label{lem:scaling}
+Let $S$ and $D$ be primitive circular words with $p_D=p_S$ for some
+$L\ge2$. Then $\spec_L(D)=\spec_L(S)$.
+\end{lemma}
+
+\begin{proof}[Proof sketch]
+$p_D=p_S$ rewrites as $|S|\,\spec_L(D)=|D|\,\spec_L(S)$, so the two spectra are
+proportional with rational factor $\lambda=|D|/|S|$. If $\lambda\ne1$, the
+project's scaling argument shows that one of the two genomes is a nontrivial
+whole-genome power, contradicting primitivity; hence $\lambda=1$ and the
+ordinary spectra coincide.
+\end{proof}
+
+The full scaling argument is recorded in the repository synthesis rather than
+reproduced here; we state it at the level of detail needed for the theorem and
+flag in Appendix~\ref{app:ledger} that its writeup is the project's, not a
+kernel-checked derivation.
+
+\subsection{The complete-spectrum uniqueness input}
+
+The remaining step is a classical one, supplied by an external source.
+
+\begin{theorem}[Bresler--Bresler--Tse complete-spectrum uniqueness]
+\label{thm:BBT}
+\srcfact{} \cite{bresler2013}. Construct the $K$-mer graph from the complete
+$(K+1)$-spectrum of a circular genome. If the genome satisfies Ukkonen's
+condition --- no triple repeat and no interleaved repeat pair of length at least
+$K$ --- then the graph has a unique Eulerian cycle, which spells the genome up
+to cyclic rotation.
+\end{theorem}
+
+Setting $K=L-1$ aligns the theorem's condition exactly with P2: maximal triple
+repeats then have length at most $L-2$, and every interleaved maximal-repeat pair
+has a constituent of length at most $L-2$.
+
+\subsection{Population uniqueness for the oriented primitive P2 class}
+
+\begin{theorem}[Population uniqueness, oriented primitive P2]
+\label{thm:population}
+Let $L\ge2$. Among primitive P2-admissible oriented circular candidates, the
+true genome $S$ is the unique population maximum-likelihood genome up to cyclic
+rotation.
+\end{theorem}
+
+\begin{proof}
+Let $D$ be primitive and P2-admissible with $\ellpop_S(D)=\ellpop_S(S)$. By
+Lemma~\ref{lem:gibbs}, $p_D=p_S$; by Lemma~\ref{lem:scaling},
+$\spec_L(D)=\spec_L(S)$. Both $S$ and $D$ satisfy P2, hence Ukkonen's condition
+at $K=L-1$, so Theorem~\ref{thm:BBT} applied to the complete $(L)$-spectrum
+gives a unique Eulerian cycle and therefore $D\sim S$. The truth is a maximizer
+by Lemma~\ref{lem:gibbs}.
+\end{proof}
+
+\statusline{The reduction and the maximizer step are \mathfact; the final
+step is the \srcfact{} external theorem \cite{bresler2013}. The whole chain is
+\emph{source-supported mathematics}, not a kernel-checked Lean theorem; the
+scaling lemma's writeup is the project's.}
+
+\subsection{Scope and one failed proof route}
+
+The theorem is stated for the \emph{oriented} spectrum model. It must not be
+silently transferred to reverse-complement-collapsed molecule classes, whose
+observation object is different: population equality there is a statement about
+class-indexed distributions, and the identification of classes changes which
+words are distinguishable.
+
+A stronger statement was attempted directly within the project, via a matching
+argument on the transition involution of the length-$(L-1)$ de Bruijn structure.
+That route has a genuine gap: a crossing between two raw occurrence pairs need
+not survive maximal extension as two interleaved \emph{maximal} repeats, and an
+explicit primitive example with the same length-$3$ spectrum and no cyclic
+relation exhibits the failure (it nevertheless fails P2 for a different
+interleaved pair, so it refutes the proof step, not the theorem). The
+Bresler--Bresler--Tse route above bypasses this gap; the failed route is recorded
+because it shows that ``the same spectrum is unique'' is not automatic from
+short local repeat structure.
+
+Finally, the population result does \emph{not} answer the finite 2016 question.
+It answers a different, cleaner question: once empirical frequencies are replaced
+by the true read distribution, bridging-style repeat bounds plus primitivity do
+recover oriented circular uniqueness. Whether the historical finite-sample
+statement holds under any fixed source-supported reading remains governed by
+Section~\ref{sec:finite}.

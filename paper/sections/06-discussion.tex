@@ -1,0 +1,103 @@
+\section{Discussion: two failure modes, two repairs, and what remains open}
+\label{sec:discussion}
+
+\subsection{The shape of the answer}
+
+The finite picture in Table~\ref{tab:finite} is neither a proof nor a refutation
+of a single sentence. It is a map of an interface. Bridging conditions are a
+\emph{structural} hypothesis; maximum likelihood is an \emph{optimization}
+objective; the published sentence asks whether the first implies the second. Our
+study shows that the answer depends on choices the sentence does not make, and
+that the mathematically clean content lives in two distinct failure modes.
+
+\paragraph{Structural/model failure.}
+Without a repeat/read-length boundary the genome need not be identifiable at all
+(Example~\ref{ex:ABAB}). Bridging conditions repair the structural ambiguity, and
+Theorem~\ref{thm:rigidity} shows that on the same-length oriented Section~6.2
+slice they are strong enough to make the truth's spectrum the only positive
+circulation --- an exact rigidity, not just a reconstruction claim. Requiring
+candidate length equal to the true length is, however, a strong extra axiom. It
+is not supplied by Medvedev and Brudno's known-size parameter, and
+Example~\ref{ex:variable-length} shows the conclusion fails as soon as it is
+dropped.
+
+\paragraph{Finite-sampling failure.}
+Even structurally admissible genomes can lose to the truth's competitors because
+empirical read frequencies fluctuate (Example~\ref{ex:frequencies}). This is a
+different mechanism and needs a different repair. Population maximum likelihood
+removes it at the maximizer level by construction
+(Lemma~\ref{lem:gibbs}), and for the oriented primitive P2 class it also yields
+uniqueness (Theorem~\ref{thm:population}).
+
+The resulting conceptual progression is:
+
+\begin{quote}
+naive ML intuition
+$\to$ structural repeat obstruction
+$\to$ the literature's repeat/bridging boundary
+$\to$ boundary-conditioned finite ML
+$\to$ a positive same-length slice but negative variable-length neighbors
+$\to$ replacing privileged true-length knowledge by intrinsic candidate checks
+$\to$ finite failure surviving as sampling fluctuation
+$\to$ population ML removing the fluctuation
+$\to$ P2 plus primitivity restoring oriented circular uniqueness.
+\end{quote}
+
+This ordering matters: population data is not introduced to patch repeat
+ambiguity, and intrinsic candidate checks are not introduced as assumptions of
+the historical papers. They repair weaknesses exposed in sequence.
+
+\subsection{What remains open}
+
+\paragraph{Source questions.}
+Which Medvedev--Brudno object the 2016 sentence denotes; which read-type
+convention (and hence which equivalence) it intends; whether candidate length is
+restricted; whether the conclusion is maximizer or uniqueness; and whether the
+unretrieved publisher supplement contains a definition that narrows any of
+these. These are not bookkeeping: each changes which formal statement the
+published sentence asserts.
+
+\paragraph{Mathematical questions.}
+The same-length Section~6.2 statement under the per-occurrence strengthening
+($d_D\ge x$) remains open in the searched scope. The single-strand reading of the
+variable-length Section~6.2 statement remains open (bounded zero evidence). The
+population uniqueness theorem's scaling lemma deserves a fully written,
+independently checked proof rather than a sketch. And the population model for
+\emph{molecule} read types --- as opposed to oriented types --- is not addressed
+here.
+
+\paragraph{What would count as settlement.}
+A positive settlement of the published question is a Lean proof of a formally
+justified version of the published implication after an argument fixes the axes
+of Table~\ref{tab:axes}. A negative settlement is a mathematically valid
+counterexample satisfying the faithfully formalized bridging hypotheses while
+violating the faithfully formalized likelihood conclusion. A computational
+discovery is useful but not a settlement until the finite instance is
+kernel-checked and the source correspondence is documented.
+
+\subsection{Relation to the literature}
+
+The closest published result is older than the 2016 question:
+Bresler, Bresler, and Tse prove a \emph{necessary} condition --- if a
+problematic interleaved pair or triple repeat has all copies unbridged, another
+same-length genome has the same read likelihood. Shomorony et al.\ strengthen
+the hypothesis to sufficient conditions for exact reconstruction and then ask
+whether those conditions also imply ML optimality. A 2025 correctness-guarantee
+paper still presents the information/correctness line and the
+maximum-likelihood line as separate \cite{salmela2025}, which is meaningful
+evidence that the 2016 question had not become a standard solved result. Our
+negative witnesses are consistent with that picture: the implication is not
+merely unproved but false under several precise readings, while the positive
+same-length and population results show where the intuition does survive.
+
+\subsection{Conclusion}
+
+The 2016 question is best read not as one theorem awaiting one proof but as an
+interface between a bridging hypothesis and a maximum-likelihood formulation
+whose candidate, representation, length, and tie choices all matter. We have made
+those choices explicit, proved a positive same-length rigidity theorem, refuted
+several precise readings by strict kernel-checked witnesses, and presented a
+repaired population model that restores oriented circular uniqueness under
+primitivity and a complete-spectrum condition. The finite source-faithful
+question remains distinct from the repaired result, and we have marked exactly
+where the boundary lies.

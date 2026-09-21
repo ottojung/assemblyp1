@@ -1,0 +1,403 @@
+\section{Finite results for the literature-derived formulations}
+\label{sec:finite}
+
+This section reports what is known about the question when the observation model
+is a finite sample and the objective is one of the Medvedev--Brudno objects of
+Section~\ref{sec:model}. The results are of two kinds. First a \emph{positive}
+rigidity theorem for same-length oriented Section~6.2 candidates under
+Shomorony's $\Is$. Then a sequence of \emph{negative} witnesses, each refuting a
+named, precisely scoped statement. We begin with the logical device that makes
+the negatives robust.
+
+\subsection{Negative results transfer; positive results do not}
+
+\begin{lemma}[Negative transfer]
+\label{lem:negative-transfer}
+Let $\Lik(\cdot;x)$ be an objective defined on a candidate class $\cands$, let
+$\cands'\subseteq\cands$, and let $S,D\in\cands'$. If
+$\Lik(D;x) > \Lik(S;x)$ then $S$ is not a maximizer of $\Lik(\cdot;x)$ over
+$\cands$.
+\end{lemma}
+
+\begin{proof}
+$D\in\cands$ is a candidate with strictly larger value than $S$, so the maximum
+over $\cands$ exceeds $\Lik(S;x)$.
+\end{proof}
+
+The converse fails: a positive result over a restricted class does not imply the
+same over a superclass, because the superclass may contain a better candidate.
+This asymmetry is why a same-length \emph{negative} witness that is
+candidate-set closed settles the unrestricted question negatively, while a
+same-length \emph{positive} theorem is a restricted result unless the restriction
+is itself source-justified.
+
+\subsection{A positive same-length oriented rigidity theorem}
+
+We work under the strict oriented single-strand convention: read types are the
+oriented length-$L$ windows of $S$ with no reverse-complement collapse, and a
+same-length Section~6.2 spelled candidate is a circular word $D$ of length
+$G=|S|$ with $\supp\spec_L(D)=\supp\spec_L(S)$.
+
+\begin{definition}[Window-support graph]
+\label{def:graph}
+Given a circular word $S$ and read length $L$, the graph $X_S$ has one node for
+each distinct length-$(L-1)$ window of $S$, and one directed edge for each
+distinct length-$L$ window $w\in\supp\spec_L(S)$, running from
+$\operatorname{prefix}_{L-1}(w)$ to $\operatorname{suffix}_{L-1}(w)$ and carrying
+multiplicity $A(w)=\spec_L(S)(w)$. A \emph{positive circulation of total $G$} is
+a map $f:\supp\spec_L(S)\to\ints_{>0}$ balanced at every node with
+$\sum_w f(w)=G$.
+\end{definition}
+
+The truth's spectrum $A$ is one such circulation, and the graph is strongly
+connected because its edges are the edges of the single closed walk
+$t\mapsto W_t(S)$.
+
+\begin{lemma}[Same-length spelled candidates are positive circulations]
+\label{lem:reduction}
+Same-length Section~6.2 spelled candidates with observed support $V$ are exactly
+the positive circulations of total $G$ on $X_S$.
+\end{lemma}
+
+\begin{proof}[Sketch]
+A circular word $D$ of length $G$ has a balanced positive spectrum of total $G$;
+if $\supp\spec_L(D)=V$ it is such a circulation. Conversely a positive
+circulation on a strongly connected balanced multigraph makes it Eulerian, so an
+Eulerian circuit spells a circular word $D$ of length $G$ with
+$\spec_L(D)=f$. The rigidity theorem below proves uniqueness on the larger
+circulation set, so it covers the spelled-circuit subclass a fortiori.
+\end{proof}
+
+\begin{theorem}[Short-repeat rigidity]
+\label{thm:short-repeat}
+If every length-$(L-1)$ window of $S$ occurs at most twice, then
+$A=\spec_L(S)$ is the unique positive circulation of total $G$ on $X_S$.
+\end{theorem}
+
+\begin{proof}
+Let $B$ be a positive circulation of total $G$ and $\delta=B-A$, a circulation
+with $\sum_w\delta(w)=0$. Since $A(w)\le$ (occurrences of
+$\operatorname{prefix}_{L-1}(w))\le 2$ and $B(w)\ge 1$, we have
+$\delta(w)\ge-1$ on every edge.
+
+Suppose $\delta\ne 0$. Then $N=\{w:\delta(w)<0\}$ is nonempty, and on $N$ we
+have $\delta(w)=-1$, $A(w)=2$, $B(w)=1$. Take $w\in N$ with tail $v$. As
+$A(w)=2$ and $\mathrm{out}_A(v)\le 2$, $w$ is the only outgoing edge at $v$, so
+$\mathrm{out}_\delta(v)=-1$ and balance gives $\mathrm{in}_\delta(v)=-1$. Each
+incoming edge has $\delta\ge-1$; if $v$ had two incoming edges they would each
+have $A=1$ and hence $\delta\ge0$, contradicting $\mathrm{in}_\delta(v)=-1$. So
+$v$ has a single incoming edge $e$ with $A(e)=2$, $\delta(e)=-1$, i.e.\ $e\in N$.
+The symmetric argument at the head of $w$ shows every edge incident to a node
+touched by $N$ lies in $N$; thus $N$ is a union of connected components of $X_S$
+with no edge to $V\setminus N$. Strong connectivity forces $N=\emptyset$ or
+$N=V$; the latter gives $\sum_w\delta(w)=-|V|<0$, contradicting
+$\sum_w\delta(w)=0$. Hence $\delta\ge0$, and a nonnegative circulation with
+$\sum_w\delta(w)=0$ is zero.
+\end{proof}
+
+The hypothesis of Theorem~\ref{thm:short-repeat} is exactly what the bridging
+condition supplies. We record the two extension lemmas that transfer bridging
+into short-repeat structure.
+
+\begin{lemma}[Primitive extension]
+\label{lem:primitive-extension}
+Let $S$ be primitive and suppose some length-$(L-1)$ window occurs at least three
+times. Then $S$ has a triple repeat of length at least $L-1$.
+\end{lemma}
+
+\begin{proof}[Sketch]
+Choose three starts carrying the same length-$(L-1)$ window and extend the three
+copies in both directions as long as all three remain equal. The process cannot
+reach length $G$, since three equal length-$G$ windows would make $S$ invariant
+under a nonzero shift, contradicting primitivity. At termination the preceding
+symbols are not all equal and the following symbols are not all equal, which is
+exactly the three-copy maximality condition; the length is at least $L-1$.
+\end{proof}
+
+\begin{lemma}[Periodic extension]
+\label{lem:periodic-extension}
+Let $S=P^k$ with minimal period $p<G$ and suppose some factor of $P$ of length at
+least $L-1$ occurs at least twice in the circular word $P$. Then $S$ has a triple
+repeat of length at least $L-1$.
+\end{lemma}
+
+\begin{proof}[Sketch]
+A repeated factor of $P$ of length at least $L-1$ occurs at least four times in
+$S$. Extending its two occurrence families maximally in both directions is
+uniform by $p$-periodicity and cannot reach length $G$, because that would make
+$r_2-r_1$ a period of $S$ and hence a smaller period of $P$. At termination the
+three-copy maximality condition holds for any three occurrences meeting both
+families.
+\end{proof}
+
+A length-$L$ read bridges a copy of a repeat of length $\ell$ only if
+$\ell\le L-2$. Hence $R\in\Is$ forbids every triple repeat of length
+$\ge L-1$. Combining this with the extension lemmas yields the main theorem.
+
+\begin{theorem}[Rigidity under $\Is$]
+\label{thm:rigidity}
+If $S$ admits a read realization $R\in\Is$, then $A=\spec_L(S)$ is the unique
+positive circulation of total $G$ on $X_S$.
+\end{theorem}
+
+\begin{proof}
+If $S$ is primitive: $R\in\Is$ gives no triple repeat of length $\ge L-1$; by
+Lemma~\ref{lem:primitive-extension} no length-$(L-1)$ window occurs three times;
+Theorem~\ref{thm:short-repeat} applies. If $S=P^k$ with minimal period
+$p<G$: by Lemma~\ref{lem:periodic-extension} every factor of $P$ of length
+$\ge L-1$ occurs at most once, so the $p$ length-$L$ and length-$(L-1)$ windows
+of $P$ are pairwise distinct and $X_S$ is a single directed $p$-cycle with
+$A(w)=k$ on every edge. A positive circulation on a directed cycle is constant
+by balance, and total $G=kp$ forces the value $k$, so $B=A$.
+\end{proof}
+
+\begin{corollary}[No strict same-length Section~6.2 counterexample]
+\label{cor:same-length-zero}
+Suppose $R\in\Is$ and the truth is Section~6.2-admissible, so
+$\supp x=\supp\spec_L(S)$. Then every same-length Section~6.2 spelled candidate
+$D$ satisfies $\spec_L(D)=\spec_L(S)$, and for every objective that is a function
+of $(\spec_L(D),x)$,
+\[
+  \frac{\Lik(D;x)}{\Lik(S;x)}=1 .
+\]
+There is no strict same-length counterexample for any $G$, $L$, or alphabet.
+\end{corollary}
+
+\begin{proof}
+By Theorem~\ref{thm:rigidity} the only positive circulation of total $G$ on
+$X_S$ is $A$, so every same-length spelled candidate has spectrum $A$. Both
+objectives depend on the candidate only through its spectrum, and the
+observation is common, so the scores coincide.
+\end{proof}
+
+Only the triple-repeat clause of $\Is$ is used. The interleaved-repeat clause and
+the coverage clause are not needed for this same-length conclusion. The equal
+length assumption, by contrast, is essential and sharp; we return to it in
+Section~\ref{sec:finite:length}.
+
+\begin{proposition}[Beatability criterion]
+\label{prop:beatability}
+Fix $S,L$ and an observation $x$ with $\supp x=\supp\spec_L(S)$, and write
+$A=\spec_L(S)$. If $A$ is the unique positive circulation of total $G$ on
+$X_S$, the truth ties every same-length spelled candidate. If $B\ne A$ is
+another positive circulation of total $G$, choose $w_0$ with $B(w_0)>A(w_0)$ and
+put $x_M=x+M e_{w_0}$. Then the likelihood ratio equals
+$\mathrm{ratio}_0\cdot(B(w_0)/A(w_0))^M$, which exceeds $1$ for all sufficiently
+large $M$; the fixed-length binomial's domain is respected because $B(w_0)<G=N$
+whenever $B$ is positive and non-constant.
+\end{proposition}
+
+Thus non-rigidity is exactly the same-length obstruction, and by
+Theorem~\ref{thm:rigidity} the hypothesis $\Is$ removes it. The minimum
+same-length non-rigid pair, found by exact search, is $S=AAAAB$,
+$D=AABAB$ ($G=5$, $L=2$); its truth carries a long triple repeat and is
+therefore not $\Is$-admissible. Skirting the triple-repeat clause is precisely
+what permits the multiplicity reallocation.
+\statusline{Theorem~\ref{thm:rigidity} and
+Corollary~\ref{cor:same-length-zero} are \mathfact; the minimum non-rigid pair
+and the bounded verifications are \computed, exhaustive in the cited scope.}
+
+\subsection{Strict finite counterexamples}
+
+The rigidity theorem is a positive same-length statement. Everything else in
+this subsection is negative, and each witness is strict, hence robust to the
+unresolved equivalence and tie conventions.
+
+\begin{theorem}[Exact-multinomial counterexample over all circular candidates]
+\label{thm:cex-exact}
+Let $\Alphabet=\{A,B\}$, $L=3$, and let the truth be
+\[
+  S=AAABB \quad (G=5),
+\]
+with realized starts $0,1,4$, so the observed reads are $\{AAA,AAB,BAA\}$, each
+once. Let
+\[
+  D=AAAAB \quad (|D|=5).
+\]
+Then $R\in\Is$ holds non-vacuously, and
+\[
+  \frac{\Lik_{\mathrm{ex}}(D;x)}{\Lik_{\mathrm{ex}}(S;x)} = 2 > 1 .
+\]
+Consequently the truth is not a maximizer for the exact multinomial over all
+circular candidates, so both the maximizer and uniqueness schemas are false for
+this objective.
+\end{theorem}
+
+\begin{proof}
+The spectra on the observed types are $\spec_3(S)=(AAA:1,AAB:1,BAA:1)$ and
+$\spec_3(D)=(AAA:2,AAB:1,BAA:1)$; $\spec_3$ has total $5$ for both. The
+multinomial coefficient $\binom{3}{1,1,1}=6$ is common, and all candidates have
+length $5$, so
+\[
+  \Lik_{\mathrm{ex}}(S;x)=6\cdot(1/5)^3=\frac{6}{125},\qquad
+  \Lik_{\mathrm{ex}}(D;x)=6\cdot(2/5)(1/5)(1/5)=\frac{12}{125}.
+\]
+For $\Is$: the starts cover all five positions; the three $A$'s at positions
+$0,1,2$ form a maximal length-$1$ triple repeat, bridged respectively by the
+reads at starts $4,0,1$; and no two maximal repeat pairs have four alternating
+starts, so the interleaved clause is vacuous. The all-bridged triple-repeat
+clause is therefore genuinely exercised. The transfers to all circular
+candidates by Lemma~\ref{lem:negative-transfer} because the witness is
+same-length.
+\statusline{\kernelcheck{} in the repository's
+\texttt{FixedLengthExactCounterexample} module.}
+\end{proof}
+
+Repeating the start-$0$ read $k$ times gives the observed multiset
+$\{AAA^k,AAB,BAA\}$ and ratio $2^k$, so the failure is a one-parameter family,
+not a coincidental tie.
+
+\begin{theorem}[Fixed-length binomial counterexample]
+\label{thm:cex-binomial}
+Let $\Alphabet=\{A,C\}$ inside the four-letter DNA alphabet, $L=3$, truth
+$S=AAACC$ with realized starts $0,1,4$ (observed reads $AAA,AAC,CAA$), and
+competitor $D=AAAAC$, both of length $5$. Under the literal Section~6.1 product
+of binomial marginals with $N=5$, the zero-count factors retained,
+\[
+  \frac{\Lik_{\mathrm{bin}}(D;x)}{\Lik_{\mathrm{bin}}(S;x)}
+  = \frac{1125}{512} > 1 .
+\]
+\end{theorem}
+
+\begin{proof}[Sketch]
+The instance is Theorem~\ref{thm:cex-exact} with $B$ relabeled to $C$, so the
+same $\Is$ certificate transfers. The spectra are $S=(AAA:1,AAC:1,CAA:1)$ and
+$D=(AAA:2,AAC:1,CAA:1)$ on the observed types. Carrying the factors for the
+zero-multiplicity types changes the ratio from $2$ to $1125/512$:
+\[
+  \Lik_{\mathrm{bin}}(S;x)=\frac{452984832}{30517578125},\qquad
+  \Lik_{\mathrm{bin}}(D;x)=\frac{7962624}{244140625}.
+\]
+\statusline{\kernelcheck{} in \texttt{FixedLengthBinomialCounterexample}. The
+difference from the exact ratio shows that dropping or retaining the zero-count
+factors changes the objective. By Lemma~\ref{lem:negative-transfer} the witness
+refutes the maximizer statement over every circular candidate on which the
+binomial objective is defined, since both $S$ and $D$ lie in the domain
+($\spec_3(D)(AAA)=2<5$).}
+\end{proof}
+
+We now turn to the reverse-complement molecular reading of the Section~6.2 flow.
+Here read types are molecule classes, the truth and competitor must both be
+admissible bidirected circuits, and the objective is the literal Section~6.1
+product with external $N$. The mechanism is different from the sequence-level
+witnesses: reverse complementarity \emph{creates} multiplicity that the
+observation does not force, and support equality then permits reallocation.
+
+\begin{theorem}[Section~6.2 variable-length molecule counterexample]
+\label{thm:cex-molecule}
+Let $\Alphabet=\{A,T\}$ with involution $A\leftrightarrow T$, $L=3$, truth
+$S=AAATT$ ($G=5$) with realized starts $0,1,4$, and competitor
+$D=AAAATT$ ($|D|=6$). Then $R\in\Is$ holds; both $S$ and $D$ induce admissible
+Section~6.2 bidirected circuits; and with external $N=5$,
+\[
+  \frac{\Lik_{6.1}(D)}{\Lik_{6.1}(S)} = \frac{9}{8} > 1 .
+\]
+\end{theorem}
+
+\begin{proof}[Sketch]
+Under $A\leftrightarrow T$ the molecule classes of $S$ are
+$d_S=(AAA:1,AAT:2,TAA:2)$ and the observed classes are
+$x=(AAA:1,AAT:1,TAA:1)$; for $D$ they are $d_D=(AAA:2,AAT:2,TAA:2)$. Both
+spectra have the same support as $x$. The ratio of the $AAA$ factor is
+$[(2/5)(3/5)^2]/[(1/5)(4/5)^2]=9/8$, and the other two classes have equal
+multiplicities, so they contribute factor $1$. Bidirected-circuit feasibility and
+the $\Is$ certificate are checked by exact computation and by an explicit
+bidirected graph.
+\statusline{\kernelcheck{} for the finite certificate and the strict inequality;
+\computed{} for the bidirected graph certificate, which is checked by script and
+not reproduced in Lean.}
+\end{proof}
+
+Allowing the lengths to be equal does not save the Section~6.2 reading. The
+smallest same-length witness is $S=AAATAT$, $D=AAAAAT$ ($G=6$), for which the
+exact ratio is $3$ and the binomial ratio is $5$, with both genomes
+Section~6.2-feasible under the source's per-vertex lower bound.
+
+\begin{remark}[A strengthening is open]
+The witnesses above use the source's per-vertex lower bound, i.e.\ support
+equality. Under the strictly stronger per-occurrence requirement
+$d_D(w)\ge x(w)$ for every observed type, the same-length Section~6.2 statement
+is \openstatus{} in the searched scope; the witnesses' truths are not candidates
+under that strengthening. We flag this because it is the kind of
+assumption-surface change that separates a refuted statement from an open one.
+\end{remark}
+
+\subsection{The candidate-length boundary}
+\label{sec:finite:length}
+
+The same-length restriction in the positive theorem is not cosmetic. On the next
+slice, where $|D|>G$ is allowed, the truth need not be optimal even under $\Is$.
+
+\begin{example}[Variable-length oriented boundary]
+\label{ex:variable-length}
+Take truth $S=AAATT$ ($G=5$), $L=3$, and competitor $D=AAAATT$ ($|D|=6$). The
+supports agree and $\Is$ holds. With the observed counts
+$x=\spec_3(S)+M e_{AAA}$,
+\begin{center}
+\begin{tabular}{@{}lll@{}}
+\toprule
+$M$ & exact multinomial & fixed-$N$ binomial ($N=5$) \\
+\midrule
+$0$ & $3125/3888<1$ & $81/128<1$ \\
+$1$ & $15625/11664>1$ & $81/64>1$ \\
+$2$ & $78125/34992>1$ & $81/32>1$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+The boundary is exactly $n>G$: at $n=G$ the truth wins, and a single extra
+observation of an over-represented type overturns it.
+\statusline{\computed{}. The same word pair also appears as a
+reverse-complement variable-length witness; here the orientation is fixed by
+observing every truth type plus an extra $AAA$, so the mechanism is
+observed-multiplicity skew rather than strand collapse.}
+\end{example}
+
+\subsection{Summary of the finite landscape}
+
+\begin{table}[t]
+\centering
+\small
+\begin{tabular}{@{}p{0.30\textwidth}p{0.24\textwidth}p{0.16\textwidth}p{0.20\textwidth}@{}}
+\toprule
+Statement & objective & candidate class & result \\
+\midrule
+same-length oriented Section~6.2, $R\in\Is$
+  & exact / binomial
+  & same-length spelled
+  & \textbf{true} (Thm.~\ref{thm:rigidity}) \\
+exact ML maximizer
+  & exact multinomial
+  & all circular
+  & \textbf{false} (Thm.~\ref{thm:cex-exact}) \\
+binomial ML maximizer
+  & fixed-$N$ binomial
+  & all circular (on its domain)
+  & \textbf{false} (Thm.~\ref{thm:cex-binomial}) \\
+Section~6.2 flow, molecule reads
+  & Section~6.1 product
+  & §6.2 circuits
+  & \textbf{false} (Thm.~\ref{thm:cex-molecule}) \\
+Section~6.2 flow, molecule, same length, per-vertex
+  & exact / binomial
+  & §6.2 spelled
+  & \textbf{false} ($AAATAT\to AAAAAT$) \\
+Section~6.2, per-occurrence strengthening
+  & exact / binomial
+  & §6.2 spelled
+  & \openstatus \\
+\bottomrule
+\end{tabular}
+\caption{The finite landscape. ``False'' means a strict, kernel-checked
+counterexample over the stated class; by Lemma~\ref{lem:negative-transfer} each
+same-length falsity transfers to all circular candidates for that objective.}
+\label{tab:finite}
+\end{table}
+
+Table~\ref{tab:finite} makes the shape of the answer visible. The 2016 question
+is not one theorem awaiting one proof: it is a family of statements indexed by
+objective, strand convention, candidate class, and length convention, some true,
+some false, and at least one open. The negative results also expose the
+\emph{mechanism}, which the next section isolates: the exact objective scores
+empirical read-type frequencies, and a competitor can improve its score by
+reallocating multiplicity toward over-represented observed types while
+respecting the bridging constraint on the realized reads.

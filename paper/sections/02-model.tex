@@ -1,0 +1,193 @@
+\section{The sequencing and bridging model}
+\label{sec:model}
+
+This section fixes notation and records the source-faithful model. We separate
+the parts that come from the literature from the project's normalizations; the
+former are tagged \srcfact{} and the latter \projchoice. The de Bruijn/Eulerian
+view of assembly that underlies both the repeat theory and the Section~6.2 graph
+is classical \cite{idury1995,pevzner2001}. A fuller discussion of
+\emph{why} the model has this shape is deferred to Appendix~\ref{app:modeling}.
+
+\subsection{Circular genomes and spectra}
+
+\begin{definition}[Circular word, window, spectrum]
+\label{def:spectrum}
+Fix a finite alphabet $\Alphabet$ of size $\sigma$. A \emph{circular word} $D$ of
+length $n=|D|$ is a function $D:\ints/n\ints \to \Alphabet$, written
+$D_0D_1\cdots D_{n-1}$ with indices mod $n$. For $L \le n$ the \emph{length-$L$
+window} at start $t$ is
+\[
+  W_t(D) \;=\; D_t D_{t+1}\cdots D_{t+L-1},
+\]
+read cyclically. The \emph{length-$L$ spectrum} of $D$ is the function
+\[
+  \spec_L(D)(w) \;=\; \#\{\, t \in \ints/n\ints : W_t(D)=w \,\}
+\]
+on length-$L$ words, with total $\sum_w \spec_L(D)(w) = n$. Its support is
+$\supp\spec_L(D) = \{\,w : \spec_L(D)(w) > 0\,\}$.
+\statusline{\srcfact{} for the circular, oriented-window model
+\cite[\S2]{shomorony2016}; the notation is ours.}
+\end{definition}
+
+Two circular words are \emph{cyclically equivalent}, written $D \sim D'$, if one
+is a rotation of the other. A circular word is \emph{primitive} if its minimal
+period equals its length, i.e.\ it is not $P^k$ for a shorter word $P$ and
+$k\ge 2$. Cyclic equivalence preserves $|D|$ and $\spec_L(D)$, so it is the
+weakest equivalence that a likelihood on spectra can ever distinguish.
+
+\begin{remark}[Why cyclic shift is unavoidable]
+\label{rem:cyclic}
+Rotation is a bijection of start positions commuting with $t \mapsto W_t(D)$;
+hence $\spec_L(\rho D)=\spec_L(D)$ for every rotation $\rho D$ and every $L$.
+A circular candidate therefore has (at least) $n$ spellings with identical
+spectra, and a conclusion that ignores cyclic shift can never be true for a
+non-rotation-fixed genome. This is a \mathfact, not a modeling preference.
+\end{remark}
+
+\subsection{Reads and the information-feasible hypothesis}
+
+\begin{definition}[Read realization and coverage]
+\label{def:reads}
+A \emph{read realization} of the circular truth $S$ with read length $L$ is a
+multiset $R$ of start positions, possibly with repetition; the observed read
+strings are the corresponding windows $W_t(S)$. It \emph{covers} $S$ if every
+position of $S$ lies in at least one read interval. The observable data are the
+read \emph{multiplicities} $x(w) = \#\{t \in R : W_t(S)=w\}$, not merely the set
+of distinct read strings.
+\statusline{\srcfact{} for uniform independent error-free sampling and coverage
+\cite[\S2]{shomorony2016}; retaining multiplicity is required for likelihood
+evaluation.}
+\end{definition}
+
+We now record the repeat and bridging vocabulary. The source-faithful reading is
+that Shomorony et al.\ inherit these definitions from Bresler, Bresler, and Tse
+\cite{bresler2013}; we follow that attribution.
+
+\begin{definition}[Repeat objects with maximality]
+\label{def:repeats}
+A length-$\ell$ \emph{repeat pair} consists of two distinct start positions whose
+length-$\ell$ windows are equal and which are \emph{maximal} on both sides: the
+symbols immediately preceding the two copies differ and the symbols immediately
+following them differ. A \emph{triple repeat} uses three starts with equal
+length-$\ell$ windows, with the three-copy maximality condition that the
+preceding symbols are not all equal and the following symbols are not all equal.
+A repeat pair is \emph{interleaved} if its four selected starts alternate in
+cyclic order; its length is the shorter constituent length.
+\statusline{\srcfact{} \cite[repeat definitions]{bresler2013};
+the cyclic-order normalization of interleaving is a \projchoice{} proved
+equivalent to the source's displayed linear orders on a circle.}
+\end{definition}
+
+A read interval $[r,r+L)$ \emph{bridges} a lifted copy $[t,t+\ell)$ iff
+$r<t$ and $t+\ell<r+L$, i.e.\ the read strictly extends beyond the copy on both
+sides. A repeat is \emph{bridged} if at least one selected copy is bridged; a
+triple repeat is \emph{all-bridged} if \emph{every} selected copy is bridged.
+This must not be confused with the weaker ``at least one copy bridged'' reading
+of a triple repeat.
+
+\begin{definition}[Information-feasible set $\Is$]
+\label{def:Is}
+A read realization $R$ of $S$ is \emph{information-feasible}, written $R \in
+\Is$, if
+\begin{enumerate}[label=(C\arabic*),leftmargin=*]
+  \item $R$ covers $S$;
+  \item every triple repeat of $S$ is all-bridged;
+  \item every interleaved repeat pair of $S$ is bridged.
+\end{enumerate}
+\statusline{\srcfact{} \cite[Eq.~(1)]{shomorony2016}, inheriting
+\cite{bresler2013}. The triplet is the hypothesis side of the published
+open-question sentence.}
+\end{definition}
+
+A length-$L$ read can bridge a copy of a repeat of length $\ell$ only if
+$\ell \le L-2$: strict extension on both sides requires the repeat to fit
+strictly inside the read. We use this repeatedly.
+
+\subsection{Observation models and candidate classes}
+
+The likelihood layer must consume only observable read multiplicities plus a
+candidate genome; it must not see the latent true placements. We keep the
+following three objectives distinct, because the published sentence does not
+select among them (Section~\ref{sec:open}).
+
+\begin{definition}[Exact multinomial; binomial approximation]
+\label{def:likelihoods}
+Let $x$ be observed read-type multiplicities with $n=\sum_w x(w)$, and let $D$ be
+a circular candidate.
+\begin{enumerate}[label=(\roman*),leftmargin=*]
+  \item The \emph{exact multinomial} objective is
+  \[
+    \Lik_{\mathrm{ex}}(D;x)
+      = \frac{n!}{\prod_w x(w)!}\,
+        \prod_{w\,:\,\spec_L(D)(w)>0}
+        \left(\frac{\spec_L(D)(w)}{|D|}\right)^{x(w)},
+  \]
+  with $|D|$ the candidate-intrinsic length, and value $0$ if some observed
+  word has zero multiplicity in $D$.
+  \item The \emph{fixed-length binomial} objective with external genome size $N$
+  is
+  \[
+    \Lik_{\mathrm{bin}}(D;x)
+      = \prod_w \binom{n}{x(w)}
+        \left(\frac{\spec_L(D)(w)}{N}\right)^{x(w)}
+        \left(1-\frac{\spec_L(D)(w)}{N}\right)^{n-x(w)},
+  \]
+  defined when $0 \le \spec_L(D)(w) \le N$ for all $w$.
+\end{enumerate}
+\statusline{(i) is the \srcfact{} exact global read-count likelihood
+\cite[\S6.1]{medvedev2009}; (ii) is the \srcfact{} separable approximation that
+replaces the candidate length $N(D)$ by an external, known $N$, which Medvedev
+and Brudno explicitly adopt for their algorithm. The two are not
+definitionally equal.}
+\end{definition}
+
+A \emph{candidate class} is a set $\cands$ of circular words to which the
+objective is restricted. The following classes occur below:
+\begin{itemize}[leftmargin=*]
+  \item all nonempty circular words (where the exact objective is defined);
+  \item the same-length class $\{\,D : |D|=|S|\,\}$;
+  \item Section~6.2 \emph{spelled candidates}: circular words $D$ whose window
+        support equals the observed support, $\supp\spec_L(D)=\supp x$, reflecting
+        the source's per-vertex lower bound of $1$ on each read molecule
+        \cite[\S6.2, Observation 7]{medvedev2009};
+  \item the project-level classes P1 and P2 defined in
+        Section~\ref{sec:population}.
+\end{itemize}
+
+Following the repository's formalization contract, we never silently identify
+these classes. A theorem proved over a restricted class is a restricted result;
+but a \emph{negative} result over a subclass transfers to every superclass
+(Lemma~\ref{lem:negative-transfer}).
+
+\subsection{The two conclusion schemas}
+
+The English phrase ``the maximum-likelihood sequence is the true sequence'' has
+two inequivalent formalizations, and the sources state no tie rule.
+
+\begin{definition}[Maximizer and uniqueness schemas]
+\label{def:schemas}
+Fix an objective $\Lik$, an observation $x$ generated from truth $S$, a
+candidate class $\cands$ containing $S$, and a genome equivalence $\approx$.
+\begin{align*}
+  \weak &: \quad \forall D \in \cands,\quad \Lik(D;x) \le \Lik(S;x);\\
+  \strong &: \quad \weak \ \wedge\ \forall D \in \cands,\quad
+             \Lik(D;x)=\Lik(S;x) \Rightarrow D \approx S.
+\end{align*}
+The weak schema asserts that the truth is \emph{a} maximizer; the strong schema
+adds that \emph{every} maximizer is the truth up to $\approx$.
+\end{definition}
+
+Two facts about the equivalence are forced rather than chosen.
+Cyclic shift must belong to $\approx$ for the strong schema to be satisfiable at
+all (Remark~\ref{rem:cyclic}). And reverse-complement equivalence is forced
+\emph{exactly} when read types are reverse-complement molecule classes: under
+molecule types a candidate and its reverse complement always tie, while under
+oriented read types they need not. The read-type convention and the genome
+equivalence are therefore one coupled choice, not two independent parameters.
+We return to this in Section~\ref{sec:open}.
+
+Finally, a strict inequality makes equivalence and tie conventions irrelevant: if
+some candidate has $\Lik(D;x) > \Lik(S;x)$ strictly, then both $\weak$ and
+$\strong$ are false under \emph{every} equivalence and tie convention. The
+kernel-checked witnesses of Section~\ref{sec:finite} are of this strict kind,
+which is why they are robust to the unresolved equivalence choices.

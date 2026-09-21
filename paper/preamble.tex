@@ -1,0 +1,82 @@
+% Shared preamble for the AssemblyP1 white paper.
+% Conservative package set; see paper/manifest.scm.
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{microtype}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage{xcolor}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,positioning,fit,backgrounds}
+\usepackage[backend=biber,style=authoryear,maxbibnames=99]{biblatex}
+\usepackage[hidelinks,colorlinks=true,linkcolor=blue!45!black,citecolor=green!40!black,urlcolor=blue!55!black]{hyperref}
+
+% ---------- Theorem environments ----------
+\theoremstyle{plain}
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{example}[theorem]{Example}
+\newtheorem{counterexample}[theorem]{Counterexample}
+\newtheorem{conjecture}[theorem]{Conjecture}
+\newtheorem{problem}[theorem]{Problem}
+
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+
+% ---------- Epistemic-status markup ----------
+% Every nontrivial claim carries one of these labels, inline or after a proof.
+\newcommand{\statustag}[1]{\textnormal{\textsc{[#1]}}}
+\newcommand{\srcfact}{\statustag{source fact}}
+\newcommand{\srcinf}{\statustag{source-supported inference}}
+\newcommand{\projchoice}{\statustag{project modeling choice}}
+\newcommand{\mathfact}{\statustag{mathematical result}}
+\newcommand{\kernelcheck}{\statustag{kernel-checked}}
+\newcommand{\computed}{\statustag{verified computation}}
+\newcommand{\boundedev}{\statustag{bounded computational evidence}}
+\newcommand{\openstatus}{\statustag{open}}
+\newcommand{\srcgap}{\statustag{source gap}}
+
+\newcommand{\statusline}[1]{\par\smallskip\noindent\textit{Status.}~#1}
+\newcommand{\provenance}[1]{\par\smallskip\noindent\textit{Provenance.}~#1}
+
+% A small legend used in several places.
+\newcommand{\statuslegend}{%
+  \srcfact, \srcinf, \projchoice, \mathfact, \kernelcheck, \computed,
+  \boundedev, \srcgap, and \openstatus.}
+
+% ---------- Notation ----------
+\newcommand{\Alphabet}{\Sigma}
+\newcommand{\spec}{\operatorname{spec}}
+\newcommand{\supp}{\operatorname{supp}}
+\newcommand{\occ}{\operatorname{occ}}
+\newcommand{\KL}{\operatorname{KL}}
+\newcommand{\ellpop}{\ell}
+\newcommand{\reals}{\mathbb{R}}
+\newcommand{\nats}{\mathbb{N}}
+\newcommand{\ints}{\mathbb{Z}}
+\newcommand{\Is}{I_s}
+\newcommand{\rc}{\operatorname{rc}}
+\newcommand{\Lik}{\mathcal{L}}
+\newcommand{\lendist}{\mathcal{D}}
+\newcommand{\cands}{\mathcal{C}}
+
+% Semantic emphasis for the two conclusion schemas.
+\newcommand{\weak}{\mathrm{W}}   % truth is a maximizer
+\newcommand{\strong}{\mathrm{S}} % every maximizer is the truth up to equivalence
+
+% ---------- Lightweight figure styles ----------
+\tikzset{
+  genomebase/.style={circle,draw,inner sep=1pt,minimum size=1.35em,font=\small},
+  readarc/.style={-{Latex[length=2mm]},thick},
+}

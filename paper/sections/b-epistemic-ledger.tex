@@ -1,0 +1,131 @@
+\section{Epistemic ledger}
+\label{app:ledger}
+
+Every nontrivial claim in this paper belongs to one of a small number of
+epistemic classes. This appendix consolidates them. The classes are:
+\emph{source fact} (stated by a cited source), \emph{source-supported inference}
+(a reading of a source that the source does not literally state),
+\emph{project modeling choice} (introduced here, not in the literature),
+\emph{mathematical result} (proved in the repository's notes),
+\emph{kernel-checked} (Lean-checked finite certificate),
+\emph{verified computation} (exact-rational script), \emph{bounded computational
+evidence} (search in a stated scope, not a proof), \emph{source gap} (the
+sources do not determine it), and \emph{open}.
+
+\subsection{Source facts and source gaps}
+
+\begin{table}[h]
+\centering
+\small
+\begin{tabular}{@{}p{0.46\textwidth}p{0.20\textwidth}p{0.26\textwidth}@{}}
+\toprule
+Claim & Status & Basis \\
+\midrule
+Circular oriented length-$L$ read model; independent uniform starts
+  & source fact & \cite[\S2]{shomorony2016} \\
+$\Is$ = coverage $\wedge$ all triple repeats all-bridged $\wedge$ interleaved
+pairs bridged & source fact & \cite[Eq.~1]{shomorony2016} \\
+Repeat/triple-repeat maximality; bridging strict on both sides
+  & source fact & \cite{bresler2013} \\
+Exact multinomial with candidate-intrinsic $N(D)$
+  & source fact & \cite[\S6.1]{medvedev2009} \\
+Fixed-$N$ binomial approximation; ``genome size known''
+  & source fact & \cite[\S6.1]{medvedev2009} \\
+Section~6.2 objects are bidirected flows, not necessarily sequences
+  & source fact & \cite[\S6.2]{medvedev2009} \\
+Reads are reverse-complement molecule pairs in MB09
+  & source fact & \cite[\S3.1,\S4.1]{medvedev2009} \\
+``$4^k$ variables'' vs.\ molecule vocabulary (internal tension)
+  & source fact / tension & \cite[\S6.1]{medvedev2009} \\
+Which MB09 object the 2016 sentence denotes
+  & source gap & \cite[\S5]{shomorony2016} \\
+Which read-type convention / equivalence; candidate length; maximizer vs.\
+uniqueness & source gap & \cite[\S5]{shomorony2016} \\
+Publisher supplement unretrieved & source gap & repository record \\
+\bottomrule
+\end{tabular}
+\caption{Source facts and gaps. The gaps are what prevent any single theorem
+from being advertised as settling the published sentence.}
+\end{table}
+
+\subsection{Mathematical and project results}
+
+\begin{table}[h]
+\centering
+\small
+\begin{tabular}{@{}p{0.48\textwidth}p{0.20\textwidth}p{0.24\textwidth}@{}}
+\toprule
+Claim & Status & Provenance \\
+\midrule
+Cyclic shift is forced for the strong schema; reverse complement forced iff
+molecule types & mathematical fact & repository equivalence note \\
+Negative results transfer to superclasses; positives do not
+  & mathematical fact & Lemma~\ref{lem:negative-transfer} \\
+Same-length oriented Section~6.2 rigidity under $\Is$
+  & mathematical fact & Theorem~\ref{thm:rigidity} \\
+No strict same-length Section~6.2 counterexample, any $G,L,\Alphabet$
+  & mathematical fact & Corollary~\ref{cor:same-length-zero} \\
+Beatability criterion; non-rigidity is the same-length obstruction
+  & mathematical fact & Prop.~\ref{prop:beatability} \\
+Gibbs/KL: truth is a population maximizer over any class
+  & mathematical fact & Lemma~\ref{lem:gibbs} \\
+Primitivity plus scaling reduces normalized to ordinary spectra
+  & project mathematical reduction (sketch) & repository synthesis \\
+Population uniqueness, oriented primitive P2
+  & source-supported mathematical theorem & Thm.~\ref{thm:population},
+  \cite{bresler2013} \\
+P1/P2 intrinsic admissibility; population objective
+  & project modeling choice & this paper, Defs.~\ref{def:P1P2},
+  \ref{def:population} \\
+\bottomrule
+\end{tabular}
+\caption{Mathematical and project-level results. ``Project mathematical
+reduction (sketch)'' marks the one step whose full writeup is not reproduced
+here; it is not kernel-checked.}
+\end{table}
+
+\subsection{Finite certificates and computations}
+
+\begin{table}[h]
+\centering
+\small
+\begin{tabular}{@{}p{0.44\textwidth}p{0.20\textwidth}p{0.28\textwidth}@{}}
+\toprule
+Claim & Status & Artifact \\
+\midrule
+$AAABB\to AAAAB$, exact ratio $2$, $\Is$ certificate
+  & kernel-checked & \texttt{FixedLengthExactCounterexample} \\
+$AAACC\to AAAAC$, binomial ratio $1125/512$
+  & kernel-checked & \texttt{FixedLengthBinomialCounterexample} \\
+$AAATT\to AAAATT$, §6.1 ratio $9/8$; $\Is$; §6.2 circuits
+  & kernel-checked (+ script for the graph) &
+  \texttt{Section62BridgingCounterexample} \\
+$AAATAT\to AAAAAT$, same length, exact $3$, binomial $5$
+  & kernel-checked (+ script) &
+  \texttt{SameLengthSection62Counterexample} \\
+$AAATT\to AAAATT$ variable-length oriented boundary
+  & verified computation & rigidity script \\
+Minimum same-length non-rigid pair $AAAAB/AABAB$
+  & verified computation (bounded, exhaustive in scope) &
+  rigidity script \\
+$AABBC\to AABC$ sampling failure, ratio $25/16$
+  & verified computation & repository script \\
+Direct P2 matching proof's maximal-extension step is invalid
+  & counterexample to a proof step, not the theorem & audit note \\
+\bottomrule
+\end{tabular}
+\caption{Finite certificates. Kernel-checked statements concern the finite
+instance and arithmetic; the source-correspondence claims are separate
+source-supported inferences.}
+\end{table}
+
+\subsection{Unresolved register}
+
+We reproduce the project's open items so that the boundary of this paper is
+explicit: (1) the referent of the 2016 sentence; (2) the read-type convention and
+hence the equivalence; (3) the candidate-length convention; (4) the
+maximizer-vs-uniqueness reading; (5) the $4^k$ vs.\ molecule-class index count in
+MB09 Section~6.1; (6) the unretrieved publisher supplement; (7) the
+per-occurrence same-length Section~6.2 statement; (8) the single-strand
+variable-length Section~6.2 statement; (9) a full proof of the scaling lemma;
+and (10) the population model for molecule read types.
