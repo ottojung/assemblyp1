@@ -1,0 +1,79 @@
+% AssemblyP1 white paper.
+% Reproducible build: see paper/README.md and paper/build.sh
+\documentclass[11pt,a4paper]{article}
+
+\input{preamble}
+
+\addbibresource{references.bib}
+
+\title{\bfseries Bridging Conditions and Maximum-Likelihood\\
+Genome Assembly\\[0.4em]
+\large A Source-Faithful Study of a 2016 Open Question}
+
+\author{AssemblyP1 Project\thanks{This manuscript is a research artifact of the
+\href{https://github.com/ottojung/assemblyp1}{assemblyp1} repository. It
+distinguishes source facts, project interpretations, proved theorems, and
+kernel-checked finite certificates throughout; see
+Appendix~\ref{app:ledger} for the consolidated epistemic ledger.}}
+
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+\noindent
+Shomorony, Kim, Courtade, and Tse (2016) asked whether the repeat-bridging
+conditions that make shotgun assembly \emph{information-feasible} also guarantee
+that ``the maximum-likelihood sequence is the true sequence,'' referring to the
+maximum-likelihood assembly formulation of Medvedev and Brudno (2009). We give a
+source-faithful mathematical study of this question that keeps four layers
+visibly separate: the historical definitions, the ambiguities those definitions
+leave open, theorems and counterexamples about the resulting formulations, and
+new models introduced by this project to repair the weaknesses found.
+
+We show that the published sentence does not by itself determine several
+modeling axes --- which Medvedev--Brudno likelihood layer is meant, whether reads
+are oriented or reverse-complement molecules, whether candidates are
+length-restricted, and whether the conclusion asserts existence of a maximizer
+or uniqueness of the maximizing genome. Along these axes we record two kinds of
+concrete results. On the negative side, kernel-checked same-length witnesses
+refute the maximizer conclusion under the exact multinomial and under the
+fixed-length binomial approximation, over all circular candidates, and further
+witnesses refute it under the reverse-complement molecule reading of the
+Medvedev--Brudno Section~6.2 flow. On the positive side, we prove a rigidity
+theorem: under Shomorony's information-feasibility condition and strict oriented
+read types, the truth's length-$L$ spectrum is the unique positive circulation
+of its length-$L$ support graph, so no strict same-length Section~6.2
+counterexample exists for any genome length, read length, or alphabet; on that
+truth-admissible row the same complete-spectrum input used below makes the truth
+unique up to cyclic rotation.
+
+We then present a \emph{new}, project-level model that isolates the statistical
+failure mechanism and removes it. Under population (infinite-read) maximum
+likelihood, the truth is always a maximizer by a Gibbs/KL identity, so
+uniqueness becomes pure spectrum identifiability. For the project's oriented,
+primitive, P2-admissible candidate class, a reduction to the
+complete-spectrum uniqueness theorem of Bresler, Bresler, and Tse (2013)
+yields uniqueness up to cyclic rotation. This repaired result does not settle the
+2016 finite-sample question, and we say exactly why.
+\end{abstract}
+
+\tableofcontents
+
+\input{sections/01-introduction}
+\input{sections/02-model}
+\input{sections/03-open-question}
+\input{sections/04-finite-results}
+\input{sections/05-population}
+\input{sections/06-discussion}
+
+\appendix
+\input{sections/a-modeling-choices}
+\input{sections/b-epistemic-ledger}
+\input{sections/c-reproduction}
+
+\printbibliography
+
+\end{document}

@@ -1,0 +1,154 @@
+\section{The published question and what its sources do not say}
+\label{sec:open}
+
+\subsection{The exact sentence and its referent}
+
+The target sentence is \cite[Discussion, p.~i501]{shomorony2016}:
+
+\begin{quote}
+``The maximum-likelihood formulation of the AP (Medvedev and Brudno, 2009), on
+the contrary, seems to be robust to these issues, and thus a good candidate for
+the `correct' formulation. Understanding whether bridging conditions can be used
+to guarantee that the maximum-likelihood sequence is the true sequence is
+currently an open question.''
+\end{quote}
+
+A full-text scan of the accepted article finds no section, equation, formula, or
+candidate-class pointer into Medvedev and Brudno. The sentence names the work
+only by bibliography and the phrase ``maximum-likelihood formulation.'' The
+surrounding paragraph contrasts information-feasible reconstruction with
+``optimization-based formulation[s] of the AP such as those considered by
+Nagarajan and Pop (2009) \dots\ and Medvedev and Brudno (2009)''
+\cite{nagarajan2009,medvedev2009}; it fixes no objective and no tie rule. This is
+the central source fact of this section: \srcfact{} the 2016 text does not
+select a referent, a read-type convention, a candidate length, or a
+maximizer/uniqueness reading.
+
+\subsection{Four Medvedev--Brudno objects}
+
+The cited paper contains four materially different objects, and they answer the
+word ``sequence'' differently.
+
+\begin{table}[t]
+\centering
+\small
+\begin{tabular}{@{}p{0.30\textwidth}p{0.42\textwidth}p{0.20\textwidth}@{}}
+\toprule
+Reading & What the optimization returns & Sequence? \\
+\midrule
+(1) exact multinomial, candidate-intrinsic $N(D)$
+  & a circular genome $D$
+  & yes \\
+(2) fixed-$N$ binomial approximation
+  & a circular genome $D$ scored through per-type counts
+  & yes \\
+(3) Section~6.2 bidirected flow
+  & a flow / ``(non-contiguous) assembly''
+  & not necessarily \\
+(4) broad ML principle
+  & unspecified
+  & n/a \\
+\bottomrule
+\end{tabular}
+\caption{The four referents of ``the maximum-likelihood formulation
+(Medvedev and Brudno, 2009).'' Reading (1) is what the paper \emph{names} as its
+global read-count likelihood but explicitly abandons as not separable;
+reading (2) is what its algorithm \emph{does} and what the contemporaneous
+literature treats as the method; reading (3) is its algorithm's feasible set;
+reading (4) is what the 2016 sentence most safely says literally. No primary
+source selects one (\srcfact); the best operational sequence-level fit is (2)
+(\srcinf).}
+\label{tab:referents}
+\end{table}
+
+Reading (3) deserves emphasis: its feasible objects are flows, and Medvedev and
+Brudno route the question of a single assembled sequence to a later heuristic.
+Thus if the 2016 phrase meant the Section~6.2 flow literally, ``the
+maximum-likelihood \emph{sequence}'' would be a category error. That is evidence
+against reading (3) as the direct referent, while not excluding it as a
+formalization of the underlying optimization.
+
+Reading (2) is not a project invention. The dissertation version of the work
+presents the fixed-size method as the operative one \cite{medvedev2010}, a
+contemporaneous survey describes the Medvedev--Brudno assembler as requiring the
+accurate genome size as a parameter \cite{howison2013}, and a follow-up
+formulation advertises its improvement precisely as better genome-size handling
+\cite{varma2011}. This is evidence about how the community read the method; it
+does not upgrade reading (2) to the literal referent of the 2016 sentence.
+
+A refinement matters for negative results. The binomial objective contains
+$\log d_i$ and $\log(N-d_i)$, so it is defined only when $0<d_i<N$ for every
+type; the exact multinomial is defined on every nonempty candidate. A refutation
+therefore has to name the objective's domain, not just the candidate class.
+
+\subsection{The axes the sentence leaves open}
+
+\begin{table}[t]
+\centering
+\small
+\begin{tabular}{@{}p{0.30\textwidth}p{0.36\textwidth}p{0.26\textwidth}@{}}
+\toprule
+Axis & Determination & Status \\
+\midrule
+named likelihood layer & readings (1)--(4) all literal & \srcgap \\
+read-type space & oriented windows vs.\ molecule classes & \srcgap \\
+candidate length & not fixed by the sentence; fixed length is best
+  operational fit & \srcgap \\
+maximizer vs.\ uniqueness & both literal & \srcgap \\
+cyclic shift in $\approx$ & \textbf{forced} for the strong schema & \mathfact \\
+reverse complement in $\approx$ & \textbf{forced iff} molecule read types
+  & \mathfact\ + \srcgap \\
+other genome equivalences & no source support & \srcfact \\
+tie rule & none stated; many optima possible & \srcfact \\
+\bottomrule
+\end{tabular}
+\caption{What the published sentence does and does not determine. The two
+``forced'' rows are mathematical consequences rather than readings; the
+remaining axes are genuine source gaps.}
+\label{tab:axes}
+\end{table}
+
+Three points from Table~\ref{tab:axes} are worth isolating.
+
+\paragraph{Candidate length is not the same as known genome size.}
+Medvedev and Brudno's Section~6.1 approximation supplies an external genome-size
+parameter $N$ to the likelihood. It does \emph{not} thereby restrict every
+candidate $D$ to $|D|=N$. Knowing or supplying $N=|S|$ and restricting
+candidates to $|D|=|S|$ are different assumptions; a same-length theorem is a
+restricted result unless a source argument fixes the restriction.
+
+\paragraph{Cyclic shift is mandatory, reverse complement is coupled.}
+By Remark~\ref{rem:cyclic} the strong schema requires cyclic shift in $\approx$.
+Reverse complement is forced precisely when read types are molecule classes: a
+molecule and its reverse complement are always tied under class-indexed
+observations, while under oriented reads the two count vectors generally differ.
+Hence ``oriented with cyclic shift'' and ``molecular with dihedral equivalence''
+are the two coherent source-supported panels; they are not freely mixable.
+
+\paragraph{Ties are generic.}
+The exact circular likelihood is invariant under cyclic shift, so distinct
+spellings tie. A contemporaneous formulation states that many Eulerian tours can
+have equal likelihood, so ``the maximum-likelihood sequence'' cannot be assumed
+unique without an equivalence convention.
+
+\subsection{Residual source gaps}
+
+We record two gaps that bear on how strongly any formal result can be attributed
+to the published sentence. First, the accepted publisher supplement of
+\cite{shomorony2016} --- the last unexamined accepted artifact that could contain
+a likelihood definition --- has not been retrieved through the available
+execution path; a definition located there could narrow the referent. Second,
+Medvedev and Brudno's Section~6.1 writes that there are ``$4^k$ such variables''
+while its model vocabulary is $k$-molecules (reverse-complement classes), so the
+index set and the vocabulary are in internal tension. A formalization must name
+which it uses. Neither gap changes the mathematics below; both change how
+directly a result may be advertised as settling the historical question.
+
+\paragraph{Consequence for this paper.}
+Because no referent is selected, we do not present any single theorem as ``the''
+answer to the 2016 question. Instead, Section~\ref{sec:finite} proves and refutes
+statements for named points in the axis space, and Section~\ref{sec:population}
+presents a project-level repaired model that is explicitly not a historical
+claim. A formal statement counts as a settlement of the published problem only
+after an argument fixes the axes of Table~\ref{tab:axes} to a source-supported
+panel; that argument is not currently available.

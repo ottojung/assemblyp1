@@ -1,0 +1,74 @@
+\section{Reproduction guide}
+\label{app:reproduction}
+
+This appendix records how to rebuild the paper and re-run every computational
+artifact referenced above. It is written for a reader who wants to scrutinize
+the results rather than take them on trust.
+
+\subsection{Building this paper}
+
+The manuscript is designed to build from a pinned, minimal TeX dependency set
+without repository-specific absolute paths. From the repository root:
+
+\begin{verbatim}
+sh paper/build.sh
+\end{verbatim}
+
+The script changes into \texttt{paper/}, creates or reuses a local Guix profile
+at \texttt{paper/.guix-profile} from \texttt{manifest.scm}, sources that
+profile, and runs \texttt{latexmk} with \texttt{pdflatex} and \texttt{biber},
+crossing references and the bibliography as needed. It writes
+\texttt{paper/main.pdf} and the usual intermediate files, which are ignored by
+version control.
+
+As an alternative to the local-profile script, the manifest can be used with an
+ephemeral Guix shell. From inside \texttt{paper/}, run:
+
+\begin{verbatim}
+guix shell -m manifest.scm -- \
+  latexmk -pdf -interaction=nonstopmode -halt-on-error main.tex
+\end{verbatim}
+
+No absolute path appears in the sources.
+
+\subsection{Repository verification artifacts}
+
+The finite and computational claims correspond to artifacts in the repository:
+
+\begin{itemize}[leftmargin=*]
+  \item exact and binomial same-length witnesses:
+        \texttt{scripts/} exact-rational verifiers and the Lean modules
+        \texttt{AssemblyP1/FixedLengthExactCounterexample.lean} and
+        \texttt{AssemblyP1/FixedLengthBinomialCounterexample.lean};
+  \item Section~6.2 molecule witnesses:
+        \texttt{scripts/verify\_se62\_bridging\_flow\_counterexample.py},
+        \texttt{scripts/verify\_se62\_mb09\_bidirected\_graph.py},
+        \texttt{scripts/verify\_samelength\_se62\_counterexample.py}, and the
+        Lean modules \texttt{Section62BridgingCounterexample.lean} and
+        \texttt{SameLengthSection62Counterexample.lean};
+  \item same-length oriented rigidity:
+        \texttt{scripts/verify\_oriented\_se62\_rigidity.py};
+  \item equivalence coupling:
+        \texttt{scripts/verify\_equivalence\_coupling.py}.
+\end{itemize}
+
+Every Python verifier is self-contained, uses exact \texttt{fractions.Fraction}
+arithmetic, is deterministic, and exits non-zero on any failed assertion. The
+Lean modules contain no \texttt{sorry}, \texttt{axiom}, or \texttt{admit};
+
+\begin{verbatim}
+lake build
+\end{verbatim}
+
+builds them under the pinned toolchain. Where a claim is kernel-checked, the
+corresponding module is named in Appendix~\ref{app:ledger}; where a claim is
+only computationally verified, it is labeled accordingly.
+
+\subsection{Epistemic boundary of reproduction}
+
+Reproduction verifies the \emph{finite mathematics}: spectra, likelihood ratios,
+bridging certificates, and graph feasibility. It does not verify the
+source-correspondence claims that identify a given finite objective or
+candidate universe with the one the 2016 sentence intends, because those are
+source-supported inferences rather than computations. The ledger in
+Appendix~\ref{app:ledger} keeps the two apart.
