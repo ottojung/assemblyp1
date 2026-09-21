@@ -1,0 +1,93 @@
+[A] propositional relations SW => TRF and PRIM&(TRF<=>SW)
+  G= 2 L=2 sigma=2: SW&!TRF=0 PRIM&(TRF xor SW)=0
+  G= 3 L=2 sigma=2: SW&!TRF=0 PRIM&(TRF xor SW)=0
+  G= 4 L=2 sigma=2: SW&!TRF=0 PRIM&(TRF xor SW)=0
+  G= 5 L=2 sigma=2: SW&!TRF=0 PRIM&(TRF xor SW)=0
+  G= 6 L=2 sigma=2: SW&!TRF=0 PRIM&(TRF xor SW)=0
+  G= 7 L=2 sigma=2: SW&!TRF=0 PRIM&(TRF xor SW)=0
+  G= 8 L=2 sigma=2: SW&!TRF=0 PRIM&(TRF xor SW)=0
+  G= 9 L=2 sigma=2: SW&!TRF=0 PRIM&(TRF xor SW)=0
+  G=10 L=2 sigma=2: SW&!TRF=0 PRIM&(TRF xor SW)=0
+  G=11 L=2 sigma=2: SW&!TRF=0 PRIM&(TRF xor SW)=0
+  G=12 L=2 sigma=2: SW&!TRF=0 PRIM&(TRF xor SW)=0
+  G=13 L=2 sigma=2: SW&!TRF=0 PRIM&(TRF xor SW)=0
+  G=14 L=2 sigma=2: SW&!TRF=0 PRIM&(TRF xor SW)=0
+  G=15 L=2 sigma=2: SW&!TRF=0 PRIM&(TRF xor SW)=0
+  G=16 L=2 sigma=2: SW&!TRF=0 PRIM&(TRF xor SW)=0
+  G=17 L=2 sigma=2: SW&!TRF=0 PRIM&(TRF xor SW)=0
+  G= 3 L=3 sigma=2: SW&!TRF=0 PRIM&(TRF xor SW)=0
+  G= 4 L=3 sigma=2: SW&!TRF=0 PRIM&(TRF xor SW)=0
+  G= 5 L=3 sigma=2: SW&!TRF=0 PRIM&(TRF xor SW)=0
+  G= 6 L=3 sigma=2: SW&!TRF=0 PRIM&(TRF xor SW)=0
+  G= 7 L=3 sigma=2: SW&!TRF=0 PRIM&(TRF xor SW)=0
+  G= 8 L=3 sigma=2: SW&!TRF=0 PRIM&(TRF xor SW)=0
+  G= 9 L=3 sigma=2: SW&!TRF=0 PRIM&(TRF xor SW)=0
+  G=10 L=3 sigma=2: SW&!TRF=0 PRIM&(TRF xor SW)=0
+  G=11 L=3 sigma=2: SW&!TRF=0 PRIM&(TRF xor SW)=0
+  G=12 L=3 sigma=2: SW&!TRF=0 PRIM&(TRF xor SW)=0
+  G=13 L=3 sigma=2: SW&!TRF=0 PRIM&(TRF xor SW)=0
+  G=14 L=3 sigma=2: SW&!TRF=0 PRIM&(TRF xor SW)=0
+  G=15 L=3 sigma=2: SW&!TRF=0 PRIM&(TRF xor SW)=0
+  G= 4 L=4 sigma=2: SW&!TRF=0 PRIM&(TRF xor SW)=0
+  G= 5 L=4 sigma=2: SW&!TRF=0 PRIM&(TRF xor SW)=0
+  G= 6 L=4 sigma=2: SW&!TRF=0 PRIM&(TRF xor SW)=0
+  G= 7 L=4 sigma=2: SW&!TRF=0 PRIM&(TRF xor SW)=0
+  G= 8 L=4 sigma=2: SW&!TRF=0 PRIM&(TRF xor SW)=0
+  G= 9 L=4 sigma=2: SW&!TRF=0 PRIM&(TRF xor SW)=0
+  G=10 L=4 sigma=2: SW&!TRF=0 PRIM&(TRF xor SW)=0
+  G=11 L=4 sigma=2: SW&!TRF=0 PRIM&(TRF xor SW)=0
+  G=12 L=4 sigma=2: SW&!TRF=0 PRIM&(TRF xor SW)=0
+  G=13 L=4 sigma=2: SW&!TRF=0 PRIM&(TRF xor SW)=0
+  G= 2 L=2 sigma=3: SW&!TRF=0 PRIM&(TRF xor SW)=0
+  G= 3 L=2 sigma=3: SW&!TRF=0 PRIM&(TRF xor SW)=0
+  G= 4 L=2 sigma=3: SW&!TRF=0 PRIM&(TRF xor SW)=0
+  G= 5 L=2 sigma=3: SW&!TRF=0 PRIM&(TRF xor SW)=0
+  G= 6 L=2 sigma=3: SW&!TRF=0 PRIM&(TRF xor SW)=0
+  G= 7 L=2 sigma=3: SW&!TRF=0 PRIM&(TRF xor SW)=0
+  G= 8 L=2 sigma=3: SW&!TRF=0 PRIM&(TRF xor SW)=0
+  G= 9 L=2 sigma=3: SW&!TRF=0 PRIM&(TRF xor SW)=0
+  G=10 L=2 sigma=3: SW&!TRF=0 PRIM&(TRF xor SW)=0
+  G=11 L=2 sigma=3: SW&!TRF=0 PRIM&(TRF xor SW)=0
+  G= 3 L=3 sigma=3: SW&!TRF=0 PRIM&(TRF xor SW)=0
+  G= 4 L=3 sigma=3: SW&!TRF=0 PRIM&(TRF xor SW)=0
+  G= 5 L=3 sigma=3: SW&!TRF=0 PRIM&(TRF xor SW)=0
+  G= 6 L=3 sigma=3: SW&!TRF=0 PRIM&(TRF xor SW)=0
+  G= 7 L=3 sigma=3: SW&!TRF=0 PRIM&(TRF xor SW)=0
+  G= 8 L=3 sigma=3: SW&!TRF=0 PRIM&(TRF xor SW)=0
+  G= 9 L=3 sigma=3: SW&!TRF=0 PRIM&(TRF xor SW)=0
+  G=10 L=3 sigma=3: SW&!TRF=0 PRIM&(TRF xor SW)=0
+[B] neither predicate alone suffices; root reduction
+  (B.i)  S=ACGT D=(ACGT)^2 L=2: TRF(D)=True PRIM(D)=False normalized spectra equal => ties for every x
+  (B.ii) S=AAATT D=AAAATT L=3: PRIM(D)=True TRF(D)=False max_excess=2/15 (w=AAA) ratio(x=dS+1e_AAA)=15625/11664 > 1
+  root reduction L=3 G<=10: checked=115 spectrum_mismatch=0 TRF_not_lifted=0
+[C] bounded search over candidate-intrinsic predicates
+  predicate PRIM: 1131 strict counterexample(s)
+      S=AABB D=AAABB L=2 w=AA excess=3/20
+      S=AABB D=AABBB L=2 w=BB excess=3/20
+      S=AABB D=AAAABB L=2 w=AA excess=1/4
+      S=AABB D=AAABBB L=2 w=AA excess=1/12
+      S=AABB D=AABABB L=2 w=AB excess=1/12
+      S=AABB D=AABBAB L=2 w=AB excess=1/12
+  predicate ILF: 323 strict counterexample(s)
+      S=AABB D=AAABB L=2 w=AA excess=3/20
+      S=AABB D=AABBB L=2 w=BB excess=3/20
+      S=AABB D=AAABBB L=2 w=AA excess=1/12
+      S=AAAB D=AAAAB L=3 w=AAA excess=3/20
+      S=ABBB D=ABBBB L=3 w=BBB excess=3/20
+      S=AAABB D=AAAABB L=3 w=AAA excess=2/15
+  predicate TRF: 162 strict counterexample(s)
+      S=AAAB D=AAABAB L=3 w=ABA excess=1/12
+      S=AABB D=AABAABB L=3 w=AAB excess=1/28
+      S=AABB D=AABBABB L=3 w=ABB excess=1/28
+      S=ABBB D=ABABBB L=3 w=BAB excess=1/12
+      S=AAABB D=AAABBABB L=3 w=ABB excess=1/20
+      S=AABBB D=AABAABBB L=3 w=AAB excess=1/20
+  predicate PRIM&TRF: 162 strict counterexample(s)
+      S=AAAB D=AAABAB L=3 w=ABA excess=1/12
+      S=AABB D=AABAABB L=3 w=AAB excess=1/28
+      S=AABB D=AABBABB L=3 w=ABB excess=1/28
+      S=ABBB D=ABABBB L=3 w=BAB excess=1/12
+      S=AAABB D=AAABBABB L=3 w=ABB excess=1/20
+      S=AABBB D=AABAABBB L=3 w=AAB excess=1/20
+  predicate STRUCT=TRF&ILF: 0 strict counterexample(s)
+  predicate PRIM&STRUCT: 0 strict counterexample(s)
