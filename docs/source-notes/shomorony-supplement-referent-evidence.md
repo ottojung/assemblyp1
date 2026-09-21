@@ -15,7 +15,7 @@ question._
 1. **The accepted supplement is a single PDF, not a ZIP.** The 2016 OUP
    supplement landing page for `btw450` lists the artifact as “Supplementary
    Data – pdf file” and links
-   `/content/suppl/2016/08/31/btw450.DC1/supp_material.pdf`. The two on-`main`
+   `/content/suppl/2016/08/31/btw450.DC1/supp_material.pdf`. Several on-`main`
    notes call it “the accepted supplementary ZIP”; that packaging description is
    the later (2018 silverchair-era) delivery, not the 2016 artifact. (Source
    fact + correction; §1–§2.)
