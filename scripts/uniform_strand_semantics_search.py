@@ -4,18 +4,39 @@
 Read-only-packet reproducibility script for the note
 `docs/source-notes/uniform-strand-convention-search-2026-09-20.md`.
 
-Two conventions are implemented end-to-end, never mixed:
+Two strand conventions are implemented end-to-end, never mixed:
 
   SINGLE-STRAND (Shomorony oriented semantics)
       read type = oriented length-L window (no reverse complement);
-      candidate genome = oriented circular string of length G;
-      objective = Medvedev-Brudno 6.1 exact multinomial (candidate-intrinsic
-      N(D); for same-length candidates only the product of d^ x survives).
+      candidate genome = oriented circular string of length G.
 
   DOUBLE-STRAND MOLECULE (Medvedev-Brudno read molecules / Bresler rc collapse)
       read type = reverse-complement class {w, revcomp(w)};
-      candidate genome = circular string, spectrum grouped by molecule class;
-      objective = the same exact multinomial over molecule classes.
+      candidate genome = circular string, spectrum grouped by molecule class.
+
+Objective attribution (important).  The note and this script must not attribute
+the repository's objective to Medvedev-Brudno (2009) §6.1 as such.  Current
+`main` keeps two objectives apart:
+
+  * EXACT CANDIDATE-INTRINSIC MULTINOMIAL (repository Variant E).  The exact
+    global read-count likelihood
+        L_E(D|x) = n!/(prod_i x_i!) * prod_i (d_i / N(D))^{x_i}
+    with the candidate's own length N(D).  For same-length candidates the
+    denominators cancel and only prod_i (d_D(i)/d_S(i))^{x_i} survives.  This is
+    what `exact_ratio` and every bounded search below compute.
+
+  * LITERAL MB09 §6.1 SEPARABLE FIXED-N BINOMIAL APPROXIMATION (Variant A).
+    §6.1 explicitly abandons the multinomial's coupling N(D) = sum_i d_i and
+    replaces N(D) by an externally supplied genome size N, giving the product
+    of binomial marginals
+        L_A(D|x) = prod_i C(n, x_i) (d_i/N)^{x_i} (1 - d_i/N)^{n - x_i}.
+    This is a *different* objective; `binomial_ratio` implements it for the
+    witness cross-checks only.  The bounded searches are NOT run under this
+    objective.
+
+See `docs/ml-formalization-contract.md` (Variant E vs Variant A),
+`docs/source-notes/mb-formulation-referent-reconciliation.md` §2.1-2.2, and
+`docs/source-notes/mb09-se61-index-orientation-resolution.md`.
 
 Bridging `I_s` is always the source predicate on the plus-strand placement:
 a read [r, r+L) bridges a copy [t, t+ell) iff, on the integer lift,
@@ -75,13 +96,46 @@ def observed(S, starts, L, alphabet, double):
 
 
 def exact_ratio(spec_S, spec_D, x, NS, ND):
-    """L(D|x)/L(S|x) for the candidate-intrinsic exact multinomial."""
+    """L_E(D|x)/L_E(S|x) for the EXACT CANDIDATE-INTRINSIC MULTINOMIAL
+    (repository Variant E), with the candidate's own length NS/ND.
+
+    Not the literal MB09 §6.1 separable fixed-N binomial; use `binomial_ratio`
+    for that.  For same-length candidates (NS == ND) this is the product of
+    (d_D/d_S)^{x}."""
     r = Fraction(1)
     for c, xc in x.items():
         dS, dD = spec_S.get(c, 0), spec_D.get(c, 0)
         if dS == 0 or dD == 0:
             return Fraction(0)
         r *= (Fraction(dD, ND) / Fraction(dS, NS)) ** xc
+    return r
+
+
+def binomial_ratio(spec_S, spec_D, x, N, n):
+    """L_A(D|x)/L_A(S|x) for the LITERAL MB09 §6.1 separable fixed-N
+    product-of-binomial-marginals approximation (repository Variant A).
+
+    The observation-only factors C(n, x_i) cancel in the ratio, leaving
+
+        prod_i (d_D(i)/d_S(i))^{x_i}
+              * ((N - d_D(i))/(N - d_S(i)))^{n - x_i}
+
+    over every read type (unobserved types included).  `N` is the externally
+    supplied genome size, not the candidate's intrinsic length, so this is not
+    `exact_ratio` even when |D| == |S| == N.  Defined for 0 <= d_i <= N; a type
+    with d_S(i) = 0 and x_i > 0 makes the ratio 0."""
+    r = Fraction(1)
+    for c in set(spec_S) | set(spec_D):
+        dS, dD = spec_S.get(c, 0), spec_D.get(c, 0)
+        xc = x.get(c, 0)
+        rest = n - xc
+        if xc:
+            if dS == 0:
+                return Fraction(0)
+            r *= Fraction(dD, dS) ** xc
+        if rest:
+            assert N - dS != 0, "d_S(i)=N forces x_i=n, so rest must be 0"
+            r *= Fraction(N - dD, N - dS) ** rest
     return r
 
 
@@ -186,8 +240,10 @@ def verify_ss_witness():
     assert all(spD.get(c, 0) > 0 for c in x), "competitor must share support"
     r = exact_ratio(spS, spD, x, G, G)
     assert r == Fraction(2), r
+    rb = binomial_ratio(spS, spD, x, G, len(starts))
+    assert rb == Fraction(1125, 512), rb
     # no reverse complement is used anywhere in this block
-    print("SINGLE-STRAND witness:")
+    print("SINGLE-STRAND witness (objective: exact candidate-intrinsic multinomial):")
     print(f"  S={show(S, alphabet)}  D={show(D, alphabet)}  G={G} L={L} starts={starts}")
     def fmt(c):
         return show(c, alphabet)
@@ -199,6 +255,7 @@ def verify_ss_witness():
     print("  d_D=", dD_tbl)
     print("  x  =", x_tbl)
     print(f"  strict I_s: {check_Is(S, starts, L)}   exact ratio D/S = {r}")
+    print(f"  literal MB09 §6.1 fixed-N binomial ratio D/S = {rb}")
     return r
 
 
@@ -217,13 +274,17 @@ def verify_ds_witness():
         x = observed(S, starts, L, alphabet, double)
         r = exact_ratio(spS, spD, x, G, G) if all(
             spS.get(c, 0) > 0 for c in x) else None
-        out[double] = (spS, spD, x, r)
+        rb = binomial_ratio(spS, spD, x, G, len(starts)) if all(
+            spS.get(c, 0) > 0 for c in x) else None
+        out[double] = (spS, spD, x, r, rb)
         tag = "MOLECULE" if double else "SINGLE-STRAND"
         suppS_eq = set(spS) == set(x)
-        print(f"{tag}: supp(d_S)=supp(x)? {suppS_eq}  exact ratio D/S = {r}")
+        print(f"{tag}: supp(d_S)=supp(x)? {suppS_eq}  "
+              f"exact ratio D/S = {r}  fixed-N binomial ratio D/S = {rb}")
     # single-strand must fail because the observed oriented type TAT is absent
     # from D; molecule collapse makes TAT = ATA, restoring the witness.
     assert out[True][3] == Fraction(3), out[True][3]
+    assert out[True][4] == Fraction(5), out[True][4]
     assert set(out[False][2]) != set(out[False][0]), "ss support differs"
     return out
 
@@ -245,7 +306,12 @@ def necklaces(G, sigma):
 def search(G, L, maxmul, sigma, double, support_equality):
     """Exhaustive over truth necklaces, start-multiplicity vectors 0..maxmul,
     and all competitor necklaces.  Optionally impose §6.2 support equality
-    (spelled-circuit feasibility): supp(d_S)=supp(x)=supp(d_D)."""
+    (spelled-circuit feasibility): supp(d_S)=supp(x)=supp(d_D).
+
+    Beats are counted under the EXACT CANDIDATE-INTRINSIC MULTINOMIAL
+    (Variant E), via `exact_ratio`.  This search is NOT run under the literal
+    MB09 §6.1 fixed-N binomial approximation (Variant A); see the module
+    docstring."""
     alphabet = alphabet_for(sigma)
     cands = list(necklaces(G, sigma))
     specs = [(D, spectrum(D, L, alphabet, double)) for D in cands]
@@ -310,7 +376,8 @@ def run_search(verbose=True):
         all_cex[(label, G, L, mm, sig)] = cex
         if verbose:
             print(f"{label:32s} sigma={sig} G={G} L={L} maxmul={mm}: "
-                  f"instances={n} cex={len(cex)} ({dt:.1f}s)")
+                  f"instances={n} cex={len(cex)} ({dt:.1f}s) "
+                  f"[objective: exact multinomial (Variant E)]")
     # single-strand sequence-level must find the AAATT orbit
     assert any(len(c) for k, c in all_cex.items() if "sequence-level" in k[0]), \
         "expected a single-strand sequence-level counterexample"
@@ -328,7 +395,9 @@ def bresler_ds_search(G, L, maxmul, sigma):
     strand: s = u . revcomp(u) has length 2G; each read is replaced by itself
     and its reverse complement (2N oriented reads); the single-strand I_s is
     applied to s.  A candidate genome is a length-G strand v, represented by
-    s' = v . revcomp(v).  Objective: exact multinomial on s (N(D)=2G)."""
+    s' = v . revcomp(v).  Objective: the EXACT CANDIDATE-INTRINSIC MULTINOMIAL
+    on s (Variant E, N(D)=2G), NOT the literal MB09 §6.1 fixed-N binomial
+    approximation (Variant A)."""
     alphabet = alphabet_for(sigma)
     twoG = 2 * G
 
@@ -382,7 +451,8 @@ def run_bresler_ds(verbose=True):
         total_cex += len(cex)
         if verbose:
             print(f"Bresler-DS remap sigma={sig} G={G} L={L} maxmul={mm}: "
-                  f"instances={n} cex={len(cex)} ({dt:.1f}s)")
+                  f"instances={n} cex={len(cex)} ({dt:.1f}s) "
+                  f"[objective: exact multinomial (Variant E)]")
     return total_cex
 
 

@@ -1,12 +1,28 @@
 # Uniform strand conventions and the bridging-to-ML frontier
 
-_Status: independent from-scratch computation + source reading, 2026-09-20.
-Written against `origin/main` (`8182e1b`, the merge of PR #43). All claims are
-labelled **source fact**, **mathematical argument**, **verified computation**,
-**bounded computation**, or **open**. This note does not settle the Shomorony
-et al. (2016) open question; it isolates exactly which strand convention each
-existing witness needs and records the bounded-search frontier for the
-strictly single-strand convention._
+_Status: independent from-scratch computation + source reading, 2026-09-20;
+reconciled with `origin/main` (`8b2f0fc`, the merge of PR #44's §6.1
+index-orientation resolution and PR #36's conclusion-semantics work) on
+2026-09-20. All claims are labelled **source fact**, **mathematical argument**,
+**verified computation**, **bounded computation**, or **open**. This note does
+not settle the Shomorony et al. (2016) open question; it isolates exactly which
+strand convention each existing witness needs and records the bounded-search
+frontier for the strictly single-strand convention._
+
+_Objective attribution. This note distinguishes two objectives that must not be
+fused (see §1.3): the repository's **exact candidate-intrinsic multinomial**
+(Variant E, the exact global read-count likelihood with the candidate's own
+length `N(D)`) and the **literal MB09 §6.1 separable fixed-`N` binomial
+approximation** (Variant A, `N(D)` replaced by an externally supplied genome
+size `N`). Every witness and bounded-search table below is computed under the
+exact candidate-intrinsic multinomial unless it explicitly says otherwise; the
+bounded searches are **not** run under the fixed-`N` binomial reading. The
+objective is not attributed to MB09 §6.1 as such; §6.1 is the source of the
+*approximation*, not of the exact multinomial. See
+[`../ml-formalization-contract.md`](../ml-formalization-contract.md) (Variants E
+and A), [`medvedev-brudno-candidate-class.md`](medvedev-brudno-candidate-class.md)
+§1-2, [`mb-formulation-referent-reconciliation.md`](mb-formulation-referent-reconciliation.md)
+§2.1-2.2, and [`mb09-se61-index-orientation-resolution.md`](mb09-se61-index-orientation-resolution.md)._
 
 _Reproduction:_
 
@@ -34,16 +50,18 @@ exits non-zero on any failed assertion._
 
 2. **A strict uniform single-strand counterexample does exist at the
    sequence level.** `S = AAATT`, `D = AAAAT`, `G = 5`, `L = 3`, starts
-   `(0,1,4)`, ratio exactly `2`, with a non-vacuous all-bridged triple repeat.
-   It uses oriented windows only; no reverse complement occurs anywhere. It is
-   an alphabet rename of the kernel-checked `AAABB → AAAAB` of
+   `(0,1,4)`, exact-multinomial ratio exactly `2` (fixed-`N` binomial ratio
+   `1125/512`), with a non-vacuous all-bridged triple repeat. It uses oriented
+   windows only; no reverse complement occurs anywhere. It is an alphabet
+   rename of the kernel-checked `AAABB → AAAAB` of
    `FixedLengthExactCounterexample.lean`, so it is not a new theorem, but it
    *is* the uniform-convention witness the `AAATAT` pair is often mistaken
    for. [verified computation; mathematical argument]
 
 3. **Under single-strand semantics together with the §6.2 spelled-circuit
    support condition, no same-length counterexample exists in the searched
-   scope.** Zero at binary `(G,L) ∈ {(5,3),(6,3),(6,4),(7,3)}` with start
+   scope under the exact candidate-intrinsic multinomial.** Zero at binary
+   `(G,L) ∈ {(5,3),(6,3),(6,4),(7,3)}` with start
    multiplicity up to `4`, and at ternary/quaternary `(5,3),(6,3)` up to
    multiplicity `2`. This extends the single-cell control on `main`
    (`(6,3)`, multiplicity `2`) and explains why: §6.2 forces every oriented
@@ -54,11 +72,14 @@ exits non-zero on any failed assertion._
 4. **The molecule (double-strand, reverse-complement-collapsed) convention
    reproduces `main`'s witness and admits larger ones.** Beyond `main`'s
    `(G,L) = (6,3)`, the same support-equality reading has a witness at
-   `(G,L) = (8,3)`: `AAATTATT → AAAATAAT`, exact ratio `1024/729 > 1`. `G = 5`
-   and `G = 7` are zero in scope. [bounded computation]
+   `(G,L) = (8,3)`: `AAATTATT → AAAATAAT`, exact-multinomial ratio
+   `1024/729 > 1` (and `5` at `(6,3)` under the fixed-`N` binomial reading,
+   versus `3` under the exact multinomial). `G = 5` and `G = 7` are zero in
+   scope. [bounded computation]
 
 5. **The Bresler et al. (2013) double-strand remap is a different
-   double-strand convention and yields no counterexample in scope.** In that
+   double-strand convention and yields no exact-multinomial counterexample in
+   scope.** In that
    remap the genome is the length-`2G` concatenation `u · revcomp(u)`, each
    read is doubled, and the single-strand `I_s` applies to the length-`2G`
    sequence. For binary `G ≤ 6` no strict counterexample was found; at
@@ -92,13 +113,54 @@ data-generating model is independent uniform sampling over circular starts.
   candidate) support equality `supp(d_D) = supp(x)`. [source fact; the
   per-occurrence strengthening `d ≥ x` is a different, stronger condition]
 
-### 1.3 Objective
+### 1.3 Objectives (two distinct models, never fused)
 
-Both conventions are scored by the Medvedev-Brudno §6.1 exact multinomial with
-candidate-intrinsic length,
-`L(D|x) ∝ ∏_c (d_D(c)/N(D))^{x_c}`.
-For same-length candidates the denominators cancel and the ratio is
-`∏_c (d_D(c)/d_S(c))^{x_c}`. [source fact]
+Both strand conventions below are scored, in this note, under the **exact
+candidate-intrinsic multinomial** (the repository's Variant E). The **literal
+MB09 §6.1 separable fixed-`N` binomial approximation** (Variant A) is a
+different objective and is stated separately. Neither may be called "the MB09
+§6.1 objective" without qualification.
+
+**(a) Exact candidate-intrinsic multinomial (Variant E).** The exact global
+read-count likelihood of Medvedev-Brudno §6.1's *first* model is multinomial
+with the candidate's own length,
+
+```text
+L_E(D|x) = n! / (∏_c x_c!) · ∏_c (d_D(c)/N(D))^{x_c}.
+```
+
+For same-length candidates (`N(D) = N(S) = G`) the denominators and the
+observation-only coefficient cancel and the ratio is
+`∏_c (d_D(c)/d_S(c))^{x_c}`. This is what
+`scripts/uniform_strand_semantics_search.py` computes (`exact_ratio`), and it is
+the repository's fixed-length exact variant when competitors are restricted to
+length `G`. [source fact for the exact multinomial; repository variant for the
+fixed-length restriction]
+
+**(b) Literal MB09 §6.1 separable fixed-`N` binomial approximation (Variant
+A).** MB09 §6.1 then *abandons* the multinomial's coupling `N(D) = Σ_c d_c` for
+separability and replaces `N(D)` by an externally supplied genome size `N` (the
+length of the actual source genome; "we assume that the genome size is known").
+The resulting objective is a product of binomial marginals,
+
+```text
+L_A(D|x) = ∏_c C(n, x_c) (d_c/N)^{x_c} (1 - d_c/N)^{n - x_c},
+```
+
+whose per-type cost is `c_c(d_c) = -(x_c log d_c) - (n - x_c) log(N - d_c)`.
+This retains the zero-count factors `(1 - d_c/N)^{n-x_c}` and is **not**
+`∏_c d_c^{x_c}`; even at same length it is not the fixed-length exact
+multinomial. `scripts/uniform_strand_semantics_search.py` implements it as
+`binomial_ratio` for the witness cross-checks only and does **not** run the
+bounded searches under it. [source fact for §6.1 Variant A; see
+[`medvedev-brudno-candidate-class.md`](medvedev-brudno-candidate-class.md) §2
+and [`mb-formulation-referent-reconciliation.md`](mb-formulation-referent-reconciliation.md)
+§2.2]
+
+Neither objective is selected by the Shomorony et al. (2016) sentence, and the
+§6.2 flow algorithm operates on Variant A's fixed-`N` costs. Whether a
+same-length ratio computed for Variant E has a corresponding Variant A result is
+recomputed, not assumed, below.
 
 ### 1.4 `I_s` bridging (Bresler et al. 2013; Shomorony et al. 2016, Eq. (1))
 
@@ -125,15 +187,17 @@ competitor D = AAAAAT
 | `x` | `AAA:2, AAT:1, TAT:1, TAA:1` | `AAA:2, AAT:1, ATA:1, TAA:1` |
 | `d_D` | `AAA:3, AAT:1, ATA:1, TAA:1` | `AAA:3, AAT:1, ATA:1, TAA:1` |
 | support `d_S = x`? | **no** | yes |
-| ratio `L(D)/L(S)` | **0** (`TAT` observed, absent from `D`) | **3** |
+| exact-multinomial ratio `L_E(D)/L_E(S)` | **0** (`TAT` observed, absent from `D`) | **3** |
+| fixed-`N` binomial ratio `L_A(D)/L_A(S)` | **0** (`TAT` observed, absent from `D`) | **5** |
 
 Under single-strand the observed type `TAT` is simply not produced by
-`D = AAAAAT`, so the competitor has likelihood zero; and the truth is not even
+`D = AAAAAT`, so the competitor has likelihood zero under either objective; and the truth is not even
 a §6.2 candidate because `TAT` (a truth window) is observed but the truth is
 scored on oriented types consistently, giving `supp(d_S) ≠ supp(x)` for the
 spelled-circuit test. Collapsing `TAT = ATA` supplies the fourth class, makes
 the truth support-feasible, and moves one unit of class multiplicity from the
-over-represented `ATA` to the observed-heavy `AAA`, raising the ratio to `3`.
+over-represented `ATA` to the observed-heavy `AAA`, raising the exact-multinomial
+ratio to `3` (and the fixed-`N` binomial ratio to `5`).
 This is the cross-source panel discussed in
 [`section62-same-length-bidirected-counterexample.md`](../section62-same-length-bidirected-counterexample.md)
 §1.1-1.2 and §5: Shomorony's placement-based `I_s` combined with
@@ -153,7 +217,8 @@ L = 3,  starts (0, 1, 4)
 x        = { AAA:1, AAT:1, TAA:1 }
 d_S      = { AAA:1, AAT:1, ATT:1, TTA:1, TAA:1 }
 d_D      = { AAA:2, AAT:1, ATA:1, TAA:1 }
-exact ratio L(D)/L(S) = 2
+exact-multinomial ratio L_E(D)/L_E(S) = 2
+fixed-N binomial ratio  L_A(D)/L_A(S) = 1125/512
 ```
 
 `I_s` is non-vacuous: coverage holds, and the maximal length-`1` triple repeat
@@ -164,18 +229,19 @@ computation]
 
 This witness is `AAABB → AAAAB` under `T ↦ B`; the kernel-checked Lean module
 [`FixedLengthExactCounterexample.lean`](../../AssemblyP1/FixedLengthExactCounterexample.lean)
-already covers it. The bounded search finds the same phenomenon across the real
-DNA alphabet: over `{A, C, G, T}`, `(G,L) = (5,3)` has `12` substantive
-counterexample truth-orbits, all at ratio `2` (for example `AAACC → AAAAC`).
+already covers it, under the exact candidate-intrinsic multinomial. The bounded
+search finds the same phenomenon across the real DNA alphabet: over
+`{A, C, G, T}`, `(G,L) = (5,3)` has `12` substantive counterexample truth-orbits,
+all at exact-multinomial ratio `2` (for example `AAACC → AAAAC`).
 `G = 6, L = 3` over `{A,T}` has none in scope. [bounded computation]
 
 ### 3.2 Single-strand plus §6.2 support equality
 
 Requiring `supp(d_S) = supp(x) = supp(d_D)` (the §6.2 spelled-circuit support
-condition) removes the witnesses and leaves **no same-length counterexample** in
-the following scopes:
+condition) removes the witnesses and leaves **no same-length counterexample**
+under the exact candidate-intrinsic multinomial in the following scopes:
 
-| alphabet | `G` | `L` | start multiplicity `≤` | `I_s` instances | same-length beats |
+| alphabet | `G` | `L` | start multiplicity `≤` | `I_s` instances | exact-multinomial same-length beats |
 |---|---|---|---|---|---|
 | `{A,T}` | 5 | 3 | 3 | 3222 | **0** |
 | `{A,T}` | 6 | 3 | 3 | 16956 | **0** |
@@ -190,7 +256,8 @@ These are exhaustive within their stated scope and are **evidence, not proof of
 absence**. Because the search imposes only the necessary support condition (not
 the full bidirected-circuit/transitive-reduction test), "zero under support
 equality" implies zero under the stronger §6.2 spelled-circuit test as well.
-[verified computation, bounded]
+These searches use only the exact candidate-intrinsic multinomial; the literal
+fixed-`N` binomial reading is not searched. [verified computation, bounded]
 
 This is the sharp contrast with the molecule convention: collapse of
 `TAT ~ ATA` is not a presentational choice here, it is the mechanism that
@@ -202,15 +269,15 @@ single-strand semantics no such mechanism was found.
 ## 4. Molecule convention: the frontier
 
 With reverse complements collapsed and §6.2 support equality, same-length
-counterexamples exist:
+counterexamples exist under the exact candidate-intrinsic multinomial:
 
-| `G` | `L` | start multiplicity `≤` | beats | representative |
+| `G` | `L` | start multiplicity `≤` | exact-multinomial beats | representative (exact / fixed-`N` binomial) |
 |---|---|---|---|---|
 | 5 | 3 | 4 | 0 | — |
-| **6** | **3** | **4** | **960** (orbit of one pair) | `AAATAT → AAAAAT`, ratio `3` (main, kernel-checked) |
+| **6** | **3** | **4** | **960** (orbit of one pair) | `AAATAT → AAAAAT`, `3` / `5` (main, kernel-checked) |
 | 7 | 3 | 4 | 0 | — |
 | 6 | 4 | 4 | 0 | — |
-| **8** | **3** | **3** | **4540** | `AAATTATT → AAAATAAT`, ratio `1024/729 ≈ 1.4047` |
+| **8** | **3** | **3** | **4540** | `AAATTATT → AAAATAAT`, `1024/729 ≈ 1.4047` / not computed |
 
 The `G = 8` pair was re-verified by hand from the printed data: `I_s` holds
 (coverage plus bridged triple and interleaved obligations, all satisfied), both
@@ -240,9 +307,11 @@ double-strand extension explicitly in "Discussions and extensions":
 So the Bresler double-strand convention is **not** the Medvedev-Brudno molecule
 collapse: it keeps oriented reads but doubles the genome and the read set. Under
 this remap, with the single-strand `I_s` applied to the length-`2G` sequence and
-a length-`G` candidate strand `v` represented by `v · revcomp(v)`:
+a length-`G` candidate strand `v` represented by `v · revcomp(v)`. The search
+below uses the exact candidate-intrinsic multinomial on the length-`2G` sequence
+(`N(D) = 2G`), not the literal fixed-`N` binomial approximation:
 
-| `G` | `L` | start multiplicity `≤` | `I_s` instances | beats |
+| `G` | `L` | start multiplicity `≤` | `I_s` instances | exact-multinomial beats |
 |---|---|---|---|---|
 | 3 | 2 | 4 | 0 | 0 |
 | 4 | 2 | 5 | 1000 | 0 |
@@ -269,11 +338,11 @@ a genuinely different behavior from the molecule convention, and it means the
 |---|---|
 | Shomorony 2016 theory is single-strand, cyclic-shift-only; `I_s` is Bresler et al.'s placement condition | **source fact** |
 | MB09 read types are reverse-complement molecules with per-vertex lower bound `1` | **source fact** |
-| `AAATAT → AAAAAT` needs `TAT ~ ATA` collapse; single-strand ratio is `0` | **verified computation** |
-| `AAATT → AAAAT` is a strict uniform single-strand sequence-level counterexample, ratio `2` | **verified computation** |
-| No uniform single-strand §6.2 same-length counterexample in the scopes of §3.2 | **bounded computation** (exhaustive in scope, not a proof) |
-| Molecule §6.2 has same-length witnesses at `(6,3)` and `(8,3)` | **bounded computation** (the `(6,3)` one is kernel-checked on `main`) |
-| Bresler 2G remap has no counterexample in the scopes of §5, and is `I_s`-unsatisfiable at `G = 3,5` | **bounded computation** |
+| `AAATAT → AAAAAT` needs `TAT ~ ATA` collapse; single-strand exact-multinomial ratio is `0` (fixed-`N` binomial ratio also `0`) | **verified computation** |
+| `AAATT → AAAAT` is a strict uniform single-strand sequence-level counterexample, exact-multinomial ratio `2` (fixed-`N` binomial ratio `1125/512`) | **verified computation** |
+| No uniform single-strand §6.2 same-length counterexample in the scopes of §3.2, under the exact candidate-intrinsic multinomial | **bounded computation** (exhaustive in scope, not a proof) |
+| Molecule §6.2 has exact-multinomial same-length witnesses at `(6,3)` and `(8,3)` | **bounded computation** (the `(6,3)` one is kernel-checked on `main`) |
+| Bresler 2G remap has no exact-multinomial counterexample in the scopes of §5, and is `I_s`-unsatisfiable at `G = 3,5` | **bounded computation** |
 | Which strand convention the 2016 open question intends | **open** (source does not say) |
 | A proof that uniform single-strand §6.2 always makes the truth a maximizer | **open** — no proof and no counterexample found |
 
@@ -286,19 +355,27 @@ a genuinely different behavior from the molecule convention, and it means the
 - The Bresler remap search used a candidate class of doubled strands `v ·
   revcomp(v)`; allowing arbitrary length-`2G` spelled candidates could change
   the result and was not searched.
-- Nothing here settles the tie/uniqueness semantics or the §6.1-binomial
-  reading.
+- The bounded searches are run only under the exact candidate-intrinsic
+  multinomial (Variant E). The literal MB09 §6.1 fixed-`N` binomial
+  approximation (Variant A) is a different objective and is not searched here;
+  only the individual witness ratios are cross-checked under it (§2, §3.1).
+- Nothing here settles the tie/uniqueness semantics or which objective the 2016
+  sentence intends.
 
 ---
 
 ## 7. Reproduce / cross-references
 
 - `scripts/uniform_strand_semantics_search.py` — witnesses, bounded searches,
-  Bresler remap.
+  Bresler remap; `exact_ratio` (Variant E) and `binomial_ratio` (Variant A).
 - `main`: [`section62-same-length-bidirected-counterexample.md`](../section62-same-length-bidirected-counterexample.md),
   [`AssemblyP1/SameLengthSection62Counterexample.lean`](../../AssemblyP1/SameLengthSection62Counterexample.lean).
 - `main`: [`fixed-length-exact-counterexample.md`](../fixed-length-exact-counterexample.md),
   [`AssemblyP1/FixedLengthExactCounterexample.lean`](../../AssemblyP1/FixedLengthExactCounterexample.lean).
+- `main` objective/attribution notes: [`../ml-formalization-contract.md`](../ml-formalization-contract.md)
+  (Variant E vs Variant A), [`medvedev-brudno-candidate-class.md`](medvedev-brudno-candidate-class.md),
+  [`mb-formulation-referent-reconciliation.md`](mb-formulation-referent-reconciliation.md),
+  [`mb09-se61-index-orientation-resolution.md`](mb09-se61-index-orientation-resolution.md).
 
 Primary sources. Guy Bresler, Ma'ayan Bresler, David Tse, "Optimal assembly for
 high throughput shotgun sequencing," *BMC Bioinformatics* 14(Suppl 5):S18, 2013,
