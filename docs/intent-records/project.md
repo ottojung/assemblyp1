@@ -119,3 +119,16 @@ source: @ottojung
 kind: requirement
 
 Scheduled AssemblyP1 orchestrators should actively inspect the live Lubko agent pool and use clearly free capacity for useful independent packets, with five active delegated agents as the shared utilization target and hard maximum. Pool management must remain lightweight infrastructure: use a startup snapshot and small launch batches, refresh periodically or before another wave rather than after every individual launch, and never make successful saturation verification a prerequisite for substantive research. If Lubko recounting, polling, or launch verification becomes uncertain or blocked, stop launching additional uncertain agents, record the uncertainty briefly when useful for recovery, and continue safe mathematical/repository work.
+
+
+---
+
+$id-9018427365142097
+title: Preserve the original intuition with an infinite-data theorem after negative settlement
+date: 2026/09/20
+source: @ottojung
+kind: requirement
+
+If the source-faithful initial versions of the bridging-to-maximum-likelihood claim, including the materially live source disambiguations, are all convincingly settled negatively, the project should not stop at the negative result. It should then formulate and prove an appropriate infinite-data or population-level positive analogue that preserves the attractive core intuition connecting sufficient repeat resolution with maximum-likelihood recovery.
+
+Do not freeze the exact statement, likelihood formula, limiting formalism, or auxiliary hypotheses in this intent record. Those details should be chosen from the mathematical understanding available after the initial variants are settled, rather than committing the project now to a conjecture that may later turn out to be poorly formulated.

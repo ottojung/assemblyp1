@@ -92,9 +92,14 @@ appears in `D`". This note (like the merged
 [`bridging-se62-flow-ml-counterexample.md`](bridging-se62-flow-ml-counterexample.md))
 uses the bidirected / molecule-class index set, which is the one §6.2 forces;
 under a strict oriented single-strand indexing the truth's support would not
-match `x` and this witness would not apply. The oriented reading is a separate,
-unresolved source fork; the single-strand control row in §3 records the bounded
-zero for it.
+match `x` and this witness would not apply. The oriented reading is a separate
+source fork; the single-strand control row in §3 records the bounded zero for
+it. [`source-notes/mb09-se61-index-orientation-resolution.md`](source-notes/mb09-se61-index-orientation-resolution.md)
+resolves the fork: the literal `4^k` count is the oriented alphabet size, but
+§6.2 identifies the `d_i` with read-molecule vertex flows, so the operative
+objective is indexed by reverse-complement classes and this witness survives;
+strict oriented indexing inverts it (the competitor's oriented likelihood is
+`0`).
 
 The repository must keep the readings distinct. Requiring in addition
 `d_D(w) ≥ x_w` for every observed type (the *per-occurrence* strengthening) is
