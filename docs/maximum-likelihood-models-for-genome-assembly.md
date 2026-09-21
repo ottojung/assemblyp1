@@ -6,7 +6,19 @@ This note synthesizes the current AssemblyP1 research state. It deliberately sep
 
 A tempting starting point is simple: noiseless reads were sampled from the true circular genome, so the true genome ought to maximize their likelihood.
 
-That intuition ignores identifiability. If the read length does not resolve the genome's repeat structure, different circular sequences can induce the same read information. No statistical objective can recover information that the reads do not contain.
+That intuition ignores identifiability. A tiny example already shows the problem. Take circular genomes
+
+- `S = AAABAB`, and
+- `D = AABAAB`,
+
+with read length `L=2`. They are not cyclic rotations of one another, but both have exactly the same circular 2-mer spectrum:
+
+- `AA` occurs twice;
+- `AB` occurs twice;
+- `BA` occurs twice;
+- `BB` never occurs.
+
+Thus even the complete noiseless 2-mer information cannot distinguish `S` from `D`; under the corresponding uniform-start read model they induce the same read distribution. This is a structural ambiguity, not a failure caused by unlucky finite sampling or by a particular likelihood optimizer.
 
 This is why the repeat/read-length boundary comes first. Shomorony et al. formulate an information-feasibility condition `I_s`: the reads cover the genome, every triple repeat is all-bridged, and every interleaved pair of repeats is bridged in the required sense. Their Not-So-Greedy construction recovers the circular sequence under this condition. The 2016 Discussion then asks whether such bridging conditions also guarantee that the maximum-likelihood sequence is the true sequence, referring to the maximum-likelihood assembly formulation of Medvedev and Brudno (2009).
 
