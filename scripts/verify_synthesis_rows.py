@@ -15,10 +15,13 @@ Checks:
      15625/11664 and population value 3125/3888.
   F. No cross-length proportional-spectrum collisions and no same-length
      same-spectrum collisions among primitive P2 words in the tested scopes.
+  G. Addendum section 9: PO vs FN0 for the five addendum witnesses (including
+     the N2 correction); Lemma F1 bounded exhaustive check; FLOW support
+     equality of S=AAB, D=AB; and the MOL collision AACAGT/AACTGT.
 """
 
 from fractions import Fraction
-from itertools import combinations, product
+from itertools import combinations, combinations_with_replacement, product
 
 BASE = ("A", "B", "C", "D")
 
@@ -139,6 +142,27 @@ def fixed_ratio(S, D, L, x):
     return r
 
 
+def rc(w):
+    return w.translate(str.maketrans("ACGT", "TGCA"))[::-1]
+
+
+def mol_class(w):
+    return min(w, rc(w))
+
+
+def observed_counts(s, starts, L):
+    n = len(s)
+    d = {}
+    for t in starts:
+        w = "".join(s[(t + i) % n] for i in range(L))
+        d[w] = d.get(w, 0) + 1
+    return d
+
+
+def rotate_min(w):
+    return min(w[i:] + w[:i] for i in range(len(w)))
+
+
 def main():
     # A. Fact 2
     assert p2("AABAB", 3) and not p1("AABAB", 3)
@@ -189,6 +213,69 @@ def main():
             assert not same, (sigma, L, same[:2])
             total = sum(len(v) for v in groups.values())
             print(f"F. sigma={sigma} L={L}: {total} primitive P2 words, 0 collisions")
+
+    # G1. Addendum section 9: PO vs FN0 (only AABBC->ABABC strict under both;
+    #     AABBC->AABC, AABB->AAB and the FLOW witness AAB->AB are PO-only).
+    cases = [
+        ("N1 AABBC->AABC flag", "AABBC", "AABC", 3, {"AAB": 1, "BCA": 1},
+         Fraction(25, 16), Fraction(1)),
+        ("N2 AABB->AAB flag", "AABB", "AAB", 3, {"AAB": 1, "BAA": 1},
+         Fraction(16, 9), Fraction(1)),
+        ("FLOW AAB->AB flag", "AAB", "AB", 2, {"AB": 1, "BA": 1},
+         Fraction(9, 4), Fraction(1)),
+        ("N-R2 AABBC->ABABC fixed", "AABBC", "ABABC", 2, {"AB": 1, "BC": 1, "CA": 1},
+         Fraction(2), Fraction(2)),
+    ]
+    for name, S, D, L, x, po, fn0 in cases:
+        assert free_ratio(S, D, L, x) == po, (name, free_ratio(S, D, L, x))
+        assert fixed_ratio(S, D, L, x) == fn0, (name, fixed_ratio(S, D, L, x))
+        print(f"G1. {name}: PO={po} FN0={fn0}")
+
+    # G2. FLOW support equality of the addendum witness S=AAB, D=AB, L=2.
+    S, D, L, x = "AAB", "AB", 2, {"AB": 1, "BA": 1}
+    assert set(spec(D, L)) == set(x) == set(spec(S, L)) - {"AA"}
+    assert primitive(S) and primitive(D) and p2(S, L) and p1(D, L)
+    print("G2. AAB->AB is support-equal FLOW; truth WEAK, candidate STRONG")
+
+    # G3. Lemma F1 bounded exhaustive check: STRONG D with supp(obs) subset of
+    #     supp(D) has FN0 ratio <= 1 for any realized read placement.
+    f1_ok = True
+    for L in (2, 3):
+        for nD in range(L, 7):
+            for dtup in product("AB", repeat=nD):
+                D = "".join(dtup)
+                if not p1(D, L):
+                    continue
+                suppD = set(spec(D, L))
+                for G in range(L, 7):
+                    for stup in product("ABC", repeat=G):
+                        S = "".join(stup)
+                        for N in (1, 2, 3):
+                            for starts in combinations_with_replacement(range(G), min(N, G)):
+                                obs = observed_counts(S, starts, L)
+                                if not set(obs).issubset(suppD):
+                                    continue
+                                if fixed_ratio(S, D, L, obs) > 1:
+                                    f1_ok = False
+                                    print("  FAIL F1", S, D, starts, L)
+    assert f1_ok
+    print("G3. F1 exhaustive small check: pass (FN0 <= 1 for STRONG support-contained)")
+
+    # G4. Molecule-panel boundary: primitive STRONG population collision.
+    S, T, L = "AACAGT", "AACTGT", 3
+    def mol_spec(w, L):
+        d = {}
+        for i in range(len(w)):
+            c = mol_class("".join(w[(i + j) % len(w)] for j in range(L)))
+            d[c] = d.get(c, 0) + 1
+        return d
+    assert primitive(S) and primitive(T)
+    assert all(v <= 1 for v in spec(S, L - 1).values())
+    assert all(v <= 1 for v in spec(T, L - 1).values())
+    assert mol_spec(S, L) == mol_spec(T, L)
+    assert rotate_min(S) != rotate_min(T)
+    assert rotate_min(S) != rotate_min(rc(T))
+    print("G4. AACAGT/AACTGT: primitive STRONG MOL collision, dihedrally inequivalent")
 
     print("ALL ASSERTIONS PASSED")
 

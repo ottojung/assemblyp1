@@ -349,3 +349,231 @@ Branch/working-tree artifacts referenced by name (not links):
 `docs/unrestricted-length-proportional-reduction.md`,
 `docs/variable-length-ml-analysis.md`,
 `mathematics/bridging-and-spectrum-uniqueness.md`.
+
+---
+
+## 9. Addendum: the objective axis and the population KL reduction
+
+_Status: addendum to §1–§8, written on `synthesis/population-objective-frontier-0921`
+based at `d028141`. It composes the two packets that matured after the stress-test:
+the issue-#48 finite intrinsic packet
+(`docs/issue48-intrinsic-admissibility-counterexample.md`,
+`docs/issue48-intrinsic-candidate-checks.md`,
+`docs/reconciliation-issue46-unlock-48-45-2026-09-21.md`) and the population
+identifiability packet
+(`docs/population-identifiability-intrinsic-genomes.md`,
+`docs/issue48-population-independent-verification-2026-09-21.md`,
+`docs/literature/circular-qgram-identifiability-and-Is-threshold-2026-09-21.md`).
+It extends §4 (which stated the population KL observation as Lemma 4.1) and supplies
+the objective axis that §2's row table was missing; it corrects one objective tag in
+the reconciliation. It does not re-prove the rigidity theorem, does not add a Lean
+statement, and does not settle `docs/open-problem.md`._
+
+_New reproduction: section G of `scripts/verify_synthesis_rows.py`._
+
+### 9.1 The finite objective axis
+
+§2 listed witnesses without naming the finite objective, so two rows could be
+compared only loosely. Three objectives must be kept separate [**source fact** for the
+MB09 §6.1 likelihood; **modeling decision** for the free-length reading]:
+
+- **`PO`** — candidate-intrinsic exact multinomial with per-candidate length
+  `N(D) = |D|` (Variant E, free-length reading):
+  `L(D)/L(S) = ∏_{w : x_w > 0} ( |S| d_D(w) / (|D| d_S(w) ) )^{x_w}`.
+- **`FN`** — fixed-`N` §6.1 product of binomial marginals *with* the zero-count
+  factors.
+- **`FN0`** — fixed-`N` ratio with the zero-count factors dropped:
+  `∏_{w : x_w > 0} ( d_D(w) / d_S(w) )^{x_w}`. This is the ratio the §2/N-R tables
+  compute.
+
+**Lemma F1 (`FN0` no-beat for support-contained unit candidates).** [mathematical
+proof] Let `D` satisfy `supp(x) ⊆ supp(d_D)` and `d_D(w) = 1` for every
+`w ∈ supp(x)`. Then the `FN0` ratio is `∏_{w : x_w > 0} 1 / d_S(w)^{x_w} ≤ 1`,
+because `d_S(w) ≥ 1` on observed types. Every `STRONG` candidate whose support
+contains `supp(x)` meets the hypothesis, since `d_D(w) ∈ {0, 1}` everywhere. So
+**free candidate length cannot create a strict `FN0` failure for `STRONG`
+candidates**: the truth is a maximizer over that class at any length. ∎
+
+**Objective-conditional reclassification of the finite witnesses.** [verified
+computation; section G] Evaluating both ratios exactly:
+
+| witness | truth / candidates | universe | length | panel | `PO` | `FN0` |
+|---|---|---|---|---|---|---|
+| `S=AABBC`, `D=AABC`, `L=3`, `x={AAB,BCA}` | `P1` / `P1` | `SEQ` | `FREE` | `OR` | `25/16` **strict** | `1` tie |
+| `S=AABB`, `D=AAB`, `L=3`, `x={AAB,BAA}` | `P2` / `P1` | `SEQ` | `FREE` | `OR` | `16/9` **strict** | `1` tie |
+| `S=AAB`, `D=AB`, `L=2`, `x={AB,BA}` | `I_s`/`P2` / `P1` | **`FLOW`** | `FREE` | `OR` | `9/4` **strict** | `1` tie |
+| `S=AABBC`, `D=ABABC`, `L=2`, `x={AB,BC,CA}` | `P2` / `P2` | `SEQ` | `FIXED` | `OR` | `2` **strict** | `2` **strict** |
+| `S=AAATT`, `D=AAAATT`, `L=3`, `x=spec_3(S)+e_AAA` | `I_s` / — | `FLOW` | `FREE` | `OR` | `15625/11664` | `4` **strict** |
+
+The #48 headline (`25/16`) and the only support-equal `FLOW` witness located in
+the bounded scope (`AAB→AB`, `9/4`) are **`PO`-only**: their entire excess is the
+factor `(|S|/|D|)^{N}`, and
+removing it gives an exact tie. `AABBC→ABABC` is strict under both because its
+competitor *repeats* an observed type. Consequently the reconciliation's §4 phrase
+"`N2`/`N4` also strict under `FN0`" is a typo for "`N4`": for `N2`
+(`AABB→AAB`) the reconciliation's own `ratio_fixed` prints `1`, and F1 applies
+(the competitor is `STRONG` and support-contained). [verified computation]
+
+So the objective axis is load-bearing. For `SEQ` the negative is not an artifact
+of choosing `PO`: `AABBC→ABABC` is strict under both `PO` and `FN0` (even though
+the other `SEQ` witnesses are `PO`-only). For `FLOW` the only support-equal
+witness located in the bounded scope is `PO`-only; under `FN0` the same pair ties.
+
+**Two naming collisions to keep explicit.** The two packets reuse different
+witness numbering: the stress-test's `N-R2` is `AABBC→ABABC`, whereas the
+reconciliation's `N2` is `AABB→AAB` and its `N4` is `AABBC→ABABC`. The
+reconciliation's `N2` and the stress-test's `N-R2` are *not* the same instance.
+§9 uses names, not indices. The stress-test's `P1`/`P2` are the population
+packet's `STRONG`/`WEAK`; the independent intrinsic packet's `SR`/`RRF`/`P_weak`
+are a *third*, separately-defined family (its §6) and must not be silently
+identified with `P1`/`P2`.
+
+### 9.2 The population KL reduction
+
+Fix a read length `L` and let `p = d_S/G`, `q_D = d_D/|D|` be the normalized
+`L`-spectra. [mathematical proof; isolates and extends Lemma 4.1]
+
+**Proposition 1 (population ML is automatic).** For every circular candidate `D`
+of any length,
+```text
+ell_pop(D) := Σ_w p(w) log q_D(w) = -H(p) - KL(p ‖ q_D) ≤ -H(p) = ell_pop(S),
+```
+with equality iff `q_D = p` on `supp(p)`, i.e. `d_D = (|D|/G) d_S`; and
+`ell_pop(D) = -∞` if some `p`-positive type is absent from `D`. (Gibbs'
+inequality; the observation-only multinomial coefficient is
+candidate-independent and drops.)
+
+Two consequences, both already latent in §4:
+
+1. **No hypotheses are used.** Proposition 1 holds with no bridging,
+   primitivity, or admissibility assumption and over all candidate *lengths*.
+   So `#45`'s weak schema ("the truth is a population maximizer") is
+   automatic; it is not a repaired ML theorem. Calling `#45` a "population
+   repair" is therefore a **conflation** with the first of C6's two
+   infinite-data regimes.
+2. **Only identifiability has content.** By Proposition 1 the population ties
+   are exactly the proportional-spectrum candidates `d_D = c · d_S`,
+   `c = |D|/G > 0`. So the whole population question is whether
+   `D ↦ p_D` is injective on the candidate class up to genome equivalence.
+   Proposition 1 is a statement about the *limit* law; it puts nothing on top of
+   the finite §6.1 objective, and it is not a settlement of the 2016 question.
+
+### 9.3 Population identifiability theorem (oriented panel)
+
+**Theorem P (cross-length exclusion).** [mathematical proof; independently
+re-proved on the population branch] Let `S, T` be primitive circular words, both
+`TRF`-admissible at read length `L`, with `d_T = c · d_S`, `c ∈ Q_{>0}`. Then
+`c = 1`. The proof needs only the triple-repeat half of `WEAK` on the larger
+side: Lemma L* (primitive + `TRF` ⇒ every `(L−1)`-mer occurs at most twice)
+forces `c ≤ 2` on the shared `(L−1)`-support, and `c = 2` forces the support to
+be a simple directed cycle traversed twice, i.e. a nontrivial power, contradicting
+primitivity.
+
+**Equal-length residue.** For `c = 1` the statement "the `L`-mer multiset
+determines a `WEAK` word up to cyclic shift" is the repository's Conjecture 4,
+now claimed as the `K = L−1` instance of **Bresler–Bresler–Tse 2013, Theorem 3**
+under the maximal-repeat definitions (their Ukkonen condition at `K = L−1` is
+literally `WEAK = TRF ∧ ILF`; the bridging threshold `ℓ ≤ L−2` makes
+"unbridgeable" and "Ukkonen-obstructing" the same length condition). [**source
+theorem** modulo the circular Eulerian-cycle reading, *not* an independent proof;
+see the circular-qgram note §3.2 for the residual reading caveats and the
+condensed-graph nuance. The earlier Çelikkanat-et-al. anchor was a linear,
+non-maximal restatement and is not used.]
+
+**Sharpness.** [verified computation; population packet §6]
+- Primitivity cannot be dropped: `AAB` / `AABAAB = S²` (`L=3`) are both `WEAK`
+  with equal population law and are not rotations.
+- Candidate-side admissibility cannot be dropped: the primitive `WEAK` truth
+  `AAAB` and the primitive-not-`TRF` mate `AAAABAAB` (`L=3`) have equal population
+  law and are not rotations.
+- `TRF` alone is not enough for the equal-length step:
+  `AABABB`/`AABBAB` (`L=3`) share a spectrum, are primitive and `TRF`, are not
+  rotations, and both fail `ILF`.
+
+**Panel boundary.** [verified computation] The positive statement is
+`OR`-conditional. On the molecule/`MOL` panel `S = AACAGT`, `T = AACTGT`
+(`L=3`) are primitive and `STRONG` (hence `WEAK`), have identical normalized
+molecule-class `3`-spectra, and are dihedrally inequivalent. So the panel's
+equivalence/read-type choice is a genuine input (this is C5), and the population
+uniqueness theorem cannot be exported to `MOL`.
+
+### 9.4 What the population regime does not do
+
+1. **It is not an ML rescue.** Proposition 1 already makes the truth a
+   maximizer; there is nothing left for bridging/admissibility to repair at the
+   population level.
+2. **It is not the primary repair of the 2016 question.** The population packet
+   says so explicitly (§8: "not claimed"). The finite §6.1/`PO` question is
+   about a different objective, on an objective-dependent candidate universe,
+   and remains open.
+3. **It does not settle the equal-length step by itself.** That step is a
+   published combinatorial theorem under a circular reading; the repository has
+   not re-proved it and has not kernel-checked it. Do not present it as a fresh
+   proof or as a Lean result.
+4. **It does not remove the objective ambiguity.** Population reclassifies the
+   finite `PO`-only failures as finite-sample/normalization effects, but it does
+   not decide whether the source's finite sentence intends `PO`, `FN0`, or `FN`.
+
+### 9.5 Corrected frontier
+
+After the finite intrinsic packet and the population KL reduction the architecture
+reads as follows.
+
+- **Finite data (the actual open problem).** Intrinsic admissibility does not
+  restore the finite theorem. For `SEQ` the negative does not depend on choosing
+  `PO`: `AABBC→ABABC` is strict under both `PO` and `FN0` (the `FREE` witnesses
+  `AABB→AAB`, `AABBC→AABC` are `PO`-only). For `FLOW` it is `PO`-conditional: a
+  support-equal witness exists under `PO` (`AAB→AB`, `9/4`), but under `FN0` no
+  strict `FLOW` witness was found in the bounded scope and Lemma F1 proves none
+  exists for `STRONG` candidates. The
+  clean finite positive rows remain `OR + FLOW + FIXED + I_s` (P-R1, a tie) and
+  `SEQ + FIXED + STRONG` (P-R2, buys maximality by excluding `I_s`-feasible
+  truths).
+- **Population (a different regime).** ML maximality is automatic; the content
+  is the `OR`-panel identifiability theorem (cross-length proved; equal-length
+  source theorem; `MOL` false).
+- **Therefore `#45` is unlocked only as an identifiability characterization, not
+  as a repair of ML maximality**, and only after fixing the source-level
+  dependency `D1` (finite objective) and `D2` (candidate universe `SEQ` vs
+  `FLOW`). `D4` (equal-length `q`-gram) is now a source theorem rather than an
+  open conjecture; `D3` (source panel `OR` vs `MOL`) decides whether population
+  uniqueness can be claimed at all; `D5` (source-liveness of `FIXED`) is
+  untouched. `docs/open-problem.md` remains open.
+
+### 9.6 Added epistemic rows
+
+| Claim | Status | Basis |
+|---|---|---|
+| Lemma F1: support-contained unit candidate ⇒ `FN0` ratio `≤ 1` | **mathematical proof** | §9.1; section G |
+| #48 `SEQ` neg. has a witness strict under both `PO` and `FN0`; `FLOW` neg. is `PO`-only | **verified computation** | §9.1 table; section G |
+| Reconciliation's "`N2` strict under `FN0`" | **corrected** (`N2` ties; `N4` is strict) | §9.1; section G |
+| `PO`-only excess is the factor `(|S|/|D|)^{N}` | **mathematical proof** | ratio identity; §9.1 |
+| Proposition 1: population ML is automatic (`KL`) | **mathematical proof** | Gibbs; §9.2 |
+| Theorem P: primitive + `TRF` ⇒ `c = 1` | **mathematical proof** | population packet; §9.3 |
+| Equal length ⇒ cyclic shift for `WEAK` (`OR`) | **source theorem** (BBT Thm 3, `K=L−1`, circular reading) | circular-qgram note; §9.3 |
+| Primitivity / candidate admissibility / `ILF` all necessary | **verified computation** | population packet §6; §9.3 |
+| `MOL` positive transfer is false (`AACAGT`/`AACTGT`) | **verified computation** | population packet §7; section G |
+| Population is the primary repair | **not accepted** | §9.4 |
+
+### 9.7 Reproduction
+
+```sh
+python3 scripts/verify_synthesis_rows.py
+```
+
+Section G of that script re-derives, with exact `Fraction` arithmetic: the `PO`
+and `FN0` values of the five witnesses of §9.1 (including the `N2` correction and
+the `PO`-only status of `AAB→AB`); a bounded exhaustive check of Lemma F1; the
+`FLOW` support-equality of `S=AAB`/`D=AB`; and the `MOL` collision
+`AACAGT`/`AACTGT`. Sections A–F are unchanged.
+
+### 9.8 Cross-reference additions
+
+Branch/working-tree artifacts referenced by name (not links):
+`docs/issue48-intrinsic-admissibility-counterexample.md`,
+`docs/issue48-intrinsic-candidate-checks.md`,
+`docs/reconciliation-issue46-unlock-48-45-2026-09-21.md`,
+`docs/population-identifiability-intrinsic-genomes.md`,
+`docs/issue48-population-independent-verification-2026-09-21.md`,
+`docs/literature/circular-qgram-identifiability-and-Is-threshold-2026-09-21.md`,
+`docs/literature/substring-spectrum-identifiability-2026-09-20.md`.
