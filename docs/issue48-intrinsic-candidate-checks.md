@@ -65,9 +65,13 @@ read length, `d_D` its length-`L` window-count spectrum.
 
 - **primitive(D).** `D ≠ C^k` for every `k ≥ 2` and shorter circular `C`.
 - **SR(D, L) — spectrum-resolvable.** `D` is the *unique* circular genome of
-  length `n` with its `L`-mer spectrum, up to rotation (Ukkonen/Pevzner
-  `q`-gram identifiability; computed in the script by exhaustively grouping all
-  length-`n` genomes by spectrum, hence exact on the searched ranges).
+  length `n` with its `L`-mer spectrum, up to rotation (computed in the script by
+  exhaustively grouping all length-`n` genomes by spectrum, hence exact on the
+  searched ranges). The parenthetical “Ukkonen/Pevzner `q`-gram identifiability”
+  naming should be read only as motivation: the classical Ukkonen–Pevzner
+  theorem is **linear**, and the circular multiset statement is not a located
+  source theorem — see
+  [`docs/literature/circular-p2-ukkonen-pevzner-audit-2026-09-21.md`](literature/circular-p2-ukkonen-pevzner-audit-2026-09-21.md).
 - **RRF(D, L) — read-length repetition-free.** No `(L−1)`-mer of `D` occurs
   twice. By Lemma 1 of `mathematics/bridging-and-spectrum-uniqueness.md`
   (`scripts/bridging_spectrum_uniqueness.py`) this is equivalent to "every

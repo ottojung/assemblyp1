@@ -161,6 +161,20 @@ conjecturally exactly the cyclic-shift (or dihedral) class, so the source's
 2. the correspondence “`I_s`-admissible ⇔ no classical obstruction” is the
    repository's analysis, not a quoted source sentence.
 
+**Audit update (2026-09-21).** A primary-source audit
+([`../literature/circular-p2-ukkonen-pevzner-audit-2026-09-21.md`](../literature/circular-p2-ukkonen-pevzner-audit-2026-09-21.md))
+confirms both caveats as open. Ukkonen (1992) is **linear** and states the
+completeness question as an open problem (p. 194); Pevzner (1995) proved the
+linear classification, but its exact wording/theorem is paywalled; and the
+`Rotation` blocking pattern is precisely the linear prefix–suffix boundary
+artifact with no separate circular analogue. No located source states a circular
+Ukkonen–Pevzner multiset classification or the implication
+“`I_s`-admissible ⇒ spectrum unique”. The defensible circular frame is the
+`L`-mer-multiset ↔ Eulerian-circuit correspondence (Arratia et al. 2000) plus
+unique-Eulerian-circuit certificates, with the `I_s` step carried as a
+repository lemma, not cited. See the audit note; this row remains
+**source-supported inference / open**, not a source theorem.
+
 ## 3. Axis: candidate length (new mathematical content)
 
 - **Free length.** For every circular `D` and `k ≥ 2`, the tandem repeat `D^k`
