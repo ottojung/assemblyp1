@@ -263,9 +263,13 @@ Consequences:
 4. **Conclusion semantics.** “the maximum-likelihood sequence is the true
    sequence” still does not disambiguate truth-is-a-maximizer from
    all-maximizers-are-truth.
-5. **Publisher supplement.** The accepted supplementary ZIP (sections A–G)
-   remains uninspected (HTTP 403); it is the last unexamined accepted artifact
-   that could contain a likelihood definition.
+5. **Publisher supplement.** The accepted supplement (sections A–G) remains
+   uninspected (HTTP 403); it is the last unexamined accepted artifact that
+   could contain a likelihood definition. It is a single PDF
+   (`supp_material.pdf`), not a ZIP, and the accepted article's own inline
+   pointers into A, B, C, E, F, G are all algorithm/proof/Lander–Waterman
+   rather than likelihood; see
+   [`shomorony-supplement-referent-evidence.md`](shomorony-supplement-referent-evidence.md).
 
 ## 9. Epistemic classification
 

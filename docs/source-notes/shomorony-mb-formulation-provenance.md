@@ -376,7 +376,12 @@ optional.
    constraint. Fixed length remains an added restriction.
 3. **Controlling source:** the publisher supplement (sections A–G) is still
    unretrieved (HTTP 403); no cross-reference in the accepted text points to a
-   likelihood/objective section.
+   likelihood/objective section. See
+   [`shomorony-supplement-referent-evidence.md`](shomorony-supplement-referent-evidence.md):
+   the accepted supplement is a single PDF (`supp_material.pdf`), and the
+   accepted article's own six by-name pointers into sections A, B, C, E, F, G
+   are all algorithm/proof/Lander–Waterman, none likelihood — so it is not a
+   likely source of a referent selection.
 4. **Consequence for settlement:** whether the kernel-checked witnesses are
    sufficient depends on (2) and on §6.2 feasibility, per §7.
 
