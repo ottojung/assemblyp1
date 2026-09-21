@@ -93,7 +93,7 @@ This failure is qualitatively different from repeat ambiguity. The wrong genome 
 
 This is the point at which a second repair becomes justified. Strengthening the repeat axioms again would target the wrong mechanism.
 
-## 6. Population ML removes exactly the remaining sampling failure
+## 6. Population ML removes the remaining sampling failure
 
 Let `d_S(w)` be the number of cyclic occurrences of the oriented length-`L` word `w` in `S`, and define the population read distribution
 
@@ -107,19 +107,25 @@ with value `-infinity` when a truth-positive word has zero probability under `D`
 
 `ell_S(D) - ell_S(S) = -KL(p_S || p_D) <= 0`.
 
-Therefore the truth is a population maximum-likelihood genome over **any** candidate class containing it. No repeat condition is required for this maximizer statement. Equality holds exactly when `p_D=p_S`, so uniqueness is no longer a statistical question: it is exactly normalized-spectrum identifiability inside the chosen candidate class.
+Therefore the truth is a population maximum-likelihood genome over **any** candidate class containing it. No repeat condition is required for this maximizer statement. Equality holds exactly when `p_D=p_S`, so uniqueness is no longer a statistical question: it is normalized-spectrum identifiability inside the chosen candidate class.
 
-For primitive P2-admissible circular candidates, the intended uniqueness argument reduces normalized-spectrum equality to ordinary spectrum equality; primitivity removes non-unit whole-genome scaling. That reduces the population statement to a circular `P2` spectrum-uniqueness lemma, which is not established at present. No cited source has yet been verified in this repository to establish the exact circular `P2` spectrum-uniqueness lemma. A concurrent source audit found that Bresler–Bresler–Tse Lemma 9 / Theorem 3 may support a circular Eulerian-cycle route, but the linear-versus-circular question and the predicate correspondence between the source conditions and `P2` remain unresolved pending independent verification. The repository's direct matching/cycle proof of that lemma also has a gap in its maximal-extension step (see the [audit of the direct circular P2 proof](audit-p2-direct-proof-maximal-extension-2026-09-21.md)). The population uniqueness statement is therefore conditional on that lemma:
+For the project's **oriented, primitive P2** candidate class, that identifiability step is also available. If primitive circular genomes `S,D` have the same normalized `L`-spectrum, the existing scaling argument reduces the equality to equality of their ordinary `L`-spectra: any non-unit integer scaling would make one genome a nontrivial whole-genome power, contradicting primitivity.
 
-> **(conditional/open)** For `L >= 2`, if the ordinary circular `P2` spectrum-uniqueness lemma holds, then among primitive `P2`-admissible circular candidates the true genome is the unique population maximum-likelihood genome up to cyclic rotation.
+The remaining ordinary-spectrum step is supplied by Bresler–Bresler–Tse (2013), Theorem 3. Their theorem constructs the `K`-mer graph from the complete `(K+1)`-spectrum and, under Ukkonen's condition—no triple or interleaved repeats of length at least `K`—gives a unique Eulerian cycle corresponding to the genome. Their repeat objects use the maximal-repeat convention, and the length of an interleaved pair is the shorter constituent. Setting `K=L-1` therefore matches P2's threshold: maximal triple repeats have length at most `L-2`, and every interleaved maximal-repeat pair has a constituent of length at most `L-2`.
 
-The statistical KL statement is proved and general; the combinatorial uniqueness statement remains open and depends on the structural candidate class.
+Hence, at the mathematical/source-supported level (not yet as a Lean/kernel-checked theorem):
+
+> **Population uniqueness theorem (oriented primitive P2).** For `L >= 2`, among primitive P2-admissible oriented circular candidates, the true genome is the unique population maximum-likelihood genome up to cyclic rotation.
+
+The proof chain is: KL/Gibbs characterizes population ties by normalized-spectrum equality; scaling plus primitivity reduces such a tie to ordinary-spectrum equality; Bresler–Bresler–Tse Theorem 3 at `K=L-1` gives circular spectrum identifiability. This source theorem bypasses the repository's attempted direct matching/cycle proof. The latter still has a genuine maximal-extension gap (see the [audit of the direct circular P2 proof](audit-p2-direct-proof-maximal-extension-2026-09-21.md)); that gap invalidates that alternative proof route, not the source-supported theorem.
+
+This result is for the oriented spectrum model. It should not be silently transferred to reverse-complement-collapsed molecule classes, whose representation changes the observation object.
 
 ## 7. What the sequence of results teaches us
 
 There are two distinct failure modes and therefore two distinct repairs.
 
-**Structural/model failure.** Without a repeat/read-length boundary, the genome need not be identifiable. Bridging/Ukkonen-style conditions are the source's repair for the assembly problem, but whether they yield the exact circular `P2` spectrum-uniqueness lemma needed for population uniqueness is open (Section 6). A fixed-true-length candidate class can additionally create finite spectrum rigidity, but requiring the true length is stronger than the source's external likelihood parameter and may be operationally unrealistic.
+**Structural/model failure.** Without a repeat/read-length boundary, the genome need not be identifiable. Bridging/Ukkonen-style conditions repair that structural ambiguity. A fixed-true-length candidate class can additionally create finite spectrum rigidity, but requiring the true length is stronger than the source's external likelihood parameter and may be operationally unrealistic. In the repaired oriented population model, P2 plus primitivity is enough for uniqueness by the spectrum theorem above.
 
 **Finite-sampling failure.** Even primitive candidates satisfying strong intrinsic repeat restrictions can beat the truth because empirical read frequencies fluctuate. The `AABBC → AABC` example isolates this mechanism. Population ML removes it by replacing empirical frequencies with the true read distribution.
 
@@ -133,7 +139,7 @@ The resulting conceptual progression is therefore
 > → replace privileged true-length knowledge by intrinsic candidate checks
 > → finite failure survives because of sampling frequencies
 > → population ML removes frequency noise
-> → structural identifiability would supply uniqueness (lemma still open).
+> → P2 plus primitivity restores oriented circular uniqueness.
 
 This ordering matters. Population data is not introduced to patch repeat ambiguity, and intrinsic candidate checks are not introduced as historical assumptions of Shomorony or Medvedev–Brudno. They repair different weaknesses exposed in sequence.
 
@@ -143,8 +149,9 @@ The source-faithful historical question and the repaired models must remain visi
 
 - Shomorony et al. supply the single-strand shotgun model, bridging/information-feasibility condition, and the published open-question sentence.
 - Medvedev–Brudno supply the ML formulations and graph/flow machinery whose exact referent must be stated for each result.
+- Bresler–Bresler–Tse supply the complete-spectrum/Ukkonen uniqueness theorem used in the repaired oriented population result; this does not settle the finite 2016 ML question by itself.
 - The fixed-candidate-length theorem is a mathematical result under an extra candidate restriction, not a consequence of MB09's known-`N` parameter.
-- P1/P2 candidate-intrinsic admissibility and the population objective are project-level repaired formulations motivated by the finite analysis, not assumptions retrofitted into the literature.
+- P1/P2 candidate-intrinsic admissibility, primitiveness, and the population objective are project-level repaired formulations motivated by the finite analysis, not assumptions retrofitted into the literature.
 - Counterexamples and proofs should continue to be labeled according to whether they are mathematical proofs, computational evidence, source interpretations, or kernel-checked Lean results.
 
-The published question is therefore best understood not as one theorem that merely awaited a proof, but as an interface between a bridging hypothesis and an ML formulation whose candidate and representation choices matter. The population KL maximizer result is a separate, proved positive statement; recovering population uniqueness additionally requires the still-open circular `P2` spectrum-uniqueness lemma. Together they would explain how the attractive ML intuition can be recovered once both structural ambiguity and finite-frequency noise are controlled.
+The published question is therefore best understood not as one theorem that merely awaited a proof, but as an interface between a bridging hypothesis and an ML formulation whose candidate and representation choices matter. The repaired population model gives a cleaner positive result: KL/Gibbs removes finite-frequency noise at the maximizer level, while P2, primitivity, and the complete-spectrum uniqueness theorem recover uniqueness for oriented circular genomes. The source-faithful finite ML question remains distinct from that later repair.
