@@ -112,7 +112,7 @@ the repeat structure.
 Exhaustive enumeration over the DNA alphabet shows:
 
 - no pair of distinct circular words of length `G ≤ 4` collides on length-`L`
-  spectra for any `L ≥ 2`; and
+  spectra for any read length `L` with `2 ≤ L ≤ G`; and
 - the first collision is at `G = 5, L = 2`, and every minimal collision pair is
   a symbol relabeling and cyclic rotation of the witness above (uniquely, the
   equality pattern has a triple of one symbol with two copies adjacent).
