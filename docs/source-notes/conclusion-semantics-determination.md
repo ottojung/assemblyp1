@@ -249,6 +249,11 @@ and [`same-length-witnesses-candidate-set-inclusion.md`](same-length-witnesses-c
   the integrated strict witnesses.
 - [`same-length-witnesses-candidate-set-inclusion.md`](same-length-witnesses-candidate-set-inclusion.md):
   negative transfer across candidate classes.
+- [`conclusion-semantics-equivalence-and-length.md`](conclusion-semantics-equivalence-and-length.md):
+  independent sharpening of the equivalence axis (same-spectrum mates tie, so
+  the strong schema needs a spectrum-collapsing `≈`; cyclic shift/dihedral are
+  necessary but not sufficient in general) and of the length axis (free length
+  makes the strong schema false universally by tandem invariance).
 
 Primary sources: Ilan Shomorony, Samuel H. Kim, Thomas A. Courtade, David N. C.
 Tse, *Information-optimal genome assembly via sparse read-overlap graphs*,
