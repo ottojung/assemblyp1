@@ -315,7 +315,7 @@ binomial objective is defined, since both $S$ and $D$ lie in the domain
 We now turn to the reverse-complement molecular reading of the Section~6.2 flow.
 Here read types are molecule classes, the truth and competitor must both be
 admissible bidirected circuits, and the objective is the literal Section~6.1
-product with external $N$. The mechanism is different from the sequence-level
+product with external $N$ (Definition~\ref{def:likelihoods}). The mechanism is different from the sequence-level
 witnesses: reverse complementarity \emph{creates} multiplicity that the
 observation does not force, and support equality then permits reallocation.
 
@@ -326,7 +326,7 @@ $S=AAATT$ ($G=5$) with realized starts $0,1,4$, and competitor
 $D=AAAATT$ ($|D|=6$). Then $R\in\Is$ holds; both $S$ and $D$ induce admissible
 Section~6.2 bidirected circuits; and with external $N=5$,
 \[
-  \frac{\Lik_{6.1}(D)}{\Lik_{6.1}(S)} = \frac{9}{8} > 1 .
+  \frac{\Lik_{6.1}(D;x)}{\Lik_{6.1}(S;x)} = \frac{9}{8} > 1 .
 \]
 \end{theorem}
 
@@ -410,7 +410,7 @@ binomial ML maximizer
   & all circular (on its domain)
   & \textbf{false} (Thm.~\ref{thm:cex-binomial}) \\
 Section~6.2 flow, molecule reads
-  & Section~6.1 product
+  & fixed-$N$ binomial (§6.1 product)
   & §6.2 circuits
   & \textbf{false} (Thm.~\ref{thm:cex-molecule}) \\
 Section~6.2 flow, molecule, same length, per-vertex
