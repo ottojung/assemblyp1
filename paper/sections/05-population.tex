@@ -105,24 +105,58 @@ assumption.
 complete-spectrum uniqueness theorem at $K=L-1$ below.}
 \end{definition}
 
-\begin{lemma}[Scaling plus primitivity]
+\begin{lemma}[Primitive P2 spectra have gcd one]
 \label{lem:scaling}
-Let $S$ and $D$ be primitive circular words with $p_D=p_S$ for some
-$L\ge2$. Then $\spec_L(D)=\spec_L(S)$.
+Let $S$ be a primitive P2-admissible circular word and $L\ge2$ with
+$L\le|S|$. Let $c=\spec_L(S)$ viewed as an integer vector and let
+$g=\gcd\{c(w):c(w)>0\}$. Then $g=1$.
 \end{lemma}
 
 \begin{proof}[Proof sketch]
-$p_D=p_S$ rewrites as $|S|\,\spec_L(D)=|D|\,\spec_L(S)$, so the two spectra are
-proportional with rational factor $\lambda=|D|/|S|$. If $\lambda\ne1$, the
-project's scaling argument shows that one of the two genomes is a nontrivial
-whole-genome power, contradicting primitivity; hence $\lambda=1$ and the
-ordinary spectra coincide.
+Suppose $g>1$. Work in the order-$(L-1)$ de Bruijn graph: vertices are
+$(L-1)$-mers and each occurrence of a length-$L$ word is a directed edge
+with multiplicity $c(w)$. Because $S$ spells a closed trail using every
+edge exactly once, this edge multiset is balanced (in-degree equals
+out-degree at every vertex) and weakly connected on its support.
+Dividing every multiplicity by $g$ gives $c'=c/g$, still integer-valued.
+Balance is a homogeneous linear condition, so it is preserved by division;
+the support is unchanged ($c'(w)>0\iff c(w)>0$), so weak connectivity on
+the support is preserved as well. Hence $c'$ is a balanced connected edge
+multiset and spells an Eulerian closed trail $W$ with
+$\spec_L(W)=c'$ and $|W|=|S|/g$.
+Repeating $W$ gives $W^g$ with $|W^g|=|S|$ and
+$\spec_L(W^g)=g\cdot\spec_L(W)=c=\spec_L(S)$: each cyclic length-$L$
+window of $W$ lifts to exactly $g$ windows of $W^g$.
+Thus $S$ and $W^g$ share the same ordinary $L$-spectrum.
+$S$ satisfies P2, hence Ukkonen's condition at $K=L-1$, so
+Theorem~\ref{thm:BBT} applied to $S$ forces $S\sim W^g$ up to rotation.
+But $W^g$ is a nontrivial whole-genome power while $S$ is primitive, and
+primitivity is rotation-invariant --- a contradiction. So $g=1$.
+Crucially, uniqueness is applied only to $S$; nothing requires $W^g$
+itself to satisfy P2.
 \end{proof}
 
-The full scaling argument is recorded in the repository synthesis rather than
-reproduced here; we state it at the level of detail needed for the theorem and
-flag in Appendix~\ref{app:ledger} that its writeup is the project's, not a
-kernel-checked derivation.
+\begin{corollary}[Normalized equality implies ordinary equality for primitive P2]
+Let $S,D$ be primitive P2-admissible with $p_D=p_S$ for some $L\ge2$.
+Then $\spec_L(D)=\spec_L(S)$.
+\end{corollary}
+
+\begin{proof}[Proof sketch]
+$p_D=p_S$ rewrites as $|S|\,\spec_L(D)=|D|\,\spec_L(S)$, so the two
+integer spectrum vectors are proportional. By the lemma both have gcd
+$1$ over their positive entries, and proportional gcd-one vectors are
+equal (indeed $|S|\mid|D|$ and $|D|\mid|S|$, so $|S|=|D|$).
+\end{proof}
+
+\begin{remark}[Why primitivity alone is not enough]
+The unrestricted statement --- primitivity plus $p_D=p_S$ implies
+$\spec_L(D)=\spec_L(S)$ --- is false. At $L=2$, the primitive words
+$S=AAB$ ($|S|=3$) and $D=AAABAB$ ($|D|=6$) have
+$\spec_2(S)=(AA{:}1,AB{:}1,BA{:}1)$ and
+$\spec_2(D)=(AA{:}2,AB{:}2,BA{:}2)$, hence identical normalized spectra
+$p_S=p_D=(1/3,1/3,1/3)$ but distinct ordinary spectra. The lemma above
+uses P2 essentially, via the BBT uniqueness input.
+\end{remark}
 
 \subsection{The complete-spectrum uniqueness input}
 
@@ -152,7 +186,8 @@ rotation.
 
 \begin{proof}
 Let $D$ be primitive and P2-admissible with $\ellpop_S(D)=\ellpop_S(S)$. By
-Lemma~\ref{lem:gibbs}, $p_D=p_S$; by Lemma~\ref{lem:scaling},
+Lemma~\ref{lem:gibbs}, $p_D=p_S$; by Lemma~\ref{lem:scaling} both spectra
+have gcd one, hence the corollary gives
 $\spec_L(D)=\spec_L(S)$. Both $S$ and $D$ satisfy P2, hence Ukkonen's condition
 at $K=L-1$, so Theorem~\ref{thm:BBT} applied to the complete $(L)$-spectrum
 gives a unique Eulerian cycle and therefore $D\sim S$. The truth is a maximizer
@@ -162,7 +197,7 @@ by Lemma~\ref{lem:gibbs}.
 \statusline{The reduction and the maximizer step are \mathfact; the final
 step is the \srcfact{} external theorem \cite{bresler2013}. The whole chain is
 \emph{source-supported mathematics}, not a kernel-checked Lean theorem; the
-scaling lemma's writeup is the project's.}
+gcd-one/division writeup is the project's.}
 
 \subsection{Scope and one failed proof route}
 
