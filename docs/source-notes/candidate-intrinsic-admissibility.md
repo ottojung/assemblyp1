@@ -1,4 +1,4 @@
-# Candidate-intrinsic repeat/read-length admissibility: the structural boundary and the role of primitiveness
+# Candidate-intrinsic repeat/read-length admissibility: the structural boundary, the support semantics, and the role of primitiveness
 
 _Status: new **repaired model** analysis for issue #48, 2026-09-21, on top of
 `origin/main` at `f60ca5f`. This note does **not** reinterpret the literature and
@@ -13,8 +13,8 @@ what the repaired question forces._
 
 _Reproduce: `python3 scripts/verify_intrinsic_admissibility.py` (quick) and
 `python3 scripts/verify_intrinsic_admissibility.py --full` (wider exhaustive
-scopes). Self-contained, exact `fractions.Fraction`, deterministic, exits
-non-zero on any failed assertion._
+scopes). Self-contained, exact `fractions.Fraction`, deterministic; exits
+non-zero only if the documented findings fail to reproduce._
 
 ---
 
@@ -30,42 +30,51 @@ to the candidate itself, that boundary yields the following.
 
 1. **The weakest candidate-intrinsic repeat predicate justified by the boundary
    is `STRUCT_L`:** the candidate has no Bresler triple repeat of length
-   `>= L-1` and no interleaved pair of maximal repeats whose two constituents
+   `>= L-1` and no interleaved pair of *maximal* repeats whose two constituents
    both have length `>= L-1`. These are exactly the two obstructions that make a
    sequence unresolvable at read length `L` (Bresler et al.; Ukkonen–Pevzner
    spectrum classification). [source fact + mathematical proof]
 
-2. **Neither conjunct can be dropped.** A primitive, triple-repeat-free candidate
-   can still strictly beat an `I_s`-realizable truth through an interleaved
-   repeat (`S = AAAB`, `D = AAABAB`, `L = 3`), and an interleaved-free candidate
-   can beat it through a triple repeat (`S = AAATT`, `D = AAAATT`, `L = 3`).
-   [verified computation]
+2. **Neither conjunct can be dropped *as a resolvability condition*.** A
+   primitive, triple-repeat-free candidate can be unresolvable through an
+   interleaved pair (`D = AABABB`, `L = 3`), and an interleaved-free candidate
+   through a triple repeat (`D = AAAATT`, `L = 3`). [verified computation]
 
-3. **Primitiveness does not follow from `STRUCT`, and is not implied by it.**
-   `D = (ACGT)^2` is `STRUCT` for `L = 2` and non-primitive. [mathematical proof]
+3. **Primitiveness does not follow from `STRUCT`.** `D = (ACGT)^2` is `STRUCT`
+   for `L = 2` and non-primitive. [mathematical proof]
 
 4. **Primitiveness is not needed for the maximizer schema, but is separately
    needed for the uniqueness schema.** If a non-primitive candidate `D = P^m`
-   strictly beats the truth, then its primitive root `P` has the same normalized
+   strictly beats the truth, its primitive root `P` has the same normalized
    length-`L` spectrum and strictly beats the truth too (root reduction). So a
    maximizer theorem over primitive `STRUCT` candidates automatically covers all
-   `STRUCT` candidates. But `S^2` is `STRUCT` and ties any primitive `STRUCT`
-   truth `S` for every observation, so without a primitiveness restriction (or a
-   proportional-spectrum quotient) the truth is never the *unique* maximizer.
-   [mathematical proof]
+   `STRUCT` candidates. But for the primitive `STRUCT` truth `S = ACGT`
+   (`L = 2`), the word `S^2` is `STRUCT` and ties `S` for every observation while
+   being a distinct circular genome, so without a primitiveness restriction (or a
+   proportional-spectrum quotient) the truth is not the *unique* maximizer.
+   [mathematical proof + verified computation]
 
-5. **Bounded evidence.** Over exhaustive small scopes the number of strict
-   counterexamples to "the `I_s` truth is a maximizer among candidates satisfying
-   predicate `P`" is (`--full` in parentheses): `PRIM` 454 (1131), `ILF` 128
-   (323), `TRF` 22 (162), `PRIM & TRF` 22 (162), `STRUCT` **0 (0)**,
-   `PRIM & STRUCT` **0 (0)**. The variable-length sufficiency of `STRUCT` is
-   therefore a well-tested conjecture, not a theorem; the same-length slice is a
-   theorem (rigidity), and it needs only `TRF`. [verified computation]
+5. **The structural repeat condition alone does *not* settle the finite ML
+   question; the support semantics does.** Under the per-vertex/§6.2
+   lower-bound reading (`supp(spec_L(D)) superseteq supp(spec_L(S))`), even
+   `PRIM & STRUCT` admits strict counterexamples: `S = AAAB`, `D = AAABAB`
+   (`L = 3`) is primitive and `STRUCT`, contains every observed type, and
+   strictly beats the truth on a skewed observation. The extra (unobserved)
+   type `BAB` lets `D` inflate its normalized frequency of the observed type
+   `ABA`. This failure is *not* structural non-identifiability of `D` (it is
+   resolvable) but extra-support frequency amplification. [verified computation]
+   Under the spelled-circuit reading (`supp(spec_L(D)) = supp(spec_L(S))`, the
+   §6.2 candidate), the weaker triple-repeat clause `TRF` alone has **no**
+   counterexample in the searched scopes. [verified computation, bounded]
 
-**Bottom line.** The repaired candidate predicate should be `STRUCT` (no long
-triple repeat, no long interleaved pair). Primitiveness is an *independent*
-conjunct: it is unnecessary for strict beating / maximizer, and necessary only to
-rule out the whole-genome proportional-spectrum ties.
+**Bottom line.** The structural boundary gives `STRUCT` as the weakest
+candidate-intrinsic *resolvability* predicate, and primitiveness is an
+independent conjunct needed only for uniqueness. But `STRUCT` is not sufficient
+for the finite maximizer statement unless the candidate universe also fixes the
+support (spelled-circuit/§6.2 equality). With support equality the triple-repeat
+clause `TRF` is the effective predicate (bounded evidence); with mere containment
+no repeat predicate suffices, and the repair must add a support constraint or
+move to the population regime (issue #45).
 
 ---
 
@@ -78,8 +87,8 @@ rule out the whole-genome proportional-spectrum ties.
 | A length-`L` read bridges a repeat copy of length `ell` iff it strictly extends on both sides, so `ell <= L-2` | **source fact** | Bresler et al. 2013 (Fig. 5); Shomorony §3 |
 | `I_s` = coverage ∧ all triple repeats all-bridged ∧ all interleaved pairs bridged | **source fact** | Shomorony Eq. (1), inheriting Bresler |
 | Repeat/triple-repeat maximality conditions; interleaved pair has alternating starts, "length = shorter repeat" | **source fact** | Bresler et al. 2013, [`../bridging-source-semantics.md`](../bridging-source-semantics.md) |
-| `I_s` is realizable on `S` iff `(T)` no triple repeat of length `>= L-1` and `(I)` no interleaved pair with both lengths `>= L-1` | **mathematical proof** (repository) | [`oriented-se62-rigidity-theorem.md`](oriented-se62-rigidity-theorem.md) §1, §3 |
-| MB09 §6.1 exact multinomial with candidate-intrinsic `N(D)=|D|`; §6.2 per-vertex lower bound `1` | **source fact** | Medvedev–Brudno 2009 §6.1–6.2 |
+| `I_s` is realizable on `S` iff `(T)` no triple repeat of length `>= L-1` and `(I)` no interleaved maximal-repeat pair with both lengths `>= L-1` | **mathematical proof** (repository) | [`oriented-se62-rigidity-theorem.md`](oriented-se62-rigidity-theorem.md) §1, §3 |
+| MB09 §6.1 exact multinomial with candidate-intrinsic `N(D)=|D|`; §6.2 per-vertex lower bound `1` on observed reads | **source fact** | Medvedev–Brudno 2009 §6.1–6.2 |
 | Spectrum uniqueness ⟺ absence of the triple/interleaved obstructions | **source fact** | Ukkonen 1992; Pevzner 1995; Çelikkanat et al. 2024 Thm 3.1 |
 | Candidate class defined by *intrinsic* checks; no true-length axiom | **new repaired model (issue #48)** | not a source statement |
 | Restricting to primitive candidates (or quotienting proportional spectra) | **new repaired model (issue #48)** | not a source statement |
@@ -109,8 +118,10 @@ Fix an alphabet `Sigma`, a read length `L >= 2`, and a circular word
   repeat is three selected copies of a length-`ell` window whose preceding
   symbols are not all equal and whose following symbols are not all equal.)
 - `ILF_L(D)`: `D` has no interleaved pair of maximal repeats whose two
-  constituents both have length `>= L-1`. (Interleaved = the four selected starts
-  alternate cyclically, per Bresler.)
+  constituents both have length `>= L-1`. A maximal repeat is a pair of equal
+  length-`ell` windows maximal on **both** sides (preceding symbols differ and
+  following symbols differ); interleaved means the four selected starts
+  alternate cyclically, per Bresler.
 - `SW_L(D)`: every length-`(L-1)` window of `D` occurs at most twice.
 - `STRUCT_L(D) := TRF_L(D) ∧ ILF_L(D)` — the structural assembly boundary.
 
@@ -119,14 +130,19 @@ Fix an alphabet `Sigma`, a read length `L >= 2`, and a circular word
 `(T) ∧ (I)` reduction above. This is the sense in which `STRUCT` is *justified by*
 the structural assembly boundary rather than invented.
 
+**Support semantics.** Two candidate-universe readings are kept explicit.
+
+- *Containment* (per-vertex/§6.2 lower bound): `supp(spec_L(S)) subseteq
+  supp(spec_L(D))`, i.e. every observed read occurs in `D`; `D` may have extra
+  windows.
+- *Equality* (spelled circuit): `supp(spec_L(D)) = supp(spec_L(S))`.
+
 **Strict-beating criterion.** For the exact objective, a candidate `D` beats a
-truth `S` on *some* observation whose support is contained in
-`supp(spec_L(S))` and which is `I_s`-realizable (so every truth type is observed
-at least once, forcing `supp(spec_L(S)) subseteq supp(spec_L(D))`) iff
+truth `S` on some observation `x` with `supp(x) = supp(spec_L(S))` (the
+coverage-consistent case forced by `I_s`) iff there is an observed type `w` with
 
 ```text
-there is an observed type w in supp(spec_L(S)) with
-    spec_L(D)(w) / |D|  >  spec_L(S)(w) / |S| .
+spec_L(D)(w) / |D|  >  spec_L(S)(w) / |S| .
 ```
 
 *Why.* Concentrating additional reads on such a `w` makes the ratio
@@ -149,9 +165,10 @@ maximal-extension argument). ∎
 
 **Proposition 3 (independence).**
 (a) `TRF` does not imply `PRIM`: `D = (ACGT)^2`, `L = 2`.
-(b) `PRIM` does not imply `TRF`: `D = AAA`, `L = 2` (or `D = AAAATT`, `L = 3`).
+(b) `PRIM` does not imply `TRF`: `D = AAAATT`, `L = 3`.
 (c) `STRUCT` does not imply `PRIM`: same as (a).
-(d) `TRF` does not imply `ILF`: `D = AAABAB`, `L = 3`.
+(d) `TRF` does not imply `ILF`: `D = AABABB`, `L = 3` (for `L = 2` the
+implication does hold in the searched scopes).
 (e) `ILF` does not imply `TRF`: `D = AAAAB`, `L = 3`.
 All five are verified by direct computation in the script. ∎
 
@@ -175,11 +192,14 @@ alternation are preserved. ∎
 strictly beats an `I_s` truth" extends verbatim to all `STRUCT` candidates.
 [mathematical proof]
 
-**Proposition 5 (primitiveness is necessary for uniqueness).** Let `S` be a
-primitive `STRUCT` word. Then `S^2` is `STRUCT`, has the same support and the same
-normalized spectrum as `S` (so `E(S^2 | x) = E(S | x)` for every `x`), and is not
-a cyclic shift of `S`. Hence the truth is not the unique maximizer up to cyclic
-shift unless candidates are restricted to primitive words (or genomes are
+**Proposition 5 (primitiveness is necessary for uniqueness).** `STRUCT` is not
+closed under whole-number repetition: `S = AAAB` (`L = 3`) is `STRUCT` while
+`S^2` is not. Nevertheless there are primitive `STRUCT` truths whose repetitions
+are again `STRUCT`. For `S = ACGT` (`L = 2`), `S^2 = ACGTACGT` is `STRUCT`, has
+the same support and the same normalized spectrum as `S` (so
+`E(S^2 | x) = E(S | x)` for every `x`), and is not a cyclic shift of `S`. Hence
+for this `I_s`-realizable truth the truth is not the unique maximizer up to
+cyclic shift unless candidates are restricted to primitive words (or genomes are
 identified by their primitive root / proportional spectrum). ∎
 
 ---
@@ -189,28 +209,34 @@ identified by their primitive root / proportional spectrum). ∎
 All arithmetic below is exact and checked by
 `scripts/verify_intrinsic_admissibility.py`.
 
-| # | role | truth `S` | candidate `D` | `L` | `PRIM(D)` | `TRF(D)` | `ILF(D)` | result |
-|---|---|---|---|---|---|---|---|---|
-| A | `TRF` insufficient (interleaved needed) | `AAAB` | `AAABAB` | 3 | yes | yes | **no** | `D` strictly beats `S` |
-| B | `ILF` insufficient (triple needed) | `AAAB` | `AAAAB` | 3 | yes | **no** | yes | `D` strictly beats `S` |
-| C | `PRIM` insufficient | `AAATT` | `AAAATT` | 3 | yes | **no** | yes | `D` strictly beats `S` |
-| D | primitiveness needed for uniqueness | `ACGT` | `(ACGT)^2` | 2 | **no** | yes | yes | `D` ties `S` for every `x` |
+| # | role | truth `S` | candidate `D` | `L` | `PRIM(D)` | `TRF(D)` | `ILF(D)` | `supp(D)` | result |
+|---|---|---|---|---|---|---|---|---|---|
+| A | `STRUCT` insufficient under containment | `AAAB` | `AAABAB` | 3 | yes | yes | yes | `⊋ supp(S)` | `D` strictly beats `S` |
+| B | `ILF` alone insufficient | `AAAB` | `AAAAB` | 3 | yes | **no** | yes | `= supp(S)` | `D` strictly beats `S` |
+| C | `PRIM` alone insufficient | `AAATT` | `AAAATT` | 3 | yes | **no** | yes | `= supp(S)` | `D` strictly beats `S` |
+| D | primitiveness needed for uniqueness | `ACGT` | `(ACGT)^2` | 2 | **no** | yes | yes | `= supp(S)` | `D` ties `S` for every `x` |
 
-**Counterexample A (the interleaved obstruction is essential at variable
-length).** `S = AAAB` is `I_s`-realizable (`STRUCT` true: the only long maximal
-repeat is `AA`, and there is no interleaved pair). `D = AAABAB` is primitive,
-`TRF`, and `SW`, but has the interleaved maximal repeats `ABA` (starts `2,4`)
-and `BA` (starts `3,5`), so `ILF(D)` is false. With
-`x = spec_3(S) + M * e_ABA`,
+**Counterexample A (the structural predicate does not close extra-support
+amplification).** `S = AAAB` is `I_s`-realizable (`STRUCT` true: its only long
+maximal repeat is `AA`, with no interleaved partner). `D = AAABAB` is primitive,
+`TRF`, and `ILF` (its maximal repeats are `AA` at starts `0,1` and `ABA` at
+starts `2,4`, which do not interleave), so `D` is `STRUCT`. `D` contains every
+observed type and one extra type `BAB`. With `x = spec_3(S) + M * e_ABA`,
 
 ```text
 E(D | x) / E(S | x) = (32/81) * (4/3)^M ,
 ```
 
-which exceeds `1` from `M = 4` (at `M = 4`: `8192/6561 > 1`). This is a witness
-that `TRF` — even together with `PRIM` and `SW` — does not suffice; the
-interleaved clause of the structural boundary is doing real work.
-[verified computation]
+which exceeds `1` from `M = 4` (at `M = 4`: `8192/6561 > 1`). This refutes
+`PRIM & STRUCT` under support containment. The mechanism is the extra window
+`BAB`, which contributes no likelihood weight (`x_BAB = 0`) but lets `D` raise
+`spec_3(D)(ABA)/|D|` above `spec_3(S)(ABA)/|S|`. [verified computation]
+
+**Example A' (support equality removes counterexample A).** `AAABAB` is not a
+spelled candidate for the observation `spec_3(AAAB)`, because `BAB` is
+unobserved. In the `--full` support-equality search, `TRF` alone has **zero**
+strict counterexamples; the triple-repeat clause is the effective predicate
+there. [verified computation, bounded]
 
 **Counterexample B (`ILF` alone is not enough).** `D = AAAAB` is primitive and
 `ILF`, but the length-`(L-1) = 2` window `AA` occurs three times, so `TRF` fails.
@@ -231,15 +257,15 @@ circular genome. This is the pure scale ambiguity that primitiveness removes.
 
 ---
 
-## 5. Bounded computational evidence for the repaired conjecture
+## 5. Bounded computational evidence
 
 The repaired finite conjecture under test is:
 
 > **Repaired conjecture (issue #48).** If the truth `S` is `I_s`-realizable
-> (`STRUCT_L(S)`), then no `STRUCT_L` candidate `D` with
-> `supp(spec_L(D)) ⊇ supp(spec_L(S))` strictly beats `S` under the exact
+> (`STRUCT_L(S)`), then no candidate `D` satisfying the chosen intrinsic
+> predicate and the chosen support constraint strictly beats `S` under the exact
 > candidate-intrinsic multinomial, for any observation `x` with
-> `supp(x) subseteq supp(spec_L(S))`.
+> `supp(x) = supp(spec_L(S))`.
 
 The script enumerates, exhaustively in scope, all `I_s`-realizable truths (as
 necklaces), all candidates of length `<= |S| + extra` (as necklaces), and applies
@@ -248,21 +274,29 @@ binary `L = 3`, `G <= 8`; ternary `L = 2`, `G <= 7` (`extra` 2–3). `--full`
 scopes: binary `L = 2`, `G <= 11`; binary `L = 3`, `G <= 10`; ternary `L = 2`,
 `G <= 8`; ternary `L = 3`, `G <= 7` (`extra` 2–3).
 
-| candidate predicate | strict cex (quick) | strict cex (`--full`) |
-|---|---|---|
-| `PRIM` | 454 | 1131 |
-| `ILF` | 128 | 323 |
-| `TRF` | 22 | 162 |
-| `PRIM & TRF` | 22 | 162 |
-| `STRUCT = TRF & ILF` | **0** | **0** |
-| `PRIM & STRUCT` | **0** | **0** |
+| candidate predicate | contain (quick) | contain (`--full`) | equal (quick) | equal (`--full`) |
+|---|---|---|---|---|
+| `PRIM` | 964 | 1887 | 236 | 617 |
+| `ILF` | 354 | 1057 | 194 | 575 |
+| `TRF` | 30 | 206 | **0** | **0** |
+| `PRIM & TRF` | 30 | 206 | **0** | **0** |
+| `STRUCT = TRF & ILF` | 22 | 186 | **0** | **0** |
+| `PRIM & STRUCT` | 22 | 186 | **0** | **0** |
 
-The `TRF`-only hits are all interleaved obstructions (e.g. counterexample A).
-Adding `PRIM` changes nothing, consistent with Corollary 4a. `STRUCT` has no hit
-in either scope. The per-scope transcript is committed as
+Two robust findings:
+
+- **Containment fails even for `STRUCT`.** The first hit is counterexample A
+  (`S = AAAB`, `D = AAABAB`); `ILF` removes only a few of the `TRF` hits, not the
+  extra-support mechanism.
+- **Equality succeeds with `TRF`.** Under the §6.2 spelled-circuit support
+  equality, the triple-repeat clause alone has no counterexample in either scope;
+  `ILF` adds nothing there.
+
+The per-scope transcript is committed as
 [`results/intrinsic_admissibility_full.txt`](../../results/intrinsic_admissibility_full.txt).
-The zero is **evidence, not proof**, and the variable-length sufficiency of
-`STRUCT` remains **open** in general. [verified computation, bounded]
+The zeros are **evidence, not proof**; the variable-length `TRF` sufficiency
+under support equality remains **open** in general. [verified computation,
+bounded]
 
 A separate exhaustive check confirms the root-reduction identities of
 Proposition 4 over `G <= 10`, `L = 3`: 115 non-primitive words, zero normalized
@@ -278,38 +312,47 @@ computation, bounded]
   positive circulation of total `G` on its window-support graph, so every
   same-length spelled candidate ties. The interleaved clause is *not* used there.
   [mathematical proof]
-- **Variable-length slice is where the interleaved clause matters.** On the
-  different-length slice the same-length circulation argument does not apply, and
-  counterexample A shows the interleaved clause is necessary. `STRUCT` removes
-  every bounded counterexample found. [verified computation + open]
+- **Variable length with support equality.** The same-length circulation argument
+  does not apply, but the bounded search finds that `TRF` already removes every
+  strict counterexample. This is the natural positive repaired model: intrinsic
+  `TRF` (no long triple repeat) plus the §6.2 spelled-candidate support.
+  [verified computation, bounded + open]
+- **Variable length with support containment.** Even `STRUCT` fails, via
+  counterexample A. The failure is extra-support frequency amplification, not
+  structural non-identifiability of the candidate. Per the issue #48 decision
+  tree this is a **support/candidate-universe** failure, not a finite-multiplicity
+  failure of the truth's own identifiability: the repair should first add the
+  support (spellability) constraint before changing the data regime, and only
+  then consider issue #45. [verified computation]
 - **Compatibility with the antecedent.** `STRUCT` is exactly the `(T) ∧ (I)`
   realizability form of `I_s`, so every `I_s`-realizable truth is admitted; and
   by Proposition 4 the primitive root of an admitted truth is admitted too. The
   repaired candidate predicate therefore does not exclude the truth.
   [mathematical proof]
-- **What the repair buys / does not buy.** If the repaired conjecture is proved,
-  the theorem needs no privileged true-length axiom and no population limit, and
-  the truth is a maximizer among intrinsically checkable candidates. It does not
-  by itself give uniqueness: for that, primitiveness (or a proportional-spectrum
-  quotient) is required by Proposition 5.
+- **What the repair buys / does not buy.** Under support equality the repair
+  needs no privileged true-length axiom and no population limit, and (boundedly)
+  the truth is a maximizer among intrinsically checkable `TRF` candidates. It
+  does not by itself give uniqueness: for that, primitiveness (or a
+  proportional-spectrum quotient) is required by Proposition 5.
 
 ---
 
 ## 7. Open questions and next tests
 
-1. **Prove or refute the variable-length `STRUCT` conjecture** (the central open
-   item of this note). The bounded zero is not a proof; a larger-instance search
-   or a structural argument is needed.
-2. **Sharpen `ILF`.** The source boundary gives "both constituents `>= L-1`";
-   test whether the "both" can be weakened for the maximizer statement without
-   readmitting counterexample A.
-3. **Support semantics.** The repaired model as tested uses support containment
-   (`supp(x) subseteq supp(spec_L(D))`), the §6.2 per-vertex reading. Re-run the
-   search under support *equality* (spelled-circuit reading) to see whether
-   `TRF` alone suffices there.
+1. **Prove or refute variable-length `TRF` sufficiency under support equality**
+   (the central open item). The bounded zero is not a proof.
+2. **Make the support-equality repair explicit.** Spellability is not a
+   repeat-intrinsic condition, so the repaired model must state it separately;
+   test whether any purely intrinsic strengthening of `STRUCT` can replace it.
+3. **Quantify the extra-support mechanism.** Characterize when adding an
+   unobserved window lets a `STRUCT` candidate raise an observed type's
+   normalized frequency.
 4. **Uniqueness semantics.** Decide whether to restrict to primitive candidates
    or to quotient by proportional spectrum; the two give the same maximizer
    statement but different uniqueness statements.
+5. **Finite-multiplicity frontier (issue #45).** If `TRF` plus support equality
+   is proved, test whether the maximizer statement survives without the
+   `I_s`-coverage support restriction.
 
 ---
 
@@ -322,9 +365,11 @@ computation, bounded]
 | `PRIM`, `TRF`, `ILF` are pairwise independent in the relevant directions | mathematical proof + verified computation (Prop. 3) |
 | Root reduction: non-primitive candidates reduce to their primitive root | mathematical proof (Prop. 4) |
 | Primitiveness is redundant for maximizer, necessary for uniqueness | mathematical proof (Cor. 4a, Prop. 5) |
-| Counterexamples A, B, C, D with exact ratios | verified computation |
-| `TRF` alone admits strict counterexamples; `STRUCT` has none in quick scopes | verified computation, bounded |
-| Variable-length `STRUCT` sufficiency in general | **open** |
+| Counterexample A: `PRIM & STRUCT` fails under support containment | verified computation |
+| Counterexamples B, C, D with exact ratios | verified computation |
+| Under support equality, `TRF` alone has no strict counterexample in scope | verified computation, bounded |
+| Under containment, no tested repeat predicate suffices | verified computation, bounded |
+| Variable-length `TRF` sufficiency under support equality in general | **open** |
 
 ---
 

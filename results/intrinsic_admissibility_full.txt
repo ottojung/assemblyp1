@@ -56,38 +56,76 @@
   G= 8 L=3 sigma=3: SW&!TRF=0 PRIM&(TRF xor SW)=0
   G= 9 L=3 sigma=3: SW&!TRF=0 PRIM&(TRF xor SW)=0
   G=10 L=3 sigma=3: SW&!TRF=0 PRIM&(TRF xor SW)=0
-[B] neither predicate alone suffices; root reduction
+[B] independence, neither predicate alone suffices, root reduction
+  TRF !-> PRIM: D=ACGTACGT L=2 PRIM=False TRF=True ILF=True
+  PRIM !-> TRF: D=AAAATT L=3 PRIM=True TRF=False ILF=True
+  TRF !-> ILF: D=AABABB L=3 PRIM=True TRF=True ILF=False
+  ILF !-> TRF: D=AAAAB L=3 PRIM=True TRF=False ILF=True
+  (A) S=AAAB D=AAABAB L=3: STRUCT(S)=True STRUCT(D)=True PRIM(D)=True extra=['BAB'] excess=1/12 ratio(M=4)=8192/6561 > 1
   (B.i)  S=ACGT D=(ACGT)^2 L=2: TRF(D)=True PRIM(D)=False normalized spectra equal => ties for every x
   (B.ii) S=AAATT D=AAAATT L=3: PRIM(D)=True TRF(D)=False max_excess=2/15 (w=AAA) ratio(x=dS+1e_AAA)=15625/11664 > 1
   root reduction L=3 G<=10: checked=115 spectrum_mismatch=0 TRF_not_lifted=0
 [C] bounded search over candidate-intrinsic predicates
-  predicate PRIM: 1131 strict counterexample(s)
+  -- support_mode=contain --
+  predicate PRIM: 1887 strict counterexample(s)
       S=AABB D=AAABB L=2 w=AA excess=3/20
       S=AABB D=AABBB L=2 w=BB excess=3/20
       S=AABB D=AAAABB L=2 w=AA excess=1/4
       S=AABB D=AAABBB L=2 w=AA excess=1/12
       S=AABB D=AABABB L=2 w=AB excess=1/12
       S=AABB D=AABBAB L=2 w=AB excess=1/12
-  predicate ILF: 323 strict counterexample(s)
+  predicate ILF: 1057 strict counterexample(s)
       S=AABB D=AAABB L=2 w=AA excess=3/20
       S=AABB D=AABBB L=2 w=BB excess=3/20
+      S=AABB D=AAAABB L=2 w=AA excess=1/4
       S=AABB D=AAABBB L=2 w=AA excess=1/12
-      S=AAAB D=AAAAB L=3 w=AAA excess=3/20
-      S=ABBB D=ABBBB L=3 w=BBB excess=3/20
-      S=AAABB D=AAAABB L=3 w=AAA excess=2/15
-  predicate TRF: 162 strict counterexample(s)
+      S=AABB D=AABBBB L=2 w=BB excess=1/4
+      S=AABB D=AAAAABB L=2 w=AA excess=9/28
+  predicate TRF: 206 strict counterexample(s)
       S=AAAB D=AAABAB L=3 w=ABA excess=1/12
       S=AABB D=AABAABB L=3 w=AAB excess=1/28
       S=AABB D=AABBABB L=3 w=ABB excess=1/28
       S=ABBB D=ABABBB L=3 w=BAB excess=1/12
       S=AAABB D=AAABBABB L=3 w=ABB excess=1/20
       S=AABBB D=AABAABBB L=3 w=AAB excess=1/20
-  predicate PRIM&TRF: 162 strict counterexample(s)
+  predicate PRIM&TRF: 206 strict counterexample(s)
       S=AAAB D=AAABAB L=3 w=ABA excess=1/12
       S=AABB D=AABAABB L=3 w=AAB excess=1/28
       S=AABB D=AABBABB L=3 w=ABB excess=1/28
       S=ABBB D=ABABBB L=3 w=BAB excess=1/12
       S=AAABB D=AAABBABB L=3 w=ABB excess=1/20
       S=AABBB D=AABAABBB L=3 w=AAB excess=1/20
+  predicate STRUCT=TRF&ILF: 186 strict counterexample(s)
+      S=AAAB D=AAABAB L=3 w=ABA excess=1/12
+      S=AABB D=AABAABB L=3 w=AAB excess=1/28
+      S=AABB D=AABBABB L=3 w=ABB excess=1/28
+      S=ABBB D=ABABBB L=3 w=BAB excess=1/12
+      S=AAABB D=AAABBABB L=3 w=ABB excess=1/20
+      S=AABBB D=AABAABBB L=3 w=AAB excess=1/20
+  predicate PRIM&STRUCT: 186 strict counterexample(s)
+      S=AAAB D=AAABAB L=3 w=ABA excess=1/12
+      S=AABB D=AABAABB L=3 w=AAB excess=1/28
+      S=AABB D=AABBABB L=3 w=ABB excess=1/28
+      S=ABBB D=ABABBB L=3 w=BAB excess=1/12
+      S=AAABB D=AAABBABB L=3 w=ABB excess=1/20
+      S=AABBB D=AABAABBB L=3 w=AAB excess=1/20
+  -- support_mode=equal --
+  predicate PRIM: 617 strict counterexample(s)
+      S=AABB D=AAABB L=2 w=AA excess=3/20
+      S=AABB D=AABBB L=2 w=BB excess=3/20
+      S=AABB D=AAAABB L=2 w=AA excess=1/4
+      S=AABB D=AAABBB L=2 w=AA excess=1/12
+      S=AABB D=AABABB L=2 w=AB excess=1/12
+      S=AABB D=AABBAB L=2 w=AB excess=1/12
+  predicate ILF: 575 strict counterexample(s)
+      S=AABB D=AAABB L=2 w=AA excess=3/20
+      S=AABB D=AABBB L=2 w=BB excess=3/20
+      S=AABB D=AAAABB L=2 w=AA excess=1/4
+      S=AABB D=AAABBB L=2 w=AA excess=1/12
+      S=AABB D=AABBBB L=2 w=BB excess=1/4
+      S=AABB D=AAAAABB L=2 w=AA excess=9/28
+  predicate TRF: 0 strict counterexample(s)
+  predicate PRIM&TRF: 0 strict counterexample(s)
   predicate STRUCT=TRF&ILF: 0 strict counterexample(s)
   predicate PRIM&STRUCT: 0 strict counterexample(s)
+documented intrinsic-admissibility findings reproduced

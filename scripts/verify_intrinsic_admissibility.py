@@ -22,12 +22,16 @@ combinatorics and exact `fractions.Fraction` arithmetic, the following:
          root P, and TRF(D) implies TRF(P).
 
   C. A bounded search for a counterexample to the *repaired* conjecture
-     "every I_s-realizable truth is a maximizer among STRUCT candidates".
-     For a candidate D and truth S the exact multinomial admits a strict
-     counterexample for some observation x with support in supp(spec_L(S)) iff
-     some observed type w has d_D(w)/|D| > d_S(w)/|S|.  The script compares the
-     predicates PRIM, ILF, TRF, PRIM&TRF, STRUCT, PRIM&STRUCT over exhaustive
-     small scopes and reports the hit counts.
+     "every I_s-realizable truth is a maximizer among candidates satisfying the
+     candidate-intrinsic predicate".  For a candidate D and truth S the exact
+     multinomial admits a strict counterexample for some observation x with
+     support in supp(spec_L(S)) iff some observed type w has
+     d_D(w)/|D| > d_S(w)/|S|.  The script compares the predicates PRIM, ILF,
+     TRF, PRIM&TRF, STRUCT, PRIM&STRUCT over exhaustive small scopes, under two
+     support semantics:
+       - "contain" (per-vertex/§6.2 lower bound, supp(D) superseteq supp(S)):
+         even PRIM&STRUCT admits strict counterexamples;
+       - "equal" (spelled-circuit, supp(D) = supp(S)): TRF alone has none.
 
 Usage:
     python3 scripts/verify_intrinsic_admissibility.py            # quick
@@ -122,6 +126,11 @@ def interleaved_long_pair(s: tuple[str, ...], L: int):
     long_pairs = []
     for i in range(G):
         for j in range(i + 1, G):
+            # A repeat is maximal on both sides: the longest common extension
+            # blocks the right, and the preceding symbols must differ (else the
+            # pair is not a maximal-repeat start pair and should be shifted left).
+            if s[(i - 1) % G] == s[(j - 1) % G]:
+                continue
             ell = maximal_repeat_length(s, i, j)
             if ell >= L - 1 and ell < G:
                 long_pairs.append((i, j, ell))
@@ -272,6 +281,46 @@ def witness_primitive_no_trf():
     assert not SW(D, L), "AAAATT should fail SW"
 
 
+def witness_struct_containment():
+    """Counterexample A: PRIM & STRUCT fails under support containment."""
+    S, D, L = tuple("AAAB"), tuple("AAABAB"), 3
+    assert STRUCT(S, L) and STRUCT(D, L) and is_primitive(D)
+    dS, dD = spec(S, L), spec(D, L)
+    V = set(dS)
+    assert V <= set(dD) and (set(dD) - V), "D must have extra (unobserved) support"
+    excess, w = max_normalized_excess(dS, dD, len(S), len(D))
+    assert excess > 0 and w == tuple("ABA")
+    M = 4
+    x = dict(dS)
+    x[tuple("ABA")] = x.get(tuple("ABA"), 0) + M
+    r = full_ratio(x, S, D, L)
+    assert r > 1
+    print(
+        f"  (A) S=AAAB D=AAABAB L=3: STRUCT(S)={STRUCT(S, L)} "
+        f"STRUCT(D)={STRUCT(D, L)} PRIM(D)={is_primitive(D)} "
+        f"extra={sorted(''.join(e) for e in set(dD) - V)} "
+        f"excess={excess} ratio(M={M})={r} > 1"
+    )
+
+
+def check_independence(verbose=True):
+    """Proposition 3 independence witnesses."""
+    cases = [
+        ("TRF !-> PRIM", tuple("ACGTACGT"), 2, True, True, False),
+        ("PRIM !-> TRF", tuple("AAAATT"), 3, False, True, True),
+        ("TRF !-> ILF", tuple("AABABB"), 3, True, False, True),
+        ("ILF !-> TRF", tuple("AAAAB"), 3, False, True, True),
+    ]
+    for label, s, L, trf, ilf, prim in cases:
+        assert TRF(s, L) == trf, label
+        assert ILF(s, L) == ilf, label
+        assert is_primitive(s) == prim, label
+        if verbose:
+            print(
+                f"  {label}: D={''.join(s)} L={L} PRIM={prim} TRF={trf} ILF={ilf}"
+            )
+
+
 def check_root_reduction(alphabet, L, Grange, verbose=True):
     """Non-primitive D = P^m: P has the same normalized spectrum, and TRF(D)
     implies TRF(P).  Hence a strict beating non-primitive candidate has a strict
@@ -349,11 +398,15 @@ def cand_pred(name, prim, trf, ilf):
     raise ValueError(name)
 
 
-def search_repaired(alphabet, L, Grange, extra_len, pred_name, verbose=True):
+def search_repaired(alphabet, L, Grange, extra_len, pred_name, verbose=True,
+                    support_mode="contain"):
     """For every I_s-structural truth S, every candidate D of length
-    <= G+extra_len satisfying predicate `pred_name` whose support contains
-    supp(spec_L(S)), check whether some observed type has
-    d_D(w)/|D| > d_S(w)/|S|."""
+    <= G+extra_len satisfying predicate `pred_name`, check whether some observed
+    type has d_D(w)/|D| > d_S(w)/|S|.
+
+    `support_mode="contain"` allows any D containing supp(spec_L(S)) (the
+    per-vertex/§6.2 lower-bound reading); `support_mode="equal"` restricts to
+    spelled candidates with supp(spec_L(D)) = supp(spec_L(S))."""
     hits = []
     scanned = 0
     for G in Grange:
@@ -369,8 +422,10 @@ def search_repaired(alphabet, L, Grange, extra_len, pred_name, verbose=True):
             for D, dD in cands:
                 if any(w not in dD for w in V):
                     continue
+                if support_mode == "equal" and any(w not in V for w in dD):
+                    continue
                 scanned += 1
-                excess, w = max_normalized_excess(spec(S, L), spec(D, L), len(S), len(D))
+                excess, w = max_normalized_excess(dS, dD, len(S), len(D))
                 if excess > 0:
                     hits.append((S, D, L, w, excess))
         if verbose:
@@ -400,7 +455,9 @@ def main(argv):
         for G in Grange:
             check_relations(alphabet, L, G)
 
-    print("[B] neither predicate alone suffices; root reduction")
+    print("[B] independence, neither predicate alone suffices, root reduction")
+    check_independence()
+    witness_struct_containment()
     witness_tandem_ties()
     witness_primitive_no_trf()
     check_root_reduction(("A", "B", "C"), 3, range(4, 11))
@@ -420,20 +477,32 @@ def main(argv):
         ]
     pred_names = ["PRIM", "ILF", "TRF", "PRIM&TRF", "STRUCT=TRF&ILF", "PRIM&STRUCT"]
     results = {}
-    for name in pred_names:
-        hits = []
-        for alphabet, L, Grange, extra in search_scopes:
-            h, _ = search_repaired(alphabet, L, Grange, extra, name, verbose=False)
-            hits.extend(h)
-        results[name] = hits
-        print(f"  predicate {name}: {len(hits)} strict counterexample(s)")
-        for S, D, L, w, excess in hits[:6]:
-            print(
-                f"      S={''.join(S)} D={''.join(D)} L={L} "
-                f"w={''.join(w)} excess={excess}"
-            )
-    # The repaired conjecture is refuted iff PRIM&STRUCT still has a hit.
-    return 1 if results["PRIM&STRUCT"] else 0
+    for mode in ("contain", "equal"):
+        print(f"  -- support_mode={mode} --")
+        for name in pred_names:
+            hits = []
+            for alphabet, L, Grange, extra in search_scopes:
+                h, _ = search_repaired(alphabet, L, Grange, extra, name,
+                                       verbose=False, support_mode=mode)
+                hits.extend(h)
+            results[(mode, name)] = hits
+            print(f"  predicate {name}: {len(hits)} strict counterexample(s)")
+            for S, D, L, w, excess in hits[:6]:
+                print(
+                    f"      S={''.join(S)} D={''.join(D)} L={L} "
+                    f"w={''.join(w)} excess={excess}"
+                )
+    # Regression assertions for the documented findings:
+    #  - under support containment even STRUCT admits strict counterexamples;
+    #  - under support equality the weaker TRF has none in the searched scopes.
+    assert results[("contain", "PRIM&STRUCT")], (
+        "expected STRUCT counterexamples under support containment"
+    )
+    assert not results[("equal", "TRF")], (
+        "expected no TRF counterexample under support equality"
+    )
+    print("documented intrinsic-admissibility findings reproduced")
+    return 0
 
 
 if __name__ == "__main__":
