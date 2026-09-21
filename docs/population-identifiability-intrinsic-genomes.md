@@ -2,10 +2,11 @@
 
 _Status: independent mathematical characterization with an exact-arithmetic
 verifier. It settles the **cross-length** part (equal normalized `L`-spectra
-force equal length and then, conditionally on the classical circular `q`-gram
-characterization, cyclic-shift equivalence) and records the sharpness of the
-hypotheses and one strand-convention boundary. It is **not** a claim that the
-population regime is the primary repair of the 2016 question; see §8._
+force equal length) and then the equal-length part via the classical circular
+`q`-gram characterization, here pinned to Bresler–Bresler–Tse 2013, Theorem 3
+at `K = L−1`; it records the sharpness of the hypotheses and one
+strand-convention boundary. It is **not** a claim that the population regime is
+the primary repair of the 2016 question; see §8._
 
 _Reproduction: `python3 scripts/verify_population_identifiability.py`
 (self-contained, deterministic, exact `fractions.Fraction`/integer arithmetic,
@@ -217,17 +218,25 @@ Theorem P reduces the population question to the case `|T| = |S|`,
 `d_T = d_S`. There, `p_T = p_S` is just equality of `L`-mer multisets, and the
 statement "the `L`-mer multiset determines an admissible word up to cyclic
 shift" is the repository's **Conjecture 4**
-(`mathematics/bridging-and-spectrum-uniqueness.md` §5), i.e. the circular
-special case of the Ukkonen 1992 / Pevzner 1995 `q`-gram characterization
-(post-2016 restatement: Çelikkanat–Masegosa–Nielsen, NeurIPS 2024, Theorem 3.1,
-whose obstructions (2)–(3) are exactly interleaved pairs and triples of
-`(L−1)`-mers — the objects `WEAK` excludes).
+(`mathematics/bridging-and-spectrum-uniqueness.md` §5). It is the `K = L−1`
+instance of the classical Ukkonen 1992 / Pevzner 1995 `q`-gram characterization
+in the accepted maximal-repeat restatement of **Bresler–Bresler–Tse 2013,
+Theorem 3** (`K`-mer graph from the `(K+1)`-spectrum; unique Eulerian cycle iff
+there is no triple or interleaved repeat of length `≥ K`). Bresler–Bresler–Tse
+define repeats as *maximal* and the length of a pair of interleaved repeats as
+the shorter constituent, so `WEAK = TRF ∧ ILF` is literally "no triple or
+interleaved repeat of length `≥ L−1`"; the circular reading is cyclic-shift
+equivalence. See
+`docs/literature/circular-qgram-identifiability-and-Is-threshold-2026-09-21.md`.
 
-Status of this step: strong finite evidence (`123 906` same-length admissible
-cases plus randomized checks, zero counterexamples, recorded in the repository)
-and a heuristic reduction, but **not yet pinned to a circular primary statement
-and not kernel-checked**. The note therefore states the equal-length conclusion
-conditionally, while the cross-length conclusion is unconditional.
+Status of this step: **source theorem** (Bresler–Bresler–Tse 2013, Thm 3 at
+`K = L−1`), modulo the circular Eulerian-cycle reading and the condensed-graph
+nuance recorded in that note. The earlier anchor on Çelikkanat et al. (2024,
+Theorem 3.1) was a linear, non-maximal restatement and is not used here; the
+`123 906`-instance exhaustive check (re-run 2026-09-21, 0 ambiguous) is
+corroboration. Primitivity is not required for this equal-length step; it is
+needed only for the cross-length Theorem P. The equal-length conclusion is
+therefore unconditional; the cross-length conclusion was already unconditional.
 
 Here the interleaved half `ILF` is genuinely needed: the same-length pair
 `AABABB` / `AABBAB` (`L = 3`) is primitive and `TRF` (no long triple repeat) but
@@ -235,7 +244,7 @@ not `ILF`, has the same `L`-mer spectrum, and the two are not rotations. So
 `TRF` alone does not force equal-length uniqueness, while `WEAK = TRF ∧ ILF`
 is exactly the classical obstruction-exclusion hypothesis.
 
-**Claim (conditional on the classical circular characterization).** For
+**Claim (source theorem; Bresler–Bresler–Tse 2013, Thm 3 at `K = L−1`).** For
 primitive `WEAK`-admissible circular genomes on the oriented panel, equal
 population read distributions imply cyclic-shift equivalence.
 
@@ -311,9 +320,10 @@ the exact words and the exact class spectrum._
   nothing here asserts it.
 - **Non-claims.** No claim about the fixed-`N` binomial objective beyond
   Proposition 1; no claim about the §6.2 flow-feasible candidate class; no claim
-  that the classical circular `q`-gram characterization is new or that it is
-  fully settled; no claim about non-uniform or non-i.i.d. sampling. The
-  equal-length step is conditional as stated in §5.
+  about non-uniform or non-i.i.d. sampling. The equal-length step is attributed
+  to Bresler–Bresler–Tse 2013, Theorem 3 (`K = L−1`) under the circular
+  Eulerian-cycle reading; the source-fidelity discussion and residual limits are
+  in `docs/literature/circular-qgram-identifiability-and-Is-threshold-2026-09-21.md`.
 - **Concurrent-work reconciliation (named branch artifacts, not links).** The
   independent synthesis packet `docs/synthesis-finite-rows-and-repairs-2026-09-21.md`
   states the same population consistency (its Lemma 4.1) and the same cross-length
@@ -356,7 +366,7 @@ and Theorem P are proved above, and A and F are proved (Proposition 1; §6.3).
 | Proposition 1: infinite-read spectrum optimum is `d_S` | **Proven** | Gibbs/KL |
 | Lemma L*: primitive `TRF` ⇒ `(L−1)`-multiplicity `≤ 2` | **Proven** + bounded check | maximal-extension triple-repeat argument |
 | Theorem P: primitive `TRF` + proportional spectra ⇒ `c = 1` | **Proven** + bounded check | Lemma L* + forced Eulerian circuit |
-| Equal length ⇒ cyclic shift (oriented) | **Conditional** on classical circular `q`-gram characterization | Ukkonen 1992 / Pevzner 1995; Çelikkanat et al. 2024 Thm 3.1; repo Conjecture 4 |
+| Equal length ⇒ cyclic shift (oriented) | **Source theorem** (circular Eulerian-cycle reading) | Bresler–Bresler–Tse 2013, Thm 3 at `K=L−1` (maximal-repeat convention); `docs/literature/circular-qgram-identifiability-and-Is-threshold-2026-09-21.md` |
 | `TRF` alone is not enough for equal length | **Refuted** | `AABABB` / `AABBAB`, `L=3` (fail `ILF`) |
 | Primitivity necessary | **Refuted without it** | `AAB` / `AABAAB`, `L=3` |
 | Candidate admissibility necessary | **Refuted without it** | `AAAB` / `AAAABAAB`, `L=3` |
@@ -372,7 +382,7 @@ and Theorem P are proved above, and A and F are proved (Proposition 1; §6.3).
 | `I_s` (coverage, all-bridged triples, bridged interleaved); circular truth; cyclic-shift target | Shomorony, Kim, Courtade, Tse, *Bioinformatics* 32(17):i494–i502, 2016, Eq. (1); [`bridging-source-semantics.md`](bridging-source-semantics.md) |
 | Repeat / triple repeat / interleaving / maximality / strict bridging | Bresler, Bresler, Tse, *BMC Bioinformatics* 14(Suppl 5):S18, 2013 |
 | Likelihood depends on candidate through length and `L`-mer spectrum | Medvedev, Brudno, *J. Comput. Biol.* 16(8), 2009, §6.1; [`ml-formalization-contract.md`](ml-formalization-contract.md) |
-| Circular `q`-gram characterization | Ukkonen, *Theoret. Comput. Sci.* 92(1):191–211, 1992; Pevzner, *Algorithmica* 13(1–2):77–105, 1995; Çelikkanat, Masegosa, Nielsen, NeurIPS 2024, Thm 3.1 (arXiv:2411.02125) |
+| Circular `q`-gram characterization (used here) | Bresler, Bresler, Tse, *BMC Bioinformatics* 14(Suppl 5):S18, 2013, Thm 3 (maximal repeats; `K = L−1`); origin: Ukkonen, *Theoret. Comput. Sci.* 92(1):191–211, 1992; Pevzner, *Algorithmica* 13(1–2):77–105, 1995; linear restatement: Çelikkanat, Masegosa, Nielsen, NeurIPS 2024, Thm 3.1 (arXiv:2411.02125). See [`docs/literature/circular-qgram-identifiability-and-Is-threshold-2026-09-21.md`](literature/circular-qgram-identifiability-and-Is-threshold-2026-09-21.md) |
 | Full-read reduction (`I_s` shadow = `WEAK`) | repository derivation; [`issue48-intrinsic-admissibility-counterexample.md`](issue48-intrinsic-admissibility-counterexample.md) §3 |
 | Issue #48 (intrinsic candidate checks; optional population question) | GitHub issue #48; [`issue48-intrinsic-candidate-checks.md`](issue48-intrinsic-candidate-checks.md) |
 | Issue #45 (population / infinite-read repair) | GitHub issue #45 |
