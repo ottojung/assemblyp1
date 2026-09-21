@@ -14,18 +14,22 @@ without repository-specific absolute paths. From the repository root:
 sh paper/build.sh
 \end{verbatim}
 
-The script enters a Guix shell described by \texttt{paper/manifest.scm} and runs
-\texttt{latexmk} with \texttt{pdflatex} and \texttt{biber}, crossing references
-and the bibliography as needed. It writes \texttt{paper/main.pdf} and the
-usual intermediate files, which are ignored by version control. The direct
-command is equivalent to:
+The script changes into \texttt{paper/}, creates or reuses a local Guix profile
+at \texttt{paper/.guix-profile} from \texttt{manifest.scm}, sources that
+profile, and runs \texttt{latexmk} with \texttt{pdflatex} and \texttt{biber},
+crossing references and the bibliography as needed. It writes
+\texttt{paper/main.pdf} and the usual intermediate files, which are ignored by
+version control.
+
+As an alternative to the local-profile script, the manifest can be used with an
+ephemeral Guix shell. From inside \texttt{paper/}, run:
 
 \begin{verbatim}
-guix shell -m paper/manifest.scm -- \
+guix shell -m manifest.scm -- \
   latexmk -pdf -interaction=nonstopmode -halt-on-error main.tex
 \end{verbatim}
 
-run from inside \texttt{paper/}. No absolute path appears in the sources.
+No absolute path appears in the sources.
 
 \subsection{Repository verification artifacts}
 
