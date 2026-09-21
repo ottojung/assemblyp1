@@ -1,9 +1,10 @@
 # Uniform strand conventions and the bridging-to-ML frontier
 
 _Status: independent from-scratch computation + source reading, 2026-09-20;
-reconciled with `origin/main` (`8b2f0fc`, the merge of PR #44's §6.1
-index-orientation resolution and PR #36's conclusion-semantics work) on
-2026-09-20. All claims are labelled **source fact**, **mathematical argument**,
+reconciled with `origin/main` (`cf6c357`, which adds the strict oriented
+single-strand §6.2 rigidity theorem on top of `8b2f0fc`'s §6.1
+index-orientation and conclusion-semantics work) on 2026-09-21. All claims are
+labelled **source fact**, **mathematical argument**,
 **verified computation**, **bounded computation**, or **open**. This note does
 not settle the Shomorony et al. (2016) open question; it isolates exactly which
 strand convention each existing witness needs and records the bounded-search
@@ -14,11 +15,13 @@ fused (see §1.3): the repository's **exact candidate-intrinsic multinomial**
 (Variant E, the exact global read-count likelihood with the candidate's own
 length `N(D)`) and the **literal MB09 §6.1 separable fixed-`N` binomial
 approximation** (Variant A, `N(D)` replaced by an externally supplied genome
-size `N`). Every witness and bounded-search table below is computed under the
-exact candidate-intrinsic multinomial unless it explicitly says otherwise; the
-bounded searches are **not** run under the fixed-`N` binomial reading. The
-objective is not attributed to MB09 §6.1 as such; §6.1 is the source of the
-*approximation*, not of the exact multinomial. See
+size `N`). Both are objects in MB09 §6.1: the exact candidate-intrinsic
+multinomial is its first model, and the separable fixed-`N` binomial is the
+approximation the paper then adopts for the flow algorithm. Neither is called
+"the MB09 §6.1 objective" without qualification or substituted for the other.
+Every witness and bounded-search table below is computed under the exact
+candidate-intrinsic multinomial unless it explicitly says otherwise; the bounded
+searches are **not** run under the fixed-`N` binomial reading. See
 [`../ml-formalization-contract.md`](../ml-formalization-contract.md) (Variants E
 and A), [`medvedev-brudno-candidate-class.md`](medvedev-brudno-candidate-class.md)
 §1-2, [`mb-formulation-referent-reconciliation.md`](mb-formulation-referent-reconciliation.md)
@@ -58,16 +61,21 @@ exits non-zero on any failed assertion._
    *is* the uniform-convention witness the `AAATAT` pair is often mistaken
    for. [verified computation; mathematical argument]
 
-3. **Under single-strand semantics together with the §6.2 spelled-circuit
-   support condition, no same-length counterexample exists in the searched
-   scope under the exact candidate-intrinsic multinomial.** Zero at binary
+3. **Under strict single-strand semantics together with the §6.2
+   spelled-circuit support condition, no same-length counterexample exists —
+   and this is now a theorem on `main`, not merely a bounded search.** The
+   bounded search recorded here is zero at binary
    `(G,L) ∈ {(5,3),(6,3),(6,4),(7,3)}` with start
    multiplicity up to `4`, and at ternary/quaternary `(5,3),(6,3)` up to
-   multiplicity `2`. This extends the single-cell control on `main`
-   (`(6,3)`, multiplicity `2`) and explains why: §6.2 forces every oriented
-   window type of the truth to be observed, which removes the
-   reverse-complement multiplicity that the `AAATAT` witness uses.
-   [bounded computation]
+   multiplicity `2`. `main`'s
+   [`oriented-se62-rigidity-theorem.md`](oriented-se62-rigidity-theorem.md)
+   proves the general statement: under `I_s` (in fact only its triple-repeat
+   clause) the truth's spectrum is the unique positive circulation of total
+   `G` on its window-support graph, so every same-length §6.2 spelled
+   candidate ties the truth under both objectives, for every `G`, `L`, and
+   alphabet. §6.2 forces every oriented window type of the truth to be
+   observed, which removes the reverse-complement multiplicity that the
+   `AAATAT` witness uses. [theorem on `main`; bounded computation here]
 
 4. **The molecule (double-strand, reverse-complement-collapsed) convention
    reproduces `main`'s witness and admits larger ones.** Beyond `main`'s
@@ -252,12 +260,19 @@ under the exact candidate-intrinsic multinomial in the following scopes:
 | `{A,C,T}` | 6 | 3 | 2 | 12024 | **0** |
 | `{A,C,G,T}` | 5 | 3 | 2 | 7376 | **0** |
 
-These are exhaustive within their stated scope and are **evidence, not proof of
-absence**. Because the search imposes only the necessary support condition (not
-the full bidirected-circuit/transitive-reduction test), "zero under support
-equality" implies zero under the stronger §6.2 spelled-circuit test as well.
+These scopes are exhaustive within their stated bounds and were recorded here as
+evidence before `main` proved the general statement. `main`'s
+[`oriented-se62-rigidity-theorem.md`](oriented-se62-rigidity-theorem.md) now
+proves that under `I_s` and the §6.2 support condition no strict same-length
+counterexample exists for any `G`, `L`, or alphabet, under the exact
+candidate-intrinsic multinomial and the fixed-`N` §6.1 binomial alike; the
+bounded search here is corroborating evidence for the listed scopes, not the
+proof. Because the search imposes only the necessary support condition (not the
+full bidirected-circuit/transitive-reduction test), "zero under support
+equality" also implies zero under the stronger §6.2 spelled-circuit test.
 These searches use only the exact candidate-intrinsic multinomial; the literal
-fixed-`N` binomial reading is not searched. [verified computation, bounded]
+fixed-`N` binomial reading is not searched. [theorem on `main`; verified
+computation, bounded here]
 
 This is the sharp contrast with the molecule convention: collapse of
 `TAT ~ ATA` is not a presentational choice here, it is the mechanism that
@@ -340,16 +355,17 @@ a genuinely different behavior from the molecule convention, and it means the
 | MB09 read types are reverse-complement molecules with per-vertex lower bound `1` | **source fact** |
 | `AAATAT → AAAAAT` needs `TAT ~ ATA` collapse; single-strand exact-multinomial ratio is `0` (fixed-`N` binomial ratio also `0`) | **verified computation** |
 | `AAATT → AAAAT` is a strict uniform single-strand sequence-level counterexample, exact-multinomial ratio `2` (fixed-`N` binomial ratio `1125/512`) | **verified computation** |
-| No uniform single-strand §6.2 same-length counterexample in the scopes of §3.2, under the exact candidate-intrinsic multinomial | **bounded computation** (exhaustive in scope, not a proof) |
+| No strict single-strand §6.2 same-length counterexample, any `G`, `L`, Σ, under either objective | **mathematical proof on `main`** ([`oriented-se62-rigidity-theorem.md`](oriented-se62-rigidity-theorem.md)); the bounded search here corroborates the scopes of §3.2 |
 | Molecule §6.2 has exact-multinomial same-length witnesses at `(6,3)` and `(8,3)` | **bounded computation** (the `(6,3)` one is kernel-checked on `main`) |
 | Bresler 2G remap has no exact-multinomial counterexample in the scopes of §5, and is `I_s`-unsatisfiable at `G = 3,5` | **bounded computation** |
 | Which strand convention the 2016 open question intends | **open** (source does not say) |
-| A proof that uniform single-strand §6.2 always makes the truth a maximizer | **open** — no proof and no counterexample found |
+| A proof that uniform single-strand §6.2 always makes the truth a maximizer | **no longer open on `main`**: the rigidity theorem proves the same-length case for all `G`, `L`, Σ; the variable-length case remains outside its scope |
 
 ### What is *not* established
 
-- The single-strand §6.2 zero is not a theorem; it is exhaustive only over the
-  stated finite scopes and alphabets.
+- The single-strand §6.2 same-length zero is proved on `main` (under `I_s` and
+  the §6.2 support condition, for all `G`, `L`, Σ); this note's bounded search is
+  only corroborating evidence for the listed scopes and is not the proof.
 - The molecule `G = 8` witness has not been validated against the full
   bidirected graph / transitive-reduction certificate.
 - The Bresler remap search used a candidate class of doubled strands `v ·
@@ -376,6 +392,9 @@ a genuinely different behavior from the molecule convention, and it means the
   (Variant E vs Variant A), [`medvedev-brudno-candidate-class.md`](medvedev-brudno-candidate-class.md),
   [`mb-formulation-referent-reconciliation.md`](mb-formulation-referent-reconciliation.md),
   [`mb09-se61-index-orientation-resolution.md`](mb09-se61-index-orientation-resolution.md).
+- `main` single-strand §6.2 rigidity theorem (the same-length zero as a proof,
+  not evidence): [`oriented-se62-rigidity-theorem.md`](oriented-se62-rigidity-theorem.md)
+  and `scripts/verify_oriented_se62_rigidity.py`.
 
 Primary sources. Guy Bresler, Ma'ayan Bresler, David Tse, "Optimal assembly for
 high throughput shotgun sequencing," *BMC Bioinformatics* 14(Suppl 5):S18, 2013,

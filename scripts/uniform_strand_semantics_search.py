@@ -14,9 +14,11 @@ Two strand conventions are implemented end-to-end, never mixed:
       read type = reverse-complement class {w, revcomp(w)};
       candidate genome = circular string, spectrum grouped by molecule class.
 
-Objective attribution (important).  The note and this script must not attribute
-the repository's objective to Medvedev-Brudno (2009) §6.1 as such.  Current
-`main` keeps two objectives apart:
+Objective attribution (important).  The note and this script keep MB09 §6.1's
+first model (the exact candidate-intrinsic multinomial) apart from the separable
+fixed-`N` binomial approximation that §6.1 then adopts; neither is called "the
+MB09 §6.1 objective" without qualification.  Current `main` keeps the two
+objectives apart:
 
   * EXACT CANDIDATE-INTRINSIC MULTINOMIAL (repository Variant E).  The exact
     global read-count likelihood
