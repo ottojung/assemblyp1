@@ -152,11 +152,15 @@ source definitions, not quoted.
 | 3 | `STRONG`+prim, free | `AABB` | 4 | 3 | `(0,0,3)` | `AAB` | 3 | yes | yes | `64/27` |
 | 4 | `STRONG`+prim, free | `AABBC` | 5 | 3 | `(0,3)` | `AABC` | 4 | yes | yes | `25/16` |
 | 5 | `WEAK` (non-vacuous `I_s`), free | `ABACABC` | 7 | 3 | `(1,1,1,3,6)` | `ABAC` | 4 | yes | yes | `16807/4096` |
+| 6 | `STRONG`+prim, non-vacuous `I_s`, free | `AABACC` | 6 | 3 | `(0,2,5)` | `AABAC` | 5 | yes | yes | `216/125` |
 
-In rows 2–4 the truth is primitive and `STRONG`, so it lies in the strongest
-candidate class; in row 1 the truth is primitive and `WEAK` but not `STRONG`
-(and the truth of row 5 is primitive and `WEAK`, not `STRONG`). In every row the
-competitor is primitive and `STRONG`,
+In rows 2–4 and 6 the truth is primitive and `STRONG`, so it lies in the
+strongest candidate class; in row 1 the truth is primitive and `WEAK` but not
+`STRONG` (and the truth of row 5 is primitive and `WEAK`, not `STRONG`). Row 6
+additionally has a non-vacuous `I_s` (a bridged length-`1` triple repeat of `A`
+at starts `0,1,3`), so it refutes the combined strongest form: non-vacuous
+source `I_s` **and** `STRONG`+primitive truth **and** `STRONG`+primitive
+competitor. In every row the competitor is primitive and `STRONG`,
 hence also `WEAK`; the observed read types all occur in both genomes (the
 ratios are finite and `> 1`).
 

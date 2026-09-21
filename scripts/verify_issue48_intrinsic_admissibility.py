@@ -378,6 +378,11 @@ def main():
     # Non-vacuous I_s truth (bridged triple + bridged interleaved pair).
     ok &= verify("non-vacuous I_s (ABACABC->ABAC)", "ABACABC", "ABAC",
                  [1, 1, 1, 3, 6], 3, "STRONG", None)
+    # Non-vacuous I_s truth that is *also* STRONG and primitive: the strongest
+    # combined form (from the concurrent issue48-intrinsic-candidate-checks
+    # packet, independently reproduced here).
+    ok &= verify("non-vacuous I_s + STRONG truth (AABACC->AABAC)", "AABACC",
+                 "AABAC", [0, 2, 5], 3, "STRONG", Fraction(216, 125))
 
     if args.search:
         print("=" * 64)
