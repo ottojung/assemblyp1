@@ -75,8 +75,12 @@ Two boundaries are emphasized:
 1. **Candidate length.** `|D| = 6 ≠ N = 5`. Section 6.2 does not constrain the
    candidate-flow length; `N` enters only as the binomial denominator and the
    domain bound `d_i ≤ N` (both satisfied: `max d = 2 < 5`). If one *adds* the
-   fixed-length restriction `|D| = N`, this witness does not apply and that
-   sub-case is left **open** here (and was open in the cited branch).
+   fixed-length restriction `|D| = N`, this witness does not apply. That
+   sub-case is now **refuted under the source per-vertex reading** by the
+   same-length spelled witness (`S = AAATAT`, `D = AAAAAT`, `G = 6`, ratio
+   `5`); see
+   [`section62-same-length-bidirected-counterexample.md`](section62-same-length-bidirected-counterexample.md).
+   Under the per-occurrence strengthening it remains open in scope (§7, §10.2).
 2. **Strand reading.** The witness uses the involution `A ↔ T`. Under the
    single-strand reading the bounded search found no non-degenerate witness in
    the searched scope (§6); the mechanism in §4 needs the reverse-complement
