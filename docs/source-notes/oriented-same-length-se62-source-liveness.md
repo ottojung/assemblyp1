@@ -292,7 +292,10 @@ Repository: [`conclusion-semantics-determination.md`](conclusion-semantics-deter
 (§6.2 index = molecule classes); [`oriented-se62-rigidity-theorem.md`](oriented-se62-rigidity-theorem.md)
 (rigidity theorem); [`uniform-strand-convention-search-2026-09-20.md`](uniform-strand-convention-search-2026-09-20.md)
 (witness strand placement); [`same-length-witnesses-candidate-set-inclusion.md`](same-length-witnesses-candidate-set-inclusion.md)
-(negative transfer).
+(negative transfer); [`candidate-universe-source-live-resolution.md`](candidate-universe-source-live-resolution.md)
+(this branch; separates the resolved candidate-universe axis from the objective,
+read-type, and algorithmic axes, and shows that same-length does not restore
+well-posedness).
 
 Primary: Ilan Shomorony, Samuel H. Kim, Thomas A. Courtade, David N. C. Tse,
 *Information-optimal genome assembly via sparse read-overlap graphs*,
