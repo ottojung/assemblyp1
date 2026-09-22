@@ -168,4 +168,39 @@ The original 2016 sentence remains source-ambiguous enough that AssemblyP1 does 
 The project now has precise finite positive/negative results and a clean repaired population theorem; remaining work is source fidelity, mechanization of mature results, and publication-quality exposition.
 \end{frame}
 
+\appendix
+\begin{frame}{Backup: the historical model is deliberately idealized}
+\begin{itemize}
+\item The genome is a \textbf{circular} string over A/C/G/T.
+\item Every read has the same length $L$ and is sampled from a uniformly random start position.
+\item Reads are \textbf{error-free} in the model studied by the 2016 question.
+\item Circular rotation therefore represents the same oriented genome.
+\end{itemize}
+\vfill
+\small These assumptions make the information-theoretic question crisp; they are not a claim that real sequencing data look this clean.
+\end{frame}
+
+\begin{frame}{Backup: three primary sources anchor the story}
+\small
+\textbf{Medvedev \& Brudno (2009).} ``Maximum Likelihood Genome Assembly.'' \emph{Journal of Computational Biology} 16(8), 1101--1116.\\
+\texttt{doi:10.1089/cmb.2009.0047}\par\medskip
+
+\textbf{Bresler, Bresler \& Tse (2013).} ``Optimal assembly for high throughput shotgun sequencing.'' \emph{BMC Bioinformatics} 14(Suppl 5):S18.\\
+\texttt{doi:10.1186/1471-2105-14-S5-S18}\par\medskip
+
+\textbf{Shomorony, Kim, Courtade \& Tse (2016).} ``Information-optimal genome assembly via sparse read-overlap graphs.'' \emph{Bioinformatics} 32(17), i494--i502.\\
+\texttt{doi:10.1093/bioinformatics/btw450}
+\end{frame}
+
+\begin{frame}{Backup: evidence levels are intentionally different}
+\begin{tabular}{p{.25\textwidth}p{.65\textwidth}}
+\textbf{Search} & Finds examples or suggests patterns; bounded search is not a proof.\\[.7em]
+\textbf{Exact script} & Removes floating-point doubt for a finite calculation.\\[.7em]
+\textbf{Mathematical proof} & Establishes a general implication from stated assumptions.\\[.7em]
+\textbf{Lean proof} & The formal statement and proof term are checked by Lean's kernel.\\
+\end{tabular}
+\vfill
+\small AssemblyP1 keeps these labels separate: the repaired population theorem is presently source-supported mathematics, while selected finite counterexamples are kernel-checked.
+\end{frame}
+
 \end{document}
