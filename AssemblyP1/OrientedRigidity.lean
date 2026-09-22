@@ -1,46 +1,43 @@
 import Mathlib
 
 /-!
-# Oriented same-length rigidity (strict single-strand Section 6.2)
+# Abstract short-repeat circulation rigidity (issue #66)
 
-This file formalizes the project's central positive finite theorem (issue #63,
-Priority 1) ∈ the smallest clean abstraction faithful to the current paper
-proof ∈ `docs/source-notes/oriented-se62-rigidity-theorem.md`:
+This file formalizes the source-independent combinatorial core of the
+oriented same-length rigidity argument: Theorem A of
+`docs/source-notes/oriented-se62-rigidity-theorem.md`, as scoped by
+issue #66.
 
-> Under strict oriented read types, if the truth admits an `I_s` read
-> realization, then its length-`L` spectrum is the unique positive circulation
-> of total genome length on its window-support graph.
+> For a finite directed support graph with edge set `E`, let `A : E → ℕ`
+> be a positive balanced circulation. Assume the support graph is
+> strongly connected, every vertex has truth vertex-throughput
+> `out_A(v) = in_A(v) ≤ 2`, and `B : E → ℕ` is another positive balanced
+> circulation with `∑ e, B e = ∑ e, A e`. Then `B = A`.
 
-Consequently every same-length oriented §6.2 spelled candidate has the truth's
-spectrum, every spectrum/count-based likelihood ratio is exactly `1`, and no
-strict same-length counterexample exists — for any `G`, `L`, or alphabet.
+## What is proved in Lean
 
-## What is proved ∈ Lean vs. cited
+* `unique_positive_circulation`: the abstract uniqueness theorem above,
+  via the difference circulation `δ = B - A` over `ℤ` (negative set is a
+  union of incidence-closed components, hence empty or everything;
+  strong connectivity plus zero total forces it empty).
+* `strong_to_supportConnected`: directed strong connectivity implies the
+  undirected incidence-connectivity consequence consumed by the proof.
 
-* **Lean-checked:** the short-repeat rigidity core (`unique_positive_circulation`,
-  Theorem A of the note: a node-outflow bound of `2` forces uniqueness of the
-  positive circulation of fixed total on a connected support); its application
-  to circular-word spectra (`rigidity_same_spectrum`); the likelihood-tie
-  corollaries; rotation uniqueness **conditional** on an explicit
-  complete-spectrum hypothesis (`rigidity_up_to_rotation`).
-* **Explicit hypotheses (trust boundary), each citing the note:**
-  - `hAbal`: the truth spectrum is balanced (note §2, Fact 1);
-  - `hstrong`: the window support is strongly connected (note §2, Fact 2,
-    strengthened to directed reachability per issue #66);
-  - `hcap`: every `(L-1)`-mer occurs at most twice. By note §3 (Fact D,
-    Lemmas B and C) this follows from the triple-repeat clause of `I_s`, in
-    both the primitive and the periodic cases. The word combinatorics of that
-    implication is cited, not re-proved here;
-  - `bbt`: the external Bresler–Bresler–Tse complete-spectrum uniqueness
-    theorem, exposed as an explicit hypothesis per issue #63 (full
-    formalization of BBT is out of scope).
-* **Deliberately not formalized here:** the `I_s` bridging predicates
-  themselves, the Medvedev–Brudno likelihood layers, tie/equivalence source
-  semantics, and bounded-search minimality results.
+## Explicit hypotheses (trust surface)
 
-The rigidity argument proves uniqueness on the full set of positive
-circulations, so it covers the Eulerian single-circuit spelled candidates
-a fortiori (note §2, Reduction R).
+`hmem` (edges land in the node set), `hApos` / `hBpos` (positivity),
+`hAbal` / `hBbal` (balance), `hAtot` / `hBtot` (equal totals),
+`hcap` (truth vertex-throughput bound `out_A(v) ≤ 2`; together with
+balance this is `out_A(v) = in_A(v) ≤ 2`), `hstrong` (directed strong
+connectivity of the support).
+
+## Deliberately not formalized here
+
+Per issue #66 scope discipline: no genomes, reads, repeat predicates,
+`I_s`, likelihoods, or BBT assumptions. The circular-spectrum adapter
+and the repeat-theory / `I_s` multiplicity-bound adapter are separate
+follow-up packets. The full word-layer development previously on this
+branch is preserved on `agent/formal-rigidity-word-layer`.
 -/
 
 namespace AssemblyP1.OrientedRigidity
@@ -92,7 +89,7 @@ theorem strong_to_supportConnected
     SupportConnected tail head edges := by
   intro N hNsub hNe hNne
   by_contra hcon
-  push_neg at hcon
+  push Not at hcon
   -- `N` is closed under incidence: every support edge sharing a vertex
   -- with a member of `N` is itself in `N`.
   have hclosed : ∀ e ∈ N, ∀ e' ∈ edges,
@@ -518,248 +515,5 @@ theorem unique_positive_circulation
     omega
 
 end AbstractCirculation
-
-section WordLayer
-
-/-- Circular symbol access for a length-`G` circular word. -/
-def cyc {α : Type} {G : ℕ} (hG : 0 < G) (S : Fin G → α) (i : ℕ) : α :=
-  S ⟨i % G, Nat.mod_lt _ hG⟩
-
-/-- Oriented length-`L` circular window at start `r` (strict single-strand
-read type: no reverse-complement collapse). -/
-def window {α : Type} {G L : ℕ} (hG : 0 < G) (S : Fin G → α) (r : Fin G) :
-    Fin L → α :=
-  fun d => cyc hG S (r.val + d.val)
-
-/-- Length-`(L-1)` circular window at start `r` (de Bruijn node). -/
-def nodeWindow {α : Type} {G L : ℕ} (hG : 0 < G) (S : Fin G → α) (r : Fin G) :
-    Fin (L - 1) → α :=
-  fun d => cyc hG S (r.val + d.val)
-
-/-- Length-`L` spectrum: occurrence counts of each window. -/
-def specCount {α : Type} [DecidableEq α] {G L : ℕ} (hG : 0 < G) (S : Fin G → α)
-    (w : Fin L → α) : ℕ :=
-  (Finset.univ.filter (fun r : Fin G => window hG S r = w)).card
-
-/-- Window support: the observed read-type set. -/
-def support {α : Type} [DecidableEq α] {G L : ℕ} (hG : 0 < G) (S : Fin G → α) :
-    Finset (Fin L → α) :=
-  Finset.univ.image (window hG S)
-
-/-- Node set: the distinct `(L-1)`-windows. -/
-def genomeNodes {α : Type} [DecidableEq α] {G L : ℕ} (hG : 0 < G)
-    (S : Fin G → α) : Finset (Fin (L - 1) → α) :=
-  Finset.univ.image (nodeWindow hG S)
-
-/-- Edge tail: length-`(L-1)` winPrefix. -/
-def winPrefix {α : Type} {L : ℕ} (w : Fin L → α) : Fin (L - 1) → α :=
-  fun d => w ⟨d.val, by have := d.isLt; omega⟩
-
-/-- Edge head: length-`(L-1)` winSuffix. -/
-def winSuffix {α : Type} {L : ℕ} (w : Fin L → α) : Fin (L - 1) → α :=
-  fun d => w ⟨d.val + 1, by have := d.isLt; omega⟩
-
-/-- Start `r + 1` as a start of the circular word. -/
-private def nextStart {G : ℕ} (hG : 0 < G) (r : Fin G) : Fin G :=
-  ⟨(r.val + 1) % G, Nat.mod_lt _ hG⟩
-
-/-- The winPrefix of a window is the node window at the same start. -/
-private lemma winPrefix_window {α : Type} {G L : ℕ} (hG : 0 < G) (S : Fin G → α)
-    (r : Fin G) :
-    winPrefix (window hG S r : Fin L → α) = nodeWindow hG S r := by
-  funext d
-  rfl
-
-/-- The winSuffix of a window is the node window at the next start. -/
-private lemma winSuffix_window {α : Type} {G L : ℕ} (hG : 0 < G) (S : Fin G → α)
-    (r : Fin G) :
-    winSuffix (window hG S r : Fin L → α) = nodeWindow hG S (nextStart hG r) := by
-  funext d
-  have hmod : ((r.val + 1) % G + d.val) % G = (r.val + (d.val + 1)) % G := by
-    rw [Nat.mod_add_mod]
-    congr 1
-    omega
-  unfold winSuffix window nodeWindow nextStart cyc
-  apply congrArg S
-  rw [Fin.mk.injEq]
-  exact hmod.symm
-
-/-- Support edges land ∈ the node set (the graph is well-formed). -/
-theorem mem_nodes_of_mem_support {α : Type} [DecidableEq α] {G L : ℕ} (hG : 0 < G)
-    (S : Fin G → α) (w : Fin L → α)
-    (hw : w ∈ support hG S) :
-    winPrefix w ∈ genomeNodes hG S ∧
-      winSuffix w ∈ genomeNodes hG S := by
-  simp only [support, Finset.mem_image] at hw
-  obtain ⟨r, _, rfl⟩ := hw
-  constructor
-  · rw [winPrefix_window]
-    exact Finset.mem_image.mpr ⟨r, Finset.mem_univ _, rfl⟩
-  · rw [winSuffix_window]
-    exact Finset.mem_image.mpr ⟨_, Finset.mem_univ _, rfl⟩
-
-/-- The truth spectrum is positive on its own support. -/
-theorem truth_pos_on_support {α : Type} [DecidableEq α] {G L : ℕ} (hG : 0 < G)
-    (S : Fin G → α) :
-    ∀ w : Fin L → α, w ∈ support hG S → 1 ≤ specCount hG S w := by
-  intro w hw
-  simp only [support, Finset.mem_image] at hw
-  obtain ⟨r, _, rfl⟩ := hw
-  have hmem : r ∈ Finset.univ.filter
-      (fun r' : Fin G => window hG S r' = (window hG S r : Fin L → α)) :=
-    Finset.mem_filter.mpr ⟨Finset.mem_univ _, rfl⟩
-  have hpos : 0 < specCount hG S (window hG S r : Fin L → α) :=
-    Finset.card_pos.mpr ⟨r, hmem⟩
-  omega
-
-/-- The truth spectrum totals to `G` over its support (fiber counting). -/
-theorem truth_total {α : Type} [DecidableEq α] {G L : ℕ} (hG : 0 < G)
-    (S : Fin G → α) :
-    ∑ w ∈ (support hG S : Finset (Fin L → α)), specCount hG S w = G := by
-  have hfib : ∀ w ∈ (support hG S : Finset (Fin L → α)),
-      (Finset.univ.filter (fun r : Fin G => window hG S r = w)).card =
-        specCount hG S w := fun _ _ => rfl
-  rw [← Finset.sum_congr rfl hfib]
-  have hmem : ∀ r ∈ (Finset.univ : Finset (Fin G)),
-      window hG S r ∈ (support hG S : Finset (Fin L → α)) := by
-    intro r _
-    exact Finset.mem_image.mpr ⟨r, Finset.mem_univ _, rfl⟩
-  have hcount := Finset.card_eq_sum_card_fiberwise hmem
-  rw [Finset.card_univ, Fintype.card_fin] at hcount
-  exact hcount.symm
-
-/-- **Main theorem (rigidity under the triple-repeat hypothesis).**
-If every `(L-1)`-mer occurs at most twice (`hcap` — the exact hypothesis
-discharged by note §3, Fact D with Lemmas B/C, from the triple-repeat clause
-of `I_s` ∈ both primitive and periodic cases), the window support is
-connected (`hstrong` — note §2, Fact 2, as directed strong connectivity), and the truth spectrum is balanced
-(`hAbal` — note §2, Fact 1), then every same-length spelled candidate
-(same support, positive balanced circulation of total `G`) has exactly the
-truth's spectrum. -/
-theorem rigidity_same_spectrum
-    {α : Type} [DecidableEq α] {G L : ℕ} (hG : 0 < G)
-    (S : Fin G → α)
-    (B : (Fin L → α) → ℕ)
-    (hBsup : ∀ w, w ∈ support hG S ↔ 0 < B w)
-    (hBbal : Balanced winPrefix winSuffix
-      (genomeNodes hG S) (support hG S) B)
-    (hBtot : ∑ w ∈ support hG S, B w = G)
-    (hAbal : Balanced winPrefix winSuffix
-      (genomeNodes hG S) (support hG S) (specCount hG S : (Fin L → α) → ℕ))
-    (hcap : ∀ k : Fin (L - 1) → α, k ∈ genomeNodes hG S →
-      ∑ w ∈ (support hG S).filter (fun w => winPrefix w = k),
-        specCount hG S w ≤ 2)
-    (hstrong : StronglyConnected winPrefix winSuffix
-      (genomeNodes hG S) (support hG S : Finset (Fin L → α)))
-    : ∀ w, B w = specCount hG S w := by
-  have hApos : ∀ w : Fin L → α, w ∈ support hG S → 1 ≤ specCount hG S w :=
-    truth_pos_on_support (L := L) hG S
-  have hAtot := truth_total (L := L) hG S
-  have hBpos : ∀ w ∈ support hG S, 1 ≤ B w := fun w hw => (hBsup w).mp hw
-  have hmemT : ∀ w : Fin L → α, w ∈ support hG S →
-      winPrefix w ∈ genomeNodes hG S ∧ winSuffix w ∈ genomeNodes hG S :=
-    mem_nodes_of_mem_support (L := L) hG S
-  have heq := unique_positive_circulation (winPrefix) (winSuffix)
-    (genomeNodes hG S) (support hG S) G (specCount hG S) B
-    hmemT hApos hBpos hAbal hBbal hAtot hBtot hcap hstrong
-  intro w
-  by_cases hw : w ∈ support hG S
-  · exact heq w hw
-  · have hB0 : B w = 0 := Nat.eq_zero_of_not_pos (fun h => hw ((hBsup w).mpr h))
-    have hA0 : specCount hG S w = 0 := by
-      have hemp : Finset.univ.filter (fun r : Fin G => window hG S r = w) = ∅ := by
-        rw [Finset.eq_empty_iff_forall_notMem]
-        intro r hr
-        apply hw
-        have hwr : window hG S r = w := (Finset.mem_filter.mp hr).2
-        rw [← hwr]
-        exact Finset.mem_image.mpr ⟨r, Finset.mem_univ _, rfl⟩
-      show (Finset.univ.filter (fun r : Fin G => window hG S r = w)).card = 0
-      rw [hemp, Finset.card_empty]
-    rw [hB0, hA0]
-
-/-- Cyclic-shift (rotation) equivalence of same-length circular genomes. -/
-def RotEquiv {α : Type} {G : ℕ} (hG : 0 < G) (D₁ D₂ : Fin G → α) : Prop :=
-  ∃ s : Fin G, ∀ i : Fin G, D₁ i = D₂ ⟨(i.val + s.val) % G, Nat.mod_lt _ hG⟩
-
-/-- **Rotation uniqueness, conditional on the external complete-spectrum
-theorem.** With the same hypotheses as `rigidity_same_spectrum`, plus the
-Bresler–Bresler–Tse complete-spectrum uniqueness input (`bbt`: equal
-length-`L` spectra determine the genome up to rotation — cited, not proved;
-formalizing BBT is out of scope per issue #63), every same-length spelled
-candidate is a rotation of the truth. Project reduction: Lean-checked;
-external BBT input: cited. -/
-theorem rigidity_up_to_rotation
-    {α : Type} [DecidableEq α] {G L : ℕ} (hG : 0 < G)
-    (S D : Fin G → α)
-    (hDsup : ∀ w : Fin L → α, w ∈ support hG S ↔ 0 < specCount hG D w)
-    (hDbal : Balanced winPrefix winSuffix
-      (genomeNodes hG S) (support hG S) (specCount hG D : (Fin L → α) → ℕ))
-    (hDtot : ∑ w ∈ (support hG S : Finset (Fin L → α)), specCount hG D w = G)
-    (hAbal : Balanced winPrefix winSuffix
-      (genomeNodes hG S) (support hG S) (specCount hG S : (Fin L → α) → ℕ))
-    (hcap : ∀ k : Fin (L - 1) → α, k ∈ genomeNodes hG S →
-      ∑ w ∈ (support hG S).filter (fun w => winPrefix w = k),
-        specCount hG S w ≤ 2)
-    (hstrong : StronglyConnected winPrefix winSuffix
-      (genomeNodes hG S) (support hG S : Finset (Fin L → α)))
-    (bbt : ∀ D₁ D₂ : Fin G → α,
-      (specCount hG D₁ : (Fin L → α) → ℕ) = specCount hG D₂ → RotEquiv hG D₁ D₂)
-    : RotEquiv hG D S := by
-  have hspec : ∀ w : Fin L → α, specCount hG D w = specCount hG S w :=
-    rigidity_same_spectrum hG S (specCount hG D)
-      hDsup hDbal hDtot hAbal hcap hstrong
-  exact bbt D S (funext hspec)
-
-/-- **Corollary (same-length likelihood tie).** Any objective depending only
-on the length-`L` spectrum and the observation ties the truth on the
-same-length slice — covering both the exact multinomial (candidate-intrinsic
-`N(D) = |D|`, same length so length factors cancel) and the fixed-`N` §6.1
-binomial objectives of the note. -/
-theorem spectrum_tie
-    {α : Type} [DecidableEq α] {G L : ℕ} (hG : 0 < G)
-    (obj : ((Fin L → α) → ℕ) → ℝ)
-    (S : Fin G → α)
-    (B : (Fin L → α) → ℕ)
-    (hBsup : ∀ w, w ∈ support hG S ↔ 0 < B w)
-    (hBbal : Balanced winPrefix winSuffix
-      (genomeNodes hG S) (support hG S) B)
-    (hBtot : ∑ w ∈ support hG S, B w = G)
-    (hAbal : Balanced winPrefix winSuffix
-      (genomeNodes hG S) (support hG S) (specCount hG S : (Fin L → α) → ℕ))
-    (hcap : ∀ k : Fin (L - 1) → α, k ∈ genomeNodes hG S →
-      ∑ w ∈ (support hG S).filter (fun w => winPrefix w = k),
-        specCount hG S w ≤ 2)
-    (hstrong : StronglyConnected winPrefix winSuffix
-      (genomeNodes hG S) (support hG S : Finset (Fin L → α)))
-    : obj B = obj (specCount hG S) := by
-  have hspec : ∀ w : Fin L → α, B w = specCount hG S w :=
-    rigidity_same_spectrum hG S B hBsup hBbal hBtot hAbal hcap hstrong
-  rw [funext hspec]
-
-/-- **Corollary (no strict same-length counterexample).** No same-length
-spelled candidate strictly improves on the truth under any spectrum-based
-objective, for any `G`, `L`, or alphabet. -/
-theorem no_strict_samelength_improvement
-    {α : Type} [DecidableEq α] {G L : ℕ} (hG : 0 < G)
-    (obj : ((Fin L → α) → ℕ) → ℝ)
-    (S : Fin G → α)
-    (B : (Fin L → α) → ℕ)
-    (hBsup : ∀ w, w ∈ support hG S ↔ 0 < B w)
-    (hBbal : Balanced winPrefix winSuffix
-      (genomeNodes hG S) (support hG S) B)
-    (hBtot : ∑ w ∈ support hG S, B w = G)
-    (hAbal : Balanced winPrefix winSuffix
-      (genomeNodes hG S) (support hG S) (specCount hG S : (Fin L → α) → ℕ))
-    (hcap : ∀ k : Fin (L - 1) → α, k ∈ genomeNodes hG S →
-      ∑ w ∈ (support hG S).filter (fun w => winPrefix w = k),
-        specCount hG S w ≤ 2)
-    (hstrong : StronglyConnected winPrefix winSuffix
-      (genomeNodes hG S) (support hG S : Finset (Fin L → α)))
-    : ¬ obj (specCount hG S) < obj B := by
-  rw [spectrum_tie hG obj S B hBsup hBbal hBtot hAbal hcap hstrong]
-  exact lt_irrefl _
-
-end WordLayer
 
 end AssemblyP1.OrientedRigidity
