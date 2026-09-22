@@ -26,10 +26,10 @@ jobs:
           pullAfterInstall: false
 
       - name: Build white paper
-        run: ./paper/build.sh
+        run: bash ./paper/build.sh
 
       - name: Build presentation
-        run: ./talk/build.sh
+        run: bash ./talk/build.sh
 
       - name: Upload white paper
         uses: actions/upload-artifact@v4
