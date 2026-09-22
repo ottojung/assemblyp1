@@ -1,0 +1,171 @@
+\documentclass[aspectratio=169]{beamer}
+\usepackage{tikz}
+\usetheme{default}
+\setbeamertemplate{navigation symbols}{}
+\title{When Reconstructible Does Not Mean Most Likely}
+\subtitle{Genome assembly, finite sampling, and a 2016 open question}
+\author{AssemblyP1}
+\date{}
+
+\newcommand{\genome}[1]{\texttt{#1}}
+
+\begin{document}
+\begin{frame}\titlepage\end{frame}
+
+\begin{frame}{Assembly is a reconstruction problem}
+\centering
+\Large Hidden DNA: \genome{ACGTTACGAT}\par\bigskip
+\normalsize Sequencing gives us many shorter pieces, not the source string.\par\medskip
+\genome{ACGTT}\qquad \genome{TTACG}\qquad \genome{ACGAT}\par\bigskip
+\alert{Goal: infer the circular source genome from the reads.}
+\end{frame}
+
+\begin{frame}{Without repeats, overlaps can tell a simple story}
+\centering
+\begin{tikzpicture}[font=\ttfamily]
+\node at (0,1.2) {ACGTT};
+\node at (1.2,.6) {GTTAC};
+\node at (2.4,0) {TACGA};
+\draw[->,thick] (.5,1) -- (1,.75);
+\draw[->,thick] (1.7,.4) -- (2.2,.15);
+\end{tikzpicture}
+\par\medskip
+\normalfont Overlap evidence links pieces into a consistent source.
+\end{frame}
+
+\begin{frame}{Repeats create forks: the same piece can fit twice}
+\centering
+\Large \genome{...A \alert{CGCG} T...}\qquad
+\genome{...G \alert{CGCG} C...}\par\bigskip
+\normalsize A read entirely inside the repeated block cannot tell which copy it came from.\par\medskip
+\alert{This is structural ambiguity, not a bad algorithm.}
+\end{frame}
+
+\begin{frame}{A bridged repeat carries context across the repeat}
+\centering
+\begin{tikzpicture}
+\draw[very thick] (0,0)--(10,0);
+\draw[very thick] (3,-.12) rectangle (6,.12);
+\node at (4.5,-.5) {repeat copy};
+\draw[very thick,->] (2,.55)--(7,.55);
+\node at (4.5,.9) {one read extends beyond both ends};
+\end{tikzpicture}
+\par\bigskip
+Bridging conditions were designed to rule out the repeat ambiguities that make assembly impossible.
+\end{frame}
+
+\begin{frame}{The 2016 question connected two different ideas}
+\Large
+\begin{center}
+structurally enough information to reconstruct
+\\[1em] $\Downarrow$ ? \\[1em]
+maximum likelihood chooses the true genome
+\end{center}
+\normalsize
+Shomorony et al. explicitly left this implication open, referring to the Medvedev--Brudno ML formulation.
+\end{frame}
+
+\begin{frame}{Maximum likelihood asks: which candidate best explains these counts?}
+\centering
+\Large Reads are sampled at random start positions.\par\bigskip
+\normalsize A candidate genome predicts probabilities for each read string.\par\medskip
+Observed multiplicities then give a likelihood score.\par\bigskip
+\alert{Important: ``can spell every observed read'' and ``assigns the highest probability to this sample'' are different tests.}
+\end{frame}
+
+\begin{frame}{The historical wording hides several distinct ML problems}
+\begin{itemize}
+\item Are read strings oriented, or collapsed with their reverse complements?
+\item Must candidates have the true genome length?
+\item Which Medvedev--Brudno likelihood/candidate formulation is intended?
+\item Does ``is the true sequence'' mean a maximizer, or the unique maximizer up to rotation?
+\end{itemize}
+\vfill
+\alert{AssemblyP1 split these choices instead of silently picking one.}
+\end{frame}
+
+\begin{frame}{Finite data gives both positive and negative answers}
+\begin{columns}[T]
+\column{.47\textwidth}
+\textbf{A strong positive case}\par\medskip
+Oriented reads + same-length candidates + the structural condition force the complete read spectrum. The truth is then uniquely determined up to circular rotation.
+\column{.47\textwidth}
+\textbf{Nearby failures}\par\medskip
+Allow variable candidate length, change strand semantics, or use other source-derived formulations, and explicit finite counterexamples appear.
+\end{columns}
+\vfill
+\alert{There is no single yes/no answer until the model is pinned down.}
+\end{frame}
+
+\begin{frame}{Why the same-length success is slightly suspicious}
+\centering
+\Large The assembler is being told the true target length.\par\bigskip
+\normalsize That removes an important degree of freedom from competing genomes.\par\medskip
+So the project asked whether candidate-checkable structural conditions could replace privileged knowledge of the answer.
+\end{frame}
+
+\begin{frame}{Intrinsic structural checks still do not cure finite sampling}
+\centering
+\Large Even when candidate genomes pass strong repeat/read-length checks,\par\medskip
+\alert{a finite random sample can accidentally favor the wrong frequency profile.}\par\bigskip
+\normalsize This isolates a second obstruction: sampling noise, distinct from repeat ambiguity.
+\end{frame}
+
+\begin{frame}{Population ML removes the sampling accident}
+\centering
+\Large Replace one finite draw by its exact read distribution.\par\bigskip
+\normalsize The expected log-likelihood is maximized exactly when the candidate predicts the same normalized read spectrum as the truth (Gibbs/KL).\par\bigskip
+\alert{Statistics is now clean; uniqueness becomes a combinatorial identifiability question.}
+\end{frame}
+
+\begin{frame}{Strongest current repaired result}
+\Large
+For oriented circular genomes that are
+\begin{itemize}
+\item primitive (not a whole-genome repetition), and
+\item P2/Ukkonen-admissible at the read length,
+\end{itemize}
+population ML uniquely recovers the true genome up to rotation.
+\vfill
+\normalsize The proof uses a P2-specific gcd/Eulerian argument plus the Bresler--Bresler--Tse complete-spectrum uniqueness theorem. This is source-supported mathematics; the full theorem is not yet kernel-checked in Lean.
+\end{frame}
+
+\begin{frame}{Computation found witnesses; Lean checks exact claims}
+\begin{columns}[T]
+\column{.47\textwidth}
+\textbf{Search}\par\medskip
+Scripts exhaust small genomes and samples to discover surprising candidates and likelihood inequalities.
+\column{.47\textwidth}
+\textbf{Verification}\par\medskip
+For selected finite witnesses, Lean proves the exact instance satisfies the formal assumptions and the claimed inequality.
+\end{columns}
+\vfill
+\alert{Testing suggests; exact arithmetic verifies a calculation; proof establishes a theorem; the Lean kernel checks a formal proof.}
+\end{frame}
+
+\begin{frame}{The research loop looked more like engineering than a single proof attempt}
+\centering
+\Large source reading $\rightarrow$ formal model $\rightarrow$ search\\[.6em]
+$\rightarrow$ counterexample/proof $\rightarrow$ audit $\rightarrow$ synthesis
+\par\bigskip
+\normalsize GitHub issues tracked research questions; parallel workers attacked independent uncertainties; failed arguments were preserved when they changed what should be tried next.
+\end{frame}
+
+\begin{frame}{What changed our understanding}
+\begin{itemize}
+\item Repeat bridging addresses \textbf{structural identifiability}.
+\item Maximum likelihood also depends on the \textbf{candidate model and finite frequencies}.
+\item Some finite formulations fail; a strict same-length oriented formulation succeeds.
+\item Removing privileged true-length knowledge exposes finite-sampling failures.
+\item Population ML cleanly separates statistical noise from spectrum identifiability.
+\end{itemize}
+\vfill
+\alert{The interesting result is the map of where the implication works, where it fails, and why.}
+\end{frame}
+
+\begin{frame}{Current frontier}
+The original 2016 sentence remains source-ambiguous enough that AssemblyP1 does not pretend one modern formulation is uniquely ``the'' historical conjecture.\par\bigskip
+The project now has precise finite positive/negative results and a clean repaired population theorem; remaining work is source fidelity, mechanization of mature results, and publication-quality exposition.
+\end{frame}
+
+\end{document}
