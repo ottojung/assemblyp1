@@ -132,3 +132,16 @@ kind: requirement
 If the source-faithful initial versions of the bridging-to-maximum-likelihood claim, including the materially live source disambiguations, are all convincingly settled negatively, the project should not stop at the negative result. It should then formulate and prove an appropriate infinite-data or population-level positive analogue that preserves the attractive core intuition connecting sufficient repeat resolution with maximum-likelihood recovery.
 
 Do not freeze the exact statement, likelihood formula, limiting formalism, or auxiliary hypotheses in this intent record. Those details should be chosen from the mathematical understanding available after the initial variants are settled, rather than committing the project now to a conjecture that may later turn out to be poorly formulated.
+
+---
+
+$id-3186075429146831
+title: Produce publication artifacts through CI
+date: 2026/09/21
+source: @ottojung
+kind: requirement
+
+The repository's human-facing publication artifacts, including the white-paper PDF and Beamer presentation PDF, should normally be built by GitHub CI and exposed as CI artifacts. Their availability should not depend on a maintainer manually building or uploading them from a workstation.
+
+This intent specifies the delivery invariant, not a workflow frequency or trigger policy. CI configuration may choose appropriate triggers and may evolve as the repository changes, provided the canonical PDFs remain reproducibly buildable and obtainable from GitHub CI.
+
