@@ -25,7 +25,8 @@ strict same-length counterexample exists — for any `G`, `L`, or alphabet.
   complete-spectrum hypothesis (`rigidity_up_to_rotation`).
 * **Explicit hypotheses (trust boundary), each citing the note:**
   - `hAbal`: the truth spectrum is balanced (note §2, Fact 1);
-  - `hconn`: the window support is (undirectedly) connected (note §2, Fact 2);
+  - `hstrong`: the window support is strongly connected (note §2, Fact 2,
+    strengthened to directed reachability per issue #66);
   - `hcap`: every `(L-1)`-mer occurs at most twice. By note §3 (Fact D,
     Lemmas B and C) this follows from the triple-repeat clause of `I_s`, in
     both the primitive and the periodic cases. The word combinatorics of that
@@ -71,6 +72,82 @@ def SupportConnected : Prop :=
       (tail e = tail e' ∨ tail e = head e' ∨ head e = tail e' ∨
         head e = head e')
 
+/-- Directed reachability inside the support edge set. -/
+inductive Reachable : V → V → Prop
+  | refl (u : V) : Reachable u u
+  | step {u w v : V} (f : E) : Reachable u w → f ∈ edges →
+      tail f = w → head f = v → Reachable u v
+
+/-- Strong connectivity of the support (issue #66 hypothesis): every node
+reaches every node by a directed path staying inside `edges`. -/
+def StronglyConnected : Prop :=
+  ∀ u ∈ nodes, ∀ v ∈ nodes, Reachable tail head edges u v
+
+/-- Strong connectivity implies the undirected incidence consequence used by
+the rigidity proof: a strongly connected support has no proper nonempty
+edge set closed under incidence. -/
+theorem strong_to_supportConnected
+    (hmem : ∀ e ∈ edges, tail e ∈ nodes ∧ head e ∈ nodes)
+    (hstrong : StronglyConnected tail head nodes edges) :
+    SupportConnected tail head edges := by
+  intro N hNsub hNe hNne
+  by_contra hcon
+  push_neg at hcon
+  -- `N` is closed under incidence: every support edge sharing a vertex
+  -- with a member of `N` is itself in `N`.
+  have hclosed : ∀ e ∈ N, ∀ e' ∈ edges,
+      (tail e = tail e' ∨ tail e = head e' ∨ head e = tail e' ∨
+        head e = head e') → e' ∈ N := by
+    intro e he e' he' hshare
+    by_contra habs
+    obtain ⟨h1, h2, h3, h4⟩ := hcon e he e' he' habs
+    rcases hshare with h | h | h | h
+    · exact absurd h h1
+    · exact absurd h h2
+    · exact absurd h h3
+    · exact absurd h h4
+  -- Closure spreads along directed paths: if `N` touches `u` and
+  -- `u ⇝ v`, then every support edge incident to `v` lies in `N`.
+  have spread : ∀ {u v : V}, Reachable tail head edges u v →
+      (∃ e ∈ N, tail e = u ∨ head e = u) →
+      ∀ f ∈ edges, tail f = v ∨ head f = v → f ∈ N := by
+    intro u v h
+    induction h with
+    | refl =>
+        intro ht f hf hinc
+        obtain ⟨e, he, hue⟩ := ht
+        rcases hue with h1 | h1 <;> rcases hinc with h2 | h2
+        · exact hclosed e he f hf (Or.inl (h1.trans h2.symm))
+        · exact hclosed e he f hf (Or.inr (Or.inl (h1.trans h2.symm)))
+        · exact hclosed e he f hf (Or.inr (Or.inr (Or.inl (h1.trans h2.symm))))
+        · exact hclosed e he f hf (Or.inr (Or.inr (Or.inr (h1.trans h2.symm))))
+    | step g hpred hgf hgt hgv ih =>
+        intro ht f hf hinc
+        -- `g` joins `N` via the IH (it leaves the reached vertex `w`);
+        -- `f` then joins via `g` (both touch `head g`).
+        have hgN : g ∈ N := ih ht g hgf (Or.inl hgt)
+        rcases hinc with h2 | h2
+        · exact hclosed g hgN f hf
+            (Or.inr (Or.inr (Or.inl (hgv.trans h2.symm))))
+        · exact hclosed g hgN f hf
+            (Or.inr (Or.inr (Or.inr (hgv.trans h2.symm))))
+  -- Pick `e₀ ∈ N` and `e₁ ∈ edges ∖ N`; the path
+  -- `tail e₀ ⇝ tail e₁` drags `e₁` into `N`. Contradiction.
+  obtain ⟨e₀, he₀⟩ := hNe
+  have he₀e := hNsub he₀
+  have hne' : ∃ e₁ ∈ edges, e₁ ∉ N := by
+    by_contra h
+    rw [not_exists] at h
+    have hsub : edges ⊆ N := fun x hx => by
+      by_contra hc
+      exact h x ⟨hx, hc⟩
+    exact hNne (Finset.Subset.antisymm hNsub hsub)
+  obtain ⟨e₁, he₁, habs⟩ := hne'
+  have hu₀ : tail e₀ ∈ nodes := (hmem e₀ he₀e).1
+  have hv₁ : tail e₁ ∈ nodes := (hmem e₁ he₁).1
+  exact habs (spread (hstrong _ hu₀ _ hv₁) ⟨e₀, he₀, Or.inl rfl⟩
+    e₁ he₁ (Or.inl rfl))
+
 /-- Two distinct members contribute at most the whole sum. -/
 private lemma pair_le_sum (s : Finset E) (f : E → ℕ) (a b : E)
     (ha : a ∈ s) (hb : b ∈ s) (hab : a ≠ b) :
@@ -106,11 +183,13 @@ private lemma triple_le_sum (s : Finset E) (f : E → ℕ) (a b c : E)
   rw [← htri]
   exact Finset.sum_le_sum_of_subset_of_nonneg hsub (fun _ _ _ => Nat.zero_le _)
 
-/-- **Theorem A (short-repeat rigidity).** A positive circulation `A` whose
-node outflows are all at most `2` is the unique positive circulation of the
-same total on a connected support. This is the Lean-checked core of note §3:
-with `δ = B - A`, the negative set `N = {δ < 0}` is shown to be a union of
-connected components, hence empty (it cannot be everything since `∑ δ = 0`). -/
+/-- **Theorem A (short-repeat rigidity, issue #66).** A positive circulation `A`
+whose vertex throughput is at most `2` (i.e. `out_A(v) = in_A(v) ≤ 2` at every
+node: equality from `hAbal`, the bound from `hcap`) is the unique positive
+circulation of the same total on a strongly connected support. This is the
+Lean-checked core of note §3: with `δ = B - A`, the negative set `N = {δ < 0}`
+is shown to be a union of connected components, hence empty (it cannot be
+everything since `∑ δ = 0`). -/
 theorem unique_positive_circulation
     (G : ℕ) (A B : E → ℕ)
     (hmem : ∀ e ∈ edges, tail e ∈ nodes ∧ head e ∈ nodes)
@@ -121,8 +200,10 @@ theorem unique_positive_circulation
     (hAtot : ∑ e ∈ edges, A e = G)
     (hBtot : ∑ e ∈ edges, B e = G)
     (hcap : ∀ v ∈ nodes, ∑ e ∈ outF tail edges v, A e ≤ 2)
-    (hconn : SupportConnected tail head edges)
+    (hstrong : StronglyConnected tail head nodes edges)
     : ∀ e ∈ edges, B e = A e := by
+  have hconn : SupportConnected tail head edges :=
+    strong_to_supportConnected tail head nodes edges hmem hstrong
   -- The difference circulation `δ = B - A` over `ℤ`.
   set δ : E → ℤ := fun e => (B e : ℤ) - (A e : ℤ) with hδdef
   have hδbal : ∀ v ∈ nodes,
@@ -551,7 +632,7 @@ theorem truth_total {α : Type} [DecidableEq α] {G L : ℕ} (hG : 0 < G)
 If every `(L-1)`-mer occurs at most twice (`hcap` — the exact hypothesis
 discharged by note §3, Fact D with Lemmas B/C, from the triple-repeat clause
 of `I_s` ∈ both primitive and periodic cases), the window support is
-connected (`hconn` — note §2, Fact 2), and the truth spectrum is balanced
+connected (`hstrong` — note §2, Fact 2, as directed strong connectivity), and the truth spectrum is balanced
 (`hAbal` — note §2, Fact 1), then every same-length spelled candidate
 (same support, positive balanced circulation of total `G`) has exactly the
 truth's spectrum. -/
@@ -568,8 +649,8 @@ theorem rigidity_same_spectrum
     (hcap : ∀ k : Fin (L - 1) → α, k ∈ genomeNodes hG S →
       ∑ w ∈ (support hG S).filter (fun w => winPrefix w = k),
         specCount hG S w ≤ 2)
-    (hconn : SupportConnected winPrefix winSuffix
-      (support hG S : Finset (Fin L → α)))
+    (hstrong : StronglyConnected winPrefix winSuffix
+      (genomeNodes hG S) (support hG S : Finset (Fin L → α)))
     : ∀ w, B w = specCount hG S w := by
   have hApos : ∀ w : Fin L → α, w ∈ support hG S → 1 ≤ specCount hG S w :=
     truth_pos_on_support (L := L) hG S
@@ -580,7 +661,7 @@ theorem rigidity_same_spectrum
     mem_nodes_of_mem_support (L := L) hG S
   have heq := unique_positive_circulation (winPrefix) (winSuffix)
     (genomeNodes hG S) (support hG S) G (specCount hG S) B
-    hmemT hApos hBpos hAbal hBbal hAtot hBtot hcap hconn
+    hmemT hApos hBpos hAbal hBbal hAtot hBtot hcap hstrong
   intro w
   by_cases hw : w ∈ support hG S
   · exact heq w hw
@@ -620,14 +701,14 @@ theorem rigidity_up_to_rotation
     (hcap : ∀ k : Fin (L - 1) → α, k ∈ genomeNodes hG S →
       ∑ w ∈ (support hG S).filter (fun w => winPrefix w = k),
         specCount hG S w ≤ 2)
-    (hconn : SupportConnected winPrefix winSuffix
-      (support hG S : Finset (Fin L → α)))
+    (hstrong : StronglyConnected winPrefix winSuffix
+      (genomeNodes hG S) (support hG S : Finset (Fin L → α)))
     (bbt : ∀ D₁ D₂ : Fin G → α,
       (specCount hG D₁ : (Fin L → α) → ℕ) = specCount hG D₂ → RotEquiv hG D₁ D₂)
     : RotEquiv hG D S := by
   have hspec : ∀ w : Fin L → α, specCount hG D w = specCount hG S w :=
     rigidity_same_spectrum hG S (specCount hG D)
-      hDsup hDbal hDtot hAbal hcap hconn
+      hDsup hDbal hDtot hAbal hcap hstrong
   exact bbt D S (funext hspec)
 
 /-- **Corollary (same-length likelihood tie).** Any objective depending only
@@ -649,11 +730,11 @@ theorem spectrum_tie
     (hcap : ∀ k : Fin (L - 1) → α, k ∈ genomeNodes hG S →
       ∑ w ∈ (support hG S).filter (fun w => winPrefix w = k),
         specCount hG S w ≤ 2)
-    (hconn : SupportConnected winPrefix winSuffix
-      (support hG S : Finset (Fin L → α)))
+    (hstrong : StronglyConnected winPrefix winSuffix
+      (genomeNodes hG S) (support hG S : Finset (Fin L → α)))
     : obj B = obj (specCount hG S) := by
   have hspec : ∀ w : Fin L → α, B w = specCount hG S w :=
-    rigidity_same_spectrum hG S B hBsup hBbal hBtot hAbal hcap hconn
+    rigidity_same_spectrum hG S B hBsup hBbal hBtot hAbal hcap hstrong
   rw [funext hspec]
 
 /-- **Corollary (no strict same-length counterexample).** No same-length
@@ -673,10 +754,10 @@ theorem no_strict_samelength_improvement
     (hcap : ∀ k : Fin (L - 1) → α, k ∈ genomeNodes hG S →
       ∑ w ∈ (support hG S).filter (fun w => winPrefix w = k),
         specCount hG S w ≤ 2)
-    (hconn : SupportConnected winPrefix winSuffix
-      (support hG S : Finset (Fin L → α)))
+    (hstrong : StronglyConnected winPrefix winSuffix
+      (genomeNodes hG S) (support hG S : Finset (Fin L → α)))
     : ¬ obj (specCount hG S) < obj B := by
-  rw [spectrum_tie hG obj S B hBsup hBbal hBtot hAbal hcap hconn]
+  rw [spectrum_tie hG obj S B hBsup hBbal hBtot hAbal hcap hstrong]
   exact lt_irrefl _
 
 end WordLayer
