@@ -7,25 +7,42 @@ Mathematical source: `paper/sections/05-population.tex` and
 `docs/maximum-likelihood-models-for-genome-assembly.md` §6.
 
 This file kernel-checks the reusable arithmetic core of the population
-reduction and a regression showing primitivity alone is insufficient.
-The two external mathematical inputs used by the paper proof are kept
-as **explicit hypotheses**, never as axioms:
+reduction, the AssemblyP1-original primitive-P2 division–Eulerian
+derivation of gcd-one (conditional on explicit spelling/uniqueness
+premises), and a regression showing primitivity alone is insufficient.
+External mathematical inputs are kept as **explicit hypotheses**,
+never as axioms:
 
 * **Gibbs/KL tie characterization** (Cover–Thomas): a population tie
   `ℓpop_S(D) = ℓpop_S(S)` holds iff the normalized spectra agree.
-  Stated here as an explicit hypothesis `hGibbsTie`.
-* **Division–Eulerian gcd-one mechanism + BBT/Ukkonen uniqueness**
-  (Bresler–Bresler–Tse 2013, Theorem 3): for primitive P2 genomes the
-  ordinary `L`-spectrum has gcd one over its positive entries, and equal
-  ordinary spectra imply rotation equivalence. Both appear below as
-  explicit hypotheses `hGcdS`, `hGcdD`, `hBBT`.
+  Gibbs itself stays outside this file; theorems below take the
+  resulting normalized equality (`NormalizedEqual`) as a premise.
+* **Eulerian spelling of a divided balanced connected spectrum**
+  (standard Eulerian-circuit existence applied to the paper's divided
+  circulation `c/g`): stated as an explicit premise `hSpell`.
+* **Bresler–Bresler–Tse (2013), Theorem 3** complete-spectrum
+  uniqueness at `K = L - 1`: an explicit premise `hBBT`.
 
-What is fully proved here (`normalized_to_ordinary`):
-proportional gcd-one integer spectrum vectors are equal (hence the two
-lengths agree). The regression (`primitivity_insufficient`) shows the
-gcd-one hypothesis cannot be dropped: primitive `S = AAB` (`|S| = 3`)
-and `D = AAABAB` (`|D| = 6`) share normalized 2-spectra but not
-ordinary 2-spectra.
+What is fully proved here:
+* `normalized_to_ordinary`: proportional gcd-one integer spectrum
+  vectors are equal (hence the two lengths agree).
+* Circulation division (`divided_balanced`, `divided_sum`,
+  `divided_support`): dividing a balanced integer circulation by a
+  common divisor preserves balance, scales the total, and preserves
+  support — the project-side division half of `lem:scaling`.
+* Power lifting (`pow_spec_of_spell`): a spelling `W` of the quotient
+  lifts to `spec (power W g) = spec S` via the explicit power-scale
+  interface — the project-side repeated-spectrum identity.
+* `gcd_one_of_primitive_P2`: from those project-side steps plus BBT
+  uniqueness, primitivity, its rotation-invariance, and
+  non-primitivity of nontrivial powers, derive `IsGcdOne`.
+* `population_uniqueness_primitive_P2`: the end-to-end project-level
+  reduction (normalized equality → ordinary equality → rotation
+  equivalence) under the same premises.
+The regression (`primitivity_insufficient`) shows the
+gcd-one conclusion cannot be obtained from primitivity alone:
+primitive `S = AAB` (`|S| = 3`) and `D = AAABAB` (`|D| = 6`) share
+normalized 2-spectra but not ordinary 2-spectra.
 -/
 
 namespace AssemblyP1.PopulationReduction
@@ -90,19 +107,22 @@ theorem normalized_to_ordinary {c d : W → ℕ} {n m : ℕ}
 
 /--
 Explicit-hypothesis wrapper recording the paper's proof chain.
-`hGibbsTie` is the Gibbs/KL input (Cover–Thomas: tie iff normalized
-equality); `hGcdS`/`hGcdD` are discharged in notes by the
-division–Eulerian argument; `hBBT` is Bresler–Bresler–Tse (2013)
-Theorem 3 at `K = L - 1`. No external fact is hidden: each is a
-universally quantified hypothesis.
+`hNormEq` is normalized-spectrum equality, the conclusion of the
+external Gibbs/KL input (Cover–Thomas: tie iff normalized equality),
+which itself stays outside this file; `hGcdS`/`hGcdD` are the
+gcd-one facts discharged by `gcd_one_of_primitive_P2` via the
+division–Eulerian argument under explicit Eulerian-spelling and BBT
+premises (see below); `hBBT` in the uniqueness theorem is
+Bresler–Bresler–Tse (2013) Theorem 3 at `K = L - 1`. No external fact
+is hidden: each is a universally quantified hypothesis.
 -/
 theorem population_tie_reduction {cS cD : W → ℕ} {nS nD : ℕ}
     (hnS : 0 < nS) (hnD : 0 < nD)
     (hSumS : ∑ w : W, cS w = nS) (hSumD : ∑ w : W, cD w = nD)
-    (hGibbsTie : NormalizedEqual cS cD nS nD)
+    (hNormEq : NormalizedEqual cS cD nS nD)
     (hGcdS : IsGcdOne cS) (hGcdD : IsGcdOne cD) :
     nS = nD ∧ cS = cD :=
-  normalized_to_ordinary hnS hnD hSumS hSumD hGibbsTie hGcdS hGcdD
+  normalized_to_ordinary hnS hnD hSumS hSumD hNormEq hGcdS hGcdD
 
 /-- BBT uniqueness step with the external theorem explicit. -/
 theorem population_uniqueness_of_ordinary {Genome V : Type*}
@@ -113,6 +133,179 @@ theorem population_uniqueness_of_ordinary {Genome V : Type*}
     (hBBT : cS = cD → rotEquiv D S) :
     rotEquiv D S :=
   hBBT hOrd
+
+-- ---------------------------------------------------------------------------
+-- AssemblyP1-original primitive-P2 division–Eulerian gcd-one mechanism.
+-- Paper source: `paper/sections/05-population.tex`, proof of
+-- `lem:scaling`, via `thm:BBT` (Bresler–Bresler–Tse 2013, Theorem 3).
+-- Balance is stated against abstract out/in edge families so this file
+-- does not rebuild de Bruijn infrastructure or duplicate the
+-- circular-spectrum word layer of issue #69: instantiations plug in
+-- `(L-1)`-mer vertices and `L`-mer edges. The standard existence of an
+-- Eulerian closed trail spelling the divided circulation `c/g` is an
+-- explicit premise `hSpell`; complete-spectrum uniqueness is an
+-- explicit premise `hBBT`. What Lean checks is the project-side
+-- division of the circulation, the power-lifting identity
+-- `spec (W^g) = spec S`, and the derivation from those premises (plus
+-- primitivity and its rotation-invariance and non-primitivity of
+-- nontrivial powers) to `IsGcdOne`. In particular gcd-one itself is
+-- never assumed.
+-- ---------------------------------------------------------------------------
+
+section CirculationDivision
+
+variable {V E : Type*}
+
+/-- Balance of an integer circulation against abstract out/in edge
+families (instantiated with de Bruijn prefix/suffix edges). -/
+def Balanced (Out In : V → Finset E) (c : E → ℕ) : Prop :=
+  ∀ v : V, ∑ e ∈ Out v, c e = ∑ e ∈ In v, c e
+
+/-- The divided circulation `c/g` of the manuscript proof. -/
+def divided (c : E → ℕ) (g : ℕ) : E → ℕ :=
+  fun e => c e / g
+
+theorem divided_balanced {Out In : V → Finset E} {c : E → ℕ} {g : ℕ}
+    (hg : 0 < g) (hdiv : ∀ e : E, g ∣ c e)
+    (hbal : Balanced Out In c) :
+    Balanced Out In (divided c g) := by
+  intro v
+  have hout : g * ∑ e ∈ Out v, divided c g e = ∑ e ∈ Out v, c e := by
+    rw [Finset.mul_sum]
+    apply Finset.sum_congr rfl
+    intro e _
+    exact Nat.mul_div_cancel' (hdiv e)
+  have hin : g * ∑ e ∈ In v, divided c g e = ∑ e ∈ In v, c e := by
+    rw [Finset.mul_sum]
+    apply Finset.sum_congr rfl
+    intro e _
+    exact Nat.mul_div_cancel' (hdiv e)
+  have h := hbal v
+  rw [← hout, ← hin] at h
+  exact Nat.mul_left_cancel (by omega : 0 < g) h
+
+theorem divided_sum {c : E → ℕ} {g : ℕ}
+    (hg : 0 < g) (hdiv : ∀ e : E, g ∣ c e) (s : Finset E) :
+    ∑ e ∈ s, divided c g e = (∑ e ∈ s, c e) / g := by
+  have h : g * ∑ e ∈ s, divided c g e = ∑ e ∈ s, c e := by
+    rw [Finset.mul_sum]
+    apply Finset.sum_congr rfl
+    intro e _
+    exact Nat.mul_div_cancel' (hdiv e)
+  rw [← h]
+  exact (Nat.mul_div_cancel_left _ hg).symm
+
+theorem divided_support {c : E → ℕ} {g : ℕ}
+    (_hg : 0 < g) (hdiv : ∀ e : E, g ∣ c e) (e : E) :
+    divided c g e = 0 ↔ c e = 0 := by
+  constructor
+  · intro h
+    have h2 : g * divided c g e = c e := Nat.mul_div_cancel' (hdiv e)
+    rw [h, mul_zero] at h2
+    exact h2.symm
+  · intro h
+    simp [divided, h, Nat.zero_div]
+
+end CirculationDivision
+
+/-- Power lifting: a spelling `W` of the quotient `spec S / g` repeats
+to the original spectrum, via the explicit power-scale interface
+`hPowScale` (what `power W g`, i.e. `W^g`, means for spectra: each
+cyclic window count scales by `g`, cf. `lem:scaling` "each cyclic
+length-`L` window of `W` lifts to exactly `g` windows of `W^g`").
+Lean checks the arithmetic lift `g * (c/g) = c`; only the Eulerian
+existence of `W` (`hSpell`) and BBT below stay premises. -/
+theorem pow_spec_of_spell {Genome V : Type*} [Fintype V]
+    {spec : Genome → (V → ℕ)} {power : Genome → ℕ → Genome}
+    {S W : Genome} {g : ℕ}
+    (hdiv : ∀ v : V, g ∣ spec S v)
+    (hSpell : spec W = fun v => spec S v / g)
+    (hPowScale : spec (power W g) = fun v => g * spec W v) :
+    spec (power W g) = spec S := by
+  funext v
+  rw [hPowScale]
+  simp only
+  rw [hSpell]
+  simp only
+  exact Nat.mul_div_cancel' (hdiv v)
+
+/-- Primitive-P2 spectra have gcd one, conditional on the explicit
+Eulerian-spelling and BBT premises of the paper proof. -/
+theorem gcd_one_of_primitive_P2 {Genome V : Type*} [Fintype V]
+    {spec : Genome → (V → ℕ)} {len : Genome → ℕ}
+    {Primitive AdmP2 : Genome → Prop}
+    {rotEquiv : Genome → Genome → Prop}
+    {power : Genome → ℕ → Genome}
+    (S : Genome)
+    (hSum : ∑ v : V, spec S v = len S)
+    (hlen : 0 < len S)
+    (hPrim : Primitive S)
+    (hP2S : AdmP2 S)
+    (hSpell : ∀ g : ℕ, 1 < g → (∀ v : V, g ∣ spec S v) →
+      ∃ W : Genome, spec W = fun v => spec S v / g)
+    (hPowScale : ∀ W : Genome, ∀ g : ℕ,
+      spec (power W g) = fun v => g * spec W v)
+    (hPowerNonPrim : ∀ W : Genome, ∀ g : ℕ, 1 < g → ¬ Primitive (power W g))
+    (hBBT : ∀ D : Genome, AdmP2 S → spec D = spec S → rotEquiv D S)
+    (hRotPrim : ∀ D : Genome, rotEquiv D S → Primitive S → Primitive D) :
+    IsGcdOne (spec S) := by
+  intro g hg
+  by_cases h1 : g = 1
+  · exact h1
+  · have hpos : 0 < g := by
+      rcases Nat.eq_zero_or_pos g with rfl | hp
+      · exfalso
+        have hall : ∀ v : V, spec S v = 0 :=
+          fun v => Nat.eq_zero_of_zero_dvd (hg v)
+        have hzero : ∑ v : V, spec S v = 0 :=
+          Finset.sum_eq_zero (fun v _ => hall v)
+        omega
+      · exact hp
+    have hlt : 1 < g := by omega
+    obtain ⟨W, hSpecW⟩ := hSpell g hlt hg
+    have hLift : spec (power W g) = spec S :=
+      pow_spec_of_spell hg hSpecW (hPowScale W g)
+    have hRot := hBBT (power W g) hP2S hLift
+    have hPrimW := hRotPrim (power W g) hRot hPrim
+    exact absurd hPrimW (hPowerNonPrim W g hlt)
+
+/-- End-to-end project-level reduction for primitive P2 genomes:
+normalized equality forces ordinary equality and rotation
+equivalence, under the same explicit Eulerian-spelling/BBT premises
+for each genome plus one final BBT uniqueness application. -/
+theorem population_uniqueness_primitive_P2 {Genome V : Type*} [Fintype V]
+    {spec : Genome → (V → ℕ)} {len : Genome → ℕ}
+    {Primitive AdmP2 : Genome → Prop}
+    {rotEquiv : Genome → Genome → Prop}
+    {power : Genome → ℕ → Genome}
+    (S D : Genome)
+    (hSumS : ∑ v : V, spec S v = len S)
+    (hSumD : ∑ v : V, spec D v = len D)
+    (hlenS : 0 < len S) (hlenD : 0 < len D)
+    (hPrimS : Primitive S) (hPrimD : Primitive D)
+    (hP2S : AdmP2 S) (hP2D : AdmP2 D)
+    (hNormEq : NormalizedEqual (spec S) (spec D) (len S) (len D))
+    (hSpellS : ∀ g : ℕ, 1 < g → (∀ v : V, g ∣ spec S v) →
+      ∃ W : Genome, spec W = fun v => spec S v / g)
+    (hSpellD : ∀ g : ℕ, 1 < g → (∀ v : V, g ∣ spec D v) →
+      ∃ W : Genome, spec W = fun v => spec D v / g)
+    (hPowScale : ∀ W : Genome, ∀ g : ℕ,
+      spec (power W g) = fun v => g * spec W v)
+    (hPowerNonPrim : ∀ W : Genome, ∀ g : ℕ, 1 < g → ¬ Primitive (power W g))
+    (hBBTS : ∀ E : Genome, AdmP2 S → spec E = spec S → rotEquiv E S)
+    (hBBTD : ∀ E : Genome, AdmP2 D → spec E = spec D → rotEquiv E D)
+    (hRotPrimS : ∀ E : Genome, rotEquiv E S → Primitive S → Primitive E)
+    (hRotPrimD : ∀ E : Genome, rotEquiv E D → Primitive D → Primitive E)
+    (hBBTuniq : spec S = spec D → rotEquiv D S) :
+    len S = len D ∧ spec S = spec D ∧ rotEquiv D S := by
+  have hGcdS : IsGcdOne (spec S) :=
+    gcd_one_of_primitive_P2 S hSumS hlenS hPrimS hP2S hSpellS
+      hPowScale hPowerNonPrim hBBTS hRotPrimS
+  have hGcdD : IsGcdOne (spec D) :=
+    gcd_one_of_primitive_P2 D hSumD hlenD hPrimD hP2D hSpellD
+      hPowScale hPowerNonPrim hBBTD hRotPrimD
+  have hOrd := normalized_to_ordinary hlenS hlenD hSumS hSumD hNormEq hGcdS hGcdD
+  exact ⟨hOrd.1, hOrd.2, hBBTuniq hOrd.2⟩
 
 -- ---------------------------------------------------------------------------
 -- Regression: primitivity alone does not imply the reduction.
