@@ -456,22 +456,19 @@ def nodeWindow {α : Type} {G L : ℕ} (hG : 0 < G) (S : Fin G → α) (r : Fin 
   fun d => cyc hG S (r.val + d.val)
 
 /-- Length-`L` spectrum: occurrence counts of each window. -/
-noncomputable def specCount {α : Type} [DecidableEq α] {G L : ℕ} (hG : 0 < G)
-    (S : Fin G → α) (w : Fin L → α) : ℕ := by
-  classical
-  exact (Finset.univ.filter (fun r : Fin G => window hG S r = w)).card
+def specCount {α : Type} [DecidableEq α] {G L : ℕ} (hG : 0 < G) (S : Fin G → α)
+    (w : Fin L → α) : ℕ :=
+  (Finset.univ.filter (fun r : Fin G => window hG S r = w)).card
 
 /-- Window support: the observed read-type set. -/
-noncomputable def support {α : Type} [DecidableEq α] {G L : ℕ} (hG : 0 < G)
-    (S : Fin G → α) : Finset (Fin L → α) := by
-  classical
-  exact Finset.univ.image (window hG S)
+def support {α : Type} [DecidableEq α] {G L : ℕ} (hG : 0 < G) (S : Fin G → α) :
+    Finset (Fin L → α) :=
+  Finset.univ.image (window hG S)
 
 /-- Node set: the distinct `(L-1)`-windows. -/
-noncomputable def genomeNodes {α : Type} [DecidableEq α] {G L : ℕ} (hG : 0 < G)
-    (S : Fin G → α) : Finset (Fin (L - 1) → α) := by
-  classical
-  exact Finset.univ.image (nodeWindow hG S)
+def genomeNodes {α : Type} [DecidableEq α] {G L : ℕ} (hG : 0 < G)
+    (S : Fin G → α) : Finset (Fin (L - 1) → α) :=
+  Finset.univ.image (nodeWindow hG S)
 
 /-- Edge tail: length-`(L-1)` winPrefix. -/
 def winPrefix {α : Type} {L : ℕ} (w : Fin L → α) : Fin (L - 1) → α :=
@@ -512,7 +509,6 @@ theorem mem_nodes_of_mem_support {α : Type} [DecidableEq α] {G L : ℕ} (hG : 
     (hw : w ∈ support hG S) :
     winPrefix w ∈ genomeNodes hG S ∧
       winSuffix w ∈ genomeNodes hG S := by
-  classical
   simp only [support, Finset.mem_image] at hw
   obtain ⟨r, _, rfl⟩ := hw
   constructor
@@ -525,7 +521,6 @@ theorem mem_nodes_of_mem_support {α : Type} [DecidableEq α] {G L : ℕ} (hG : 
 theorem truth_pos_on_support {α : Type} [DecidableEq α] {G L : ℕ} (hG : 0 < G)
     (S : Fin G → α) :
     ∀ w : Fin L → α, w ∈ support hG S → 1 ≤ specCount hG S w := by
-  classical
   intro w hw
   simp only [support, Finset.mem_image] at hw
   obtain ⟨r, _, rfl⟩ := hw
@@ -540,7 +535,6 @@ theorem truth_pos_on_support {α : Type} [DecidableEq α] {G L : ℕ} (hG : 0 < 
 theorem truth_total {α : Type} [DecidableEq α] {G L : ℕ} (hG : 0 < G)
     (S : Fin G → α) :
     ∑ w ∈ (support hG S : Finset (Fin L → α)), specCount hG S w = G := by
-  classical
   have hfib : ∀ w ∈ (support hG S : Finset (Fin L → α)),
       (Finset.univ.filter (fun r : Fin G => window hG S r = w)).card =
         specCount hG S w := fun _ _ => rfl
@@ -577,7 +571,6 @@ theorem rigidity_same_spectrum
     (hconn : SupportConnected winPrefix winSuffix
       (support hG S : Finset (Fin L → α)))
     : ∀ w, B w = specCount hG S w := by
-  classical
   have hApos : ∀ w : Fin L → α, w ∈ support hG S → 1 ≤ specCount hG S w :=
     truth_pos_on_support (L := L) hG S
   have hAtot := truth_total (L := L) hG S
@@ -632,7 +625,6 @@ theorem rigidity_up_to_rotation
     (bbt : ∀ D₁ D₂ : Fin G → α,
       (specCount hG D₁ : (Fin L → α) → ℕ) = specCount hG D₂ → RotEquiv hG D₁ D₂)
     : RotEquiv hG D S := by
-  classical
   have hspec : ∀ w : Fin L → α, specCount hG D w = specCount hG S w :=
     rigidity_same_spectrum hG S (specCount hG D)
       hDsup hDbal hDtot hAbal hcap hconn
@@ -660,7 +652,6 @@ theorem spectrum_tie
     (hconn : SupportConnected winPrefix winSuffix
       (support hG S : Finset (Fin L → α)))
     : obj B = obj (specCount hG S) := by
-  classical
   have hspec : ∀ w : Fin L → α, B w = specCount hG S w :=
     rigidity_same_spectrum hG S B hBsup hBbal hBtot hAbal hcap hconn
   rw [funext hspec]
@@ -685,7 +676,6 @@ theorem no_strict_samelength_improvement
     (hconn : SupportConnected winPrefix winSuffix
       (support hG S : Finset (Fin L → α)))
     : ¬ obj (specCount hG S) < obj B := by
-  classical
   rw [spectrum_tie hG obj S B hBsup hBbal hBtot hAbal hcap hconn]
   exact lt_irrefl _
 
