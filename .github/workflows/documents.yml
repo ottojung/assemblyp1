@@ -1,0 +1,46 @@
+name: Documents
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: documents-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  pdfs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install GNU Guix
+        uses: PromyLOPh/guix-install-action@v1
+        with:
+          pullAfterInstall: false
+
+      - name: Build white paper
+        run: ./paper/build.sh
+
+      - name: Build presentation
+        run: ./talk/build.sh
+
+      - name: Upload white paper
+        uses: actions/upload-artifact@v4
+        with:
+          name: assemblyp1-white-paper-${{ github.sha }}
+          path: paper/main.pdf
+          if-no-files-found: error
+
+      - name: Upload presentation
+        uses: actions/upload-artifact@v4
+        with:
+          name: assemblyp1-presentation-${{ github.sha }}
+          path: talk/main.pdf
+          if-no-files-found: error
