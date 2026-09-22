@@ -34,10 +34,11 @@ connectivity of the support).
 ## Deliberately not formalized here
 
 Per issue #66 scope discipline: no genomes, reads, repeat predicates,
-`I_s`, likelihoods, or BBT assumptions. The circular-spectrum adapter
-and the repeat-theory / `I_s` multiplicity-bound adapter are separate
-follow-up packets. The full word-layer development previously on this
-branch is preserved on `agent/formal-rigidity-word-layer`.
+`I_s`, likelihoods, or BBT assumptions. The circular-spectrum adapter is
+issue #69 (the `WordLayer` section below); the repeat-theory / `I_s`
+multiplicity-bound adapter is a separate follow-up packet. The full
+word-layer development previously on this branch is preserved on
+`agent/formal-rigidity-word-layer`.
 -/
 
 namespace AssemblyP1.OrientedRigidity
@@ -515,5 +516,400 @@ theorem unique_positive_circulation
     omega
 
 end AbstractCirculation
+
+section WordLayer
+
+/-!
+# Circular-spectrum adapter (issue #69)
+
+For a nonempty circular word `S : Fin G → α` and read length `L`, this
+section defines the oriented length-`L` windows, their support, the
+`(L-1)`-window nodes, and spectrum multiplicities, and proves that the
+truth spectrum on its support is positive, balanced, of total mass `G`,
+and strongly connected — all from the circular-word structure, with no
+extra hypotheses.
+
+The public adapter `rigidity_same_spectrum` therefore takes no `hAbal`
+(note §2, Fact 1) and no `hstrong` (note §2, Fact 2): both are proved
+here. Its only remaining truth hypothesis is the natural `(L-1)`-window
+multiplicity cap `hNodeCap` (every `(L-1)`-window occurs at most twice),
+which is the exact form of the vertex-throughput bound consumed by
+`unique_positive_circulation` (via `throughput_eq_nodeCount`). Proving
+that cap from the triple-repeat clause of `I_s` (note §3, Fact D with
+Lemmas B/C, primitive and periodic cases) is a separate repeat-theory
+follow-up packet, as is the external BBT complete-spectrum input.
+-/
+
+/-- Circular symbol access for a length-`G` circular word. -/
+def cyc {α : Type} {G : ℕ} (hG : 0 < G) (S : Fin G → α) (i : ℕ) : α :=
+  S ⟨i % G, Nat.mod_lt _ hG⟩
+
+/-- Oriented length-`L` circular window at start `r` (strict single-strand
+read type: no reverse-complement collapse). -/
+def window {α : Type} {G L : ℕ} (hG : 0 < G) (S : Fin G → α) (r : Fin G) :
+    Fin L → α :=
+  fun d => cyc hG S (r.val + d.val)
+
+/-- Length-`(L-1)` circular window at start `r` (de Bruijn node). -/
+def nodeWindow {α : Type} {G L : ℕ} (hG : 0 < G) (S : Fin G → α) (r : Fin G) :
+    Fin (L - 1) → α :=
+  fun d => cyc hG S (r.val + d.val)
+
+/-- Length-`L` spectrum: occurrence counts of each window. -/
+def specCount {α : Type} [DecidableEq α] {G L : ℕ} (hG : 0 < G) (S : Fin G → α)
+    (w : Fin L → α) : ℕ :=
+  (Finset.univ.filter (fun r : Fin G => window hG S r = w)).card
+
+/-- Window support: the observed read-type set. -/
+def support {α : Type} [DecidableEq α] {G L : ℕ} (hG : 0 < G) (S : Fin G → α) :
+    Finset (Fin L → α) :=
+  Finset.univ.image (window hG S)
+
+/-- Node set: the distinct `(L-1)`-windows. -/
+def genomeNodes {α : Type} [DecidableEq α] {G L : ℕ} (hG : 0 < G)
+    (S : Fin G → α) : Finset (Fin (L - 1) → α) :=
+  Finset.univ.image (nodeWindow hG S)
+
+/-- `(L-1)`-window multiplicity: how many starts spell `k`. This is the
+natural word-level form of vertex throughput
+(`throughput_eq_nodeCount`); the cap `nodeCount k ≤ 2` is the explicit
+hypothesis left for the repeat-theory / `I_s` follow-up packet. -/
+def nodeCount {α : Type} [DecidableEq α] {G L : ℕ} (hG : 0 < G)
+    (S : Fin G → α) (k : Fin (L - 1) → α) : ℕ :=
+  (Finset.univ.filter (fun r : Fin G => nodeWindow hG S r = k)).card
+
+/-- Edge tail: length-`(L-1)` winPrefix. -/
+def winPrefix {α : Type} {L : ℕ} (w : Fin L → α) : Fin (L - 1) → α :=
+  fun d => w ⟨d.val, by have := d.isLt; omega⟩
+
+/-- Edge head: length-`(L-1)` winSuffix. -/
+def winSuffix {α : Type} {L : ℕ} (w : Fin L → α) : Fin (L - 1) → α :=
+  fun d => w ⟨d.val + 1, by have := d.isLt; omega⟩
+
+/-- Start `r + 1` as a start of the circular word. -/
+private def nextStart {G : ℕ} (hG : 0 < G) (r : Fin G) : Fin G :=
+  ⟨(r.val + 1) % G, Nat.mod_lt _ hG⟩
+
+/-- Start `r - 1` as a start of the circular word (two-sided inverse of
+`nextStart`, used to reindex node fibers). -/
+private def prevStart {G : ℕ} (hG : 0 < G) (r : Fin G) : Fin G :=
+  ⟨(r.val + G - 1) % G, Nat.mod_lt _ hG⟩
+
+/-- `nextStart` undoes `prevStart` (modular arithmetic). -/
+private lemma next_prev {G : ℕ} (hG : 0 < G) (r : Fin G) :
+    nextStart hG (prevStart hG r) = r := by
+  rw [Fin.ext_iff]
+  show ((r.val + G - 1) % G + 1) % G = r.val
+  have hr : r.val < G := r.isLt
+  rw [Nat.mod_add_mod, show r.val + G - 1 + 1 = r.val + G by omega,
+    Nat.add_mod_right, Nat.mod_eq_of_lt hr]
+
+/-- `prevStart` undoes `nextStart` (modular arithmetic). -/
+private lemma prev_next {G : ℕ} (hG : 0 < G) (r : Fin G) :
+    prevStart hG (nextStart hG r) = r := by
+  rw [Fin.ext_iff]
+  show ((r.val + 1) % G + G - 1) % G = r.val
+  have hr : r.val < G := r.isLt
+  by_cases h : r.val + 1 < G
+  · rw [Nat.mod_eq_of_lt h]
+    have h1 : r.val + 1 + G - 1 = r.val + G := by omega
+    rw [h1, Nat.add_mod_right, Nat.mod_eq_of_lt hr]
+  · have hrG : r.val + 1 = G := by omega
+    rw [hrG, Nat.mod_self, Nat.zero_add,
+      Nat.mod_eq_of_lt (by omega : G - 1 < G)]
+    omega
+
+/-- Iterating `nextStart` adds `t` modulo `G`. -/
+private lemma nextIter_val {G : ℕ} (hG : 0 < G) (r : Fin G) (t : ℕ) :
+    ((nextStart hG)^[t] r).val = (r.val + t) % G := by
+  induction t with
+  | zero =>
+      simp only [Function.iterate_zero, id_eq, Nat.add_zero,
+        Nat.mod_eq_of_lt r.isLt]
+  | succ n ih =>
+      rw [Function.iterate_succ_apply']
+      show (((nextStart hG)^[n] r).val + 1) % G = (r.val + (n + 1)) % G
+      rw [ih, Nat.mod_add_mod, Nat.add_assoc]
+
+/-- The winPrefix of a window is the node window at the same start. -/
+private lemma winPrefix_window {α : Type} {G L : ℕ} (hG : 0 < G) (S : Fin G → α)
+    (r : Fin G) :
+    winPrefix (window hG S r : Fin L → α) = nodeWindow hG S r := by
+  funext d
+  rfl
+
+/-- The winSuffix of a window is the node window at the next start. -/
+private lemma winSuffix_window {α : Type} {G L : ℕ} (hG : 0 < G) (S : Fin G → α)
+    (r : Fin G) :
+    winSuffix (window hG S r : Fin L → α) = nodeWindow hG S (nextStart hG r) := by
+  funext d
+  have hmod : ((r.val + 1) % G + d.val) % G = (r.val + (d.val + 1)) % G := by
+    rw [Nat.mod_add_mod]
+    congr 1
+    omega
+  unfold winSuffix window nodeWindow nextStart cyc
+  apply congrArg S
+  rw [Fin.mk.injEq]
+  exact hmod.symm
+
+/-- Support edges land ∈ the node set (the graph is well-formed). -/
+theorem mem_nodes_of_mem_support {α : Type} [DecidableEq α] {G L : ℕ} (hG : 0 < G)
+    (S : Fin G → α) (w : Fin L → α)
+    (hw : w ∈ support hG S) :
+    winPrefix w ∈ genomeNodes hG S ∧
+      winSuffix w ∈ genomeNodes hG S := by
+  simp only [support, Finset.mem_image] at hw
+  obtain ⟨r, _, rfl⟩ := hw
+  constructor
+  · rw [winPrefix_window]
+    exact Finset.mem_image.mpr ⟨r, Finset.mem_univ _, rfl⟩
+  · rw [winSuffix_window]
+    exact Finset.mem_image.mpr ⟨_, Finset.mem_univ _, rfl⟩
+
+/-- The truth spectrum is positive on its own support. -/
+theorem truth_pos_on_support {α : Type} [DecidableEq α] {G L : ℕ} (hG : 0 < G)
+    (S : Fin G → α) :
+    ∀ w : Fin L → α, w ∈ support hG S → 1 ≤ specCount hG S w := by
+  intro w hw
+  simp only [support, Finset.mem_image] at hw
+  obtain ⟨r, _, rfl⟩ := hw
+  have hmem : r ∈ Finset.univ.filter
+      (fun r' : Fin G => window hG S r' = (window hG S r : Fin L → α)) :=
+    Finset.mem_filter.mpr ⟨Finset.mem_univ _, rfl⟩
+  have hpos : 0 < specCount hG S (window hG S r : Fin L → α) :=
+    Finset.card_pos.mpr ⟨r, hmem⟩
+  omega
+
+/-- The truth spectrum totals to `G` over its support (fiber counting). -/
+theorem truth_total {α : Type} [DecidableEq α] {G L : ℕ} (hG : 0 < G)
+    (S : Fin G → α) :
+    ∑ w ∈ (support hG S : Finset (Fin L → α)), specCount hG S w = G := by
+  have hfib : ∀ w ∈ (support hG S : Finset (Fin L → α)),
+      (Finset.univ.filter (fun r : Fin G => window hG S r = w)).card =
+        specCount hG S w := fun _ _ => rfl
+  rw [← Finset.sum_congr rfl hfib]
+  have hmem : ∀ r ∈ (Finset.univ : Finset (Fin G)),
+      window hG S r ∈ (support hG S : Finset (Fin L → α)) := by
+    intro r _
+    exact Finset.mem_image.mpr ⟨r, Finset.mem_univ _, rfl⟩
+  have hcount := Finset.card_eq_sum_card_fiberwise hmem
+  rw [Finset.card_univ, Fintype.card_fin] at hcount
+  exact hcount.symm
+
+/-- Vertex throughput at `k` equals the `(L-1)`-window multiplicity of `k`:
+summing the truth spectrum over out-edges counts exactly the starts
+spelling `k` (fiber counting over `winPrefix_window`). -/
+theorem throughput_eq_nodeCount {α : Type} [DecidableEq α] {G L : ℕ}
+    (hG : 0 < G) (S : Fin G → α) (k : Fin (L - 1) → α) :
+    ∑ w ∈ outF winPrefix (support hG S) k, specCount hG S w
+      = nodeCount hG S k := by
+  show ∑ w ∈ (support hG S).filter (fun w => winPrefix w = k),
+    specCount hG S w = nodeCount hG S k
+  set s : Finset (Fin G) :=
+    Finset.univ.filter (fun r : Fin G => nodeWindow hG S r = k) with hs
+  have H : ∀ r ∈ s,
+      window hG S r ∈ (support hG S).filter (fun w => winPrefix w = k) := by
+    intro r hr
+    have hrk : nodeWindow hG S r = k := (Finset.mem_filter.mp hr).2
+    refine Finset.mem_filter.mpr ⟨Finset.mem_image.mpr
+      ⟨r, Finset.mem_univ _, rfl⟩, ?_⟩
+    rw [winPrefix_window]
+    exact hrk
+  have hcard := Finset.card_eq_sum_card_fiberwise H
+  have hfib : ∀ w ∈ (support hG S).filter (fun w => winPrefix w = k),
+      (s.filter (fun r : Fin G => window hG S r = w)).card
+        = specCount hG S w := by
+    intro w hw
+    have hpk : winPrefix w = k := (Finset.mem_filter.mp hw).2
+    congr 1
+    ext r
+    simp only [Finset.mem_filter, Finset.mem_univ, true_and]
+    constructor
+    · intro ⟨_, hwr⟩
+      exact hwr
+    · intro hwr
+      refine ⟨?_, hwr⟩
+      have h1 : nodeWindow hG S r = winPrefix w := by
+        rw [← hwr]
+        exact (winPrefix_window hG S r).symm
+      rw [hpk] at h1
+      rw [hs]
+      exact Finset.mem_filter.mpr ⟨Finset.mem_univ _, h1⟩
+  rw [Finset.sum_congr rfl hfib] at hcard
+  have hnc : s.card = nodeCount hG S k := rfl
+  rw [hnc] at hcard
+  exact hcard.symm
+
+/-- In-throughput at `k` also equals the `(L-1)`-window multiplicity:
+summing over in-edges counts the starts whose *successor* spells `k`,
+and `nextStart` permutes starts (via `prevStart`). -/
+private lemma in_throughput_eq_nodeCount {α : Type} [DecidableEq α] {G L : ℕ}
+    (hG : 0 < G) (S : Fin G → α) (k : Fin (L - 1) → α) :
+    ∑ w ∈ inF winSuffix (support hG S) k, specCount hG S w
+      = nodeCount hG S k := by
+  show ∑ w ∈ (support hG S).filter (fun w => winSuffix w = k),
+    specCount hG S w = nodeCount hG S k
+  set s : Finset (Fin G) :=
+    Finset.univ.filter
+      (fun r : Fin G => nodeWindow hG S (nextStart hG r) = k) with hs
+  have H : ∀ r ∈ s,
+      window hG S r ∈ (support hG S).filter (fun w => winSuffix w = k) := by
+    intro r hr
+    have hrk : nodeWindow hG S (nextStart hG r) = k :=
+      (Finset.mem_filter.mp hr).2
+    refine Finset.mem_filter.mpr ⟨Finset.mem_image.mpr
+      ⟨r, Finset.mem_univ _, rfl⟩, ?_⟩
+    rw [winSuffix_window]
+    exact hrk
+  have hcard := Finset.card_eq_sum_card_fiberwise H
+  have hfib : ∀ w ∈ (support hG S).filter (fun w => winSuffix w = k),
+      (s.filter (fun r : Fin G => window hG S r = w)).card
+        = specCount hG S w := by
+    intro w hw
+    have hsk : winSuffix w = k := (Finset.mem_filter.mp hw).2
+    congr 1
+    ext r
+    simp only [Finset.mem_filter, Finset.mem_univ, true_and]
+    constructor
+    · intro ⟨_, hwr⟩
+      exact hwr
+    · intro hwr
+      refine ⟨?_, hwr⟩
+      have h1 : nodeWindow hG S (nextStart hG r) = winSuffix w := by
+        rw [← hwr]
+        exact (winSuffix_window hG S r).symm
+      rw [hsk] at h1
+      rw [hs]
+      exact Finset.mem_filter.mpr ⟨Finset.mem_univ _, h1⟩
+  rw [Finset.sum_congr rfl hfib] at hcard
+  -- The successor-fiber has the same card as the node fiber:
+  -- `nextStart` is a permutation with inverse `prevStart`.
+  have hshift : s.card = nodeCount hG S k := by
+    show s.card =
+      (Finset.univ.filter (fun r : Fin G => nodeWindow hG S r = k)).card
+    apply Finset.card_bij' (fun r _ => nextStart hG r)
+      (fun q _ => prevStart hG q)
+    · intro r hr
+      exact Finset.mem_filter.mpr
+        ⟨Finset.mem_univ _, (Finset.mem_filter.mp hr).2⟩
+    · intro q hq
+      have h2 : nodeWindow hG S q = k := (Finset.mem_filter.mp hq).2
+      refine Finset.mem_filter.mpr ⟨Finset.mem_univ _, ?_⟩
+      have h3 : nodeWindow hG S (nextStart hG (prevStart hG q)) = k := by
+        rw [next_prev]
+        exact h2
+      exact h3
+    · intro r _
+      exact prev_next hG r
+    · intro q _
+      exact next_prev hG q
+  rw [hshift] at hcard
+  exact hcard.symm
+
+/-- The truth spectrum is balanced at every `(L-1)`-window node (note §2,
+Fact 1, Lean-checked): out- and in-throughput both equal the node
+multiplicity. -/
+theorem truth_balanced {α : Type} [DecidableEq α] {G L : ℕ} (hG : 0 < G)
+    (S : Fin G → α) :
+    Balanced winPrefix winSuffix (genomeNodes hG S) (support hG S)
+      (specCount hG S : (Fin L → α) → ℕ) := by
+  intro k _
+  rw [throughput_eq_nodeCount hG S k, in_throughput_eq_nodeCount hG S k]
+
+/-- Walking `t` steps forward from `r` stays reachable: each step follows
+the length-`L` window edge at the current start. -/
+private lemma reachable_iter {α : Type} [DecidableEq α] {G L : ℕ} (hG : 0 < G)
+    (S : Fin G → α) (r : Fin G) (t : ℕ) :
+    Reachable (winPrefix (α := α) (L := L)) (winSuffix (α := α) (L := L))
+      (support hG S) (nodeWindow hG S r)
+      (nodeWindow hG S ((nextStart hG)^[t] r)) := by
+  induction t generalizing r with
+  | zero => exact Reachable.refl _
+  | succ n ih =>
+      rw [Function.iterate_succ_apply']
+      exact Reachable.step (window hG S ((nextStart hG)^[n] r)) (ih r)
+        (Finset.mem_image.mpr ⟨_, Finset.mem_univ _, rfl⟩)
+        (winPrefix_window hG S _)
+        (winSuffix_window hG S _)
+
+/-- The window support is directed-strongly-connected (note §2, Fact 2,
+Lean-checked): from the start spelling `u`, walk forward along the
+circular word until reaching the start spelling `v`. -/
+theorem truth_strongly_connected {α : Type} [DecidableEq α] {G L : ℕ}
+    (hG : 0 < G) (S : Fin G → α) :
+    StronglyConnected winPrefix winSuffix (genomeNodes hG S)
+      (support hG S : Finset (Fin L → α)) := by
+  intro u hu v hv
+  simp only [genomeNodes, Finset.mem_image] at hu hv
+  obtain ⟨ru, _, rfl⟩ := hu
+  obtain ⟨rv, _, rfl⟩ := hv
+  have hstep : (nextStart hG)^[((rv.val + G - ru.val) % G)] ru = rv := by
+    have hrv : rv.val < G := rv.isLt
+    have key : (ru.val + (rv.val + G - ru.val) % G) % G = rv.val := by
+      rw [show ru.val + (rv.val + G - ru.val) % G
+            = (rv.val + G - ru.val) % G + ru.val from add_comm _ _,
+        Nat.mod_add_mod,
+        show (rv.val + G - ru.val) + ru.val = rv.val + G by omega,
+        Nat.add_mod_right, Nat.mod_eq_of_lt hrv]
+    apply Fin.ext
+    rw [nextIter_val]
+    exact key
+  rw [← hstep]
+  exact reachable_iter hG S ru _
+
+/-- **Main adapter (issue #69): rigidity under the `(L-1)`-window
+multiplicity cap.** If every `(L-1)`-window occurs at most twice
+(`hNodeCap` — the natural word-level form of the vertex-throughput bound,
+whose derivation from the triple-repeat clause of `I_s` is a separate
+repeat-theory packet), then every same-length spelled candidate (same
+support, positive balanced circulation of total `G`) has exactly the
+truth's spectrum. Balance (`truth_balanced`) and strong connectivity
+(`truth_strongly_connected`) are proved from the circular word, not
+assumed. -/
+theorem rigidity_same_spectrum
+    {α : Type} [DecidableEq α] {G L : ℕ} (hG : 0 < G)
+    (S : Fin G → α)
+    (B : (Fin L → α) → ℕ)
+    (hBsup : ∀ w, w ∈ support hG S ↔ 0 < B w)
+    (hBbal : Balanced winPrefix winSuffix
+      (genomeNodes hG S) (support hG S) B)
+    (hBtot : ∑ w ∈ support hG S, B w = G)
+    (hNodeCap : ∀ k : Fin (L - 1) → α, k ∈ genomeNodes hG S →
+      nodeCount hG S k ≤ 2)
+    : ∀ w, B w = specCount hG S w := by
+  have hApos : ∀ w : Fin L → α, w ∈ support hG S → 1 ≤ specCount hG S w :=
+    truth_pos_on_support (L := L) hG S
+  have hAtot := truth_total (L := L) hG S
+  have hAbal := truth_balanced (L := L) hG S
+  have hstrong := truth_strongly_connected (L := L) hG S
+  have hBpos : ∀ w ∈ support hG S, 1 ≤ B w := fun w hw => (hBsup w).mp hw
+  have hmemT : ∀ w : Fin L → α, w ∈ support hG S →
+      winPrefix w ∈ genomeNodes hG S ∧ winSuffix w ∈ genomeNodes hG S :=
+    mem_nodes_of_mem_support (L := L) hG S
+  have hcap : ∀ k : Fin (L - 1) → α, k ∈ genomeNodes hG S →
+      ∑ w ∈ outF winPrefix (support hG S) k, specCount hG S w ≤ 2 := by
+    intro k hk
+    rw [throughput_eq_nodeCount hG S k]
+    exact hNodeCap k hk
+  have heq := unique_positive_circulation (winPrefix) (winSuffix)
+    (genomeNodes hG S) (support hG S) G (specCount hG S) B
+    hmemT hApos hBpos hAbal hBbal hAtot hBtot hcap hstrong
+  intro w
+  by_cases hw : w ∈ support hG S
+  · exact heq w hw
+  · have hB0 : B w = 0 := Nat.eq_zero_of_not_pos (fun h => hw ((hBsup w).mpr h))
+    have hA0 : specCount hG S w = 0 := by
+      have hemp : Finset.univ.filter (fun r : Fin G => window hG S r = w) = ∅ := by
+        rw [Finset.eq_empty_iff_forall_notMem]
+        intro r hr
+        apply hw
+        have hwr : window hG S r = w := (Finset.mem_filter.mp hr).2
+        rw [← hwr]
+        exact Finset.mem_image.mpr ⟨r, Finset.mem_univ _, rfl⟩
+      show (Finset.univ.filter (fun r : Fin G => window hG S r = w)).card = 0
+      rw [hemp, Finset.card_empty]
+    rw [hB0, hA0]
+
+end WordLayer
 
 end AssemblyP1.OrientedRigidity
