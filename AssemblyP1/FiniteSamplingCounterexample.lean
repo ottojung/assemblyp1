@@ -53,9 +53,9 @@ def TruthP1 : Prop := Function.Injective truthWindow2
 
 def CompetitorP1 : Prop := Function.Injective competitorWindow2
 
-theorem truth_p1 : TruthP1 := by decide
+theorem truth_p1 : TruthP1 := by classical decide
 
-theorem competitor_p1 : CompetitorP1 := by decide
+theorem competitor_p1 : CompetitorP1 := by classical decide
 
 /-- Concrete primitivity certificate: no nonzero shift fixes the circular word. -/
 def TruthPrimitive : Prop :=
@@ -65,9 +65,9 @@ def TruthPrimitive : Prop :=
 def CompetitorPrimitive : Prop :=
   ∀ k : Fin 4, k ≠ 0 → ∃ i : Fin 4, competitorCyc (i.val + k.val) ≠ competitor i
 
-theorem truth_primitive : TruthPrimitive := by decide
+theorem truth_primitive : TruthPrimitive := by classical decide
 
-theorem competitor_primitive : CompetitorPrimitive := by decide
+theorem competitor_primitive : CompetitorPrimitive := by classical decide
 
 /-- Starts `0` and `3` in `AABBC` realize exactly the advertised reads. -/
 theorem realized_reads : truthWindow3 0 = readAAB ∧ truthWindow3 3 = readBCA := by
