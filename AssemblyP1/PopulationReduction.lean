@@ -1535,6 +1535,170 @@ theorem spell_exists_divided {G : ℕ} (hG : 0 < G) (S : Fin G → α)
 
 end DividedSpelling
 
+section PowerScaling
+
+variable {α : Type} [DecidableEq α]
+variable {L : ℕ}
+
+open OrientedRigidity
+
+/-- Power word: repeat `W` `g` times into length `G`. -/
+def repWord {m : ℕ} (hm : 0 < m) (W : Fin m → α) (_g : ℕ) (G : ℕ) :
+    Fin G → α :=
+  fun i => W ⟨i.val % m, Nat.mod_lt _ hm⟩
+
+omit [DecidableEq α] in
+/-- Windows of a power word are windows of the base. -/
+theorem window_repWord {m G : ℕ} (hm : 0 < m) (W : Fin m → α) (g : ℕ)
+    (hG0 : 0 < G) (hG : m * g = G) (L : ℕ) (r : Fin G) :
+    window (L := L) hG0 (repWord hm W g G) r
+      = window (L := L) hm W ⟨r.val % m, Nat.mod_lt _ hm⟩ := by
+  funext d
+  have hdivG : m ∣ G := ⟨g, hG.symm⟩
+  have e1 : ((r.val + d.val) % G) % m = (r.val + d.val) % m :=
+    Nat.mod_mod_of_dvd _ hdivG
+  have e2 : ((r.val % m) + d.val) % m = (r.val + d.val) % m :=
+    Nat.mod_add_mod _ _ _
+  have sL : window (L := L) hG0 (repWord hm W g G) r d
+      = W ⟨((r.val + d.val) % G) % m, Nat.mod_lt _ hm⟩ := rfl
+  have sR : window (L := L) hm W ⟨r.val % m, Nat.mod_lt _ hm⟩ d
+      = W ⟨((r.val % m) + d.val) % m, Nat.mod_lt _ hm⟩ := rfl
+  have f1 : (⟨((r.val + d.val) % G) % m, Nat.mod_lt _ hm⟩ : Fin m)
+      = ⟨(r.val + d.val) % m, Nat.mod_lt _ hm⟩ :=
+    Fin.ext e1
+  have f2 : (⟨((r.val % m) + d.val) % m, Nat.mod_lt _ hm⟩ : Fin m)
+      = ⟨(r.val + d.val) % m, Nat.mod_lt _ hm⟩ :=
+    Fin.ext e2
+  rw [sL, sR, f1, f2]
+
+/-- Each base start lifts to exactly `g` power starts. -/
+theorem fiber_card_rep {m G : ℕ} (hm : 0 < m) (g : ℕ) (hG : m * g = G)
+    (b : Fin m) :
+    (Finset.univ.filter (fun r : Fin G => r.val % m = b.val)).card = g := by
+  have hbound : ∀ t : Fin g, b.val + t.val * m < m * g := by
+    intro t
+    have ht1 : t.val + 1 ≤ g := Nat.succ_le_of_lt t.isLt
+    have hmul := mul_le_mul_of_nonneg_right ht1 (Nat.zero_le m)
+    have hexpand : (t.val + 1) * m = t.val * m + m := by
+      rw [Nat.add_mul, Nat.one_mul]
+    have hb : b.val < m := b.isLt
+    have hcomm : m * g = g * m := mul_comm _ _
+    omega
+  have hfin : ∀ t : Fin g, b.val + t.val * m < G := fun t => hG ▸ hbound t
+  classical
+  let φ : Fin g → Fin G := fun t => ⟨b.val + t.val * m, hfin t⟩
+  have himg : Finset.image φ Finset.univ
+      = Finset.univ.filter (fun r : Fin G => r.val % m = b.val) := by
+    ext r
+    simp only [Finset.mem_image, Finset.mem_univ, true_and,
+      Finset.mem_filter, Finset.mem_univ, true_and]
+    constructor
+    · rintro ⟨t, ht⟩
+      have htv : (φ t).val = b.val + t.val * m := rfl
+      rw [← ht, htv]
+      have e : (b.val + t.val * m) % m = b.val := by
+        have hb : b.val < m := b.isLt
+        rw [Nat.add_mul_mod_self_right]
+        exact Nat.mod_eq_of_lt hb
+      exact e
+    · intro hmod
+      have hlt : r.val < g * m := by
+        rw [mul_comm]
+        omega
+      have hdiv : r.val / m < g := (Nat.div_lt_iff_lt_mul hm).mpr hlt
+      refine ⟨⟨r.val / m, hdiv⟩, ?_⟩
+      apply Fin.ext
+      have hdecomp : r.val % m + m * (r.val / m) = r.val :=
+        Nat.mod_add_div _ _
+      have h2 : b.val + r.val / m * m = r.val := by
+        rw [← hmod]
+        rw [mul_comm (r.val / m) m]
+        exact hdecomp
+      -- goal: b.val + (r.val / m) * m = r.val (from Fin.ext val equation)
+      exact h2
+  have hinj : Function.Injective φ := by
+    intro t₁ t₂ h12
+    have h12v : b.val + t₁.val * m = b.val + t₂.val * m := by
+      have := congrArg Fin.val h12
+      simpa only [Fin.val_mk] using this
+    have hmul : t₁.val * m = t₂.val * m := by omega
+    have hteq : t₁.val = t₂.val := Nat.mul_right_cancel hm hmul
+    exact Fin.ext hteq
+  rw [← himg, Finset.card_image_of_injective _ hinj, Finset.card_univ,
+    Fintype.card_fin]
+
+/-- Power spectrum scaling (issue #70, discharging `hPowScale`):
+repeating a word `g` times scales every window count by `g`. -/
+theorem power_spec_rep {m G : ℕ} (hm : 0 < m) (W : Fin m → α) (g : ℕ)
+    (hG0 : 0 < G) (hG : m * g = G) (L : ℕ) :
+    specCount (L := L) hG0 (repWord hm W g G)
+      = fun w : Fin L → α => g * specCount (L := L) hm W w := by
+  funext w
+  have hMaps : Set.MapsTo (fun r : Fin G => (⟨r.val % m, Nat.mod_lt _ hm⟩ : Fin m))
+      ↑(Finset.univ.filter
+        (fun r : Fin G => window (L := L) hG0 (repWord hm W g G) r = w))
+      ↑(Finset.univ.filter (fun s : Fin m => window (L := L) hm W s = w)) := by
+    intro r hr
+    simp only [Finset.mem_coe, Finset.mem_filter, Finset.mem_univ,
+      true_and] at hr ⊢
+    have hwr := window_repWord hm W g hG0 hG L r
+    exact hwr ▸ hr
+  have hcount := Finset.card_eq_sum_card_fiberwise hMaps
+  have hsR : specCount (L := L) hG0 (repWord hm W g G) w
+      = (Finset.univ.filter
+        (fun r : Fin G => window (L := L) hG0 (repWord hm W g G) r = w)).card := rfl
+  have hsW : specCount (L := L) hm W w
+      = (Finset.univ.filter (fun s : Fin m => window (L := L) hm W s = w)).card := rfl
+  have hfib_eq : ∀ b ∈ Finset.univ.filter
+      (fun s : Fin m => window (L := L) hm W s = w),
+      (Finset.univ.filter
+        (fun r : Fin G => window (L := L) hG0 (repWord hm W g G) r = w)).filter
+        (fun a => (⟨a.val % m, Nat.mod_lt _ hm⟩ : Fin m) = b)
+      = Finset.univ.filter (fun r : Fin G => r.val % m = b.val) := by
+    intro b hb
+    have hwb : window (L := L) hm W b = w := (Finset.mem_filter.mp hb).2
+    ext r
+    simp only [Finset.mem_filter, Finset.mem_univ, true_and]
+    constructor
+    · intro hmem
+      obtain ⟨hrw, hfb⟩ := hmem
+      have hfbv : r.val % m = b.val := by
+        have hcc := congrArg Fin.val hfb
+        simpa only [Fin.val_mk] using hcc
+      exact hfbv
+    · intro hmod
+      have hfb : (⟨r.val % m, Nat.mod_lt _ hm⟩ : Fin m) = b :=
+        Fin.ext hmod
+      have hwR : window (L := L) hG0 (repWord hm W g G) r = window (L := L) hm W b := by
+        have hwr := window_repWord hm W g hG0 hG L r
+        rw [hfb] at hwr
+        exact hwr
+      refine ⟨?_, ?_⟩
+      · rw [hwR]; exact hwb
+      · exact hfb
+  have hsum : (∑ b ∈ Finset.univ.filter (fun s : Fin m => window (L := L) hm W s = w),
+      ((Finset.univ.filter
+        (fun r : Fin G => window (L := L) hG0 (repWord hm W g G) r = w)).filter
+        (fun a => (⟨a.val % m, Nat.mod_lt _ hm⟩ : Fin m) = b)).card)
+      = ∑ _b ∈ Finset.univ.filter (fun s : Fin m => window (L := L) hm W s = w), g :=
+    Finset.sum_congr rfl (fun b hb => by
+      have hfc := fiber_card_rep hm g hG b
+      have heq := hfib_eq b hb
+      exact (congrArg Finset.card heq).trans hfc)
+  have hfin : (∑ _b ∈ Finset.univ.filter
+      (fun s : Fin m => window (L := L) hm W s = w), g)
+      = g * specCount (L := L) hm W w := by
+    have e1 : (∑ _b ∈ Finset.univ.filter
+        (fun s : Fin m => window (L := L) hm W s = w), g)
+        = (Finset.univ.filter
+          (fun s : Fin m => window (L := L) hm W s = w)).card * g := by
+      rw [Finset.sum_const]
+      exact nsmul_eq_mul _ _
+    rw [e1, hsW, mul_comm]
+  exact hsR.trans (hcount.trans (hsum.trans hfin))
+
+end PowerScaling
+
 /-- Power lifting: a spelling `W` of the quotient `spec S / g` repeats
 to the original spectrum, via the explicit power-scale interface
 `hPowScale` (what `power W g`, i.e. `W^g`, means for spectra: each
