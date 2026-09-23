@@ -1100,6 +1100,168 @@ theorem eulerian_closed_trail (q : E → ℕ) (hbal : CircBalanced tail head q)
 
 end EulerianTrail
 
+/-- Every nonempty list splits off its last element. -/
+theorem list_split_last {E : Type} {T : List E} (hne : T ≠ []) :
+    ∃ A l, T = A ++ [l] := by
+  induction T with
+  | nil => exact absurd rfl hne
+  | cons e T' ih =>
+    cases T' with
+    | nil => exact ⟨[], e, rfl⟩
+    | cons f rest =>
+      obtain ⟨A, l, h⟩ := ih (by simp)
+      exact ⟨e :: A, l, by rw [h, List.cons_append]⟩
+
+section TrailSpelling
+
+variable {V E : Type} [DecidableEq V] [DecidableEq E]
+variable (tail head : E → V)
+
+omit [DecidableEq V] [DecidableEq E] in
+/-- First edge of a nonempty trail starts at the start. -/
+theorem trail_first_tail {e : E} {T' : List E} {s t : V}
+    (h : TrailEnds tail head (e :: T') s t) : tail e = s := by
+  cases h with
+  | cons _ _ _ _ hte _ => exact hte
+
+omit [DecidableEq V] [DecidableEq E] in
+/-- Internal adjacency: consecutive edges of a trail match head/tail. -/
+theorem trail_get_adj {T : List E} {s t : V}
+    (h : TrailEnds tail head T s t) (i : ℕ) (hi : i + 1 < T.length) :
+    head (T.get ⟨i, by omega⟩) = tail (T.get ⟨i + 1, hi⟩) := by
+  revert i hi
+  induction h with
+  | nil s =>
+    intro i hi
+    simp at hi
+  | cons e T' s t hte hT' ih =>
+    intro i hi
+    cases i with
+    | zero =>
+      show head e = tail ((e :: T').get ⟨0 + 1, hi⟩)
+      rw [List.get_cons_succ]
+      cases T' with
+      | nil => simp at hi
+      | cons f rest =>
+        show head e = tail f
+        cases hT' with
+        | cons _ _ _ _ hte' _ => exact hte'.symm
+    | succ j =>
+      have hlen : (e :: T').length = T'.length + 1 := rfl
+      have hj : j + 1 < T'.length := by omega
+      simp only [List.get_cons_succ]
+      exact ih j hj
+
+omit [DecidableEq V] [DecidableEq E] in
+/-- Last edge of a trail ends at the end (index-free: induct on the
+init part). -/
+theorem trail_last_head {A : List E} {l : E} {s t : V}
+    (h : TrailEnds tail head (A ++ [l]) s t) : head l = t := by
+  induction A generalizing s with
+  | nil =>
+    have h' : TrailEnds tail head [l] s t := h
+    cases h' with
+    | cons _ _ _ _ _ hT' =>
+      cases hT' with
+      | nil _ => rfl
+  | cons a A' ih =>
+    have h' : TrailEnds tail head (a :: (A' ++ [l])) s t := h
+    cases h' with
+    | cons _ _ _ _ _ hT' => exact ih hT'
+
+section WordSpelling
+
+variable {α : Type} [DecidableEq α]
+variable {L : ℕ}
+
+open OrientedRigidity
+
+/-- Cyclic edge access into a trail. -/
+def cycEdge (T : List (Fin L → α)) (hm : 0 < T.length) (n : ℕ) : Fin L → α :=
+  T.get ⟨n % T.length, Nat.mod_lt _ hm⟩
+
+omit [DecidableEq α] in
+/-- Cyclic adjacency of a closed trail: consecutive edges (modulo the
+length) match suffix/prefix. -/
+theorem trail_cyc_adj {T : List (Fin L → α)} {s : Fin (L - 1) → α}
+    (h : TrailEnds winPrefix winSuffix T s s) (hm : 0 < T.length)
+    (j : ℕ) (hj : j < T.length) :
+    winSuffix (cycEdge T hm j)
+      = winPrefix (cycEdge T hm ((j + 1) % T.length)) := by
+  by_cases hlt : j + 1 < T.length
+  · have g1 : cycEdge T hm j = T.get ⟨j, hj⟩ := by
+      unfold cycEdge
+      congr 1
+      exact Fin.ext (Nat.mod_eq_of_lt hj)
+    have g2 : cycEdge T hm ((j + 1) % T.length) = T.get ⟨j + 1, hlt⟩ := by
+      unfold cycEdge
+      congr 1
+      apply Fin.ext
+      rw [Nat.mod_eq_of_lt hlt]
+      exact Nat.mod_eq_of_lt hlt
+    rw [g1, g2]
+    exact trail_get_adj winPrefix winSuffix h j hlt
+  · have hj1 : j + 1 = T.length := by omega
+    have e0 : (j + 1) % T.length = 0 := by rw [hj1, Nat.mod_self]
+    have hne : T ≠ [] := by
+      intro h0
+      rw [h0] at hj
+      simp at hj
+    obtain ⟨A, l, hAB⟩ := list_split_last hne
+    subst hAB
+    have hlen : (A ++ [l]).length = A.length + 1 := by
+      rw [List.length_append]
+      simp
+    have hls : winSuffix l = s :=
+      trail_last_head winPrefix winSuffix h
+    have h3 : j - A.length = 0 := by omega
+    have hlast : cycEdge (A ++ [l]) hm j = l := by
+      have g1 : cycEdge (A ++ [l]) hm j = (A ++ [l]).get ⟨j, hj⟩ := by
+        unfold cycEdge
+        congr 1
+        exact Fin.ext (Nat.mod_eq_of_lt hj)
+      have hJ : (A ++ [l])[j] = l := by
+        rw [List.getElem_append_right (by omega : A.length ≤ j)]
+        exact List.getElem_singleton (by omega)
+      rw [g1, List.get_eq_getElem]
+      exact hJ
+    have hfs : winPrefix (cycEdge (A ++ [l]) hm 0) = s := by
+      cases A with
+      | nil =>
+        have g0 : cycEdge ([] ++ [l]) hm 0
+            = ([] ++ [l]).get ⟨0, hm⟩ := by
+          unfold cycEdge
+          congr 1
+        have hJ : ([] ++ [l])[0] = l := by
+          rw [List.getElem_append_right (by simp : ([] : List (Fin L → α)).length ≤ 0)]
+          exact List.getElem_singleton (by omega)
+        have h2 : TrailEnds winPrefix winSuffix [l] s s := h
+        have hW : winPrefix (([] ++ [l])[0]) = s := by
+          rw [hJ]
+          exact trail_first_tail winPrefix winSuffix h2
+        rw [g0, List.get_eq_getElem]
+        exact hW
+      | cons a A' =>
+        have g0 : cycEdge ((a :: A') ++ [l]) hm 0
+            = ((a :: A') ++ [l]).get ⟨0, hm⟩ := by
+          unfold cycEdge
+          congr 1
+        have hJ : ((a :: A') ++ [l])[0] = a := by
+          rw [List.getElem_append_left (by simp : (0 : ℕ) < (a :: A').length)]
+          exact List.getElem_cons_zero a A' (by simp)
+        have h2 : TrailEnds winPrefix winSuffix (a :: (A' ++ [l])) s s := h
+        have hW : winPrefix (((a :: A') ++ [l])[0]) = s := by
+          rw [hJ]
+          exact trail_first_tail winPrefix winSuffix h2
+        rw [g0, List.get_eq_getElem]
+        exact hW
+    rw [e0, hlast, hfs]
+    exact hls
+
+end WordSpelling
+
+end TrailSpelling
+
 /-- Power lifting: a spelling `W` of the quotient `spec S / g` repeats
 to the original spectrum, via the explicit power-scale interface
 `hPowScale` (what `power W g`, i.e. `W^g`, means for spectra: each
