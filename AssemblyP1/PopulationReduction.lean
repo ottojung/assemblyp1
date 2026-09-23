@@ -1389,7 +1389,8 @@ theorem spell_exists_divided {G : ℕ} (hG : 0 < G) (S : Fin G → α)
     (hL : 1 < L) (g : ℕ) (hg1 : 1 < g)
     (hdiv : ∀ w : Fin L → α, g ∣ specCount hG S w) :
     ∃ (m : ℕ) (hW : 0 < m) (W : Fin m → α),
-      specCount hW W = fun w : Fin L → α => specCount hG S w / g := by
+      specCount hW W = (fun w : Fin L → α => specCount hG S w / g)
+        ∧ m * g = G := by
   have hg0 : 0 < g := by omega
   -- The divided circulation vanishes off-support.
   have hcvan : ∀ w : Fin L → α, w ∉ support hG S → specCount hG S w = 0 := by
@@ -1490,11 +1491,14 @@ theorem spell_exists_divided {G : ℕ} (hG : 0 < G) (S : Fin G → α)
     have hQ0 : ∑ w : Fin L → α, specCount hG S w / g = 0 := Nat.eq_zero_of_not_pos hcon
     rw [hQ0, mul_zero] at hGmul
     omega
-  have hlenT : 0 < T.length := by
-    have hTeq := length_eq_sum_edgeUse T
-    have hsum : ∑ e, edgeUse T e = ∑ w : Fin L → α, specCount hG S w / g :=
-      Finset.sum_congr rfl (fun w _ => hTuse w)
-    omega
+  have hTeq := length_eq_sum_edgeUse T
+  have hsum : ∑ e, edgeUse T e
+      = ∑ w : Fin L → α, specCount hG S w / g :=
+    Finset.sum_congr rfl (fun w _ => hTuse w)
+  have hlenT : 0 < T.length := by omega
+  have hmg : T.length * g = G := by
+    rw [hTeq, hsum, mul_comm]
+    exact hGmul.symm
   -- Spell the trail as a circular word with the quotient spectrum.
   have hL0 : 0 < L := by omega
   have hadj : ∀ j : Fin T.length, winSuffix (T.get j)
@@ -1512,7 +1516,7 @@ theorem spell_exists_divided {G : ℕ} (hG : 0 < G) (S : Fin G → α)
       exact Fin.ext (Nat.mod_eq_of_lt (Nat.mod_lt _ hlenT))
     rw [b1, b2] at hbase
     exact hbase
-  refine ⟨T.length, hlenT, spellWord hL0 T.get, ?_⟩
+  refine ⟨T.length, hlenT, spellWord hL0 T.get, ?_, hmg⟩
   funext w
   have hwin : ∀ r : Fin T.length,
       window hlenT (spellWord hL0 T.get) r = T.get r :=
