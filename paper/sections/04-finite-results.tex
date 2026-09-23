@@ -201,7 +201,8 @@ exactly the rotation class of $S$.
 
 \statusline{The spectrum-rigidity reduction is \kernelcheck{} in
 \texttt{AssemblyP1/OrientedFinalRigidity.lean}, conditional on the explicit
-no-long-triple-repeat boundary and primitive/periodic case-split context; the
+no-long-triple-repeat boundary, with the primitive/periodic split discharged
+internally by the kernel-checked dichotomy; the
 $\Is$-to-no-triple-repeat bridging implication is source-supported, and the
 spectrum-identifiability (rotation-uniqueness) step is the external \srcfact{}
 input \cite{bresler2013} (Theorem~\ref{thm:BBT}), the same input accepted for the
@@ -233,7 +234,8 @@ what permits the multiplicity reallocation.
 \statusline{Theorem~\ref{thm:rigidity} and
 Corollary~\ref{cor:same-length-zero} are \mathfact{} with a \kernelcheck{}
 conditional core (\texttt{OrientedFinalRigidity}, modulo the source-supported
-$\Is$ bridging implication and explicit case-split context); the rotation
+$\Is$ bridging implication, the primitive/periodic split now being
+kernel-checked internally); the rotation
 conclusion of Corollary~\ref{cor:same-length-rotation} adds the external BBT input
 \cite{bresler2013} and is therefore source-supported mathematics rather than
 kernel-checked. The same-spectrum conclusion gives equality/ties for

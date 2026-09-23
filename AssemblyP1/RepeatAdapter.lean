@@ -1139,4 +1139,82 @@ theorem periodic_rigidity_same_spectrum {α : Type} [DecidableEq α] {G L : ℕ}
       rw [hemp, Finset.card_empty]
     rw [hB0, hA0]
 
+/-! ## Primitive-or-minimal-period dichotomy (issue #74) -/
+
+/-- A full turn is a period. -/
+private theorem period_G {α : Type} {G : ℕ} (hG : 0 < G)
+    (S : Fin G → α) : IsPeriod hG S G :=
+  fun i => (cyc_add_G hG S i).symm
+
+/-- Periods are closed under addition. -/
+private theorem period_add {α : Type} {G : ℕ} (hG : 0 < G)
+    (S : Fin G → α) {p q : ℕ}
+    (hp : IsPeriod hG S p) (hq : IsPeriod hG S q) :
+    IsPeriod hG S (p + q) := by
+  intro i
+  have e1 := hp i
+  have e2 := hq (i + p)
+  have heq : i + (p + q) = (i + p) + q := by omega
+  rw [heq]
+  exact e1.trans e2
+
+/-- Periods are closed under subtraction (`b ≤ a`). -/
+private theorem period_sub {α : Type} {G : ℕ} (hG : 0 < G)
+    (S : Fin G → α) {a b : ℕ}
+    (ha : IsPeriod hG S a) (hb : IsPeriod hG S b) (hle : b ≤ a) :
+    IsPeriod hG S (a - b) := by
+  intro i
+  have h1 := hb (i + (a - b))
+  have h2 := ha i
+  have heq : i + (a - b) + b = i + a := by omega
+  rw [heq] at h1
+  exact h2.trans h1.symm
+
+/-- **Dichotomy (issue #74).** Every nonempty finite circular word is either
+primitive or carries a minimal period (dividing `G`). The witness is the
+least positive period; divisibility follows by Euclidean division, since a
+nonzero remainder would be a strictly smaller period. `hno`/source-`I_s`
+and BBT interfaces are untouched. -/
+theorem primitive_or_minimal_period {α : Type} {G : ℕ} (hG : 0 < G)
+    (S : Fin G → α) :
+    IsPrimitive hG S ∨ ∃ p : ℕ, HasMinimalPeriod hG S p := by
+  classical
+  by_cases hprim : IsPrimitive hG S
+  · exact Or.inl hprim
+  · right
+    have hex : ∃ s : ℕ, 0 < s ∧ s < G ∧ IsPeriod hG S s := by
+      by_contra hnone
+      apply hprim
+      intro s hs0 hsG hper
+      exact hnone ⟨s, hs0, hsG, hper⟩
+    obtain ⟨s, hs0, hsG, hsper⟩ := hex
+    have hGper : IsPeriod hG S G := period_G hG S
+    have hexP : ∃ p : ℕ, IsPeriod hG S p ∧ 0 < p := ⟨G, hGper, hG⟩
+    have hmem : IsPeriod hG S (Nat.find hexP) ∧ 0 < Nat.find hexP :=
+      Nat.find_spec hexP
+    obtain ⟨hper_p, hp0⟩ := hmem
+    have hple : Nat.find hexP ≤ s := Nat.find_min' hexP ⟨hsper, hs0⟩
+    have hpG : Nat.find hexP < G := lt_of_le_of_lt hple hsG
+    have hmin : ∀ q : ℕ, 0 < q → q < Nat.find hexP →
+        ¬ IsPeriod hG S q := by
+      intro q hq0 hqp hper_q
+      have hle : Nat.find hexP ≤ q := Nat.find_min' hexP ⟨hper_q, hq0⟩
+      omega
+    have hGp : G % Nat.find hexP = 0 := by
+      by_contra hne0
+      have hr0 : 0 < G % Nat.find hexP := Nat.pos_of_ne_zero hne0
+      have hrlt : G % Nat.find hexP < Nat.find hexP := Nat.mod_lt _ hp0
+      have hmul : IsPeriod hG S (Nat.find hexP * (G / Nat.find hexP)) :=
+        fun i => per_add_mul hG S (Nat.find hexP) hper_p i (G / Nat.find hexP)
+      have hle : Nat.find hexP * (G / Nat.find hexP) ≤ G := by
+        have h := Nat.div_add_mod G (Nat.find hexP)
+        omega
+      have hsub := period_sub hG S hGper hmul hle
+      have heq : G - Nat.find hexP * (G / Nat.find hexP) = G % Nat.find hexP := by
+        have h := Nat.div_add_mod G (Nat.find hexP)
+        omega
+      rw [heq] at hsub
+      exact hmin _ hr0 hrlt hsub
+    exact ⟨Nat.find hexP, hp0, hpG, hGp, hper_p, hmin⟩
+
 end AssemblyP1.RepeatAdapter
