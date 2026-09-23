@@ -1258,6 +1258,97 @@ theorem trail_cyc_adj {T : List (Fin L → α)} {s : Fin (L - 1) → α}
     rw [e0, hlast, hfs]
     exact hls
 
+/-- Spelling word: first letters of successive trail edges. -/
+def spellWord {m : ℕ} (hL : 0 < L) (w : Fin m → Fin L → α) : Fin m → α :=
+  fun j => w j ⟨0, hL⟩
+
+omit [DecidableEq α] in
+/-- One-letter shift along the trail spelling. -/
+theorem spell_shift {m : ℕ} (w : Fin m → Fin L → α) (hm : 0 < m)
+    (hadj : ∀ j : Fin m, winSuffix (w j)
+      = winPrefix (w ⟨(j.val + 1) % m, Nat.mod_lt _ hm⟩))
+    (j : Fin m) (k : ℕ) (hk1 : k + 1 < L) :
+    w ⟨(j.val + 1) % m, Nat.mod_lt _ hm⟩ ⟨k, by omega⟩
+      = w j ⟨k + 1, by omega⟩ := by
+  have hk' : k < L - 1 := by omega
+  have hc := congrFun (hadj j) ⟨k, hk'⟩
+  exact hc.symm
+
+omit [DecidableEq α] in
+/-- Window identity core: the `d`-th letter window aligns by induction. -/
+theorem spell_window_aux {m : ℕ} (w : Fin m → Fin L → α) (hm : 0 < m)
+    (hadj : ∀ j : Fin m, winSuffix (w j)
+      = winPrefix (w ⟨(j.val + 1) % m, Nat.mod_lt _ hm⟩))
+    (n d k : ℕ) (hk : k < L) (hdk : d + k < L) :
+    w ⟨(n + d) % m, Nat.mod_lt _ hm⟩ ⟨k, hk⟩
+      = w ⟨n % m, Nat.mod_lt _ hm⟩ ⟨d + k, by omega⟩ := by
+  revert k hk hdk
+  induction d with
+  | zero =>
+    intro k hk hdk
+    have e1 : (⟨(n + 0) % m, Nat.mod_lt _ hm⟩ : Fin m)
+        = ⟨n % m, Nat.mod_lt _ hm⟩ :=
+      Fin.ext (by rw [Nat.add_zero])
+    have e2 : (⟨0 + k, by omega⟩ : Fin L) = ⟨k, hk⟩ :=
+      Fin.ext (Nat.zero_add k)
+    rw [e1, e2]
+  | succ d ih =>
+    intro k hk hdk
+    have hmod : (n + (d + 1)) % m = ((n + d) % m + 1) % m := by
+      have h1 : n + (d + 1) = (n + d) + 1 := by omega
+      rw [h1, Nat.mod_add_mod]
+    have estep : (⟨(n + (d + 1)) % m, Nat.mod_lt _ hm⟩ : Fin m)
+        = ⟨((n + d) % m + 1) % m, Nat.mod_lt _ hm⟩ :=
+      Fin.ext hmod
+    rw [estep]
+    have hsh := spell_shift w hm hadj ⟨(n + d) % m, Nat.mod_lt _ hm⟩ k
+      (by omega : k + 1 < L)
+    have hih := ih (k + 1) (by omega) (by omega)
+    have hkv : d + (k + 1) = (d + 1) + k := by omega
+    have e3 : (⟨d + (k + 1), by omega⟩ : Fin L) = ⟨(d + 1) + k, by omega⟩ :=
+      Fin.ext hkv
+    rw [← e3]
+    exact hsh.trans hih
+
+omit [DecidableEq α] in
+/-- Windows of the spelling word are exactly the trail edges. -/
+theorem spell_window {m : ℕ} (w : Fin m → Fin L → α) (hm : 0 < m)
+    (hL0 : 0 < L)
+    (hadj : ∀ j : Fin m, winSuffix (w j)
+      = winPrefix (w ⟨(j.val + 1) % m, Nat.mod_lt _ hm⟩))
+    (r : Fin m) :
+    window hm (spellWord hL0 w) r = w r := by
+  funext d
+  have hd : d.val < L := d.isLt
+  have hA := spell_window_aux w hm hadj r.val d.val 0
+    (by omega : 0 < L) (by omega : d.val + 0 < L)
+  have er : (⟨r.val % m, Nat.mod_lt _ hm⟩ : Fin m) = r :=
+    Fin.ext (Nat.mod_eq_of_lt r.isLt)
+  have ed : (⟨d.val + 0, by omega⟩ : Fin L) = d :=
+    Fin.ext (Nat.add_zero _)
+  simp only [window, spellWord, cyc]
+  rw [er] at hA
+  rw [ed] at hA
+  exact hA
+
+/-- Spectrum of the spelling word equals trail edge usage. -/
+theorem count_bridge {E : Type} [DecidableEq E] (T : List E) (w : E) :
+    (({j | T.get j = w} : Finset (Fin T.length))).card = edgeUse T w := by
+  induction T with
+  | nil =>
+    simp only [edgeUse, List.countP_nil]
+    rw [Finset.card_eq_zero]
+    ext j
+    exact Fin.elim0 j
+  | cons a T' ih =>
+    simp only [List.length_cons]
+    rw [Fin.card_filter_univ_succ', List.get_cons_zero]
+    have hfib : (({x | (a :: T').get x.succ = w} : Finset (Fin T'.length))).card
+        = (({x | T'.get x = w} : Finset (Fin T'.length))).card := by
+      congr 1
+    rw [hfib, ih, edgeUse_cons]
+    exact Nat.add_comm _ _
+
 end WordSpelling
 
 end TrailSpelling
