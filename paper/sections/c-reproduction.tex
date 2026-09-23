@@ -48,11 +48,15 @@ The finite and computational claims correspond to artifacts in the repository:
         \texttt{SameLengthSection62Counterexample.lean};
   \item same-length oriented rigidity:
         \texttt{scripts/verify\_oriented\_se62\_rigidity.py}, plus the
-        kernel-checked abstract circulation core in
-        \texttt{AssemblyP1/OrientedRigidity.lean} and circular-spectrum adapter
-        in \texttt{AssemblyP1/WordLayer.lean}.  The repeat-theory bridge that
-        discharges the primitive/periodic hypotheses remains separate, so these
-        modules do not yet kernel-check the full $I_s$ rigidity theorem;
+        kernel-checked abstract circulation core and circular-spectrum adapter in
+        \texttt{AssemblyP1/OrientedRigidity.lean}, the primitive/periodic
+        repeat-theory adapter in \texttt{AssemblyP1/RepeatAdapter.lean}, and the
+        thin final conditional spectrum-rigidity reduction in
+        \texttt{AssemblyP1/OrientedFinalRigidity.lean}.  The reduction is
+        kernel-checked conditional on the explicit no-long-triple-repeat boundary,
+        with the primitive/periodic split discharged internally by the
+        kernel-checked dichotomy; the $\Is$ bridging implication
+        and the rotation-uniqueness (BBT) input remain external;
   \item equivalence coupling:
         \texttt{scripts/verify\_equivalence\_coupling.py}.
 \end{itemize}

@@ -199,11 +199,16 @@ likelihood ratio $1$ by Corollary~\ref{cor:same-length-zero}, the maximizer set 
 exactly the rotation class of $S$.
 \end{proof}
 
-\statusline{The rigidity step is \mathfact; the spectrum-identifiability step is
-the external \srcfact{} input \cite{bresler2013} (Theorem~\ref{thm:BBT}), the same
-input accepted for the population theorem. The whole chain is source-supported
-mathematics, not a kernel-checked Lean theorem, and it does not transfer to
-molecule classes.}
+\statusline{The spectrum-rigidity reduction is \kernelcheck{} in
+\texttt{AssemblyP1/OrientedFinalRigidity.lean}, conditional on the explicit
+no-long-triple-repeat boundary, with the primitive/periodic split discharged
+internally by the kernel-checked dichotomy; the
+$\Is$-to-no-triple-repeat bridging implication is source-supported, and the
+spectrum-identifiability (rotation-uniqueness) step is the external \srcfact{}
+input \cite{bresler2013} (Theorem~\ref{thm:BBT}), the same input accepted for the
+population theorem. The whole chain is source-supported mathematics with a
+kernel-checked conditional core, not a kernel-checked proof of $\Is$ or BBT,
+and it does not transfer to molecule classes.}
 
 The equal length assumption, by contrast, is essential and sharp; we return to it
 in Section~\ref{sec:finite:length}.
@@ -227,10 +232,14 @@ $D=AABAB$ ($G=5$, $L=2$); its truth carries a long triple repeat and is
 therefore not $\Is$-admissible. Skirting the triple-repeat clause is precisely
 what permits the multiplicity reallocation.
 \statusline{Theorem~\ref{thm:rigidity} and
-Corollary~\ref{cor:same-length-zero} are \mathfact; the rotation conclusion of
-Corollary~\ref{cor:same-length-rotation} adds the external BBT input
+Corollary~\ref{cor:same-length-zero} are \mathfact{} with a \kernelcheck{}
+conditional core (\texttt{OrientedFinalRigidity}, modulo the source-supported
+$\Is$ bridging implication, the primitive/periodic split now being
+kernel-checked internally); the rotation
+conclusion of Corollary~\ref{cor:same-length-rotation} adds the external BBT input
 \cite{bresler2013} and is therefore source-supported mathematics rather than
-kernel-checked. The minimum non-rigid pair and the bounded verifications are
+kernel-checked. The same-spectrum conclusion gives equality/ties for
+spectrum-based finite objectives, not strict recovery by itself. The minimum non-rigid pair and the bounded verifications are
 \computed, exhaustive in the cited scope.}
 
 \subsection{Strict finite counterexamples}

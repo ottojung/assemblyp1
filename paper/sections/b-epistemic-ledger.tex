@@ -66,7 +66,8 @@ boundary, including the primitive/periodic split
   & kernel-checked project reduction &
   \texttt{OrientedRigidity}, \texttt{WordLayer}, \texttt{RepeatAdapter} \\
 No strict same-length Section~6.2 counterexample, any $G,L,\Alphabet$
-  & mathematical fact; final Lean wiring pending & Corollary~\ref{cor:same-length-zero}, issue \#74 \\
+  & source-supported mathematics with kernel-checked conditional core &
+  Corollary~\ref{cor:same-length-zero} \\
 Uniqueness up to cyclic rotation on the truth-admissible same-length row
   & source-supported mathematical theorem &
   Corollary~\ref{cor:same-length-rotation}, \cite{bresler2013} \\
@@ -88,11 +89,11 @@ P1/P2 intrinsic admissibility; population objective
   \ref{def:population} \\
 \bottomrule
 \end{tabular}
-\caption{Mathematical and project-level results. The same-length rigidity core
-and its primitive/periodic repeat reduction are kernel-checked; the thin final
-Section~6.2 theorem wiring is tracked separately. The population division/Eulerian
-reduction remains in progress. External complete-spectrum uniqueness is not
-claimed as kernel-checked.}
+\caption{Mathematical and project-level results. The same-length rigidity core,
+its primitive/periodic repeat reduction, its conditional final wiring, and the
+population division/Eulerian reduction plus thin tie-to-rotation wiring are
+kernel-checked. External source-boundary and complete-spectrum uniqueness
+premises are not claimed as kernel-checked.}
 \end{table}
 
 \subsection{Finite certificates and computations}
@@ -121,6 +122,9 @@ Minimum same-length non-rigid pair $AAAAB/AABAB$
   rigidity script \\
 $AABBC\to AABC$ sampling failure, ratio $25/16$
   & kernel-checked & \texttt{FiniteSamplingCounterexample} \\
+Conditional same-length oriented spectrum rigidity (no-long-triple-repeat
+boundary + primitive/periodic case split; $\Is$ implication and BBT external)
+  & kernel-checked (conditional) & \texttt{OrientedFinalRigidity} \\
 Direct P2 matching proof's maximal-extension step is invalid
   & counterexample to a proof step, not the theorem & audit note \\
 \bottomrule
@@ -138,7 +142,5 @@ hence the equivalence; (3) the candidate-length convention; (4) the
 maximizer-vs-uniqueness reading; (5) the $4^k$ vs.\ molecule-class index count in
 MB09 Section~6.1; (6) the unretrieved publisher supplement; (7) the
 per-occurrence same-length Section~6.2 statement; (8) the single-strand
-variable-length Section~6.2 statement; (9) the thin final population
-tie-to-rotation wiring, kernel-checked as \texttt{PopulationUniqueness}
-(issue \#73) with Gibbs/KL and BBT as explicit external premises; and
-(10) the population model for molecule read types.
+variable-length Section~6.2 statement; and (9) the population model for
+molecule read types.
