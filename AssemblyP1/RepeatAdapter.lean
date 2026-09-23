@@ -24,12 +24,13 @@ since a `k`-fold periodic truth has every window multiplicity `k`.
   `(L-1)`-window multiplicity `≤ 2`. The corollary
   `primitive_rigidity_same_spectrum` feeds this cap into
   `rigidity_same_spectrum`.
-* **Periodic branch** (`unique_circulation_of_cycle`,
-  `periodic_cycle_shape`, `periodic_rigidity_same_spectrum`): on a simple
-  directed-cycle support, every positive balanced circulation of total `G`
-  is uniquely determined. The word-level wrapper derives the cycle shape
-  from periodicity plus distinctness of the period's length-`L` and
-  length-`(L-1)` windows.
+* **Periodic branch** (`periodic_factor_distinct`,
+  `unique_circulation_of_cycle`, `periodic_cycle_shape`,
+  `periodic_rigidity_same_spectrum`): minimal period plus no long triple
+  repeat gives distinctness of the period's length-`(L-1)` factors (Lemma C
+  of the note, via the shared extension engine with a small-period
+  escape), hence the simple directed-cycle support, on which every
+  positive balanced circulation of total `G` is uniquely determined.
 
 ## Explicit external interfaces (not kernel-checked here)
 
@@ -38,11 +39,8 @@ since a `k`-fold periodic truth has every window multiplicity `k`.
   `I_s` forbids Bresler triple repeats of length `≥ L - 1`). The full
   read-realization machinery would dominate this packet, so
   `HasLongTripleRepeat` is the interface hypothesis and the implication
-  from `I_s` stays documented/external.
-* Lemma C of the note (minimal period + no long triple repeat implies the
-  period's factors of length `≥ L - 1` occur at most once) is notes-level;
-  the Lean periodic route takes that distinctness (`hLwin`, `hNwin`) as an
-  explicit hypothesis.
+  from `I_s` stays documented/external. (Lemma C, by contrast, is now
+  kernel-checked as `periodic_factor_distinct`.)
 * As in issue #69, the complete-spectrum (BBT) input — same support,
   positivity, balance, total mass of the competitor — remains an external
   hypothesis (`hBsup`, `hBbal`, `hBtot`).
@@ -51,16 +49,24 @@ since a `k`-fold periodic truth has every window multiplicity `k`.
 
 * `not_primitive_of_ge_G_agree`: triple agreement on `≥ G` consecutive
   positions between distinct residues makes the word shift-invariant.
+* `small_period_of_ge_p_agree`: pair agreement on `≥ p` positions
+  between mod-`p`-distinct residues forces a strictly smaller period.
+* `extend_triple`: shared two-sided maximal-extension engine driving
+  both Lemma B and Lemma C (caller-supplied escape for long totals).
 * `primitive_nodeCount_le_two`: primitive + no long triple repeat gives
-  the `(L-1)`-window cap `nodeCount k ≤ 2` (two-sided maximal extension,
-  formalized via bounded maxima over `Finset.Icc 0 G`).
+  the `(L-1)`-window cap `nodeCount k ≤ 2` (via the engine with a
+  non-primitivity escape).
 * `primitive_rigidity_same_spectrum`: the primitive route end-to-end.
+* `periodic_factor_distinct`: minimal period + no long triple repeat
+  gives distinctness of the period's length-`(L-1)` factors (Lemma C, via
+  the engine with a small-period escape; needs `2 ≤ L`).
 * `unique_circulation_of_cycle`: abstract positive-circulation uniqueness
   on a simple directed-cycle support (needs strong connectivity: a
   disjoint union of cycles admits distinct constants per component).
-* `periodic_cycle_shape`: periodicity + distinct period windows give the
-  simple-cycle shape (`IsSimpleCycle`).
-* `periodic_rigidity_same_spectrum`: the periodic route end-to-end.
+* `periodic_cycle_shape`: periodicity + distinct period node windows give
+  the simple-cycle shape (`IsSimpleCycle`).
+* `periodic_rigidity_same_spectrum`: the periodic route end-to-end,
+  consuming the derived `periodic_factor_distinct`.
 -/
 
 namespace AssemblyP1.RepeatAdapter
@@ -196,6 +202,15 @@ private theorem cyc_residue_add {α : Type} {G : ℕ} (hG : 0 < G)
   rw [hdecomp]
   exact (per_add_mul hG S p hper _ _).symm
 
+/-- `cyc` respects congruence mod `p` under a period `p`. -/
+private theorem cyc_per_congr {α : Type} {G : ℕ} (hG : 0 < G) (S : Fin G → α)
+    (p : ℕ) (hper : IsPeriod hG S p) {x y : ℕ} (h : x % p = y % p) :
+    OrientedRigidity.cyc hG S x = OrientedRigidity.cyc hG S y := by
+  have e1 := cyc_residue_add hG S p hper x 0
+  have e2 := cyc_residue_add hG S p hper y 0
+  simp only [Nat.add_zero] at e1 e2
+  rw [e1, e2, h]
+
 /-! ## Long agreement between distinct residues breaks primitivity -/
 
 /-- Agreement on `≥ G` consecutive positions between starts in distinct
@@ -274,6 +289,276 @@ theorem not_primitive_of_ge_G_agree {α : Type} {G : ℕ} (hG : 0 < G)
     _ = OrientedRigidity.cyc hG S (b + d) := hag
     _ = OrientedRigidity.cyc hG S (i + s) := cyc_congr hG S key2
 
+/-! ## Shared extension engine: small periods and two-sided extension -/
+
+/-- Pair agreement on `≥ p` consecutive positions between starts in
+distinct residues mod `p` forces a strictly smaller period (the periodic
+analogue of `not_primitive_of_ge_G_agree`, used for Lemma C). The shift
+is `s = (b % p + p - a % p) % p`; offsets are placed by residues mod `p`
+and transported back with `cyc_per_congr`. -/
+theorem small_period_of_ge_p_agree {α : Type} {G : ℕ} (hG : 0 < G)
+    (S : Fin G → α) (p : ℕ) (hp0 : 0 < p) (hper : IsPeriod hG S p)
+    (a b ℓ : ℕ) (hab : a % p ≠ b % p) (hℓ : p ≤ ℓ)
+    (h : ∀ d : ℕ, d < ℓ →
+      OrientedRigidity.cyc hG S (a + d) =
+        OrientedRigidity.cyc hG S (b + d)) :
+    ∃ s : ℕ, 0 < s ∧ s < p ∧ IsPeriod hG S s := by
+  set A : ℕ := a % p with hA
+  set B : ℕ := b % p with hB
+  have hAG : A < p := Nat.mod_lt _ hp0
+  have hBG : B < p := Nat.mod_lt _ hp0
+  have hAB : A ≠ B := hab
+  set s : ℕ := (B + p - A) % p with hs
+  have hsLt : s < p := Nat.mod_lt _ hp0
+  have hsPos : 0 < s := by
+    rw [hs]
+    by_cases hle : A ≤ B
+    · have heq : B + p - A = p + (B - A) := by omega
+      rw [heq, show (p + (B - A)) % p = (B - A) % p from by
+        rw [Nat.add_mod, Nat.mod_self, Nat.zero_add, Nat.mod_mod]]
+      rw [Nat.mod_eq_of_lt (by omega : B - A < p)]
+      omega
+    · have heq : B + p - A = p - (A - B) := by omega
+      rw [heq, Nat.mod_eq_of_lt (by omega : p - (A - B) < p)]
+      omega
+  refine ⟨s, hsPos, hsLt, ?_⟩
+  intro i
+  set d : ℕ := (i + p - A) % p with hd
+  have hdLt : d < p := Nat.mod_lt _ hp0
+  have hag := h d (lt_of_lt_of_le hdLt hℓ)
+  have hmodd : d % p = (i + p - A) % p := by rw [hd, Nat.mod_mod]
+  have key1 : (a + d) % p = i % p := by
+    have e : (a + d) % p = (A + (i + p - A)) % p := by
+      have g1 : (a + d) % p = ((a % p) + (d % p)) % p := Nat.add_mod _ _ _
+      have g2 : (A + (i + p - A)) % p = ((A % p) + ((i + p - A) % p)) % p :=
+        Nat.add_mod _ _ _
+      have haA : a % p = A := hA.symm
+      have hAA : A % p = A := Nat.mod_eq_of_lt hAG
+      rw [g1, g2, haA, hmodd, hAA]
+    have f : (A + (i + p - A)) % p = i % p := by
+      have heq : A + (i + p - A) = i + p := by
+        have hleA : A ≤ i + p := by omega
+        omega
+      rw [heq, add_G_mod]
+    exact e.trans f
+  have key2 : (b + d) % p = (i + s) % p := by
+    have e1 : (b + d) % p = (B + (i + p - A)) % p := by
+      have g1 : (b + d) % p = ((b % p) + (d % p)) % p := Nat.add_mod _ _ _
+      have g2 : (B + (i + p - A)) % p = ((B % p) + ((i + p - A) % p)) % p :=
+        Nat.add_mod _ _ _
+      have hbB : b % p = B := hB.symm
+      have hBB : B % p = B := Nat.mod_eq_of_lt hBG
+      rw [g1, g2, hbB, hmodd, hBB]
+    have e2 : (i + s) % p = (B + (i + p - A)) % p := by
+      have hsmod : s % p = (B + p - A) % p := by rw [hs, Nat.mod_mod]
+      have g1 : (i + s) % p = ((i % p) + (s % p)) % p := Nat.add_mod _ _ _
+      have g2 : (i + (B + p - A)) % p = ((i % p) + ((B + p - A) % p)) % p :=
+        Nat.add_mod _ _ _
+      have congr1 : (i + s) % p = (i + (B + p - A)) % p := by
+        rw [g1, g2, hsmod]
+      have heq : i + (B + p - A) = B + (i + p - A) := by
+        have h1 : A ≤ B + p := by omega
+        have h2 : A ≤ i + p := by omega
+        omega
+      rw [congr1, heq]
+    exact e1.trans e2.symm
+  calc OrientedRigidity.cyc hG S i
+      = OrientedRigidity.cyc hG S (a + d) :=
+        cyc_per_congr hG S p hper key1.symm
+    _ = OrientedRigidity.cyc hG S (b + d) := hag
+    _ = OrientedRigidity.cyc hG S (i + s) :=
+        cyc_per_congr hG S p hper key2
+
+/-- **Shared two-sided maximal-extension engine (Lemmas B and C).**
+Three starts in pairwise distinct residues mod `G` agreeing on `L - 1`
+positions are extended maximally backwards (bounded maximum over
+`Icc 0 G`) and then forwards. Either some phase reaches total length
+`≥ G` — discharged by the caller-supplied `hbig` escape, which
+additionally receives the back-shift `b` witnessing the shifted form of
+the escape pair — or both flanks differ, yielding a long maximal triple
+that contradicts `hno`. Lemma B escapes via non-primitivity; Lemma C
+via a strictly smaller period. -/
+private theorem extend_triple {α : Type} {G L : ℕ} (hG : 0 < G)
+    (S : Fin G → α) (hL : 2 ≤ L) (a₁ a₂ a₃ : ℕ)
+    (hdist : a₁ % G ≠ a₂ % G ∧ a₂ % G ≠ a₃ % G ∧ a₁ % G ≠ a₃ % G)
+    (hag : TripleAgree hG S a₁ a₂ a₃ (L - 1))
+    (hno : ¬ HasLongTripleRepeat hG S L)
+    (hbig : ∀ b₁ b₂ ℓ : ℕ, b₁ % G ≠ b₂ % G → G ≤ ℓ →
+      (∀ d : ℕ, d < ℓ → OrientedRigidity.cyc hG S (b₁ + d) =
+        OrientedRigidity.cyc hG S (b₂ + d)) →
+      ∀ b : ℕ, b ≤ G → b₁ = a₁ + G - b → b₂ = a₂ + G - b → False) :
+    False := by
+  classical
+  -- Length regime for the extension bounds below (`L ≥ 2`, hence the
+  -- initial window `L - 1` is nonempty); named explicitly for the record.
+  have _hLuse : 2 ≤ L := hL
+  -- Backward phase: maximal uniform back-shift.
+  have hback0 : AgreeFrom hG S (a₁ + G - 0) (a₂ + G - 0)
+      (a₃ + G - 0) (L - 1) 0 := by
+    refine ⟨Nat.zero_le _, ?_⟩
+    intro d hd
+    have r1e : a₁ + G - 0 + d = (a₁ + d) + G := by omega
+    have r2e : a₂ + G - 0 + d = (a₂ + d) + G := by omega
+    have r3e : a₃ + G - 0 + d = (a₃ + d) + G := by omega
+    simp only [r1e, r2e, r3e, cyc_add_G hG S]
+    have hd' : d < L - 1 := by omega
+    exact hag d hd'
+  set backSet : Finset ℕ :=
+    (Finset.Icc 0 G).filter
+      (fun b => AgreeFrom hG S (a₁ + G - b) (a₂ + G - b)
+        (a₃ + G - b) (L - 1) b) with hbackSet
+  have hbackNe : backSet.Nonempty := by
+    refine ⟨0, ?_⟩
+    simp only [hbackSet, Finset.mem_filter, Finset.mem_Icc]
+    exact ⟨⟨Nat.zero_le _, Nat.zero_le _⟩, hback0⟩
+  set bstar : ℕ := backSet.max' hbackNe with hbstar
+  have hbstar_mem : bstar ∈ backSet := Finset.max'_mem _ _
+  have hbstar_le : ∀ b ∈ backSet, b ≤ bstar :=
+    fun b hb => Finset.le_max' _ _ hb
+  have hbstar_P := (Finset.mem_filter.mp hbstar_mem).2
+  obtain ⟨hbstar_leG, hbstar_ag⟩ := hbstar_P
+  -- Uniform back-shifts preserve residue distinctness.
+  have shiftNe : ∀ u v : ℕ, u % G ≠ v % G →
+      (u + G - bstar) % G ≠ (v + G - bstar) % G := by
+    intro u v huv hcon
+    apply huv
+    have hC : u + G - bstar = u + (G - bstar) := by omega
+    have hC2 : v + G - bstar = v + (G - bstar) := by omega
+    rw [hC, hC2] at hcon
+    have hme : u ≡ v [MOD G] :=
+      Nat.ModEq.add_right_cancel' (G - bstar) hcon
+    exact hme
+  have hq12 : (a₁ + G - bstar) % G ≠ (a₂ + G - bstar) % G :=
+    shiftNe _ _ hdist.1
+  have hq23 : (a₂ + G - bstar) % G ≠ (a₃ + G - bstar) % G :=
+    shiftNe _ _ hdist.2.1
+  have hq13 : (a₁ + G - bstar) % G ≠ (a₃ + G - bstar) % G :=
+    shiftNe _ _ hdist.2.2
+  by_cases hblt : L - 1 + bstar < G
+  · -- The total stays below `G`: exhibit a long maximal triple.
+    have hbsG : bstar + 1 ≤ G := by omega
+    -- Preceding flanks differ, else `bstar` was not maximal.
+    have hpre : ¬ (OrientedRigidity.cyc hG S ((a₁ + G - bstar) + G - 1) =
+            OrientedRigidity.cyc hG S ((a₂ + G - bstar) + G - 1) ∧
+          OrientedRigidity.cyc hG S ((a₂ + G - bstar) + G - 1) =
+            OrientedRigidity.cyc hG S ((a₃ + G - bstar) + G - 1)) := by
+      intro hcon
+      have hstep : AgreeFrom hG S (a₁ + G - (bstar + 1))
+          (a₂ + G - (bstar + 1)) (a₃ + G - (bstar + 1))
+          (L - 1) (bstar + 1) := by
+        refine ⟨hbsG, ?_⟩
+        intro d hd
+        have p1 : a₁ + G - (bstar + 1) + d =
+            ((a₁ + G - bstar) - 1) + d := by omega
+        have p2 : a₂ + G - (bstar + 1) + d =
+            ((a₂ + G - bstar) - 1) + d := by omega
+        have p3 : a₃ + G - (bstar + 1) + d =
+            ((a₃ + G - bstar) - 1) + d := by omega
+        rw [p1, p2, p3]
+        by_cases hd0 : d = 0
+        · subst hd0
+          rw [Nat.add_zero, Nat.add_zero, Nat.add_zero]
+          have q1 : 1 ≤ a₁ + G - bstar := by omega
+          have q2 : 1 ≤ a₂ + G - bstar := by omega
+          have q3 : 1 ≤ a₃ + G - bstar := by omega
+          have b1 : ((a₁ + G - bstar) - 1) % G =
+              ((a₁ + G - bstar) + G - 1) % G := by
+            have ee : (a₁ + G - bstar) + G - 1 =
+                ((a₁ + G - bstar) - 1) + G := by omega
+            rw [ee, add_G_mod]
+          have b2 : ((a₂ + G - bstar) - 1) % G =
+              ((a₂ + G - bstar) + G - 1) % G := by
+            have ee : (a₂ + G - bstar) + G - 1 =
+                ((a₂ + G - bstar) - 1) + G := by omega
+            rw [ee, add_G_mod]
+          have b3 : ((a₃ + G - bstar) - 1) % G =
+              ((a₃ + G - bstar) + G - 1) % G := by
+            have ee : (a₃ + G - bstar) + G - 1 =
+                ((a₃ + G - bstar) - 1) + G := by omega
+            rw [ee, add_G_mod]
+          have c1 := cyc_congr hG S b1
+          have c2 := cyc_congr hG S b2
+          have c3 := cyc_congr hG S b3
+          exact ⟨c1.trans (hcon.1.trans c2.symm), c2.trans (hcon.2.trans c3.symm)⟩
+        · obtain ⟨e, rfl⟩ := Nat.exists_eq_succ_of_ne_zero hd0
+          have q1 : 1 ≤ a₁ + G - bstar := by omega
+          have q2 : 1 ≤ a₂ + G - bstar := by omega
+          have q3 : 1 ≤ a₃ + G - bstar := by omega
+          have s1 : (a₁ + G - bstar) - 1 + (e + 1) =
+              (a₁ + G - bstar) + e := by omega
+          have s2 : (a₂ + G - bstar) - 1 + (e + 1) =
+              (a₂ + G - bstar) + e := by omega
+          have s3 : (a₃ + G - bstar) - 1 + (e + 1) =
+              (a₃ + G - bstar) + e := by omega
+          rw [s1, s2, s3]
+          have he : e < L - 1 + bstar := by omega
+          exact hbstar_ag e he
+      have hmem : bstar + 1 ∈ backSet := by
+        simp only [hbackSet, Finset.mem_filter, Finset.mem_Icc]
+        exact ⟨⟨Nat.zero_le _, hbsG⟩, hstep⟩
+      have hle := hbstar_le (bstar + 1) hmem
+      omega
+    -- Forward phase from the back-shifted starts.
+    set fwdSet : Finset ℕ :=
+      (Finset.Icc 0 G).filter
+        (fun f => AgreeFrom hG S (a₁ + G - bstar) (a₂ + G - bstar)
+          (a₃ + G - bstar) (L - 1 + bstar) f) with hfwdSet
+    have hfwdNe : fwdSet.Nonempty := by
+      refine ⟨0, ?_⟩
+      simp only [hfwdSet, Finset.mem_filter, Finset.mem_Icc]
+      refine ⟨⟨Nat.zero_le _, Nat.zero_le _⟩, Nat.zero_le _, ?_⟩
+      intro d hd
+      have hd' : d < L - 1 + bstar := by omega
+      exact hbstar_ag d hd'
+    set fstar : ℕ := fwdSet.max' hfwdNe with hfstar
+    have hfstar_mem : fstar ∈ fwdSet := Finset.max'_mem _ _
+    have hfstar_le : ∀ f ∈ fwdSet, f ≤ fstar :=
+      fun f hf => Finset.le_max' _ _ hf
+    have hfstar_P := (Finset.mem_filter.mp hfstar_mem).2
+    obtain ⟨hfstar_leG, hfstar_ag⟩ := hfstar_P
+    by_cases hflt : L - 1 + bstar + fstar < G
+    · -- Following flanks differ, else `fstar` was not maximal.
+      have hfol : ¬ (OrientedRigidity.cyc hG S
+              ((a₁ + G - bstar) + (L - 1 + bstar + fstar)) =
+              OrientedRigidity.cyc hG S
+                ((a₂ + G - bstar) + (L - 1 + bstar + fstar)) ∧
+            OrientedRigidity.cyc hG S
+              ((a₂ + G - bstar) + (L - 1 + bstar + fstar)) =
+              OrientedRigidity.cyc hG S
+                ((a₃ + G - bstar) + (L - 1 + bstar + fstar))) := by
+        intro hcon
+        have hstep : AgreeFrom hG S (a₁ + G - bstar)
+            (a₂ + G - bstar) (a₃ + G - bstar)
+            (L - 1 + bstar) (fstar + 1) := by
+          refine ⟨by omega, ?_⟩
+          have eqlen : L - 1 + bstar + (fstar + 1) =
+              (L - 1 + bstar + fstar) + 1 := by omega
+          rw [eqlen]
+          intro d hd
+          by_cases hdl : d < L - 1 + bstar + fstar
+          · exact hfstar_ag d hdl
+          · have hdeq : d = L - 1 + bstar + fstar := by omega
+            subst hdeq
+            exact hcon
+        have hmem : fstar + 1 ∈ fwdSet := by
+          simp only [hfwdSet, Finset.mem_filter, Finset.mem_Icc]
+          exact ⟨⟨Nat.zero_le _, by omega⟩, hstep⟩
+        have hle := hfstar_le (fstar + 1) hmem
+        omega
+      -- The long maximal triple.
+      apply hno
+      exact ⟨a₁ + G - bstar, a₂ + G - bstar, a₃ + G - bstar,
+        L - 1 + bstar + fstar, by omega, hflt, hq12, hq23, hq13,
+        hfstar_ag, hpre, hfol⟩
+    · -- Forward total reaches `G`: caller's escape.
+      have hflt' : G ≤ L - 1 + bstar + fstar := not_lt.mp hflt
+      exact hbig _ _ _ hq12 hflt' (fun d hd => (hfstar_ag d hd).1)
+        bstar hbstar_leG rfl rfl
+  · -- Backward total reaches `G`: caller's escape.
+    have hblt' : G ≤ L - 1 + bstar := not_lt.mp hblt
+    exact hbig _ _ _ hq12 hblt' (fun d hd => (hbstar_ag d hd).1)
+      bstar hbstar_leG rfl rfl
+
 /-! ## Primitive branch: the `(L-1)`-window cap (note Lemma B) -/
 
 /-- Three distinct elements from `3 ≤ card`. -/
@@ -306,6 +591,9 @@ theorem primitive_nodeCount_le_two {α : Type} [DecidableEq α] {G L : ℕ}
   classical
   intro k hk
   by_contra hgt
+  -- Regime hypothesis, kept explicit for the record (`L ≤ G` orients the
+  -- `(L-1)`-windows against the circular word; the proof needs `2 ≤ L`).
+  have _hLGuse : L ≤ G := hLG
   have h3 : 3 ≤ (Finset.univ.filter
       (fun r : Fin G => OrientedRigidity.nodeWindow hG S r = k)).card := by
     have hlt : 2 < (Finset.univ.filter
@@ -325,182 +613,17 @@ theorem primitive_nodeCount_le_two {α : Type} [DecidableEq α] {G L : ℕ}
     have f12 := congrFun (e1.trans e2.symm) ⟨d, hd⟩
     have f23 := congrFun (e2.trans e3.symm) ⟨d, hd⟩
     exact ⟨f12, f23⟩
-  -- Backward phase: maximal uniform back-shift.
-  have hback0 : AgreeFrom hG S (r1.val + G - 0) (r2.val + G - 0)
-      (r3.val + G - 0) (L - 1) 0 := by
-    refine ⟨Nat.zero_le _, ?_⟩
-    intro d hd
-    have r1e : r1.val + G - 0 + d = (r1.val + d) + G := by omega
-    have r2e : r2.val + G - 0 + d = (r2.val + d) + G := by omega
-    have r3e : r3.val + G - 0 + d = (r3.val + d) + G := by omega
-    simp only [r1e, r2e, r3e, cyc_add_G hG S]
-    have hd' : d < L - 1 := by omega
-    exact hAG d hd'
-  set backSet : Finset ℕ :=
-    (Finset.Icc 0 G).filter
-      (fun b => AgreeFrom hG S (r1.val + G - b) (r2.val + G - b)
-        (r3.val + G - b) (L - 1) b) with hbackSet
-  have hbackNe : backSet.Nonempty := by
-    refine ⟨0, ?_⟩
-    simp only [hbackSet, Finset.mem_filter, Finset.mem_Icc]
-    exact ⟨⟨Nat.zero_le _, Nat.zero_le _⟩, hback0⟩
-  set bstar : ℕ := backSet.max' hbackNe with hbstar
-  have hbstar_mem : bstar ∈ backSet := Finset.max'_mem _ _
-  have hbstar_le : ∀ b ∈ backSet, b ≤ bstar :=
-    fun b hb => Finset.le_max' _ _ hb
-  have hbstar_P := (Finset.mem_filter.mp hbstar_mem).2
-  obtain ⟨hbstar_leG, hbstar_ag⟩ := hbstar_P
-  -- Uniform back-shifts preserve residue distinctness.
-  have resNe : ∀ u v : Fin G, u ≠ v →
-      (u.val + G - bstar) % G ≠ (v.val + G - bstar) % G := by
-    intro u v huv hcon
-    apply huv
-    have hC : ∀ w : Fin G, w.val + G - bstar = w.val + (G - bstar) := by
-      intro w
-      omega
-    rw [hC u, hC v] at hcon
-    have hme : u.val ≡ v.val [MOD G] :=
-      Nat.ModEq.add_right_cancel' (G - bstar) hcon
-    have e1 : u.val % G = u.val := Nat.mod_eq_of_lt u.isLt
-    have e2 : v.val % G = v.val := Nat.mod_eq_of_lt v.isLt
-    have huv2 : u.val = v.val := by
-      rw [← e1, ← e2]
-      exact hme
-    exact Fin.ext huv2
-  have hq12 : (r1.val + G - bstar) % G ≠ (r2.val + G - bstar) % G :=
-    resNe r1 r2 h12
-  have hq23 : (r2.val + G - bstar) % G ≠ (r3.val + G - bstar) % G :=
-    resNe r2 r3 h23
-  have hq13 : (r1.val + G - bstar) % G ≠ (r3.val + G - bstar) % G :=
-    resNe r1 r3 h13
-  by_cases hblt : L - 1 + bstar < G
-  · -- The total stays below `G`: exhibit a long maximal triple.
-    have hbsG : bstar + 1 ≤ G := by omega
-    -- Preceding flanks differ, else `bstar` was not maximal.
-    have hpre : ¬ (OrientedRigidity.cyc hG S ((r1.val + G - bstar) + G - 1) =
-            OrientedRigidity.cyc hG S ((r2.val + G - bstar) + G - 1) ∧
-          OrientedRigidity.cyc hG S ((r2.val + G - bstar) + G - 1) =
-            OrientedRigidity.cyc hG S ((r3.val + G - bstar) + G - 1)) := by
-      intro hcon
-      have hstep : AgreeFrom hG S (r1.val + G - (bstar + 1))
-          (r2.val + G - (bstar + 1)) (r3.val + G - (bstar + 1))
-          (L - 1) (bstar + 1) := by
-        refine ⟨hbsG, ?_⟩
-        intro d hd
-        have p1 : r1.val + G - (bstar + 1) + d =
-            ((r1.val + G - bstar) - 1) + d := by omega
-        have p2 : r2.val + G - (bstar + 1) + d =
-            ((r2.val + G - bstar) - 1) + d := by omega
-        have p3 : r3.val + G - (bstar + 1) + d =
-            ((r3.val + G - bstar) - 1) + d := by omega
-        rw [p1, p2, p3]
-        by_cases hd0 : d = 0
-        · subst hd0
-          rw [Nat.add_zero, Nat.add_zero, Nat.add_zero]
-          have q1 : 1 ≤ r1.val + G - bstar := by omega
-          have q2 : 1 ≤ r2.val + G - bstar := by omega
-          have q3 : 1 ≤ r3.val + G - bstar := by omega
-          have b1 : ((r1.val + G - bstar) - 1) % G =
-              ((r1.val + G - bstar) + G - 1) % G := by
-            have ee : (r1.val + G - bstar) + G - 1 =
-                ((r1.val + G - bstar) - 1) + G := by omega
-            rw [ee, add_G_mod]
-          have b2 : ((r2.val + G - bstar) - 1) % G =
-              ((r2.val + G - bstar) + G - 1) % G := by
-            have ee : (r2.val + G - bstar) + G - 1 =
-                ((r2.val + G - bstar) - 1) + G := by omega
-            rw [ee, add_G_mod]
-          have b3 : ((r3.val + G - bstar) - 1) % G =
-              ((r3.val + G - bstar) + G - 1) % G := by
-            have ee : (r3.val + G - bstar) + G - 1 =
-                ((r3.val + G - bstar) - 1) + G := by omega
-            rw [ee, add_G_mod]
-          have c1 := cyc_congr hG S b1
-          have c2 := cyc_congr hG S b2
-          have c3 := cyc_congr hG S b3
-          exact ⟨c1.trans (hcon.1.trans c2.symm), c2.trans (hcon.2.trans c3.symm)⟩
-        · obtain ⟨e, rfl⟩ := Nat.exists_eq_succ_of_ne_zero hd0
-          have q1 : 1 ≤ r1.val + G - bstar := by omega
-          have q2 : 1 ≤ r2.val + G - bstar := by omega
-          have q3 : 1 ≤ r3.val + G - bstar := by omega
-          have s1 : (r1.val + G - bstar) - 1 + (e + 1) =
-              (r1.val + G - bstar) + e := by omega
-          have s2 : (r2.val + G - bstar) - 1 + (e + 1) =
-              (r2.val + G - bstar) + e := by omega
-          have s3 : (r3.val + G - bstar) - 1 + (e + 1) =
-              (r3.val + G - bstar) + e := by omega
-          rw [s1, s2, s3]
-          have he : e < L - 1 + bstar := by omega
-          exact hbstar_ag e he
-      have hmem : bstar + 1 ∈ backSet := by
-        simp only [hbackSet, Finset.mem_filter, Finset.mem_Icc]
-        exact ⟨⟨Nat.zero_le _, hbsG⟩, hstep⟩
-      have hle := hbstar_le (bstar + 1) hmem
-      omega
-    -- Forward phase from the back-shifted starts.
-    set fwdSet : Finset ℕ :=
-      (Finset.Icc 0 G).filter
-        (fun f => AgreeFrom hG S (r1.val + G - bstar) (r2.val + G - bstar)
-          (r3.val + G - bstar) (L - 1 + bstar) f) with hfwdSet
-    have hfwdNe : fwdSet.Nonempty := by
-      refine ⟨0, ?_⟩
-      simp only [hfwdSet, Finset.mem_filter, Finset.mem_Icc]
-      refine ⟨⟨Nat.zero_le _, Nat.zero_le _⟩, Nat.zero_le _, ?_⟩
-      intro d hd
-      have hd' : d < L - 1 + bstar := by omega
-      exact hbstar_ag d hd'
-    set fstar : ℕ := fwdSet.max' hfwdNe with hfstar
-    have hfstar_mem : fstar ∈ fwdSet := Finset.max'_mem _ _
-    have hfstar_le : ∀ f ∈ fwdSet, f ≤ fstar :=
-      fun f hf => Finset.le_max' _ _ hf
-    have hfstar_P := (Finset.mem_filter.mp hfstar_mem).2
-    obtain ⟨hfstar_leG, hfstar_ag⟩ := hfstar_P
-    by_cases hflt : L - 1 + bstar + fstar < G
-    · -- Following flanks differ, else `fstar` was not maximal.
-      have hfol : ¬ (OrientedRigidity.cyc hG S
-              ((r1.val + G - bstar) + (L - 1 + bstar + fstar)) =
-              OrientedRigidity.cyc hG S
-                ((r2.val + G - bstar) + (L - 1 + bstar + fstar)) ∧
-            OrientedRigidity.cyc hG S
-              ((r2.val + G - bstar) + (L - 1 + bstar + fstar)) =
-              OrientedRigidity.cyc hG S
-                ((r3.val + G - bstar) + (L - 1 + bstar + fstar))) := by
-        intro hcon
-        have hstep : AgreeFrom hG S (r1.val + G - bstar)
-            (r2.val + G - bstar) (r3.val + G - bstar)
-            (L - 1 + bstar) (fstar + 1) := by
-          refine ⟨by omega, ?_⟩
-          have eqlen : L - 1 + bstar + (fstar + 1) =
-              (L - 1 + bstar + fstar) + 1 := by omega
-          rw [eqlen]
-          intro d hd
-          by_cases hdl : d < L - 1 + bstar + fstar
-          · exact hfstar_ag d hdl
-          · have hdeq : d = L - 1 + bstar + fstar := by omega
-            subst hdeq
-            exact hcon
-        have hmem : fstar + 1 ∈ fwdSet := by
-          simp only [hfwdSet, Finset.mem_filter, Finset.mem_Icc]
-          exact ⟨⟨Nat.zero_le _, by omega⟩, hstep⟩
-        have hle := hfstar_le (fstar + 1) hmem
-        omega
-      -- The long maximal triple.
-      apply hno
-      exact ⟨r1.val + G - bstar, r2.val + G - bstar, r3.val + G - bstar,
-        L - 1 + bstar + fstar, by omega, hflt, hq12, hq23, hq13,
-        hfstar_ag, hpre, hfol⟩
-    · -- Forward total reaches `G`: non-primitivity.
-      have hflt' : G ≤ L - 1 + bstar + fstar := not_lt.mp hflt
-      have h12' := not_primitive_of_ge_G_agree hG S
-        (r1.val + G - bstar) (r2.val + G - bstar) (L - 1 + bstar + fstar)
-        hq12 hflt' (fun d hd => (hfstar_ag d hd).1)
-      exact h12' hprim
-  · -- Backward total reaches `G`: non-primitivity.
-    have hblt' : G ≤ L - 1 + bstar := not_lt.mp hblt
-    have h12' := not_primitive_of_ge_G_agree hG S
-      (r1.val + G - bstar) (r2.val + G - bstar) (L - 1 + bstar)
-      hq12 hblt' (fun d hd => (hbstar_ag d hd).1)
-    exact h12' hprim
+  have m1 : r1.val % G = r1.val := Nat.mod_eq_of_lt r1.isLt
+  have m2 : r2.val % G = r2.val := Nat.mod_eq_of_lt r2.isLt
+  have m3 : r3.val % G = r3.val := Nat.mod_eq_of_lt r3.isLt
+  have hdist : r1.val % G ≠ r2.val % G ∧ r2.val % G ≠ r3.val % G ∧
+      r1.val % G ≠ r3.val % G := by
+    rw [m1, m2, m3]
+    exact ⟨fun h => h12 (Fin.ext h), fun h => h23 (Fin.ext h),
+      fun h => h13 (Fin.ext h)⟩
+  exact extend_triple hG S hL r1.val r2.val r3.val hdist hAG hno
+    (fun b₁ b₂ ℓ hne hle hag _ _ _ _ =>
+      (not_primitive_of_ge_G_agree hG S b₁ b₂ ℓ hne hle hag) hprim)
 
 /-- **Primitive route end-to-end.** Under primitivity and no long triple
 repeat, every same-length spelled candidate has exactly the truth's
@@ -692,15 +815,6 @@ private theorem nodeWindow_residue {α : Type} {G L : ℕ} (hG : 0 < G)
   funext d
   exact cyc_residue_add hG S p hper t.val d.val
 
-/-- `cyc` respects congruence mod `p` under a period `p`. -/
-private theorem cyc_per_congr {α : Type} {G : ℕ} (hG : 0 < G) (S : Fin G → α)
-    (p : ℕ) (hper : IsPeriod hG S p) {x y : ℕ} (h : x % p = y % p) :
-    OrientedRigidity.cyc hG S x = OrientedRigidity.cyc hG S y := by
-  have e1 := cyc_residue_add hG S p hper x 0
-  have e2 := cyc_residue_add hG S p hper y 0
-  simp only [Nat.add_zero] at e1 e2
-  rw [e1, e2, h]
-
 /-- One step back within residues mod `p` returns to the residue:
 `(((t + p - 1) % p) + 1) % p = t % p`. -/
 private theorem back_step_residue (t p : ℕ) (hp0 : 0 < p) :
@@ -712,25 +826,98 @@ private theorem back_step_residue (t p : ℕ) (hp0 : 0 < p) :
     have : t % p + p ≥ 1 := by omega
     omega
   rw [h2, add_G_mod, Nat.mod_mod]
+/-- **Lemma C (periodic extension), word-level distinctness.** Under a
+minimal period `p`, if two residues below `p` carried the same
+length-`(L-1)` window, the three starts `i`, `j`, `i + p` (pairwise
+distinct mod `G`, using `i + p < G` from `p ∣ G` and `p < G`) would feed
+the shared extension engine: either some phase reaches total length
+`≥ G`, and the shifted pair — still distinct mod `p` by uniform-shift
+injectivity — yields a strictly smaller period via
+`small_period_of_ge_p_agree`, contradicting minimality; or both flanks
+differ, exhibiting a long maximal triple. Requires `2 ≤ L` so the
+initial window is nonempty. -/
+theorem periodic_factor_distinct {α : Type} {G L : ℕ} (hG : 0 < G)
+    (S : Fin G → α) (p : ℕ) (hL : 2 ≤ L)
+    (hmin : HasMinimalPeriod hG S p)
+    (hno : ¬ HasLongTripleRepeat hG S L) :
+    ∀ i j : ℕ, i < p → j < p →
+      (∀ d : ℕ, d < L - 1 →
+        OrientedRigidity.cyc hG S (i + d) =
+          OrientedRigidity.cyc hG S (j + d)) → i = j := by
+  obtain ⟨hp0, hpG, hGp, hper, hsmall⟩ := hmin
+  have hple : p ≤ G := le_of_lt hpG
+  have hdvd : p ∣ G := Nat.dvd_of_mod_eq_zero hGp
+  obtain ⟨k, hk⟩ := hdvd
+  have hk2 : 2 ≤ k := by
+    by_contra hc
+    have h1 : k < 2 := by omega
+    interval_cases k
+    · rw [Nat.mul_zero] at hk
+      omega
+    · rw [Nat.mul_one] at hk
+      omega
+  have h2p : p + p ≤ G := by
+    rw [hk]
+    calc p + p = p * 2 := by ring
+      _ ≤ p * k := Nat.mul_le_mul_left p hk2
+  intro i j hi hj hagree
+  by_contra hne
+  have hiG : i < G := by omega
+  have hjG : j < G := by omega
+  have hipG : i + p < G := by omega
+  have mi : i % G = i := Nat.mod_eq_of_lt hiG
+  have mj : j % G = j := Nat.mod_eq_of_lt hjG
+  have mip : (i + p) % G = i + p := Nat.mod_eq_of_lt hipG
+  have hdist : i % G ≠ j % G ∧ j % G ≠ (i + p) % G ∧
+      i % G ≠ (i + p) % G := by
+    rw [mi, mj, mip]
+    exact ⟨hne, by omega, by omega⟩
+  -- The initial triple: `j` agrees with `i` by hypothesis and with
+  -- `i + p` by `p`-periodicity.
+  have hag0 : TripleAgree hG S i j (i + p) (L - 1) := by
+    intro d hd
+    have h1 := hagree d hd
+    have h2 := hper (i + d)
+    have heq : (i + d) + p = (i + p) + d := by omega
+    rw [heq] at h2
+    exact ⟨h1, h1.symm.trans h2⟩
+  exact extend_triple hG S hL i j (i + p) hdist hag0 hno
+    (fun b₁ b₂ ℓ hne2 hle2 hag2 b hbG e₁ e₂ => by
+      have hpℓ : p ≤ ℓ := le_trans hple hle2
+      -- The escape pair is a uniform back-shift of `(i, j)`, hence
+      -- still distinct mod `p`.
+      have hmodp : b₁ % p ≠ b₂ % p := by
+        rw [e₁, e₂]
+        have hC : i + G - b = i + (G - b) := by omega
+        have hC2 : j + G - b = j + (G - b) := by omega
+        rw [hC, hC2]
+        intro hcon
+        apply hne
+        have hme : i ≡ j [MOD p] :=
+          Nat.ModEq.add_right_cancel' (G - b) hcon
+        have ei : i % p = i := Nat.mod_eq_of_lt hi
+        have ej : j % p = j := Nat.mod_eq_of_lt hj
+        have hij : i = j := by
+          rw [← ei, ← ej]
+          exact hme
+        exact hij
+      obtain ⟨s, hs0, hsp, hsper⟩ :=
+        small_period_of_ge_p_agree hG S p hp0 hper b₁ b₂ ℓ hmodp hpℓ hag2
+      exact hsmall s hs0 hsp hsper)
+
 /-- **Periodic cycle shape.** Periodicity plus distinctness of the
-period's length-`L` windows (`hLwin`, part of the Lemma-C interface
-contract) and length-`(L-1)` windows (`hNwin`) give the simple
-directed-cycle shape. The out-edge argument consumes `hNwin` (shared
-prefixes force equal residues), and the in-edge argument consumes `hNwin`
-on starts shifted by one (shared suffixes force equal residues). -/
+period's length-`(L-1)` windows (`hNwin` — the kernel-checked Lemma-C
+consequence `periodic_factor_distinct`) give the simple directed-cycle
+shape. The out-edge argument consumes `hNwin` (shared prefixes force
+equal residues), and the in-edge argument consumes `hNwin` on starts
+shifted by one (shared suffixes force equal residues). -/
 theorem periodic_cycle_shape {α : Type} [DecidableEq α] {G L : ℕ}
     (hG : 0 < G) (S : Fin G → α) (p : ℕ) (hp0 : 0 < p) (hple : p ≤ G)
     (hper : IsPeriod hG S p)
-    (hLwin : ∀ i j : ℕ, i < p → j < p →
-      (∀ d : ℕ, d < L → OrientedRigidity.cyc hG S (i + d) =
-        OrientedRigidity.cyc hG S (j + d)) → i = j)
     (hNwin : ∀ i j : ℕ, i < p → j < p →
       (∀ d : ℕ, d < L - 1 → OrientedRigidity.cyc hG S (i + d) =
         OrientedRigidity.cyc hG S (j + d)) → i = j) :
     IsSimpleCycle L hG S := by
-  -- The length-`L` interface is part of the Lemma-C contract; the shape
-  -- below is driven by node distinctness. Silence the linter by naming it.
-  have _hLwin := hLwin
   constructor
   · -- Out-edges: shared prefixes force equal residues via `hNwin`.
     intro k hk
@@ -875,22 +1062,18 @@ theorem periodic_cycle_shape {α : Type} [DecidableEq α] {G L : ℕ}
     have hrrF : r' = ρ := Fin.ext hrr
     rw [hreq', hrrF]
 
-/-- **Periodic route end-to-end.** Under a minimal period plus the
-Lemma-C distinctness of the period's windows, every same-length spelled
-candidate has exactly the truth's spectrum (via `periodic_cycle_shape`
-and `unique_circulation_of_cycle`). The minimality/divisibility parts of
-`hmin` are case-split context (the Lemma-C derivation, notes-level);
-the Lean argument consumes the period bounds, the period itself, and the
-explicit distinctness hypotheses. -/
+/-- **Periodic route end-to-end.** Under a minimal period, no long
+triple repeat, and the BBT competitor inputs, every same-length spelled
+candidate has exactly the truth's spectrum. The period-factor
+distinctness feeding the cycle shape is the kernel-checked Lemma-C
+consequence `periodic_factor_distinct` — not an external premise. The
+minimality/divisibility parts of `hmin` are case-split context; the Lean
+argument consumes the period bounds, the period itself, and `hno`. -/
 theorem periodic_rigidity_same_spectrum {α : Type} [DecidableEq α] {G L : ℕ}
     (hG : 0 < G) (S : Fin G → α) (p : ℕ)
     (hmin : HasMinimalPeriod hG S p)
-    (hLwin : ∀ i j : ℕ, i < p → j < p →
-      (∀ d : ℕ, d < L → OrientedRigidity.cyc hG S (i + d) =
-        OrientedRigidity.cyc hG S (j + d)) → i = j)
-    (hNwin : ∀ i j : ℕ, i < p → j < p →
-      (∀ d : ℕ, d < L - 1 → OrientedRigidity.cyc hG S (i + d) =
-        OrientedRigidity.cyc hG S (j + d)) → i = j)
+    (hL : 2 ≤ L)
+    (hno : ¬ HasLongTripleRepeat hG S L)
     (B : (Fin L → α) → ℕ)
     (hBsup : ∀ w, w ∈ OrientedRigidity.support hG S ↔ 0 < B w)
     (hBbal : OrientedRigidity.Balanced OrientedRigidity.winPrefix
@@ -900,7 +1083,11 @@ theorem periodic_rigidity_same_spectrum {α : Type} [DecidableEq α] {G L : ℕ}
     ∀ w, B w = OrientedRigidity.specCount hG S w := by
   obtain ⟨hp0, hpG, _hGp, hper, _hmin⟩ := hmin
   have hple : p ≤ G := le_of_lt hpG
-  have hcyc := periodic_cycle_shape hG S p hp0 hple hper hLwin hNwin
+  have hNwin : ∀ i j : ℕ, i < p → j < p →
+      (∀ d : ℕ, d < L - 1 → OrientedRigidity.cyc hG S (i + d) =
+        OrientedRigidity.cyc hG S (j + d)) → i = j :=
+    periodic_factor_distinct hG S p hL ⟨hp0, hpG, _hGp, hper, _hmin⟩ hno
+  have hcyc := periodic_cycle_shape hG S p hp0 hple hper hNwin
   have hmemT : ∀ w ∈ OrientedRigidity.support hG S,
       OrientedRigidity.winPrefix w ∈ OrientedRigidity.genomeNodes hG S ∧
         OrientedRigidity.winSuffix w ∈ OrientedRigidity.genomeNodes hG S :=
