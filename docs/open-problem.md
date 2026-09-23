@@ -23,19 +23,21 @@ The paper builds on information-feasibility conditions involving repeats. Its se
 
 A repeat copy is bridged when a read extends beyond that copy on both sides. These conditions are sufficient for the paper's Not-So-Greedy construction to recover the true circular sequence up to cyclic shift.
 
-## What must be formalized before attacking the conjecture
+## Formalization status and the remaining source boundary
 
-The bootstrap Lean files deliberately expose only an abstract `AssemblyModel`. A faithful theorem statement still requires extracting and reconciling at least:
+The repository is no longer only a bootstrap `AssemblyModel`. It now kernel-checks substantial project mathematics, including finite counterexample certificates, normalized-spectrum arithmetic, abstract positive-circulation rigidity, a circular-word/spectrum adapter, and the primitive/periodic repeat-theory reduction used by the oriented same-length rigidity argument. These formal results deliberately use small source-independent abstractions where that gives a cleaner verification boundary.
 
-- finite circular strings and equality up to cyclic shift;
-- fixed-length read sampling with multiplicity;
-- coverage;
-- repeats, maximal repeats if required by the paper's definitions, triple repeats, interleaving, and the exact bridging predicates;
-- the information-feasible condition actually intended in the open-question sentence;
-- the Medvedev–Brudno maximum-likelihood objective, including what candidate genome lengths are allowed and how ties are treated;
-- the exact conclusion meant by “the maximum-likelihood sequence is the true sequence.”
+That progress does **not** by itself settle which theorem the 2016 sentence denotes. A source-faithful final statement still requires reconciling the historical choices that remain material, especially:
 
-Two candidate conclusion schemas currently live in `AssemblyP1/Model.lean`: truth is an ML maximizer, and truth is the unique ML maximizer up to genome equivalence. Neither is yet designated as the published conjecture.
+- the exact Medvedev–Brudno candidate object/universe referred to by Shomorony et al.;
+- oriented read strings versus reverse-complement-collapsed read types;
+- whether candidate genome length is constrained or merely appears as an externally supplied likelihood parameter;
+- maximizer versus uniqueness semantics and the corresponding genome equivalence;
+- the exact bridge from Shomorony's information-feasibility condition to the hypotheses consumed by a particular formal theorem.
+
+For the current positive oriented theorem, the project keeps the source-supported implication from `I_s` to the required no-long-triple-repeat condition explicit rather than silently redefining `I_s`. Likewise, upgrading equality of complete spectra to genome uniqueness up to rotation uses the external Bresler–Bresler–Tse complete-spectrum theorem unless and until that theorem is separately formalized.
+
+Two candidate conclusion schemas live in `AssemblyP1/Model.lean`: truth is an ML maximizer, and truth is the unique ML maximizer up to genome equivalence. Neither is designated as *the* published conjecture while the source ambiguity above remains unresolved.
 
 ## What would count as settlement
 
