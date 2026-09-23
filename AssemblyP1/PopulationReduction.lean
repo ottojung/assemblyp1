@@ -9,8 +9,8 @@ Mathematical source: `paper/sections/05-population.tex` and
 
 This file kernel-checks the reusable arithmetic core of the population
 reduction, the AssemblyP1-original primitive-P2 division–Eulerian
-derivation of gcd-one (conditional on explicit spelling/uniqueness
-premises), and a regression showing primitivity alone is insufficient.
+derivation of gcd-one (conditional only on the explicit BBT uniqueness
+premise), and a regression showing primitivity alone is insufficient.
 External mathematical inputs are kept as **explicit hypotheses**,
 never as axioms:
 
@@ -18,11 +18,10 @@ never as axioms:
   `ℓpop_S(D) = ℓpop_S(S)` holds iff the normalized spectra agree.
   Gibbs itself stays outside this file; theorems below take the
   resulting normalized equality (`NormalizedEqual`) as a premise.
-* **Eulerian spelling of a divided balanced connected spectrum**
-  (standard Eulerian-circuit existence applied to the paper's divided
-  circulation `c/g`): stated as an explicit premise `hSpell`.
 * **Bresler–Bresler–Tse (2013), Theorem 3** complete-spectrum
-  uniqueness at `K = L - 1`: an explicit premise `hBBT`.
+  uniqueness at `K = L - 1`: an explicit premise `hBBT`/`hBBTS`/`hBBTD`.
+  The P2 admissibility predicate `AdmP2` is an opaque explicit
+  parameter: only the BBT uniqueness implication consumes it.
 
 What is fully proved here:
 * `normalized_to_ordinary`: proportional gcd-one integer spectrum
@@ -31,15 +30,19 @@ What is fully proved here:
   `divided_support`): dividing a balanced integer circulation by a
   common divisor preserves balance, scales the total, and preserves
   support — the project-side division half of `lem:scaling`.
-* Power lifting (`pow_spec_of_spell`): a spelling `W` of the quotient
-  lifts to `spec (power W g) = spec S` via the explicit power-scale
-  interface — the project-side repeated-spectrum identity.
-* `gcd_one_of_primitive_P2`: from those project-side steps plus BBT
-  uniqueness, primitivity, its rotation-invariance, and
-  non-primitivity of nontrivial powers, derive `IsGcdOne`.
-* `population_uniqueness_primitive_P2`: the end-to-end project-level
-  reduction (normalized equality → ordinary equality → rotation
-  equivalence) under the same premises.
+* Eulerian spelling (`spell_exists_divided`): the divided quotient
+  circulation is spelled by a circular word (via `balanced_div_univ`,
+  `truth_strongly_connected`, `eulerian_closed_trail`, `spell_window`,
+  `count_bridge`) — Lean-checked, discharging the former `hSpell`.
+* Power lifting (`power_spec_rep`): a spelling `W` of the quotient
+  lifts to `spec (W^g) = spec S` — Lean-checked, discharging the
+  former `hPowScale`.
+* `gcd_one_of_primitive_P2_words`: from those project-side steps plus BBT
+  uniqueness, primitivity, its rotation-invariance (`rot_prim`), and
+  non-primitivity of nontrivial powers (`power_nonprim`), derive `IsGcdOne`.
+* `population_uniqueness_primitive_P2_words`: the end-to-end project-level
+  reduction (normalized equality → equal lengths + ordinary equality)
+  under the same premises.
 The regression (`primitivity_insufficient`) shows the
 gcd-one conclusion cannot be obtained from primitivity alone:
 primitive `S = AAB` (`|S| = 3`) and `D = AAABAB` (`|D| = 6`) share
@@ -111,9 +114,9 @@ Explicit-hypothesis wrapper recording the paper's proof chain.
 `hNormEq` is normalized-spectrum equality, the conclusion of the
 external Gibbs/KL input (Cover–Thomas: tie iff normalized equality),
 which itself stays outside this file; `hGcdS`/`hGcdD` are the
-gcd-one facts discharged by `gcd_one_of_primitive_P2` via the
-division–Eulerian argument under explicit Eulerian-spelling and BBT
-premises (see below); `hBBT` in the uniqueness theorem is
+gcd-one facts discharged by `gcd_one_of_primitive_P2_words` via the
+Lean-checked division–Eulerian argument under the explicit BBT
+premise (see below); `hBBT` in the uniqueness theorem is
 Bresler–Bresler–Tse (2013) Theorem 3 at `K = L - 1`. No external fact
 is hidden: each is a universally quantified hypothesis.
 -/
@@ -1703,104 +1706,153 @@ theorem power_spec_rep {m G : ℕ} (hm : 0 < m) (W : Fin m → α) (g : ℕ)
 
 end PowerScaling
 
-/-- Power lifting: a spelling `W` of the quotient `spec S / g` repeats
-to the original spectrum, via the explicit power-scale interface
-`hPowScale` (what `power W g`, i.e. `W^g`, means for spectra: each
-cyclic window count scales by `g`, cf. `lem:scaling` "each cyclic
-length-`L` window of `W` lifts to exactly `g` windows of `W^g`").
-Lean checks the arithmetic lift `g * (c/g) = c`; only the Eulerian
-existence of `W` (`hSpell`) and BBT below stay premises. -/
-theorem pow_spec_of_spell {Genome V : Type*} [Fintype V]
-    {spec : Genome → (V → ℕ)} {power : Genome → ℕ → Genome}
-    {S W : Genome} {g : ℕ}
-    (hdiv : ∀ v : V, g ∣ spec S v)
-    (hSpell : spec W = fun v => spec S v / g)
-    (hPowScale : spec (power W g) = fun v => g * spec W v) :
-    spec (power W g) = spec S := by
-  funext v
-  rw [hPowScale]
-  simp only
-  rw [hSpell]
-  simp only
-  exact Nat.mul_div_cancel' (hdiv v)
+section RotationPrim
 
-/-- Primitive-P2 spectra have gcd one, conditional on the explicit
-Eulerian-spelling and BBT premises of the paper proof. -/
-theorem gcd_one_of_primitive_P2 {Genome V : Type*} [Fintype V]
-    {spec : Genome → (V → ℕ)} {len : Genome → ℕ}
-    {Primitive AdmP2 : Genome → Prop}
-    {rotEquiv : Genome → Genome → Prop}
-    {power : Genome → ℕ → Genome}
-    (S : Genome)
-    (hSum : ∑ v : V, spec S v = len S)
-    (hlen : 0 < len S)
-    (hPrim : Primitive S)
-    (hP2S : AdmP2 S)
-    (hSpell : ∀ g : ℕ, 1 < g → (∀ v : V, g ∣ spec S v) →
-      ∃ W : Genome, spec W = fun v => spec S v / g)
-    (hPowScale : ∀ W : Genome, ∀ g : ℕ,
-      spec (power W g) = fun v => g * spec W v)
-    (hPowerNonPrim : ∀ W : Genome, ∀ g : ℕ, 1 < g → ¬ Primitive (power W g))
-    (hBBT : ∀ D : Genome, AdmP2 S → spec D = spec S → rotEquiv D S)
-    (hRotPrim : ∀ D : Genome, rotEquiv D S → Primitive S → Primitive D) :
-    IsGcdOne (spec S) := by
+variable {α : Type}
+
+/-- Rotation equivalence of same-length circular words (forward-shift
+form): `D` shifted forward spells `S`. -/
+def RotEquiv {G : ℕ} (hG : 0 < G) (D S : Fin G → α) : Prop :=
+  ∃ k : ℕ, ∀ i : Fin G, D ⟨(i.val + k) % G, Nat.mod_lt _ hG⟩ = S i
+
+/-- Primitivity: not a nontrivial whole-genome repetition. -/
+def IsPrimitive {G : ℕ} (S : Fin G → α) : Prop :=
+  ¬ ∃ (H : ℕ) (hH : 0 < H) (U : Fin H → α) (q : ℕ), 1 < q ∧ H * q = G ∧
+    ∀ i : Fin G, S i = U ⟨i.val % H, Nat.mod_lt _ hH⟩
+
+/-- Powers are non-primitive (discharges `hPowerNonPrim`): a repetition
+witnesses its own non-primitivity. -/
+theorem power_nonprim {m G : ℕ} (hm : 0 < m) (W : Fin m → α) (g : ℕ)
+    (hG : m * g = G) (hlt : 1 < g) :
+    ¬ IsPrimitive (repWord hm W g G) := by
+  intro hcon
+  apply hcon
+  exact ⟨m, hm, W, g, hlt, hG, fun i => rfl⟩
+
+/-- Rotation preserves primitivity (discharges `hRotPrim`): a repetition
+of `D` pulls back along the rotation to a repetition of `S`. -/
+theorem rot_prim {G : ℕ} (hG : 0 < G) {D S : Fin G → α}
+    (hrot : RotEquiv hG D S) (hS : IsPrimitive S) :
+    IsPrimitive D := by
+  obtain ⟨t, ht⟩ := hrot
+  intro hD
+  obtain ⟨H, hH, U, q, h1, hlen, hrep⟩ := hD
+  apply hS
+  have hdivHG : H ∣ G := ⟨q, hlen.symm⟩
+  refine ⟨H, hH, (fun j : Fin H => U ⟨(j.val + t) % H, Nat.mod_lt _ hH⟩),
+    q, h1, hlen, fun i => ?_⟩
+  have e1 : S i = D ⟨(i.val + t) % G, Nat.mod_lt _ hG⟩ := (ht i).symm
+  have emod : (((i.val + t) % G) % H) = (((i.val % H) + t) % H) := by
+    rw [Nat.mod_mod_of_dvd _ hdivHG]
+    exact (Nat.mod_add_mod _ _ _).symm
+  have em : (⟨(((i.val + t) % G) % H), Nat.mod_lt _ hH⟩ : Fin H)
+      = ⟨(((i.val % H) + t) % H), Nat.mod_lt _ hH⟩ :=
+    Fin.ext emod
+  have hwr : D ⟨(i.val + t) % G, Nat.mod_lt _ hG⟩
+      = U ⟨(((i.val + t) % G) % H), Nat.mod_lt _ hH⟩ :=
+    hrep _
+  rw [em] at hwr
+  exact e1.trans hwr
+
+end RotationPrim
+
+section ConcreteGcd
+
+variable {α : Type} [DecidableEq α] [Fintype α]
+variable {L : ℕ}
+
+open OrientedRigidity
+
+/-- Primitive-P2 spectra have gcd one: the project-side
+division–Eulerian argument with both obligations discharged.
+`spell_exists_divided` supplies the Eulerian spelling `W` of the
+quotient; `power_spec_rep` lifts it to `spec (W^g) = spec S`; BBT
+uniqueness (the sole external mathematical premise) forces
+`S ∼ W^g`, contradicting primitivity via rotation-invariance and
+non-primitivity of powers (both proved above). -/
+theorem gcd_one_of_primitive_P2_words {G : ℕ}
+    (AdmP2 : ∀ {H : ℕ}, (Fin H → α) → Prop)
+    (hG : 0 < G) (S : Fin G → α) (hL : 1 < L)
+    (hPrim : IsPrimitive S) (hP2S : AdmP2 S)
+    (hBBT : ∀ D : Fin G → α, AdmP2 S →
+      specCount (L := L) hG S = specCount (L := L) hG D → RotEquiv hG D S) :
+    IsGcdOne (W := Fin L → α) (specCount (L := L) hG S) := by
   intro g hg
+  have hg' : ∀ w : Fin L → α, g ∣ specCount (L := L) hG S w := hg
   by_cases h1 : g = 1
   · exact h1
   · have hpos : 0 < g := by
       rcases Nat.eq_zero_or_pos g with rfl | hp
       · exfalso
-        have hall : ∀ v : V, spec S v = 0 :=
-          fun v => Nat.eq_zero_of_zero_dvd (hg v)
-        have hzero : ∑ v : V, spec S v = 0 :=
-          Finset.sum_eq_zero (fun v _ => hall v)
+        have hall : ∀ v : Fin L → α, specCount (L := L) hG S v = 0 :=
+          fun v => Nat.eq_zero_of_zero_dvd (hg' v)
+        have htot := truth_total (L := L) hG S
+        have hzero : ∑ w ∈ support (L := L) hG S, specCount hG S w = 0 :=
+          Finset.sum_eq_zero (fun w _ => hall w)
         omega
       · exact hp
     have hlt : 1 < g := by omega
-    obtain ⟨W, hSpecW⟩ := hSpell g hlt hg
-    have hLift : spec (power W g) = spec S :=
-      pow_spec_of_spell hg hSpecW (hPowScale W g)
-    have hRot := hBBT (power W g) hP2S hLift
-    have hPrimW := hRotPrim (power W g) hRot hPrim
-    exact absurd hPrimW (hPowerNonPrim W g hlt)
+    obtain ⟨m, hm, W, hSpecW, hlenW⟩ :=
+      spell_exists_divided hG S hL g hlt hg'
+    have hPowSpec : specCount (L := L) hG (repWord hm W g G) = specCount (L := L) hG S := by
+      have hsc := power_spec_rep hm W g hG hlenW L
+      funext w
+      rw [hsc]
+      simp only [hSpecW]
+      exact Nat.mul_div_cancel' (hg' w)
+    have hRot := hBBT (repWord hm W g G) hP2S hPowSpec.symm
+    have hPrimW := rot_prim hG hRot hPrim
+    have hNonPrim := power_nonprim hm W g hlenW hlt
+    exact absurd hPrimW hNonPrim
 
 /-- End-to-end project-level reduction for primitive P2 genomes:
-normalized equality forces ordinary equality and rotation
-equivalence, under the same explicit Eulerian-spelling/BBT premises
-for each genome plus one final BBT uniqueness application. -/
-theorem population_uniqueness_primitive_P2 {Genome V : Type*} [Fintype V]
-    {spec : Genome → (V → ℕ)} {len : Genome → ℕ}
-    {Primitive AdmP2 : Genome → Prop}
-    {rotEquiv : Genome → Genome → Prop}
-    {power : Genome → ℕ → Genome}
-    (S D : Genome)
-    (hSumS : ∑ v : V, spec S v = len S)
-    (hSumD : ∑ v : V, spec D v = len D)
-    (hlenS : 0 < len S) (hlenD : 0 < len D)
-    (hPrimS : Primitive S) (hPrimD : Primitive D)
+normalized equality forces equal lengths and equal ordinary spectra.
+Rotation then follows by substituting the length identity into BBT
+uniqueness (one line at the use site). -/
+theorem population_uniqueness_primitive_P2_words {G H : ℕ}
+    (AdmP2 : ∀ {K : ℕ}, (Fin K → α) → Prop)
+    (hG : 0 < G) (hH : 0 < H) (S : Fin G → α) (D : Fin H → α)
+    (hL : 1 < L)
+    (hPrimS : IsPrimitive S) (hPrimD : IsPrimitive D)
     (hP2S : AdmP2 S) (hP2D : AdmP2 D)
-    (hNormEq : NormalizedEqual (spec S) (spec D) (len S) (len D))
-    (hSpellS : ∀ g : ℕ, 1 < g → (∀ v : V, g ∣ spec S v) →
-      ∃ W : Genome, spec W = fun v => spec S v / g)
-    (hSpellD : ∀ g : ℕ, 1 < g → (∀ v : V, g ∣ spec D v) →
-      ∃ W : Genome, spec W = fun v => spec D v / g)
-    (hPowScale : ∀ W : Genome, ∀ g : ℕ,
-      spec (power W g) = fun v => g * spec W v)
-    (hPowerNonPrim : ∀ W : Genome, ∀ g : ℕ, 1 < g → ¬ Primitive (power W g))
-    (hBBTS : ∀ E : Genome, AdmP2 S → spec E = spec S → rotEquiv E S)
-    (hBBTD : ∀ E : Genome, AdmP2 D → spec E = spec D → rotEquiv E D)
-    (hRotPrimS : ∀ E : Genome, rotEquiv E S → Primitive S → Primitive E)
-    (hRotPrimD : ∀ E : Genome, rotEquiv E D → Primitive D → Primitive E)
-    (hBBTuniq : spec S = spec D → rotEquiv D S) :
-    len S = len D ∧ spec S = spec D ∧ rotEquiv D S := by
-  have hGcdS : IsGcdOne (spec S) :=
-    gcd_one_of_primitive_P2 S hSumS hlenS hPrimS hP2S hSpellS
-      hPowScale hPowerNonPrim hBBTS hRotPrimS
-  have hGcdD : IsGcdOne (spec D) :=
-    gcd_one_of_primitive_P2 D hSumD hlenD hPrimD hP2D hSpellD
-      hPowScale hPowerNonPrim hBBTD hRotPrimD
-  have hOrd := normalized_to_ordinary hlenS hlenD hSumS hSumD hNormEq hGcdS hGcdD
-  exact ⟨hOrd.1, hOrd.2, hBBTuniq hOrd.2⟩
+    (hNormEq : NormalizedEqual (W := Fin L → α) (specCount (L := L) hG S) (specCount (L := L) hH D) G H)
+    (hBBTS : ∀ E : Fin G → α, AdmP2 S →
+      specCount (L := L) hG S = specCount (L := L) hG E → RotEquiv hG E S)
+    (hBBTD : ∀ E : Fin H → α, AdmP2 D →
+      specCount (L := L) hH D = specCount (L := L) hH E → RotEquiv hH E D) :
+    G = H ∧ specCount (L := L) hG S = specCount (L := L) hH D := by
+  have hSumS : ∑ w : Fin L → α, specCount (L := L) hG S w = G := by
+    have htot := truth_total (L := L) hG S
+    have hsub : (∑ w ∈ support (L := L) hG S, specCount hG S w)
+        = ∑ w : Fin L → α, specCount (L := L) hG S w := by
+      apply Finset.sum_subset (Finset.subset_univ _)
+      intro w _ hwN
+      have h0 : specCount (L := L) hG S w = 0 := by
+        have h : ¬ 0 < specCount (L := L) hG S w :=
+          fun hpos => hwN ((mem_support_iff hG S w).mpr hpos)
+        omega
+      exact h0
+    omega
+  have hSumD : ∑ w : Fin L → α, specCount (L := L) hH D w = H := by
+    have htot := truth_total (L := L) hH D
+    have hsub : (∑ w ∈ support (L := L) hH D, specCount hH D w)
+        = ∑ w : Fin L → α, specCount (L := L) hH D w := by
+      apply Finset.sum_subset (Finset.subset_univ _)
+      intro w _ hwN
+      have h0 : specCount (L := L) hH D w = 0 := by
+        have h : ¬ 0 < specCount (L := L) hH D w :=
+          fun hpos => hwN ((mem_support_iff hH D w).mpr hpos)
+        omega
+      exact h0
+    omega
+  have hGcdS : IsGcdOne (W := Fin L → α) (specCount (L := L) hG S) :=
+    gcd_one_of_primitive_P2_words AdmP2 hG S hL hPrimS hP2S hBBTS
+  have hGcdD : IsGcdOne (W := Fin L → α) (specCount (L := L) hH D) :=
+    gcd_one_of_primitive_P2_words AdmP2 hH D hL hPrimD hP2D hBBTD
+  have hOrd := normalized_to_ordinary hG hH hSumS hSumD hNormEq hGcdS hGcdD
+  exact hOrd
+
+end ConcreteGcd
 
 -- ---------------------------------------------------------------------------
 -- Regression: primitivity alone does not imply the reduction.
