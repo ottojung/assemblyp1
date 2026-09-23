@@ -194,10 +194,14 @@ gives a unique Eulerian cycle and therefore $D\sim S$. The truth is a maximizer
 by Lemma~\ref{lem:gibbs}.
 \end{proof}
 
-\statusline{The reduction and the maximizer step are \mathfact; the final
-step is the \srcfact{} external theorem \cite{bresler2013}. The whole chain is
-\emph{source-supported mathematics}, not a kernel-checked Lean theorem; the
-gcd-one/division writeup is the project's.}
+\statusline{The project-side reduction (division/Eulerian gcd-one, issue
+\#70) and the thin final tie-to-rotation wiring (issue \#73) are
+\kernelcheck{} in \texttt{PopulationReduction} and
+\texttt{PopulationUniqueness}, reusing the \#70 reduction with no
+duplicated infrastructure. The Gibbs/KL tie characterization and the BBT
+uniqueness step remain explicit external premises (\srcfact{}
+\cite{cover2006}, \cite{bresler2013}). The gcd-one/division writeup is the
+project's.}
 
 \subsection{Scope and one failed proof route}
 
