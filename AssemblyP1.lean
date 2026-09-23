@@ -8,3 +8,4 @@ import AssemblyP1.SameLengthSection62Counterexample
 import AssemblyP1.FiniteSamplingCounterexample
 import AssemblyP1.PopulationReduction
 import AssemblyP1.OrientedRigidity
+import AssemblyP1.RepeatAdapter
