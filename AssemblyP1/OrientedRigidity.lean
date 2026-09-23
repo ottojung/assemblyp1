@@ -515,6 +515,32 @@ theorem unique_positive_circulation
     simp only [hδdef] at h0
     omega
 
+/-- **Division preserves balance (issue #70).** Dividing every
+multiplicity of a balanced circulation by a common divisor `g > 0`
+yields a balanced circulation. This is the project-side division half
+of `lem:scaling` in `paper/sections/05-population.tex`: balance is a
+homogeneous linear condition, so it survives division. -/
+theorem balanced_div (c : E → ℕ) (g : ℕ)
+    (hg : 0 < g) (hdiv : ∀ e ∈ edges, g ∣ c e)
+    (hbal : Balanced tail head nodes edges c) :
+    Balanced tail head nodes edges (fun e => c e / g) := by
+  intro v hv
+  have hout : g * ∑ e ∈ outF tail edges v, c e / g
+      = ∑ e ∈ outF tail edges v, c e := by
+    rw [Finset.mul_sum]
+    apply Finset.sum_congr rfl
+    intro e he
+    exact Nat.mul_div_cancel' (hdiv e (Finset.mem_filter.mp he).1)
+  have hin : g * ∑ e ∈ inF head edges v, c e / g
+      = ∑ e ∈ inF head edges v, c e := by
+    rw [Finset.mul_sum]
+    apply Finset.sum_congr rfl
+    intro e he
+    exact Nat.mul_div_cancel' (hdiv e (Finset.mem_filter.mp he).1)
+  have h := hbal v hv
+  rw [← hout, ← hin] at h
+  exact Nat.mul_left_cancel (by omega : 0 < g) h
+
 end AbstractCirculation
 
 section WordLayer

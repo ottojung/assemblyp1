@@ -1,4 +1,5 @@
 import Mathlib
+import AssemblyP1.OrientedRigidity
 
 /-!
 # Population normalized-to-ordinary spectrum reduction (primitive P2)
@@ -138,75 +139,966 @@ theorem population_uniqueness_of_ordinary {Genome V : Type*}
 -- AssemblyP1-original primitive-P2 division–Eulerian gcd-one mechanism.
 -- Paper source: `paper/sections/05-population.tex`, proof of
 -- `lem:scaling`, via `thm:BBT` (Bresler–Bresler–Tse 2013, Theorem 3).
--- Balance is stated against abstract out/in edge families so this file
--- does not rebuild de Bruijn infrastructure or duplicate the
--- circular-spectrum word layer of issue #69: instantiations plug in
--- `(L-1)`-mer vertices and `L`-mer edges. The standard existence of an
--- Eulerian closed trail spelling the divided circulation `c/g` is an
--- explicit premise `hSpell`; complete-spectrum uniqueness is an
--- explicit premise `hBBT`. What Lean checks is the project-side
--- division of the circulation, the power-lifting identity
--- `spec (W^g) = spec S`, and the derivation from those premises (plus
--- primitivity and its rotation-invariance and non-primitivity of
--- nontrivial powers) to `IsGcdOne`. In particular gcd-one itself is
--- never assumed.
+--
+-- The Eulerian closed-trail theorem below (`eulerian_closed_trail`,
+-- Hierholzer's theorem for finite balanced weakly-connected integer
+-- circulations) is proved in Lean from scratch: Mathlib has no Eulerian
+-- machinery, so the project-side division/Eulerian step is
+-- kernel-checked rather than assumed. The circular power-word scaling
+-- identity (`powerSpec`) is likewise proved from the circular-word
+-- structure of issue #69's `WordLayer`. The only external mathematical
+-- input remaining is complete-spectrum uniqueness `hBBT`
+-- (Bresler–Bresler–Tse 2013, Theorem 3). Gcd-one itself is never assumed.
 -- ---------------------------------------------------------------------------
 
-section CirculationDivision
+section EulerianTrail
 
-variable {V E : Type*}
+variable {V E : Type} [DecidableEq V] [DecidableEq E] [Fintype E]
+variable (tail head : E → V)
 
-/-- Balance of an integer circulation against abstract out/in edge
-families (instantiated with de Bruijn prefix/suffix edges). -/
-def Balanced (Out In : V → Finset E) (c : E → ℕ) : Prop :=
-  ∀ v : V, ∑ e ∈ Out v, c e = ∑ e ∈ In v, c e
+/-- Out-edges of `v` (all of them; availability is tracked separately). -/
+def eOut (v : V) : Finset E := Finset.univ.filter (fun e => tail e = v)
 
-/-- The divided circulation `c/g` of the manuscript proof. -/
-def divided (c : E → ℕ) (g : ℕ) : E → ℕ :=
-  fun e => c e / g
+/-- In-edges of `v`. -/
+def eIn (v : V) : Finset E := Finset.univ.filter (fun e => head e = v)
 
-theorem divided_balanced {Out In : V → Finset E} {c : E → ℕ} {g : ℕ}
-    (hg : 0 < g) (hdiv : ∀ e : E, g ∣ c e)
-    (hbal : Balanced Out In c) :
-    Balanced Out In (divided c g) := by
+/-- Edge usage of a trail: multiplicity of `e` in `T`. -/
+def edgeUse (T : List E) (e : E) : ℕ :=
+  T.countP (fun x => decide (x = e))
+
+/-- Out-usage at `v`: used out-edges counted with multiplicity. -/
+def outUse (T : List E) (v : V) : ℕ :=
+  ∑ e ∈ eOut tail v, edgeUse T e
+
+/-- In-usage at `v`. -/
+def inUse (T : List E) (v : V) : ℕ :=
+  ∑ e ∈ eIn head v, edgeUse T e
+
+/-- Balance of an availability function (integer circulation). -/
+def CircBalanced (q : E → ℕ) : Prop :=
+  ∀ v : V, ∑ e ∈ eOut tail v, q e = ∑ e ∈ eIn head v, q e
+
+/-- Vertices visited by a trail. -/
+def TVerts (T : List E) (u : V) : Prop :=
+  ∃ e ∈ T, tail e = u ∨ head e = u
+
+/-- Directed trails with endpoints. -/
+inductive TrailEnds : List E → V → V → Prop
+  | nil (s : V) : TrailEnds [] s s
+  | cons (e : E) (T : List E) (s t : V) (hte : tail e = s)
+      (hT : TrailEnds T (head e) t) : TrailEnds (e :: T) s t
+
+/-- Undirected vertex paths inside a support edge set. -/
+inductive UPath (supp : Finset E) : List E → V → V → Prop
+  | nil (u : V) : UPath supp [] u u
+  | fwd (f : E) (P : List E) (u v : V) (hf : f ∈ supp)
+      (hte : tail f = u) (hP : UPath supp P (head f) v) :
+      UPath supp (f :: P) u v
+  | bwd (f : E) (P : List E) (u v : V) (hf : f ∈ supp)
+      (hhe : head f = u) (hP : UPath supp P (tail f) v) :
+      UPath supp (f :: P) u v
+
+/-- Weak connectivity of a support edge set: any two incident vertices
+are joined by an undirected path. -/
+def WeakConn (supp : Finset E) : Prop :=
+  ∀ u v : V, (∃ e ∈ supp, tail e = u ∨ head e = u) →
+    (∃ e ∈ supp, tail e = v ∨ head e = v) → ∃ P, UPath tail head supp P u v
+
+omit [Fintype E] in
+theorem edgeUse_nil (e : E) : edgeUse ([] : List E) e = 0 := rfl
+
+omit [Fintype E] in
+theorem edgeUse_cons (a : E) (T' : List E) (e : E) :
+    edgeUse (a :: T') e = edgeUse T' e + (if a = e then 1 else 0) := by
+  unfold edgeUse
+  rw [List.countP_cons]
+  by_cases h : a = e <;> simp [h]
+
+omit [Fintype E] in
+/-- Indicator sum over a finset: only the given member contributes. -/
+private theorem sum_ite_self (s : Finset E) (a : E) :
+    ∑ x ∈ s, (if a = x then 1 else 0) = (if a ∈ s then 1 else 0) := by
+  by_cases h : a ∈ s
+  · have e1 : (if a ∈ s then (1 : ℕ) else 0) = 1 := by simp [h]
+    rw [e1]
+    calc ∑ x ∈ s, (if a = x then 1 else 0)
+        = (if a = a then 1 else 0) :=
+          Finset.sum_eq_single a
+            (fun x _ hxa => by simp [Ne.symm hxa])
+            (fun hcon => absurd h hcon)
+      _ = 1 := by simp
+  · have e0 : (if a ∈ s then (1 : ℕ) else 0) = 0 := by simp [h]
+    rw [e0]
+    apply Finset.sum_eq_zero
+    intro x hx
+    have hne : a ≠ x := fun he => h (he.symm ▸ hx)
+    simp [hne]
+
+theorem outUse_nil (v : V) : outUse tail ([] : List E) v = 0 := by
+  unfold outUse
+  simp [edgeUse]
+
+theorem inUse_nil (v : V) : inUse head ([] : List E) v = 0 := by
+  unfold inUse
+  simp [edgeUse]
+
+theorem outUse_cons (a : E) (T' : List E) (v : V) :
+    outUse tail (a :: T') v
+      = outUse tail T' v + (if tail a = v then 1 else 0) := by
+  unfold outUse
+  have h : ∀ x ∈ eOut tail v,
+      edgeUse (a :: T') x = edgeUse T' x + (if a = x then 1 else 0) :=
+    fun x _ => edgeUse_cons a T' x
+  rw [Finset.sum_congr rfl h, Finset.sum_add_distrib, sum_ite_self]
+  congr 1
+  by_cases hmv : tail a = v
+  · have hm : a ∈ eOut tail v :=
+      Finset.mem_filter.mpr ⟨Finset.mem_univ _, hmv⟩
+    simp [hm, hmv]
+  · have hm : a ∉ eOut tail v :=
+      fun hh => hmv (Finset.mem_filter.mp hh).2
+    simp [hm, hmv]
+
+theorem inUse_cons (a : E) (T' : List E) (v : V) :
+    inUse head (a :: T') v
+      = inUse head T' v + (if head a = v then 1 else 0) := by
+  unfold inUse
+  have h : ∀ x ∈ eIn head v,
+      edgeUse (a :: T') x = edgeUse T' x + (if a = x then 1 else 0) :=
+    fun x _ => edgeUse_cons a T' x
+  rw [Finset.sum_congr rfl h, Finset.sum_add_distrib, sum_ite_self]
+  congr 1
+  by_cases hmv : head a = v
+  · have hm : a ∈ eIn head v :=
+      Finset.mem_filter.mpr ⟨Finset.mem_univ _, hmv⟩
+    simp [hm, hmv]
+  · have hm : a ∉ eIn head v :=
+      fun hh => hmv (Finset.mem_filter.mp hh).2
+    simp [hm, hmv]
+
+omit [Fintype E] in
+theorem edgeUse_append (A B : List E) (e : E) :
+    edgeUse (A ++ B) e = edgeUse A e + edgeUse B e := by
+  unfold edgeUse
+  rw [List.countP_append]
+
+theorem outUse_append (A B : List E) (v : V) :
+    outUse tail (A ++ B) v = outUse tail A v + outUse tail B v := by
+  unfold outUse
+  rw [← Finset.sum_add_distrib]
+  apply Finset.sum_congr rfl
+  intro x _
+  exact edgeUse_append A B x
+
+theorem inUse_append (A B : List E) (v : V) :
+    inUse head (A ++ B) v = inUse head A v + inUse head B v := by
+  unfold inUse
+  rw [← Finset.sum_add_distrib]
+  apply Finset.sum_congr rfl
+  intro x _
+  exact edgeUse_append A B x
+
+/-- A trail's length is the total edge usage. -/
+theorem length_eq_sum_edgeUse (T : List E) :
+    T.length = ∑ e ∈ Finset.univ, edgeUse T e := by
+  induction T with
+  | nil => simp [edgeUse]
+  | cons a T' ih =>
+    have h : ∀ x ∈ (Finset.univ : Finset E),
+        edgeUse (a :: T') x = edgeUse T' x + (if a = x then 1 else 0) :=
+      fun x _ => edgeUse_cons a T' x
+    have h1 : ∑ x ∈ (Finset.univ : Finset E), (if a = x then 1 else 0) = 1 := by
+      rw [sum_ite_self]
+      simp only [Finset.mem_univ, ite_true]
+    rw [List.length_cons, Finset.sum_congr rfl h,
+      Finset.sum_add_distrib, ← ih, h1, add_comm]
+
+/-- Endpoint flow balance of a trail: out-use minus in-use is `+1` at
+the start, `-1` at the end, `0` elsewhere. -/
+theorem trail_count {T : List E} {s t : V} (h : TrailEnds tail head T s t)
+    (v : V) :
+    (outUse tail T v : ℤ) - (inUse head T v : ℤ)
+      = (if s = v then 1 else 0) - (if t = v then 1 else 0) := by
+  induction h with
+  | nil s => simp [outUse_nil, inUse_nil]
+  | cons e T' s t hte _ ih =>
+    rw [outUse_cons, inUse_cons]
+    push_cast
+    rw [hte]
+    by_cases q1 : s = v <;> by_cases q2 : head e = v <;> by_cases q3 : t = v <;>
+      simp only [q1, q2, q3, ite_true, ite_false] at ih ⊢ <;> omega
+
+/-- A closed trail's usage is balanced at every vertex. -/
+theorem trail_closed_balanced {T : List E} {s : V}
+    (h : TrailEnds tail head T s s) (v : V) :
+    outUse tail T v = inUse head T v := by
+  have h := trail_count tail head h v
+  have hz : (if s = v then (1 : ℤ) else 0) - (if s = v then 1 else 0) = 0 :=
+    sub_self _
+  rw [hz] at h
+  omega
+
+omit [DecidableEq V] [DecidableEq E] [Fintype E] in
+/-- Appending consecutive trails. -/
+theorem trail_append {A B : List E} {s u t : V}
+    (hA : TrailEnds tail head A s u) (hB : TrailEnds tail head B u t) :
+    TrailEnds tail head (A ++ B) s t := by
+  revert hB
+  induction hA with
+  | nil s =>
+    intro hB
+    simpa using hB
+  | cons e A' s u' hte _ ih =>
+    intro hB
+    exact .cons e (A' ++ B) s t hte (ih hB)
+
+omit [DecidableEq V] [DecidableEq E] [Fintype E] in
+/-- Appending a single edge at the end. -/
+theorem trail_append_single {T : List E} {s t : V} {e : E}
+    (hT : TrailEnds tail head T s t) (hte : tail e = t) :
+    TrailEnds tail head (T ++ [e]) s (head e) :=
+  trail_append tail head hT (.cons e [] t (head e) hte (.nil _))
+
+omit [DecidableEq V] [DecidableEq E] [Fintype E] in
+/-- A trail through `u` splits into `s ⇝ u` and `u ⇝ t`. -/
+theorem trail_split_visit {T : List E} {s t u : V}
+    (h : TrailEnds tail head T s t)
+    (hvisit : ∃ e ∈ T, tail e = u ∨ head e = u) :
+    ∃ A B, T = A ++ B ∧ TrailEnds tail head A s u ∧
+      TrailEnds tail head B u t := by
+  revert u
+  induction h with
+  | nil s =>
+    intro u hvisit
+    obtain ⟨f, hf, _⟩ := hvisit
+    exact absurd hf List.not_mem_nil
+  | cons e T' s t hte hT' ih =>
+    intro u hvisit
+    obtain ⟨f, hf, hfu⟩ := hvisit
+    rw [List.mem_cons] at hf
+    rcases hf with hfe | hfT'
+    · subst hfe
+      rcases hfu with htu | huu
+      · have hsu : s = u := hte.symm.trans htu
+        subst hsu
+        exact ⟨[], f :: T', rfl, .nil _, .cons f T' _ _ hte hT'⟩
+      · subst huu
+        exact ⟨[f], T', rfl,
+          .cons f [] s (head f) hte (.nil _), hT'⟩
+    · obtain ⟨A', B', hAB', hA', hB'⟩ := ih ⟨f, hfT', hfu⟩
+      exact ⟨e :: A', B', by rw [hAB', List.cons_append],
+        .cons e A' s u hte hA', hB'⟩
+
+omit [DecidableEq V] [DecidableEq E] [Fintype E] in
+/-- Appending undirected paths. -/
+theorem upath_append {supp : Finset E} {P Q : List E} {u w v : V}
+    (hP : UPath tail head supp P u w) (hQ : UPath tail head supp Q w v) :
+    UPath tail head supp (P ++ Q) u v := by
+  revert hQ
+  induction hP with
+  | nil u =>
+    intro hQ
+    simpa using hQ
+  | fwd f P' u w' hf hte _ ih =>
+    intro hQ
+    exact .fwd f (P' ++ Q) u v hf hte (ih hQ)
+  | bwd f P' u w' hf hhe _ ih =>
+    intro hQ
+    exact .bwd f (P' ++ Q) u v hf hhe (ih hQ)
+
+omit [DecidableEq V] [DecidableEq E] [Fintype E] in
+/-- Directed reachability yields an undirected path. -/
+theorem reachable_to_upath {edges supp : Finset E}
+    (hsub : edges ⊆ supp)
+    {u v : V} (h : OrientedRigidity.Reachable tail head edges u v) :
+    ∃ P, UPath tail head supp P u v := by
+  induction h with
+  | refl => exact ⟨[], .nil _⟩
+  | step f _ hmem htw hhw ih =>
+    obtain ⟨P, hP⟩ := ih
+    refine ⟨P ++ [f], hhw ▸ upath_append tail head hP ?_⟩
+    exact .fwd f [] _ _ (hsub hmem) htw (.nil _)
+
+/-- Maximal trails end at their start: if every out-edge of the end
+is exhausted and availability is balanced, the end equals the start.
+Otherwise out-use would exceed in-use at the end. -/
+theorem maximal_end_start {q' : E → ℕ} (hbal : CircBalanced tail head q')
+    {X : List E} {s' t : V} (hT : TrailEnds tail head X s' t)
+    (hle : ∀ e, edgeUse X e ≤ q' e)
+    (hstuck : ∀ e ∈ eOut tail t, edgeUse X e = q' e) :
+    t = s' := by
+  have hcount := trail_count tail head hT t
+  have hOut : outUse tail X t = ∑ e ∈ eOut tail t, q' e :=
+    Finset.sum_congr rfl (fun e he => hstuck e he)
+  have hge : (inUse head X t : ℤ) ≤ (outUse tail X t : ℤ) := by
+    have h1 : inUse head X t ≤ ∑ e ∈ eIn head t, q' e :=
+      Finset.sum_le_sum (fun e _ => hle e)
+    have h2 : ∑ e ∈ eOut tail t, q' e = ∑ e ∈ eIn head t, q' e := hbal t
+    omega
+  by_contra hne
+  have hne' : s' ≠ t := fun h => hne h.symm
+  have e1 : (if s' = t then (1 : ℤ) else 0) = 0 := by simp [hne']
+  have e2 : (if t = t then (1 : ℤ) else 0) = 1 := by simp
+  rw [e1, e2] at hcount
+  omega
+
+omit [DecidableEq E] in
+/-- Subtracting a balanced sub-circulation preserves balance. -/
+theorem balanced_sub {q u : E → ℕ} (hbal : CircBalanced tail head q)
+    (hbalu : ∀ v : V, ∑ e ∈ eOut tail v, u e = ∑ e ∈ eIn head v, u e)
+    (hle : ∀ e : E, u e ≤ q e) :
+    CircBalanced tail head (fun e => q e - u e) := by
   intro v
-  have hout : g * ∑ e ∈ Out v, divided c g e = ∑ e ∈ Out v, c e := by
-    rw [Finset.mul_sum]
-    apply Finset.sum_congr rfl
-    intro e _
-    exact Nat.mul_div_cancel' (hdiv e)
-  have hin : g * ∑ e ∈ In v, divided c g e = ∑ e ∈ In v, c e := by
-    rw [Finset.mul_sum]
-    apply Finset.sum_congr rfl
-    intro e _
-    exact Nat.mul_div_cancel' (hdiv e)
-  have h := hbal v
-  rw [← hout, ← hin] at h
-  exact Nat.mul_left_cancel (by omega : 0 < g) h
+  show ∑ e ∈ eOut tail v, (q e - u e) = ∑ e ∈ eIn head v, (q e - u e)
+  have key : ∀ s : Finset E,
+      ∑ e ∈ s, (q e - u e) + ∑ e ∈ s, u e = ∑ e ∈ s, q e := by
+    intro s
+    rw [← Finset.sum_add_distrib]
+    exact Finset.sum_congr rfl (fun x _ => Nat.sub_add_cancel (hle x))
+  have h1 := key (eOut tail v)
+  have h2 := key (eIn head v)
+  have hq := hbal v
+  have hu := hbalu v
+  omega
 
-theorem divided_sum {c : E → ℕ} {g : ℕ}
-    (hg : 0 < g) (hdiv : ∀ e : E, g ∣ c e) (s : Finset E) :
-    ∑ e ∈ s, divided c g e = (∑ e ∈ s, c e) / g := by
-  have h : g * ∑ e ∈ s, divided c g e = ∑ e ∈ s, c e := by
-    rw [Finset.mul_sum]
-    apply Finset.sum_congr rfl
-    intro e _
-    exact Nat.mul_div_cancel' (hdiv e)
-  rw [← h]
-  exact (Nat.mul_div_cancel_left _ hg).symm
+/-- Find an available out-edge of `t` (one used strictly below quota). -/
+noncomputable def findAvail (q : E → ℕ) (T : List E) (t : V) : Option E :=
+  (eOut tail t).toList.find? (fun e => decide (edgeUse T e < q e))
 
-theorem divided_support {c : E → ℕ} {g : ℕ}
-    (_hg : 0 < g) (hdiv : ∀ e : E, g ∣ c e) (e : E) :
-    divided c g e = 0 ↔ c e = 0 := by
-  constructor
-  · intro h
-    have h2 : g * divided c g e = c e := Nat.mul_div_cancel' (hdiv e)
-    rw [h, mul_zero] at h2
-    exact h2.symm
-  · intro h
-    simp [divided, h, Nat.zero_div]
+theorem findAvail_some_mem {q : E → ℕ} {T : List E} {t : V}
+    {ee : E} (h : findAvail tail q T t = some ee) :
+    ee ∈ eOut tail t := by
+  unfold findAvail at h
+  exact Finset.mem_toList.mp (List.mem_of_find?_eq_some h)
 
-end CirculationDivision
+theorem findAvail_some_lt {q : E → ℕ} {T : List E} {t : V} {ee : E}
+    (h : findAvail tail q T t = some ee) : edgeUse T ee < q ee := by
+  unfold findAvail at h
+  have h2 := List.find?_some h
+  exact of_decide_eq_true h2
+
+theorem findAvail_none_le {q : E → ℕ} {T : List E} {t : V}
+    (h : findAvail tail q T t = none) (x : E) (hx : x ∈ eOut tail t) :
+    q x ≤ edgeUse T x := by
+  unfold findAvail at h
+  rw [List.find?_eq_none] at h
+  have hx' : x ∈ (eOut tail t).toList := Finset.mem_toList.mpr hx
+  have h2 := h x hx'
+  by_contra hlt
+  have hlt' : edgeUse T x < q x := Nat.not_le.mp hlt
+  exact h2 (by simp [hlt'])
+
+/-- Greedy maximal extension with fuel: extend while an available
+out-edge exists at the current end. -/
+noncomputable def grow (q : E → ℕ) : ℕ → List E → V → List E × V
+  | 0, T, t => (T, t)
+  | fuel + 1, T, t =>
+    match findAvail tail q T t with
+    | none => (T, t)
+    | some e => grow q fuel (T ++ [e]) (head e)
+
+theorem grow_succ (q : E → ℕ) (fuel : ℕ) (T : List E) (t : V) :
+    grow tail head q (fuel + 1) T t =
+      match findAvail tail q T t with
+      | none => (T, t)
+      | some e => grow tail head q fuel (T ++ [e]) (head e) := rfl
+
+theorem grow_trail (q : E → ℕ) (fuel : ℕ) (X : List E) (s' t : V)
+    (hT : TrailEnds tail head X s' t) :
+    TrailEnds tail head (grow tail head q fuel X t).1 s'
+      (grow tail head q fuel X t).2 := by
+  induction fuel generalizing X t with
+  | zero =>
+    simpa [grow] using hT
+  | succ fuel ih =>
+    rw [grow_succ]
+    cases hfind : findAvail tail q X t with
+    | none =>
+      simpa using hT
+    | some e =>
+      have he : tail e = t :=
+        (Finset.mem_filter.mp (findAvail_some_mem tail hfind)).2
+      show TrailEnds tail head (grow tail head q fuel (X ++ [e]) (head e)).1
+        s' (grow tail head q fuel (X ++ [e]) (head e)).2
+      exact ih (X ++ [e]) (head e) (trail_append_single tail head hT he)
+
+theorem grow_le (q : E → ℕ) (fuel : ℕ) (X : List E) (t : V)
+    (hle : ∀ e, edgeUse X e ≤ q e) :
+    ∀ e, edgeUse (grow tail head q fuel X t).1 e ≤ q e := by
+  induction fuel generalizing X t with
+  | zero =>
+    simpa [grow] using hle
+  | succ fuel ih =>
+    rw [grow_succ]
+    cases hfind : findAvail tail q X t with
+    | none =>
+      simpa using hle
+    | some e =>
+      show ∀ e', edgeUse (grow tail head q fuel (X ++ [e]) (head e)).1 e' ≤ q e'
+      apply ih
+      intro x
+      have hlt : edgeUse X e < q e := findAvail_some_lt tail hfind
+      have hx := hle x
+      rw [edgeUse_append]
+      by_cases hxe : x = e
+      · subst hxe
+        have h1 : edgeUse [x] x = 1 := by simp [edgeUse]
+        omega
+      · have h0 : edgeUse [e] x = 0 := by simp [edgeUse, Ne.symm hxe]
+        omega
+
+/-- Growth outcome: either the end is stuck (all out-edges exhausted)
+or the trail grew by the full fuel allowance. -/
+theorem grow_outcome (q : E → ℕ) (fuel : ℕ) (X : List E) (s' t : V)
+    (hT : TrailEnds tail head X s' t) :
+    (∀ e ∈ eOut tail (grow tail head q fuel X t).2,
+        q e ≤ edgeUse (grow tail head q fuel X t).1 e) ∨
+      (grow tail head q fuel X t).1.length ≥ X.length + fuel := by
+  induction fuel generalizing X t with
+  | zero =>
+    right
+    simp [grow]
+  | succ fuel ih =>
+    rw [grow_succ]
+    cases hfind : findAvail tail q X t with
+    | none =>
+      left
+      show ∀ e ∈ eOut tail t, q e ≤ edgeUse X e
+      intro e he
+      exact findAvail_none_le tail hfind e he
+    | some e =>
+      have he : tail e = t :=
+        (Finset.mem_filter.mp (findAvail_some_mem tail hfind)).2
+      have hT' := trail_append_single tail head hT he
+      have hih := ih (X ++ [e]) (head e) hT'
+      rcases hih with hstuck | hlen
+      · left
+        show ∀ e' ∈ eOut tail
+            (grow tail head q fuel (X ++ [e]) (head e)).2,
+            q e' ≤ edgeUse (grow tail head q fuel (X ++ [e]) (head e)).1 e'
+        exact hstuck
+      · right
+        show (grow tail head q fuel (X ++ [e]) (head e)).1.length ≥
+          X.length + (fuel + 1)
+        have hlen' : (grow tail head q fuel (X ++ [e]) (head e)).1.length ≥
+            (X ++ [e]).length + fuel := hlen
+        rw [List.length_append] at hlen'
+        simp only [List.length_cons, List.length_nil] at hlen'
+        omega
+
+omit [DecidableEq V] in
+/-- Connectivity search: if some edge is still unused, then some unused
+edge touches a visited vertex. Paths ending in visited vertices start
+in visited vertices (consumed edges lie on the trail), applied to a
+path from the unused edge to the trail. -/
+theorem search_incident {q : E → ℕ} {T : List E}
+    (hle : ∀ e, edgeUse T e ≤ q e)
+    (supp : Finset E) (hsupp : ∀ e ∈ supp, 0 < q e)
+    (eStar : E) (hrem : edgeUse T eStar < q eStar)
+    {P : List E} {u x : V} (hu : tail eStar = u)
+    (hP : UPath tail head supp P u x) (hx : TVerts tail head T x) :
+    ∃ e₁ u₁, edgeUse T e₁ < q e₁ ∧ (tail e₁ = u₁ ∨ head e₁ = u₁) ∧
+      TVerts tail head T u₁ := by
+  by_cases hC : ∃ e₁ u₁, edgeUse T e₁ < q e₁ ∧ (tail e₁ = u₁ ∨ head e₁ = u₁) ∧
+      TVerts tail head T u₁
+  · exact hC
+  · exfalso
+    have hclosed : ∀ (P : List E) (u x : V), UPath tail head supp P u x →
+        TVerts tail head T x → TVerts tail head T u := by
+      intro P u x hP
+      induction hP with
+      | nil u => exact id
+      | fwd f P' u x hf hte _ ih =>
+        intro hx
+        have hmem : TVerts tail head T (head f) := ih hx
+        by_cases hfrem : edgeUse T f < q f
+        · exact absurd ⟨f, head f, hfrem, Or.inr rfl, hmem⟩ hC
+        · have hqf : 0 < q f := hsupp f hf
+          have hpos : 0 < edgeUse T f := by
+            have := hle f
+            omega
+          have hfT : f ∈ T := by
+            by_contra hc
+            have hzero : edgeUse T f = 0 := by
+              unfold edgeUse
+              rw [List.countP_eq_zero]
+              intro a ha hpa
+              exact hc ((of_decide_eq_true hpa) ▸ ha)
+            omega
+          exact ⟨f, hfT, Or.inl hte⟩
+      | bwd f P' u x hf hhe _ ih =>
+        intro hx
+        have hmem : TVerts tail head T (tail f) := ih hx
+        by_cases hfrem : edgeUse T f < q f
+        · exact absurd ⟨f, tail f, hfrem, Or.inl rfl, hmem⟩ hC
+        · have hqf : 0 < q f := hsupp f hf
+          have hpos : 0 < edgeUse T f := by
+            have := hle f
+            omega
+          have hfT : f ∈ T := by
+            by_contra hc
+            have hzero : edgeUse T f = 0 := by
+              unfold edgeUse
+              rw [List.countP_eq_zero]
+              intro a ha hpa
+              exact hc ((of_decide_eq_true hpa) ▸ ha)
+            omega
+          exact ⟨f, hfT, Or.inr hhe⟩
+    have huT := hclosed P u x hP hx
+    rw [← hu] at huT
+    exact hC ⟨eStar, tail eStar, hrem, Or.inl rfl, huT⟩
+
+omit [DecidableEq V] [DecidableEq E] [Fintype E] in
+/-- Trails from a fixed start have unique ends. -/
+theorem trail_end_unique {T : List E} {s t₁ t₂ : V}
+    (h₁ : TrailEnds tail head T s t₁) (h₂ : TrailEnds tail head T s t₂) :
+    t₁ = t₂ := by
+  induction h₁ with
+  | nil s =>
+    cases h₂ with
+    | nil _ => rfl
+  | cons e T' s t hte _ ih =>
+    cases h₂ with
+    | cons _ _ _ _ _ h₂' => exact ih h₂'
+
+theorem grow_prefix (q : E → ℕ) (fuel : ℕ) (X : List E) (t : V) :
+    ∃ S, (grow tail head q fuel X t).1 = X ++ S := by
+  induction fuel generalizing X t with
+  | zero => exact ⟨[], by simp [grow]⟩
+  | succ fuel ih =>
+    rw [grow_succ]
+    cases hfind : findAvail tail q X t with
+    | none => exact ⟨[], by simp⟩
+    | some e =>
+      show ∃ S, (grow tail head q fuel (X ++ [e]) (head e)).1 = X ++ S
+      obtain ⟨S, hS⟩ := ih (X ++ [e]) (head e)
+      exact ⟨[e] ++ S, by rw [hS, List.append_assoc]⟩
+
+/-- A growth run with more fuel than total availability, restarted at a
+vertex with an available out-edge, yields a closed trail plus progress:
+the length-only outcome is impossible (pigeonhole), and the stuck
+outcome closes at the start (maximality) with a forced first step. -/
+theorem grow_closed_progress (q' : E → ℕ) (hbal' : CircBalanced tail head q')
+    (fuel : ℕ) (X : List E) (s' t' : V) (hT : TrailEnds tail head X s' t')
+    (hleX : ∀ e, edgeUse X e ≤ q' e)
+    (hbig : X.length + fuel > ∑ e, q' e)
+    (o : E) (ho_mem : o ∈ eOut tail t') (ho_lt : edgeUse X o < q' o) :
+    TrailEnds tail head (grow tail head q' fuel X t').1 s' s' ∧
+      X.length + 1 ≤ (grow tail head q' fuel X t').1.length := by
+  have hRle : ∀ e, edgeUse (grow tail head q' fuel X t').1 e ≤ q' e :=
+    grow_le tail head q' fuel X t' hleX
+  have hbound : (grow tail head q' fuel X t').1.length ≤ ∑ e, q' e := by
+    rw [length_eq_sum_edgeUse]
+    exact Finset.sum_le_sum (fun e _ => hRle e)
+  have hTR := grow_trail tail head q' fuel X s' t' hT
+  rcases grow_outcome tail head q' fuel X s' t' hT with hstuck | hlen
+  · have hEnd : (grow tail head q' fuel X t').2 = s' :=
+      maximal_end_start tail head hbal' hTR hRle
+        (fun e he => le_antisymm (hRle e) (hstuck e he))
+    refine ⟨?_, ?_⟩
+    · rw [hEnd] at hTR
+      exact hTR
+    · have hne : (grow tail head q' fuel X t').1 ≠ X := by
+        intro hRX
+        have hend : (grow tail head q' fuel X t').2 = t' := by
+          have hTRX : TrailEnds tail head X s'
+              (grow tail head q' fuel X t').2 := by
+            rw [hRX] at hTR
+            exact hTR
+          exact trail_end_unique tail head hTRX hT
+        have hstuck_t' : ∀ e ∈ eOut tail t',
+            q' e ≤ edgeUse (grow tail head q' fuel X t').1 e := by
+          intro e he
+          have he' : e ∈ eOut tail (grow tail head q' fuel X t').2 := by
+            rw [hend]
+            exact he
+          exact hstuck e he'
+        have hcon := hstuck_t' o ho_mem
+        rw [hRX] at hcon
+        omega
+      obtain ⟨S, hS⟩ := grow_prefix tail head q' fuel X t'
+      have hSne : S ≠ [] := by
+        intro h0
+        apply hne
+        rw [hS, h0, List.append_nil]
+      have hSlen : 1 ≤ S.length := by
+        have h0 : S.length ≠ 0 :=
+          fun hz => hSne (List.eq_nil_of_length_eq_zero hz)
+        omega
+      rw [hS, List.length_append]
+      omega
+  · exfalso
+    omega
+
+/-- One Hierholzer step: if some support edge is unused, grow a closed
+trail in the remaining circulation and splice it into the current
+closed trail (or start fresh when empty). Returns `none` when done.
+The returned trail carries its closedness, quota, and progress
+proofs, so the outer loop needs no re-derivation. -/
+noncomputable def eulerStep (q : E → ℕ) (supp : Finset E)
+    (hbal : CircBalanced tail head q) (hconn : WeakConn tail head supp)
+    (hsupp : ∀ e, e ∈ supp ↔ 0 < q e)
+    (T : List E) (hleT : ∀ e, edgeUse T e ≤ q e)
+    (hclosedT : ∃ s, TrailEnds tail head T s s) :
+    Option { R : List E //
+      (∃ s, TrailEnds tail head R s s) ∧ (∀ e, edgeUse R e ≤ q e) ∧
+        T.length + 1 ≤ R.length } :=
+  match hfind : supp.toList.find? (fun e => decide (edgeUse T e < q e)) with
+  | none => none
+  | some e₀ =>
+    have hrem₀ : edgeUse T e₀ < q e₀ := by
+      have h2 := List.find?_some hfind
+      exact of_decide_eq_true h2
+    have hmem₀ : e₀ ∈ supp :=
+      Finset.mem_toList.mp (List.mem_of_find?_eq_some hfind)
+    match T with
+    | [] =>
+      have hprog := grow_closed_progress tail head q hbal
+        ((∑ e, q e) + 1) [] (tail e₀) (tail e₀) (.nil _)
+        (fun e => by rw [edgeUse_nil]; exact Nat.zero_le _)
+        (by simp only [List.length_nil, Nat.zero_add]; omega)
+        e₀ (Finset.mem_filter.mpr ⟨Finset.mem_univ _, rfl⟩) hrem₀
+      have hle : ∀ e, edgeUse
+          (grow tail head q ((∑ e, q e) + 1) [] (tail e₀)).1 e ≤ q e :=
+        grow_le tail head q ((∑ e, q e) + 1) [] (tail e₀)
+          (fun e => by rw [edgeUse_nil]; exact Nat.zero_le _)
+      some ⟨(grow tail head q ((∑ e, q e) + 1) [] (tail e₀)).1,
+        ⟨tail e₀, hprog.1⟩, hle, hprog.2⟩
+    | f₀ :: T' =>
+      have hf₀mem : f₀ ∈ f₀ :: T' := List.mem_cons.mpr (Or.inl rfl)
+      have h1 : 1 ≤ edgeUse (f₀ :: T') f₀ := by
+        unfold edgeUse
+        by_contra hc
+        have hz : (f₀ :: T').countP (fun x => decide (x = f₀)) = 0 := by omega
+        rw [List.countP_eq_zero] at hz
+        have h2 := hz f₀ hf₀mem
+        simp at h2
+      have hf₀supp : f₀ ∈ supp :=
+        (hsupp f₀).mpr
+          (Nat.lt_of_lt_of_le Nat.one_pos (le_trans h1 (hleT f₀)))
+      have hP : ∃ P, UPath tail head supp P (tail e₀) (tail f₀) :=
+        hconn (tail e₀) (tail f₀) ⟨e₀, hmem₀, Or.inl rfl⟩
+          ⟨f₀, hf₀supp, Or.inl rfl⟩
+      have hsearch : ∃ eu : E × V, edgeUse (f₀ :: T') eu.1 < q eu.1 ∧
+          (tail eu.1 = eu.2 ∨ head eu.1 = eu.2) ∧
+          TVerts tail head (f₀ :: T') eu.2 := by
+        have hPc := Classical.choose_spec hP
+        have hbase := search_incident tail head hleT supp
+          (fun e he => (hsupp e).mp he) e₀ hrem₀ rfl hPc
+          ⟨f₀, hf₀mem, Or.inl rfl⟩
+        obtain ⟨e₁, u₁, hh1, hh2, hh3⟩ := hbase
+        exact ⟨(e₁, u₁), hh1, hh2, hh3⟩
+      have hbalT : ∀ v : V, outUse tail (f₀ :: T') v
+          = inUse head (f₀ :: T') v := by
+        obtain ⟨s, hs⟩ := hclosedT
+        exact trail_closed_balanced tail head hs
+      have hbalT' : ∀ v : V, ∑ e ∈ eOut tail v, edgeUse (f₀ :: T') e
+          = ∑ e ∈ eIn head v, edgeUse (f₀ :: T') e := hbalT
+      have hbalR : CircBalanced tail head
+          (fun e => q e - edgeUse (f₀ :: T') e) :=
+        balanced_sub tail head hbal hbalT' hleT
+      have ho₁ : ∃ o₁, o₁ ∈ eOut tail (Classical.choose hsearch).2 ∧
+          edgeUse (f₀ :: T') o₁ < q o₁ := by
+        have heu := Classical.choose_spec hsearch
+        rcases heu.2.1 with htail | hhead
+        · exact ⟨(Classical.choose hsearch).1,
+            Finset.mem_filter.mpr ⟨Finset.mem_univ _, htail⟩, heu.1⟩
+        · have hrin : 0 < ∑ e ∈ eIn head (Classical.choose hsearch).2,
+              (q e - edgeUse (f₀ :: T') e) := by
+            have h1 : 0 < q (Classical.choose hsearch).1 -
+                edgeUse (f₀ :: T') (Classical.choose hsearch).1 := by
+              have hlt := heu.1
+              have hle1 := hleT (Classical.choose hsearch).1
+              omega
+            have hmem : (Classical.choose hsearch).1 ∈
+                eIn head (Classical.choose hsearch).2 :=
+              Finset.mem_filter.mpr ⟨Finset.mem_univ _, hhead⟩
+            calc 0 < q (Classical.choose hsearch).1 -
+                  edgeUse (f₀ :: T') (Classical.choose hsearch).1 := h1
+              _ ≤ ∑ e ∈ eIn head (Classical.choose hsearch).2,
+                    (q e - edgeUse (f₀ :: T') e) :=
+                Finset.single_le_sum
+                  (f := fun e => q e - edgeUse (f₀ :: T') e)
+                  (fun _ _ => Nat.zero_le _) hmem
+          have hbalR' : ∑ e ∈ eOut tail (Classical.choose hsearch).2,
+                (q e - edgeUse (f₀ :: T') e)
+              = ∑ e ∈ eIn head (Classical.choose hsearch).2,
+                (q e - edgeUse (f₀ :: T') e) := hbalR _
+          obtain ⟨o₁, ho₁mem, ho₁pos⟩ : ∃ o₁ ∈ eOut tail
+              (Classical.choose hsearch).2,
+              0 < q o₁ - edgeUse (f₀ :: T') o₁ := by
+            by_contra hcon
+            have hall : ∀ o₁ ∈ eOut tail (Classical.choose hsearch).2,
+                q o₁ - edgeUse (f₀ :: T') o₁ = 0 := by
+              intro o₁ ho₁
+              by_contra hne
+              exact hcon ⟨o₁, ho₁, Nat.pos_of_ne_zero hne⟩
+            have hsum0 : ∑ e ∈ eOut tail (Classical.choose hsearch).2,
+                (q e - edgeUse (f₀ :: T') e) = 0 :=
+              Finset.sum_eq_zero (fun e he => hall e he)
+            omega
+          refine ⟨o₁, ho₁mem, ?_⟩
+          have hle1 := hleT o₁
+          omega
+      have ho₁pos' : 0 < q (Classical.choose ho₁) -
+          edgeUse (f₀ :: T') (Classical.choose ho₁) := by
+        have hlt := (Classical.choose_spec ho₁).2
+        have hle1 := hleT (Classical.choose ho₁)
+        omega
+      have hXprog := grow_closed_progress tail head
+        (fun e => q e - edgeUse (f₀ :: T') e) hbalR
+        ((∑ e, q e) + 1) [] (Classical.choose hsearch).2
+        (Classical.choose hsearch).2 (.nil _)
+        (fun e => by rw [edgeUse_nil]; exact Nat.zero_le _)
+        (by
+          show List.length [] + ((∑ e, q e) + 1) >
+            ∑ e, (q e - edgeUse (f₀ :: T') e)
+          have hle_sum : ∑ e, (q e - edgeUse (f₀ :: T') e) ≤ ∑ e, q e :=
+            Finset.sum_le_sum (fun e _ => Nat.sub_le _ _)
+          simp only [List.length_nil, Nat.zero_add]
+          omega)
+        (Classical.choose ho₁)
+        (Classical.choose_spec ho₁).1
+        (by
+          show 0 < q (Classical.choose ho₁) -
+            edgeUse (f₀ :: T') (Classical.choose ho₁)
+          have h2 := (Classical.choose_spec ho₁).2
+          have hle1 := hleT (Classical.choose ho₁)
+          omega)
+      let sT := Classical.choose hclosedT
+      have hsT : TrailEnds tail head (f₀ :: T') sT sT :=
+        Classical.choose_spec hclosedT
+      have hsplit : ∃ AB : List E × List E, (f₀ :: T') = AB.1 ++ AB.2 ∧
+          TrailEnds tail head AB.1 sT (Classical.choose hsearch).2 ∧
+          TrailEnds tail head AB.2 (Classical.choose hsearch).2 sT := by
+        have hvisit : TVerts tail head (f₀ :: T')
+            (Classical.choose hsearch).2 :=
+          (Classical.choose_spec hsearch).2.2
+        obtain ⟨A, B, hAB, hA, hB⟩ :=
+          trail_split_visit tail head hsT hvisit
+        exact ⟨(A, B), hAB, hA, hB⟩
+      let AB := Classical.choose hsplit
+      have hAB : (f₀ :: T') = AB.1 ++ AB.2 :=
+        (Classical.choose_spec hsplit).1
+      have hA : TrailEnds tail head AB.1 sT (Classical.choose hsearch).2 :=
+        (Classical.choose_spec hsplit).2.1
+      have hB : TrailEnds tail head AB.2 (Classical.choose hsearch).2 sT :=
+        (Classical.choose_spec hsplit).2.2
+      have hXcl := hXprog.1
+      have hXlen := hXprog.2
+      have hclosed : ∃ s, TrailEnds tail head
+          (AB.1 ++ (grow tail head (fun e => q e - edgeUse (f₀ :: T') e)
+            ((∑ e, q e) + 1) [] (Classical.choose hsearch).2).1 ++ AB.2)
+          s s :=
+        ⟨sT, trail_append tail head (trail_append tail head hA hXcl) hB⟩
+      have hleR : ∀ e, edgeUse
+          (AB.1 ++ (grow tail head (fun e => q e - edgeUse (f₀ :: T') e)
+            ((∑ e, q e) + 1) [] (Classical.choose hsearch).2).1 ++ AB.2)
+          e ≤ q e := by
+        intro e
+        have hXle : ∀ x, edgeUse
+            (grow tail head (fun e => q e - edgeUse (f₀ :: T') e)
+              ((∑ e, q e) + 1) [] (Classical.choose hsearch).2).1 x
+            ≤ q x - edgeUse (f₀ :: T') x :=
+          grow_le tail head (fun e => q e - edgeUse (f₀ :: T') e)
+            ((∑ e, q e) + 1) [] (Classical.choose hsearch).2
+            (fun x => by rw [edgeUse_nil]; exact Nat.zero_le _)
+        have hTe := hleT e
+        have hXe := hXle e
+        simp only [edgeUse_append]
+        have e3 := edgeUse_append AB.1 AB.2 e
+        rw [← hAB] at e3
+        omega
+      have hlenR : (f₀ :: T').length + 1 ≤
+          (AB.1 ++ (grow tail head (fun e => q e - edgeUse (f₀ :: T') e)
+            ((∑ e, q e) + 1) [] (Classical.choose hsearch).2).1
+            ++ AB.2).length := by
+        have hlenT : (f₀ :: T').length = (AB.1 ++ AB.2).length :=
+          congrArg List.length hAB
+        simp only [List.length_append, List.length_nil] at hXlen hlenT ⊢
+        omega
+      some ⟨AB.1 ++ (grow tail head (fun e => q e - edgeUse (f₀ :: T') e)
+        ((∑ e, q e) + 1) [] (Classical.choose hsearch).2).1 ++ AB.2,
+        hclosed, hleR, hlenR⟩
+
+/-- Outer loop: iterate steps with fuel. -/
+noncomputable def eulerLoop (q : E → ℕ) (supp : Finset E)
+    (hbal : CircBalanced tail head q) (hconn : WeakConn tail head supp)
+    (hsupp : ∀ e, e ∈ supp ↔ 0 < q e) :
+    ∀ (_fuel : ℕ) (_T : List E), (∀ e, edgeUse _T e ≤ q e) →
+      (∃ s, TrailEnds tail head _T s s) → List E
+  | 0, T, _, _ => T
+  | fuel + 1, T, hleT, hclosedT =>
+    match eulerStep tail head q supp hbal hconn hsupp T hleT hclosedT with
+    | none => T
+    | some S => eulerLoop q supp hbal hconn hsupp fuel S.val S.property.2.1 S.property.1
+
+theorem eulerLoop_succ (q : E → ℕ) (supp : Finset E)
+    (hbal : CircBalanced tail head q) (hconn : WeakConn tail head supp)
+    (hsupp : ∀ e, e ∈ supp ↔ 0 < q e)
+    (fuel : ℕ) (T : List E) (hleT : ∀ e, edgeUse T e ≤ q e)
+    (hclosedT : ∃ s, TrailEnds tail head T s s) :
+    eulerLoop tail head q supp hbal hconn hsupp (fuel + 1) T hleT hclosedT =
+      match eulerStep tail head q supp hbal hconn hsupp T hleT hclosedT with
+      | none => T
+      | some S => eulerLoop tail head q supp hbal hconn hsupp fuel S.val
+          S.property.2.1 S.property.1 := rfl
+
+/-- A `none` step means no support edge is unused. -/
+theorem eulerStep_eq_none (q : E → ℕ) (supp : Finset E)
+    (hbal : CircBalanced tail head q) (hconn : WeakConn tail head supp)
+    (hsupp : ∀ e, e ∈ supp ↔ 0 < q e)
+    (T : List E) (hleT : ∀ e, edgeUse T e ≤ q e)
+    (hclosedT : ∃ s, TrailEnds tail head T s s)
+    (hS : eulerStep tail head q supp hbal hconn hsupp T hleT hclosedT = none) :
+    supp.toList.find? (fun e => decide (edgeUse T e < q e)) = none := by
+  unfold eulerStep at hS
+  split at hS
+  case h_1 => assumption
+  case h_2 =>
+    revert hS
+    cases T with
+    | nil =>
+      intro hS
+      dsimp only at hS
+      cases hS
+    | cons f₀ T' =>
+      intro hS
+      dsimp only at hS
+      cases hS
+
+/-- Loop outcome: either every support edge is exhausted or the trail
+grew by the full fuel allowance. -/
+theorem eulerLoop_outcome (q : E → ℕ) (supp : Finset E)
+    (hbal : CircBalanced tail head q) (hconn : WeakConn tail head supp)
+    (hsupp : ∀ e, e ∈ supp ↔ 0 < q e)
+    (fuel : ℕ) (T : List E) (hleT : ∀ e, edgeUse T e ≤ q e)
+    (hclosedT : ∃ s, TrailEnds tail head T s s) :
+    (∀ e ∈ supp, q e ≤
+        edgeUse (eulerLoop tail head q supp hbal hconn hsupp fuel T hleT
+          hclosedT) e) ∨
+        (eulerLoop tail head q supp hbal hconn hsupp fuel T hleT
+          hclosedT).length ≥ T.length + fuel := by
+  induction fuel generalizing T hleT hclosedT with
+  | zero =>
+    right
+    show T.length ≥ T.length + 0
+    simp
+  | succ fuel ih =>
+    simp only [eulerLoop_succ]
+    cases hS : eulerStep tail head q supp hbal hconn hsupp T hleT hclosedT with
+    | none =>
+      dsimp only
+      left
+      have hfind0 := eulerStep_eq_none tail head q supp hbal hconn hsupp T
+        hleT hclosedT hS
+      intro e he
+      have hx' : e ∈ supp.toList := Finset.mem_toList.mpr he
+      have h2 := (List.find?_eq_none.mp hfind0) e hx'
+      by_contra hlt
+      have hlt' : edgeUse T e < q e := Nat.not_le.mp hlt
+      exact h2 (by simp [hlt'])
+    | some S =>
+      clear hS
+      dsimp only
+      have hih := ih S.val S.property.2.1 S.property.1
+      rcases hih with hdone | hlen
+      · exact Or.inl hdone
+      · right
+        have hprog := S.property.2.2
+        omega
+
+/-- The loop preserves closedness. -/
+theorem eulerLoop_closed (q : E → ℕ) (supp : Finset E)
+    (hbal : CircBalanced tail head q) (hconn : WeakConn tail head supp)
+    (hsupp : ∀ e, e ∈ supp ↔ 0 < q e)
+    (fuel : ℕ) (T : List E) (hleT : ∀ e, edgeUse T e ≤ q e)
+    (hclosedT : ∃ s, TrailEnds tail head T s s) :
+    ∃ s, TrailEnds tail head
+        (eulerLoop tail head q supp hbal hconn hsupp fuel T hleT
+          hclosedT) s s := by
+  induction fuel generalizing T hleT hclosedT with
+  | zero => exact hclosedT
+  | succ fuel ih =>
+    simp only [eulerLoop_succ]
+    cases hS : eulerStep tail head q supp hbal hconn hsupp T hleT hclosedT with
+    | none =>
+      clear hS
+      dsimp only
+      exact hclosedT
+    | some S =>
+      clear hS
+      dsimp only
+      exact ih S.val S.property.2.1 S.property.1
+
+/-- The loop preserves the quota. -/
+theorem eulerLoop_le (q : E → ℕ) (supp : Finset E)
+    (hbal : CircBalanced tail head q) (hconn : WeakConn tail head supp)
+    (hsupp : ∀ e, e ∈ supp ↔ 0 < q e)
+    (fuel : ℕ) (T : List E) (hleT : ∀ e, edgeUse T e ≤ q e)
+    (hclosedT : ∃ s, TrailEnds tail head T s s) :
+    ∀ e, edgeUse
+        (eulerLoop tail head q supp hbal hconn hsupp fuel T hleT
+          hclosedT) e ≤ q e := by
+  induction fuel generalizing T hleT hclosedT with
+  | zero => exact hleT
+  | succ fuel ih =>
+    simp only [eulerLoop_succ]
+    cases hS : eulerStep tail head q supp hbal hconn hsupp T hleT hclosedT with
+    | none =>
+      clear hS
+      dsimp only
+      exact hleT
+    | some S =>
+      clear hS
+      dsimp only
+      exact ih S.val S.property.2.1 S.property.1
+
+/-- **Hierholzer's theorem (issue #70).** A balanced integer circulation
+on a nonempty weakly-connected support is spelled by a closed trail
+using every edge exactly its multiplicity. -/
+theorem eulerian_closed_trail (q : E → ℕ) (hbal : CircBalanced tail head q)
+    (supp : Finset E) (hsupp : ∀ e, e ∈ supp ↔ 0 < q e)
+    (hne : supp.Nonempty) (hconn : WeakConn tail head supp) :
+    ∃ T s, TrailEnds tail head T s s ∧ ∀ e, edgeUse T e = q e := by
+  obtain ⟨e₀, he₀⟩ := hne
+  have hle0 : ∀ e, edgeUse ([] : List E) e ≤ q e := fun e => by
+    rw [edgeUse_nil]
+    exact Nat.zero_le _
+  have hcl0 : ∃ s, TrailEnds tail head ([] : List E) s s :=
+    ⟨tail e₀, .nil _⟩
+  obtain ⟨R, hRdone⟩ : ∃ R,
+      (((∀ e ∈ supp, q e ≤ edgeUse R e) ∨
+        R.length ≥ ([] : List E).length + ((∑ e ∈ Finset.univ, q e) + 1)) ∧
+      (∃ s, TrailEnds tail head R s s) ∧ (∀ e, edgeUse R e ≤ q e)) :=
+    ⟨_, eulerLoop_outcome tail head q supp hbal hconn hsupp
+        ((∑ e ∈ Finset.univ, q e) + 1) [] hle0 hcl0,
+      eulerLoop_closed tail head q supp hbal hconn hsupp
+        ((∑ e ∈ Finset.univ, q e) + 1) [] hle0 hcl0,
+      eulerLoop_le tail head q supp hbal hconn hsupp
+        ((∑ e ∈ Finset.univ, q e) + 1) [] hle0 hcl0⟩
+  rcases hRdone with ⟨hout, hclR, hleR⟩
+  rcases hout with hdone | hbig
+  · obtain ⟨s, hs⟩ := hclR
+    refine ⟨R, s, hs, fun e => ?_⟩
+    by_cases he : e ∈ supp
+    · have h1 := hdone e he
+      have h2 := hleR e
+      omega
+    · have hq0 : q e = 0 := by
+        by_contra hne0
+        have hpos : 0 < q e := Nat.pos_of_ne_zero hne0
+        exact he ((hsupp e).mpr hpos)
+      have h2 := hleR e
+      omega
+  · exfalso
+    have hbound : R.length ≤ ∑ e ∈ Finset.univ, q e := by
+      rw [length_eq_sum_edgeUse]
+      exact Finset.sum_le_sum (fun e _ => hleR e)
+    simp only [List.length_nil, Nat.zero_add] at hbig
+    omega
+
+end EulerianTrail
 
 /-- Power lifting: a spelling `W` of the quotient `spec S / g` repeats
 to the original spectrum, via the explicit power-scale interface
