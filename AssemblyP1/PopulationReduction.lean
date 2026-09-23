@@ -1353,6 +1353,188 @@ end WordSpelling
 
 end TrailSpelling
 
+section DividedSpelling
+
+variable {α : Type} [DecidableEq α] [Fintype α]
+variable {L : ℕ}
+
+open OrientedRigidity
+
+omit [Fintype α] in
+/-- Support is exactly where the spectrum is positive. -/
+theorem mem_support_iff {G : ℕ} (hG : 0 < G) (S : Fin G → α)
+    (w : Fin L → α) :
+    w ∈ support hG S ↔ 0 < specCount hG S w := by
+  constructor
+  · intro hw
+    have h1 := truth_pos_on_support hG S w hw
+    omega
+  · intro hpos
+    have hne : (Finset.univ.filter
+        (fun r : Fin G => window hG S r = w)).Nonempty := by
+      apply Finset.card_pos.mp
+      simpa [specCount] using hpos
+    obtain ⟨r, hr⟩ := hne
+    simp only [support, Finset.mem_image]
+    exact ⟨r, Finset.mem_univ r, (Finset.mem_filter.mp hr).2⟩
+
+/-- **Eulerian spelling of a divided circulation (issue #70, discharging
+`hSpell`).** If every `L`-window multiplicity of a circular genome is
+divisible by `g > 1`, the divided circulation is spelled by a circular
+word with exactly the quotient spectrum. Division preserves balance
+(`balanced_div_univ`); support is unchanged so connectivity transfers
+(`truth_strongly_connected`); `eulerian_closed_trail` gives the closed
+trail; `spell_window` + `count_bridge` turn it into a word. -/
+theorem spell_exists_divided {G : ℕ} (hG : 0 < G) (S : Fin G → α)
+    (hL : 1 < L) (g : ℕ) (hg1 : 1 < g)
+    (hdiv : ∀ w : Fin L → α, g ∣ specCount hG S w) :
+    ∃ (m : ℕ) (hW : 0 < m) (W : Fin m → α),
+      specCount hW W = fun w : Fin L → α => specCount hG S w / g := by
+  have hg0 : 0 < g := by omega
+  -- The divided circulation vanishes off-support.
+  have hcvan : ∀ w : Fin L → α, w ∉ support hG S → specCount hG S w = 0 := by
+    intro w hw
+    have h : ¬ 0 < specCount hG S w :=
+      fun hpos => hw ((mem_support_iff hG S w).mpr hpos)
+    omega
+  have hqvan : ∀ w : Fin L → α, w ∉ support hG S →
+      specCount hG S w / g = 0 := by
+    intro w hw
+    rw [hcvan w hw]
+    exact Nat.zero_div g
+  -- The divided circulation is balanced (on nodes, then everywhere).
+  have hqBal : CircBalanced winPrefix winSuffix
+      (fun w : Fin L → α => specCount hG S w / g) := by
+    intro v
+    by_cases hv : v ∈ genomeNodes hG S
+    · unfold eOut eIn
+      exact balanced_div_univ winPrefix winSuffix (genomeNodes hG S)
+        (support hG S) (specCount hG S) g hg0 (fun e he => hdiv e)
+        (truth_balanced hG S) hcvan v hv
+    · have o0 : ∑ e ∈ Finset.univ.filter (fun e => winPrefix e = v),
+          (fun w => specCount hG S w / g) e = 0 := by
+        apply Finset.sum_eq_zero
+        intro w hw
+        have hwv : winPrefix w = v := (Finset.mem_filter.mp hw).2
+        have hws : w ∉ support hG S := by
+          intro hmem
+          have hm := mem_nodes_of_mem_support hG S w hmem
+          exact hv (hwv ▸ hm.1)
+        exact hqvan w hws
+      have i0 : ∑ e ∈ Finset.univ.filter (fun e => winSuffix e = v),
+          (fun w => specCount hG S w / g) e = 0 := by
+        apply Finset.sum_eq_zero
+        intro w hw
+        have hwv : winSuffix w = v := (Finset.mem_filter.mp hw).2
+        have hws : w ∉ support hG S := by
+          intro hmem
+          have hm := mem_nodes_of_mem_support hG S w hmem
+          exact hv (hwv ▸ hm.2)
+        exact hqvan w hws
+      unfold eOut eIn
+      omega
+  -- Support of the quotient = support of the truth.
+  have hsupp : ∀ e : Fin L → α,
+      e ∈ support hG S ↔ 0 < specCount hG S e / g := by
+    intro e
+    rw [mem_support_iff hG S e]
+    constructor
+    · intro hpos
+      by_contra hneg
+      have h0 : specCount hG S e / g = 0 := Nat.eq_zero_of_not_pos hneg
+      have hmul := Nat.mul_div_cancel' (hdiv e)
+      rw [h0, mul_zero] at hmul
+      omega
+    · intro hpos
+      have hle : specCount hG S e / g ≤ specCount hG S e :=
+        Nat.div_le_self _ _
+      omega
+  have hsupne : (support (L := L) hG S).Nonempty := by
+    have h0 : (Finset.univ : Finset (Fin G)).Nonempty := by
+      rw [Finset.univ_nonempty_iff]
+      exact ⟨⟨0, hG⟩⟩
+    exact h0.image _
+  -- Weak connectivity transfers from strong connectivity.
+  have hconn : WeakConn winPrefix winSuffix (support (L := L) hG S) := by
+    intro u v hu hv
+    obtain ⟨eu, heu, hue⟩ := hu
+    obtain ⟨ev, hev, hve⟩ := hv
+    have hmemu := mem_nodes_of_mem_support hG S eu heu
+    have hmemv := mem_nodes_of_mem_support hG S ev hev
+    have huN : u ∈ genomeNodes hG S := by
+      rcases hue with h | h
+      · rw [← h]; exact hmemu.1
+      · rw [← h]; exact hmemu.2
+    have hvN : v ∈ genomeNodes hG S := by
+      rcases hve with h | h
+      · rw [← h]; exact hmemv.1
+      · rw [← h]; exact hmemv.2
+    have hreach := truth_strongly_connected (L := L) hG S u huN v hvN
+    exact reachable_to_upath winPrefix winSuffix Finset.Subset.rfl hreach
+  -- The Eulerian closed trail with exact quotient multiplicities.
+  obtain ⟨T, s, hTclosed, hTuse⟩ := eulerian_closed_trail winPrefix winSuffix
+    (fun w => specCount hG S w / g) hqBal (support hG S) hsupp hsupne hconn
+  -- Total mass is positive, so the trail is nonempty.
+  have htot := truth_total (L := L) hG S
+  have hGmul : G = g * ∑ w : Fin L → α, specCount hG S w / g := by
+    have hsub : (∑ w ∈ support (L := L) hG S, specCount hG S w / g)
+        = ∑ w : Fin L → α, specCount hG S w / g :=
+      Finset.sum_subset (Finset.subset_univ _) (fun w _ hwN => hqvan w hwN)
+    have h1 : (∑ w ∈ support (L := L) hG S, specCount hG S w)
+        = g * ∑ w ∈ support (L := L) hG S, specCount hG S w / g := by
+      rw [Finset.mul_sum]
+      exact Finset.sum_congr rfl (fun w _ => (Nat.mul_div_cancel' (hdiv w)).symm)
+    exact htot.symm.trans (h1.trans (by rw [hsub]))
+  have hQpos : 0 < ∑ w : Fin L → α, specCount hG S w / g := by
+    by_contra hcon
+    have hQ0 : ∑ w : Fin L → α, specCount hG S w / g = 0 := Nat.eq_zero_of_not_pos hcon
+    rw [hQ0, mul_zero] at hGmul
+    omega
+  have hlenT : 0 < T.length := by
+    have hTeq := length_eq_sum_edgeUse T
+    have hsum : ∑ e, edgeUse T e = ∑ w : Fin L → α, specCount hG S w / g :=
+      Finset.sum_congr rfl (fun w _ => hTuse w)
+    omega
+  -- Spell the trail as a circular word with the quotient spectrum.
+  have hL0 : 0 < L := by omega
+  have hadj : ∀ j : Fin T.length, winSuffix (T.get j)
+      = winPrefix (T.get ⟨(j.val + 1) % T.length, Nat.mod_lt _ hlenT⟩) := by
+    intro j
+    have hbase := trail_cyc_adj hTclosed hlenT j.val j.isLt
+    have b1 : cycEdge T hlenT j.val = T.get j := by
+      unfold cycEdge
+      congr 1
+      exact Fin.ext (Nat.mod_eq_of_lt j.isLt)
+    have b2 : cycEdge T hlenT ((j.val + 1) % T.length)
+        = T.get ⟨(j.val + 1) % T.length, Nat.mod_lt _ hlenT⟩ := by
+      unfold cycEdge
+      congr 1
+      exact Fin.ext (Nat.mod_eq_of_lt (Nat.mod_lt _ hlenT))
+    rw [b1, b2] at hbase
+    exact hbase
+  refine ⟨T.length, hlenT, spellWord hL0 T.get, ?_⟩
+  funext w
+  have hwin : ∀ r : Fin T.length,
+      window hlenT (spellWord hL0 T.get) r = T.get r :=
+    fun r => spell_window T.get hlenT hL0 hadj r
+  have hspec : specCount hlenT (spellWord hL0 T.get) w = edgeUse T w := by
+    have hset : Finset.univ.filter
+        (fun r : Fin T.length => window hlenT (spellWord hL0 T.get) r = w)
+        = Finset.univ.filter (fun r : Fin T.length => T.get r = w) := by
+      ext r
+      simp only [Finset.mem_filter, Finset.mem_univ, true_and]
+      rw [hwin r]
+    have hsp : specCount hlenT (spellWord hL0 T.get) w
+        = (Finset.univ.filter
+          (fun r : Fin T.length => window hlenT (spellWord hL0 T.get) r = w)).card :=
+      rfl
+    rw [hsp, hset]
+    exact count_bridge T w
+  rw [hspec]
+  exact hTuse w
+
+end DividedSpelling
+
 /-- Power lifting: a spelling `W` of the quotient `spec S / g` repeats
 to the original spectrum, via the explicit power-scale interface
 `hPowScale` (what `power W g`, i.e. `W^g`, means for spectra: each

@@ -515,6 +515,7 @@ theorem unique_positive_circulation
     simp only [hδdef] at h0
     omega
 
+omit [DecidableEq E] in
 /-- **Division preserves balance (issue #70).** Dividing every
 multiplicity of a balanced circulation by a common divisor `g > 0`
 yields a balanced circulation. This is the project-side division half
@@ -540,6 +541,46 @@ theorem balanced_div (c : E → ℕ) (g : ℕ)
   have h := hbal v hv
   rw [← hout, ← hin] at h
   exact Nat.mul_left_cancel (by omega : 0 < g) h
+
+omit [DecidableEq E] in
+/-- **Divided balance over all windows (issue #70).** The divided
+circulation is balanced as sums over *all* out/in windows (not just
+the support-filtered families), since it vanishes off-support. This
+is the exact form consumed by the Eulerian closed-trail theorem. -/
+theorem balanced_div_univ (c : E → ℕ) (g : ℕ) [Fintype E]
+    (hg : 0 < g) (hdiv : ∀ e ∈ edges, g ∣ c e)
+    (hbal : Balanced tail head nodes edges c)
+    (hvan : ∀ e ∉ edges, c e = 0) (v : V) (hv : v ∈ nodes) :
+    ∑ e ∈ Finset.univ.filter (fun e => tail e = v), c e / g
+      = ∑ e ∈ Finset.univ.filter (fun e => head e = v), c e / g := by
+  have hout : ∑ e ∈ outF tail edges v, c e / g
+      = ∑ e ∈ Finset.univ.filter (fun e => tail e = v), c e / g := by
+    apply Finset.sum_subset
+    · intro x hx
+      have hx2 := Finset.mem_filter.mp hx
+      exact Finset.mem_filter.mpr ⟨Finset.mem_univ x, hx2.2⟩
+    · intro x hx hxN
+      have hxne : x ∉ edges := by
+        intro he
+        apply hxN
+        exact Finset.mem_filter.mpr ⟨he, (Finset.mem_filter.mp hx).2⟩
+      rw [hvan x hxne]
+      exact Nat.zero_div g
+  have hin : ∑ e ∈ inF head edges v, c e / g
+      = ∑ e ∈ Finset.univ.filter (fun e => head e = v), c e / g := by
+    apply Finset.sum_subset
+    · intro x hx
+      have hx2 := Finset.mem_filter.mp hx
+      exact Finset.mem_filter.mpr ⟨Finset.mem_univ x, hx2.2⟩
+    · intro x hx hxN
+      have hxne : x ∉ edges := by
+        intro he
+        apply hxN
+        exact Finset.mem_filter.mpr ⟨he, (Finset.mem_filter.mp hx).2⟩
+      rw [hvan x hxne]
+      exact Nat.zero_div g
+  rw [← hout, ← hin]
+  exact balanced_div tail head nodes edges c g hg hdiv hbal v hv
 
 end AbstractCirculation
 
