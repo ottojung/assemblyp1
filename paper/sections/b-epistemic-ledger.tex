@@ -62,9 +62,11 @@ molecule types & mathematical fact & repository equivalence note \\
 Negative results transfer to superclasses; positives do not
   & mathematical fact & Lemma~\ref{lem:negative-transfer} \\
 Same-length oriented Section~6.2 rigidity under $\Is$
-  & mathematical fact & Theorem~\ref{thm:rigidity} \\
+  & source-supported mathematics with kernel-checked conditional core &
+  Theorem~\ref{thm:rigidity}; reduction in \texttt{OrientedFinalRigidity} \\
 No strict same-length Section~6.2 counterexample, any $G,L,\Alphabet$
-  & mathematical fact & Corollary~\ref{cor:same-length-zero} \\
+  & source-supported mathematics with kernel-checked conditional core &
+  Corollary~\ref{cor:same-length-zero} \\
 Uniqueness up to cyclic rotation on the truth-admissible same-length row
   & source-supported mathematical theorem &
   Corollary~\ref{cor:same-length-rotation}, \cite{bresler2013} \\
@@ -114,6 +116,9 @@ Minimum same-length non-rigid pair $AAAAB/AABAB$
   rigidity script \\
 $AABBC\to AABC$ sampling failure, ratio $25/16$
   & kernel-checked & \texttt{FiniteSamplingCounterexample} \\
+Conditional same-length oriented spectrum rigidity (no-long-triple-repeat
+boundary + primitive/periodic case split; $\Is$ implication and BBT external)
+  & kernel-checked (conditional) & \texttt{OrientedFinalRigidity} \\
 Direct P2 matching proof's maximal-extension step is invalid
   & counterexample to a proof step, not the theorem & audit note \\
 \bottomrule
