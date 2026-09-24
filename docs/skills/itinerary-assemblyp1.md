@@ -81,6 +81,10 @@ AssemblyP1 integrates directly into `main`. **Do not create or use `release/*` b
 
 A scheduled invocation may prepare several independent PRs over time. It should not create an artificial omnibus branch that hides which results depend on which assumptions.
 
+## Lean on Phoebe Dev
+
+Before running Lean on `phoebe-dev`, follow [`lean-on-phoebe-dev.md`](lean-on-phoebe-dev.md). In particular, use the existing `/home/lubko/.elan/bin` installation instead of creating a per-worktree toolchain.
+
 ## Verification and review
 
 Verification must match the epistemic claim being made.
