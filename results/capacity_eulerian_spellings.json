@@ -1,0 +1,1028 @@
+{
+  "examples": {
+    "multiple": {
+      "capacities": {
+        "AA": 1,
+        "AB": 2,
+        "BA": 1
+      },
+      "min_max_vertex_degree": 5,
+      "spellings": [
+        [
+          [
+            "A",
+            "A"
+          ],
+          [
+            "A",
+            "B"
+          ],
+          [
+            "A",
+            "B"
+          ],
+          [
+            "B",
+            "A"
+          ]
+        ],
+        [
+          [
+            "A",
+            "A"
+          ],
+          [
+            "A",
+            "B"
+          ],
+          [
+            "B",
+            "A"
+          ],
+          [
+            "A",
+            "B"
+          ]
+        ]
+      ]
+    },
+    "unique": {
+      "capacities": {
+        "AA": 1
+      },
+      "min_max_vertex_degree": 2,
+      "spellings": [
+        [
+          [
+            "A",
+            "A"
+          ]
+        ]
+      ]
+    }
+  },
+  "forced_implies_unique_records": 8,
+  "max_length": 8,
+  "multiple_records": 50,
+  "nonunique_forced_records": 0,
+  "records": 93,
+  "results": [
+    {
+      "all_spellings_have_max_vertex_degree_2": true,
+      "capacities": {
+        "AA": 1
+      },
+      "forced_at_every_vertex_for_every_spelling": true,
+      "number_modulo_rotation": 1
+    },
+    {
+      "all_spellings_have_max_vertex_degree_2": false,
+      "capacities": {
+        "AA": 2
+      },
+      "forced_at_every_vertex_for_every_spelling": true,
+      "number_modulo_rotation": 1
+    },
+    {
+      "all_spellings_have_max_vertex_degree_2": false,
+      "capacities": {
+        "AA": 1,
+        "AB": 1
+      },
+      "forced_at_every_vertex_for_every_spelling": false,
+      "number_modulo_rotation": 1
+    },
+    {
+      "all_spellings_have_max_vertex_degree_2": false,
+      "capacities": {
+        "AA": 3
+      },
+      "forced_at_every_vertex_for_every_spelling": true,
+      "number_modulo_rotation": 1
+    },
+    {
+      "all_spellings_have_max_vertex_degree_2": false,
+      "capacities": {
+        "AA": 2,
+        "AB": 1
+      },
+      "forced_at_every_vertex_for_every_spelling": false,
+      "number_modulo_rotation": 1
+    },
+    {
+      "all_spellings_have_max_vertex_degree_2": false,
+      "capacities": {
+        "AA": 1,
+        "AB": 1,
+        "BA": 1
+      },
+      "forced_at_every_vertex_for_every_spelling": false,
+      "number_modulo_rotation": 1
+    },
+    {
+      "all_spellings_have_max_vertex_degree_2": false,
+      "capacities": {
+        "AA": 4
+      },
+      "forced_at_every_vertex_for_every_spelling": true,
+      "number_modulo_rotation": 1
+    },
+    {
+      "all_spellings_have_max_vertex_degree_2": false,
+      "capacities": {
+        "AA": 3,
+        "AB": 1
+      },
+      "forced_at_every_vertex_for_every_spelling": false,
+      "number_modulo_rotation": 1
+    },
+    {
+      "all_spellings_have_max_vertex_degree_2": false,
+      "capacities": {
+        "AA": 2,
+        "AB": 1,
+        "BA": 1
+      },
+      "forced_at_every_vertex_for_every_spelling": false,
+      "number_modulo_rotation": 1
+    },
+    {
+      "all_spellings_have_max_vertex_degree_2": false,
+      "capacities": {
+        "AA": 1,
+        "AB": 1,
+        "BA": 1,
+        "BB": 1
+      },
+      "forced_at_every_vertex_for_every_spelling": false,
+      "number_modulo_rotation": 1
+    },
+    {
+      "all_spellings_have_max_vertex_degree_2": false,
+      "capacities": {
+        "AA": 1,
+        "AB": 1,
+        "BA": 2
+      },
+      "forced_at_every_vertex_for_every_spelling": false,
+      "number_modulo_rotation": 1
+    },
+    {
+      "all_spellings_have_max_vertex_degree_2": false,
+      "capacities": {
+        "AA": 1,
+        "AB": 2,
+        "BA": 1
+      },
+      "forced_at_every_vertex_for_every_spelling": false,
+      "number_modulo_rotation": 2
+    },
+    {
+      "all_spellings_have_max_vertex_degree_2": false,
+      "capacities": {
+        "AA": 5
+      },
+      "forced_at_every_vertex_for_every_spelling": true,
+      "number_modulo_rotation": 1
+    },
+    {
+      "all_spellings_have_max_vertex_degree_2": false,
+      "capacities": {
+        "AA": 4,
+        "AB": 1
+      },
+      "forced_at_every_vertex_for_every_spelling": false,
+      "number_modulo_rotation": 1
+    },
+    {
+      "all_spellings_have_max_vertex_degree_2": false,
+      "capacities": {
+        "AA": 3,
+        "AB": 1,
+        "BA": 1
+      },
+      "forced_at_every_vertex_for_every_spelling": false,
+      "number_modulo_rotation": 1
+    },
+    {
+      "all_spellings_have_max_vertex_degree_2": false,
+      "capacities": {
+        "AA": 2,
+        "AB": 1,
+        "BA": 1,
+        "BB": 1
+      },
+      "forced_at_every_vertex_for_every_spelling": false,
+      "number_modulo_rotation": 1
+    },
+    {
+      "all_spellings_have_max_vertex_degree_2": false,
+      "capacities": {
+        "AA": 1,
+        "AB": 1,
+        "BA": 1,
+        "BB": 2
+      },
+      "forced_at_every_vertex_for_every_spelling": false,
+      "number_modulo_rotation": 1
+    },
+    {
+      "all_spellings_have_max_vertex_degree_2": false,
+      "capacities": {
+        "AA": 2,
+        "AB": 1,
+        "BA": 2
+      },
+      "forced_at_every_vertex_for_every_spelling": false,
+      "number_modulo_rotation": 1
+    },
+    {
+      "all_spellings_have_max_vertex_degree_2": false,
+      "capacities": {
+        "AA": 1,
+        "AB": 1,
+        "BA": 2,
+        "BB": 1
+      },
+      "forced_at_every_vertex_for_every_spelling": false,
+      "number_modulo_rotation": 2
+    },
+    {
+      "all_spellings_have_max_vertex_degree_2": false,
+      "capacities": {
+        "AA": 2,
+        "AB": 2,
+        "BA": 1
+      },
+      "forced_at_every_vertex_for_every_spelling": false,
+      "number_modulo_rotation": 3
+    },
+    {
+      "all_spellings_have_max_vertex_degree_2": false,
+      "capacities": {
+        "AA": 1,
+        "AB": 2,
+        "BA": 1,
+        "BB": 1
+      },
+      "forced_at_every_vertex_for_every_spelling": false,
+      "number_modulo_rotation": 2
+    },
+    {
+      "all_spellings_have_max_vertex_degree_2": false,
+      "capacities": {
+        "AA": 1,
+        "AB": 2,
+        "BA": 2
+      },
+      "forced_at_every_vertex_for_every_spelling": false,
+      "number_modulo_rotation": 1
+    },
+    {
+      "all_spellings_have_max_vertex_degree_2": false,
+      "capacities": {
+        "AA": 6
+      },
+      "forced_at_every_vertex_for_every_spelling": true,
+      "number_modulo_rotation": 1
+    },
+    {
+      "all_spellings_have_max_vertex_degree_2": false,
+      "capacities": {
+        "AA": 5,
+        "AB": 1
+      },
+      "forced_at_every_vertex_for_every_spelling": false,
+      "number_modulo_rotation": 1
+    },
+    {
+      "all_spellings_have_max_vertex_degree_2": false,
+      "capacities": {
+        "AA": 4,
+        "AB": 1,
+        "BA": 1
+      },
+      "forced_at_every_vertex_for_every_spelling": false,
+      "number_modulo_rotation": 1
+    },
+    {
+      "all_spellings_have_max_vertex_degree_2": false,
+      "capacities": {
+        "AA": 3,
+        "AB": 1,
+        "BA": 1,
+        "BB": 1
+      },
+      "forced_at_every_vertex_for_every_spelling": false,
+      "number_modulo_rotation": 1
+    },
+    {
+      "all_spellings_have_max_vertex_degree_2": false,
+      "capacities": {
+        "AA": 2,
+        "AB": 1,
+        "BA": 1,
+        "BB": 2
+      },
+      "forced_at_every_vertex_for_every_spelling": false,
+      "number_modulo_rotation": 1
+    },
+    {
+      "all_spellings_have_max_vertex_degree_2": false,
+      "capacities": {
+        "AA": 1,
+        "AB": 1,
+        "BA": 1,
+        "BB": 3
+      },
+      "forced_at_every_vertex_for_every_spelling": false,
+      "number_modulo_rotation": 1
+    },
+    {
+      "all_spellings_have_max_vertex_degree_2": false,
+      "capacities": {
+        "AA": 3,
+        "AB": 1,
+        "BA": 2
+      },
+      "forced_at_every_vertex_for_every_spelling": false,
+      "number_modulo_rotation": 1
+    },
+    {
+      "all_spellings_have_max_vertex_degree_2": false,
+      "capacities": {
+        "AA": 2,
+        "AB": 1,
+        "BA": 2,
+        "BB": 1
+      },
+      "forced_at_every_vertex_for_every_spelling": false,
+      "number_modulo_rotation": 2
+    },
+    {
+      "all_spellings_have_max_vertex_degree_2": false,
+      "capacities": {
+        "AA": 1,
+        "AB": 1,
+        "BA": 2,
+        "BB": 2
+      },
+      "forced_at_every_vertex_for_every_spelling": false,
+      "number_modulo_rotation": 3
+    },
+    {
+      "all_spellings_have_max_vertex_degree_2": false,
+      "capacities": {
+        "AA": 3,
+        "AB": 2,
+        "BA": 1
+      },
+      "forced_at_every_vertex_for_every_spelling": false,
+      "number_modulo_rotation": 4
+    },
+    {
+      "all_spellings_have_max_vertex_degree_2": false,
+      "capacities": {
+        "AA": 2,
+        "AB": 2,
+        "BA": 1,
+        "BB": 1
+      },
+      "forced_at_every_vertex_for_every_spelling": false,
+      "number_modulo_rotation": 3
+    },
+    {
+      "all_spellings_have_max_vertex_degree_2": false,
+      "capacities": {
+        "AA": 1,
+        "AB": 2,
+        "BA": 1,
+        "BB": 2
+      },
+      "forced_at_every_vertex_for_every_spelling": false,
+      "number_modulo_rotation": 2
+    },
+    {
+      "all_spellings_have_max_vertex_degree_2": false,
+      "capacities": {
+        "AA": 2,
+        "AB": 2,
+        "BA": 2
+      },
+      "forced_at_every_vertex_for_every_spelling": false,
+      "number_modulo_rotation": 2
+    },
+    {
+      "all_spellings_have_max_vertex_degree_2": false,
+      "capacities": {
+        "AA": 1,
+        "AB": 2,
+        "BA": 2,
+        "BB": 1
+      },
+      "forced_at_every_vertex_for_every_spelling": false,
+      "number_modulo_rotation": 2
+    },
+    {
+      "all_spellings_have_max_vertex_degree_2": false,
+      "capacities": {
+        "AA": 1,
+        "AB": 2,
+        "BA": 3
+      },
+      "forced_at_every_vertex_for_every_spelling": false,
+      "number_modulo_rotation": 2
+    },
+    {
+      "all_spellings_have_max_vertex_degree_2": false,
+      "capacities": {
+        "AA": 1,
+        "AB": 3,
+        "BA": 2
+      },
+      "forced_at_every_vertex_for_every_spelling": false,
+      "number_modulo_rotation": 3
+    },
+    {
+      "all_spellings_have_max_vertex_degree_2": false,
+      "capacities": {
+        "AA": 7
+      },
+      "forced_at_every_vertex_for_every_spelling": true,
+      "number_modulo_rotation": 1
+    },
+    {
+      "all_spellings_have_max_vertex_degree_2": false,
+      "capacities": {
+        "AA": 6,
+        "AB": 1
+      },
+      "forced_at_every_vertex_for_every_spelling": false,
+      "number_modulo_rotation": 1
+    },
+    {
+      "all_spellings_have_max_vertex_degree_2": false,
+      "capacities": {
+        "AA": 5,
+        "AB": 1,
+        "BA": 1
+      },
+      "forced_at_every_vertex_for_every_spelling": false,
+      "number_modulo_rotation": 1
+    },
+    {
+      "all_spellings_have_max_vertex_degree_2": false,
+      "capacities": {
+        "AA": 4,
+        "AB": 1,
+        "BA": 1,
+        "BB": 1
+      },
+      "forced_at_every_vertex_for_every_spelling": false,
+      "number_modulo_rotation": 1
+    },
+    {
+      "all_spellings_have_max_vertex_degree_2": false,
+      "capacities": {
+        "AA": 3,
+        "AB": 1,
+        "BA": 1,
+        "BB": 2
+      },
+      "forced_at_every_vertex_for_every_spelling": false,
+      "number_modulo_rotation": 1
+    },
+    {
+      "all_spellings_have_max_vertex_degree_2": false,
+      "capacities": {
+        "AA": 2,
+        "AB": 1,
+        "BA": 1,
+        "BB": 3
+      },
+      "forced_at_every_vertex_for_every_spelling": false,
+      "number_modulo_rotation": 1
+    },
+    {
+      "all_spellings_have_max_vertex_degree_2": false,
+      "capacities": {
+        "AA": 1,
+        "AB": 1,
+        "BA": 1,
+        "BB": 4
+      },
+      "forced_at_every_vertex_for_every_spelling": false,
+      "number_modulo_rotation": 1
+    },
+    {
+      "all_spellings_have_max_vertex_degree_2": false,
+      "capacities": {
+        "AA": 4,
+        "AB": 1,
+        "BA": 2
+      },
+      "forced_at_every_vertex_for_every_spelling": false,
+      "number_modulo_rotation": 1
+    },
+    {
+      "all_spellings_have_max_vertex_degree_2": false,
+      "capacities": {
+        "AA": 3,
+        "AB": 1,
+        "BA": 2,
+        "BB": 1
+      },
+      "forced_at_every_vertex_for_every_spelling": false,
+      "number_modulo_rotation": 2
+    },
+    {
+      "all_spellings_have_max_vertex_degree_2": false,
+      "capacities": {
+        "AA": 2,
+        "AB": 1,
+        "BA": 2,
+        "BB": 2
+      },
+      "forced_at_every_vertex_for_every_spelling": false,
+      "number_modulo_rotation": 3
+    },
+    {
+      "all_spellings_have_max_vertex_degree_2": false,
+      "capacities": {
+        "AA": 1,
+        "AB": 1,
+        "BA": 2,
+        "BB": 3
+      },
+      "forced_at_every_vertex_for_every_spelling": false,
+      "number_modulo_rotation": 4
+    },
+    {
+      "all_spellings_have_max_vertex_degree_2": false,
+      "capacities": {
+        "AA": 4,
+        "AB": 2,
+        "BA": 1
+      },
+      "forced_at_every_vertex_for_every_spelling": false,
+      "number_modulo_rotation": 5
+    },
+    {
+      "all_spellings_have_max_vertex_degree_2": false,
+      "capacities": {
+        "AA": 3,
+        "AB": 2,
+        "BA": 1,
+        "BB": 1
+      },
+      "forced_at_every_vertex_for_every_spelling": false,
+      "number_modulo_rotation": 4
+    },
+    {
+      "all_spellings_have_max_vertex_degree_2": false,
+      "capacities": {
+        "AA": 2,
+        "AB": 2,
+        "BA": 1,
+        "BB": 2
+      },
+      "forced_at_every_vertex_for_every_spelling": false,
+      "number_modulo_rotation": 3
+    },
+    {
+      "all_spellings_have_max_vertex_degree_2": false,
+      "capacities": {
+        "AA": 1,
+        "AB": 2,
+        "BA": 1,
+        "BB": 3
+      },
+      "forced_at_every_vertex_for_every_spelling": false,
+      "number_modulo_rotation": 2
+    },
+    {
+      "all_spellings_have_max_vertex_degree_2": false,
+      "capacities": {
+        "AA": 3,
+        "AB": 2,
+        "BA": 2
+      },
+      "forced_at_every_vertex_for_every_spelling": false,
+      "number_modulo_rotation": 2
+    },
+    {
+      "all_spellings_have_max_vertex_degree_2": false,
+      "capacities": {
+        "AA": 2,
+        "AB": 2,
+        "BA": 2,
+        "BB": 1
+      },
+      "forced_at_every_vertex_for_every_spelling": false,
+      "number_modulo_rotation": 3
+    },
+    {
+      "all_spellings_have_max_vertex_degree_2": false,
+      "capacities": {
+        "AA": 1,
+        "AB": 2,
+        "BA": 2,
+        "BB": 2
+      },
+      "forced_at_every_vertex_for_every_spelling": false,
+      "number_modulo_rotation": 3
+    },
+    {
+      "all_spellings_have_max_vertex_degree_2": false,
+      "capacities": {
+        "AA": 2,
+        "AB": 2,
+        "BA": 3
+      },
+      "forced_at_every_vertex_for_every_spelling": false,
+      "number_modulo_rotation": 3
+    },
+    {
+      "all_spellings_have_max_vertex_degree_2": false,
+      "capacities": {
+        "AA": 1,
+        "AB": 2,
+        "BA": 3,
+        "BB": 1
+      },
+      "forced_at_every_vertex_for_every_spelling": false,
+      "number_modulo_rotation": 6
+    },
+    {
+      "all_spellings_have_max_vertex_degree_2": false,
+      "capacities": {
+        "AA": 2,
+        "AB": 3,
+        "BA": 2
+      },
+      "forced_at_every_vertex_for_every_spelling": false,
+      "number_modulo_rotation": 6
+    },
+    {
+      "all_spellings_have_max_vertex_degree_2": false,
+      "capacities": {
+        "AA": 1,
+        "AB": 3,
+        "BA": 2,
+        "BB": 1
+      },
+      "forced_at_every_vertex_for_every_spelling": false,
+      "number_modulo_rotation": 6
+    },
+    {
+      "all_spellings_have_max_vertex_degree_2": false,
+      "capacities": {
+        "AA": 1,
+        "AB": 3,
+        "BA": 3
+      },
+      "forced_at_every_vertex_for_every_spelling": false,
+      "number_modulo_rotation": 1
+    },
+    {
+      "all_spellings_have_max_vertex_degree_2": false,
+      "capacities": {
+        "AA": 8
+      },
+      "forced_at_every_vertex_for_every_spelling": true,
+      "number_modulo_rotation": 1
+    },
+    {
+      "all_spellings_have_max_vertex_degree_2": false,
+      "capacities": {
+        "AA": 7,
+        "AB": 1
+      },
+      "forced_at_every_vertex_for_every_spelling": false,
+      "number_modulo_rotation": 1
+    },
+    {
+      "all_spellings_have_max_vertex_degree_2": false,
+      "capacities": {
+        "AA": 6,
+        "AB": 1,
+        "BA": 1
+      },
+      "forced_at_every_vertex_for_every_spelling": false,
+      "number_modulo_rotation": 1
+    },
+    {
+      "all_spellings_have_max_vertex_degree_2": false,
+      "capacities": {
+        "AA": 5,
+        "AB": 1,
+        "BA": 1,
+        "BB": 1
+      },
+      "forced_at_every_vertex_for_every_spelling": false,
+      "number_modulo_rotation": 1
+    },
+    {
+      "all_spellings_have_max_vertex_degree_2": false,
+      "capacities": {
+        "AA": 4,
+        "AB": 1,
+        "BA": 1,
+        "BB": 2
+      },
+      "forced_at_every_vertex_for_every_spelling": false,
+      "number_modulo_rotation": 1
+    },
+    {
+      "all_spellings_have_max_vertex_degree_2": false,
+      "capacities": {
+        "AA": 3,
+        "AB": 1,
+        "BA": 1,
+        "BB": 3
+      },
+      "forced_at_every_vertex_for_every_spelling": false,
+      "number_modulo_rotation": 1
+    },
+    {
+      "all_spellings_have_max_vertex_degree_2": false,
+      "capacities": {
+        "AA": 2,
+        "AB": 1,
+        "BA": 1,
+        "BB": 4
+      },
+      "forced_at_every_vertex_for_every_spelling": false,
+      "number_modulo_rotation": 1
+    },
+    {
+      "all_spellings_have_max_vertex_degree_2": false,
+      "capacities": {
+        "AA": 1,
+        "AB": 1,
+        "BA": 1,
+        "BB": 5
+      },
+      "forced_at_every_vertex_for_every_spelling": false,
+      "number_modulo_rotation": 1
+    },
+    {
+      "all_spellings_have_max_vertex_degree_2": false,
+      "capacities": {
+        "AA": 5,
+        "AB": 1,
+        "BA": 2
+      },
+      "forced_at_every_vertex_for_every_spelling": false,
+      "number_modulo_rotation": 1
+    },
+    {
+      "all_spellings_have_max_vertex_degree_2": false,
+      "capacities": {
+        "AA": 4,
+        "AB": 1,
+        "BA": 2,
+        "BB": 1
+      },
+      "forced_at_every_vertex_for_every_spelling": false,
+      "number_modulo_rotation": 2
+    },
+    {
+      "all_spellings_have_max_vertex_degree_2": false,
+      "capacities": {
+        "AA": 3,
+        "AB": 1,
+        "BA": 2,
+        "BB": 2
+      },
+      "forced_at_every_vertex_for_every_spelling": false,
+      "number_modulo_rotation": 3
+    },
+    {
+      "all_spellings_have_max_vertex_degree_2": false,
+      "capacities": {
+        "AA": 2,
+        "AB": 1,
+        "BA": 2,
+        "BB": 3
+      },
+      "forced_at_every_vertex_for_every_spelling": false,
+      "number_modulo_rotation": 4
+    },
+    {
+      "all_spellings_have_max_vertex_degree_2": false,
+      "capacities": {
+        "AA": 1,
+        "AB": 1,
+        "BA": 2,
+        "BB": 4
+      },
+      "forced_at_every_vertex_for_every_spelling": false,
+      "number_modulo_rotation": 5
+    },
+    {
+      "all_spellings_have_max_vertex_degree_2": false,
+      "capacities": {
+        "AA": 5,
+        "AB": 2,
+        "BA": 1
+      },
+      "forced_at_every_vertex_for_every_spelling": false,
+      "number_modulo_rotation": 6
+    },
+    {
+      "all_spellings_have_max_vertex_degree_2": false,
+      "capacities": {
+        "AA": 4,
+        "AB": 2,
+        "BA": 1,
+        "BB": 1
+      },
+      "forced_at_every_vertex_for_every_spelling": false,
+      "number_modulo_rotation": 5
+    },
+    {
+      "all_spellings_have_max_vertex_degree_2": false,
+      "capacities": {
+        "AA": 3,
+        "AB": 2,
+        "BA": 1,
+        "BB": 2
+      },
+      "forced_at_every_vertex_for_every_spelling": false,
+      "number_modulo_rotation": 4
+    },
+    {
+      "all_spellings_have_max_vertex_degree_2": false,
+      "capacities": {
+        "AA": 2,
+        "AB": 2,
+        "BA": 1,
+        "BB": 3
+      },
+      "forced_at_every_vertex_for_every_spelling": false,
+      "number_modulo_rotation": 3
+    },
+    {
+      "all_spellings_have_max_vertex_degree_2": false,
+      "capacities": {
+        "AA": 1,
+        "AB": 2,
+        "BA": 1,
+        "BB": 4
+      },
+      "forced_at_every_vertex_for_every_spelling": false,
+      "number_modulo_rotation": 2
+    },
+    {
+      "all_spellings_have_max_vertex_degree_2": false,
+      "capacities": {
+        "AA": 4,
+        "AB": 2,
+        "BA": 2
+      },
+      "forced_at_every_vertex_for_every_spelling": false,
+      "number_modulo_rotation": 3
+    },
+    {
+      "all_spellings_have_max_vertex_degree_2": false,
+      "capacities": {
+        "AA": 3,
+        "AB": 2,
+        "BA": 2,
+        "BB": 1
+      },
+      "forced_at_every_vertex_for_every_spelling": false,
+      "number_modulo_rotation": 4
+    },
+    {
+      "all_spellings_have_max_vertex_degree_2": false,
+      "capacities": {
+        "AA": 2,
+        "AB": 2,
+        "BA": 2,
+        "BB": 2
+      },
+      "forced_at_every_vertex_for_every_spelling": false,
+      "number_modulo_rotation": 5
+    },
+    {
+      "all_spellings_have_max_vertex_degree_2": false,
+      "capacities": {
+        "AA": 1,
+        "AB": 2,
+        "BA": 2,
+        "BB": 3
+      },
+      "forced_at_every_vertex_for_every_spelling": false,
+      "number_modulo_rotation": 4
+    },
+    {
+      "all_spellings_have_max_vertex_degree_2": false,
+      "capacities": {
+        "AA": 3,
+        "AB": 2,
+        "BA": 3
+      },
+      "forced_at_every_vertex_for_every_spelling": false,
+      "number_modulo_rotation": 4
+    },
+    {
+      "all_spellings_have_max_vertex_degree_2": false,
+      "capacities": {
+        "AA": 2,
+        "AB": 2,
+        "BA": 3,
+        "BB": 1
+      },
+      "forced_at_every_vertex_for_every_spelling": false,
+      "number_modulo_rotation": 9
+    },
+    {
+      "all_spellings_have_max_vertex_degree_2": false,
+      "capacities": {
+        "AA": 1,
+        "AB": 2,
+        "BA": 3,
+        "BB": 2
+      },
+      "forced_at_every_vertex_for_every_spelling": false,
+      "number_modulo_rotation": 12
+    },
+    {
+      "all_spellings_have_max_vertex_degree_2": false,
+      "capacities": {
+        "AA": 3,
+        "AB": 3,
+        "BA": 2
+      },
+      "forced_at_every_vertex_for_every_spelling": false,
+      "number_modulo_rotation": 10
+    },
+    {
+      "all_spellings_have_max_vertex_degree_2": false,
+      "capacities": {
+        "AA": 2,
+        "AB": 3,
+        "BA": 2,
+        "BB": 1
+      },
+      "forced_at_every_vertex_for_every_spelling": false,
+      "number_modulo_rotation": 12
+    },
+    {
+      "all_spellings_have_max_vertex_degree_2": false,
+      "capacities": {
+        "AA": 1,
+        "AB": 3,
+        "BA": 2,
+        "BB": 2
+      },
+      "forced_at_every_vertex_for_every_spelling": false,
+      "number_modulo_rotation": 9
+    },
+    {
+      "all_spellings_have_max_vertex_degree_2": false,
+      "capacities": {
+        "AA": 2,
+        "AB": 3,
+        "BA": 3
+      },
+      "forced_at_every_vertex_for_every_spelling": false,
+      "number_modulo_rotation": 2
+    },
+    {
+      "all_spellings_have_max_vertex_degree_2": false,
+      "capacities": {
+        "AA": 1,
+        "AB": 3,
+        "BA": 3,
+        "BB": 1
+      },
+      "forced_at_every_vertex_for_every_spelling": false,
+      "number_modulo_rotation": 3
+    },
+    {
+      "all_spellings_have_max_vertex_degree_2": false,
+      "capacities": {
+        "AA": 1,
+        "AB": 3,
+        "BA": 4
+      },
+      "forced_at_every_vertex_for_every_spelling": false,
+      "number_modulo_rotation": 3
+    },
+    {
+      "all_spellings_have_max_vertex_degree_2": false,
+      "capacities": {
+        "AA": 1,
+        "AB": 4,
+        "BA": 3
+      },
+      "forced_at_every_vertex_for_every_spelling": false,
+      "number_modulo_rotation": 4
+    }
+  ],
+  "scope": "edge alphabet AA, AB, BA, BB; exact enumeration; at least one AA copy anchors the DFS",
+  "unique_records": 43
+}
