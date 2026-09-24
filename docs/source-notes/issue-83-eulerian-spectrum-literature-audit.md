@@ -99,6 +99,17 @@ the spectrum. [source fact + modeling conclusion]
 
 ### 1.2 BEST and prescribed multiplicities
 
+The primary source of the named formula is N. G. de Bruijn, A. E. van
+Aardenne-Ehrenfest, C. A. B. Smith, and W. T. Tutte, “A polynomial time
+algorithm for the BEST theorem,” *Bulletin of the American Mathematical Society*
+**64** (1958), 817–820,
+[doi:10.1090/S0002-9904-1958-10177-1](https://doi.org/10.1090/S0002-9904-1958-10177-1).
+Its tours are walks on a directed graph whose edges are distinct objects. Thus
+parallel spectrum copies are counted separately, and rooting conventions must
+also be converted explicitly to #83's rotation quotient. A labelled count is
+not a uniqueness test for type-level spellings and cannot simply be divided by
+the multiplicity factorials. [source fact + modeling conclusion]
+
 Farrell and Levine, *Multi-Eulerian Tours of Directed Graphs*, Electronic
 Journal of Combinatorics 23(2) (2016), #P2.21,
 DOI [10.37236/5588](https://doi.org/10.37236/5588), explicitly permit loops and
@@ -174,6 +185,27 @@ a period vector is a positive integer vector in the Laplacian kernel, and
 "primitive" means that its entries have gcd one. Every period vector is a
 positive integer multiple of the unique primitive period vector. [source fact]
 
+### 2.3 Necklaces and the arithmetic reduction
+
+Richard A. Bruckner, “Counting necklaces and primitive necklaces,” *Discrete
+Mathematics* **12** (1976), 1–12,
+[doi:10.1016/0012-365X(76)90096-6](https://doi.org/10.1016/0012-365X(76)90096-6),
+and Moreno Moroni, “Counting and reconstructing necklaces,” *SIAM Journal on
+Computing* **22** (1993), 836–852,
+[doi:10.1137/0212067](https://doi.org/10.1137/0212067), are primary sources
+for ordinary cyclic-word canonicalization, prescribed-content counting, and the
+primitive/power decomposition. Their object is the necklace itself (or its
+letter content), not a complete overlapping-word spectrum, so neither supplies
+#83's identifiability theorem. [source fact + modeling conclusion]
+
+The arithmetic reduction is elementary. If a positive integer capacity vector
+`c` has gcd one and two candidate lengths `G,H` have proportional spectra,
+`H c_S = G c_D`, cancelling the gcd gives `G|H` and `H|G`. Hence `G=H` and the
+integer spectra agree. Without gcd one, each proportional integer spectrum is
+`m c` for an integer `m>1`; the remaining question is whether some such multiple
+admits a primitive cyclic edge-type spelling. [modeling choice + mathematical
+proof]
+
 Thus this paper directly studies multiplied edge uses, but its primitive tour
 is a minimal solution of vertex-wise degree equations. If the graph is already
 Eulerian, that period vector is all ones and the paper reduces to ordinary
@@ -185,12 +217,11 @@ conclusion]
 
 ### Packet 1: same-length exact criterion
 
-A known theorem directly states the issue's unique cyclic edge-type spelling
-criterion, with the quotient built into the object. No theorem was found doing
-so. The straightforward iff is the mapping between a fixed-length circular word
-and its cyclic type-word in the Euler tour, so it is essentially definitional
-unless a new local quotient-graph criterion is derived. [bounded literature-audit
-conclusion]
+No audited source states the requested unique cyclic edge-type spelling
+criterion with this quotient built into the object. The straightforward iff is
+the mapping between a fixed-length circular word and its cyclic type-word in the
+Euler tour, so it is essentially definitional unless a new local quotient-graph
+criterion is derived. [bounded literature-audit conclusion]
 
 ### Packet 2: graph-theoretic simplification
 
@@ -242,3 +273,12 @@ the audited theorems states that leaf. [bounded literature-audit conclusion]
 7. Nidia Obscura Acosta and Alexandru I. Tomescu, “Simplicity in Eulerian
    Circuits: Uniqueness and Safety,” arXiv:2208.08522v2 (2023), especially §1.1,
    footnote 2, §1.2, and Corollary 1.
+8. N. G. de Bruijn, A. E. van Aardenne-Ehrenfest, C. A. B. Smith, and W. T.
+   Tutte, “A polynomial time algorithm for the BEST theorem,” *Bulletin of the
+   American Mathematical Society* **64** (1958), 817–820,
+   doi:10.1090/S0002-9904-1958-10177-1.
+9. Richard A. Bruckner, “Counting necklaces and primitive necklaces,”
+   *Discrete Mathematics* **12** (1976), 1–12,
+   doi:10.1016/0012-365X(76)90096-6.
+10. Moreno Moroni, “Counting and reconstructing necklaces,” *SIAM Journal on
+    Computing* **22** (1993), 836–852, doi:10.1137/0212067.
