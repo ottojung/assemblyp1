@@ -25,6 +25,12 @@ def main():
     assert primitive_cycle("AAABAB")
     assert spectrum("AAB", 2) == (('AA', 1), ('AB', 1), ('BA', 1))
     assert spectrum("AAABAB", 2) == (('AA', 2), ('AB', 2), ('BA', 2))
+    for a in "AB":
+        for b in "AB":
+            if a != b:
+                assert not any(len("AABB") % d == 0 and
+                               "AABB" == "AABB"[:d] * (4 // d)
+                               for d in range(1, 4))
 
     # Exhaustive binary check for L=2, lengths through 8: the only obstruction
     # found is the forced-cycle case (one outgoing edge type at every vertex).

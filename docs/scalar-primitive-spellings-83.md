@@ -1,7 +1,7 @@
 # Scalar primitive spellings on the variable-length leaf
 
 **Issue:** #83, packet 3  
-**Status:** mathematical proof plus bounded exact computation (2026-09-24)
+**Status:** mathematical proof plus bounded exact computation; the branching/equivalence claim is refuted (2026-09-24)
 
 ## Setup
 
@@ -17,20 +17,36 @@ length is `H`, integrality and the equality
 `H c0 = G cD` force `G | H`, and after cancelling the gcd the multiplier is an
 integer.  The question is whether some `m>1` has a primitive spelling.
 
-## Theorem
+## Correct theorem and the branching obstruction
 
-Let `c0` be a primitive balanced vector whose support is weakly connected.
-Then the following are equivalent:
+The no-branching direction is correct. If every vertex has at most one
+outgoing edge type, weak connectivity and balance make the support a single
+directed cycle, so every cyclic spelling of `m c0` is `W^m`, with `W^m` the
+power of the unique primitive spelling `W`. Thus no multiple has a primitive
+spelling.
 
-1. `c0` has a branching vertex, meaning a vertex with at least two distinct
-   outgoing edge types.
-2. `m c0` has a primitive cyclic edge-type spelling for `m=2` (and hence for
-   at least one `m>1`).
-3. `c0` has at least two distinct cyclic edge-type spellings modulo rotation.
+The converse as previously stated is false: branching is not equivalent to
+having two cyclic edge-type spellings modulo rotation. The cut-at-two-visits
+splice only gives a *rooted/linear* Euler-tour change when the two visits are
+actually spliceable. After forgetting the cut (forgetting the starting vertex),
+swapping two excursions at their common vertex can be a rotation. It is not a
+new edge-type necklace.
 
-If there is no branching vertex, every cyclic spelling of `m c0` is the word
-`W^m`, where `W` is the unique cyclic spelling of `c0`.  In particular no
-`m>1` is primitive.
+A transparent counterexample is the figure-eight graph: vertex `v` has two
+separate directed 2-cycles, one with edge types `a,b` and one with `c,d`. Its
+edge-type count vector `(1,1,1,1)` is primitive, and `v` branches, but its only
+cyclic spellings are `abcd` and `cdab`, which are rotations. Nevertheless
+`2c0` has the primitive spelling `abcdabcdcdcd` (with the symbols understood as
+the corresponding edge types). More generally, two closed excursions based at
+`v` can be concatenated in either order, but `XY` and `YX` are rotations at the
+base point; the splice is invisible to cyclic equivalence.
+
+The valid existence statement is therefore only the implication
+`c0` has two distinct cyclic spellings modulo rotation => `2c0` has a
+primitive spelling, proved by the concatenation lemma below. Branching is a
+sufficient condition for a local splice in some graphs, but not an iff
+criterion for cyclic necklaces. This note makes no claim about a
+branching-equivalence or a multiple-base-necklaces theorem.
 
 ## Proof
 
@@ -40,25 +56,21 @@ directed cycle.  Since the vector `c0` is primitive, the corresponding cyclic
 edge-type word is `W`, not a power.  Every spelling of `m c0` follows that
 unique successor at every occurrence, so its word is `W^m`.
 
-Conversely, suppose `v` has two distinct outgoing edge types `a` and `b`.
-Take any Eulerian circuit and read it cyclically.  Consider the two successive
-outgoing edges at the visit to `v` that follows a chosen cut.  The cyclic order
-of the occurrences of `a` and `b` can be reversed by the standard Eulerian
-splice at `v`: equivalently, decompose the circuit at `v` and concatenate the
-resulting closed trails in the opposite order.  The result is Eulerian.  Since
-`a` and `b` are distinct edge types, the two resulting edge-type necklaces are
-distinct (if they were equal, the cyclic order at the cut would be the same).
-This proves (1) implies (3).  The other implications are immediate except for
-the primitive construction below.
+For the remaining valid implication, let `A` and `B` be distinct cyclic
+spellings of `c0`, each of length `N=sum c0`. The cyclic word `AB` spells
+`2c0`. **Concatenation lemma.** If `A` and `B` have the same length and are not
+rotations of one another, then `AB` is primitive. Indeed, if `AB=U^r` with
+`r>1`, then cutting the periodic word at the boundary between `A` and `B` shows
+that `A` and `B` are powers of the same block; since they have equal length, the
+two powers are rotations. This contradicts the choice of `A,B`.
 
-Let `A` and `B` be distinct cyclic spellings of `c0`, each of length `N=sum c0`.
-The cyclic word `AB` spells `2c0`.  **Concatenation lemma.** If `A` and `B` have
-the same length and are not rotations of one another, then `AB` is primitive.
-Indeed, if `AB=U^r` with `r>1`, then cutting the periodic word at the boundary
-between `A` and `B` shows that `A` and `B` are powers of the same block; since
-they have equal length, the two powers are rotations.  This contradicts the
-choice of `A,B`.  Therefore (1) implies (2), and `(3)` is equivalent to
-`(1)` by the preceding argument.
+The word lemma requested in issue #83 is also valid in its sharper form: for
+nonempty `A,B` with different first symbols, `AABB` is not a square. If
+`AABB=XX`, then `|A|+|B|=2|X|`; the first symbol of `X` is the first symbol
+of `A`, while the first symbol of the second copy of `X` is the first symbol
+of `B`. These would have to be equal, a contradiction. The fixed linear cut in
+`AABB` is essential to this direct proof; one must not silently identify words
+under rotation before comparing the two first symbols.
 
 The last sentence is important: primitiveness of the **count vector** is not
 being confused with primitiveness of a spelling.  The former controls the
