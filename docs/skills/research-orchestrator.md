@@ -110,6 +110,8 @@ Do not promote stable definitions or lemmas to Lean by default. Substantial form
 
 ### Verify and review
 
+On `phoebe-dev`, configure Lean according to [`lean-on-phoebe-dev.md`](lean-on-phoebe-dev.md) before running Lean/Lake commands.
+
 Independently check primary-source claims, rerun important searches, inspect Lean assumptions, run `lake build`, check CI, and review PR diffs. The agent that produced a result is not its independent reviewer.
 
 The orchestrator itself owns final PR review and integration judgment; do not delegate those responsibilities to `lubko-agent`.
