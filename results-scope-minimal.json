@@ -1,0 +1,34 @@
+{
+  "bounds": {
+    "maximum_genome_size": 4,
+    "maximum_read_length": 2
+  },
+  "checked_primitive_canonical_genomes": 16,
+  "evidence": "exhaustive only within the stated finite binary scope",
+  "first_hit": {
+    "genome_size": 4,
+    "primitive": true,
+    "read_length": 2,
+    "spectrum": {
+      "AA": 2,
+      "AB": 1,
+      "BA": 1
+    },
+    "unique_canonical_rotations": [
+      "AAAB"
+    ],
+    "word": "AAAB"
+  },
+  "model": {
+    "alphabet": [
+      "A",
+      "B"
+    ],
+    "candidate_length": "same as genome",
+    "equivalence": "rotation only",
+    "observation": "complete integer multiplicity spectrum",
+    "orientation": "fixed",
+    "quantifier": "for every same-length binary circular candidate in the bounded scope"
+  },
+  "unique_but_p2_satisfying_before_hit": 14
+}
