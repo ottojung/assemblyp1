@@ -50,6 +50,27 @@ requiring that no symbol occur at three distinct starts.
 
 ## Exact spectrum and the failed condition
 
+For `L >= 2`, this graph bijection can also be stated in terms of BEST:
+the number of edge-distinct cyclic Euler tours is
+
+```text
+tau_r(G) * product_v (outdeg(v) - 1)!,
+```
+
+where `tau_r` is the number of directed spanning arborescences rooted at
+`r`. Thus the usual best-possible count is one exactly when
+`tau_r(G) = 1` and every outdegree is at most one. **This formula must not be
+applied verbatim to labeled-word identifiability without a quotient.** BEST
+counts parallel copies as distinct edges, whereas two parallel copies carrying
+the same observed `L`-mer are indistinguishable in a spectrum. The exact
+word-level criterion therefore counts cyclic Euler tours modulo parallel-copy
+permutations (or, equivalently, count edge-type sequences with prescribed
+multiplicity). If the genome is restricted to primitive circular words, a
+word-level class of `m` tours corresponds to `m` periodic traversals of a
+primitive root, and the quotient still has to be taken. The `AAAB` proof
+below does not depend on this subtlety: its forced tour is unique even in the
+finer edge-distinct sense.
+
 The four cyclic 2-mers of `S = AAAB`, in start order, are
 
 ```text
@@ -125,7 +146,18 @@ first hit]**
    same-length model, the exact property is uniqueness of the positive
    multiplicity circulation / Eulerian circuit compatible with the observed
    spectrum. P2 is not this property. Repeats of higher multiplicity and
-   non-interleaved triple repeats need not create competing traversals.
+   non-interleaved triple repeats need not create competing traversals. More
+   precisely, for `L >= 2`, the observed integer multiplicities determine a
+   directed multigraph on observed `(L-1)`-mers: each distinct observed
+   `L`-mer `a_1...a_L` is an edge
+   `a_1...a_{L-1} -> a_2...a_L` with its integer multiplicity. Every
+   same-length circular word with the observed spectrum is exactly a cyclic
+   Euler tour of this graph, modulo rotation of the starting point and modulo
+   permutation of indistinguishable parallel copies carrying the same
+   `L`-mer. Complete-spectrum identifiability is therefore equivalent to
+   having exactly one such label-and-rotation class of Euler tours. This is an
+   exact necessary-and-sufficient graph property, but it is local to the
+   observed graph rather than P2 repeat syntax.
 
 3. **Do not conflate this with finite-data ML.** Complete-spectrum uniqueness
    concerns the observation `spec_L(S)`. It does not establish unique ML for a
