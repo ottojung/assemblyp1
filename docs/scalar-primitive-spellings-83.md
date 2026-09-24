@@ -61,7 +61,7 @@ The theorem also covers a figure-eight graph cleanly. If its two closed `v`-excu
 
 ## Imported result and epistemic status
 
-The only imported word-combinatorics result is the classical Lyndon–Schützenberger theorem used above. A convenient independently checkable formal statement is the Archive of Formal Proofs entry `Combinatorics_Words/Lyndon_Schutzenberger`, which formalizes that `x^a y^b = z^c` with all three exponents at least two has commuting word solutions. Before this note is used as a source-facing result, cite the original Lyndon–Schützenberger paper or another standard primary source precisely.
+The only imported word-combinatorics result is the classical Lyndon–Schützenberger theorem used above. The primary source is R. C. Lyndon and M. P. Schützenberger, “The equation a^M = b^N c^P in a free group,” *Michigan Mathematical Journal* **9** (1962), 289–298, DOI `10.1307/mmj/1028998766`. It proves that for exponents at least two the solutions in a free group are powers of a common element; the free-monoid word form used here is the corresponding positive-word specialization. A convenient independently checkable formalization of the word form is the Archive of Formal Proofs entry `Combinatorics_Words/Lyndon_Schutzenberger`, which states that `x^a y^b = z^c` with all three exponents at least two forces the words to commute.
 
 The branching theorem itself is a direct mathematical proof conditional only on that standard imported theorem. No bounded computation is needed for the proof.
 
