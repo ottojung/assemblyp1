@@ -10,13 +10,15 @@ The bounded search covers all capacity vectors with total length 1 through 8 and
 python3 scripts/enumerate_capacity_eulerian_spellings.py --max-length 8 --output results/capacity_eulerian_spellings.json
 ```
 
-The result contains 93 nonempty capacity records: 43 have one spelling modulo rotation and 50 have more than one. The exact result-file SHA-256 is printed by the script and is currently `0045cec8924f72b1a3f85e466285c1dd8627c04bc4008c58f76f08f5ed9736d5`.
+The result contains 93 nonempty capacity records: 43 have one spelling modulo rotation and 50 have more than one. The evaluator now also exactly enumerates spellings of doubled capacities, canonicalizes them by the same rotation quotient, and records which are primitive cyclic words. The exact result-file SHA-256 is `8e203e05a8a85b88fdaacd1124d1b4a11f0a9061869d0eec0d7bfc82f3b536f9`.
 
 ## Local criteria tested
 
 At each vertex, a local transition is forced when all incoming edge *types* at that vertex are identical and all outgoing edge types are identical. This is stronger than merely checking that the total degree is even, and it directly ignores instance-level parallel labels. Across the 93 records, all 8 records satisfying this criterion were unique modulo rotation; no nonunique record satisfied it.
 
 The search also records the weaker test that every vertex has total degree 2. Exactly one capacity record has all spellings of maximum vertex degree 2, and it is unique. This is not proposed as a general criterion: a degree-2 multigraph can still have several Eulerian cyclic edge-type spellings in larger alphabets or with repeated edge types, so the bounded result only tests this small alphabet.
+
+The doubling extension reports whether a capacity vector has a branching vertex and whether its doubled vector has a primitive spelling modulo rotation. There are zero branching/doubling mismatches. Only one record in this bound has every positive capacity at least two, namely `AA:2, AB:2, BA:2, BB:2`; it has multiple spellings and primitive doubled spellings. Thus the all-capacities-`>=2` slice is nonempty but extremely small, while direct witnesses outside that slice show that the hypothesis is not needed for ambiguity and, conversely, abstract one-type graphs of capacity two show that it is not sufficient for it.
 
 ## Minimal bounded pattern
 
@@ -37,4 +39,4 @@ The ambiguity is the order of the two indistinguishable `AB` transitions at the 
 
 ## What this does and does not show
 
-Within the stated finite alphabet and length bound, forced vertex transitions are a clean sufficient search criterion, while total-degree-two is much weaker. The result does not establish that the local condition is necessary, does not handle arbitrary alphabets, does not prove a BEST/arborescence criterion after the edge-type quotient, and does not address variable-length normalized spectra. Those are the next graph-theoretic targets for issue #83. The enumerator is intentionally small and self-contained so that the JSON can be regenerated independently.
+Within the stated finite alphabet and length bound, forced vertex transitions are a sufficient search criterion, while total-degree-two is much weaker. The doubling output is exact enumeration of the finite model and evidence for, not a proof of, the branching/primitive-doubled criterion. The result does not establish necessity of the local condition, does not handle arbitrary alphabets or longer capacities, and does not derive a static BEST/arborescence criterion after the edge-type quotient. The enumerator is intentionally small and self-contained so that the JSON can be regenerated independently.

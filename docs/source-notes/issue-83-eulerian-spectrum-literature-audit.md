@@ -129,9 +129,11 @@ fact]
 This is an important exact precedent for the warning in issue #83: the
 indistinguishable-copy quotient is a separate operation, not a raw BEST count.
 It is not, however, a uniqueness criterion for arbitrary spectrum-induced
-graphs. In §2.1 Tesler's graph contains every possible `k`-mer and §9.3 applies
-this to the complete de Bruijn graph with uniform multiplicity. The support,
-imbalance pattern, and multiplicity ratios in #83 are arbitrary. [source fact
+graphs. Tesler's §9 states a graph-partition framework for arbitrary balanced
+graphs with prescribed edge multiplicities, but it counts a multiset of cycles.
+The earlier complete uniform de Bruijn construction is the special case in
+which the theorem's general graph framework is specialized. The singleton
+cyclic spelling and rotation-orbit questions of #83 are different. [source fact
 + modeling conclusion]
 
 ## 2. Primitive words with multiplied edge multiplicities
@@ -145,15 +147,16 @@ cycles whose aggregate `k`-mer multiplicity is exactly `m` (§8.1). Theorem 9.3
 counts these aggregate realizations with prescribed edge multiplicities after
 the `nu_e!` quotient. [source fact]
 
-This matches the phrase "primitive Eulerian words under multiplied edge
-multiplicities" only if the intended graph is the complete de Bruijn graph and
-the multiplicity vector is uniform. It does **not** state a criterion for:
+Tesler's §9 is therefore closer to arbitrary-support graph data than the
+earlier complete-uniform construction, but it does **not** state a criterion
+for:
 
 - a singleton normalized spectrum, where aggregate edge multiplicities are
-  proportional rather than fixed;
-- existence of two different primitive words on the same prescribed aggregate
-  spectrum;
-- different total lengths and possibly different supports;
+  proportional rather than fixed (positive proportional vectors have the same
+  support, so a different support is not a live ambiguity);
+- existence of two different primitive singleton cycles on the same
+  prescribed aggregate spectrum;
+- different total lengths;
 - a single connected Eulerian cycle as opposed to a multiset of cycles.
 
 Those distinctions are the core of issue #83 packet 3. [modeling conclusion]

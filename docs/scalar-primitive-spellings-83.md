@@ -41,24 +41,20 @@ edge-type word is `W`, not a power.  Every spelling of `m c0` follows that
 unique successor at every occurrence, so its word is `W^m`.
 
 Conversely, suppose `v` has two distinct outgoing edge types `a` and `b`.
-Take any Eulerian circuit and read it cyclically.  Consider the two successive
-outgoing edges at the visit to `v` that follows a chosen cut.  The cyclic order
-of the occurrences of `a` and `b` can be reversed by the standard Eulerian
-splice at `v`: equivalently, decompose the circuit at `v` and concatenate the
-resulting closed trails in the opposite order.  The result is Eulerian.  Since
-`a` and `b` are distinct edge types, the two resulting edge-type necklaces are
-distinct (if they were equal, the cyclic order at the cut would be the same).
-This proves (1) implies (3).  The other implications are immediate except for
-the primitive construction below.
+Cut an Eulerian circuit at all its visits to `v`. The maximal closed subtrails
+between successive visits can be reattached in the opposite order at `v`,
+without changing multiplicities or adjacency. A reattachment that exchanges
+the cyclic order of occurrences of `a` and `b` gives a different edge-type
+necklace: otherwise that order would be invariant. This proves (1) implies (3).
 
-Let `A` and `B` be distinct cyclic spellings of `c0`, each of length `N=sum c0`.
-The cyclic word `AB` spells `2c0`.  **Concatenation lemma.** If `A` and `B` have
-the same length and are not rotations of one another, then `AB` is primitive.
-Indeed, if `AB=U^r` with `r>1`, then cutting the periodic word at the boundary
-between `A` and `B` shows that `A` and `B` are powers of the same block; since
-they have equal length, the two powers are rotations.  This contradicts the
-choice of `A,B`.  Therefore (1) implies (2), and `(3)` is equivalent to
-`(1)` by the preceding argument.
+Choose representatives `A,B` of two distinct necklaces, each of length
+`N=sum c0`, cut at occurrences of the branching vertex `v`, and rotate both
+cuts to that same vertex. Endpoint compatibility now holds by construction,
+and the cyclic word `AB` spells `2c0`. **Concatenation lemma.** If `A,B` have
+the same length and are not rotations, then `AB` is primitive. If `AB=U^r`
+with `r>1`, the equal-length factors are powers of rotations of the same
+primitive block, hence rotations of one another, a contradiction. Thus (1)
+implies (2).
 
 The last sentence is important: primitiveness of the **count vector** is not
 being confused with primitiveness of a spelling.  The former controls the
@@ -74,6 +70,13 @@ primitive word `AAB`.  The doubled vector is `(2,2,2)`, and the word
 
 At the other extreme, a single directed edge-type cycle with count vector
 `c0` has no primitive spelling at any multiple: every spelling is `W^m`.
+
+The all-capacities-`>=2` regime does not remove the dichotomy. A branching
+example with `AA:AB:BA:BB=2:2:2:2` has multiple spellings and primitive
+doubled spellings, as checked in the bounded artifact. A nonbranching example
+is the single loop type with capacity two, whose doubled spelling is `aa` and
+is nonprimitive. Thus capacities uniformly at least two are neither an
+ambiguity criterion nor an obstruction to primitive repair.
 
 ## Reproducible computation
 

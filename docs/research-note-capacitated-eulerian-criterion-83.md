@@ -1,7 +1,7 @@
 # Capacitated edge-type Eulerian spellings: a forced-safe-transition criterion
 
 **Issue:** #83  
-**Branch:** `agent/capacitated-criterion-83`  
+**Branch:** `agent/issue-83-exact-evaluator`
 **Scope:** same-length complete oriented spectra  
 **Epistemic class:** mathematical proofs, except the literature-status paragraph, which is a source fact
 
@@ -37,19 +37,20 @@ The substantive question is how to recognize the singleton.
 ## 2. Residual states and safe edge types
 
 Fix a prefix of a spelling and let \(R\) be the residual capacitated
-multigraph after deleting the prefix. By construction, \(R\) is balanced on
-its support and has an Eulerian spelling beginning at the current vertex.
-The state is \(R\), not merely the current vertex: a choice can be forced by
-the residual edge multiplicities elsewhere in the graph.
+multigraph after deleting the prefix. If \(v\) and \(w\) are the fixed
+starting vertex and the current vertex, then \(R\) has an Euler trail from
+\(w\) to \(v\); it is not generally balanced. The state is \(R\), not merely
+the current vertex: a choice can be forced by residual multiplicities and
+reachability elsewhere in the graph.
 
 For an available edge type \(e:v\to w\), call \(e\) **safe at \(R\)** when the
 ordinary residual multigraph \(R-e\) has an Euler trail from \(w\) to \(v\).
 Equivalently, the standard directed Euler-trail feasibility test succeeds:
 the degree imbalance is \(+1\) at \(w\), \(-1\) at \(v\), and zero elsewhere,
-and all residual edges lie in the required connected/reachable component of
-that trail. The current graph is balanced, so the first conditions follow
-automatically after deletion; connectivity and the endpoint-reachability
-condition are the substantive test.
+and every residual edge lies on that trail: each positive-capacity edge is
+reachable from \(w\), and its head can reach \(v\). The current state comes
+from a valid trail, so these conditions follow after deleting its first
+edge; for arbitrary inputs they are the substantive feasibility test.
 
 **Interpretation.** An edge type is safe exactly when some complete residual
 spelling can begin with that type. Two copies of one safe type are one choice,
@@ -139,21 +140,23 @@ edge have been removed is therefore sufficient to force the last exit.
 For edge types, it must be stated for **types**, not copies. For example,
 requiring a multiplicity to be one is unnecessarily strong: two copies of a
 single available type are still one choice. The residual-safe criterion is
-strictly more permissive because it can force a choice before all other
-copies of competing types are exhausted.
+at least as permissive: it can force a choice before all other copies of
+competing types are exhausted. No strict-separation claim is needed here.
 
 ### 4.3 A local degree or support condition is insufficient by itself
 
 Balanced degrees, strong connectivity, and positive capacity do not force
 uniqueness. At a single vertex, take two loop types \(a,b\) with capacities
-two and one. The graph is strongly connected and balanced, but its cyclic
-type words are `aab` and `aba` modulo rotation.
+two and two. The graph is strongly connected and balanced, and its two
+canonical cyclic type words are `aabb` and `abab`.
 
-Capacities are decisive even on a small type support. Capacities \((2,1)\) on
-loops \(a,b\) give two rotation orbits; capacities \((2,2)\) also give two;
-capacities \((2,0)\) give one. Scaling all capacities need not preserve
-uniqueness. On three loop types, \((2,2,1)\) and \((1,1,3)\) have different
-numbers of type words. These one-vertex examples are abstract capacitated
+Conversely, the all-capacities-at-least-two hypothesis does not force
+ambiguity. On one vertex, a single loop type of capacity two has the unique
+spelling `aa`; on two vertices, types `A` and `B` with capacity two give the
+unique cyclic spelling `ABAB`. Capacities and the support are therefore
+decisive even when every multiplicity is at least two. On one vertex,
+capacities \((2,1)\) and \((2,2)\) on loops \(a,b\) both give two rotation
+orbits, whereas \((2,0)\) gives one. These one-vertex examples are abstract capacitated
 graph witnesses. A de Bruijn graph has the more restricted property that two
 edge instances with the same tail and head have the same edge type; the
 binary example below is a direct de Bruijn witness.

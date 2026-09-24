@@ -64,6 +64,19 @@ def forced_at_vertices(word):
     return True
 
 
+def primitive_cycle(word):
+    length = len(word)
+    return not any(
+        length % divisor == 0 and word == word[:divisor] * (length // divisor)
+        for divisor in range(1, length)
+    )
+
+
+def doubled_primitive_spellings(capacities, alphabet):
+    doubled = {edge: 2 * count for edge, count in capacities.items()}
+    return [word for word in enumerate_spellings(doubled, alphabet) if primitive_cycle(word)]
+
+
 def max_vertex_degree(word):
     vertices = set(outgoing(word))
     return max(Counter(outgoing(word))[v] + Counter(incoming(word))[v] for v in vertices)
@@ -102,17 +115,29 @@ def main():
             unique = len(words) == 1
             forced = all(forced_at_vertices(word) for word in words)
             max_degree = min(max_vertex_degree(word) for word in words)
+            all_capacities_at_least_two = all(count >= 2 for count in capacities.values())
+            outgoing_types = defaultdict(set)
+            for word in words:
+                for vertex, edge in zip(outgoing(word), word):
+                    outgoing_types[vertex].add(edge)
+            has_branching = any(len(edges) >= 2 for edges in outgoing_types.values())
+            primitive_doubles = doubled_primitive_spellings(capacities, alphabet)
             key = "unique" if unique else "multiple"
             examples.setdefault(key, {
                 "capacities": encode_capacities(capacities),
                 "spellings": [list(map(list, word)) for word in words],
                 "min_max_vertex_degree": max_degree,
+                "all_capacities_at_least_two": all_capacities_at_least_two,
+                "primitive_doubled_spellings": [list(map(list, word)) for word in primitive_doubles],
             })
             results.append({
                 "capacities": encode_capacities(capacities),
                 "number_modulo_rotation": len(words),
                 "forced_at_every_vertex_for_every_spelling": forced,
                 "all_spellings_have_max_vertex_degree_2": all(max_vertex_degree(word) == 2 for word in words),
+                "all_capacities_at_least_two": all_capacities_at_least_two,
+                "has_branching_vertex": has_branching,
+                "number_of_primitive_doubled_spellings_modulo_rotation": len(primitive_doubles),
             })
 
     data = {
@@ -127,6 +152,13 @@ def main():
         ),
         "nonunique_forced_records": sum(
             row["forced_at_every_vertex_for_every_spelling"] and row["number_modulo_rotation"] > 1
+            for row in results
+        ),
+        "all_capacities_at_least_two_records": sum(row["all_capacities_at_least_two"] for row in results),
+        "branching_dichotomy_mismatches_in_all_capacities_at_least_two_regime": sum(
+            row["all_capacities_at_least_two"]
+            and row["has_branching_vertex"]
+            != (row["number_of_primitive_doubled_spellings_modulo_rotation"] > 0)
             for row in results
         ),
         "examples": examples,

@@ -1,12 +1,16 @@
 {
+  "all_capacities_at_least_two_records": 1,
+  "branching_dichotomy_mismatches_in_all_capacities_at_least_two_regime": 0,
   "examples": {
     "multiple": {
+      "all_capacities_at_least_two": false,
       "capacities": {
         "AA": 1,
         "AB": 2,
         "BA": 1
       },
       "min_max_vertex_degree": 5,
+      "primitive_doubled_spellings": [],
       "spellings": [
         [
           [
@@ -47,10 +51,12 @@
       ]
     },
     "unique": {
+      "all_capacities_at_least_two": false,
       "capacities": {
         "AA": 1
       },
       "min_max_vertex_degree": 2,
+      "primitive_doubled_spellings": [],
       "spellings": [
         [
           [
@@ -68,48 +74,64 @@
   "records": 93,
   "results": [
     {
+      "all_capacities_at_least_two": false,
       "all_spellings_have_max_vertex_degree_2": true,
       "capacities": {
         "AA": 1
       },
       "forced_at_every_vertex_for_every_spelling": true,
-      "number_modulo_rotation": 1
+      "has_branching_vertex": false,
+      "number_modulo_rotation": 1,
+      "number_of_primitive_doubled_spellings_modulo_rotation": 0
     },
     {
+      "all_capacities_at_least_two": false,
       "all_spellings_have_max_vertex_degree_2": false,
       "capacities": {
         "AA": 2
       },
       "forced_at_every_vertex_for_every_spelling": true,
-      "number_modulo_rotation": 1
+      "has_branching_vertex": false,
+      "number_modulo_rotation": 1,
+      "number_of_primitive_doubled_spellings_modulo_rotation": 0
     },
     {
+      "all_capacities_at_least_two": false,
       "all_spellings_have_max_vertex_degree_2": false,
       "capacities": {
         "AA": 1,
         "AB": 1
       },
       "forced_at_every_vertex_for_every_spelling": false,
-      "number_modulo_rotation": 1
+      "has_branching_vertex": true,
+      "number_modulo_rotation": 1,
+      "number_of_primitive_doubled_spellings_modulo_rotation": 0
     },
     {
+      "all_capacities_at_least_two": false,
       "all_spellings_have_max_vertex_degree_2": false,
       "capacities": {
         "AA": 3
       },
       "forced_at_every_vertex_for_every_spelling": true,
-      "number_modulo_rotation": 1
+      "has_branching_vertex": false,
+      "number_modulo_rotation": 1,
+      "number_of_primitive_doubled_spellings_modulo_rotation": 0
     },
     {
+      "all_capacities_at_least_two": false,
       "all_spellings_have_max_vertex_degree_2": false,
       "capacities": {
         "AA": 2,
         "AB": 1
       },
       "forced_at_every_vertex_for_every_spelling": false,
-      "number_modulo_rotation": 1
+      "has_branching_vertex": true,
+      "number_modulo_rotation": 1,
+      "number_of_primitive_doubled_spellings_modulo_rotation": 0
     },
     {
+      "all_capacities_at_least_two": false,
       "all_spellings_have_max_vertex_degree_2": false,
       "capacities": {
         "AA": 1,
@@ -117,26 +139,35 @@
         "BA": 1
       },
       "forced_at_every_vertex_for_every_spelling": false,
-      "number_modulo_rotation": 1
+      "has_branching_vertex": true,
+      "number_modulo_rotation": 1,
+      "number_of_primitive_doubled_spellings_modulo_rotation": 1
     },
     {
+      "all_capacities_at_least_two": false,
       "all_spellings_have_max_vertex_degree_2": false,
       "capacities": {
         "AA": 4
       },
       "forced_at_every_vertex_for_every_spelling": true,
-      "number_modulo_rotation": 1
+      "has_branching_vertex": false,
+      "number_modulo_rotation": 1,
+      "number_of_primitive_doubled_spellings_modulo_rotation": 0
     },
     {
+      "all_capacities_at_least_two": false,
       "all_spellings_have_max_vertex_degree_2": false,
       "capacities": {
         "AA": 3,
         "AB": 1
       },
       "forced_at_every_vertex_for_every_spelling": false,
-      "number_modulo_rotation": 1
+      "has_branching_vertex": true,
+      "number_modulo_rotation": 1,
+      "number_of_primitive_doubled_spellings_modulo_rotation": 0
     },
     {
+      "all_capacities_at_least_two": false,
       "all_spellings_have_max_vertex_degree_2": false,
       "capacities": {
         "AA": 2,
@@ -144,9 +175,12 @@
         "BA": 1
       },
       "forced_at_every_vertex_for_every_spelling": false,
-      "number_modulo_rotation": 1
+      "has_branching_vertex": true,
+      "number_modulo_rotation": 1,
+      "number_of_primitive_doubled_spellings_modulo_rotation": 2
     },
     {
+      "all_capacities_at_least_two": false,
       "all_spellings_have_max_vertex_degree_2": false,
       "capacities": {
         "AA": 1,
@@ -155,9 +189,12 @@
         "BB": 1
       },
       "forced_at_every_vertex_for_every_spelling": false,
-      "number_modulo_rotation": 1
+      "has_branching_vertex": true,
+      "number_modulo_rotation": 1,
+      "number_of_primitive_doubled_spellings_modulo_rotation": 4
     },
     {
+      "all_capacities_at_least_two": false,
       "all_spellings_have_max_vertex_degree_2": false,
       "capacities": {
         "AA": 1,
@@ -165,9 +202,12 @@
         "BA": 2
       },
       "forced_at_every_vertex_for_every_spelling": false,
-      "number_modulo_rotation": 1
+      "has_branching_vertex": true,
+      "number_modulo_rotation": 1,
+      "number_of_primitive_doubled_spellings_modulo_rotation": 0
     },
     {
+      "all_capacities_at_least_two": false,
       "all_spellings_have_max_vertex_degree_2": false,
       "capacities": {
         "AA": 1,
@@ -175,26 +215,35 @@
         "BA": 1
       },
       "forced_at_every_vertex_for_every_spelling": false,
-      "number_modulo_rotation": 2
+      "has_branching_vertex": true,
+      "number_modulo_rotation": 2,
+      "number_of_primitive_doubled_spellings_modulo_rotation": 0
     },
     {
+      "all_capacities_at_least_two": false,
       "all_spellings_have_max_vertex_degree_2": false,
       "capacities": {
         "AA": 5
       },
       "forced_at_every_vertex_for_every_spelling": true,
-      "number_modulo_rotation": 1
+      "has_branching_vertex": false,
+      "number_modulo_rotation": 1,
+      "number_of_primitive_doubled_spellings_modulo_rotation": 0
     },
     {
+      "all_capacities_at_least_two": false,
       "all_spellings_have_max_vertex_degree_2": false,
       "capacities": {
         "AA": 4,
         "AB": 1
       },
       "forced_at_every_vertex_for_every_spelling": false,
-      "number_modulo_rotation": 1
+      "has_branching_vertex": true,
+      "number_modulo_rotation": 1,
+      "number_of_primitive_doubled_spellings_modulo_rotation": 0
     },
     {
+      "all_capacities_at_least_two": false,
       "all_spellings_have_max_vertex_degree_2": false,
       "capacities": {
         "AA": 3,
@@ -202,9 +251,12 @@
         "BA": 1
       },
       "forced_at_every_vertex_for_every_spelling": false,
-      "number_modulo_rotation": 1
+      "has_branching_vertex": true,
+      "number_modulo_rotation": 1,
+      "number_of_primitive_doubled_spellings_modulo_rotation": 3
     },
     {
+      "all_capacities_at_least_two": false,
       "all_spellings_have_max_vertex_degree_2": false,
       "capacities": {
         "AA": 2,
@@ -213,9 +265,12 @@
         "BB": 1
       },
       "forced_at_every_vertex_for_every_spelling": false,
-      "number_modulo_rotation": 1
+      "has_branching_vertex": true,
+      "number_modulo_rotation": 1,
+      "number_of_primitive_doubled_spellings_modulo_rotation": 7
     },
     {
+      "all_capacities_at_least_two": false,
       "all_spellings_have_max_vertex_degree_2": false,
       "capacities": {
         "AA": 1,
@@ -224,9 +279,12 @@
         "BB": 2
       },
       "forced_at_every_vertex_for_every_spelling": false,
-      "number_modulo_rotation": 1
+      "has_branching_vertex": true,
+      "number_modulo_rotation": 1,
+      "number_of_primitive_doubled_spellings_modulo_rotation": 7
     },
     {
+      "all_capacities_at_least_two": false,
       "all_spellings_have_max_vertex_degree_2": false,
       "capacities": {
         "AA": 2,
@@ -234,9 +292,12 @@
         "BA": 2
       },
       "forced_at_every_vertex_for_every_spelling": false,
-      "number_modulo_rotation": 1
+      "has_branching_vertex": true,
+      "number_modulo_rotation": 1,
+      "number_of_primitive_doubled_spellings_modulo_rotation": 0
     },
     {
+      "all_capacities_at_least_two": false,
       "all_spellings_have_max_vertex_degree_2": false,
       "capacities": {
         "AA": 1,
@@ -245,9 +306,12 @@
         "BB": 1
       },
       "forced_at_every_vertex_for_every_spelling": false,
-      "number_modulo_rotation": 2
+      "has_branching_vertex": true,
+      "number_modulo_rotation": 2,
+      "number_of_primitive_doubled_spellings_modulo_rotation": 0
     },
     {
+      "all_capacities_at_least_two": false,
       "all_spellings_have_max_vertex_degree_2": false,
       "capacities": {
         "AA": 2,
@@ -255,9 +319,12 @@
         "BA": 1
       },
       "forced_at_every_vertex_for_every_spelling": false,
-      "number_modulo_rotation": 3
+      "has_branching_vertex": true,
+      "number_modulo_rotation": 3,
+      "number_of_primitive_doubled_spellings_modulo_rotation": 0
     },
     {
+      "all_capacities_at_least_two": false,
       "all_spellings_have_max_vertex_degree_2": false,
       "capacities": {
         "AA": 1,
@@ -266,9 +333,12 @@
         "BB": 1
       },
       "forced_at_every_vertex_for_every_spelling": false,
-      "number_modulo_rotation": 2
+      "has_branching_vertex": true,
+      "number_modulo_rotation": 2,
+      "number_of_primitive_doubled_spellings_modulo_rotation": 0
     },
     {
+      "all_capacities_at_least_two": false,
       "all_spellings_have_max_vertex_degree_2": false,
       "capacities": {
         "AA": 1,
@@ -276,26 +346,35 @@
         "BA": 2
       },
       "forced_at_every_vertex_for_every_spelling": false,
-      "number_modulo_rotation": 1
+      "has_branching_vertex": true,
+      "number_modulo_rotation": 1,
+      "number_of_primitive_doubled_spellings_modulo_rotation": 2
     },
     {
+      "all_capacities_at_least_two": false,
       "all_spellings_have_max_vertex_degree_2": false,
       "capacities": {
         "AA": 6
       },
       "forced_at_every_vertex_for_every_spelling": true,
-      "number_modulo_rotation": 1
+      "has_branching_vertex": false,
+      "number_modulo_rotation": 1,
+      "number_of_primitive_doubled_spellings_modulo_rotation": 0
     },
     {
+      "all_capacities_at_least_two": false,
       "all_spellings_have_max_vertex_degree_2": false,
       "capacities": {
         "AA": 5,
         "AB": 1
       },
       "forced_at_every_vertex_for_every_spelling": false,
-      "number_modulo_rotation": 1
+      "has_branching_vertex": true,
+      "number_modulo_rotation": 1,
+      "number_of_primitive_doubled_spellings_modulo_rotation": 0
     },
     {
+      "all_capacities_at_least_two": false,
       "all_spellings_have_max_vertex_degree_2": false,
       "capacities": {
         "AA": 4,
@@ -303,9 +382,12 @@
         "BA": 1
       },
       "forced_at_every_vertex_for_every_spelling": false,
-      "number_modulo_rotation": 1
+      "has_branching_vertex": true,
+      "number_modulo_rotation": 1,
+      "number_of_primitive_doubled_spellings_modulo_rotation": 4
     },
     {
+      "all_capacities_at_least_two": false,
       "all_spellings_have_max_vertex_degree_2": false,
       "capacities": {
         "AA": 3,
@@ -314,9 +396,12 @@
         "BB": 1
       },
       "forced_at_every_vertex_for_every_spelling": false,
-      "number_modulo_rotation": 1
+      "has_branching_vertex": true,
+      "number_modulo_rotation": 1,
+      "number_of_primitive_doubled_spellings_modulo_rotation": 10
     },
     {
+      "all_capacities_at_least_two": false,
       "all_spellings_have_max_vertex_degree_2": false,
       "capacities": {
         "AA": 2,
@@ -325,9 +410,12 @@
         "BB": 2
       },
       "forced_at_every_vertex_for_every_spelling": false,
-      "number_modulo_rotation": 1
+      "has_branching_vertex": true,
+      "number_modulo_rotation": 1,
+      "number_of_primitive_doubled_spellings_modulo_rotation": 12
     },
     {
+      "all_capacities_at_least_two": false,
       "all_spellings_have_max_vertex_degree_2": false,
       "capacities": {
         "AA": 1,
@@ -336,9 +424,12 @@
         "BB": 3
       },
       "forced_at_every_vertex_for_every_spelling": false,
-      "number_modulo_rotation": 1
+      "has_branching_vertex": true,
+      "number_modulo_rotation": 1,
+      "number_of_primitive_doubled_spellings_modulo_rotation": 10
     },
     {
+      "all_capacities_at_least_two": false,
       "all_spellings_have_max_vertex_degree_2": false,
       "capacities": {
         "AA": 3,
@@ -346,9 +437,12 @@
         "BA": 2
       },
       "forced_at_every_vertex_for_every_spelling": false,
-      "number_modulo_rotation": 1
+      "has_branching_vertex": true,
+      "number_modulo_rotation": 1,
+      "number_of_primitive_doubled_spellings_modulo_rotation": 0
     },
     {
+      "all_capacities_at_least_two": false,
       "all_spellings_have_max_vertex_degree_2": false,
       "capacities": {
         "AA": 2,
@@ -357,9 +451,12 @@
         "BB": 1
       },
       "forced_at_every_vertex_for_every_spelling": false,
-      "number_modulo_rotation": 2
+      "has_branching_vertex": true,
+      "number_modulo_rotation": 2,
+      "number_of_primitive_doubled_spellings_modulo_rotation": 0
     },
     {
+      "all_capacities_at_least_two": false,
       "all_spellings_have_max_vertex_degree_2": false,
       "capacities": {
         "AA": 1,
@@ -368,9 +465,12 @@
         "BB": 2
       },
       "forced_at_every_vertex_for_every_spelling": false,
-      "number_modulo_rotation": 3
+      "has_branching_vertex": true,
+      "number_modulo_rotation": 3,
+      "number_of_primitive_doubled_spellings_modulo_rotation": 0
     },
     {
+      "all_capacities_at_least_two": false,
       "all_spellings_have_max_vertex_degree_2": false,
       "capacities": {
         "AA": 3,
@@ -378,9 +478,12 @@
         "BA": 1
       },
       "forced_at_every_vertex_for_every_spelling": false,
-      "number_modulo_rotation": 4
+      "has_branching_vertex": true,
+      "number_modulo_rotation": 4,
+      "number_of_primitive_doubled_spellings_modulo_rotation": 0
     },
     {
+      "all_capacities_at_least_two": false,
       "all_spellings_have_max_vertex_degree_2": false,
       "capacities": {
         "AA": 2,
@@ -389,9 +492,12 @@
         "BB": 1
       },
       "forced_at_every_vertex_for_every_spelling": false,
-      "number_modulo_rotation": 3
+      "has_branching_vertex": true,
+      "number_modulo_rotation": 3,
+      "number_of_primitive_doubled_spellings_modulo_rotation": 0
     },
     {
+      "all_capacities_at_least_two": false,
       "all_spellings_have_max_vertex_degree_2": false,
       "capacities": {
         "AA": 1,
@@ -400,9 +506,12 @@
         "BB": 2
       },
       "forced_at_every_vertex_for_every_spelling": false,
-      "number_modulo_rotation": 2
+      "has_branching_vertex": true,
+      "number_modulo_rotation": 2,
+      "number_of_primitive_doubled_spellings_modulo_rotation": 0
     },
     {
+      "all_capacities_at_least_two": false,
       "all_spellings_have_max_vertex_degree_2": false,
       "capacities": {
         "AA": 2,
@@ -410,9 +519,12 @@
         "BA": 2
       },
       "forced_at_every_vertex_for_every_spelling": false,
-      "number_modulo_rotation": 2
+      "has_branching_vertex": true,
+      "number_modulo_rotation": 2,
+      "number_of_primitive_doubled_spellings_modulo_rotation": 8
     },
     {
+      "all_capacities_at_least_two": false,
       "all_spellings_have_max_vertex_degree_2": false,
       "capacities": {
         "AA": 1,
@@ -421,9 +533,12 @@
         "BB": 1
       },
       "forced_at_every_vertex_for_every_spelling": false,
-      "number_modulo_rotation": 2
+      "has_branching_vertex": true,
+      "number_modulo_rotation": 2,
+      "number_of_primitive_doubled_spellings_modulo_rotation": 24
     },
     {
+      "all_capacities_at_least_two": false,
       "all_spellings_have_max_vertex_degree_2": false,
       "capacities": {
         "AA": 1,
@@ -431,9 +546,12 @@
         "BA": 3
       },
       "forced_at_every_vertex_for_every_spelling": false,
-      "number_modulo_rotation": 2
+      "has_branching_vertex": true,
+      "number_modulo_rotation": 2,
+      "number_of_primitive_doubled_spellings_modulo_rotation": 0
     },
     {
+      "all_capacities_at_least_two": false,
       "all_spellings_have_max_vertex_degree_2": false,
       "capacities": {
         "AA": 1,
@@ -441,26 +559,35 @@
         "BA": 2
       },
       "forced_at_every_vertex_for_every_spelling": false,
-      "number_modulo_rotation": 3
+      "has_branching_vertex": true,
+      "number_modulo_rotation": 3,
+      "number_of_primitive_doubled_spellings_modulo_rotation": 0
     },
     {
+      "all_capacities_at_least_two": false,
       "all_spellings_have_max_vertex_degree_2": false,
       "capacities": {
         "AA": 7
       },
       "forced_at_every_vertex_for_every_spelling": true,
-      "number_modulo_rotation": 1
+      "has_branching_vertex": false,
+      "number_modulo_rotation": 1,
+      "number_of_primitive_doubled_spellings_modulo_rotation": 0
     },
     {
+      "all_capacities_at_least_two": false,
       "all_spellings_have_max_vertex_degree_2": false,
       "capacities": {
         "AA": 6,
         "AB": 1
       },
       "forced_at_every_vertex_for_every_spelling": false,
-      "number_modulo_rotation": 1
+      "has_branching_vertex": true,
+      "number_modulo_rotation": 1,
+      "number_of_primitive_doubled_spellings_modulo_rotation": 0
     },
     {
+      "all_capacities_at_least_two": false,
       "all_spellings_have_max_vertex_degree_2": false,
       "capacities": {
         "AA": 5,
@@ -468,9 +595,12 @@
         "BA": 1
       },
       "forced_at_every_vertex_for_every_spelling": false,
-      "number_modulo_rotation": 1
+      "has_branching_vertex": true,
+      "number_modulo_rotation": 1,
+      "number_of_primitive_doubled_spellings_modulo_rotation": 5
     },
     {
+      "all_capacities_at_least_two": false,
       "all_spellings_have_max_vertex_degree_2": false,
       "capacities": {
         "AA": 4,
@@ -479,9 +609,12 @@
         "BB": 1
       },
       "forced_at_every_vertex_for_every_spelling": false,
-      "number_modulo_rotation": 1
+      "has_branching_vertex": true,
+      "number_modulo_rotation": 1,
+      "number_of_primitive_doubled_spellings_modulo_rotation": 13
     },
     {
+      "all_capacities_at_least_two": false,
       "all_spellings_have_max_vertex_degree_2": false,
       "capacities": {
         "AA": 3,
@@ -490,9 +623,12 @@
         "BB": 2
       },
       "forced_at_every_vertex_for_every_spelling": false,
-      "number_modulo_rotation": 1
+      "has_branching_vertex": true,
+      "number_modulo_rotation": 1,
+      "number_of_primitive_doubled_spellings_modulo_rotation": 17
     },
     {
+      "all_capacities_at_least_two": false,
       "all_spellings_have_max_vertex_degree_2": false,
       "capacities": {
         "AA": 2,
@@ -501,9 +637,12 @@
         "BB": 3
       },
       "forced_at_every_vertex_for_every_spelling": false,
-      "number_modulo_rotation": 1
+      "has_branching_vertex": true,
+      "number_modulo_rotation": 1,
+      "number_of_primitive_doubled_spellings_modulo_rotation": 17
     },
     {
+      "all_capacities_at_least_two": false,
       "all_spellings_have_max_vertex_degree_2": false,
       "capacities": {
         "AA": 1,
@@ -512,9 +651,12 @@
         "BB": 4
       },
       "forced_at_every_vertex_for_every_spelling": false,
-      "number_modulo_rotation": 1
+      "has_branching_vertex": true,
+      "number_modulo_rotation": 1,
+      "number_of_primitive_doubled_spellings_modulo_rotation": 13
     },
     {
+      "all_capacities_at_least_two": false,
       "all_spellings_have_max_vertex_degree_2": false,
       "capacities": {
         "AA": 4,
@@ -522,9 +664,12 @@
         "BA": 2
       },
       "forced_at_every_vertex_for_every_spelling": false,
-      "number_modulo_rotation": 1
+      "has_branching_vertex": true,
+      "number_modulo_rotation": 1,
+      "number_of_primitive_doubled_spellings_modulo_rotation": 0
     },
     {
+      "all_capacities_at_least_two": false,
       "all_spellings_have_max_vertex_degree_2": false,
       "capacities": {
         "AA": 3,
@@ -533,9 +678,12 @@
         "BB": 1
       },
       "forced_at_every_vertex_for_every_spelling": false,
-      "number_modulo_rotation": 2
+      "has_branching_vertex": true,
+      "number_modulo_rotation": 2,
+      "number_of_primitive_doubled_spellings_modulo_rotation": 0
     },
     {
+      "all_capacities_at_least_two": false,
       "all_spellings_have_max_vertex_degree_2": false,
       "capacities": {
         "AA": 2,
@@ -544,9 +692,12 @@
         "BB": 2
       },
       "forced_at_every_vertex_for_every_spelling": false,
-      "number_modulo_rotation": 3
+      "has_branching_vertex": true,
+      "number_modulo_rotation": 3,
+      "number_of_primitive_doubled_spellings_modulo_rotation": 0
     },
     {
+      "all_capacities_at_least_two": false,
       "all_spellings_have_max_vertex_degree_2": false,
       "capacities": {
         "AA": 1,
@@ -555,9 +706,12 @@
         "BB": 3
       },
       "forced_at_every_vertex_for_every_spelling": false,
-      "number_modulo_rotation": 4
+      "has_branching_vertex": true,
+      "number_modulo_rotation": 4,
+      "number_of_primitive_doubled_spellings_modulo_rotation": 0
     },
     {
+      "all_capacities_at_least_two": false,
       "all_spellings_have_max_vertex_degree_2": false,
       "capacities": {
         "AA": 4,
@@ -565,9 +719,12 @@
         "BA": 1
       },
       "forced_at_every_vertex_for_every_spelling": false,
-      "number_modulo_rotation": 5
+      "has_branching_vertex": true,
+      "number_modulo_rotation": 5,
+      "number_of_primitive_doubled_spellings_modulo_rotation": 0
     },
     {
+      "all_capacities_at_least_two": false,
       "all_spellings_have_max_vertex_degree_2": false,
       "capacities": {
         "AA": 3,
@@ -576,9 +733,12 @@
         "BB": 1
       },
       "forced_at_every_vertex_for_every_spelling": false,
-      "number_modulo_rotation": 4
+      "has_branching_vertex": true,
+      "number_modulo_rotation": 4,
+      "number_of_primitive_doubled_spellings_modulo_rotation": 0
     },
     {
+      "all_capacities_at_least_two": false,
       "all_spellings_have_max_vertex_degree_2": false,
       "capacities": {
         "AA": 2,
@@ -587,9 +747,12 @@
         "BB": 2
       },
       "forced_at_every_vertex_for_every_spelling": false,
-      "number_modulo_rotation": 3
+      "has_branching_vertex": true,
+      "number_modulo_rotation": 3,
+      "number_of_primitive_doubled_spellings_modulo_rotation": 0
     },
     {
+      "all_capacities_at_least_two": false,
       "all_spellings_have_max_vertex_degree_2": false,
       "capacities": {
         "AA": 1,
@@ -598,9 +761,12 @@
         "BB": 3
       },
       "forced_at_every_vertex_for_every_spelling": false,
-      "number_modulo_rotation": 2
+      "has_branching_vertex": true,
+      "number_modulo_rotation": 2,
+      "number_of_primitive_doubled_spellings_modulo_rotation": 0
     },
     {
+      "all_capacities_at_least_two": false,
       "all_spellings_have_max_vertex_degree_2": false,
       "capacities": {
         "AA": 3,
@@ -608,9 +774,12 @@
         "BA": 2
       },
       "forced_at_every_vertex_for_every_spelling": false,
-      "number_modulo_rotation": 2
+      "has_branching_vertex": true,
+      "number_modulo_rotation": 2,
+      "number_of_primitive_doubled_spellings_modulo_rotation": 20
     },
     {
+      "all_capacities_at_least_two": false,
       "all_spellings_have_max_vertex_degree_2": false,
       "capacities": {
         "AA": 2,
@@ -619,9 +788,12 @@
         "BB": 1
       },
       "forced_at_every_vertex_for_every_spelling": false,
-      "number_modulo_rotation": 3
+      "has_branching_vertex": true,
+      "number_modulo_rotation": 3,
+      "number_of_primitive_doubled_spellings_modulo_rotation": 86
     },
     {
+      "all_capacities_at_least_two": false,
       "all_spellings_have_max_vertex_degree_2": false,
       "capacities": {
         "AA": 1,
@@ -630,9 +802,12 @@
         "BB": 2
       },
       "forced_at_every_vertex_for_every_spelling": false,
-      "number_modulo_rotation": 3
+      "has_branching_vertex": true,
+      "number_modulo_rotation": 3,
+      "number_of_primitive_doubled_spellings_modulo_rotation": 86
     },
     {
+      "all_capacities_at_least_two": false,
       "all_spellings_have_max_vertex_degree_2": false,
       "capacities": {
         "AA": 2,
@@ -640,9 +815,12 @@
         "BA": 3
       },
       "forced_at_every_vertex_for_every_spelling": false,
-      "number_modulo_rotation": 3
+      "has_branching_vertex": true,
+      "number_modulo_rotation": 3,
+      "number_of_primitive_doubled_spellings_modulo_rotation": 0
     },
     {
+      "all_capacities_at_least_two": false,
       "all_spellings_have_max_vertex_degree_2": false,
       "capacities": {
         "AA": 1,
@@ -651,9 +829,12 @@
         "BB": 1
       },
       "forced_at_every_vertex_for_every_spelling": false,
-      "number_modulo_rotation": 6
+      "has_branching_vertex": true,
+      "number_modulo_rotation": 6,
+      "number_of_primitive_doubled_spellings_modulo_rotation": 0
     },
     {
+      "all_capacities_at_least_two": false,
       "all_spellings_have_max_vertex_degree_2": false,
       "capacities": {
         "AA": 2,
@@ -661,9 +842,12 @@
         "BA": 2
       },
       "forced_at_every_vertex_for_every_spelling": false,
-      "number_modulo_rotation": 6
+      "has_branching_vertex": true,
+      "number_modulo_rotation": 6,
+      "number_of_primitive_doubled_spellings_modulo_rotation": 0
     },
     {
+      "all_capacities_at_least_two": false,
       "all_spellings_have_max_vertex_degree_2": false,
       "capacities": {
         "AA": 1,
@@ -672,9 +856,12 @@
         "BB": 1
       },
       "forced_at_every_vertex_for_every_spelling": false,
-      "number_modulo_rotation": 6
+      "has_branching_vertex": true,
+      "number_modulo_rotation": 6,
+      "number_of_primitive_doubled_spellings_modulo_rotation": 0
     },
     {
+      "all_capacities_at_least_two": false,
       "all_spellings_have_max_vertex_degree_2": false,
       "capacities": {
         "AA": 1,
@@ -682,26 +869,35 @@
         "BA": 3
       },
       "forced_at_every_vertex_for_every_spelling": false,
-      "number_modulo_rotation": 1
+      "has_branching_vertex": true,
+      "number_modulo_rotation": 1,
+      "number_of_primitive_doubled_spellings_modulo_rotation": 3
     },
     {
+      "all_capacities_at_least_two": false,
       "all_spellings_have_max_vertex_degree_2": false,
       "capacities": {
         "AA": 8
       },
       "forced_at_every_vertex_for_every_spelling": true,
-      "number_modulo_rotation": 1
+      "has_branching_vertex": false,
+      "number_modulo_rotation": 1,
+      "number_of_primitive_doubled_spellings_modulo_rotation": 0
     },
     {
+      "all_capacities_at_least_two": false,
       "all_spellings_have_max_vertex_degree_2": false,
       "capacities": {
         "AA": 7,
         "AB": 1
       },
       "forced_at_every_vertex_for_every_spelling": false,
-      "number_modulo_rotation": 1
+      "has_branching_vertex": true,
+      "number_modulo_rotation": 1,
+      "number_of_primitive_doubled_spellings_modulo_rotation": 0
     },
     {
+      "all_capacities_at_least_two": false,
       "all_spellings_have_max_vertex_degree_2": false,
       "capacities": {
         "AA": 6,
@@ -709,9 +905,12 @@
         "BA": 1
       },
       "forced_at_every_vertex_for_every_spelling": false,
-      "number_modulo_rotation": 1
+      "has_branching_vertex": true,
+      "number_modulo_rotation": 1,
+      "number_of_primitive_doubled_spellings_modulo_rotation": 6
     },
     {
+      "all_capacities_at_least_two": false,
       "all_spellings_have_max_vertex_degree_2": false,
       "capacities": {
         "AA": 5,
@@ -720,9 +919,12 @@
         "BB": 1
       },
       "forced_at_every_vertex_for_every_spelling": false,
-      "number_modulo_rotation": 1
+      "has_branching_vertex": true,
+      "number_modulo_rotation": 1,
+      "number_of_primitive_doubled_spellings_modulo_rotation": 16
     },
     {
+      "all_capacities_at_least_two": false,
       "all_spellings_have_max_vertex_degree_2": false,
       "capacities": {
         "AA": 4,
@@ -731,9 +933,12 @@
         "BB": 2
       },
       "forced_at_every_vertex_for_every_spelling": false,
-      "number_modulo_rotation": 1
+      "has_branching_vertex": true,
+      "number_modulo_rotation": 1,
+      "number_of_primitive_doubled_spellings_modulo_rotation": 22
     },
     {
+      "all_capacities_at_least_two": false,
       "all_spellings_have_max_vertex_degree_2": false,
       "capacities": {
         "AA": 3,
@@ -742,9 +947,12 @@
         "BB": 3
       },
       "forced_at_every_vertex_for_every_spelling": false,
-      "number_modulo_rotation": 1
+      "has_branching_vertex": true,
+      "number_modulo_rotation": 1,
+      "number_of_primitive_doubled_spellings_modulo_rotation": 24
     },
     {
+      "all_capacities_at_least_two": false,
       "all_spellings_have_max_vertex_degree_2": false,
       "capacities": {
         "AA": 2,
@@ -753,9 +961,12 @@
         "BB": 4
       },
       "forced_at_every_vertex_for_every_spelling": false,
-      "number_modulo_rotation": 1
+      "has_branching_vertex": true,
+      "number_modulo_rotation": 1,
+      "number_of_primitive_doubled_spellings_modulo_rotation": 22
     },
     {
+      "all_capacities_at_least_two": false,
       "all_spellings_have_max_vertex_degree_2": false,
       "capacities": {
         "AA": 1,
@@ -764,9 +975,12 @@
         "BB": 5
       },
       "forced_at_every_vertex_for_every_spelling": false,
-      "number_modulo_rotation": 1
+      "has_branching_vertex": true,
+      "number_modulo_rotation": 1,
+      "number_of_primitive_doubled_spellings_modulo_rotation": 16
     },
     {
+      "all_capacities_at_least_two": false,
       "all_spellings_have_max_vertex_degree_2": false,
       "capacities": {
         "AA": 5,
@@ -774,9 +988,12 @@
         "BA": 2
       },
       "forced_at_every_vertex_for_every_spelling": false,
-      "number_modulo_rotation": 1
+      "has_branching_vertex": true,
+      "number_modulo_rotation": 1,
+      "number_of_primitive_doubled_spellings_modulo_rotation": 0
     },
     {
+      "all_capacities_at_least_two": false,
       "all_spellings_have_max_vertex_degree_2": false,
       "capacities": {
         "AA": 4,
@@ -785,9 +1002,12 @@
         "BB": 1
       },
       "forced_at_every_vertex_for_every_spelling": false,
-      "number_modulo_rotation": 2
+      "has_branching_vertex": true,
+      "number_modulo_rotation": 2,
+      "number_of_primitive_doubled_spellings_modulo_rotation": 0
     },
     {
+      "all_capacities_at_least_two": false,
       "all_spellings_have_max_vertex_degree_2": false,
       "capacities": {
         "AA": 3,
@@ -796,9 +1016,12 @@
         "BB": 2
       },
       "forced_at_every_vertex_for_every_spelling": false,
-      "number_modulo_rotation": 3
+      "has_branching_vertex": true,
+      "number_modulo_rotation": 3,
+      "number_of_primitive_doubled_spellings_modulo_rotation": 0
     },
     {
+      "all_capacities_at_least_two": false,
       "all_spellings_have_max_vertex_degree_2": false,
       "capacities": {
         "AA": 2,
@@ -807,9 +1030,12 @@
         "BB": 3
       },
       "forced_at_every_vertex_for_every_spelling": false,
-      "number_modulo_rotation": 4
+      "has_branching_vertex": true,
+      "number_modulo_rotation": 4,
+      "number_of_primitive_doubled_spellings_modulo_rotation": 0
     },
     {
+      "all_capacities_at_least_two": false,
       "all_spellings_have_max_vertex_degree_2": false,
       "capacities": {
         "AA": 1,
@@ -818,9 +1044,12 @@
         "BB": 4
       },
       "forced_at_every_vertex_for_every_spelling": false,
-      "number_modulo_rotation": 5
+      "has_branching_vertex": true,
+      "number_modulo_rotation": 5,
+      "number_of_primitive_doubled_spellings_modulo_rotation": 0
     },
     {
+      "all_capacities_at_least_two": false,
       "all_spellings_have_max_vertex_degree_2": false,
       "capacities": {
         "AA": 5,
@@ -828,9 +1057,12 @@
         "BA": 1
       },
       "forced_at_every_vertex_for_every_spelling": false,
-      "number_modulo_rotation": 6
+      "has_branching_vertex": true,
+      "number_modulo_rotation": 6,
+      "number_of_primitive_doubled_spellings_modulo_rotation": 0
     },
     {
+      "all_capacities_at_least_two": false,
       "all_spellings_have_max_vertex_degree_2": false,
       "capacities": {
         "AA": 4,
@@ -839,9 +1071,12 @@
         "BB": 1
       },
       "forced_at_every_vertex_for_every_spelling": false,
-      "number_modulo_rotation": 5
+      "has_branching_vertex": true,
+      "number_modulo_rotation": 5,
+      "number_of_primitive_doubled_spellings_modulo_rotation": 0
     },
     {
+      "all_capacities_at_least_two": false,
       "all_spellings_have_max_vertex_degree_2": false,
       "capacities": {
         "AA": 3,
@@ -850,9 +1085,12 @@
         "BB": 2
       },
       "forced_at_every_vertex_for_every_spelling": false,
-      "number_modulo_rotation": 4
+      "has_branching_vertex": true,
+      "number_modulo_rotation": 4,
+      "number_of_primitive_doubled_spellings_modulo_rotation": 0
     },
     {
+      "all_capacities_at_least_two": false,
       "all_spellings_have_max_vertex_degree_2": false,
       "capacities": {
         "AA": 2,
@@ -861,9 +1099,12 @@
         "BB": 3
       },
       "forced_at_every_vertex_for_every_spelling": false,
-      "number_modulo_rotation": 3
+      "has_branching_vertex": true,
+      "number_modulo_rotation": 3,
+      "number_of_primitive_doubled_spellings_modulo_rotation": 0
     },
     {
+      "all_capacities_at_least_two": false,
       "all_spellings_have_max_vertex_degree_2": false,
       "capacities": {
         "AA": 1,
@@ -872,9 +1113,12 @@
         "BB": 4
       },
       "forced_at_every_vertex_for_every_spelling": false,
-      "number_modulo_rotation": 2
+      "has_branching_vertex": true,
+      "number_modulo_rotation": 2,
+      "number_of_primitive_doubled_spellings_modulo_rotation": 0
     },
     {
+      "all_capacities_at_least_two": false,
       "all_spellings_have_max_vertex_degree_2": false,
       "capacities": {
         "AA": 4,
@@ -882,9 +1126,12 @@
         "BA": 2
       },
       "forced_at_every_vertex_for_every_spelling": false,
-      "number_modulo_rotation": 3
+      "has_branching_vertex": true,
+      "number_modulo_rotation": 3,
+      "number_of_primitive_doubled_spellings_modulo_rotation": 40
     },
     {
+      "all_capacities_at_least_two": false,
       "all_spellings_have_max_vertex_degree_2": false,
       "capacities": {
         "AA": 3,
@@ -893,9 +1140,12 @@
         "BB": 1
       },
       "forced_at_every_vertex_for_every_spelling": false,
-      "number_modulo_rotation": 4
+      "has_branching_vertex": true,
+      "number_modulo_rotation": 4,
+      "number_of_primitive_doubled_spellings_modulo_rotation": 208
     },
     {
+      "all_capacities_at_least_two": true,
       "all_spellings_have_max_vertex_degree_2": false,
       "capacities": {
         "AA": 2,
@@ -904,9 +1154,12 @@
         "BB": 2
       },
       "forced_at_every_vertex_for_every_spelling": false,
-      "number_modulo_rotation": 5
+      "has_branching_vertex": true,
+      "number_modulo_rotation": 5,
+      "number_of_primitive_doubled_spellings_modulo_rotation": 304
     },
     {
+      "all_capacities_at_least_two": false,
       "all_spellings_have_max_vertex_degree_2": false,
       "capacities": {
         "AA": 1,
@@ -915,9 +1168,12 @@
         "BB": 3
       },
       "forced_at_every_vertex_for_every_spelling": false,
-      "number_modulo_rotation": 4
+      "has_branching_vertex": true,
+      "number_modulo_rotation": 4,
+      "number_of_primitive_doubled_spellings_modulo_rotation": 208
     },
     {
+      "all_capacities_at_least_two": false,
       "all_spellings_have_max_vertex_degree_2": false,
       "capacities": {
         "AA": 3,
@@ -925,9 +1181,12 @@
         "BA": 3
       },
       "forced_at_every_vertex_for_every_spelling": false,
-      "number_modulo_rotation": 4
+      "has_branching_vertex": true,
+      "number_modulo_rotation": 4,
+      "number_of_primitive_doubled_spellings_modulo_rotation": 0
     },
     {
+      "all_capacities_at_least_two": false,
       "all_spellings_have_max_vertex_degree_2": false,
       "capacities": {
         "AA": 2,
@@ -936,9 +1195,12 @@
         "BB": 1
       },
       "forced_at_every_vertex_for_every_spelling": false,
-      "number_modulo_rotation": 9
+      "has_branching_vertex": true,
+      "number_modulo_rotation": 9,
+      "number_of_primitive_doubled_spellings_modulo_rotation": 0
     },
     {
+      "all_capacities_at_least_two": false,
       "all_spellings_have_max_vertex_degree_2": false,
       "capacities": {
         "AA": 1,
@@ -947,9 +1209,12 @@
         "BB": 2
       },
       "forced_at_every_vertex_for_every_spelling": false,
-      "number_modulo_rotation": 12
+      "has_branching_vertex": true,
+      "number_modulo_rotation": 12,
+      "number_of_primitive_doubled_spellings_modulo_rotation": 0
     },
     {
+      "all_capacities_at_least_two": false,
       "all_spellings_have_max_vertex_degree_2": false,
       "capacities": {
         "AA": 3,
@@ -957,9 +1222,12 @@
         "BA": 2
       },
       "forced_at_every_vertex_for_every_spelling": false,
-      "number_modulo_rotation": 10
+      "has_branching_vertex": true,
+      "number_modulo_rotation": 10,
+      "number_of_primitive_doubled_spellings_modulo_rotation": 0
     },
     {
+      "all_capacities_at_least_two": false,
       "all_spellings_have_max_vertex_degree_2": false,
       "capacities": {
         "AA": 2,
@@ -968,9 +1236,12 @@
         "BB": 1
       },
       "forced_at_every_vertex_for_every_spelling": false,
-      "number_modulo_rotation": 12
+      "has_branching_vertex": true,
+      "number_modulo_rotation": 12,
+      "number_of_primitive_doubled_spellings_modulo_rotation": 0
     },
     {
+      "all_capacities_at_least_two": false,
       "all_spellings_have_max_vertex_degree_2": false,
       "capacities": {
         "AA": 1,
@@ -979,9 +1250,12 @@
         "BB": 2
       },
       "forced_at_every_vertex_for_every_spelling": false,
-      "number_modulo_rotation": 9
+      "has_branching_vertex": true,
+      "number_modulo_rotation": 9,
+      "number_of_primitive_doubled_spellings_modulo_rotation": 0
     },
     {
+      "all_capacities_at_least_two": false,
       "all_spellings_have_max_vertex_degree_2": false,
       "capacities": {
         "AA": 2,
@@ -989,9 +1263,12 @@
         "BA": 3
       },
       "forced_at_every_vertex_for_every_spelling": false,
-      "number_modulo_rotation": 2
+      "has_branching_vertex": true,
+      "number_modulo_rotation": 2,
+      "number_of_primitive_doubled_spellings_modulo_rotation": 20
     },
     {
+      "all_capacities_at_least_two": false,
       "all_spellings_have_max_vertex_degree_2": false,
       "capacities": {
         "AA": 1,
@@ -1000,9 +1277,12 @@
         "BB": 1
       },
       "forced_at_every_vertex_for_every_spelling": false,
-      "number_modulo_rotation": 3
+      "has_branching_vertex": true,
+      "number_modulo_rotation": 3,
+      "number_of_primitive_doubled_spellings_modulo_rotation": 72
     },
     {
+      "all_capacities_at_least_two": false,
       "all_spellings_have_max_vertex_degree_2": false,
       "capacities": {
         "AA": 1,
@@ -1010,9 +1290,12 @@
         "BA": 4
       },
       "forced_at_every_vertex_for_every_spelling": false,
-      "number_modulo_rotation": 3
+      "has_branching_vertex": true,
+      "number_modulo_rotation": 3,
+      "number_of_primitive_doubled_spellings_modulo_rotation": 0
     },
     {
+      "all_capacities_at_least_two": false,
       "all_spellings_have_max_vertex_degree_2": false,
       "capacities": {
         "AA": 1,
@@ -1020,7 +1303,9 @@
         "BA": 3
       },
       "forced_at_every_vertex_for_every_spelling": false,
-      "number_modulo_rotation": 4
+      "has_branching_vertex": true,
+      "number_modulo_rotation": 4,
+      "number_of_primitive_doubled_spellings_modulo_rotation": 0
     }
   ],
   "scope": "edge alphabet AA, AB, BA, BB; exact enumeration; at least one AA copy anchors the DFS",
