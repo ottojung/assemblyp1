@@ -26,7 +26,7 @@ Preserve multiplicity when the probability model uses multiplicity. A set of dis
 
 ## Development loop
 
-On `marceline-dev`, first follow [`lean-on-marceline-dev.md`](lean-on-marceline-dev.md) so the host Elan installation is on `PATH` and worktrees do not grow duplicate toolchains.
+On `marceline-dev`, first follow [`lean-on-marceline-dev.md`](lean-on-marceline-dev.md). It distinguishes host smoke tests from the exact repository-pinned Lean toolchain and avoids per-worktree toolchain duplication.
 
 1. Add the smallest definition or theorem interface justified by the source.
 2. Encode one or more hand-checkable examples.
