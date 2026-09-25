@@ -145,3 +145,12 @@ The repository's human-facing publication artifacts, including the white-paper P
 
 This intent specifies the delivery invariant, not a workflow frequency or trigger policy. CI configuration may choose appropriate triggers and may evolve as the repository changes, provided the canonical PDFs remain reproducibly buildable and obtainable from GitHub CI.
 
+---
+
+$id-8241037695124406
+title: Prefer Marceline Dev for AssemblyP1 execution
+date: 2026/09/25
+source: @ottojung
+kind: preference
+
+AssemblyP1 should prefer `lubko://marceline-dev` over `lubko://phoebe-dev` as its normal execution target for repository work, delegated work, and Lean evaluation. Existing Phoebe state may still be inspected or recovered during the migration, and a specifically justified fallback is allowed when Marceline lacks a required capability, but the project should surface and provision missing Marceline capabilities rather than silently making Phoebe primary again.
