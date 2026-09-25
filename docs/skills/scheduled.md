@@ -13,7 +13,7 @@ Every scheduled AssemblyP1 run operates through Lubko for worker-pool discovery 
 
 Every scheduled run should take a quick live snapshot of the AssemblyP1 Lubko pool near startup. This is infrastructure support for the research run, **not a blocking gate and not the main task**.
 
-1. Through Lubko's Supabase transport, run `lubko-agent list --running --json` on `phoebe-dev` and poll that root job to terminal when the transport allows it.
+1. Through Lubko's Supabase transport, run `lubko-agent list --running --json` on `marceline-dev` and poll that root job to terminal when the transport allows it. If `lubko-agent` is not available on the preferred target, treat pool telemetry as unavailable rather than as an empty pool; do not launch uncertain delegated agents and do not silently redirect new work to Phoebe. Continue safe direct research/repository work and preserve the capability gap for recovery.
 2. Identify running AssemblyP1 agents. New agents are identified by a title beginning `AssemblyP1:`. For legacy sessions created before this rule, also count a running agent whose cwd clearly belongs to AssemblyP1 (for example `/workspace/assemblyp1-...`).
 3. Reconcile that snapshot with any agent handles mentioned in durable status. Live Lubko state is authoritative for whether an agent is actually running; durable comments provide recovery context.
 4. Compute an approximate number of clearly free slots under the repository-wide cap of five.
