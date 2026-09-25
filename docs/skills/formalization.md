@@ -26,7 +26,7 @@ Preserve multiplicity when the probability model uses multiplicity. A set of dis
 
 ## Development loop
 
-On `phoebe-dev`, first follow [`lean-on-phoebe-dev.md`](lean-on-phoebe-dev.md) so the host Elan installation is on `PATH` and worktrees do not grow duplicate toolchains.
+On `marceline-dev`, first follow [`lean-on-marceline-dev.md`](lean-on-marceline-dev.md) so the host Elan installation is on `PATH` and worktrees do not grow duplicate toolchains.
 
 1. Add the smallest definition or theorem interface justified by the source.
 2. Encode one or more hand-checkable examples.
