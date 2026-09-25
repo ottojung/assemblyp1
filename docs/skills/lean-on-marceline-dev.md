@@ -17,20 +17,16 @@ AssemblyP1 currently pins `leanprover/lean4:v4.34.0` in `lean-toolchain`. Theref
 
 ## Basic host smoke test
 
-A small standalone Lean proof can be used to check whether the host can execute Lean at all:
+A small standalone Lean proof can be used to check whether the host can execute Lean at all. On the observed Marceline image, `guix shell` cannot create its normal per-user profile under `/var/guix/profiles/per-user/lubko`, so use the immutable store output directly:
 
 ```sh
+lean_store="$(guix build lean4)"
 printf 'example (n : Nat) : n = n := by rfl\n' > /workspace/Smoke.lean
-guix shell lean4 -- lean /workspace/Smoke.lean
+"$lean_store/bin/lean" --version
+"$lean_store/bin/lean" /workspace/Smoke.lean
 ```
 
-Also record the smoke-test version:
-
-```sh
-guix shell lean4 -- lean --version
-```
-
-These commands test Marceline and Guix, not the repository.
+The first `guix build lean4` may download the Guix Lean package; later runs reuse the store item. These commands test Marceline and Guix, not the repository.
 
 ## Project-valid Lean work
 
@@ -60,7 +56,7 @@ Use normal commands such as `lubko-agent list --running --json`. The wrapper del
 ## Troubleshooting
 
 - `lean: not found` / `lake: not found`: expected on the baseline image; do not mistake this for a Lubko transport failure.
-- Need only a host smoke test: use `guix shell lean4 -- ...`.
+- Need only a host smoke test: use `lean_store="$(guix build lean4)"` and execute `$lean_store/bin/lean` directly.
 - Need repository verification: provision the exact `lean-toolchain` version first.
 - Empty `/workspace`: clone/recover the repository or worktree before project commands.
 - `lubko-agent: not found`: verify `$HOME/.local/bin` is on `PATH` and that `/workspace/our-lubko-with-agent` exists.
