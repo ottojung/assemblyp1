@@ -65,9 +65,25 @@ lubko-agent list --running --json
 
 ## Lean
 
-Marceline has Guix. AssemblyP1 does not require the host's globally available
-Lean version to match an old Phoebe installation for simple evaluator work.
-For a tiny standalone Lean check, use Guix directly:
+Marceline has Lean 4 available in the Guix store. AssemblyP1 does not require
+the host's Lean version to match an old Phoebe installation for simple evaluator
+work.
+
+The host exposes a convenience wrapper at `$HOME/.local/bin/lean` which selects
+the first working Lean 4 binary already present in `/gnu/store`:
+
+```sh
+#!/bin/sh
+for x in /gnu/store/*lean4-*/bin/lean; do
+  if [ -x "$x" ] && "$x" --version >/dev/null 2>&1; then
+    exec "$x" "$@"
+  fi
+done
+echo "no working Lean 4 binary found in /gnu/store" >&2
+exit 127
+```
+
+A tiny standalone kernel check is therefore:
 
 ```sh
 cat > /tmp/AssemblyP1Smoke.lean <<'EOF'
@@ -75,8 +91,13 @@ theorem add_zero_smoke (n : Nat) : n + 0 = n := by
   simp
 EOF
 
-guix shell lean4 -- lean /tmp/AssemblyP1Smoke.lean
+lean /tmp/AssemblyP1Smoke.lean
 ```
+
+Do not depend on `guix shell lean4` inside the current worker container: at the
+time this guide was written it attempted to create
+`/var/guix/profiles/per-user/lubko` and failed for lack of permission. The
+already-present store binary is sufficient for bounded Lean evaluator work.
 
 For repository verification, the repository itself remains authoritative about
 its Lean/Lake dependencies. Prefer the cheapest setup that can run the exact
@@ -96,7 +117,9 @@ Currently verified on Marceline:
 - Git and Guix are available;
 - `uv` is available;
 - the wrapper-backed `lubko-agent` CLI runs successfully from the pinned
-  pre-removal Lubko checkout.
+  pre-removal Lubko checkout;
+- the `$HOME/.local/bin/lean` wrapper successfully kernel-checks standalone Lean
+  proofs using a working Lean 4 binary already present in the Guix store.
 
 If any of these assumptions changes, repair the host setup rather than silently
 falling back to Phoebe as the default execution target.
