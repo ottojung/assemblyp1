@@ -145,3 +145,13 @@ The repository's human-facing publication artifacts, including the white-paper P
 
 This intent specifies the delivery invariant, not a workflow frequency or trigger policy. CI configuration may choose appropriate triggers and may evolve as the repository changes, provided the canonical PDFs remain reproducibly buildable and obtainable from GitHub CI.
 
+
+---
+
+$id-2748391057614286
+title: Prefer Marceline Dev for AssemblyP1 execution
+date: 2026/09/25
+source: @ottojung
+kind: preference
+
+AssemblyP1 should prefer `lubko://marceline-dev` rather than `lubko://phoebe-dev` for delegated research, orchestration, and Lean execution. The managed-agent CLI should come from a pinned older Lubko checkout that still contains `lubko-agent`, exposed through a small wrapper such as `$HOME/.local/bin/lubko-agent` that runs `uv run --project /workspace/our-lubko-with-agent lubko-agent "$@"`. Matching Phoebe's exact Lean version is not required; use a suitable Lean available on Marceline for evaluator and verification work.
