@@ -10,7 +10,7 @@ As of 2026-09-25, a fresh Marceline Dev workspace has:
 - GNU Guix available;
 - an initially empty `/workspace`;
 - no `lean`, `lake`, or `elan` executable on `PATH` by default;
-- no `lubko-agent` executable on `PATH` by default;
+- a project-backed `lubko-agent` wrapper at `$HOME/.local/bin/lubko-agent`, dispatching through `uv` to `/workspace/our-lubko-with-agent`;
 - Guix package `lean4` at version 4.28.0.
 
 AssemblyP1 currently pins `leanprover/lean4:v4.34.0` in `lean-toolchain`. Therefore the Guix `lean4` package is useful for **host smoke tests only**. A successful proof under Guix Lean 4.28.0 is not evidence that the AssemblyP1 project builds under its required toolchain.
@@ -46,9 +46,16 @@ Before claiming any AssemblyP1 theorem or build is verified on Marceline:
 
 Until the exact toolchain is provisioned, report project-level Lean verification as **blocked by toolchain provisioning**, not as passed using Guix Lean 4.28.0.
 
-## Delegated-agent caveat
+## Delegated agents
 
-The Lubko command worker on Marceline can execute normal command jobs, but the observed baseline does not include the `lubko-agent` management CLI. If it remains unavailable, AssemblyP1 orchestrators must treat delegated-pool telemetry and launches as unavailable on Marceline; they must not interpret that as zero live agents and must not silently redirect new work to Phoebe. Direct bounded command work on Marceline remains available while the agent CLI is provisioned.
+The Marceline environment exposes `$HOME/.local/bin` on `PATH`. Its `lubko-agent` wrapper is:
+
+```sh
+#!/bin/sh
+exec /usr/local/bin/uv run --project /workspace/our-lubko-with-agent lubko-agent "$@"
+```
+
+Use normal commands such as `lubko-agent list --running --json`. The wrapper deliberately executes the dedicated checkout rather than a stale globally installed copy.
 
 ## Troubleshooting
 
@@ -56,4 +63,4 @@ The Lubko command worker on Marceline can execute normal command jobs, but the o
 - Need only a host smoke test: use `guix shell lean4 -- ...`.
 - Need repository verification: provision the exact `lean-toolchain` version first.
 - Empty `/workspace`: clone/recover the repository or worktree before project commands.
-- `lubko-agent: not found`: agent-pool orchestration is not yet provisioned on this target; continue only work that does not require uncertain delegated capacity.
+- `lubko-agent: not found`: verify `$HOME/.local/bin` is on `PATH` and that `/workspace/our-lubko-with-agent` exists.
