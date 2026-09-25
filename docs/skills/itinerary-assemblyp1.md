@@ -21,7 +21,7 @@ Before acting, study and obey:
 
 Consult `docs/formalization-plan.md` when the current work concerns formalization. It defines the project's formalization cadence: pin down the initial statement, explore primarily outside Lean, then formalize a mature final proof/counterexample. It is **not** the research strategy or a fallback work queue.
 
-Lubko's canonical skill is the operational authority for reaching `lubko://phoebe-dev`: follow its Supabase job transport, `lubko-agent` lifecycle, polling/liveness, and execution-safety rules rather than improvising a direct shell connection. `phoebe-dev` has Guix available, and therefore can support Lean execution when a bounded evaluator or later formal-verification task calls for it. AssemblyP1-specific rules in this itinerary still govern research selection, the repository-wide five-agent cap, and direct integration into `main`.
+AssemblyP1's preferred execution target is `lubko://marceline-dev`. Lubko's canonical skill is the operational authority for reaching it: follow the Supabase job transport, `lubko-agent` lifecycle when available, polling/liveness, and execution-safety rules rather than improvising a direct shell connection. `marceline-dev` has Git and Guix available. Before Lean work, follow `docs/skills/lean-on-marceline-dev.md` and verify that the exact repository-pinned toolchain is available; do not treat an arbitrary Guix Lean version as project verification. Do not silently make `marceline-dev` primary again for new work; use it only for explicit recovery/diagnosis of pre-migration state or a separately justified fallback. AssemblyP1-specific rules in this itinerary still govern research selection, the repository-wide five-agent cap, and direct integration into `main`.
 
 `docs/skills/scheduled.md` owns reusable scheduled-orchestrator mechanics. `docs/research-orchestration.md` owns the generic research graph, delegation, epistemic-status, and reconciliation protocol. This itinerary contains only AssemblyP1-specific work selection, integration, and completion policy; do not restate those shared mechanics here.
 
@@ -57,7 +57,7 @@ When choosing among plausible frontier questions, use research judgment. Useful 
 
 The orchestrator may decompose a broad frontier question into multiple independent or competing packets when that is useful. Prefer narrow leaf packets with explicit ownership over claiming a broad umbrella issue exclusively; concurrent scheduled orchestrators should be able to choose other unowned frontier leaves. It may also abandon, mutate, combine, or redirect a methodology when evaluator feedback suggests a better route. Repository documents must not be treated as authority for a proof method merely because they were written earlier.
 
-For broad exploration, aim for **near-saturation of the shared Lubko pool** when useful work exists. The repository-wide maximum is **5 actively working delegated agents across all concurrent orchestrators**. Use `lubko-agent list --running --json` on `phoebe-dev` for a live snapshot when practical; do not infer the count only from GitHub issue comments. Launch into clearly free capacity in small batches, refresh periodically or before another wave, and keep the research run moving if pool telemetry becomes temporarily unavailable.
+For broad exploration, aim for **near-saturation of the shared Lubko pool** when useful work exists. The repository-wide maximum is **5 actively working delegated agents across all concurrent orchestrators**. Use `lubko-agent list --running --json` on `marceline-dev` for a live snapshot when practical; do not infer the count only from GitHub issue comments. Launch into clearly free capacity in small batches, refresh periodically or before another wave, and keep the research run moving if pool telemetry becomes temporarily unavailable.
 
 Do not manufacture filler work or duplicate active packets to hit five. Instead, if the selected issue/PR cannot use all available slots independently, generate materially different packets from the wider research frontier and run those alongside it. When an agent finishes, fails, stalls, or is stopped, reconcile its output and refill the slot promptly when another useful packet exists.
 
@@ -81,9 +81,9 @@ AssemblyP1 integrates directly into `main`. **Do not create or use `release/*` b
 
 A scheduled invocation may prepare several independent PRs over time. It should not create an artificial omnibus branch that hides which results depend on which assumptions.
 
-## Lean on Phoebe Dev
+## Lean on Marceline Dev
 
-Before running Lean on `phoebe-dev`, follow [`lean-on-phoebe-dev.md`](lean-on-phoebe-dev.md). In particular, use the existing `/home/lubko/.elan/bin` installation instead of creating a per-worktree toolchain.
+Before running Lean on `marceline-dev`, follow [`lean-on-marceline-dev.md`](lean-on-marceline-dev.md). In particular, use the existing `/home/lubko/.elan/bin` installation instead of creating a per-worktree toolchain.
 
 ## Verification and review
 
