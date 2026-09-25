@@ -21,7 +21,7 @@ Before acting, study and obey:
 
 Consult `docs/formalization-plan.md` when the current work concerns formalization. It defines the project's formalization cadence: pin down the initial statement, explore primarily outside Lean, then formalize a mature final proof/counterexample. It is **not** the research strategy or a fallback work queue.
 
-AssemblyP1's preferred execution target is `lubko://marceline-dev`. Lubko's canonical skill is the operational authority for reaching it: follow the Supabase job transport, `lubko-agent` lifecycle when available, polling/liveness, and execution-safety rules rather than improvising a direct shell connection. `marceline-dev` has Git and Guix available. Before Lean work, follow `docs/skills/lean-on-marceline-dev.md` and verify that the exact repository-pinned toolchain is available; do not treat an arbitrary Guix Lean version as project verification. Do not silently make `marceline-dev` primary again for new work; use it only for explicit recovery/diagnosis of pre-migration state or a separately justified fallback. AssemblyP1-specific rules in this itinerary still govern research selection, the repository-wide five-agent cap, and direct integration into `main`.
+AssemblyP1's preferred execution target is `lubko://marceline-dev`. Lubko's canonical skill is the operational authority for reaching it: follow the Supabase job transport, `lubko-agent` lifecycle when available, polling/liveness, and execution-safety rules rather than improvising a direct shell connection. `marceline-dev` has Git and Guix available. Before Lean work, follow `docs/skills/lean-on-marceline-dev.md` and verify that the exact repository-pinned toolchain is available; do not treat an arbitrary Guix Lean version as project verification. Do not silently make `phoebe-dev` primary again for new work; use it only for explicit recovery/diagnosis of pre-migration state or a separately justified fallback. AssemblyP1-specific rules in this itinerary still govern research selection, the repository-wide five-agent cap, and direct integration into `main`.
 
 `docs/skills/scheduled.md` owns reusable scheduled-orchestrator mechanics. `docs/research-orchestration.md` owns the generic research graph, delegation, epistemic-status, and reconciliation protocol. This itinerary contains only AssemblyP1-specific work selection, integration, and completion policy; do not restate those shared mechanics here.
 
@@ -83,7 +83,7 @@ A scheduled invocation may prepare several independent PRs over time. It should 
 
 ## Lean on Marceline Dev
 
-Before running Lean on `marceline-dev`, follow [`lean-on-marceline-dev.md`](lean-on-marceline-dev.md). In particular, use the existing `/home/lubko/.elan/bin` installation instead of creating a per-worktree toolchain.
+Before running Lean on `marceline-dev`, follow [`lean-on-marceline-dev.md`](lean-on-marceline-dev.md). In particular, verify the exact repository-pinned Lean version; Guix Lean may be used for a host smoke test, but project verification waits for the exact shared toolchain to be provisioned.
 
 ## Verification and review
 
