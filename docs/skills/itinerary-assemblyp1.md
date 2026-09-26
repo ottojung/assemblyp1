@@ -13,17 +13,17 @@ Before acting, study and obey:
 - `AGENTS.md`;
 - `docs/open-problem.md`;
 - `docs/research-orchestration.md`;
-- `docs/skills/scheduled.md`;
+- Antonina's canonical board-orchestrator skill: <https://github.com/ottojung/antonina/blob/main/docs/skills/orchestrator.md>;
 - `docs/skills/research-orchestrator.md` when the selected work is broad or benefits from multiple workers;
 - `docs/skills/exploration.md` whenever the best next direction is uncertain or several approaches deserve comparison;
 - the narrower skill under `docs/skills/` appropriate to the selected packet;
-- **on every scheduled run, read and obey Lubko's canonical execution skill:** <https://github.com/ottojung/lubko/blob/main/docs/SKILL.md>. The lightweight pool check in `docs/skills/scheduled.md` uses Lubko, but it must not dominate or block the research run.
+- **on every scheduled run, read and obey Lubko's canonical execution skill:** <https://github.com/ottojung/lubko/blob/main/docs/SKILL.md>. Lubko remains the execution transport; execution-pool bookkeeping must not replace or dominate Antonina board coordination or the research run.
 
 Consult `docs/formalization-plan.md` when the current work concerns formalization. It defines the project's formalization cadence: pin down the initial statement, explore primarily outside Lean, then formalize a mature final proof/counterexample. It is **not** the research strategy or a fallback work queue.
 
 AssemblyP1's preferred execution target is `lubko://marceline-dev`. Lubko's canonical skill is the operational authority for reaching it: follow the Supabase job transport, `lubko-agent` lifecycle when available, polling/liveness, and execution-safety rules rather than improvising a direct shell connection. `marceline-dev` has Git and Guix available. Before Lean work, follow `docs/skills/lean-on-marceline-dev.md` and verify that the exact repository-pinned toolchain is available; do not treat an arbitrary Guix Lean version as project verification. Do not silently make `phoebe-dev` primary again for new work; use it only for explicit recovery/diagnosis of pre-migration state or a separately justified fallback. AssemblyP1-specific rules in this itinerary still govern research selection, the repository-wide five-agent cap, and direct integration into `main`.
 
-`docs/skills/scheduled.md` owns reusable scheduled-orchestrator mechanics. `docs/research-orchestration.md` owns the generic research graph, delegation, epistemic-status, and reconciliation protocol. This itinerary contains only AssemblyP1-specific work selection, integration, and completion policy; do not restate those shared mechanics here.
+Antonina's canonical orchestrator skill owns queue selection, claims, recovery, append-only progress, blockers, handoff, and board completion. `docs/research-orchestration.md` owns the generic research graph, delegation, epistemic-status, and reconciliation protocol. This itinerary contains only AssemblyP1-specific research, integration, and completion policy; do not restate those shared mechanics here.
 
 **The scheduled ChatGPT task must never be paused, stopped, or disabled. There will always be useful work to do until the published open problem is faithfully settled, whether by advancing the current frontier, recovering or reconciling prior work, testing assumptions, improving the formal model, investigating literature, or discovering a better research direction.**
 
@@ -33,19 +33,19 @@ The ultimate goal is to settle the published open problem faithfully. The orches
 
 ## Work selection
 
-Near startup, perform the lightweight Lubko pool snapshot from `docs/skills/scheduled.md` and opportunistically launch a useful batch when capacity is clearly available. Then proceed with the research run; pool bookkeeping is not a gate on issue work, PR repair, proof search, CI diagnosis, or local exploration.
+After the Antonina board has selected the primary issue, inspect existing delegated agents and durable research artifacts before launching replacements. Use available execution capacity opportunistically, but pool bookkeeping is not a gate on issue work, PR repair, proof search, CI diagnosis, or local exploration.
 
-Apply `docs/skills/scheduled.md` and `docs/research-orchestration.md`, with these AssemblyP1-specific choices.
+Apply Antonina's canonical orchestrator skill and `docs/research-orchestration.md`, with these AssemblyP1-specific choices.
 
 Prefer existing durable work before inventing duplicate work for the orchestrator's own coordination/recovery attention:
 
 1. **Recover abandoned issue-tracked work** that has useful partial results, an existing branch/PR, unfinished formalization, or unreconciled worker output.
 2. **Advance an existing open AssemblyP1 PR** when doing so can move the research toward a trustworthy integrated result.
-3. **Select an actionable open issue on the current research frontier** whose dependencies are satisfied and which is not actively owned under the scheduled-work protocol.
+3. **Select the highest-priority actionable AssemblyP1 board issue on the current research frontier** when no recoverable ongoing work should be continued.
 
-This ordering does **not** mean all delegated agents must work on the first open issue or PR. Open issues are durable research nodes, not the boundary of allowed exploration. Give an existing node only the worker capacity it can use independently and productively; fill remaining free agent slots from the broader live frontier.
+This ordering does **not** mean all delegated agents must work on the selected board issue or one PR. Antonina board issues are durable research nodes, not the boundary of allowed exploration. Give an existing node only the worker capacity it can use independently and productively; fill remaining free agent slots from the broader live frontier.
 
-Exploratory agent packets may begin without an issue. When a packet produces a question, result, dependency, obstruction, or recovery state that should survive across invocations, promote it into an issue, document, branch/PR, or other durable repository state.
+Exploratory agent packets may run as subordinate work under the selected board issue. When a packet produces a distinct question, dependency, obstruction, or follow-up that deserves its own priority or lifecycle, create a new Antonina board issue; preserve supporting results in documents, branches/PRs, or other durable repository state as appropriate.
 
 If existing durable work does not consume all useful research capacity, **derive additional frontier packets from the current state of the problem**. Do not fall back to a fixed plan. Reconstruct the frontier from the published target, intent records, literature ground truth, current formal definitions, established lemmas, computational evidence, failed approaches, unresolved ambiguities, and recently completed work.
 
@@ -57,7 +57,7 @@ When choosing among plausible frontier questions, use research judgment. Useful 
 
 The orchestrator may decompose a broad frontier question into multiple independent or competing packets when that is useful. Prefer narrow leaf packets with explicit ownership over claiming a broad umbrella issue exclusively; concurrent scheduled orchestrators should be able to choose other unowned frontier leaves. It may also abandon, mutate, combine, or redirect a methodology when evaluator feedback suggests a better route. Repository documents must not be treated as authority for a proof method merely because they were written earlier.
 
-For broad exploration, aim for **near-saturation of the shared Lubko pool** when useful work exists. The repository-wide maximum is **5 actively working delegated agents across all concurrent orchestrators**. Use `lubko-agent list --running --json` on `marceline-dev` for a live snapshot when practical; do not infer the count only from GitHub issue comments. Launch into clearly free capacity in small batches, refresh periodically or before another wave, and keep the research run moving if pool telemetry becomes temporarily unavailable.
+For broad exploration, aim for **near-saturation of the shared Lubko pool** when useful work exists. The repository-wide maximum is **5 actively working delegated agents across all concurrent orchestrators**. Use `lubko-agent list --running --json` on `marceline-dev` for a live snapshot when practical; do not infer the count only from Antonina board comments. Launch into clearly free capacity in small batches, refresh periodically or before another wave, and keep the research run moving if pool telemetry becomes temporarily unavailable.
 
 Do not manufacture filler work or duplicate active packets to hit five. Instead, if the selected issue/PR cannot use all available slots independently, generate materially different packets from the wider research frontier and run those alongside it. When an agent finishes, fails, stalls, or is stopped, reconcile its output and refill the slot promptly when another useful packet exists.
 
@@ -126,4 +126,4 @@ A scheduled AssemblyP1 work item is complete when:
 
 Completion does not mechanically require a merge when there is a concrete reason to leave a PR open, but a reviewed and verified PR may be merged directly into `main` by the orchestrator; it need not wait for separate human promotion.
 
-After those conditions hold, complete the shared scheduled-orchestrator bookkeeping according to `docs/skills/scheduled.md` and continue the recurring task on future invocations.
+After those conditions hold, append the completed Antonina board comment, close the board issue, verify that it has left the queue, and continue future recurring invocations from the board.
