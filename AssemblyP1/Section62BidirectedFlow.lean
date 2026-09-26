@@ -1,4 +1,36 @@
-that is spelled by two shorter overlaps" |
+import Mathlib
+
+/-!
+# The literal Medvedev–Brudno §6.2 bidirected-flow object
+
+This module encodes the *actual* §6.2 feasibility object of Medvedev–Brudno,
+*Maximum Likelihood Genome Assembly*, J. Comput. Biol. 16(8) (2009) 1101–1116,
+as a small amount of finite, computable structure.  It exists so that the
+finite §6.2 counterexample modules can certify their witnesses against the
+source construction itself, rather than against a proxy predicate.
+
+Everything here is parameterized by the strand type, so the two witness
+instances (`Section62BridgingCounterexample`, `SameLengthSection62Counterexample`)
+instantiate it with their own length-`3` word type.  Nothing here is specific to
+a witness, and nothing here decides any of the unresolved source forks recorded
+in `docs/ml-formalization-contract.md`.
+
+Everything is computable: the vertex set is a `List` rather than a `Finset`,
+because `Finset.toList` is noncomputable and these definitions must be
+dischargeable by `decide`.
+
+## Source correspondence
+
+Primary source: MB09 §3.1–§3.4, §5.2, §6.1–§6.2
+(<https://pmc.ncbi.nlm.nih.gov/articles/PMC3154397/>), as quoted in
+`docs/section62-mb09-bidirected-graph-audit.md` §1.
+
+| Lean object | MB09 clause |
+|---|---|
+| `Strand`, a single-stranded word, together with `rc` and `toList` | §3.1: a DNA molecule is an unordered reverse-complement strand pair |
+| `rep : W → W`, the molecule-class representative of a strand; `verts` | §6.2: "the vertices of this graph are the reads"; §4.1: "each k-molecule is represented only once" |
+| `overlapEdges`, `BdEdge`, `BdEdge.sgnX` / `.sgnY` | §6.2: "the edges are all possible bidirected overlaps of length at least `o_min`"; §3.3: a bidirected edge carries a positive/negative incidence at each endpoint |
+| `isReducible`, `transitivelyReduced`, `ReductionVacuous` | §6.2: "we then perform transitive edge reduction, where we remove any overlap that is spelled by two shorter overlaps" |
 | `isReducibleLonger`, `transitivelyReducedLonger`, `ReductionVacuousLonger` | the alternative "two-step path of strictly *longer* proper overlaps" reading discussed in `docs/section62-mb09-bidirected-graph-audit.md` §2.1 |
 | `BdFlow`, `Admissible` clause 1 | §6.2: "All other lower bounds are 0 and all upper bounds are infinity" |
 | `Admissible` clause 2, `throughput` | §6.2: "Each vertex has a lower bound of 1"; §5.2: the vertex split `v⁻ → v⁺` carries the vertex bounds, so `d_i` is the flow through vertex `i` |
@@ -66,6 +98,27 @@ structure BdEdge (A : Type) (W : Type) [DecidableEq W] where
   sgnX : ℤ
   /-- The signed incidence at the molecule class of `sy`. -/
   sgnY : ℤ
+
+/-- Decidable equality on overlap edges, stated field by field.
+
+This is deliberately *not* obtained by `deriving`: the derived instance for a
+structure carrying a class-implicit type parameter is not definitionally equal to
+the instance the type class elaborator picks, and, more importantly, the finite
+graph checks in the witness modules must be reducible by `decide` all the way to
+`isTrue`.  `decidable_of_iff` keeps the runtime shape a plain conjunction of
+primitive field comparisons. -/
+instance instDecidableEqBdEdge (A : Type) (W : Type) [DecidableEq W] :
+    DecidableEq (BdEdge A W) :=
+  fun a b => decidable_of_iff
+    (a.sx = b.sx ∧ a.sy = b.sy ∧ a.len = b.len ∧ a.sgnX = b.sgnX ∧ a.sgnY = b.sgnY)
+    ⟨fun h => by
+        cases a
+        cases b
+        simp_all,
+     fun h => ⟨congrArg BdEdge.sx h, congrArg BdEdge.sy h, congrArg BdEdge.len h,
+       congrArg BdEdge.sgnX h, congrArg BdEdge.sgnY h⟩⟩
+
+/-- The bidirected edge of overlap length `len` from strand `sx` to strand `sy`,
 with both signed incidences determined by the molecule-class representatives
 `rep sx` and `rep sy`. -/
 def bdEdge {A : Type} {W : Type} [DecidableEq W] (rep : W → W) (sx sy : W)
@@ -145,7 +198,35 @@ def isReducible (A : Type) (W : Type) [DecidableEq A] [DecidableEq W]
     (toList : W → List A) (rc : W → W) (readLen : Nat) (verts : List W)
     (e : BdEdge A W) : Prop :=
   isReducibleB A W toList rc readLen verts e = true
-idableEq W]
+
+/-- Whether the direct overlap of length `e.len` is removed under the alternative
+(Myers-style) reading of transitive edge reduction: a two-edge path through an
+intermediate molecule class exists whose two proper overlaps are both strictly
+*longer* than `e.len`.  The audit note
+`docs/section62-mb09-bidirected-graph-audit.md` §2.1 discusses both readings. -/
+def isReducibleLongerB (A : Type) (W : Type) [DecidableEq A] [DecidableEq W]
+    (toList : W → List A) (rc : W → W) (readLen : Nat) (verts : List W)
+    (e : BdEdge A W) : Bool :=
+  verts.any fun _my =>
+    (strandsOf rc verts).any fun m =>
+      decide (maxOverlap A W toList readLen e.sx m > e.len) &&
+        decide (maxOverlap A W toList readLen m e.sy > e.len)
+
+/-- The alternative reading of transitive edge reduction, as a proposition. -/
+def isReducibleLonger (A : Type) (W : Type) [DecidableEq A] [DecidableEq W]
+    (toList : W → List A) (rc : W → W) (readLen : Nat) (verts : List W)
+    (e : BdEdge A W) : Prop :=
+  isReducibleLongerB A W toList rc readLen verts e = true
+
+/-- The transitively reduced bidirected overlap graph: those edges of `edges`
+that are not spelled by two shorter overlaps. -/
+def transitivelyReduced (A : Type) (W : Type) [DecidableEq A] [DecidableEq W]
+    (toList : W → List A) (rc : W → W) (readLen : Nat) (verts : List W)
+    (edges : List (BdEdge A W)) : List (BdEdge A W) :=
+  edges.filter (fun e => !isReducibleB A W toList rc readLen verts e)
+
+/-- The transitively reduced graph under the alternative longer-overlap reading. -/
+def transitivelyReducedLonger (A : Type) (W : Type) [DecidableEq A] [DecidableEq W]
     (toList : W → List A) (rc : W → W) (readLen : Nat) (verts : List W)
     (edges : List (BdEdge A W)) : List (BdEdge A W) :=
   edges.filter (fun e => !isReducibleLongerB A W toList rc readLen verts e)
@@ -217,7 +298,36 @@ def balance (A : Type) (W : Type) [DecidableEq W] (rep : W → W) (f : BdFlow A 
     (t : SuperTerminals W) (edges : List (BdEdge A W)) (v : W) : ℤ :=
   balCore A W rep f edges v + ((t.srcUse v : ℤ) - (t.snkUse v : ℤ))
 
-t 0 _)
+
+
+/-- The integer absorption step of the §6.2 supersource/supersink conversion: a
+residual signed-incidence balance `b` is cancelled by routing the positive part
+of `b` to the supersink and the positive part of `−b` to the supersource. -/
+theorem int_absorb (b : ℤ) : b + max 0 (-b) - max 0 b = 0 := by
+  rcases b.lt_trichotomy 0 with h | h | h
+  · have hb : b ≤ 0 := le_of_lt h
+    rw [Int.max_eq_right (Int.neg_nonneg.mpr hb), Int.max_eq_left hb]
+    ring
+  · subst h
+    simp
+  · have hb : 0 ≤ b := le_of_lt h
+    have hnb : -b ≤ 0 := Int.neg_nonneg.mp (by rw [neg_neg]; exact hb)
+    rw [Int.max_eq_left hnb, Int.max_eq_right hb]
+    ring
+
+/-- Supersource/supersink usages that cancel the residual balance of `f` at
+every read vertex, at the cost of the prohibitively large §6.2 terminal edges.
+This is the circulation conversion: `f` becomes a circulation on the augmented
+graph. -/
+def absorb (A : Type) (W : Type) [DecidableEq W] (rep : W → W) (f : BdFlow A W)
+    (edges : List (BdEdge A W)) : SuperTerminals W where
+  srcUse := fun v => (max 0 (-balCore A W rep f edges v)).toNat
+  snkUse := fun v => (max 0 (balCore A W rep f edges v)).toNat
+
+/-- The `ℤ`-cast of a `max` with zero is the identity, the `max` already being
+nonnegative. -/
+lemma cast_max_zero (z : ℤ) : ((max 0 z).toNat : ℤ) = max 0 z :=
+  Int.toNat_of_nonneg (Int.le_max_left 0 _)
 
 /-- The §6.2 circulation conversion: after adding the supersource and supersink
 with the absorbing usages, the flow is balanced at every read vertex.  This is
@@ -288,7 +398,39 @@ circulation.
 
 Note also that `BdFlow` is a total function on `BdEdge A W` while MB09's flow
 lives on the graph; the graph is the argument `edges`, and all four clauses are
--/
+computed from `edges` alone, so a flow's off-graph part is invisible to them.  The
+intended reading — and the one the certificates below realize — is a flow
+supported on `edges`. -/
+def Feasible62 (A : Type) (W : Type) [DecidableEq W] (rep : W → W)
+    (verts : List W) (edges : List (BdEdge A W)) (f : BdFlow A W)
+    (t : SuperTerminals W) (d : W → ℕ) : Prop :=
+  Admissible A W 0 1 rep verts edges f t d ∧
+    (∀ v, t.srcUse v = 0 ∧ t.snkUse v = 0)
+
+/-! ## Spelled candidates: the circuit a candidate genome induces -/
+
+/-- A §6.2 *spelled* candidate: a circular molecule of length `n`, recorded as
+the strand read at each of its `n` cyclic read positions.  MB09 §6.2: "the
+original double-stranded genome corresponds to a circuit". -/
+structure Spelling (A : Type) (W : Type) (n : Nat) where
+  /-- The strand read at cyclic position `i`. -/
+  strand : Fin n → W
+  /-- The candidate has at least one read position, so the cyclic successor and
+  predecessor of a position exist. -/
+  hn : 0 < n
+
+/-- The cyclic successor of the read position `i`. -/
+def next {A : Type} {W : Type} {n : Nat} (sp : Spelling A W n) (i : Fin n) : Fin n :=
+  ⟨(i.val + 1) % n, Nat.mod_lt _ sp.hn⟩
+
+/-- The cyclic predecessor of the read position `i`. -/
+def pred {A : Type} {W : Type} {n : Nat} (sp : Spelling A W n) (i : Fin n) : Fin n :=
+  ⟨(i.val + n - 1) % n, Nat.mod_lt _ sp.hn⟩
+
+/-- Step `i` of the cyclic walk of a spelling: the proper overlap of length
+`readLen − 1` from the strand at position `i` to the strand at position `i + 1`.
+Two consecutive length-`readLen` windows of a circular molecule share exactly
+`readLen − 1` symbols, so this is a maximal proper overlap. -/
 def Spelling.step {A : Type} {W : Type} [DecidableEq W] {n : Nat}
     (rep : W → W) (readLen : Nat) (sp : Spelling A W n) (i : Fin n) : BdEdge A W :=
   bdEdge rep (sp.strand i) (sp.strand (next sp i)) (readLen - 1)
