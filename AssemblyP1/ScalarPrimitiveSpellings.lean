@@ -41,19 +41,31 @@ length-`L` window support of a circular word (`OrientedRigidity.support`,
    `properPower_of_period` applied to a repeated edge: with at most one outgoing
    edge type per node, a repeated edge forces the cyclic spelling to be a proper
    power.
-5. `identifiable_iff_nonbranching`: the exported fixed-truth classification.  A
+5. `gcdOne_of_nonbranching_primitive`: a primitive truth on a nonbranching
+   support has a gcd-one complete spectrum (all support counts `1`), so it is
+   the primitive point of the integer spectrum ray — with no uniqueness input.
+6. `rotEquiv_of_specCount_eq`: same-length complete-spectrum uniqueness on a
+   nonbranching support.  Equal spectra give equal supports, so the candidate's
+   window at start `0` is *some* truth window, say the one started at `j`; the
+   deterministic prefix/suffix step (`winPrefix_winAt`) plus the functional
+   support (`winAt_agrees`) then force the two traversals to agree at every
+   start, so the candidate reads the truth from a shifted start and is a
+   rotation of it (`rotEquiv_of_shift`).  This is the replacement for the BBT
+   premise.
+7. `identifiable_iff_nonbranching`: the exported fixed-truth classification.  A
    primitive truth is identifiable among arbitrary-length primitive candidates
    from its normalized complete spectrum **iff** its spectrum-support graph has no
    vertex with two distinct outgoing edge types.
 
-The only external input in the "identifiable" direction is the same-length
-complete-spectrum uniqueness up to rotation (BBT) that the rest of the project
-takes as an explicit premise (`OrientedFinalRigidity.rotation_uniqueness_of_bbt`,
-`PopulationReduction.gcd_one_of_primitive_P2_words`); it is exposed here as the
-hypothesis `hBBT` and is *not* assumed silently.  Everything else — the ray
+The exported `identifiable_iff_nonbranching` has **no** external
+complete-spectrum uniqueness hypothesis: there is no `hBBT`, no `AdmP2`
+admissibility predicate and no `hP2S`.  The equal-length step is derived from
+the deterministic prefix/suffix step of the window walk together with the
+functional (out-degree ≤ 1) nonbranching condition, which is strictly easier
+than the P2 (`hP2S`) uniqueness of issue #89.  Everything — the ray
 arithmetic, both directions of the classification, the two-excursion cut, the
-period/gcd argument, and the Lyndon–Schützenberger separator — is kernel-checked
-with no new axioms.
+period/gcd argument, the forced-traversal rotation step and the
+Lyndon–Schützenberger separator — is kernel-checked with no new axioms.
 -/
 
 namespace AssemblyP1.ScalarPrimitive
@@ -1523,14 +1535,12 @@ fixed-truth classification of `docs/scalar-primitive-spellings-83.md`:
 > vertex with two distinct outgoing edge types.
 
 The hypotheses are model-level only: the truth `S` is a circular word of length
-`G > 0` over `α` with `L > 1`, `S` is primitive, and BBT same-length
-complete-spectrum uniqueness is available for `S`.  Candidates are *primitive
+`G > 0` over `α` with `L > 1`, and `S` is primitive.  Candidates are *primitive
 circular words of arbitrary positive length*; identification is up to cyclic
-rotation, as in `PopulationReduction.RotEquiv`. -/
+rotation, as in `PopulationReduction.RotEquiv`.  No complete-spectrum
+uniqueness premise is assumed anywhere in this section. -/
 
 section Classification
-
-variable {α : Type} [DecidableEq α]
 
 variable {α : Type} [DecidableEq α] [Fintype α] {G : ℕ} {L : ℕ}
 
@@ -1586,78 +1596,314 @@ theorem uniqueOut_of_nonbranching {hG : 0 < G} {hL : 1 < L} {S : Fin G → α}
     (ht : winPrefix (L := L) e₁ = winPrefix (L := L) e₂) : e₁ = e₂ := by
   exact hnb (winPrefix (L := L) e₁) e₁ h₁ e₂ h₂ (by rfl) ht.symm
 
+/-- Off the support the truth's complete spectrum vanishes. -/
+theorem truth_van {hG : 0 < G} (S : Fin G → α) (w : Fin L → α)
+    (hw : w ∉ support (L := L) hG S) : specCount (L := L) hG S w = 0 := by
+  have h1 := (mem_support_iff (L := L) hG S w).mpr
+  by_contra hc
+  exact absurd (h1 (by omega)) hw
+
+/-- **The truth's complete spectrum on a nonbranching support.**  A primitive
+truth whose spectrum-support graph does not branch has `specCount = 1` on its
+whole support: its own window trail is a primitive cyclic spelling of its
+complete spectrum (`truth_trail_primitive`), and a primitive spelling of a
+nonbranching support uses every support edge exactly once
+(`nonbranching_primitive_spelling_eq_one`). -/
+theorem one_on_support_of_nonbranching_primitive {hG : 0 < G} {hL : 1 < L}
+    {S : Fin G → α} (hS : PopulationReduction.IsPrimitive S)
+    (hnb : NonBranching (genomeNodes (L := L) hG S) (support (L := L) hG S)
+      (winPrefix (L := L)) (winSuffix (L := L))) :
+    ∀ e ∈ support (L := L) hG S, specCount (L := L) hG S e = 1 := by
+  obtain ⟨s, hT⟩ := truth_trail_closed (L := L) S
+  have hne : winTrail (L := L) hG S ≠ [] := by
+    intro h0
+    have hz : (winTrail (L := L) hG S).length = 0 := by rw [h0, List.length_nil]
+    have h1 := winTrail_length (L := L) hG S
+    rw [h1] at hz
+    omega
+  exact nonbranching_primitive_spelling_eq_one hT hne (specCount (L := L) hG S)
+    (truth_trail_spectrum (L := L) S) (support (L := L) hG S)
+    (fun e₁ he₁ e₂ he₂ ht => uniqueOut_of_nonbranching (hL := hL) hnb e₁ e₂ he₁ he₂ ht)
+    (fun e' he' => truth_van (L := L) S e' he')
+    (fun e' he' => truth_pos_on_support (L := L) hG S e' he')
+    (truth_trail_primitive (L := L) (hL := hL) S hS)
+
+/-- The truth's complete spectrum totals `G` over the whole read-type space:
+the support sum is the total, since off-support counts vanish. -/
+theorem truth_total_all {hG : 0 < G} (S : Fin G → α) :
+    ∑ w : Fin L → α, specCount (L := L) hG S w = G := by
+  have h1 := truth_total (L := L) hG S
+  have h2 : ∑ w : Fin L → α, specCount (L := L) hG S w
+      = ∑ w ∈ support (L := L) hG S, specCount (L := L) hG S w :=
+    (Finset.sum_subset (fun b _ => Finset.mem_univ _)
+      (fun b _ hb => truth_van (L := L) S b hb)).symm
+  rw [h2]
+  exact h1
+
+/-- The truth's support is nonempty: its complete spectrum totals `G > 0`. -/
+theorem support_ne_nil_of_truth {hG : 0 < G} (S : Fin G → α) :
+    (support (L := L) hG S).Nonempty := by
+  have h1 := truth_total (L := L) hG S
+  by_contra hcon
+  have h5 : support (L := L) hG S = ∅ := by simpa using hcon
+  have h1' : (∑ w ∈ support (L := L) hG S, specCount (L := L) hG S w) = 0 := by
+    rw [h5]
+    simp
+  rw [h1'] at h1
+  omega
+
+/-- **Nonbranching makes the truth's spectrum gcd-one.**  Every support count is
+`1` and every off-support count is `0`, so the gcd of the complete spectrum is
+`1`.  This is the primitive point of the integer spectrum ray, and it is
+obtained from the *deterministic graph condition alone* — no complete-spectrum
+uniqueness input of any kind. -/
+theorem gcdOne_of_nonbranching_primitive {hG : 0 < G} {hL : 1 < L} {S : Fin G → α}
+    (hS : PopulationReduction.IsPrimitive S)
+    (hnb : NonBranching (genomeNodes (L := L) hG S) (support (L := L) hG S)
+      (winPrefix (L := L)) (winSuffix (L := L))) :
+    IsGcdOne (W := Fin L → α) (specCount (L := L) hG S) := by
+  intro g hg
+  have hone := one_on_support_of_nonbranching_primitive (L := L) (hL := hL) hS hnb
+  obtain ⟨e, he⟩ := support_ne_nil_of_truth (L := L) (hG := hG) S
+  have hz := hg e
+  rw [hone e he] at hz
+  exact Nat.eq_one_of_dvd_one hz
+
+/-! ## Forced traversal: one agreeing window pins down the whole walk
+
+The lemmas below replace the external same-length complete-spectrum uniqueness
+(BBT) that the rest of the project takes as an explicit premise.
+
+The key point is that a *walk* along a circular word moves deterministically: the
+length-`(L-1)` prefix of the window read at start `i + 1` is the length-`(L-1)`
+suffix of the window read at start `i` (`winPrefix_winAt`).  Note that this alone
+does **not** determine the next window — `winPrefix` records the letters at
+positions `0 … L-2`, so the last letter of the next window is new information,
+and a branching support can supply it in more than one way.  What closes the gap
+is exactly the hypothesis of issue #92: on a **nonbranching** support two edges
+out of the same node are equal, so the two windows at the next start, being two
+support edges out of one node, are equal.  Induction on the offset therefore
+pins the whole traversal (`winAt_agrees`): the candidate reads the truth from a
+shifted start, and `rotEquiv_of_shift` turns that into
+`PopulationReduction.RotEquiv`. -/
+
+/-- The `L`-window of `D` read `t` steps after the start `j`. -/
+def winAt {H : ℕ} (hH : 0 < H) (D : Fin H → α) (j : Fin H) (t : ℕ) : Fin L → α :=
+  window (L := L) hH D ⟨(j.val + t) % H, Nat.mod_lt _ hH⟩
+
+/-- `winAt` at step `0` is the window itself. -/
+theorem winAt_zero' {H : ℕ} (hH : 0 < H) (D : Fin H → α) (r : Fin H) :
+    winAt (L := L) hH D r 0 = window (L := L) hH D r := by
+  unfold winAt
+  congr 1
+  apply Fin.ext
+  exact Nat.mod_eq_of_lt r.isLt
+
+/-- The prefix of the window at the next start is the suffix of the current one:
+the deterministic step of the walk. -/
+theorem winPrefix_winAt {H : ℕ} (hH : 0 < H) (D : Fin H → α) (j : Fin H) (t : ℕ) :
+    winPrefix (L := L) (winAt (L := L) hH D j (t + 1))
+      = winSuffix (L := L) (winAt (L := L) hH D j t) := by
+  funext d
+  have hmod : ((j.val + (t + 1)) % H + d.val) % H = ((j.val + t + (d.val + 1)) % H) := by
+    rw [Nat.mod_add_mod]
+    congr 1
+    omega
+  unfold winSuffix winPrefix winAt window OrientedRigidity.cyc
+  apply congrArg D
+  exact Fin.ext (by simpa using hmod)
+
+/-- `winAt` read from the zero start. -/
+theorem winAt_B {H : ℕ} (hH : 0 < H) (B : Fin H → α) (t : ℕ) :
+    winAt (L := L) hH B ⟨0, hH⟩ t
+      = window (L := L) hH B ⟨t % H, Nat.mod_lt _ hH⟩ := by
+  unfold winAt
+  congr 1
+  apply Fin.ext
+  simp
+
+/-- `winAt` from an arbitrary start is the window at the shifted start. -/
+theorem winAt_A {H : ℕ} (hH : 0 < H) (B : Fin H → α) (j : Fin H) (t : ℕ) :
+    winAt (L := L) hH B j t
+      = window (L := L) hH B ⟨(j.val + t) % H, Nat.mod_lt _ hH⟩ := rfl
+
+/-- A support window is a member of the support. -/
+theorem mem_support_window (S : Fin G → α) (hG : 0 < G) (j : Fin G) :
+    window (L := L) hG S j ∈ support (L := L) hG S :=
+  Finset.mem_image.mpr ⟨j, Finset.mem_univ _, rfl⟩
+
+/-- **Forced traversal on a nonbranching support.**  If the truth's and the
+candidate's windows agree at one start, they agree at every start.
+
+Proof.  Induction on the offset.  The window at offset `t + 1` is a support
+window on both sides, and its length-`(L-1)` prefix is the length-`(L-1)` suffix
+of the window at offset `t` (`winPrefix_winAt`), which the induction hypothesis
+already matches.  So the two windows at offset `t + 1` are two support edges out
+of the *same* node, and a nonbranching support admits at most one such edge
+(`uniqueOut_of_nonbranching`). -/
+theorem winAt_agrees {G : ℕ} (hG : 0 < G) {hL : 1 < L} (S D : Fin G → α) (j : Fin G)
+    (hsup : support (L := L) hG S = support (L := L) hG D)
+    (hnb : NonBranching (genomeNodes (L := L) hG S) (support (L := L) hG S)
+      (winPrefix (L := L)) (winSuffix (L := L)))
+    (h0 : winAt (L := L) hG S j 0 = winAt (L := L) hG D ⟨0, hG⟩ 0) (t : ℕ) :
+    winAt (L := L) hG S j t = winAt (L := L) hG D ⟨0, hG⟩ t := by
+  induction t with
+  | zero => exact h0
+  | succ t ih =>
+      have hpf : winPrefix (L := L) (winAt (L := L) hG S j (t + 1))
+          = winPrefix (L := L) (winAt (L := L) hG D ⟨0, hG⟩ (t + 1)) := by
+        rw [winPrefix_winAt, winPrefix_winAt,
+          congrArg (fun e : Fin L → α => winSuffix (L := L) e) ih]
+      exact uniqueOut_of_nonbranching (hL := hL) hnb
+        (winAt (L := L) hG S j (t + 1)) (winAt (L := L) hG D ⟨0, hG⟩ (t + 1))
+        (by unfold winAt; exact mem_support_window S hG _)
+        (by refine hsup ▸ ?_; unfold winAt; exact mem_support_window D hG _)
+        hpf
+
+/-- A window prefix of a support window is a prefix of a support element. -/
+theorem winPrefix_mem_image (S : Fin G → α) (hG : 0 < G) (j : Fin G) :
+    winPrefix (L := L) (window (L := L) hG S j)
+      ∈ (support (L := L) hG S).image (winPrefix (L := L)) :=
+  Finset.mem_image.mpr ⟨window (L := L) hG S j,
+    Finset.mem_image.mpr ⟨j, Finset.mem_univ _, rfl⟩, winPrefix_window' (L := L) hG S j⟩
+
+/-- **Rotation from a forward shift, in the exact orientation of
+`PopulationReduction.RotEquiv`.**  If the candidate reads the truth shifted
+forward by `s < G`, i.e. `D n = S ((s + n) mod G)`, then `D` rotated forward by
+`k = G - s` spells `S`: for each `i`, apply `hs` at
+`q = (i + (G - s)) mod G`, and note `(s + q) mod G = i`.  That index fact is the
+whole content, and it is arithmetic only:
+`(s + (i + (G - s)) mod G) mod G = (i + G) mod G = i mod G = i`, by
+`Nat.add_mod_mod`, `Nat.sub_add_cancel` (using `s ≤ G`), the repository's
+`AmpBmpPrimitivity.mod_add_self` and `Nat.mod_eq_of_lt`. -/
+theorem rotEquiv_of_shift {G : ℕ} (hG : 0 < G) {D S : Fin G → α} (s : ℕ)
+    (hslt : s < G)
+    (hs : ∀ (n : ℕ) (hn : n < G), D ⟨n, hn⟩
+      = S ⟨(s + n) % G, Nat.mod_lt _ hG⟩) : RotEquiv hG D S := by
+  refine ⟨G - s, fun i => ?_⟩
+  have h1 := hs ((i.val + (G - s)) % G) (Nat.mod_lt (i.val + (G - s)) hG)
+  have hstep : s + (i.val + (G - s)) = i.val + G := by omega
+  have hmod : (s + (i.val + (G - s)) % G) % G = i.val := by
+    calc (s + (i.val + (G - s)) % G) % G
+        = (s + (i.val + (G - s))) % G := Nat.add_mod_mod _ _ _
+      _ = (i.val + G) % G := by rw [hstep]
+      _ = i.val % G := mod_add_self G i.val
+      _ = i.val := Nat.mod_eq_of_lt i.isLt
+  rw [h1]
+  congr 1
+  apply Fin.ext
+  exact hmod
+
+/-- **Same-length complete-spectrum uniqueness.**  Two circular words of the same
+length with the same complete `L`-spectrum differ by a rotation.
+
+Proof.  Equal spectra give equal supports, and the candidate's window at start
+`0` is a support window of the truth, so it is *some* truth window, say the one
+started at `j`.  The support is a functional graph, so two support edges out of
+the same node are equal: the two traversals, which agree at start `0` and share
+the deterministic prefix/suffix step, agree at every start (`winAt_agrees`).
+The candidate's window at start `i` is therefore the truth's window at start
+`j + i`.  Reading the window's first letter gives `D n = S ((j + n) mod G)`, and
+`rotEquiv_of_shift` turns that into `RotEquiv`.
+
+This is the replacement for the BBT premise; it is used only in the
+nonbranching direction, which is where the support is functional. -/
+theorem rotEquiv_of_specCount_eq {G : ℕ} (hG : 0 < G) {hL : 1 < L} (S D : Fin G → α)
+    (hnb : NonBranching (genomeNodes (L := L) hG S) (support (L := L) hG S)
+      (winPrefix (L := L)) (winSuffix (L := L)))
+    (hspec : specCount (L := L) hG S = specCount (L := L) hG D) :
+    RotEquiv hG D S := by
+  have hsup : support (L := L) hG S = support (L := L) hG D := by
+    ext w
+    rw [mem_support_iff (L := L) hG S w, mem_support_iff (L := L) hG D w,
+      congrFun hspec w]
+  -- align: some truth window is the candidate's window at start `0`
+  obtain ⟨j, hj⟩ : ∃ j : Fin G, window (L := L) hG S j = window (L := L) hG D ⟨0, hG⟩ := by
+    have hmem : window (L := L) hG D ⟨0, hG⟩ ∈ support (L := L) hG D :=
+      mem_support_window D hG ⟨0, hG⟩
+    rw [← hsup] at hmem
+    obtain ⟨r, hr, hwr⟩ := Finset.mem_image.mp hmem
+    exact ⟨r, hwr⟩
+  -- the walk is pinned: agreeing at start `0` forces agreement at every start
+  have hj' : winAt (L := L) hG S j 0 = winAt (L := L) hG D ⟨0, hG⟩ 0 :=
+    (winAt_zero' (L := L) hG S j).trans
+      (hj.trans (winAt_zero' (L := L) hG D ⟨0, hG⟩).symm)
+  have halign : ∀ (i : Fin G), window (L := L) hG D i
+      = window (L := L) hG S ⟨(j.val + i.val) % G, Nat.mod_lt _ hG⟩ := by
+    intro i
+    have h := winAt_agrees hG (L := L) (hL := hL) S D j hsup hnb hj' i.val
+    rw [winAt_A, winAt_B] at h
+    calc window (L := L) hG D i
+        = window (L := L) hG D ⟨i.val % G, Nat.mod_lt _ hG⟩ := by
+          apply congrArg (fun r : Fin G => window (L := L) hG D r)
+          apply Fin.ext
+          exact (Nat.mod_eq_of_lt i.isLt).symm
+      _ = window (L := L) hG S ⟨(j.val + i.val) % G, Nat.mod_lt _ hG⟩ := h.symm
+  -- aligned windows give aligned letters: the candidate reads the truth shifted
+  have hs : ∀ (n : ℕ) (hn : n < G), D ⟨n, hn⟩
+      = S ⟨(j.val + n) % G, Nat.mod_lt _ hG⟩ := by
+    intro n hn
+    have h1 := congrArg (fun e : Fin L → α => e ⟨0, by omega⟩)
+      (halign ⟨n, hn⟩)
+    unfold window OrientedRigidity.cyc at h1
+    have hDfin : (⟨(n + 0) % G, Nat.mod_lt _ hG⟩ : Fin G) = ⟨n, hn⟩ :=
+      Fin.ext (Nat.mod_eq_of_lt hn)
+    have hSfin : (⟨((j.val + n) % G + 0) % G, Nat.mod_lt _ hG⟩ : Fin G)
+        = ⟨(j.val + n) % G, Nat.mod_lt _ hG⟩ := Fin.ext (by simp)
+    calc D ⟨n, hn⟩
+        = D (⟨(n + 0) % G, Nat.mod_lt _ hG⟩ : Fin G) := by rw [hDfin]
+      _ = S (⟨((j.val + n) % G + 0) % G, Nat.mod_lt _ hG⟩ : Fin G) := h1
+      _ = S ⟨(j.val + n) % G, Nat.mod_lt _ hG⟩ := by rw [hSfin]
+  exact rotEquiv_of_shift hG j.val j.isLt hs
+
 /-- **The nonbranching direction.**  If the truth's spectrum-support graph does
 not branch, then any primitive candidate with the truth's normalized complete
 spectrum is identified with the truth.
 
-Proof.  The truth spectrum is gcd-one (`gcd_one_of_primitive_P2_words`, whose
-only external input is the explicit BBT hypothesis), so the ray decomposition
-`cS = g * c0` has `g = 1` and `c0 = cS`.  The ray lemma puts the candidate at
-multiplier `m >= 1` on the same ray.  The candidate's window trail is a cyclic
-spelling of `cD = m * cS` and, since the candidate is primitive, that trail is
-primitive.  Nonbranching gives at most one outgoing edge type per node on the
-support, so `nonbranching_primitive_spelling_eq_one` forces every support count
-of `cD` to be `1`; as `cD w = m * cS w` with `cS w >= 1` on the support, `m = 1`
-and `cD = cS`.  The candidate therefore has the truth's length and spectrum, and
-BBT same-length uniqueness gives the rotation. -/
+Proof.  Nonbranching plus primitivity of the truth make its complete spectrum
+`gcdOne` with all support counts `1` (`gcdOne_of_nonbranching_primitive`), so the
+ray lemma `spectrum_on_ray` puts the candidate at some multiplier `mm ≥ 1` on the
+same ray.  The candidate's window trail is a cyclic spelling of `cD = mm * cS`
+and is primitive, so `nonbranching_primitive_spelling_eq_one` again forces every
+support count of `cD` to be `1`; since the support counts of `cS` are `1` too,
+`mm = 1`, the candidate has the truth's length and the truth's complete
+spectrum, and `rotEquiv_of_specCount_eq` — determinism of the window walk —
+makes it a rotation of the truth.
+
+No complete-spectrum uniqueness premise is used: the equal-length step is
+proved from the traversal itself. -/
 theorem identifiable_of_nonbranching {hG : 0 < G} {hL : 1 < L} {S : Fin G → α}
-    (AdmP2 : ∀ {K : ℕ}, (Fin K → α) → Prop)
-    (hS : PopulationReduction.IsPrimitive S) (hP2S : AdmP2 S)
-    (hBBT : ∀ D : Fin G → α, AdmP2 S →
-      specCount (L := L) hG S = specCount (L := L) hG D → RotEquiv hG D S)
+    (hS : PopulationReduction.IsPrimitive S)
     (hnb : NonBranching (genomeNodes (L := L) hG S) (support (L := L) hG S)
       (winPrefix (L := L)) (winSuffix (L := L))) :
     Identifiable hG hL S := by
   intro m D hD hDprim hNorm
-  -- the truth spectrum is gcd-one
+  -- the truth spectrum is gcd-one, from the nonbranching support alone
   have hgcdS : IsGcdOne (W := Fin L → α) (specCount (L := L) hG S) :=
-    gcd_one_of_primitive_P2_words AdmP2 hG S hL hS hP2S hBBT
-  have hsupIff : ∀ w, w ∈ support (L := L) hG S ↔ 0 < specCount (L := L) hG S w :=
-    fun w => mem_support_iff (L := L) hG S w
-  have hout : ∀ w, w ∉ support (L := L) hG S → specCount (L := L) hG S w = 0 := by
-    intro w hw
-    have h1 := (mem_support_iff (L := L) hG S w).mpr
-    by_contra hc
-    exact absurd (h1 (by omega)) hw
-  -- the truth totals its spectrum over the support
-  have h2' : ∑ w : Fin L → α, specCount (L := L) hG S w
-      = ∑ w ∈ support (L := L) hG S, specCount (L := L) hG S w := by
-    exact (Finset.sum_subset (fun b _ => Finset.mem_univ _)
-      (fun b _ hb => hout b hb)).symm
-  have hSsum : ∑ w : Fin L → α, specCount (L := L) hG S w = G := by
-    have h1 := truth_total (L := L) hG S
-    have h2 : ∑ w : Fin L → α, specCount (L := L) hG S w
-        = ∑ w ∈ support (L := L) hG S, specCount (L := L) hG S w := by
-      exact (Finset.sum_subset (fun b _ => Finset.mem_univ _)
-        (fun b _ hb => hout b hb)).symm
-    rw [h2]
-    exact h1
-  -- the candidate is on the same ray, and the ray multiplier of the truth is 1
+    gcdOne_of_nonbranching_primitive (L := L) (hL := hL) hS hnb
+  have honeS := one_on_support_of_nonbranching_primitive (L := L) (hL := hL) hS hnb
+  have hSsum : ∑ w : Fin L → α, specCount (L := L) hG S w = G :=
+    truth_total_all (L := L) (hG := hG) S
+  -- the candidate is on the same integer ray of spectra
   obtain ⟨mm, hmm1, hmmG, hDm⟩ :=
     spectrum_on_ray hG hD (Nat.succ_pos 0)
       (specCount (L := L) hG S) (specCount (L := L) hG S) (specCount (L := L) hD D)
       (fun w => by rw [Nat.one_mul]) hSsum
       (fun w => by rw [← hNorm w]) hgcdS
-  have hsupD : ∀ w, w ∈ support (L := L) hD D ↔ w ∈ support (L := L) hG S := by
+  have hsupD : ∀ w : Fin L → α, w ∈ support (L := L) hG S ↔ w ∈ support (L := L) hD D := by
     intro w
-    have h1 := (mem_support_iff (L := L) hD D w)
-    have h2 := hsupIff w
-    have h3 := hDm w
+    rw [mem_support_iff (L := L) hG S w, mem_support_iff (L := L) hD D w]
+    have h := hDm w
     constructor
-    · intro hw
-      have h4 : 0 < specCount (L := L) hG S w := by
-        have h5 : 0 < specCount (L := L) hD D w := h1.mp hw
-        by_contra hc
-        have h6 : specCount (L := L) hG S w = 0 := by omega
-        have h7 : specCount (L := L) hD D w = 0 := by rw [h3, h6]; rfl
-        omega
-      exact h2.mpr h4
-    · intro hw
-      have h4 : 0 < specCount (L := L) hG S w := h2.mp hw
-      have h6 : 0 < specCount (L := L) hD D w := by
-        have h5 := h3
-        exact h5 ▸ Nat.mul_pos (by omega) h4
-      exact h1.mpr h6
+    · intro hpos
+      rw [h]
+      exact Nat.mul_pos hmm1 hpos
+    · intro hpos
+      by_contra hzero
+      have hz : specCount (L := L) hG S w = 0 := by omega
+      rw [hz] at h
+      simp at h
+      omega
   -- the candidate's window trail is a primitive cyclic spelling of `cD`
   obtain ⟨sD, hTrailD⟩ := winTrail_closed (L := L) hD D
   have huseD : ∀ e, edgeUse (winTrail (L := L) hD D) e = specCount (L := L) hD D e :=
@@ -1667,71 +1913,52 @@ theorem identifiable_of_nonbranching {hG : 0 < G} {hL : 1 < L} {S : Fin G → α
   have htrailNe : winTrail (L := L) hD D ≠ [] := by
     intro h0
     have hz : (winTrail (L := L) hD D).length = 0 := by rw [h0, List.length_nil]
-    have := winTrail_length (L := L) hD D
-    rw [this] at hz
+    have h1 := winTrail_length (L := L) hD D
+    rw [h1] at hz
     omega
   -- nonbranching forces every support count of the candidate to be one
-  have hone : ∀ e ∈ support (L := L) hG S, specCount (L := L) hD D e = 1 := by
+  have honeD : ∀ e ∈ support (L := L) hG S, specCount (L := L) hD D e = 1 := by
     intro e he
-    have honeD : ∀ e ∈ support (L := L) hD D, specCount (L := L) hD D e = 1 :=
-      nonbranching_primitive_spelling_eq_one hTrailD htrailNe
-        (specCount (L := L) hD D) huseD (support (L := L) hD D)
-        (fun e₁ he₁ e₂ he₂ ht => uniqueOut_of_nonbranching (hL := hL) hnb e₁ e₂
-          ((hsupD e₁).mp he₁) ((hsupD e₂).mp he₂) ht)
-        (fun e' he' => by
-          have h4 := hDm e'
-          by_cases hz : specCount (L := L) hG S e' = 0
-          · rw [h4, hz]
-            rfl
-          · have hposD : 0 < specCount (L := L) hD D e' := by
-              rw [h4]
-              exact Nat.mul_pos (by omega) (by omega)
-            exact absurd ((mem_support_iff (L := L) hD D e').mpr hposD) he')
-        (fun e' he' => by
-          have hposS : 0 < specCount (L := L) hG S e' :=
-            (hsupIff e').mp ((hsupD e').mp he')
-          have h4 := hDm e'
-          have h5 : 0 < mm * specCount (L := L) hG S e' :=
-            Nat.mul_pos (by omega) hposS
-          rw [h4]
-          exact h5)
-        hprimD
-    exact honeD e ((hsupD e).mpr he)
-  -- hence the ray multiplier is one and the spectra agree
-  have hne : (support (L := L) hG S).Nonempty := by
-    have h1 := hSsum
-    rw [h2'] at h1
-    by_contra hcon
-    have h5 : support (L := L) hG S = ∅ := by simpa using hcon
-    have h1' : (∑ w ∈ support (L := L) hG S, specCount (L := L) hG S w) = 0 := by
-      rw [h5]
-      simp
-    rw [h1'] at h1
-    omega
-  obtain ⟨e, he⟩ := hne
-  have hone1 := hone e he
-  have hDm1e := hDm e
-  have hpos : 1 ≤ specCount (L := L) hG S e :=
-    truth_pos_on_support (L := L) hG S e he
-  have hone1'' : 1 = mm * specCount (L := L) hG S e := by
-    have h2 := hDm1e
-    rwa [hone1] at h2
+    have heD : e ∈ support (L := L) hD D := (hsupD e).mp he
+    exact nonbranching_primitive_spelling_eq_one hTrailD htrailNe
+      (specCount (L := L) hD D) huseD (support (L := L) hD D)
+      (fun e₁ he₁ e₂ he₂ ht => uniqueOut_of_nonbranching (hL := hL) hnb e₁ e₂
+        ((hsupD e₁).mpr he₁) ((hsupD e₂).mpr he₂) ht)
+      (fun e' he' => by
+        have h4 := hDm e'
+        by_cases hz : specCount (L := L) hG S e' = 0
+        · rw [h4, hz]
+          rfl
+        · exfalso
+          have hposD : 0 < specCount (L := L) hD D e' := by
+            rw [h4]
+            exact Nat.mul_pos hmm1 (by omega)
+          exact absurd ((mem_support_iff (L := L) hD D e').mpr hposD) he')
+      (fun e' he' => by
+        rw [hDm e']
+        exact Nat.mul_pos hmm1
+          ((mem_support_iff (L := L) hG S e').mp ((hsupD e').mpr he')))
+      hprimD e heD
+  -- hence the ray multiplier is one
+  obtain ⟨e, he⟩ := support_ne_nil_of_truth (L := L) (hG := hG) S
   have hmm : mm = 1 := by
-    have hdvd : mm ∣ (1 : ℕ) := by
-      rw [hone1'']
-      have h2 := dvd_mul_left mm (specCount (L := L) hG S e)
-      rwa [Nat.mul_comm] at h2
-    exact Nat.eq_one_of_dvd_one hdvd
+    have hone1 := honeD e he
+    have hone2 := honeS e he
+    have h1 := hDm e
+    rw [hone1, hone2] at h1
+    omega
   have hmmG' : m = G := by
     have h1 := hmmG
     rw [hmm, Nat.succ_eq_add_one, Nat.div_one, Nat.one_mul] at h1
     exact h1
   subst hmmG'
+  -- same length and same complete spectrum: forced traversal gives the rotation
   have hspec : specCount (L := L) hG S = specCount (L := L) hG D := by
     funext w
     rw [hDm w, hmm, one_mul]
   refine ⟨rfl, ?_⟩
-  exact (identified_iff_rotEquiv hG D rfl S).mpr (hBBT D hP2S hspec)
+  exact (identified_iff_rotEquiv hG D rfl S).mpr
+    (rotEquiv_of_specCount_eq (L := L) (hL := hL) hG S D hnb hspec)
 
 /-- **The branching direction.**  If the truth's spectrum-support graph branches,
 then the truth is *not* identifiable from the normalized complete spectrum among
@@ -1820,13 +2047,15 @@ theorem not_identifiable_of_branching {hG : 0 < G} {hL : 1 < L} {S : Fin G → �
 normalized complete spectrum among primitive candidates of arbitrary length if
 and only if its spectrum-support graph does not branch.
 
-The only external input is the explicit BBT hypothesis `hBBT`, giving same-length
-rotation uniqueness among `AdmP2` words. -/
+This is the fixed-truth statement of the issue: the hypotheses are the
+model-level ones only — a circular word `S` of length `G > 0` over `α`, a window
+length `L > 1`, and primitivity of `S`.  There is **no** external
+complete-spectrum uniqueness premise (`hBBT`), no `AdmP2` admissibility
+predicate, and no `hP2S`: the equal-length step is proved from the deterministic
+prefix/suffix step of the window walk plus the functional nonbranching support,
+by `rotEquiv_of_specCount_eq`. -/
 theorem identifiable_iff_nonbranching {hG : 0 < G} {hL : 1 < L} {S : Fin G → α}
-    (AdmP2 : ∀ {K : ℕ}, (Fin K → α) → Prop)
-    (hS : PopulationReduction.IsPrimitive S) (hP2S : AdmP2 S)
-    (hBBT : ∀ D : Fin G → α, AdmP2 S →
-      specCount (L := L) hG S = specCount (L := L) hG D → RotEquiv hG D S) :
+    (hS : PopulationReduction.IsPrimitive S) :
     Identifiable hG hL S ↔
       NonBranching (genomeNodes (L := L) hG S) (support (L := L) hG S)
         (winPrefix (L := L)) (winSuffix (L := L)) := by
@@ -1836,12 +2065,12 @@ theorem identifiable_iff_nonbranching {hG : 0 < G} {hL : 1 < L} {S : Fin G → �
     have hbr : Branching (genomeNodes (L := L) hG S) (support (L := L) hG S)
         (winPrefix (L := L)) (winSuffix (L := L)) := by
       unfold Branching
-      push_neg at hcon
+      push Not at hcon
       obtain ⟨e₁, he₁, e₂, he₂, hp₁, hp₂, hne⟩ := hcon
       have h12 : winPrefix e₁ = winPrefix e₂ := hp₁.trans hp₂.symm
       exact ⟨winPrefix e₁, e₁, he₁, e₂, he₂, hne, rfl, h12.symm⟩
     exact not_identifiable_of_branching hbr hI
   · intro hnb
-    exact identifiable_of_nonbranching AdmP2 hS hP2S hBBT hnb
+    exact identifiable_of_nonbranching hS hnb
 
 end Classification
