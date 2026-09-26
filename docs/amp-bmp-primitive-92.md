@@ -1,8 +1,9 @@
 # `A^m ++ B^m`: the Fine–Wilf case, formally verified
 
 **Issue:** #92
-**Status:** kernel-checked *sufficient* variant of the Lyndon–Schützenberger step used in
-`docs/scalar-primitive-spellings-83.md`; the unconditional statement remains open.
+**Status:** kernel-checked.  The unconditional Lyndon–Schützenberger step is now proved
+in `AssemblyP1/LyndonSchutzenberger.lean`; the results below are the *conditional*
+variants kept for the record, and the `_uncond` corollaries supersede them.
 
 ## What is proved
 
@@ -94,6 +95,9 @@ The only genuinely word-theoretic input is step 1–2, i.e. Fine–Wilf.
 
 ## Source fidelity
 
+* `(m-1)|A| >= |U|` appears only in the *conditional* theorems of
+  `AssemblyP1/AmpBmpPrimitivity.lean`, which are kept for the record; the `_uncond`
+  corollaries in `AssemblyP1/LyndonSchutzenberger.lean` are the versions without it.
 * The separator hypothesis used in `ampbmp_primitive_of_head_ne` (`A[0]? ≠ B[0]?`) is the
   edge-type separator of `docs/scalar-primitive-spellings-83.md`: cutting a cyclic
   Eulerian spelling at two visits to a vertex with two distinct outgoing edge types
@@ -106,25 +110,87 @@ The only genuinely word-theoretic input is step 1–2, i.e. Fine–Wilf.
   It is exactly the region of the classical proof in which the periodicity lemma
   applies.
 
-## Exact residual statement
+## The unconditional statement is now proved
 
-What is still missing is the unconditional claim
-
-> for nonempty `A, B` with different first letters and every `m ≥ 2`, the word
-> `A^m ++ B^m` is primitive,
-
-equivalently the full Lyndon–Schützenberger theorem for `x^a y^b = z^c` with
-`a, b, c ≥ 2` (Lyndon–Schützenberger 1962, DOI `10.1307/mmj/1028998766`), which
-`docs/scalar-primitive-spellings-83.md` imports as a black box.
-
-The instances not covered here are the witnesses `A^m ++ B^m = U^k` with
+`AssemblyP1/LyndonSchutzenberger.lean` closes the residual.  It contains a
+self-contained proof of the full Lyndon–Schützenberger word equation, using only
+Fine–Wilf (`AssemblyP1/WordPeriodicity.lean`) as external input, and then derives the
+three unconditional corollaries that issue #92 needs:
 
 ```
-(m - 1) * |A| < |U|  =  m * (|A| + |B|) / k ,
+theorem lyndonSchutzenberger {x y z : List α} {a b c : ℕ}
+    (ha : 2 ≤ a) (hb : 2 ≤ b) (hc : 2 ≤ c) (hx : x ≠ []) (hy : y ≠ [])
+    (h : nCopies x a ++ nCopies y b = nCopies z c) : x ++ y = y ++ x
+
+theorem ampbmp_commonRoot_uncond {A B U : List α} {m k : ℕ}
+    (hA : A ≠ []) (hB : B ≠ []) (hm2 : 2 ≤ m) (hk2 : 2 ≤ k)
+    (h : nCopies A m ++ nCopies B m = nCopies U k) :
+    ∃ w : List α, w ≠ [] ∧ ∃ p q r : ℕ, 1 ≤ p ∧ 1 ≤ q ∧ 1 ≤ r ∧
+      A = nCopies w p ∧ B = nCopies w q ∧ U = nCopies w r
+
+theorem ampbmp_head_eq_of_pow_uncond {A B U : List α} {m k : ℕ}
+    (hA : A ≠ []) (hB : B ≠ []) (hm2 : 2 ≤ m) (hk2 : 2 ≤ k)
+    (h : nCopies A m ++ nCopies B m = nCopies U k) : A[0]? = B[0]?
+
+theorem ampbmp_primitive_of_head_ne_uncond {A B U : List α} {m k : ℕ}
+    (hA : A ≠ []) (hB : B ≠ []) (hm2 : 2 ≤ m) (hk2 : 2 ≤ k)
+    (h : nCopies A m ++ nCopies B m = nCopies U k)
+    (hne : A[0]? ≠ B[0]?) : IsPrimitive (nCopies A m ++ nCopies B m)
 ```
 
-i.e. where the root is long relative to the first excursion. Since `|A| ≤ max(|A|,|B|)`,
-this includes every square witness `k = 2` with `|A| = |B|`, and generally all witnesses
-whose two excursions have nearly equal length. In the classical proof these are exactly
-the cases handled by the remaining two arguments — the `c = 3` decomposition and the
-`c = 2` induction on `|z|` — neither of which is formalised.
+The instances previously excluded by `(m-1)|A| < |U|` are now covered: the
+`_uncond` corollaries carry no length hypothesis, so in particular every square witness
+`k = 2` with `|A| = |B|` is included.
+
+### Proof structure of `lyndonSchutzenberger`
+
+Strong induction on the measure `|z| + b*|y|`, following Lyndon–Schützenberger 1965 and
+Lothaire 1.3.2.  Write `d = |x|`, `e = |y|`, `f = |z|`, so `a*d + b*e = c*f`.
+
+* **Step 0 (symmetry).** If `a*d < b*e`, apply the induction hypothesis to the reversed
+  equation `(rev y)^b ++ (rev x)^a = (rev z)^c`, whose measure `f + a*d` is smaller, and
+  convert back with `comm_of_rev_comm`.  Hence assume `b*e ≤ a*d`.
+* **Step 1 (the periodicity lemma).** If `(a-1)d ≥ f`, the existing
+  `ampbmp_commonRoot` applies directly.  If `(b-1)e ≥ f`, it applies to the reversed
+  equation.  In both cases `x` and `y` are powers of a common word.
+* **Step 2 (`c < 4`).** Otherwise `(a-1)d < f` and `(b-1)e < f`, whence `d < f` and
+  `e < f`, so `c*f = a*d + b*e < 4*f` and `c < 4`, i.e. `c = 2` or `c = 3`.
+* **Step 3 (`c = 3`, `LS_core_c3`).** From `b*e ≤ a*d`, `2 ≤ a`, `b` and
+  `a*d < f + d` one first derives `a = 2` (`ls_c3_a2`), so the equation is
+  `x^2 ++ y^b = z^3`.  With `d < f < 2d` the critical decomposition gives
+  `u ++ w = x = w ++ p`, `z = x ++ u`, `y^b = p ++ u ++ z`; the word
+  `s = u ++ w ++ p` is both `|u|`-periodic and `|y|`-periodic with `|u| + e ≤ |s|`, so
+  Fine–Wilf gives the period `g = gcd |u| e`; `g` divides `|x|, |z|, |u|, |w|, |p|`, and
+  hence `x`, `y^b` and `z` are all powers of the length-`g` prefix of `s`.  By
+  `eqPow_commonRoot` they share a primitive root, so `x ++ y = y ++ x`.
+* **Step 4 (`c = 2`, the descent).** `x^a ++ y^b = z*z`; since `|z| ≤ a*d` and
+  `b*e ≤ f`, the word `z` splits both as `z = x^(a-1) ++ u` and as `z = w ++ y^b`, with
+  `u ++ w = x` (cancellation in `x^(a-1) ++ (u ++ w ++ y^b) = x^(a-1) ++ (x ++ y^b)`).
+  The sliding identity `w (u w)^(a-1) u = (w u)^a` then turns this into the *new*
+  equation `w^2 ++ y^b = (w ++ u)^a = x^a`, whose measure `|x| + b*e` is strictly smaller
+  because `d < f`.  The induction hypothesis gives `w ++ y = y ++ w`, hence
+  `y ++ z = z ++ y`, and cancelling in `z^c ++ y^b = y^b ++ z^c` yields
+  `x^a ++ y^b = y^b ++ x^a`; `comm_of_powComm` finishes.
+
+### Axiom audit of the new module
+
+```
+$ lake env lean /tmp/ax.lean   # #print axioms
+'AssemblyP1.lyndonSchutzenberger' depends on axioms: [propext, Classical.choice, Quot.sound]
+'AssemblyP1.LS_core_c3' depends on axioms: [propext, Classical.choice, Quot.sound]
+'AssemblyP1.ampbmp_commonRoot_uncond' depends on axioms: [propext, Classical.choice, Quot.sound]
+'AssemblyP1.ampbmp_head_eq_of_pow_uncond' depends on axioms: [propext, Classical.choice, Quot.sound]
+'AssemblyP1.ampbmp_primitive_of_head_ne_uncond' depends on axioms: [propext, Classical.choice, Quot.sound]
+```
+
+No `sorry`, no `admit`, no `sorryAx`, no new axioms.  The only imported mathematical
+input is Fine–Wilf; the AFP Isabelle formalisation of Lyndon–Schützenberger was used as
+a *blueprint* for the case structure only.
+
+## What remains
+
+The word-combinatorics half of issue #92 is closed.  What is left on the graph side is
+the argument of `docs/scalar-primitive-spellings-83.md` itself: that cutting a cyclic
+Eulerian spelling at two visits to a vertex with two distinct outgoing edge types
+produces two closed excursions `A`, `B` with `A[0]? ≠ B[0]?`, together with the
+divisibility half already formalised as `dvd_mul_of_letterCount_eq_one`.

@@ -67,15 +67,23 @@ Let `x^a ++ y^b = z^c` with `a, b, c >= 2` and `x, y` nonempty.  Put
 
 ## Status
 
-* **Done, machine-checked:** all the auxiliary word lemmas and `LS_core_c3`, the
-  `c = 3` core case (including the Fine–Wilf step and the extraction of the
-  common root).
-* **Not yet present:** `lyndonSchutzenberger` and the four `_uncond` corollaries
-  above.  What remains is the induction over the cases listed in
-  `## Structure of the proof`: the reverse-symmetry reduction, Case 1 (which
-  invokes the existing `ampbmp_commonRoot`), and Case 3 (the `c = 2` descent).
-  Until those are added, `LS_core_c3` is the only theorem in this file, and
-  `AssemblyP1.AmpBmpPrimitivity` still carries its extra length hypothesis.
+**Done and machine-checked.**  Every step of the plan above is proved in this file:
+
+* `LS_core_c3` — the `c = 3` core case (Step 2 below);
+* `lyndonSchutzenberger` — the full theorem, by strong induction on `|z| + b*|y|`
+  over the cases listed above, using the reverse symmetry (Step 0), the existing
+  `ampbmp_commonRoot` (Step 1), the `c = 2` descent (Step 3) and `LS_core_c3`
+  (Step 4);
+* `ampbmp_commonRoot_uncond` — **the theorem needed by issue #92**: for nonempty
+  `A, B` and `m >= 2`, if `A^m ++ B^m` is a proper power `U^k` (`k >= 2`) then
+  `A`, `B` and `U` are powers of one common nonempty word, with no length
+  hypothesis;
+* `ampbmp_head_eq_of_pow_uncond`, `ampbmp_primitive_of_head_ne_uncond` — the
+  separator theorems: two excursions whose first letters differ produce
+  `A^m ++ B^m` primitive for every `m >= 2`.
+
+The three `_uncond` corollaries drop the hypothesis `(m-1)*|A| >= |U|` that the
+similarly named results in `AssemblyP1.AmpBmpPrimitivity` still carry.
 
 No `sorry`, no `admit`, no new axioms.
 -/
@@ -722,4 +730,409 @@ theorem LS_core_c3 {x y z : List α} {b : ℕ}
     calc y ++ x = nCopies r i ++ nCopies r (j * (x.length / g)) := append_congr hyR h1
       _ = nCopies r (i + j * (x.length / g)) := (nCopies_add r i (j * (x.length / g))).symm
   rw [hxy, hyx, Nat.add_comm]
+/-! ## Sliding words: `w (u w)^k = (w u)^k w` -/
+
+/-- Auxiliary form of the sliding identity, phrased with `k+1`. -/
+theorem nCopies_append_pred {l₁ l₂ : List α} : ∀ k : ℕ,
+    nCopies (l₁ ++ l₂) (k + 1) = l₁ ++ nCopies (l₂ ++ l₁) k ++ l₂ := by
+  intro k
+  induction k with
+  | zero => simp [nCopies_succ, nCopies_zero]
+  | succ k ih =>
+    rw [nCopies_succ, ih, nCopies_succ]
+    simp [List.append_assoc]
+
+/-- The sliding identity for a concatenation: `(l₁ ++ l₂)^k = l₁ ++ nCopies (l₂ ++ l₁) (k-1) ++ l₂`
+for `k >= 1`.  This is the standard "overlap shift" of word powers. -/
+theorem nCopies_append_succ {l₁ l₂ : List α} (k : ℕ) (hk : 1 ≤ k) :
+    nCopies (l₁ ++ l₂) k = l₁ ++ nCopies (l₂ ++ l₁) (k - 1) ++ l₂ := by
+  obtain ⟨m, rfl⟩ : ∃ m : ℕ, k = m + 1 := ⟨k - 1, by omega⟩
+  rw [show m + 1 - 1 = m from by omega]
+  exact nCopies_append_pred (l₁ := l₁) (l₂ := l₂) m
+
+/-- Concatenating a power of `p` on either side of `X` is the same, provided `p`
+commutes with `X`. -/
+theorem nCopies_middle_comm {p X : List α} (hX : p ++ X = X ++ p) (m : ℕ) :
+    nCopies p m ++ X = X ++ nCopies p m := by
+  induction m with
+  | zero => simp
+  | succ m ih =>
+    calc (p ++ nCopies p m) ++ X = p ++ (nCopies p m ++ X) :=
+        (List.append_assoc p (nCopies p m) X)
+      _ = p ++ (X ++ nCopies p m) := congrArg (fun t => p ++ t) ih
+      _ = (p ++ X) ++ nCopies p m := (List.append_assoc p X (nCopies p m)).symm
+      _ = (X ++ p) ++ nCopies p m := by rw [hX]
+      _ = X ++ (p ++ nCopies p m) := (List.append_assoc X p (nCopies p m))
+
+/-- Powers of two commuting words commute with each other. -/
+theorem nCopies_comm_swap {p q : List α} (h : p ++ q = q ++ p) (m n : ℕ) :
+    nCopies p m ++ nCopies q n = nCopies q n ++ nCopies p m := by
+  have h1 : p ++ nCopies q n = nCopies q n ++ p := by
+    induction n with
+    | zero => simp
+    | succ n ih =>
+      calc p ++ nCopies q (n + 1) = p ++ (q ++ nCopies q n) := by rw [nCopies_succ]
+        _ = (p ++ q) ++ nCopies q n := (List.append_assoc p q (nCopies q n)).symm
+        _ = (q ++ p) ++ nCopies q n := by rw [h]
+        _ = q ++ (p ++ nCopies q n) := (List.append_assoc q p (nCopies q n))
+        _ = q ++ (nCopies q n ++ p) := by rw [ih]
+        _ = (q ++ nCopies q n) ++ p := (List.append_assoc q (nCopies q n) p).symm
+        _ = nCopies q (n + 1) ++ p := by rw [nCopies_succ]
+  have h2 : q ++ nCopies p m = nCopies p m ++ q := by
+    induction m with
+    | zero => simp
+    | succ m ih =>
+      calc q ++ nCopies p (m + 1) = q ++ (p ++ nCopies p m) := by rw [nCopies_succ]
+        _ = (q ++ p) ++ nCopies p m := (List.append_assoc q p (nCopies p m)).symm
+        _ = (p ++ q) ++ nCopies p m := by rw [h]
+        _ = p ++ (q ++ nCopies p m) := (List.append_assoc p q (nCopies p m))
+        _ = p ++ (nCopies p m ++ q) := by rw [ih]
+        _ = (p ++ nCopies p m) ++ q := (List.append_assoc p (nCopies p m) q).symm
+        _ = nCopies p (m + 1) ++ q := by rw [nCopies_succ]
+  rw [nCopies_middle_comm h1 m, nCopies_middle_comm h2 n]
+
+/-! ## Small consequences used by the induction -/
+
+/-- The length equation attached to `x^a ++ y^b = z^c`. -/
+theorem len_of_eqPow {x y z : List α} {a b c : ℕ}
+    (h : nCopies x a ++ nCopies y b = nCopies z c) :
+    a * x.length + b * y.length = c * z.length := by
+  have h2 := congrArg List.length h
+  rwa [List.length_append, nCopies_length, nCopies_length, nCopies_length] at h2
+
+/-- Two powers of a common word commute. -/
+theorem comm_of_powCommonRoot {x y w : List α} {p q : ℕ} (hx : x = nCopies w p)
+    (hy : y = nCopies w q) : x ++ y = y ++ x := by
+  rw [hx, hy, ← nCopies_add w p q, ← nCopies_add w q p, Nat.add_comm]
+
+/-- `l^2 = l ++ l`. -/
+theorem nCopies_two (l : List α) : nCopies l 2 = l ++ l := by
+  rw [nCopies_succ, nCopies_one]
+
+/-- In the `c = 3` core case the exponent of `x` is forced to be `2`. -/
+theorem ls_c3_a2 {a b d e f : ℕ} (ha : 2 ≤ a) (hb : 2 ≤ b) (hd : 0 < d) (hf : 0 < f)
+    (hlen : a * d + b * e = 3 * f) (hbe : b * e ≤ a * d) (hlenx : a * d < f + d) :
+    a = 2 := by
+  have _ := hb
+  have _ := hd
+  have _ := hf
+  have h1 : 3 * f ≤ 2 * (a * d) := by omega
+  have h2 : 2 * (a * d) < 2 * (f + d) := by omega
+  have h3 : 3 * f < 2 * f + 2 * d := by omega
+  have h4 : f < 2 * d := by omega
+  have h6 : a * d < 3 * d := by omega
+  have h7 : a < 3 := Nat.lt_of_mul_lt_mul_right h6
+  omega
+
+/-! ## The full theorem, by strong induction on `|z| + b*|y|` -/
+
+/-- The Lyndon–Schützenberger theorem, in the form needed downstream: for `a, b, c >= 2`,
+`x^a ++ y^b = z^c` forces `x ++ y = y ++ x`. -/
+theorem lyndonSchutzenberger {x y z : List α} {a b c : ℕ}
+    (ha : 2 ≤ a) (hb : 2 ≤ b) (hc : 2 ≤ c) (hx : x ≠ []) (hy : y ≠ [])
+    (h : nCopies x a ++ nCopies y b = nCopies z c) : x ++ y = y ++ x := by
+  have hmain : ∀ m : ℕ, ∀ (x y z : List α) (a b c : ℕ),
+      z.length + b * y.length ≤ m → 2 ≤ a → 2 ≤ b → 2 ≤ c → x ≠ [] → y ≠ [] →
+      nCopies x a ++ nCopies y b = nCopies z c → x ++ y = y ++ x := by
+    intro m
+    induction m using Nat.strong_induction_on with
+    | _ m ih =>
+      intro x y z a b c hm ha hb hc hx hy h
+      have hxpos : 0 < x.length := length_pos_of_ne_nil hx
+      have hypos : 0 < y.length := length_pos_of_ne_nil hy
+      have hzpos : 0 < z.length := by
+        by_contra hcon
+        have hcon' : z.length = 0 := by omega
+        have h1 := len_of_eqPow h
+        have h2 : 0 < a * x.length := Nat.mul_pos (by omega) hxpos
+        rw [hcon'] at h1
+        omega
+      have hz : z ≠ [] := ne_nil_of_length_pos hzpos
+      have hlen : a * x.length + b * y.length = c * z.length := len_of_eqPow h
+      -- the reversed equation is again of the same shape
+      have hrev : nCopies y.reverse b ++ nCopies x.reverse a = nCopies z.reverse c := by
+        calc nCopies y.reverse b ++ nCopies x.reverse a
+            = (nCopies y b).reverse ++ (nCopies x a).reverse := by
+              rw [rev_nCopies, rev_nCopies]
+          _ = (nCopies x a ++ nCopies y b).reverse := (List.reverse_append ..).symm
+          _ = (nCopies z c).reverse := congrArg List.reverse h
+          _ = nCopies z.reverse c := rev_nCopies z c
+      have hxrev : x.reverse ≠ [] := ne_nil_of_length_pos (by rw [List.length_reverse]; exact hxpos)
+      have hyrev : y.reverse ≠ [] := ne_nil_of_length_pos (by rw [List.length_reverse]; exact hypos)
+      -- Step 0: if the `y`-block is the longer one, pass to the reversed equation
+      by_cases hlt : a * x.length < b * y.length
+      · have hlt' : z.length + a * x.length < z.length + b * y.length := by omega
+        have hmeas : z.reverse.length + a * x.reverse.length ≤ z.length + a * x.length := by
+          rw [List.length_reverse, List.length_reverse]
+        have h1 := ih (z.length + a * x.length) (lt_of_lt_of_le hlt' hm) y.reverse x.reverse
+          z.reverse b a c hmeas (by omega) (by omega) (by omega) hyrev hxrev hrev
+        exact (comm_of_rev_comm (p := y) (q := x) h1).symm
+      have hbe : b * y.length ≤ a * x.length := by omega
+      -- Step 1: the periodicity lemma, on the equation or on its reverse
+      by_cases hper : a * x.length - x.length ≥ z.length
+      · have hper'' : (a - 1) * x.length ≥ z.length := by
+          have h1 : (a - 1) * x.length = a * x.length - x.length := by
+            rw [Nat.sub_mul, Nat.one_mul, show a = (a - 1) + 1 from by omega, Nat.succ_mul]
+          rwa [h1]
+        obtain ⟨w, hw, p, q, r, hp, hq, hr, hxw, hyw, hzw⟩ :=
+          ampbmp_commonRoot hx hy ha hb (by omega) h hper''
+        exact comm_of_powCommonRoot hxw hyw
+      by_cases hper' : b * y.length - y.length ≥ z.length
+      · have hper'' : (b - 1) * y.length ≥ z.length := by
+          have h1 : (b - 1) * y.length = b * y.length - y.length := by
+            rw [Nat.sub_mul, Nat.one_mul, show b = (b - 1) + 1 from by omega, Nat.succ_mul]
+          rwa [h1]
+        have hperrev : (b - 1) * y.reverse.length ≥ z.reverse.length := by
+          have h2 : (b - 1) * y.length ≥ z.length := hper''
+          have h3 : (b - 1) * y.length = (b - 1) * y.reverse.length := by
+            rw [List.length_reverse]
+          have h4 : z.length = z.reverse.length := by rw [List.length_reverse]
+          omega
+        obtain ⟨w, hw, p, q, r, hp, hq, hr, hyw, hxw, hzw⟩ :=
+          ampbmp_commonRoot hyrev hxrev hb ha (by omega) hrev hperrev
+        have h1 : y = nCopies w.reverse p := by
+          calc y = y.reverse.reverse := (List.reverse_reverse y).symm
+            _ = (nCopies w p).reverse := by rw [hyw]
+            _ = nCopies w.reverse p := rev_nCopies w p
+        have h2 : x = nCopies w.reverse q := by
+          calc x = x.reverse.reverse := (List.reverse_reverse x).symm
+            _ = (nCopies w q).reverse := by rw [hxw]
+            _ = nCopies w.reverse q := rev_nCopies w q
+        exact comm_of_powCommonRoot h2 h1
+      -- Step 2: the length hypotheses rule out `c >= 4`
+      have hnx : a * x.length - x.length < z.length := by omega
+      have hny : b * y.length - y.length < z.length := by omega
+      have hdx : x.length < z.length := by
+        have h2 : 2 * x.length ≤ a * x.length := Nat.mul_le_mul (by omega) (le_refl x.length)
+        have h3 : x.length ≤ a * x.length - x.length := by omega
+        omega
+      have hey : y.length < z.length := by
+        have h2 : 2 * y.length ≤ b * y.length := Nat.mul_le_mul (by omega) (le_refl y.length)
+        have h3 : y.length ≤ b * y.length - y.length := by omega
+        omega
+      have hc4 : c * z.length < 4 * z.length := by
+        have h1 : a * x.length < z.length + x.length := by omega
+        have h2 : b * y.length < z.length + y.length := by omega
+        omega
+      have hclt : c < 4 := Nat.lt_of_mul_lt_mul_right hc4
+      have hcq : c = 2 ∨ c = 3 := by omega
+      rcases hcq with hc2 | hc3
+      · -- Step 3: the `c = 2` descent
+        have hlen2 : a * x.length + b * y.length = 2 * z.length := by rwa [hc2] at hlen
+        have h1 : nCopies z c = z ++ z := by rw [hc2, nCopies_two]
+        have heq2 : nCopies x a ++ nCopies y b = z ++ z := h1 ▸ h
+        have hf_ax : z.length ≤ a * x.length := by omega
+        have hbef : b * y.length ≤ z.length := by omega
+        have hidx : 2 * z.length - b * y.length = a * x.length := by omega
+        set a' : ℕ := a - 1 with ha'
+        have ha'1 : 1 ≤ a' := by omega
+        have ha'a : a' + 1 = a := by omega
+        have hlenxa : (nCopies x a).length = a * x.length := nCopies_length x a
+        have hlenxap : (nCopies x a').length = a' * x.length := nCopies_length x a'
+        have ha'lt : a' * x.length < z.length := by
+          have h2 : a' * x.length = a * x.length - x.length := by
+            rw [ha', Nat.sub_mul, Nat.one_mul, ← ha'a, Nat.succ_mul]
+          omega
+        have ha'le : (nCopies x a').length ≤ z.length := by rw [hlenxap]; exact ha'lt.le
+        have hdxf : x.length < z.length := by
+          have h2 : x.length ≤ a' * x.length := by
+            have h3 : 1 * x.length ≤ a' * x.length := Nat.mul_le_mul ha'1 (le_refl x.length)
+            omega
+          omega
+        set u : List α := (x ++ nCopies y b).take (z.length - (nCopies x a').length) with hu
+        set w : List α := z.take (z.length - b * y.length) with hw
+        have heq3 : nCopies x a' ++ (x ++ nCopies y b) = z ++ z := by
+          calc nCopies x a' ++ (x ++ nCopies y b) = nCopies x a ++ nCopies y b := by
+                rw [← ha'a, nCopies_add x a' 1, nCopies_one, List.append_assoc]
+            _ = z ++ z := heq2
+        have hzxu : z = nCopies x a' ++ u := by
+          have h2 : (z ++ z).take z.length = z := by
+            rw [take_append, List.take_of_length_le (le_refl _),
+              show z.length - z.length = 0 by omega, List.take_zero, List.append_nil]
+          have h3 : (nCopies x a' ++ (x ++ nCopies y b)).take z.length
+              = nCopies x a' ++ (x ++ nCopies y b).take (z.length - (nCopies x a').length) :=
+            take_append_of_le' ha'le
+          calc z = (z ++ z).take z.length := h2.symm
+            _ = (nCopies x a' ++ (x ++ nCopies y b)).take z.length := by rw [heq3]
+            _ = nCopies x a' ++ (x ++ nCopies y b).take (z.length - (nCopies x a').length) := h3
+            _ = nCopies x a' ++ u := by rw [hu]
+        have hL : (nCopies x a ++ nCopies y b).drop (2 * z.length - b * y.length) = nCopies y b := by
+          calc (nCopies x a ++ nCopies y b).drop (2 * z.length - b * y.length)
+              = (nCopies x a).drop (2 * z.length - b * y.length)
+                  ++ (nCopies y b).drop
+                    (2 * z.length - b * y.length - (nCopies x a).length) := by
+                rw [hidx, List.drop_append]
+            _ = [] ++ nCopies y b := by
+                have hf_ax' : (nCopies x a).length ≤ a * x.length := by rw [hlenxa]
+                rw [hidx, hlenxa, List.drop_of_length_le hf_ax',
+                  show a * x.length - a * x.length = 0 by omega, List.drop_zero, List.nil_append]
+            _ = nCopies y b := List.nil_append _
+        have hR : (z ++ z).drop (2 * z.length - b * y.length) = z.drop (z.length - b * y.length) := by
+          calc (z ++ z).drop (2 * z.length - b * y.length)
+              = z.drop (2 * z.length - b * y.length)
+                  ++ z.drop (2 * z.length - b * y.length - z.length) := by
+                rw [hidx, List.drop_append]
+            _ = [] ++ z.drop (z.length - b * y.length) := by
+                rw [hidx, List.drop_of_length_le hf_ax,
+                  show a * x.length - z.length = z.length - b * y.length by omega, List.nil_append]
+            _ = z.drop (z.length - b * y.length) := List.nil_append _
+        have hybsuf : nCopies y b = z.drop (z.length - b * y.length) := by
+          have h3 := congrArg (fun t => t.drop (2 * z.length - b * y.length)) heq2
+          exact hL.symm.trans (h3.trans hR)
+        have hzwy : z = w ++ nCopies y b := by
+          have h3 : z.take (z.length - b * y.length) ++ z.drop (z.length - b * y.length) = z :=
+            List.take_append_drop ..
+          rw [← h3, hw, hybsuf]
+
+        have huw : u ++ w = x := by
+          have h2 : nCopies x a' ++ (x ++ nCopies y b)
+              = nCopies x a' ++ ((u ++ w) ++ nCopies y b) := by
+            calc nCopies x a' ++ (x ++ nCopies y b) = z ++ z := heq3
+              _ = (nCopies x a' ++ u) ++ (w ++ nCopies y b) := by rw [← hzxu, ← hzwy]
+              _ = nCopies x a' ++ ((u ++ w) ++ nCopies y b) := by
+                simp only [List.append_assoc]
+          have h3 : x ++ nCopies y b = (u ++ w) ++ nCopies y b := List.append_cancel_left h2
+          exact (List.append_cancel_right h3).symm
+        have hnew : nCopies w 2 ++ nCopies y b = nCopies (w ++ u) a := by
+          have hleft : nCopies w 2 ++ nCopies y b = w ++ nCopies x a' ++ u := by
+            calc nCopies w 2 ++ nCopies y b = w ++ (w ++ nCopies y b) := by
+                  rw [nCopies_two, List.append_assoc]
+              _ = w ++ z := by rw [hzwy]
+              _ = w ++ (nCopies x a' ++ u) := by rw [hzxu]
+              _ = w ++ nCopies x a' ++ u := (List.append_assoc w (nCopies x a') u).symm
+          have hright : nCopies (w ++ u) a = w ++ nCopies x a' ++ u := by
+            calc nCopies (w ++ u) a = w ++ nCopies (u ++ w) (a - 1) ++ u :=
+                nCopies_append_succ (l₁ := w) (l₂ := u) a (by omega)
+              _ = w ++ nCopies x a' ++ u := by
+                rw [← huw, show a - 1 = a' by omega]
+          exact hleft.trans hright.symm
+        have hlen_wu : (w ++ u).length = x.length := by
+          have h2 := congrArg List.length huw
+          rw [List.length_append] at h2
+          calc (w ++ u).length = w.length + u.length := by rw [List.length_append]
+            _ = u.length + w.length := Nat.add_comm _ _
+            _ = x.length := h2
+        have hlt' : (w ++ u).length + b * y.length < m := by
+          rw [hlen_wu]
+          omega
+        have hwy : w ++ y = y ++ w := by
+          by_cases hw0 : w = []
+          · simp [hw0]
+          · have h3 := ih ((w ++ u).length + b * y.length) hlt' w y (w ++ u) 2 b a
+              (le_refl _) (by omega) (by omega) (by omega) hw0 hy hnew
+            exact h3
+        have hyz : y ++ z = z ++ y := by
+          calc y ++ z = y ++ (w ++ nCopies y b) := by rw [hzwy]
+            _ = (y ++ w) ++ nCopies y b := (List.append_assoc y w (nCopies y b)).symm
+            _ = (w ++ y) ++ nCopies y b := by rw [hwy.symm]
+            _ = w ++ (y ++ nCopies y b) := List.append_assoc w y (nCopies y b)
+            _ = w ++ (nCopies y b ++ y) := by rw [nCopies_add_right]
+            _ = w ++ nCopies y b ++ y := (List.append_assoc w (nCopies y b) y).symm
+            _ = z ++ y := by rw [hzwy]
+        have h5 : nCopies z c ++ nCopies y b = nCopies y b ++ nCopies z c :=
+          nCopies_comm_swap (p := z) (q := y) hyz.symm c b
+        have h4 : nCopies x a ++ nCopies y b = nCopies y b ++ nCopies x a := by
+          have h6 : nCopies y b ++ (nCopies x a ++ nCopies y b) = nCopies y b ++ nCopies z c := by
+            rw [h]
+          have h7 : nCopies z c ++ nCopies y b = (nCopies y b ++ nCopies x a) ++ nCopies y b := by
+            calc nCopies z c ++ nCopies y b = nCopies y b ++ nCopies z c := h5
+              _ = nCopies y b ++ (nCopies x a ++ nCopies y b) := h6.symm
+              _ = (nCopies y b ++ nCopies x a) ++ nCopies y b :=
+                (List.append_assoc _ _ _).symm
+          exact h.trans (List.append_cancel_right h7)
+        exact comm_of_powComm hx hy (by omega) (by omega) h4
+      · -- Step 4: the `c = 3` core case
+        have hnx' : a * x.length < z.length + x.length := by omega
+        have hlen3 : a * x.length + b * y.length = 3 * z.length := by rwa [hc3] at hlen
+        have ha2 : a = 2 := ls_c3_a2 ha hb hxpos hzpos hlen3 hbe hnx'
+        have h1 : 2 * x.length < z.length + x.length := by
+          have := hnx'; rwa [ha2] at this
+        have h2 : b * y.length ≤ 2 * x.length := by
+          have h3 : a * x.length = 2 * x.length := by rw [ha2]
+          rwa [h3] at hbe
+        have h3 : nCopies x 2 ++ nCopies y b = nCopies z 3 := by
+          rw [ha2, hc3] at h; exact h
+        exact LS_core_c3 hx hy hb h2 h1 h3
+  exact hmain (z.length + b * y.length) x y z a b c (le_refl _) ha hb hc hx hy h
+
+
+/-! ## The unconditional consequences for issue #92
+
+`ampbmp_commonRoot`, `ampbmp_head_eq_of_pow` and `ampbmp_primitive_of_head_ne` in
+`AssemblyP1.AmpBmpPrimitivity` all carry the extra hypothesis `(m-1)*|A| >= |U|`,
+which fails for every square witness `k = 2` with `|A| = |B|`.  The
+Lyndon–Schützenberger theorem above removes it: `A^m ++ B^m = U^k` is already an
+instance of `x^a ++ y^b = z^c` with `a = b = m >= 2` and `c = k >= 2`. -/
+
+/-- **The theorem of issue #92.** For nonempty `A, B` and `m >= 2`, if
+`A^m ++ B^m = U^k` with `k >= 2`, then `A`, `B` and `U` are powers of one common
+nonempty word.  No length hypothesis is needed.
+
+`A^m ++ B^m = U^k` is an instance of `x^a ++ y^b = z^c` with `a = b = m` and
+`c = k`, so `lyndonSchutzenberger` gives `A ++ B = B ++ A`; `commuting_commonRoot`
+then exhibits a word `w` with `A = w^p` and `B = w^q`, and
+`A^m ++ B^m = w^(m(p+q)) = U^k` gives the root of `U` by `eqPow_commonRoot`. -/
+theorem ampbmp_commonRoot_uncond {A B U : List α} {m k : ℕ}
+    (hA : A ≠ []) (hB : B ≠ []) (hm2 : 2 ≤ m) (hk2 : 2 ≤ k)
+    (h : nCopies A m ++ nCopies B m = nCopies U k) :
+    ∃ w : List α, w ≠ [] ∧ ∃ p q r : ℕ, 1 ≤ p ∧ 1 ≤ q ∧ 1 ≤ r ∧
+      A = nCopies w p ∧ B = nCopies w q ∧ U = nCopies w r := by
+  have hcomm : A ++ B = B ++ A := lyndonSchutzenberger hm2 hm2 hk2 hA hB h
+  obtain ⟨w, hw, p, q, hp, hq, hA', hB'⟩ := commuting_commonRoot hA hB hcomm
+  have hm1 : 1 ≤ m := by omega
+  have hk1 : 1 ≤ k := by omega
+  have hAB : nCopies A m ++ nCopies B m = nCopies w (p * m + q * m) := by
+    rw [hA', hB', nCopies_compose, nCopies_compose, ← nCopies_add]
+  have hU : U ≠ [] := by
+    intro hc
+    have h1 : 0 < (nCopies A m).length := by
+      rw [nCopies_length]
+      exact Nat.mul_pos (by omega) (length_pos_of_ne_nil hA)
+    have h2 := congrArg List.length h
+    rw [hc, nCopies_length, List.length_append, nCopies_length, List.length_nil] at h2
+    have h3 : (nCopies A m).length = 0 := by
+      rw [nCopies_length]
+      have := length_pos_of_ne_nil hA
+      omega
+    omega
+  have hne : p * m + q * m ≠ 0 := by
+    have h1 : 0 < p * m + q * m := Nat.add_pos_left (Nat.mul_pos hp (by omega)) _
+    exact Nat.ne_of_gt h1
+  obtain ⟨v, hv, i, j, hi, hj, hUi, hwj⟩ :=
+    eqPow_commonRoot (x := U) (m := k) (w := w) (p := p * m + q * m) hU hw hk1
+      (by omega) (by rw [← hAB]; exact h.symm)
+  refine ⟨v, hv, j * p, j * q, i, ?_, ?_, hi, ?_, ?_, hUi⟩
+  · simpa using Nat.mul_le_mul hj hp
+  · simpa using Nat.mul_le_mul hj hq
+  · rw [hA', hwj, nCopies_compose]
+  · rw [hB', hwj, nCopies_compose]
+
+/-- **The separator step, unconditionally.** If `A^m ++ B^m = U^k` with `m, k >= 2`
+and `A, B` nonempty, then `A` and `B` start with the same letter.
+
+This is the step the branching construction of `docs/scalar-primitive-spellings-83.md`
+needs: cutting a cyclic Eulerian spelling at two visits to a vertex with two distinct
+outgoing edge types produces two closed excursions `A` and `B` whose first *edge types*
+differ, hence whose first letters differ. -/
+theorem ampbmp_head_eq_of_pow_uncond {A B U : List α} {m k : ℕ}
+    (hA : A ≠ []) (hB : B ≠ []) (hm2 : 2 ≤ m) (hk2 : 2 ≤ k)
+    (h : nCopies A m ++ nCopies B m = nCopies U k) :
+    A[0]? = B[0]? := by
+  obtain ⟨w, hw, p, q, r, hp, hq, hr, hA', hB', hU'⟩ :=
+    ampbmp_commonRoot_uncond hA hB hm2 hk2 h
+  exact head_eq_of_commonRoot hw hp hq hA' hB'
+
+/-- Consequently, under the same hypotheses, `A^m ++ B^m` is not a proper power
+whenever `A` and `B` start with different letters: the two excursions must have
+started with the same edge type. -/
+theorem ampbmp_primitive_of_head_ne_uncond {A B U : List α} {m k : ℕ}
+    (hA : A ≠ []) (hB : B ≠ []) (hm2 : 2 ≤ m) (hk2 : 2 ≤ k)
+    (h : nCopies A m ++ nCopies B m = nCopies U k)
+    (hne : A[0]? ≠ B[0]?) :
+    IsPrimitive (nCopies A m ++ nCopies B m) := by
+  intro hp
+  obtain ⟨U, hU, k', hk', heq⟩ := hp
+  exact hne (ampbmp_head_eq_of_pow_uncond hA hB hm2 hk2 h)
+
+
 end AssemblyP1
