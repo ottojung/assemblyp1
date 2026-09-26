@@ -1,4 +1,23 @@
- same-length complete-spectrum
+import AssemblyP1.PopulationUniqueness
+import AssemblyP1.RepeatAdapter
+
+/-!
+# The `AAAB`, `G = 4`, `L = 2` converse: P2 failure with a singleton
+# same-length complete-spectrum fibre (issue #92)
+
+This file kernel-checks the concrete converse instance recorded
+mathematically in the mature converse note
+`docs/research/spectrum-identifiability-converse.md` (branch
+`agent/converse-82`, not yet merged): the primitive circular genome
+
+```text
+S = AAAB,      |S| = G = 4,      read length L = 2
+```
+
+**fails the project's P2 / BBT-Ukkonen repeat condition**, yet the
+complete length-`2` spectrum fibre at the same candidate length is a
+**singleton modulo cyclic rotation**. So P2 is a clean *sufficient*
+structural region for oriented same-length complete-spectrum
 identifiability, but it is **not necessary**: the reverse implication
 `complete-spectrum identifiability ⟹ P2` is refuted by a concrete
 kernel-checked instance.
@@ -89,7 +108,25 @@ def truth : Genome4 := ![Bin.A, Bin.A, Bin.A, Bin.B]
 
 /-! ## Data-level mirrors of the repository's word layer
 
-ome4) (i : ℕ) : cyc4 D i = cyc hG4 D i := rfl
+The statements below are about the repository's `cyc` / `window` /
+`specCount`; these `rfl`-equivalent mirrors exist only so that the
+finite claims can be discharged by `decide` (the repository definitions
+carry the side-condition proof `hG4`, which is irrelevant to the
+computations by proof irrelevance). -/
+
+/-- Circular symbol access, definitionally `OrientedRigidity.cyc hG4`. -/
+def cyc4 (D : Genome4) (i : ℕ) : Base := D ⟨i % 4, Nat.mod_lt _ (by norm_num)⟩
+
+/-- Oriented length-`2` window, definitionally
+`OrientedRigidity.window hG4 (L := 2)`. -/
+def win2 (D : Genome4) (r : Fin 4) : Pair2 := fun d => cyc4 D (r.val + d.val)
+
+/-- Complete length-`2` spectrum, definitionally
+`OrientedRigidity.specCount hG4 (L := 2)`. -/
+def spec2 (D : Genome4) (w : Pair2) : ℕ :=
+  (Finset.univ.filter (fun r : Fin 4 => win2 D r = w)).card
+
+theorem cyc4_eq_cyc (D : Genome4) (i : ℕ) : cyc4 D i = cyc hG4 D i := rfl
 
 theorem win2_eq_window (D : Genome4) (r : Fin 4) :
     win2 D r = window hG4 (L := 2) D r := rfl
@@ -181,7 +218,12 @@ def fibre (S : Genome4) : Finset Genome4 := Finset.univ.filter (fun D => spec2 D
 
 theorem fibre_card_truth : (fibre truth).card = 4 := by
   unfold fibre spec2 win2 cyc4 truth
-r ⟨Finset.mem_univ _, by decide⟩
+  decide
+
+/-- The truth itself lies in its own fibre, and each rotation of the
+truth lies in it. -/
+theorem fibre_contains_truth : truth ∈ fibre truth :=
+  Finset.mem_filter.mpr ⟨Finset.mem_univ _, by decide⟩
 
 /-- Rotation invariance of the complete spectrum (finite, exhaustive
 over the four rotations of an arbitrary length-`4` word). -/
