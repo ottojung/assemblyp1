@@ -17,6 +17,7 @@ import AssemblyP1.OrientedSameLengthML
 import AssemblyP1.SameLengthExactMLCounterexample
 import AssemblyP1.SameLength62Maximizer
 import AssemblyP1.WraparoundTripleRepeat
+import AssemblyP1.MLEscape
 import AssemblyP1.PopulationUniqueness
 import AssemblyP1.AAABConverse
 
@@ -42,3 +43,21 @@ import AssemblyP1.AAABConverse
 #print axioms AssemblyP1.WraparoundTripleRepeat.informationFeasible_does_not_exclude_long_triple_repeat
 #print axioms AssemblyP1.WraparoundTripleRepeat.wraparound_information_feasible
 #print axioms AssemblyP1.WraparoundTripleRepeat.wraparound_has_long_triple_repeat
+
+/-! ## Axiom audit for the wraparound-regime result of #88
+(`AssemblyP1.MLEscape`) -/
+
+#print axioms AssemblyP1.MLEscape.Is62SpelledMLMax
+#print axioms AssemblyP1.MLEscape.informationFeasible_62_spelledML_of_no_long_triple
+#print axioms AssemblyP1.MLEscape.HasMidRangeTripleRepeat.longTriple
+#print axioms AssemblyP1.MLEscape.informationFeasible_no_midRangeTriple
+#print axioms AssemblyP1.MLEscape.longTripleFree_no_midRangeTriple
+#print axioms AssemblyP1.MLEscape.exactLik_le_of_spec_le
+#print axioms AssemblyP1.MLEscape.observed_spectral_excess_of_ml_failure
+#print axioms AssemblyP1.MLEscape.candidate_is_massG_positive_circulation
+#print axioms AssemblyP1.MLEscape.eq_specCount_of_massG_le
+#print axioms AssemblyP1.MLEscape.ml_failure_gives_spectral_escape
+#print axioms AssemblyP1.MLEscape.informationFeasible_62_spelledML_of_escape_crux
+#print axioms AssemblyP1.MLEscape.culprit_instance_checked
+#print axioms AssemblyP1.MLEscape.cand0_is_escape
+#print axioms AssemblyP1.MLEscape.truth0_has_midrange_triple

@@ -254,3 +254,11 @@ not proved. It is recorded as such.
   truth-feasible realizations. `AAAAB` refutes it.
 * anything about the residual long-triple-repeat regime beyond its
   non-emptiness.
+
+**Superseded in part.** The successor to this packet is
+`AssemblyP1/MLEscape` with the note `docs/issue88-wraparound-contrapositive.md`:
+it states the faithful §6.2 maximizer predicate *with* membership, identifies
+the exact band that clause 2 of `I_s` forbids (`L - 1 ≤ ℓ < G - L`), reduces the
+residual regime to a single graph/repeat-level culprit statement, and proves the
+target-shaped theorem with that culprit statement in place of `hno`. The
+culprit statement itself is not proved; the finite evidence is recorded there.
