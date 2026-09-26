@@ -1279,3 +1279,123 @@ theorem winTrail_edgeUse {H : ℕ} (hH : 0 < H) (D : Fin H → α) (e : Fin L �
   simp
 
 end WindowTrail
+
+/-! ## The normalized-spectrum ray
+
+A candidate whose normalized complete spectrum agrees with the truth's has its
+count vector on the *same* integer ray, and its length is the corresponding
+multiple of the primitive length.  This is the arithmetic behind the "membership
+on the same integer ray" step of `docs/scalar-primitive-spellings-83.md`,
+stated using the gcd-one property of the primitive point rather than a division
+free identity. -/
+
+section Ray
+
+variable {W : Type} [DecidableEq W] [Fintype W]
+
+/-- Cancelling a common left factor in an equation with reassociated products. -/
+private theorem mul_cancel_left' {E A C : ℕ} (hE : 0 < E)
+    (h : E * A = E * C) : A = C := Nat.mul_left_cancel hE h
+
+/-- If `cD w * d = c0 w * H` for every `w`, `0 < d`, and `c0` is gcd-one, then
+`d` divides `H` and `cD w = (H / d) * c0 w`. -/
+theorem ray_multiple {d H : ℕ} (c0 cD : W → ℕ)
+    (hd : 0 < d) (hgcd : IsGcdOne c0) (hmul : ∀ w, cD w * d = c0 w * H) :
+    d ∣ H ∧ ∀ w, cD w = (H / d) * c0 w := by
+  -- the reduced factors are coprime
+  set e := Nat.gcd d H with he
+  have hepos : 0 < e := Nat.gcd_pos_of_pos_left H hd
+  have hed : e ∣ d := Nat.gcd_dvd_left _ _
+  have heH : e ∣ H := Nat.gcd_dvd_right _ _
+  have hed' : e * (d / e) = d := Nat.mul_div_cancel' hed
+  have heH' : e * (H / e) = H := Nat.mul_div_cancel' heH
+  have hcop : Nat.Coprime (d / e) (H / e) := by
+    have h1 := Nat.gcd_div hed heH
+    have h2 : Nat.gcd (d / e) (H / e) = 1 := by
+      rw [h1, he, Nat.div_self hepos]
+    rw [Nat.coprime_iff_gcd_eq_one, h2]
+  -- the coprime factor of `d` divides every `c0 w`, so gcd-one forces it to be 1
+  have hde : d / e = 1 := by
+    refine hgcd (d / e) ?_
+    intro w
+    have h2 := hmul w
+    have h3 : cD w * (d / e) = c0 w * (H / e) := by
+      have h4 := h2
+      rw [← hed', ← heH'] at h4
+      have h5 : e * (cD w * (d / e)) = e * (c0 w * (H / e)) := by
+        simpa [Nat.mul_assoc, Nat.mul_comm, Nat.mul_left_comm] using h4
+      exact mul_cancel_left' hepos h5
+    refine Nat.Coprime.dvd_of_dvd_mul_left hcop ?_
+    refine ⟨cD w, ?_⟩
+    have h4 := h3
+    rw [Nat.mul_comm (cD w) (d / e)] at h4
+    have h5 := h4.symm
+    rwa [Nat.mul_comm (c0 w) (H / e)] at h5
+  have hde' : d = e := by
+    have h1 := hed'
+    rw [hde, Nat.mul_one] at h1
+    exact h1.symm
+  have hdv : d ∣ H := by rw [hde']; exact heH
+  refine ⟨hdv, fun w => ?_⟩
+  have h2 := hmul w
+  have h3 : c0 w * (H / e) = cD w := by
+    have h4 := h2
+    rw [← hed', ← heH'] at h4
+    have h5 : e * (cD w * (d / e)) = e * (c0 w * (H / e)) := by
+      simpa [Nat.mul_assoc, Nat.mul_comm, Nat.mul_left_comm] using h4
+    have h6 : cD w * (d / e) = c0 w * (H / e) := mul_cancel_left' hepos h5
+    rw [hde, Nat.mul_one] at h6
+    exact h6.symm
+  have h4 : H / e = H / d := by rw [hde']
+  rw [h4] at h3
+  rw [Nat.mul_comm]
+  exact h3.symm
+
+/-- **Normalized-spectrum equality means membership on the same integer ray.**
+If the truth spectrum is `g * c0` on the primitive point `c0` (`IsGcdOne c0`),
+the truth totals `G`, and a candidate of length `H` has the same normalized
+complete spectrum, then its count vector is `m * c0` for some `m >= 1` and
+`H = m * (G / g)`. -/
+theorem spectrum_on_ray {G H g : ℕ} (hG : 0 < G) (hH : 0 < H) (hg0 : 0 < g)
+    (c0 cS cD : W → ℕ)
+    (hS : ∀ w, cS w = g * c0 w)
+    (hSsum : ∑ w : W, cS w = G)
+    (hNorm : ∀ w, cS w * H = cD w * G) (hgcd : IsGcdOne c0) :
+    ∃ m, 1 ≤ m ∧ H = m * (G / g) ∧ ∀ w, cD w = m * c0 w := by
+  -- `G` is `g` times the mass of `c0`
+  have hexp : G = g * (∑ w : W, c0 w) := by
+    calc G = ∑ w : W, cS w := hSsum.symm
+      _ = ∑ w : W, g * c0 w := Finset.sum_congr rfl (fun w _ => hS w)
+      _ = g * ∑ w : W, c0 w := by
+          simpa [Finset.mul_sum]
+  have hcomm := hexp
+  rw [Nat.mul_comm] at hcomm
+  have hS0 : (∑ w : W, c0 w) = G / g :=
+    (Nat.div_eq_of_eq_mul_left hg0 hcomm).symm
+  have hS0pos : 0 < G / g := by
+    by_contra hcon
+    have hz : G / g = 0 := by omega
+    have h1 := hexp
+    rw [hS0, hz] at h1
+    simp at h1
+    omega
+  -- cancellation of the common factor `g`
+  have hmul : ∀ w, cD w * (G / g) = c0 w * H := by
+    intro w
+    have h1 := hNorm w
+    rw [hS w] at h1
+    have h2 : G = g * (G / g) := by rw [← hS0, hexp]
+    rw [h2] at h1
+    have h1' : g * (c0 w * H) = g * (cD w * (G / g)) := by
+      simpa [Nat.mul_assoc, Nat.mul_comm, Nat.mul_left_comm] using h1
+    exact (mul_cancel_left' hg0 h1').symm
+  obtain ⟨hdvd, hD⟩ := ray_multiple c0 cD hS0pos hgcd hmul
+  refine ⟨H / (G / g), ?_, ?_, ?_⟩
+  · have h1 : 0 < H / (G / g) := Nat.div_pos (Nat.le_of_dvd hH hdvd) hS0pos
+    omega
+  · have h1 : (G / g) * (H / (G / g)) = H := Nat.mul_div_cancel' hdvd
+    exact h1.symm.trans (Nat.mul_comm _ _)
+  · intro w
+    exact hD w
+
+end Ray
