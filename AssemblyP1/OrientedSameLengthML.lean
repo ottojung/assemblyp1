@@ -1,4 +1,6 @@
 import AssemblyP1.OrientedFinalRigidity
+import AssemblyP1.SourceFaithfulIs
+import AssemblyP1.BridgingBridge
 
 /-!
 # Oriented same-length ML: the model-boundary endpoint (issue #88)
@@ -607,6 +609,130 @@ theorem truth_is_spelled_candidate {α : Type} [DecidableEq α] [Fintype α] {G 
   ⟨rfl, fun w hw => by
     have hw' := OrientedRigidity.truth_pos_on_support (L := L) hG S w (hobs w hw)
     exact Nat.lt_of_lt_of_le (by omega) hw'⟩
+
+
+/-! ## Reading a genuine realization into observed multiplicities
+
+A *realization* is a list of `n` latent read starts `ρ : Fin n → Fin G`.
+`observedOf` turns it into the observed read-type multiplicity function by
+counting, so that two reads landing on the same start are counted twice. This
+is the layer that was previously missing: the earlier endpoint
+`truth_is_spelled_candidate` took "every observed read type is a window of the
+truth" as a *hypothesis*, which is exactly the observable consequence of drawing
+reads from the truth. It is now a theorem, and the endpoint below is phrased
+from a realization rather than from that hypothesis. -/
+
+/-- A realization of `n` reads: the latent start of each observed read. -/
+abbrev Realization (G n : ℕ) := Fin n → Fin G
+
+/-- The observed read-type multiplicities of a realization: `x w` is the number
+of the `n` realized reads whose oriented length-`L` word is `w`. Repeated latent
+starts are counted repeatedly, and a `Finset` of starts is never used as the
+observation. -/
+def observedOf {α : Type} [DecidableEq α] [Fintype α] {G L n : ℕ} (hG : 0 < G)
+    (S : Fin G → α) (ρ : Realization G n) : ObservedReads α L :=
+  fun w => ∑ i : Fin n, if OrientedRigidity.window (L := L) hG S (ρ i) = w then 1 else 0
+
+/-- **Every observed read type is a window of the truth.** This is the
+observable consequence of a realization whose reads were drawn from the truth,
+and it is what used to be an explicit premise of the endpoint. -/
+theorem observedOf_mem_support {α : Type} [DecidableEq α] [Fintype α] {G L n : ℕ}
+    (hG : 0 < G) (S : Fin G → α) (ρ : Realization G n) (w : Fin L → α)
+    (hw : 0 < observedOf (L := L) hG S ρ w) :
+    w ∈ OrientedRigidity.support (L := L) hG S := by
+  classical
+  by_contra hn
+  have hz : observedOf (L := L) hG S ρ w = 0 := by
+    apply Finset.sum_eq_zero
+    intro i _
+    refine if_neg ?_
+    intro he
+    exact hn (Finset.mem_image.mpr ⟨ρ i, Finset.mem_univ _, he⟩)
+  omega
+
+/-- **The truth is a strict same-length spelled candidate of its own
+realization**, with no observation-level hypothesis: the support clause is
+`rfl` and the spelling clause is `observedOf_mem_support`. -/
+theorem truth_is_spelled_candidate_of_realization {α : Type} [DecidableEq α]
+    [Fintype α] {G L n : ℕ} (hG : 0 < G) (S : Fin G → α) (ρ : Realization G n) :
+    IsSameLengthSpelledCandidate (L := L) hG S S (observedOf hG S ρ) :=
+  ⟨rfl, fun w hw =>
+    (specCount_pos_iff hG S w).mpr (observedOf_mem_support hG S ρ w hw)⟩
+
+/-! ## A positive boundary: covering constant reads force a constant genome
+
+This is the theorem-level counterpart of the computational observation that the
+"constant all-zero competitor" family of apparent counterexamples is impossible.
+If every realized read returns the same symbol, and the realized starts cover
+the genome, then the genome is itself constant, so the truth spells every one
+of its length-`L` windows and its exact likelihood is `1`, the maximum value of
+the objective. Hence **no counterexample to the same-length exact ML claim can
+have a single-read-type observation**, for any read length — not because of any
+repeat-theoretic consideration, but because of clause 1 of `I_s` alone. -/
+
+/-- **Covering constant reads force a constant genome.** If every realized read
+at every start in `R` returns the symbol `v`, and the realized starts cover the
+genome, then every position carries `v`. -/
+theorem covering_constant_reads_is_constant {α : Type} [DecidableEq α] {G L : ℕ}
+    (hG : 0 < G) (hLG : L ≤ G) (S : Fin G → α) (v : α) (R : Finset (Fin G))
+    (hobs : ∀ r ∈ R, ∀ d : Fin L, OrientedRigidity.cyc hG S (r.val + d.val) = v)
+    (hcov : ∀ p : Fin G, ∃ r ∈ R, ∃ d : Fin L, p.val = (r.val + d.val) % G) :
+    ∀ i : Fin G, OrientedRigidity.cyc hG S i.val = v := by
+  intro i
+  obtain ⟨r, hr, d, hd⟩ := hcov i
+  have h1 : OrientedRigidity.cyc hG S i.val
+      = OrientedRigidity.cyc hG S (r.val + d.val) := by
+    unfold OrientedRigidity.cyc
+    have hmod : i.val % G = (r.val + d.val) % G := by
+      rw [hd, Nat.mod_mod]
+    exact congrArg S (Fin.ext hmod)
+  rw [h1]
+  exact hobs r hr d
+
+/-! ## The honest end-to-end endpoint, from `InformationFeasible`
+
+The theorem below is the strongest statement of the #88 target that is *true*
+in this repository. Its premise is a genuine realization together with **full
+source-faithful** information feasibility of the set of distinct latent starts,
+plus the sharp nondegeneracy condition on the truth; its conclusion is the
+actual same-length exact Medvedev–Brudno objective. The wraparound regime that
+`AssemblyP1.BridgingBridge` shows `I_s` cannot exclude is an explicit premise
+here, and is *not* assumed away.
+
+`AssemblyP1.SameLengthExactMLCounterexample` shows that without the
+nondegeneracy — and, more decisively, without restricting the candidate class —
+the same conclusion is false, and pins down exactly where the boundary lies. -/
+
+/-- The `Genome` of a same-length truth, for the shared bridging layer. -/
+def asGenome {α : Type} {G : ℕ} (hG : 0 < G) (S : Fin G → α) :
+    SourceFaithfulIs.Genome α := ⟨G, hG, S⟩
+
+/-- **The end-to-end endpoint.** Let `ρ` be a genuine realization of `n` reads on
+the truth `S`, let `R` be a set of latent starts containing all of them, and
+suppose `InformationFeasible (asGenome hG S) L R` at full strength. If the
+truth carries no triple repeat in the bridging-permitted regime
+`max (L - 1) (G - L) ≤ e`, then the truth maximises the oriented same-length
+exact multinomial objective over the strict spelled same-length candidate class.
+
+The hypothesis side goes through `AssemblyP1.BridgingBridge`, which discharges
+`¬ HasLongTripleRepeat` from `InformationFeasible` plus exactly that
+nondegeneracy; the conclusion side is the spectrum-rigidity chain composed with
+the congruence lemmas of this module. -/
+theorem informationFeasible_exactLik_maximizer
+    {α : Type} [DecidableEq α] [Fintype α] {G L n : ℕ} (hG : 0 < G) (hL2 : 2 ≤ L)
+    (hLG : L ≤ G) (S : Fin G → α) (ρ : Realization G n)
+    (R : Finset (Fin G))
+    (hR : ∀ i : Fin n, ρ i ∈ R)
+    (hfeas : SourceFaithfulIs.InformationFeasible (asGenome hG S) L R)
+    (hnr : BridgingBridge.SharpNoLongTripleRepeat (L := L) (S := asGenome hG S))
+    (D : Fin G → α)
+    (hD : IsSameLengthSpelledCandidate (L := L) hG S D (observedOf hG S ρ)) :
+    exactLik (L := L) hG D (observedOf hG S ρ)
+      ≤ exactLik (L := L) hG S (observedOf hG S ρ) := by
+  have hno : ¬ RepeatAdapter.HasLongTripleRepeat hG S L :=
+    BridgingBridge.informationFeasible_sharp_no_long_triple_repeat hL2 hLG hfeas hnr
+  exact same_length_exactLik_maximizer hG S D hL2 hLG hno (observedOf hG S ρ) hD
+
 
 end
 

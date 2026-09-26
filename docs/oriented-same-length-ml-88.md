@@ -1,3 +1,15 @@
+> **SUPERSEDED for the conclusion.** This note records the pre-#100 state of
+> issue #88. The target theorem it was aiming at is **false**, and the refutation
+> — including the literal §6.2 `SpelledFeasible62` predicate, full `I_s`, and
+> equal genome length — is kernel-checked in
+> `AssemblyP1/SameLengthExactMLCounterexample.lean`. See
+> `docs/same-length-exact-ml-88-refutation.md` for the settled result, the exact
+> theorem surface, the cross-check of the two independently reported witnesses,
+> and the correction of a void earlier computational harness. The "Fact D"
+> section below is refuted by `AssemblyP1/BridgingBridge.lean`: `I_s` does
+> **not** imply `¬ HasLongTripleRepeat`, because a read may bridge a long copy
+> by spanning the complement arc.
+
 # Oriented same-length ML at the model boundary (issue #88)
 
 This note records what `AssemblyP1/OrientedSameLengthML.lean` states and proves,

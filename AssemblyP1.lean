@@ -12,6 +12,22 @@ import AssemblyP1.PopulationReduction
 import AssemblyP1.OrientedRigidity
 import AssemblyP1.RepeatAdapter
 import AssemblyP1.OrientedFinalRigidity
+import AssemblyP1.BridgingBridge
 import AssemblyP1.OrientedSameLengthML
+import AssemblyP1.SameLengthExactMLCounterexample
 import AssemblyP1.PopulationUniqueness
 import AssemblyP1.AAABConverse
+
+/-! ## Axiom audit for the #88 deliverable (issue #88) -/
+
+#print axioms AssemblyP1.SameLengthExactMLCounterexample.same_length_exact_ML_refutation_62
+#print axioms AssemblyP1.SameLengthExactMLCounterexample.competitor_spelledFeasible62
+#print axioms AssemblyP1.SameLengthExactMLCounterexample.section62_maxLikelihood_refuted
+#print axioms AssemblyP1.SameLengthExactMLCounterexample.truth_information_feasible
+#print axioms AssemblyP1.SameLengthExactMLCounterexample.truth_no_long_triple_repeat
+#print axioms AssemblyP1.BridgingBridge.bridgingLength
+#print axioms AssemblyP1.BridgingBridge.informationFeasible_tripleRepeat_ge_G_sub_L
+#print axioms AssemblyP1.BridgingBridge.informationFeasible_sharp_no_long_triple_repeat
+#print axioms AssemblyP1.OrientedSameLengthML.informationFeasible_exactLik_maximizer
+#print axioms AssemblyP1.OrientedSameLengthML.covering_constant_reads_is_constant
+#print axioms AssemblyP1.OrientedSameLengthML.truth_is_spelled_candidate_of_realization
