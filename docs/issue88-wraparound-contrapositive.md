@@ -138,12 +138,30 @@ window support (a read type's multiplicity is at most `G`) and is `1` off it
 multiplicity.
 
 **The converse is false and is not claimed.** Two same-support same-length
-spectra of equal total mass can differ in both directions at once (e.g. one read
-type rarer in `D`, another more common), and the likelihood product can then go
-either way. So the exact content of ML failure is the weaker
+spectra of equal total mass can differ in both directions at once, and the
+likelihood product can then go either way depending on the observation. The
+concrete instance, from the same definitions (`G = 5`, `L = 2`, alphabet
+binary, same window support `{00, 01, 10}`):
+
+```
+truth      00001 : d(00) = 3, d(01) = 1, d(10) = 1
+candidate  00101 : d(00) = 1, d(01) = 2, d(10) = 2
+```
+
+* observation `{01, 10}` (one read of each): `exactLik(cand) = (2/5)² (2/5)² =
+  0.0256 > 0.0016 = (1/5)² (1/5)² = exactLik(truth)` — the candidate wins, and
+  indeed `d(01) > d_S(01)`;
+* observation `{00}`: `exactLik(cand) = (1/5) = 0.2 < 0.6 = (3/5) =
+  exactLik(truth)` — the truth wins, although the pointwise domination of the
+  second kind holds nowhere on the observed type `00` (`1 < 3`).
+
+So `exactLik D ≤ exactLik S` does **not** imply the pointwise spectral
+comparison, and the exact content of ML failure is the weaker
 `observed_spectral_excess_of_ml_failure`: ML failure implies that *some observed
 read type* has strictly larger multiplicity in `D`. That is all the reduction
-needs, and it is the direction recorded in the module header.
+needs, and it is the direction recorded in the module header. (This instance is
+of course not `I_s`-feasible at `L = 2`; it is used only to show the direction
+of the implication, not to make a claim about #88.)
 
 ## 4. The graph-level contrapositive, and the evidence for it
 
