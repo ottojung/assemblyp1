@@ -3,60 +3,62 @@ import AssemblyP1.RepeatAdapter
 import AssemblyP1.PopulationReduction
 
 /-!
-# The chord / transposition core of `thm:BBT` (issue #89), route recorded in the
-# issue comments
+# The chord / transposition core of `thm:BBT` (issue #89)
 
 This file attacks the *only* remaining boundary of
 `AssemblyP1.PopulationUniqueness.population_unique_ML_up_to_rotation`, namely
-`P2.BBTUniqueAt`.  It follows the route sketched in the issue comments and does
-**not** use the raw `(L-1)`-mer maximal-extension argument that
-`docs/audit-p2-direct-proof-maximal-extension-2026-09-21.md` refutes.
+`P2.BBTUniqueAt`, along the route sketched in the issue comments (condense
+unambiguous paths / maximal repeats, alternate Eulerian traversal as a local
+rematching of truth boundary occurrences, transposition/chord lemma,
+non-interleaving chords force a unique cyclic trail).
 
-## The route
+Contents:
 
-Two circular words `S` (truth) and `E` (candidate) with the same complete
-`L`-spectrum traverse the *same* length-`(L-1)`-mer multigraph in two different
-cyclic orders: the truth walks its own positions `0,1,…,G-1`, the candidate
-walks its own.  Because the spectra agree, the two traversals are matched
-occurrence-by-occurrence: there is a bijection `σ : Fin G → Fin G` (a
-*matching*) with `window S r = window E (σ r)` for all `r`.  Comparing where the
-two traversals *enter* each node gives the **rematching**
+* §1 the abstract cyclic transposition / chord lemma (`chord_lemma`), on the
+  smallest useful data structure;
+* §2 the generic equal-spectrum **matching** adapter (`exists_matching`,
+  `matching_rotation_imp`);
+* §3 a kernel-checked **refutation of the raw `(L-1)`-mer chord
+  instantiation** (`raw_node_crossing_not_maximal`).
 
-```text
-R = σ⁻¹ ∘ pred ∘ σ,
-```
+## §1 The abstract core
 
-a permutation of the truth's positions: `R r` is the truth occurrence whose
-incoming edge the candidate uses immediately before the edge of `r`.  `R` is
-exactly the "local rematching of truth boundary occurrences" of the route:
+On a circle of at least three positions, an involution that is not the identity
+and whose two-element orbits ("chords") are pairwise non-interleaving is not a
+rotation of the circle; equivalently, a nontrivial rotational involution has two
+crossing orbits (`chord_lemma_cross`).  This is the combinatorial step
+"non-interleaving chords forbid a single cyclic trail", proved with no words,
+spectra or graphs in it, so it is independent of how chords are realized.
 
-* `R = id` **iff** `E` is a rotation of `S` (`rematch_id_iff`, matching
-  characterization `rotEquiv_iff_exists_matching`);
-* under the multiplicity cap `nodeCount k ≤ 2` (which is what the triple-repeat
-  clause of `def:P1P2` buys) `R` is a **product of disjoint transpositions**:
-  `R` preserves every node fibre, and a fibre has one or two elements
-  (`rematch_fiber`, `rematch_le_two_or_id`, `rematch_transposition`);
-* the two ends of a `R`-chord are two occurrences of the *same* `(L-1)`-mer,
-  i.e. an "unambiguous path" of length `L-1` (`rematch_chord_agree`).
+## §2 The matching adapter (route-agnostic)
 
-The abstract combinatorial core (`chord_lemma`) is then: on a circle of at
-least three positions, an involution that is not the identity and whose
-two-element orbits are pairwise non-interleaving cannot be a rotation of the
-circle.  Contrapositively (the form consumed below): a nontrivial
-product of disjoint transpositions that is a rotation must have two *crossing*
-chords.  This is kernel-checked on the smallest useful data structure — an
-abstract permutation of `Fin G` together with the two notions of "rotation" and
-"interleaving of four starts" — with no words, spectra or graphs in it.
+Two circular words with the same complete `L`-spectrum traverse the same
+length-`(L-1)`-mer multigraph in two cyclic orders, and equal spectra give a
+bijection of the two traversals start by start (`exists_matching`).  A *rotational*
+matching is a rotation of the words, i.e. exactly `RotEquiv` (`matching_rotation_imp`).
+These lemmas are valid regardless of the chord analysis.
+
+## §3 Raw `(L-1)`-mer chords do not work
+
+The route's first instantiation of §1 takes the two ends of a chord to be the two
+occurrences of a repeated `(L-1)`-mer.  That is refuted here: for
+`S = 00101`, `G = 5`, `L = 3` (which satisfies P2) the two repeated length-`2`
+mers occur at the crossing pairs `{1,3}` and `{2,4}`, yet neither pair is a
+maximal repeat.  So crossing of raw node pairs is compatible with P2, and the
+argument has to be organized around **maximal-repeat blocks** instead — the
+simultaneous two-sided maximal extension of a node's occurrences, which is what
+the interleaved clause of `def:P1P2` ranges over.
 
 ## What this file does not do
 
-`chord_lemma` is proved; the *adapter* is proved as far as it is sound.  The
-remaining gap is stated exactly, as `chords_imply_interleaved_maximal`, in
-`docs/bbt-chord-rematch-89.md`: a `R`-chord is only an `(L-1)`-mer agreement,
-not yet a *maximal* repeat, and the audited failure shows that crossing raw
-`(L-1)`-mer pairs need not extend to distinct interleaved maximal pairs.  No
-`sorry`, no `admit`, no new axiom, and `BBTUniqueAt` is not closed.
+`chord_lemma` is proved, the matching adapter is proved, and the raw-node
+instantiation is refuted.  The **block-factoring step** — that the alternative
+Eulerian choices factor by maximal-repeat blocks, and that non-interleaved blocks
+force a unique cyclic trail — is *not* proved; it is the remaining gap, stated
+exactly in `docs/bbt-chord-rematch-89.md`.  `BBTUniqueAt` is not closed.  No
+`sorry`, no `admit`, no new axiom.
 -/
+
 
 namespace AssemblyP1.BBTChords
 
