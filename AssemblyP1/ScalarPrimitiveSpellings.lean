@@ -1035,3 +1035,247 @@ theorem isPrimitive_of_primitiveTrail {H : ℕ} (hH0 : 0 < H) (W : Fin H → α)
   exact hprim ⟨l, hl, k, hk, hpow⟩
 
 end WordLayer
+
+/-! ## The window trail of a circular word -/
+
+section WindowTrail
+
+variable {α : Type} [DecidableEq α] {L : ℕ} [Fintype α]
+
+/-- The cyclic list of the `L`-windows of a circular word of length `H`.  This is
+the "cyclic edge-type trail" that reads the genome; by `PopulationReduction`'s
+window/node lemmas its edges are incidence-compatible in the cycle. -/
+def winTrail {H : ℕ} (hH : 0 < H) (D : Fin H → α) : List (Fin L → α) :=
+  List.ofFn fun r : Fin H => window (L := L) hH D r
+
+theorem winTrail_length {H : ℕ} (hH : 0 < H) (D : Fin H → α) :
+    (winTrail (L := L) hH D).length = H := List.length_ofFn
+
+theorem winTrail_get {H : ℕ} (hH : 0 < H) (D : Fin H → α) (i : ℕ) (hi : i < H) :
+    (winTrail (L := L) hH D)[i]? = some (window (L := L) hH D ⟨i, hi⟩) := by
+  show (List.ofFn (fun r : Fin H => window (L := L) hH D r))[i]? = _
+  rw [List.getElem?_ofFn]
+  simp [hi]
+
+/-- The prefix (node) of the window at `r`. -/
+theorem winPrefix_window' {H : ℕ} (hH : 0 < H) (D : Fin H → α) (r : Fin H) :
+    winPrefix (window (L := L) hH D r : Fin L → α) = nodeWindow hH D r := by
+  funext d
+  rfl
+
+/-- The suffix (node) of the window at `r` is the node window at the next
+start. -/
+theorem winSuffix_window' {H : ℕ} (hH : 0 < H) (D : Fin H → α) (r : Fin H) :
+    winSuffix (window (L := L) hH D r : Fin L → α)
+      = nodeWindow hH D ⟨(r.val + 1) % H, Nat.mod_lt _ hH⟩ := by
+  funext d
+  have hmod : ((r.val + 1) % H + d.val) % H = (r.val + (d.val + 1)) % H := by
+    rw [Nat.mod_add_mod]
+    congr 1
+    omega
+  unfold winSuffix window nodeWindow OrientedRigidity.cyc
+  apply congrArg D
+  rw [Fin.mk.injEq]
+  exact hmod.symm
+
+/-- **An incidence-compatible list is a trail.**  If consecutive entries of a
+nonempty list match (`head (T[i]) = tail (T[i+1])` for `i + 1 < |T|`), and the
+first entry's tail is `s` while the last entry's head is `s`, then `T` is a
+closed trail based at `s`. -/
+theorem trail_of_step {E V : Type} [DecidableEq E] [DecidableEq V]
+    (tail head : E → V) : ∀ (T : List E) (u v : V), T ≠ [] →
+      (∀ (i : ℕ) (hi : i + 1 < T.length) (e₁ e₂ : E),
+        T[i]? = some e₁ → T[i + 1]? = some e₂ → head e₁ = tail e₂) →
+      (∃ e, T[0]? = some e ∧ tail e = u) →
+      (∃ e, T[T.length - 1]? = some e ∧ head e = v) →
+      TrailEnds tail head T u v := by
+  intro T
+  induction T with
+  | nil => intro u v hne _ _ _; exact absurd rfl hne
+  | cons a T ih =>
+      intro u v hne hstep hfirst hlast
+      obtain ⟨e₀, he₀, htail0⟩ := hfirst
+      obtain ⟨x, hx, hheadx⟩ := hlast
+      by_cases hT : T = []
+      · rw [hT] at he₀
+        rw [List.getElem?_cons_zero] at he₀
+        have hta : tail a = u := by
+          rw [← Option.some.inj he₀.symm]
+          exact htail0
+        have hz : (a :: ([] : List E)).length - 1 = 0 := by simp
+        rw [hT, hz, List.getElem?_cons_zero] at hx
+        have hha : head a = v := by
+          rw [← Option.some.inj hx.symm]
+          exact hheadx
+        rw [hT]
+        exact .cons a [] u v hta (by rw [hha]; exact .nil v)
+      · have hpt : 0 < T.length := List.length_pos_of_ne_nil hT
+        have hlen : T.length + 1 = (a :: T).length := by simp
+        have hsub : T.length + 1 - 1 = T.length := by omega
+        -- the last entry of `T` is the last entry of `a :: T`
+        have hx' : T[T.length - 1]? = some x := by
+          have h3 := hx
+          rw [← hlen, hsub, List.getElem?_cons, ite_eq_right (by omega)] at h3
+          have h3' := h3
+          rwa [List.getElem?_eq_getElem (by omega)] at h3'
+        -- the first entry of `T` follows `a`
+        have hta0 : tail (T.get ⟨0, hpt⟩) = head a := by
+          have h3 := hstep 0 (by omega) a (T.get ⟨0, hpt⟩)
+          refine (h3 (by rw [List.getElem?_cons, ite_eq_left rfl]) ?_).symm
+          rw [show (0 + 1) = 1 from rfl, List.getElem?_cons_succ]
+          exact List.getElem?_eq_getElem hpt
+        have hstepT : ∀ (i : ℕ) (hi : i + 1 < T.length) (e₁ e₂ : E),
+            T[i]? = some e₁ → T[i + 1]? = some e₂ → head e₁ = tail e₂ := by
+          intro i hi e₁ e₂ h1 h2
+          have h3 := hstep (i + 1) (by omega) e₁ e₂
+          refine h3 ?_ ?_
+          · simpa using h1
+          · simpa using h2
+        have hta : tail a = u := by
+          rw [← Option.some.inj he₀.symm]
+          exact htail0
+        exact .cons a T u v hta
+          (ih (head a) v hT hstepT ⟨T.get ⟨0, hpt⟩, List.getElem?_eq_getElem hpt, hta0⟩
+            ⟨x, hx', hheadx⟩)
+
+/-- A closed trail from incidence-compatible consecutive entries. -/
+theorem trail_closed_of_step {E V : Type} [DecidableEq E] [DecidableEq V]
+    (tail head : E → V) (T : List E) (s : V) (hne : T ≠ [])
+    (hstep : ∀ (i : ℕ) (hi : i + 1 < T.length) (e₁ e₂ : E),
+      T[i]? = some e₁ → T[i + 1]? = some e₂ → head e₁ = tail e₂)
+    (hfirst : ∃ e, T[0]? = some e ∧ tail e = s)
+    (hlast : ∃ e, T[T.length - 1]? = some e ∧ head e = s) :
+    TrailEnds tail head T s s :=
+  trail_of_step tail head T s s hne hstep hfirst hlast
+
+/-- **An incidence-compatible finite sequence is a trail.**  If consecutive
+entries of `f : Fin n → E` match (`head (f i) = tail (f (i+1))`), then
+`List.ofFn f` runs from the tail of its first entry to the head of its last. -/
+theorem ofFn_trail {E V : Type} [DecidableEq E] [DecidableEq V]
+    (tail head : E → V) : ∀ (n : ℕ) (f : Fin n → E) (u v : V), 0 < n →
+      (∀ (h : n - 1 < n), head (f ⟨n - 1, h⟩) = v) →
+      (∀ (i : Fin n) (hi : i.val + 1 < n),
+        head (f i) = tail (f ⟨i.val + 1, by omega⟩)) →
+      (∀ (h : 0 < n), tail (f ⟨0, h⟩) = u) →
+      TrailEnds tail head (List.ofFn f) u v := by
+  intro n
+  induction n with
+  | zero => intro f u v hn _ _ _; omega
+  | succ m ihm =>
+      intro f u v hn hlastv hadj hfirst
+      cases m with
+      | zero =>
+          have hlast0 : head (f 0) = v := by
+            have hEq : (⟨0 + 1 - 1, by omega⟩ : Fin (0 + 1)) = (0 : Fin (0 + 1)) := by
+              rw [Fin.mk.injEq]
+              omega
+            exact hEq ▸ hlastv (by omega)
+          rw [List.ofFn_succ, List.ofFn_zero]
+          exact .cons (f 0) [] u v (hfirst hn) (by rw [hlast0]; exact .nil v)
+      | succ m =>
+          rw [List.ofFn_succ]
+          refine .cons (f 0) _ u v (hfirst hn) ?_
+          have hstart : ∀ (h : 0 < m + 1), tail (f 1) = head (f 0) := by
+            intro h
+            have h1 := hadj (0 : Fin (m + 1 + 1)) (by
+              show (0 : ℕ) + 1 < m + 1 + 1
+              omega)
+            have hEq : ((⟨(0 : ℕ) + 1, by omega⟩ : Fin (m + 1 + 1)))
+                = ((1 : Fin (m + 1 + 1)) : Fin (m + 1 + 1)) := by
+              rw [Fin.mk.injEq]
+              rfl
+            exact (hEq.symm ▸ h1).symm
+          have hlast' : ∀ (h : m + 1 + 1 - 1 < m + 1 + 1),
+              head (f ⟨m + 1 + 1 - 1, h⟩) = v := by
+            intro h
+            have hEq : ((⟨m + 1 + 1 - 1, h⟩ : Fin (m + 1 + 1)))
+                = ((⟨m + 1, by omega⟩ : Fin (m + 1 + 1)) : Fin (m + 1 + 1)) := by
+              rw [Fin.mk.injEq]
+              omega
+            exact hEq ▸ hlastv (by omega)
+          have hlast'' : ∀ (h : m + 1 - 1 < m + 1),
+              head ((fun j : Fin (m + 1) => f (Fin.succ j)) ⟨m + 1 - 1, h⟩) = v := by
+            intro h
+            show head (f (Fin.succ (⟨m + 1 - 1, h⟩ : Fin (m + 1)))) = v
+            rw [Fin.succ_mk]
+            have hfin : ((⟨m + 1 - 1 + 1, by omega⟩ : Fin (m + 1 + 1)) : Fin (m + 1 + 1))
+                = ((⟨m + 1 + 1 - 1, by omega⟩ : Fin (m + 1 + 1)) : Fin (m + 1 + 1)) := by
+              apply Fin.ext
+              show m + 1 - 1 + 1 = m + 1 + 1 - 1
+              omega
+            rw [hfin]
+            exact hlastv (by omega)
+          have hadj' : ∀ (i : Fin (m + 1)) (hi : i.val + 1 < m + 1),
+              (head : E → V) ((fun j : Fin (m + 1) => f (Fin.succ j)) i)
+                = (tail : E → V)
+                    ((fun j : Fin (m + 1) => f (Fin.succ j)) ⟨i.val + 1, by omega⟩) := by
+            intro i hi
+            have hi' : i.val + 1 + 1 < m + 1 + 1 := by omega
+            exact hadj (Fin.succ i) (by simpa using hi')
+          exact ihm (fun i : Fin (m + 1) => f (Fin.succ i)) (head (f 0)) v
+            (by omega) hlast'' hadj' hstart
+
+/-- **The window trail of a circular word is a closed trail**: the `L`-windows of
+a circular word read a closed edge-type trail, since the suffix of the window at
+`r` is the prefix of the window at the next start. -/
+theorem winTrail_closed {H : ℕ} (hH : 0 < H) (D : Fin H → α) :
+    ∃ s, TrailEnds winPrefix winSuffix (winTrail (L := L) hH D) s s := by
+  refine ⟨nodeWindow hH D ⟨0, hH⟩, ?_⟩
+  have hstep : ∀ (i : Fin H) (hi : i.val + 1 < H),
+      winSuffix (window (L := L) hH D i)
+        = winPrefix (window (L := L) hH D ⟨i.val + 1, by omega⟩) := by
+    intro i hi
+    have hA := winSuffix_window' (L := L) hH D ⟨i.val, i.isLt⟩
+    have hB := winPrefix_window' (L := L) hH D ⟨i.val + 1, by omega⟩
+    rw [hA, hB]
+    apply congrArg (nodeWindow hH D)
+    apply Fin.ext
+    show (i.val + 1) % H = i.val + 1
+    exact Nat.mod_eq_of_lt hi
+  refine ofFn_trail winPrefix winSuffix H
+    (fun r : Fin H => window (L := L) hH D r)
+    (nodeWindow hH D ⟨0, hH⟩) (nodeWindow hH D ⟨0, hH⟩) hH
+    (by
+      intro h
+      rw [winSuffix_window' (L := L) hH D ⟨H - 1, h⟩]
+      apply congrArg (nodeWindow hH D)
+      apply Fin.ext
+      show (H - 1 + 1) % H = 0
+      rw [Nat.sub_add_cancel (by omega : 1 ≤ H), Nat.mod_self])
+    hstep (fun h => winPrefix_window' (L := L) hH D ⟨0, h⟩)
+
+/-- Counting in a list of all indices: `countP` over `List.ofFn` is the card of
+the corresponding filtered finset. -/
+theorem countP_ofFn {Y : ℕ} {X : Type} (f : Fin Y → X) (p : X → Bool) :
+    (List.ofFn f).countP p
+      = ((Finset.univ : Finset (Fin Y)).filter (fun r => p (f r))).card := by
+  induction Y with
+  | zero => simp
+  | succ n ih =>
+      have h1 : (List.ofFn f).countP p
+          = (List.ofFn (fun i : Fin n => f i.succ)).countP p
+            + if p (f 0) then 1 else 0 := by
+        rw [List.ofFn_succ, List.countP_cons]
+      have h2 : ((Finset.univ : Finset (Fin (n + 1))).filter (fun r => p (f r))).card
+          = ((Finset.univ : Finset (Fin n)).filter (fun i => p (f i.succ))).card
+            + if p (f 0) then 1 else 0 := by
+        rw [Fin.card_filter_univ_succ']
+        split <;> simp [Nat.add_comm]
+      rw [h1, h2, ih]
+
+/-- The window trail spells the complete spectrum of the word. -/
+theorem winTrail_edgeUse {H : ℕ} (hH : 0 < H) (D : Fin H → α) (e : Fin L → α) :
+    edgeUse (winTrail (L := L) hH D) e = specCount (L := L) hH D e := by
+  show (winTrail (L := L) hH D).countP (fun x => decide (x = e)) = _
+  have h : (winTrail (L := L) hH D).countP (fun x => decide (x = e))
+      = ((Finset.univ : Finset (Fin H)).filter
+          (fun r : Fin H => decide (window (L := L) hH D r = e))).card := by
+    rw [← countP_ofFn (fun r : Fin H => window (L := L) hH D r)
+      (fun x : Fin L → α => decide (x = e))]
+    rfl
+  rw [h, specCount]
+  congr 1
+  ext r
+  simp
+
+end WindowTrail
