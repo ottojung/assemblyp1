@@ -1280,6 +1280,119 @@ theorem winTrail_edgeUse {H : ℕ} (hH : 0 < H) (D : Fin H → α) (e : Fin L �
 
 end WindowTrail
 
+/-! ## Realizing a closed trail as a circular word
+
+`spell_exists_circulation` produces a word from a balanced circulation.  Here we
+need the converse direction: a *given* closed edge-type trail is the window
+trail of a circular word of the same length, with exactly the same spectrum.
+This is the `TrailEnds → word` half of the same Hierholzer-free argument, and
+it is what lets the branching construction hand its primitive trail to the word
+layer. -/
+
+section TrailToWord
+
+variable {α : Type} [DecidableEq α] {L : ℕ} [Fintype α]
+
+/-- **A closed trail is the window trail of a circular word.**  If `T` is a
+closed edge-type trail over `winPrefix`/`winSuffix` of positive length, then
+there is a circular word `W` of length `|T|` whose complete spectrum is
+`edgeUse T` and whose windows are the entries of `T`. -/
+theorem word_of_closed_trail {T : List (Fin L → α)} {s : Fin (L - 1) → α}
+    (hT : TrailEnds winPrefix winSuffix T s s) (hTne : T ≠ []) (hL : 1 < L) :
+    ∃ (W : Fin T.length → α),
+      specCount (L := L) (length_pos_of_ne_nil hTne) W = edgeUse T ∧
+      (∀ r : Fin T.length, window (L := L) (length_pos_of_ne_nil hTne) W r = T.get r) := by
+  have hlenT : 0 < T.length := length_pos_of_ne_nil hTne
+  have hL0 : 0 < L := by omega
+  have hadj : ∀ j : Fin T.length, winSuffix (T.get j)
+      = winPrefix (T.get ⟨(j.val + 1) % T.length, Nat.mod_lt _ hlenT⟩) := by
+    intro j
+    have hbase := trail_cyc_adj hT hlenT j.val j.isLt
+    have b1 : PopulationReduction.cycEdge T hlenT j.val = T.get j := by
+      unfold PopulationReduction.cycEdge
+      congr 1
+      exact Fin.ext (Nat.mod_eq_of_lt j.isLt)
+    have b2 : PopulationReduction.cycEdge T hlenT ((j.val + 1) % T.length)
+        = T.get ⟨(j.val + 1) % T.length, Nat.mod_lt _ hlenT⟩ := by
+      unfold PopulationReduction.cycEdge
+      congr 1
+      apply Fin.ext
+      exact Nat.mod_mod_of_dvd _ dvd_rfl
+    rw [b1, b2] at hbase
+    exact hbase
+  refine ⟨spellWord hL0 T.get, ?_, ?_⟩
+  · funext w
+    have hwin : ∀ r : Fin T.length,
+        window (L := L) hlenT (spellWord hL0 T.get) r = T.get r :=
+      fun r => spell_window T.get hlenT hL0 hadj r
+    have hset : Finset.univ.filter
+        (fun r : Fin T.length => window (L := L) hlenT (spellWord hL0 T.get) r = w)
+        = Finset.univ.filter (fun r : Fin T.length => T.get r = w) := by
+      ext r
+      simp only [Finset.mem_filter, Finset.mem_univ, true_and]
+      rw [hwin r]
+    have hsp : specCount (L := L) hlenT (spellWord hL0 T.get) w
+        = (Finset.univ.filter
+          (fun r : Fin T.length => window (L := L) hlenT (spellWord hL0 T.get) r = w)).card :=
+      rfl
+    rw [hsp, hset]
+    exact count_bridge T w
+  · intro r
+    exact spell_window T.get hlenT hL0 hadj r
+
+/-- **A proper power window trail forces a proper power word.**  If the window
+trail of a circular word is a nontrivial repetition, then the word itself is a
+nontrivial repetition. -/
+theorem not_primitive_of_properPowerTrail {H : ℕ} (hH : 0 < H) (hL : 1 < L)
+    (S : Fin H → α)
+    {l : List (Fin L → α)} {k : ℕ} (hl : l ≠ []) (hk : 2 ≤ k)
+    (hpow : winTrail (L := L) hH S = nCopies l k) :
+    ¬ PopulationReduction.IsPrimitive S := by
+  intro hprim
+  have hlen : (winTrail (L := L) hH S).length = H := winTrail_length hH S
+  have hL0 : 0 < L := by omega
+  have hlenl : 0 < l.length := length_pos_of_ne_nil hl
+  have hmul : l.length * k = H := by
+    have h1 := congrArg List.length hpow
+    rw [nCopies_length] at h1
+    rw [hlen] at h1
+    rw [Nat.mul_comm] at h1
+    exact h1.symm
+  have hget : ∀ (i : ℕ) (hi : i < H),
+      (winTrail (L := L) hH S)[i]? = l[i % l.length]? := by
+    intro i hi
+    have hi' : i < (winTrail (L := L) hH S).length := by rw [hlen]; exact hi
+    have h2 : (winTrail (L := L) hH S)[i]? = (nCopies l k)[i]? := by rw [hpow]
+    rw [h2]
+    exact nCopies_getElem? (hpow ▸ hi')
+  have hS : ∀ (i : Fin H),
+      S i = (l.get (Fin.mk (i.val % l.length) (Nat.mod_lt _ hlenl)) : Fin L → α)
+        ⟨0, hL0⟩ := by
+    intro i
+    have hi : i.val < H := i.isLt
+    have h1 := hget i.val hi
+    have h2 := winTrail_get (L := L) hH S i.val hi
+    have h1' : some (window (L := L) hH S ⟨i.val, hi⟩) = l[i.val % l.length]? :=
+      h2.symm.trans (hget i.val hi)
+    have hletter : (window (L := L) hH S ⟨i.val, hi⟩ : Fin L → α) ⟨0, hL0⟩ = S i := by
+      unfold OrientedRigidity.window
+      simp only [OrientedRigidity.cyc]
+      congr 1
+      apply Fin.ext
+      exact Nat.mod_eq_of_lt i.isLt
+    have h4 : some (window (L := L) hH S ⟨i.val, hi⟩) = l[i.val % l.length]? := h1'
+    rw [List.getElem?_eq_getElem (Nat.mod_lt _ hlenl)] at h4
+    have h5 : window (L := L) hH S ⟨i.val, hi⟩
+        = l.get (Fin.mk (i.val % l.length) (Nat.mod_lt _ hlenl)) := Option.some.inj h4
+    have h6 := congrArg (fun f : Fin L → α => f ⟨0, hL0⟩) h5
+    rwa [hletter] at h6
+  have hk2 : 1 < k := by omega
+  exact hprim ⟨l.length, hlenl,
+    fun j : Fin l.length => (l.get j : Fin L → α) ⟨0, hL0⟩,
+    k, hk2, hmul, fun i => hS i⟩
+
+end TrailToWord
+
 /-! ## The normalized-spectrum ray
 
 A candidate whose normalized complete spectrum agrees with the truth's has its
