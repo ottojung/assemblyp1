@@ -449,7 +449,7 @@ theorem p1_spectrum_unique_up_to_rotation (hG : 0 < G) (hL : 0 < L)
     exact hjv
   exact congrArg (fun x : Fin G => window (L := L) hG S x) (Fin.ext hval)
 
-/-! ## 4b. `P1` implies `P2`
+/-! ## 5. `P1` implies `P2`
 
 The paper remarks that "P1 is stronger than P2".  This is proved here, so that
 `p1_spectrum_unique_up_to_rotation` is a theorem about a subclass of the
@@ -534,7 +534,7 @@ theorem p2_of_p1_spectrum_unique_up_to_rotation
     RotEquiv hG E S :=
   p1_spectrum_unique_up_to_rotation hG (by omega) S E hP1 hSpec
 
-/-! ## 5. The residual: Eulerian-circuit uniqueness for the `(L-1)`-de Bruijn
+/-! ## 6. The residual: Eulerian-circuit uniqueness for the `(L-1)`-de Bruijn
 multigraph under Ukkonen's condition
 
 `thm:BBT` says: build the `K`-mer graph from the complete `(K+1)`-spectrum;
@@ -570,7 +570,7 @@ def NodeCrossing (hG : 0 < G) (L : ℕ) (S : Fin G → α) : Prop :=
     (∀ x : Fin G, nodeWindow (L := L) hG S x = v → x = c ∨ x = d) →
     ¬ Interleaved (mkGenome hG S) a b c d
 
-/-! ### 5.1 What is proved: the translation
+/-! ### 6.1 What is proved: the translation
 
 Everything from the multigraph statement to the conclusion about genomes is
 proved below.  `p2_spectrum_unique_up_to_rotation` is therefore exactly as
