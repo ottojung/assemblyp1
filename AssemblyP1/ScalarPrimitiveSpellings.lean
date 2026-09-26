@@ -864,3 +864,174 @@ theorem branching_primitive_spellings {T : List (Fin L → α)} {s : Fin (L - 1)
   · exact ampbmp_isPrimitive_of_head_ne hAne hBne hm2 hneAB
 
 end Spellings
+
+/-! ## From cyclic edge-type spellings to circular words
+
+The competitors produced by the branching direction must be genuine genomes, not
+abstract edge-type lists.  `spell_exists_circulation` is the same Hierholzer +
+window-spelling argument as `PopulationReduction.spell_exists_divided`, with no
+division (`g = 1`), and `isPrimitive_of_primitiveTrail` transfers primitivity
+from the edge-type list to the circular word. -/
+
+section WordLayer
+
+variable {α : Type} [DecidableEq α] {L : ℕ} [Fintype α]
+
+/-- **Any balanced, positive, weakly connected circulation of total mass `G` is
+spelled by a circular word of length `G` with exactly that complete spectrum.**
+This is the `g = 1` case of `PopulationReduction.spell_exists_divided`: Hierholzer
+gives a closed trail with the prescribed multiplicities, and the repository's
+`spell_window`/`count_bridge` turn it into a word whose length-`L` windows are the
+trail edges. -/
+theorem spell_exists_circulation {G : ℕ} (hG : 0 < G) (S : Fin G → α) (hL : 1 < L)
+    (q : (Fin L → α) → ℕ) (hbal : CircBalanced winPrefix winSuffix q)
+    (supp : Finset (Fin L → α)) (hsupp : ∀ e, e ∈ supp ↔ 0 < q e)
+    (hne : supp.Nonempty) (hconn : WeakConn winPrefix winSuffix supp)
+    (htot : ∑ w : Fin L → α, q w = G) :
+    ∃ (m : ℕ) (hW : 0 < m) (W : Fin m → α),
+      specCount (L := L) hW W = q ∧ m = G := by
+  obtain ⟨T, s, hTclosed, hTuse⟩ :=
+    eulerian_closed_trail winPrefix winSuffix q hbal supp hsupp hne hconn
+  have hTeq := length_eq_sum_edgeUse T
+  have hsum : ∑ e, edgeUse T e = ∑ w : Fin L → α, q w :=
+    Finset.sum_congr rfl (fun w _ => hTuse w)
+  have hTne : T ≠ [] := by
+    intro h0
+    have hzero : ∀ e, edgeUse T e = 0 := by
+      intro e
+      rw [h0]
+      rfl
+    have hq0 : ∑ w : Fin L → α, q w = 0 := by
+      rw [← hsum]
+      simp only [hzero]
+      simp
+    omega
+  have hlenT : 0 < T.length := length_pos_of_ne_nil hTne
+  have hlenT' : T.length = G := by
+    rw [hTeq, hsum, htot]
+  have hL0 : 0 < L := by omega
+  have hadj : ∀ j : Fin T.length, winSuffix (T.get j)
+      = winPrefix (T.get ⟨(j.val + 1) % T.length, Nat.mod_lt _ hlenT⟩) := by
+    intro j
+    have hbase := trail_cyc_adj hTclosed hlenT j.val j.isLt
+    have b1 : PopulationReduction.cycEdge T hlenT j.val = T.get j := by
+      unfold PopulationReduction.cycEdge
+      congr 1
+      exact Fin.ext (Nat.mod_eq_of_lt j.isLt)
+    have b2 : PopulationReduction.cycEdge T hlenT ((j.val + 1) % T.length)
+        = T.get ⟨(j.val + 1) % T.length, Nat.mod_lt _ hlenT⟩ := by
+      unfold PopulationReduction.cycEdge
+      congr 1
+      apply Fin.ext
+      exact Nat.mod_mod_of_dvd _ dvd_rfl
+    rw [b1, b2] at hbase
+    exact hbase
+  refine ⟨T.length, hlenT, spellWord hL0 T.get, ?_, hlenT'⟩
+  funext w
+  have hwin : ∀ r : Fin T.length,
+      window (L := L) hlenT (spellWord hL0 T.get) r = T.get r :=
+    fun r => spell_window T.get hlenT hL0 hadj r
+  have hspec : specCount (L := L) hlenT (spellWord hL0 T.get) w = edgeUse T w := by
+    have hset : Finset.univ.filter
+        (fun r : Fin T.length => window (L := L) hlenT (spellWord hL0 T.get) r = w)
+        = Finset.univ.filter (fun r : Fin T.length => T.get r = w) := by
+      ext r
+      simp only [Finset.mem_filter, Finset.mem_univ, true_and]
+      rw [hwin r]
+    have hsp : specCount (L := L) hlenT (spellWord hL0 T.get) w
+        = (Finset.univ.filter
+          (fun r : Fin T.length => window (L := L) hlenT (spellWord hL0 T.get) r = w)).card :=
+      rfl
+    rw [hsp, hset]
+    exact count_bridge T w
+  rw [hspec]
+  exact hTuse w
+
+/-- **A circular word whose window trail is a primitive cyclic edge-type
+spelling is primitive.**  A nontrivial power `W = U^k` of a word has its
+length-`L` window sequence cyclically periodic with period `|U| < |W|`, so the
+window trail — and hence the edge-type spelling — is a proper power, contradicting
+primitivity of the trail.  This is the word-level counterpart of
+`properPower_of_cyclicPeriod`, and it is what makes the branching competitor a
+*genome* rather than an edge-type list. -/
+theorem isPrimitive_of_primitiveTrail {H : ℕ} (hH0 : 0 < H) (W : Fin H → α)
+    (T : List (Fin L → α)) (hlen : T.length = H)
+    (hwin : ∀ r : Fin H, window (L := L) hH0 W r
+      = PopulationReduction.cycEdge T (by omega) r.val)
+    (hprim : IsPrimitive T) :
+    PopulationReduction.IsPrimitive W := by
+  rintro ⟨H0, hH0', U, q, hq, hG, hrep⟩
+  have hH0pos : 0 < H0 := hH0'
+  have hHlen : H0 * q = H := hG
+  have hqpos : 1 < q := hq
+  have hmul : H0 * 1 < H0 * q := Nat.mul_lt_mul_of_pos_left hqpos hH0pos
+  have hHp : H0 < H := by rw [← hHlen]; omega
+  have hdiv : H0 ∣ H := ⟨q, hHlen.symm⟩
+  -- the `hrep` presentation makes the window sequence cyclically `H0`-periodic
+  have hWrep : ∀ i : ℕ, W ⟨(i + H0) % H, Nat.mod_lt _ hH0⟩
+      = W ⟨i % H, Nat.mod_lt _ hH0⟩ := by
+    intro i
+    have h3 : ((i + H0) % H) % H0 = i % H0 := by
+      rw [Nat.mod_mod_of_dvd _ hdiv, Nat.add_mod, Nat.mod_self, Nat.add_zero,
+        Nat.mod_mod]
+    have hA : W ⟨(i + H0) % H, Nat.mod_lt _ hH0⟩
+        = U ⟨i % H0, Nat.mod_lt _ hH0pos⟩ := by
+      have hz := hrep ⟨(i + H0) % H, Nat.mod_lt _ hH0⟩
+      rw [hz]
+      congr 1
+      exact Fin.ext h3
+    have hB : W ⟨i % H, Nat.mod_lt _ hH0⟩
+        = U ⟨i % H0, Nat.mod_lt _ hH0pos⟩ := by
+      have hz := hrep ⟨i % H, Nat.mod_lt _ hH0⟩
+      rw [hz]
+      congr 1
+      exact Fin.ext (Nat.mod_mod_of_dvd _ hdiv)
+    exact hA.trans hB.symm
+  -- hence the window sequence has `H0` as a cyclic period
+  have hposT : 0 < T.length := by rw [hlen]; exact hH0
+  have hwin' : ∀ (m : ℕ) (hm : m < T.length) (hmH : m < H),
+      T[m]? = some (window (L := L) hH0 W ⟨m, hmH⟩) := by
+    intro m hm hmH
+    have hz := hwin ⟨m, hmH⟩
+    have hce : PopulationReduction.cycEdge T hposT m = T[m]'hm := by
+      unfold PopulationReduction.cycEdge
+      congr 1
+      exact Fin.ext (Nat.mod_eq_of_lt hm)
+    rw [hz, hce, List.getElem?_eq_getElem hm]
+  have hperiod : CyclicPeriod T H0 := by
+    intro m hm
+    have hmH : m < H := by rw [← hlen]; exact hm
+    have hmT : (m + H0) % T.length < T.length := Nat.mod_lt _ hposT
+    have hmmH : (m + H0) % T.length = (m + H0) % H := by
+      rw [hlen]
+    have hmmH' : (m + H0) % H < H := Nat.mod_lt _ hH0
+    have hmmHT : (m + H0) % H < T.length := by rw [hlen]; exact hmmH'
+    have h1 := hwin' m hm hmH
+    have h2c : T[(m + H0) % H]? = some (window (L := L) hH0 W ⟨(m + H0) % H, hmmH'⟩) :=
+      hwin' ((m + H0) % H) hmmHT hmmH'
+    have hwinEq : window (L := L) hH0 W ⟨m, hmH⟩
+        = window (L := L) hH0 W ⟨(m + H0) % H, hmmH'⟩ := by
+      funext d
+      change cyc hH0 W (m + d.val) = cyc hH0 W ((m + H0) % H + d.val)
+      simp only [OrientedRigidity.cyc]
+      have hstep : ((m + H0) % H + d.val) % H = (m + d.val + H0) % H := by
+        rw [Nat.mod_add_mod]
+        apply congrArg (fun n : ℕ => n % H)
+        omega
+      have hidx : (⟨((m + H0) % H + d.val) % H, Nat.mod_lt _ hH0⟩ : Fin H)
+          = ⟨(m + d.val + H0) % H, Nat.mod_lt _ hH0⟩ := Fin.ext hstep
+      rw [hidx]
+      exact (hWrep (m + d.val)).symm
+    calc T[m]? = some (window (L := L) hH0 W ⟨m, hmH⟩) := h1
+      _ = some (window (L := L) hH0 W ⟨(m + H0) % H, hmmH'⟩) := by rw [hwinEq]
+      _ = T[(m + H0) % H]? := h2c.symm
+      _ = T[(m + H0) % T.length]? := by rw [hmmH]
+  have hne : T ≠ [] := by
+    intro h0
+    rw [h0] at hposT
+    simp at hposT
+  have hHpT : H0 < T.length := by rw [hlen]; exact hHp
+  obtain ⟨l, hl, k, hk, hpow⟩ := properPower_of_cyclicPeriod hne hH0pos hHpT hperiod
+  exact hprim ⟨l, hl, k, hk, hpow⟩
+
+end WordLayer
