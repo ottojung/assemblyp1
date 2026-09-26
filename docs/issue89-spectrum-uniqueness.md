@@ -29,8 +29,28 @@ New module: `AssemblyP1/P2SpectrumUniqueness.lean`. No `axiom`, `sorry` or
 | **`P1.imp_P2`** | **P1 implies P2** (the paper's "P1 is stronger than P2"), kernel-checked | none |
 | `p2_of_p1_spectrum_unique_up_to_rotation` | the `P1` sub-case phrased in the actual P2 language | none |
 | `UniqueEulerCircuit` | the multigraph of `c` has a single Eulerian circuit up to shift | – |
-| `NodeCrossing` | the occurrence pairs of doubly-occurring `(L-1)`-mers do not interleave (concrete, decidable) | – |
+| `NodeCrossing` | the occurrence pairs of doubly-occurring `(L-1)`-mers do not interleave (concrete, decidable) — **not** a consequence of `P2`; see §3 and `cex_not_NodeCrossing` | – |
 | `p2_spectrum_unique_up_to_rotation` | primitive P2 truth + equal complete `L`-spectrum + same length ⟹ `RotEquiv` | `hUnique : UniqueEulerCircuit …` |
+
+### 1b. Also kernel-checked: the (R1)/(R2) genome side, with two corrections
+
+New module: `AssemblyP1/P2RepeatResidual.lean`. No `axiom`, `sorry` or `admit`.
+
+| name | statement | premise |
+| --- | --- | --- |
+| `IsPrimitive.shiftPrimitive` | the `_hPrimS` of `p2_spectrum_unique_up_to_rotation` (`PopulationReduction.IsPrimitive`, "not a nontrivial power") implies the shift-invariance primitivity `RepeatAdapter.IsPrimitive` that the repeat theory needs (Euclidean reduction `s ↦ G mod s`) | – |
+| `isTripleRepeat_of_maximalTriple` | `RepeatAdapter.IsMaximalTriple` at `ℕ`-starts *is* a source-faithful `Genome.IsTripleRepeat` at the residues | – |
+| `P2.imp_noLongTripleRepeat` | **actual `P2` ⟹ `¬ HasLongTripleRepeat` at `L`** (clause 1 of `def:P1P2`, no primitivity needed) | – |
+| `P2.imp_nodeCount_le_two` | **actual `P2` + primitivity ⟹ every `(L-1)`-mer occurs at most twice**, i.e. every node of the `(L-1)`-de Bruijn multigraph has multiplicity `≤ 2` | primitivity |
+| `maxPair_isRepeat` | **(R1) for `n = 2`**: two distinct agreeing starts on a primitive circle extend to a `Genome.IsRepeat` of length `e` with `ℓ ≤ e < G`, at the **shifted** starts | primitivity |
+| `ExtCrossing` | the corrected (R2b): the maximal extensions of two interleaving double-node pairs do not interleave | – |
+| `P2.imp_ExtCrossing` | **actual `P2` + primitivity ⟹ `ExtCrossing`** | primitivity |
+| `P2.imp_nodeCount_le_two_of_powerPrimitive`, `P2.imp_ExtCrossing_of_powerPrimitive` | the same two consequences under the primitivity actually carried by `p2_spectrum_unique_up_to_rotation` | – |
+| `cex_is_shiftPrimitive`, `cex_is_p2`, `cex_not_NodeCrossing`, `cex_pair_agrees`, `cex_not_maximalRepeat_at_same_starts` | the counterexample of §3 below, on `S = AABAB`, `G = 5`, `L = 3` | – |
+
+**The residual (R1) and (R2) as written in §3 are false, and the module proves
+the corrected versions instead of the stated ones.** Both failures come from the
+same wrong step — that a maximal extension stays at the selected starts.
 
 `P1.imp_P2` matters for the status claim: because P1 is *proved* to imply the
 repository's actual `P2`, the premise-free theorem above applies to a subclass
@@ -87,30 +107,65 @@ Write `K = L - 1`, `V = Fin (L-1) → α`, `E = Fin L → α`, and for a circula
 word `S` let `m_S v = nodeCount hG S v` be the number of starts whose `(L-1)`
 window is `v` (the in-degree = out-degree of `v` in the multigraph).
 
-**(R1) Simultaneous maximal extension (repeat theory).** If `S` is primitive,
-`1 ≤ e₀ < G`, and starts `r₁, …, rₙ` (`n ∈ {2, 3}`, pairwise distinct) carry a
-common `e₀`-window, then there are `E` and the same starts with
+**(R1) Simultaneous maximal extension (repeat theory). — CORRECTED.** As
+written, this said "there are `E` and **the same starts**". That is false, and
+the corrected statement is the one proved in `AssemblyP1.P2RepeatResidual.lean`.
+If `S` is primitive (minimal period `G`), `1 ≤ ℓ ≤ G`, and starts `a ≠ b` carry
+a common `ℓ`-window, then there are `E`, `β` and shifted starts
+`a' ≡ a + G - β`, `b' ≡ b + G - β` (`0 ≤ β ≤ G`) with
 
-* `e₀ ≤ E < G`, all the `E`-windows at the starts equal,
-* the `n` symbols preceding the copies are not all equal,
-* the `n` symbols following the copies are not all equal.
+* `ℓ ≤ E < G`, all the `E`-windows at `a'`, `b'` equal,
+* the two symbols preceding the copies differ,
+* the two symbols following the copies differ,
 
-This is exactly `Genome.IsRepeat` (`n = 2`) and `Genome.IsTripleRepeat`
-(`n = 3`) at length `E`. The construction is the one in the `Q1`/`Q2` probes:
-shift the common window one step left, take the maximum `e` for which the
-shifted family still agrees, and use maximality for both maximality
-conditions. Primitivity is needed exactly to know the maximum is `< G`: a
-family agreeing on `G-1` or more positions forces two of the starts to
-coincide.
+i.e. exactly `Genome.IsRepeat E a' b'`. Construction (`pairBack`, `pairFwd`):
+take the maximum `β ≤ G` for which the *nested blocks*
+`[a + G - β, a + G)` and `[b + G - β, b + G)` agree, then the maximum `γ ≤ G`
+for which `[a', a' + γ)` and `[b', b' + γ)` agree, and take `E = γ`; the two
+maximality conditions are the one-step failures at `a' - 1` and at `a' + γ`.
+Primitivity is needed exactly to know the maxima are `< G`: agreement on `G`
+consecutive positions at two distinct residues is a shift invariance.
+
+For `n = 3`, the same conclusion (a source-faithful `Genome.IsTripleRepeat` of
+length `≥ ℓ`) is what `RepeatAdapter.extend_triple` already constructs at
+shifted starts; `isTripleRepeat_of_maximalTriple` proves that its `ℕ`-start
+formulation is the same predicate as the source-faithful one, which is all
+that was missing to feed it to `P2`.
+
+**The "same starts" version is false.** Kernel-checked
+(`cex_not_maximalRepeat_at_same_starts`): on the primitive word
+`S = AABAB` (`G = 5`) at `L = 3`, the starts `2, 4` carry the common `2`-mer
+`10` (`cex_pair_agrees`), but no `e` with `2 ≤ e < 5` makes them a maximal
+repeat: they are preceded by the same symbol, so the pair is never
+left-maximal at those starts.
 
 **(R2) From P2 to the graph hypotheses.**
 
-* `P2` (clause 1, no triple repeat of length `≥ K`) + (R1) with `n = 3` gives
-  `∀ v, m_S v ≤ 2`: three starts with the same `(L-1)`-window would produce a
-  maximal triple repeat of length `≥ L-1`.
-* `P2` (clause 2) + (R1) with `n = 2` gives `NodeCrossing`: if `m_S u = 2` and
-  `m_S v = 2` at starts `a, b` and `c, d`, the corresponding maximal repeats
-  have lengths `≥ K = L-1 > L-2`, so clause 2 forbids `Interleaved a b c d`.
+* **PROVED** (`P2.imp_nodeCount_le_two`): `P2` (clause 1, no triple repeat of
+  length `≥ L-1`) + primitivity gives `∀ v, m_S v ≤ 2` for **all** `(L-1)`-mers,
+  not just those in the node set. Three starts with the same `(L-1)`-window
+  would produce a maximal triple repeat of length `≥ L-1`.
+* **CORRECTED** (`ExtCrossing`, `P2.imp_ExtCrossing`): `P2` (clause 2) + (R1)
+  with `n = 2` does **not** give `NodeCrossing`. It gives that the *maximal
+  extensions* of the two pairs do not interleave: if `a ≠ b` and `c ≠ d` each
+  carry a common `(L-1)`-mer and `Interleaved a b c d`, then `E`-maximal repeats
+  at the two *shifted* pairs have lengths `≥ L-1 > L-2`, so clause 2 forbids
+  `Interleaved` of the four extended starts (in either ordering of the first
+  pair). `NodeCrossing` itself — about the *unshifted* occurrence pairs — is
+  **false for `P2`**.
+
+  Kernel-checked counterexample (`cex_not_NodeCrossing`): `S = AABAB`, `G = 5`,
+  `L = 3` satisfies actual `P2` (`cex_is_p2`; its only repeated `2`-mers are `01`
+  at starts `1, 3` and `10` at starts `2, 4`, so there is no maximal triple
+  repeat of length `≥ 2` at all, and neither pair is a maximal repeat, so clause
+  2 is vacuous), yet the two occurrence pairs interleave:
+  `Interleaved 1 3 2 4`. This is the smallest such example over primitive
+  circular words.
+
+  Numerical support for the correction (primitive binary words, `4 ≤ G ≤ 10`,
+  all `2 ≤ L ≤ G`): 4838 interleaving double-node configurations, 2534 of them
+  on `P2` words; 1320 configurations have interleaving *maximal extensions*, and
+  **0** of those lies on a `P2` word.
 
 **(R3) The multigraph combinatorics.** If `S` is primitive, every node has
 `m_S v ≤ 2`, and the occurrence pairs of the double nodes are pairwise
@@ -166,8 +221,16 @@ Probe scripts: kept out of the library; they are pure Python over
 * Closed in the kernel: the P1 complete-spectrum uniqueness theorem, the
   P2 ⟹ Ukkonen alignment, the genome ⟺ Eulerian-circuit translation, and the
   reduction of the P2 statement to `UniqueEulerCircuit`.
-* **Not** closed: `UniqueEulerCircuit` under the P2 hypothesis, i.e. (R1),
-  (R2), (R3) of §3. Consequently
+* Closed in the kernel since `agent/issue89-repeat-adapter`: the genome-side
+  (R1) (`maxPair_isRepeat`, plus the `n = 3` bridge) and (R2) (`P2` ⟹ node
+  multiplicity `≤ 2`, `P2` ⟹ `ExtCrossing`), together with kernel-checked
+  counterexamples showing that the (R1)/(R2) statements of §3 as previously
+  written are false, and the corrected `ExtCrossing` that replaces
+  `NodeCrossing` for the chord worker.
+* **Not** closed: `UniqueEulerCircuit` under the P2 hypothesis, i.e. (R3) of §3
+  (the multigraph/chord combinatorics), and the bridge from (R1)+(R2) to
+  `UniqueEulerCircuit` for the corrected `ExtCrossing` rather than
+  `NodeCrossing`. Consequently
   `p2_spectrum_unique_up_to_rotation` still takes `hUnique`, and the
   `PopulationUniqueness` chain on `main` still takes `hBBTS`/`hBBTD`.
 * No `axiom`, `sorry` or `admit` was introduced; nothing in the library was

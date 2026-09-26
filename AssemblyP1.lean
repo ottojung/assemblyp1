@@ -15,3 +15,4 @@ import AssemblyP1.OrientedFinalRigidity
 import AssemblyP1.PopulationUniqueness
 import AssemblyP1.AAABConverse
 import AssemblyP1.P2SpectrumUniqueness
+import AssemblyP1.P2RepeatResidual
