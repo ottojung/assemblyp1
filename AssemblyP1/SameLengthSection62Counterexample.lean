@@ -1,10 +1,14 @@
 import Mathlib
+import AssemblyP1.SourceFaithfulIs
+import AssemblyP1.Section62BidirectedFlow
 
 /-!
 # A finite SAME-LENGTH Section 6.2 bridging counterexample
 
 This file kernel-checks the finite witness recorded in
-`docs/section62-same-length-bidirected-counterexample.md`.  Under the
+`docs/section62-same-length-bidirected-counterexample.md`, using the shared
+hypothesis layer `AssemblyP1.SourceFaithfulIs` and the shared §6.2 flow layer
+`AssemblyP1.Section62Flow`.  Under the
 Medvedev–Brudno (2009) §6.2 reading in which the vertices of the bidirected
 read-overlap graph are read *DNA molecules* (a word and its reverse complement
 are one vertex, and identical molecules are one vertex), the truth-induced flow
@@ -26,27 +30,42 @@ Instance:
 * truth spectrum `d_S = { AAA:1, AAT:1, ATA:3, TAA:1 }`;
 * competitor `D = AAAAAT` (length `6`), `d_D = { AAA:3, AAT:1, ATA:1, TAA:1 }`.
 
-What is kernel-checked here:
+What is kernel-checked here.  This file proves the **literal Medvedev–Brudno
+§6.2 feasibility** of both candidates, via `AssemblyP1.Section62Flow`:
 
-* the source-faithful `I_s` certificate (coverage, every maximal triple repeat
-  all-bridged, every interleaved repeat pair bridged — for this truth the
-  interleaving conjunct is **non-vacuous**: the `A`-copies `{0,2}` and `{1,4}`
-  interleave, and both pairs are bridged);
-* the §6.2 *spelled-circuit* feasibility predicate `SeqSupport` (support
-  equality: a circular molecule has every observed read molecule as a
-  length-`L` submolecule, so its cyclic window walk visits every read vertex,
-  satisfying the source vertex lower bound `1`);
+* the explicit bidirected read-overlap graph on the four observed read
+  molecules, its sixteen edges written out and proved equal to the generated
+  `overlapEdges`;
+* the transitive edge reduction, vacuous on this graph under both readings;
+* the §6.2 vertex lower bound `1` and edge lower bounds `0`, the §3.4
+  signed-incidence balance `0` at every read vertex, and **no
+  supersource/supersink usage**;
+* the vertex throughputs, which by Observation 7 are `d_S` and `d_D` as already
+  used by the objectives below;
+* the **shared, authoritative** `SourceFaithfulIs.InformationFeasible` predicate
+  `I_s` at full strength — coverage, *every* triple repeat all-bridged, and
+  *every* interleaved pair of repeats bridged, quantified over all repeat lengths
+  and all selected starts — proved by finite `decide` on the `Genome` object
+  `truthGenome` with read length `3` and the realized placements `{0, 1, 3, 5}`.
+  The sampling realization samples start `0` twice; the duplicate collapses
+  because `Covers` and `BridgesCopy` quantify over placements, and the sampled
+  multiplicity is recorded separately by the read-type counts `obs`.  The
+  module-local `SourceCertificate` is retained as supporting evidence only;
+* the exact candidate-length equality `genomeLength truth = genomeLength
+  competitor`, so this remains the fixed-length sub-case `|D| = |S| = G`;
 * the strict improvement under both same-length objectives:
   the literal §6.1 product-of-binomial-marginals ratio `L(D)/L(S) = 5`, and the
   candidate-intrinsic exact multinomial ratio `exact(D)/exact(S) = 3`.
 
-Scope.  The explicit bidirected overlap graph, its transitive reduction, the
-edge-incidence/balance conditions and the absence of supersource/supersink
-usage for the two walks are checked computationally (not in Lean) by
-`scripts/verify_samelength_se62_counterexample.py` and the companion note.  The
-Lean file checks the finite `I_s`, `SeqSupport` and likelihood claims.  It does
-not settle which Medvedev–Brudno object the Shomorony et al. (2016) sentence
-intends, nor the per-occurrence strengthening or the single-strand reading.
+The endpoint theorem is `samelength_se62_bidirected_flow_counterexample`, whose
+feasibility clauses are `SpelledFeasible62`, not the `SeqSupport` proxy.
+`SeqSupport` is retained as `samelength_se62_counterexample` only as supporting
+evidence, and `scripts/verify_samelength_se62_counterexample.py` remains as a
+second, implementation-independent check of the same graph and circuits.
+
+Scope.  This file is about the finite instance only.  It does not settle which
+Medvedev–Brudno object the Shomorony et al. (2016) sentence intends, nor the
+per-occurrence strengthening or the single-strand reading.
 -/
 
 set_option maxHeartbeats 4000000
@@ -100,6 +119,58 @@ def truth : Fin 6 → Base := ![.A, .A, .A, .T, .A, .T]
 
 /-- The competitor `AAAAAT` of length `6`. -/
 def competitor : Fin 6 → Base := ![.A, .A, .A, .A, .A, .T]
+
+/-! ### The truth as the shared source-faithful object
+
+The hypothesis side of this counterexample is stated with the *shared* predicate
+`SourceFaithfulIs.InformationFeasible`, the same object every other AssemblyP1
+counterexample module uses, rather than with a module-local stand-in. -/
+
+open SourceFaithfulIs
+
+/-- The true circular genome `AAATAT` in the shared source-faithful
+representation.  This is a reducible abbreviation, not an opaque `def`, so that the
+`Fin`-indexed numerals and the `Decidable` instances of the shared layer are
+found by instance search when `I_s` membership is decided. -/
+abbrev truthGenome : SourceFaithfulIs.Genome Base where
+  len := 6
+  len_pos := by norm_num
+  sym := truth
+
+/-- The competing candidate `AAAAAT` in the shared source-faithful
+representation, so that candidate-intrinsic length is intrinsic to the object. -/
+abbrev competitorGenome : SourceFaithfulIs.Genome Base where
+  len := 6
+  len_pos := by norm_num
+  sym := competitor
+
+/-- The realized length-`3` read placements, as a set of distinct starts.
+
+The sampling realization is `readStarts = [0, 0, 1, 3, 5]`: start `0` was sampled
+twice.  Coverage and bridging are properties of the latent *placements*, and
+`SourceFaithfulIs.Covers`/`BridgesCopy` quantify over a `Finset` of start
+positions, so the repeated sampling collapses to a single placement here.  The
+sampled multiplicity is not lost: it is recorded by the read-type counts `obs`,
+which is what the likelihood consumes. -/
+def realizedStarts : Finset (Fin 6) := {0, 1, 3, 5}
+
+/-- The realized start set is exactly the set of distinct entries of the sampling
+realization, so collapsing the duplicate sample loses no placement. -/
+theorem realizedStarts_eq : realizedStarts = {0, 1, 3, 5} := rfl
+
+/-- The shared `Genome` length of the truth is the length used everywhere else in
+this file. -/
+theorem truthGenome_len : truthGenome.len = 6 := rfl
+
+/-- **The actual `I_s` hypothesis for this realization.**  This is
+`SourceFaithfulIs.InformationFeasible` at full strength — coverage, *every*
+triple repeat all-bridged, and *every* interleaved pair of repeats bridged,
+quantified over all repeat lengths and all selected starts — discharged by finite
+`decide` on `truthGenome` with read length `3` and the realized start set
+`{0, 1, 3, 5}`.  No repeat is enumerated by hand and no clause is assumed. -/
+theorem truth_information_feasible :
+    SourceFaithfulIs.InformationFeasible truthGenome 3 realizedStarts := by
+  decide
 
 /-- Circular symbol access for a length-`6` genome. -/
 def cyc6 (g : Fin 6 → Base) (i : Nat) : Base :=
@@ -384,15 +455,470 @@ multinomial objective: ratio `3`. -/
 theorem exactLik_over_truth : exactLik dD obs / exactLik dS obs = 3 := by
   rw [exactLik_truth, exactLik_competitor]; norm_num
 
+/-! ## Literal §6.2 bidirected-flow feasibility (MB09 §6.2)
+
+Everything below replaces the `SeqSupport` proxy by the actual §6.2 object: the
+explicit bidirected read-overlap graph on the observed read *molecules*, its
+transitive edge reduction, the vertex and edge lower bounds, the §3.4
+signed-incidence balance, and the supersource/supersink circulation conversion.
+
+Strand and candidate semantics are unchanged: vertices are molecule classes
+(MB09 §3.1, §4.1) and the candidates are still the circular sequences `truth` and
+`competitor`, both of length `6`.  Only the feasibility predicate is replaced, and
+the exact candidate-length equality `|S| = |D| = 6` is preserved throughout. -/
+
+open AssemblyP1.Section62Flow
+
+set_option maxHeartbeats 4000000
+set_option maxRecDepth 1000000
+
+/-- A *strand*: one single-stranded DNA sequence, as the list of its symbols. -/
+abbrev Strand3 := List Base
+
+/-- A length-`3` read molecule, as a strand. -/
+def m3 (a b c : Base) : Strand3 := [a, b, c]
+
+/-- The linearization of a strand. -/
+def toList3 (w : Strand3) : List Base := w
+
+/-- The DNA reverse complement of a strand (MB09 §3.1). -/
+def rc3 (w : Strand3) : Strand3 := w.reverse.map comp
+
+/-- The binary code of a strand, least significant symbol last. -/
+def code3 (w : Strand3) : Nat := (w.map bitA).foldl (fun a b => a * 2 + b) 0
+
+/-- The molecule-class representative of a strand: the strand itself when its
+binary code is the smaller of the two strand codes, and its reverse complement
+otherwise.  MB09 §4.1 represents each k-molecule only once, so this is the vertex
+label of the §6.2 graph. -/
+def rep3 (w : Strand3) : Strand3 := if code3 w ≤ code3 (rc3 w) then w else rc3 w
+
+/-- The bidirected overlap edge of length `L − 1 = 2` between two strands. -/
+def e2 (x y : Strand3) : BdEdge Base Strand3 := bdEdge rep3 x y 2
+
+/-- The molecule-class code of a strand, i.e. the `Fin 8` label of its
+reverse-complement pair.  This is the indexing used by the already kernel-checked
+spectra `dS`, `dD` and by the §6.1 and exact-multinomial objectives. -/
+def repCode (w : Strand3) : Fin 8 :=
+  if h : min (code3 w) (code3 (rc3 w)) < 8 then ⟨min (code3 w) (code3 (rc3 w)), h⟩
+  else 0
+
+/-- The four observed read DNA molecules, the vertices of the §6.2 graph. -/
+def readVerts : List Strand3 :=
+  [m3 .A .A .A, m3 .A .A .T, m3 .A .T .A, m3 .T .A .A]
+
+/-- The read length `L = 3`. -/
+def readLen : Nat := 3
+
+/-- The §6.2 overlap threshold for this instance, `o_min = L − 1 = 2`. -/
+def oMin : Nat := 2
+
+/-- The explicit bidirected overlap graph of MB09 §6.2 on the observed read
+molecules. -/
+def graph : List (BdEdge Base Strand3) :=
+  overlapEdges Base Strand3 toList3 rep3 rc3 readLen oMin readVerts
+
+/-- The sixteen §6.2 overlap edges, written out, in the order `overlapEdges`
+generates them.  The feasibility checks below use this explicit list so that they
+stay shallow enough for the kernel to evaluate; `graph_eq` identifies it with the
+generated graph. -/
+def graphList : List (BdEdge Base Strand3) :=
+  [ e2 (m3 .A .A .A) (m3 .A .A .A), e2 (m3 .A .A .A) (m3 .A .A .T),
+    e2 (m3 .A .A .T) (m3 .A .T .A), e2 (m3 .A .A .T) (m3 .A .T .T),
+    e2 (m3 .A .T .A) (m3 .T .A .A), e2 (m3 .A .T .A) (m3 .T .A .T),
+    e2 (m3 .T .A .A) (m3 .A .A .A), e2 (m3 .T .A .A) (m3 .A .A .T),
+    e2 (m3 .T .T .T) (m3 .T .T .T), e2 (m3 .T .T .T) (m3 .T .T .A),
+    e2 (m3 .A .T .T) (m3 .T .T .T), e2 (m3 .A .T .T) (m3 .T .T .A),
+    e2 (m3 .T .A .T) (m3 .A .T .A), e2 (m3 .T .A .T) (m3 .A .T .T),
+    e2 (m3 .T .T .A) (m3 .T .A .A), e2 (m3 .T .T .A) (m3 .T .A .T) ]
+
+/-- The written-out edge list is exactly the generated §6.2 overlap graph. -/
+theorem graph_eq : graph = graphList := by decide
+
+/-- The strand read at start `r` of the truth `AAATAT`. -/
+def strandTruth (r : Fin 6) : Strand3 :=
+  [cyc6 truth r.val, cyc6 truth (r.val + 1), cyc6 truth (r.val + 2)]
+
+/-- The strand read at start `r` of the competitor `AAAAAT`. -/
+def strandCompetitor (r : Fin 6) : Strand3 :=
+  [cyc6 competitor r.val, cyc6 competitor (r.val + 1), cyc6 competitor (r.val + 2)]
+
+/-- The truth's molecule spectrum indexed by molecule class: the throughput vector
+`d` that §6.2 requires, by Observation 7.  This is exactly the `Fin 8` spectrum
+`dS` consumed by the objectives above, relabelled by molecule class. -/
+def dS' (w : Strand3) : Nat := dS (repCode w)
+
+/-- The competitor's molecule spectrum, likewise relabelled by molecule class. -/
+def dD' (w : Strand3) : Nat := dD (repCode w)
+
+/-- The truth `AAATAT` as a §6.2 spelled candidate. -/
+def spellTruth : Spelling Base Strand3 6 := ⟨strandTruth, by decide⟩
+
+/-- The competitor `AAAAAT` as a §6.2 spelled candidate.  It has the same length
+`6` as the truth, which is what makes this the fixed-candidate-length sub-case. -/
+def spellCompetitor : Spelling Base Strand3 6 := ⟨strandCompetitor, by decide⟩
+
+/-- No supersource and no supersink is used: both candidates are genuine circuits. -/
+def noTerm : SuperTerminals Strand3 := noTerminals Strand3
+
+/-- The concrete `noTerm` uses neither the supersource nor the supersink, which is
+the zero-terminal-usage conjunct of `Feasible62`. -/
+theorem noTerm_usage_zero : ∀ v, noTerm.srcUse v = 0 ∧ noTerm.snkUse v = 0 :=
+  fun _ => ⟨rfl, rfl⟩
+
+/-- A numeric key identifying an overlap edge by the binary codes of its two
+strands.  The certificate flows below use these keys so that they stay cheap
+enough for the kernel to evaluate the feasibility checks. -/
+def ekey (e : BdEdge Base Strand3) : Nat := 8 * code3 e.sx + code3 e.sy
+
+/-- The key of the edge between the strands `x` and `y`. -/
+def keyOf (x y : Strand3) : Nat := 8 * code3 x + code3 y
+
+/-- The flow of the truth's bidirected circuit: flow `1` on each of the six
+overlap edges its walk traverses, and `0` elsewhere.  The edges are
+`AAA → AAT`, `AAT → ATA`, `ATA → TAT`, `TAT → ATA`, `ATA → TAA`, `TAA → AAA`. -/
+def truthCircuitFlow : BdFlow Base Strand3 := fun e =>
+  if ekey e = keyOf (m3 .A .A .A) (m3 .A .A .T) then 1 else
+  if ekey e = keyOf (m3 .A .A .T) (m3 .A .T .A) then 1 else
+  if ekey e = keyOf (m3 .A .T .A) (m3 .T .A .T) then 1 else
+  if ekey e = keyOf (m3 .T .A .T) (m3 .A .T .A) then 1 else
+  if ekey e = keyOf (m3 .A .T .A) (m3 .T .A .A) then 1 else
+  if ekey e = keyOf (m3 .T .A .A) (m3 .A .A .A) then 1 else
+  0
+
+/-- The flow of the competitor's bidirected circuit.  The walk visits `AAA` three
+times but traverses the `AAA → AAA` self-overlap only twice, so that edge carries
+flow `2`; the other four edges carry `1`. -/
+def competitorCircuitFlow : BdFlow Base Strand3 := fun e =>
+  if ekey e = keyOf (m3 .A .A .A) (m3 .A .A .A) then 2 else
+  if ekey e = keyOf (m3 .A .A .A) (m3 .A .A .T) then 1 else
+  if ekey e = keyOf (m3 .A .A .T) (m3 .A .T .A) then 1 else
+  if ekey e = keyOf (m3 .A .T .A) (m3 .T .A .A) then 1 else
+  if ekey e = keyOf (m3 .T .A .A) (m3 .A .A .A) then 1 else
+  0
+
+/-! ### The graph and the candidate-length equality -/
+
+/-- The §6.2 graph on the four observed molecules has exactly the sixteen
+bidirected overlap edges of length `2`. -/
+theorem graph_has_sixteen_edges : graph.length = 16 := by decide
+
+/-- There are four observed read molecules. -/
+theorem readVerts_length : readVerts.length = 4 := by decide
+
+/-- The genome length of a circular candidate presented as `Fin n → Base`: it is
+`n`, the number of cyclic positions. -/
+def genomeLength {n : Nat} (_g : Fin n → Base) : Nat := n
+
+/-- The truth has length `G = 6`. -/
+theorem truth_genome_length : genomeLength truth = 6 := rfl
+
+/-- The competitor also has length `6`. -/
+theorem competitor_genome_length : genomeLength competitor = 6 := rfl
+
+/-- The exact candidate-length equality of this sub-case, kept explicit: the
+competing candidate is a single spelled molecule of the same length as the truth,
+so this is the fixed-length case `|D| = |S| = G`. -/
+theorem same_candidate_length : genomeLength truth = genomeLength competitor := rfl
+
+/-! ### Explicit walk evidence -/
+
+/-- The molecule classes visited by a cyclic spelling, in order. -/
+def visitsList {n : Nat} (sp : Spelling Base Strand3 n) : List Strand3 :=
+  (List.finRange n).map (fun i => rep3 (sp.strand i))
+
+/-- The truth's cyclic window walk visits `AAA, AAT, ATA, ATA, ATA, TAA`. -/
+theorem truth_walk :
+    visitsList spellTruth =
+      [m3 .A .A .A, m3 .A .A .T, m3 .A .T .A, m3 .A .T .A, m3 .A .T .A, m3 .T .A .A] := by
+  decide
+
+/-- The competitor's cyclic window walk visits `AAA, AAA, AAA, AAT, ATA, TAA`. -/
+theorem competitor_walk :
+    visitsList spellCompetitor =
+      [m3 .A .A .A, m3 .A .A .A, m3 .A .A .A, m3 .A .A .T, m3 .A .T .A, m3 .T .A .A] := by
+  decide
+
+/-! ### §6.2 feasibility, clause by clause -/
+
+/-- §6.2 edge lower bounds hold on every edge for the truth's circuit. -/
+theorem truth_edge_lower_bounds : ∀ e ∈ graphList, (0 : ℕ) ≤ truthCircuitFlow e := by
+  decide
+
+/-- The truth's vertex throughput at `AAA` is `1`. -/
+theorem truth_throughput_AAA :
+    throughput Base Strand3 rep3 truthCircuitFlow graphList (m3 .A .A .A) = 1 := by
+  decide
+
+/-- The truth's vertex throughput at `AAT` is `1`. -/
+theorem truth_throughput_AAT :
+    throughput Base Strand3 rep3 truthCircuitFlow graphList (m3 .A .A .T) = 1 := by
+  decide
+
+/-- The truth's vertex throughput at `ATA` is `3`. -/
+theorem truth_throughput_ATA :
+    throughput Base Strand3 rep3 truthCircuitFlow graphList (m3 .A .T .A) = 3 := by
+  decide
+
+/-- The truth's vertex throughput at `TAA` is `1`. -/
+theorem truth_throughput_TAA :
+    throughput Base Strand3 rep3 truthCircuitFlow graphList (m3 .T .A .A) = 1 := by
+  decide
+
+/-- The truth's vertex throughputs meet the §6.2 vertex lower bound `1`. -/
+theorem truth_vertex_lower_bounds :
+    ∀ v ∈ readVerts, (1 : ℕ) ≤ throughput Base Strand3 rep3 truthCircuitFlow graphList v := by
+  decide
+
+/-- The §3.4 signed-incidence balance of the truth's circuit is `0` at every read
+vertex, with no supersource/supersink usage. -/
+theorem truth_balance_zero :
+    ∀ v ∈ readVerts, balance Base Strand3 rep3 truthCircuitFlow noTerm graphList v = 0 := by
+  decide
+
+/-- The truth's vertex throughputs are the truth's molecule spectrum. -/
+theorem truth_throughput_is_spectrum :
+    ∀ v ∈ readVerts, throughput Base Strand3 rep3 truthCircuitFlow graphList v = dS' v := by
+  decide
+
+/-- The truth's hand-written circuit is a §6.2 feasible flow. -/
+theorem truth_feasible62 :
+    Feasible62 Base Strand3 rep3 readVerts graphList truthCircuitFlow noTerm dS' :=
+  ⟨⟨truth_edge_lower_bounds, truth_vertex_lower_bounds, truth_balance_zero,
+    truth_throughput_is_spectrum⟩, noTerm_usage_zero⟩
+
+/-- §6.2 edge lower bounds hold on every edge for the competitor's circuit. -/
+theorem competitor_edge_lower_bounds :
+    ∀ e ∈ graphList, (0 : ℕ) ≤ competitorCircuitFlow e := by
+  decide
+
+/-- The competitor's vertex throughput at `AAA` is `3`. -/
+theorem competitor_throughput_AAA :
+    throughput Base Strand3 rep3 competitorCircuitFlow graphList (m3 .A .A .A) = 3 := by
+  decide
+
+/-- The competitor's vertex throughput at `AAT` is `1`. -/
+theorem competitor_throughput_AAT :
+    throughput Base Strand3 rep3 competitorCircuitFlow graphList (m3 .A .A .T) = 1 := by
+  decide
+
+/-- The competitor's vertex throughput at `ATA` is `1`. -/
+theorem competitor_throughput_ATA :
+    throughput Base Strand3 rep3 competitorCircuitFlow graphList (m3 .A .T .A) = 1 := by
+  decide
+
+/-- The competitor's vertex throughput at `TAA` is `1`. -/
+theorem competitor_throughput_TAA :
+    throughput Base Strand3 rep3 competitorCircuitFlow graphList (m3 .T .A .A) = 1 := by
+  decide
+
+/-- The competitor's vertex throughputs meet the §6.2 vertex lower bound `1`. -/
+theorem competitor_vertex_lower_bounds :
+    ∀ v ∈ readVerts, (1 : ℕ) ≤
+      throughput Base Strand3 rep3 competitorCircuitFlow graphList v := by
+  decide
+
+/-- The §3.4 signed-incidence balance of the competitor's circuit is `0` at every
+read vertex, with no supersource/supersink usage. -/
+theorem competitor_balance_zero :
+    ∀ v ∈ readVerts, balance Base Strand3 rep3 competitorCircuitFlow noTerm graphList v = 0 := by
+  decide
+
+/-- The competitor's vertex throughputs are the competitor's molecule spectrum. -/
+theorem competitor_throughput_is_spectrum :
+    ∀ v ∈ readVerts, throughput Base Strand3 rep3 competitorCircuitFlow graphList v = dD' v := by
+  decide
+
+/-- The competitor's hand-written circuit is a §6.2 feasible flow. -/
+theorem competitor_feasible62 :
+    Feasible62 Base Strand3 rep3 readVerts graphList competitorCircuitFlow noTerm dD' :=
+  ⟨⟨competitor_edge_lower_bounds, competitor_vertex_lower_bounds,
+    competitor_balance_zero, competitor_throughput_is_spectrum⟩, noTerm_usage_zero⟩
+
+/-! ### The spelled-candidate components -/
+
+/-- Every position of the truth's walk visits an observed read molecule. -/
+theorem truth_visits_observed : VisitsObserved rep3 spellTruth readVerts := by
+  unfold VisitsObserved
+  decide
+
+theorem competitor_visits_observed : VisitsObserved rep3 spellCompetitor readVerts := by
+  unfold VisitsObserved
+  decide
+
+/-- Every step of the truth's walk is a real edge of the §6.2 overlap graph. -/
+theorem truth_steps_in_graph : StepsInGraph rep3 readLen spellTruth graphList := by
+  unfold StepsInGraph
+  decide
+
+theorem competitor_steps_in_graph : StepsInGraph rep3 readLen spellCompetitor graphList := by
+  unfold StepsInGraph
+  decide
+
+/-- Every step of the truth's walk survives the transitive edge reduction, so the
+circuit lives on the *transitively reduced* graph §6.2 requires. -/
+theorem truth_steps_survive_reduction :
+    StepsSurviveReduction Base Strand3 toList3 rep3 rc3 readLen readVerts spellTruth
+      graphList := by
+  unfold StepsSurviveReduction transitivelyReduced
+  decide
+
+theorem competitor_steps_survive_reduction :
+    StepsSurviveReduction Base Strand3 toList3 rep3 rc3 readLen readVerts
+      spellCompetitor graphList := by
+  unfold StepsSurviveReduction transitivelyReduced
+  decide
+
+/-- At every interior vertex of each walk the arriving and departing incidences
+are opposite (MB09 §3.2): both are genuine bidirected circuits. -/
+theorem truth_bidirected_circuit : BidirectedCircuit rep3 readLen spellTruth := by
+  unfold BidirectedCircuit OppositeAtInterior
+  decide
+
+theorem competitor_bidirected_circuit : BidirectedCircuit rep3 readLen spellCompetitor := by
+  unfold BidirectedCircuit OppositeAtInterior
+  decide
+
+/-- The truth, as a *spelled* §6.2 candidate. -/
+theorem truth_spelled_feasible62 :
+    SpelledFeasible62 Base Strand3 toList3 rep3 rc3 readLen oMin readVerts spellTruth
+      truthCircuitFlow noTerm dS' :=
+  ⟨truth_visits_observed, truth_steps_in_graph, truth_steps_survive_reduction,
+    truth_bidirected_circuit, truth_feasible62⟩
+
+/-- The competitor, as a spelled §6.2 candidate of the *same* length. -/
+theorem competitor_spelled_feasible62 :
+    SpelledFeasible62 Base Strand3 toList3 rep3 rc3 readLen oMin readVerts
+      spellCompetitor competitorCircuitFlow noTerm dD' :=
+  ⟨competitor_visits_observed, competitor_steps_in_graph,
+    competitor_steps_survive_reduction, competitor_bidirected_circuit,
+    competitor_feasible62⟩
+
+/-! ### The hand-written circuits are the walks' own flows -/
+
+/-- The hand-written truth circuit is exactly the flow its cyclic window walk
+carries, on every edge of the graph. -/
+theorem truthCircuitFlow_eq_walkFlow :
+    ∀ e ∈ graphList, truthCircuitFlow e = spellTruth.flow rep3 readLen e := by
+  decide
+
+/-- Likewise for the competitor circuit. -/
+theorem competitorCircuitFlow_eq_walkFlow :
+    ∀ e ∈ graphList, competitorCircuitFlow e = spellCompetitor.flow rep3 readLen e := by
+  decide
+
+/-- The walk's visit counts are the candidate's molecule spectrum (Observation 7). -/
+theorem truth_visits_eq_spectrum :
+    ∀ v ∈ readVerts, spellTruth.visits rep3 v = dS' v := by
+  decide
+
+theorem competitor_visits_eq_spectrum :
+    ∀ v ∈ readVerts, spellCompetitor.visits rep3 v = dD' v := by
+  decide
+
+/-! ### Transitive edge reduction -/
+
+/-- The transitive edge reduction removes no edge of this graph, under the literal
+§6.2 reading.  Every overlap has length `L − 1 = 2`, and the composition law
+`len₁ + len₂ − L = len` with `len₁, len₂ < len` is unsatisfiable here. -/
+theorem graph_reduction_vacuous :
+    ReductionVacuous Base Strand3 toList3 rc3 readLen readVerts graphList := by
+  unfold ReductionVacuous
+  decide
+
+/-- The same under the alternative longer-overlap reading. -/
+theorem graph_reduction_vacuous_longer :
+    ReductionVacuousLonger Base Strand3 toList3 rc3 readLen readVerts graphList := by
+  unfold ReductionVacuousLonger
+  decide
+
+/-! ### The throughput vector is the spectrum the objectives use -/
+
+/-- The certified truth throughputs are the already kernel-checked
+`d_S = { AAA:1, AAT:1, ATA:3, TAA:1 }`. -/
+theorem truth_throughput_values :
+    dS' (m3 .A .A .A) = 1 ∧ dS' (m3 .A .A .T) = 1 ∧ dS' (m3 .A .T .A) = 3 ∧
+      dS' (m3 .T .A .A) = 1 :=
+  ⟨by
+    rw [← truth_throughput_is_spectrum (m3 .A .A .A) (by decide)]
+    exact truth_throughput_AAA,
+   by
+    rw [← truth_throughput_is_spectrum (m3 .A .A .T) (by decide)]
+    exact truth_throughput_AAT,
+   by
+    rw [← truth_throughput_is_spectrum (m3 .A .T .A) (by decide)]
+    exact truth_throughput_ATA,
+   by
+    rw [← truth_throughput_is_spectrum (m3 .T .A .A) (by decide)]
+    exact truth_throughput_TAA⟩
+
+/-- The certified competitor throughputs are the already kernel-checked
+`d_D = { AAA:3, AAT:1, ATA:1, TAA:1 }`. -/
+theorem competitor_throughput_values :
+    dD' (m3 .A .A .A) = 3 ∧ dD' (m3 .A .A .T) = 1 ∧ dD' (m3 .A .T .A) = 1 ∧
+      dD' (m3 .T .A .A) = 1 :=
+  ⟨by
+    rw [← competitor_throughput_is_spectrum (m3 .A .A .A) (by decide)]
+    exact competitor_throughput_AAA,
+   by
+    rw [← competitor_throughput_is_spectrum (m3 .A .A .T) (by decide)]
+    exact competitor_throughput_AAT,
+   by
+    rw [← competitor_throughput_is_spectrum (m3 .A .T .A) (by decide)]
+    exact competitor_throughput_ATA,
+   by
+    rw [← competitor_throughput_is_spectrum (m3 .T .A .A) (by decide)]
+    exact competitor_throughput_TAA⟩
+
+/-- The certified spectra are literally the `Fin 8` spectra the objectives use. -/
+theorem truth_throughput_matches_dS :
+    dS' (m3 .A .A .A) = dS 0 ∧ dS' (m3 .A .A .T) = dS 1 ∧
+      dS' (m3 .A .T .A) = dS 2 ∧ dS' (m3 .T .A .A) = dS 4 := by
+  decide
+
+theorem competitor_throughput_matches_dD :
+    dD' (m3 .A .A .A) = dD 0 ∧ dD' (m3 .A .A .T) = dD 1 ∧
+      dD' (m3 .A .T .A) = dD 2 ∧ dD' (m3 .T .A .A) = dD 4 := by
+  decide
+
 /-! ## Main finite theorem -/
 
-/-- Kernel-checked finite same-length counterexample: the instance satisfies the
-source-faithful `I_s` certificate, the truth and a same-length competitor both
-satisfy the §6.2 spelled-circuit feasibility predicate `SeqSupport`, and the
-competitor strictly beats the truth under both the literal §6.1 binomial
-objective (`5 > 1`) and the exact same-length multinomial objective (`3 > 1`).
-The explicit bidirected-graph/flow admissibility of both circuits is checked
-computationally in `scripts/verify_samelength_se62_counterexample.py`. -/
+/-- Kernel-checked finite same-length counterexample with the **literal MB09 §6.2**
+feasibility endpoint.
+
+In substance: the instance satisfies the **shared, authoritative**
+`SourceFaithfulIs.InformationFeasible` predicate `I_s` at full strength, proved by
+finite `decide` on the `Genome` object `truthGenome` with read length `3` and the
+realized length-`3` placements `{0, 1, 3, 5}` (the sampling realization samples
+start `0` twice, and the duplicate collapses because coverage and bridging
+quantify over placements; the sampled multiplicity is recorded separately by the
+read-type counts `obs`); the competing candidate is a single spelled molecule of
+exactly the same length as
+the truth (`same_candidate_length`, i.e. the fixed-length sub-case `|D| = |S| = G`
+with `G = 6`); the truth `AAATAT` and that competitor are both genuine §6.2
+spelled candidates — bidirected circuits in the transitively reduced bidirected
+overlap graph on the four observed read molecules, every step a real graph edge
+surviving the transitive reduction, every position an observed read molecule,
+edge lower bounds `0`, the §6.2 vertex lower bound `1`, signed-incidence balance
+`0`, no supersource/supersink usage, and vertex throughput equal to the
+candidate's own molecule spectrum; and the competitor strictly beats the truth
+under both the literal §6.1 binomial objective (ratio `5`) and the exact
+same-length multinomial objective (ratio `3`). -/
+theorem samelength_se62_bidirected_flow_counterexample :
+    SourceFaithfulIs.InformationFeasible truthGenome 3 realizedStarts ∧
+      (genomeLength truth = genomeLength competitor) ∧
+      (SpelledFeasible62 Base Strand3 toList3 rep3 rc3 readLen oMin readVerts spellTruth
+          truthCircuitFlow noTerm dS' ∧
+        (SpelledFeasible62 Base Strand3 toList3 rep3 rc3 readLen oMin readVerts
+            spellCompetitor competitorCircuitFlow noTerm dD' ∧
+          (lik obs dS < lik obs dD ∧ exactLik dD obs / exactLik dS obs = 3))) :=
+  ⟨truth_information_feasible, ⟨same_candidate_length,
+    ⟨truth_spelled_feasible62, ⟨competitor_spelled_feasible62,
+      ⟨competitor_strictly_better, exactLik_over_truth⟩⟩⟩⟩⟩
+
+/-- The earlier sequence-level statement, retained: §6.2 feasibility holds
+*alongside* the proxy `SeqSupport` for both candidates, and both strict
+improvements.  The §6.2 theorem above is the one that uses the source object. -/
 theorem samelength_se62_counterexample :
     SourceCertificate ∧ SeqSupport dS obs ∧ SeqSupport dD obs ∧
       lik obs dS < lik obs dD ∧ exactLik dD obs / exactLik dS obs = 3 :=
