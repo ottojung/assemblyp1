@@ -893,7 +893,15 @@ theorem ampbmp_head_eq_of_pow {A B U : List α} {m k : ℕ}
 
 /-- Consequently, under the same hypotheses, `A^m ++ B^m` is not a proper power: the two
 excursions must have started with the same edge type, contradicting the assumption that
-the vertex had two distinct outgoing edge types. -/
+the vertex had two distinct outgoing edge types.
+
+**Audit note (2026-09).** The witness `U`, the exponent `k ≥ 2` and the equation
+`A^m ++ B^m = U^k` appear here as *hypotheses*, so this is not the primitivity statement
+the graph argument needs: it derives the conclusion from an already-contradictory
+premise. The quantified form (no witness in sight) is
+`LyndonSchutzenberger.not_properPower_of_head_ne`, and the `IsPrimitive` form is
+`LyndonSchutzenberger.ampbmp_isPrimitive_of_head_ne`, both proved from the full
+Lyndon–Schützenberger theorem. This conditional variant is kept for the record. -/
 theorem ampbmp_not_properPower_of_head_ne {A B U : List α} {m k : ℕ}
     (hA : A ≠ []) (hB : B ≠ []) (hm2 : 2 ≤ m) (hk2 : 2 ≤ k)
     (h : nCopies A m ++ nCopies B m = nCopies U k)
@@ -904,7 +912,10 @@ theorem ampbmp_not_properPower_of_head_ne {A B U : List α} {m k : ℕ}
   obtain ⟨U, hU, k', hk', heq⟩ := hp
   exact hne (ampbmp_head_eq_of_pow hA hB hm2 hk2 h hlen)
 
-/-- The same statement phrased with `IsPrimitive`. -/
+/-- The same statement phrased with `IsPrimitive`.
+
+**Audit note (2026-09).** Inverted form, as above: superseded by
+`LyndonSchutzenberger.ampbmp_isPrimitive_of_head_ne`. -/
 theorem ampbmp_primitive_of_head_ne {A B U : List α} {m k : ℕ}
     (hA : A ≠ []) (hB : B ≠ []) (hm2 : 2 ≤ m) (hk2 : 2 ≤ k)
     (h : nCopies A m ++ nCopies B m = nCopies U k)
@@ -957,7 +968,11 @@ theorem dvd_mul_letterCount_of_pow {α : Type _} [BEq α] {A B U : List α} {m k
 
 /-- If some letter occurs exactly once in `A ++ B`, every witness `A^m ++ B^m = U^k`
 satisfies `k | m`. Together with `k >= 2` this restricts the possible witnesses to
-proper divisors of `m`. -/
+proper divisors of `m`.
+
+**Audit note (2026-09).** This shape is *not* the inverted one: the conclusion is a
+statement about the witness `k` that the caller already possesses, so taking the
+equation as a hypothesis is exactly right here. -/
 theorem dvd_mul_of_letterCount_eq_one {α : Type _} [BEq α] {A B U : List α} {m k : ℕ} (a : α)
     (hc : letterCount a (A ++ B) = 1) (h : nCopies A m ++ nCopies B m = nCopies U k) :
     k ∣ m := by

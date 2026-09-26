@@ -1134,5 +1134,45 @@ theorem ampbmp_primitive_of_head_ne_uncond {A B U : List α} {m k : ℕ}
   obtain ⟨U, hU, k', hk', heq⟩ := hp
   exact hne (ampbmp_head_eq_of_pow_uncond hA hB hm2 hk2 h)
 
+/-! ### The corrected primitivity surface (audit fix)
+
+`ampbmp_primitive_of_head_ne_uncond` above is a true statement, but it is *not* the
+theorem the graph argument needs: it takes a proper-power witness `U`, `k ≥ 2` and the
+equation `nCopies A m ++ nCopies B m = nCopies U k` as **hypotheses**, so it only
+produces `IsPrimitive` from an already-contradictory premise. The statement required
+by `docs/scalar-primitive-spellings-83.md` quantifies over the witness instead: for
+nonempty `A`, `B`, `m ≥ 2` and `A[0]? ≠ B[0]?`, the word `A^m ++ B^m` *is* primitive, with
+no witness and no equation in sight. The theorems below are that statement; the
+proper-power witness is decomposed inside the proof by `IsProperPower`/`IsPrimitive` and
+discharged with `ampbmp_head_eq_of_pow_uncond`. They supersede
+`AmpBmpPrimitivity.ampbmp_primitive_of_head_ne` and
+`AmpBmpPrimitivity.ampbmp_not_properPower_of_head_ne`, which are of the inverted
+(witness-as-hypothesis) form and are kept only for the record. -/
+
+/-- **`A^m ++ B^m` is primitive whenever `A`, `B` are nonempty, `m ≥ 2` and their
+first letters differ.** The proper-power witness is quantified over inside the proof:
+no `U`, no `k`, no equation appears in the statement. -/
+theorem ampbmp_isPrimitive_of_head_ne {A B : List α} {m : ℕ}
+    (hA : A ≠ []) (hB : B ≠ []) (hm2 : 2 ≤ m) (hne : A[0]? ≠ B[0]?) :
+    IsPrimitive (nCopies A m ++ nCopies B m) := by
+  intro hp
+  obtain ⟨U, hU, k, hk2, heq⟩ := hp
+  exact hne (ampbmp_head_eq_of_pow_uncond hA hB hm2 hk2 heq)
+
+/-- The same statement phrased as the negation of a nontrivial power, i.e. with the
+witness `l` and exponent `k ≥ 2` left free. -/
+theorem not_properPower_of_head_ne {A B : List α} {m : ℕ}
+    (hA : A ≠ []) (hB : B ≠ []) (hm2 : 2 ≤ m) (hne : A[0]? ≠ B[0]?) :
+    ∀ l : List α, l ≠ [] → ∀ k : ℕ, 2 ≤ k → nCopies A m ++ nCopies B m ≠ nCopies l k :=
+  fun _ _ _ hk2 heq => hne (ampbmp_head_eq_of_pow_uncond hA hB hm2 hk2 heq)
+
+/-- The separator statement with the witness quantified over rather than assumed:
+every nontrivial power representation of `A^m ++ B^m` forces `A[0]? = B[0]?`. -/
+theorem head_eq_of_pow {A B : List α} {m : ℕ} (hA : A ≠ []) (hB : B ≠ [])
+    (hm2 : 2 ≤ m) :
+    ∀ U : List α, U ≠ [] → ∀ k : ℕ, 2 ≤ k →
+      nCopies A m ++ nCopies B m = nCopies U k → A[0]? = B[0]? :=
+  fun _ _ _ hk2 h => ampbmp_head_eq_of_pow_uncond hA hB hm2 hk2 h
+
 
 end AssemblyP1
