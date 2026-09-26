@@ -25,9 +25,19 @@ New module: `AssemblyP1/P2SpectrumUniqueness.lean`. No `axiom`, `sorry` or
 | `rotEquiv_of_trailEquiv` | shift-equivalent window trails ⟹ rotation-equivalent words | none |
 | `P1`, `P1.node_injective` | no length-`(L-1)` word occurs more than once ⟹ the node map of `S` is injective | none |
 | **`p1_spectrum_unique_up_to_rotation`** | **`P1` + equal complete `L`-spectrum + same length ⟹ `RotEquiv`** | **none** |
+| `nodeWindow_eq_of_agree`, `nodeCount_ge_two` | agreeing starts with `L-1 ≤ e` share their `(L-1)`-window; two distinct such starts force node multiplicity `≥ 2` | none |
+| **`P1.imp_P2`** | **P1 implies P2** (the paper's "P1 is stronger than P2"), kernel-checked | none |
+| `p2_of_p1_spectrum_unique_up_to_rotation` | the `P1` sub-case phrased in the actual P2 language | none |
 | `UniqueEulerCircuit` | the multigraph of `c` has a single Eulerian circuit up to shift | – |
 | `NodeCrossing` | the occurrence pairs of doubly-occurring `(L-1)`-mers do not interleave (concrete, decidable) | – |
 | `p2_spectrum_unique_up_to_rotation` | primitive P2 truth + equal complete `L`-spectrum + same length ⟹ `RotEquiv` | `hUnique : UniqueEulerCircuit …` |
+
+`P1.imp_P2` matters for the status claim: because P1 is *proved* to imply the
+repository's actual `P2`, the premise-free theorem above applies to a subclass
+of the `P2` class itself, and is not a statement about a different condition.
+Its proof uses no maximal-extension argument: a maximal repeat (or maximal
+triple repeat) of length `≥ L - 1` has its two (or three) selected starts
+carrying the same `(L-1)`-window, which `P1` forbids.
 
 `p1_spectrum_unique_up_to_rotation` is a **fully proved, premise-free**
 complete-spectrum uniqueness theorem: for circular genomes of the same

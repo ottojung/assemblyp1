@@ -449,6 +449,91 @@ theorem p1_spectrum_unique_up_to_rotation (hG : 0 < G) (hL : 0 < L)
     exact hjv
   exact congrArg (fun x : Fin G => window (L := L) hG S x) (Fin.ext hval)
 
+/-! ## 4b. `P1` implies `P2`
+
+The paper remarks that "P1 is stronger than P2".  This is proved here, so that
+`p1_spectrum_unique_up_to_rotation` is a theorem about a subclass of the
+repository's actual `P2` class, and not about a different admissibility
+condition.
+
+The proof needs no maximal-extension argument: a maximal repeat (or maximal
+triple repeat) of length `≥ L - 1` has its two (or three) selected starts
+carrying the *same* `(L-1)`-window, which `P1` forbids. -/
+
+/-- Two starts whose `e`-windows agree, with `L - 1 ≤ e`, carry the same
+`(L-1)`-window. -/
+theorem nodeWindow_eq_of_agree (hG : 0 < G) (S : Fin G → α) {e : ℕ} {a b : Fin G}
+    (he : L - 1 ≤ e) (h : ∀ d : Fin e,
+      (mkGenome hG S).window e a d = (mkGenome hG S).window e b d) :
+    nodeWindow (L := L) hG S a = nodeWindow (L := L) hG S b := by
+  funext d
+  have hd : d.val < e := by have := d.isLt; omega
+  have h1 := h ⟨d.val, hd⟩
+  show cyc hG S (a.val + d.val) = cyc hG S (b.val + d.val)
+  simpa [mkGenome, SourceFaithfulIs.Genome.window, SourceFaithfulIs.Genome.cycl, cyc] using h1
+
+/-- Two distinct starts carrying the same `(L-1)`-window witness a node
+multiplicity of at least two. -/
+theorem nodeCount_ge_two (hG : 0 < G) (S : Fin G → α) {a b : Fin G} (hab : a ≠ b)
+    (h : nodeWindow (L := L) hG S a = nodeWindow (L := L) hG S b) :
+    2 ≤ nodeCount (L := L) hG S (nodeWindow (L := L) hG S a) := by
+  have hsub : (insert a ({b} : Finset (Fin G))) ⊆ Finset.univ.filter
+      (fun j : Fin G => nodeWindow (L := L) hG S j = nodeWindow (L := L) hG S a) := by
+    intro j hj
+    rcases Finset.mem_insert.mp hj with hj | hj
+    · rw [hj]
+      exact Finset.mem_filter.mpr ⟨Finset.mem_univ _, rfl⟩
+    · have hjb : j = b := Finset.mem_singleton.mp hj
+      rw [hjb, h]
+      exact Finset.mem_filter.mpr ⟨Finset.mem_univ _, rfl⟩
+  have hcard := Finset.card_le_card hsub
+  have hc : (insert a ({b} : Finset (Fin G))).card = 2 := by
+    rw [Finset.card_insert_of_notMem (by simp [hab]), Finset.card_singleton, Nat.add_comm]
+  unfold nodeCount
+  omega
+
+/-- **P1 is stronger than P2** (`def:P1P2`), proved: if no length-`(L-1)` word
+occurs more than once, then there is no maximal triple repeat of length
+`≥ L - 1`, and no interleaved pair of maximal repeats both of length
+`≥ L - 1` (such a pair would repeat both `(L-1)`-words twice). -/
+theorem P1.imp_P2 (hG : 0 < G) (S : Fin G → α) (hP1 : P1 hG L S) : P2 hG L S := by
+  constructor
+  · -- no maximal triple repeat of length `≥ L - 1`
+    intro e a b c ht
+    rcases ht with ⟨h1, h2, hab, hac, hbc, hagb, _, _, _, _⟩
+    by_contra hnot
+    have hge : L - 1 ≤ e.val := by omega
+    have hn := nodeWindow_eq_of_agree hG S hge hagb
+    have h2le := nodeCount_ge_two hG S hab hn
+    have h3 := hP1 (nodeWindow (L := L) hG S a)
+    unfold nodeCount at h2le h3
+    omega
+  · -- no interleaved pair of maximal repeats both of length `≥ L - 1`
+    intro e₁ e₂ a b c d hR₁ _hR₂ hI
+    obtain ⟨h1, h2, hab, hag, hpre, hfol⟩ := hR₁
+    by_cases hle1 : e₁.val ≤ L - 2
+    · exact Or.inl hle1
+    · by_cases hle2 : e₂.val ≤ L - 2
+      · exact Or.inr hle2
+      · exfalso
+        have hge1 : L - 1 ≤ e₁.val := by omega
+        have hge2 : L - 1 ≤ e₂.val := by omega
+        have hn1 := nodeWindow_eq_of_agree hG S hge1 hag
+        have h2le := nodeCount_ge_two hG S hab hn1
+        have h3 := hP1 (nodeWindow (L := L) hG S a)
+        unfold nodeCount at h2le h3
+        omega
+
+/-- **The `P1` sub-case of the P2 interface, in the P2 language.**  Combining
+`P1.imp_P2` with `p1_spectrum_unique_up_to_rotation`: a truth satisfying the
+actual `P2` condition of `def:P1P2` *because* it satisfies `P1` is determined
+up to cyclic rotation by its complete `L`-spectrum, with no external premise. -/
+theorem p2_of_p1_spectrum_unique_up_to_rotation
+    (hG : 0 < G) (hL : 1 < L) (S E : Fin G → α) (hP1 : P1 hG L S)
+    (hSpec : specCount (L := L) hG S = specCount (L := L) hG E) :
+    RotEquiv hG E S :=
+  p1_spectrum_unique_up_to_rotation hG (by omega) S E hP1 hSpec
+
 /-! ## 5. The residual: Eulerian-circuit uniqueness for the `(L-1)`-de Bruijn
 multigraph under Ukkonen's condition
 
