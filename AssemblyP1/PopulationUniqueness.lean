@@ -2,6 +2,7 @@ import Mathlib
 import AssemblyP1.PopulationGibbs
 import AssemblyP1.P2
 import AssemblyP1.PopulationReduction
+import AssemblyP1.BBTEulerian
 
 /-!
 # End-to-end population uniqueness for the oriented primitive P2 class
@@ -39,18 +40,31 @@ parameters: the caller had to state the objective, the candidate class,
 and the whole of the Gibbs analysis. All of that is now derived in the
 kernel.
 
-## The one remaining external input
+## The one remaining input: uniqueness of the condensed graph's Eulerian cycle
 
-`hBBTS`/`hBBTD` are inhabitants of
-`AssemblyP1.P2.BBTCompleteSpectrumUniqueness`, the precisely specialized
-form of `thm:BBT` (Bresler–Bresler–Tse 2013, Theorem 3) at `K = L - 1`
-on the project's own spectrum and rotation objects. That irreducible
-core is named, documented and stated at the level the paper needs; it is
-the only external mathematical input to the whole population chain, and
-`AssemblyP1.P2.P2.imp_Ukkonen` proves in the kernel that P2 supplies its
-hypothesis, so the caller supplies a *theorem about complete spectra*
-rather than a *repeat condition to be re-checked*. No `axiom`, `sorry`
-or `admit` appears anywhere in the chain.
+The single hypothesis `hPevzner` is an inhabitant of
+`AssemblyP1.BBTEulerian.EulerianCycleObstruction`, i.e. `thm:BBT` in the
+theorem shape of Bresler--Bresler--Tse 2013, Theorem 3, read at
+`K = L - 1` on the project's own objects: *for every alternative Eulerian
+cycle of the condensed `(L-1)`-mer graph of a `Ukkonen` word, either that
+cycle is the truth's own cycle up to rotation, or the truth carries a
+maximal triple repeat of length `≥ L - 1`, or two interleaved maximal
+repeats both of length `≥ L - 1`*.  Since `P2` rules out the last two
+alternatives by `AssemblyP1.P2.P2.triple` and
+`AssemblyP1.P2.P2.interleaved`, this is exactly the statement that the
+condensed graph has a unique Eulerian cycle spelling `s`.
+
+`AssemblyP1.P2.BBTUniqueAt` is **no longer an assumption**: it is derived
+from `hPevzner` by `AssemblyP1.BBTEulerian.bbtUniqueAt_of_obstruction`
+(inside the proof, from the `2 ≤ L` that `hL : 1 < L` already provides),
+and that derived statement is what the rest of the chain consumes.  The
+whole bridge --- equal spectra give a matching, the pull-back of a
+matching is an alternative Eulerian cycle of the condensed graph
+(`BBTSequenceGraph.match_next_vtx`), a rotational vertex cycle makes the
+candidate a rotation of the truth --- is proved in
+`AssemblyP1/BBTEulerian.lean`.  `EulerianCycleObstruction` itself is not
+proved here; it is the Pevzner 1995 Lemma 9 input, named and isolated.
+No `axiom`, `sorry` or `admit` appears anywhere in the chain.
 
 ## What is reused
 
@@ -76,6 +90,7 @@ open AssemblyP1.PopulationGibbs
 open AssemblyP1.PopulationReduction
 open AssemblyP1.OrientedRigidity
 open AssemblyP1.P2
+open AssemblyP1.BBTEulerian
 
 variable {α : Type} [DecidableEq α] [Fintype α]
 variable {G H : ℕ}
@@ -128,14 +143,16 @@ More precisely, for `L ≥ 2` and any primitive P2-admissible candidates
 The only hypotheses are the two genome lengths, `L ≥ 2`, the structural
 conditions on `S` and `E` (primitivity and P2, the actual `def:P1P2`
 predicate), the population tie, and one inhabitant of
-`AssemblyP1.P2.BBTCompleteSpectrumUniqueness` per genome side — the
-specialized Bresler–Bresler–Tse input of `thm:BBT`. -/
+`AssemblyP1.BBTEulerian.EulerianCycleObstruction` — the
+Bresler–Bresler–Tse input of `thm:BBT`, in the Eulerian-cycle form of
+Theorem 3, from which `AssemblyP1.P2.BBTUniqueAt` is derived inside the
+proof. -/
 theorem population_unique_ML_up_to_rotation
     (L : ℕ) (hG : 0 < G) (hL : 1 < L)
     (S : Fin G → α)
     (hPrimS : IsPrimitive S)
     (hP2S : P2 hG L S)
-    (hBBT : BBTUniqueAt (α := α) L) :
+    (hPevzner : EulerianCycleObstruction (α := α) L) :
     -- the truth is a population maximizer over the whole admissible class
     ((∀ (K : ℕ) (hK : 0 < K) (W : Fin K → α), AdmClass L hK W →
         PopLogLik (popSpectrum L hG S) (popSpectrum L hK W)
@@ -165,6 +182,7 @@ theorem population_unique_ML_up_to_rotation
       popProb_eq_iff_normalized hG hK hDist
     -- the reused #70 reduction: primitivity + P2 turn normalized equality
     -- into equal lengths and equal ordinary spectra
+    have hBBT : BBTUniqueAt (α := α) L := bbtUniqueAt_of_obstruction (by omega) hPevzner
     obtain ⟨hGK, hSpec⟩ :=
       population_uniqueness_primitive_P2_words
         (fun {_K : ℕ} (_W : Fin _K → α) => True)
@@ -187,7 +205,7 @@ theorem population_unique_ML_up_to_rotation_same_length
     (L : ℕ) (hG : 0 < G) (hL : 1 < L) (S : Fin G → α)
     (hPrimS : IsPrimitive S)
     (hP2S : P2 hG L S)
-    (hBBT : BBTUniqueAt (α := α) L) :
+    (hPevzner : EulerianCycleObstruction (α := α) L) :
     (∀ E : Fin G → α, AdmClass L hG E →
         PopLogLik (popSpectrum L hG S) (popSpectrum L hG E)
           ≤ PopLogLik (popSpectrum L hG S) (popSpectrum L hG S))
@@ -197,7 +215,7 @@ theorem population_unique_ML_up_to_rotation_same_length
           = PopLogLik (popSpectrum L hG S) (popSpectrum L hG S) →
         RotEquiv hG E S) := by
   obtain ⟨hCand, hRot⟩ :=
-    population_unique_ML_up_to_rotation L hG hL S hPrimS hP2S hBBT
+    population_unique_ML_up_to_rotation L hG hL S hPrimS hP2S hPevzner
   refine ⟨fun E hE => hCand G hG E hE, ?_⟩
   intro E hE hETie
   obtain ⟨hGG, hRotE⟩ := hRot G hG E hE hETie
@@ -217,10 +235,10 @@ theorem population_tie_implies_rotation
     (hPrimS : IsPrimitive S) (hPrimD : IsPrimitive D)
     (hP2S : P2 hG L S) (hP2D : P2 hH L D)
     (hTie : PopTie L hG hH S D)
-    (hBBT : BBTUniqueAt (α := α) L) :
+    (hPevzner : EulerianCycleObstruction (α := α) L) :
     ∃ hGH : G = H, RotEquiv hG (hGH ▸ D) S := by
   obtain ⟨_, hRot⟩ :=
-    population_unique_ML_up_to_rotation L hG hL S hPrimS hP2S hBBT
+    population_unique_ML_up_to_rotation L hG hL S hPrimS hP2S hPevzner
   exact hRot H hH D ⟨hPrimD, hP2D⟩ hTie
 
 /-- The maximizer half alone, over the whole primitive P2 class: no tie,

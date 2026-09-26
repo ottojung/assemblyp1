@@ -1,5 +1,22 @@
 # #89 BBT chord/rematch work: what is proved, and the exact remaining gap
 
+> **SUPERSEDED IN PART by `docs/bbt-eulerian-cycle-89.md` (2026-09-26).**
+> §5 of this note states the remaining step in terms of *non-rotational
+> read-type-preserving pull-back permutations*. **That statement is false**,
+> and §4 of `docs/bbt-eulerian-cycle-89.md` contains two kernel-checked
+> refutations (`S = 001`, `G = 3`, `L = 3` for a permutation that is not a
+> traversal at all; `S = 0101`, `G = 4`, `L = 3` for a non-rotational
+> pull-back that carries no long obstruction because it is a presentation
+> of the truth's own Eulerian cycle). The theorem of Bresler–Bresler–Tse
+> 2013, Theorem 3 is about **Eulerian cycles of the condensed `K`-mer
+> graph**, and the corrected statement, its object, and the whole reduction
+> are in `AssemblyP1/BBTEulerian.lean` and
+> `docs/bbt-eulerian-cycle-89.md`. Sections 1–4 of this note remain accurate
+> as a record of the chord route and of the raw-node-chord refutation; §5
+> and §6 are superseded. In particular `P2.BBTUniqueAt` is now a *theorem*
+> (`BBTEulerian.bbtUniqueAt_of_obstruction`), not an assumption of the
+> exported population theorem.
+
 _Status: kernel-checked partial results, 2026-09-26 (`c39108d` + this packet).
 `P2.BBTUniqueAt` is **not** closed; the exported theorem
 `AssemblyP1.PopulationUniqueness.population_unique_ML_up_to_rotation` still takes

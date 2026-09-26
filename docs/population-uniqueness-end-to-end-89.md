@@ -1,13 +1,19 @@
 # End-to-end population uniqueness from the real objective (issue #89)
 
-_Status: kernel-checked Lean theorems, 2026-09-26. **The issue's acceptance
-criterion — that the exported theorem take no BBT / complete-spectrum
-uniqueness premise — is NOT met.** The objective and P2 work is complete and
-kernel-checked; the `thm:BBT` bridge remains an explicit named hypothesis
-`BBTUniqueAt` on `population_unique_ML_up_to_rotation` and
-`population_tie_implies_rotation`. See "Acceptance status" at the end for the
-precise blocker and the route that would close it. No `axiom`, `sorry` or
-`admit` was added; `#print axioms` reports only `propext`,
+_Status: kernel-checked Lean theorems, 2026-09-26, updated by
+`docs/bbt-eulerian-cycle-89.md`. **The issue's acceptance criterion — that the
+exported theorem take no BBT / complete-spectrum uniqueness premise — is NOT
+met.** The objective and P2 work is complete and kernel-checked. The
+`thm:BBT` bridge is now taken in the *Eulerian-cycle* form of Bresler–Bresler–Tse
+2013, Theorem 3: the exported theorem takes
+`hPevzner : BBTEulerian.EulerianCycleObstruction L` (uniqueness of the Eulerian
+cycle of the condensed `(L-1)`-mer graph, with the long triple-repeat /
+interleaved-repeat obstruction spelled out), and `P2.BBTUniqueAt` is *derived*
+from it inside the proof by `BBTEulerian.bbtUniqueAt_of_obstruction` — it is no
+longer a premise anywhere. The single remaining unproved statement of the chain
+is `BBTEulerian.EulerianCycleObstruction` itself; see "Acceptance status" at
+the end and `docs/bbt-eulerian-cycle-89.md` §6 for its exact shape. No `axiom`,
+`sorry` or `admit` was added; `#print axioms` reports only `propext`,
 `Classical.choice` and `Quot.sound` for every exported theorem._
 
 ## What changed
@@ -42,7 +48,7 @@ AssemblyP1.PopulationUniqueness.population_unique_ML_up_to_rotation
   (L : ℕ) (hG : 0 < G) (hL : 1 < L) (S : Fin G → α)
   (hPrimS : PopulationReduction.IsPrimitive S)
   (hP2S   : P2 hG L S)
-  (hBBT   : P2.BBTUniqueAt L) :
+  (hPevzner : BBTEulerian.EulerianCycleObstruction (α := α) L) :
   ( (∀ (K : ℕ) (hK : 0 < K) (W : Fin K → α), AdmClass L hK W →
        PopLogLik (popSpectrum L hG S) (popSpectrum L hK W)
          ≤ PopLogLik (popSpectrum L hG S) (popSpectrum L hG S))
@@ -92,7 +98,7 @@ Companion corollaries, all kernel-checked:
 | P2 aligns with Ukkonen at `K = L-1` | `P2.P2.imp_Ukkonen` | kernel-checked |
 | `lem:scaling` (gcd one) | `PopulationReduction.gcd_one_of_primitive_P2_words` (#70) | kernel-checked |
 | corollary (normalized ⇒ ordinary) | `PopulationReduction.normalized_to_ordinary` (#70) | kernel-checked |
-| `thm:BBT` at `K = L-1` | `P2.BBTCompleteSpectrumUniqueness`, `P2.BBTUniqueAt` | **external, named** |
+| `thm:BBT` at `K = L-1` | `BBTEulerian.EulerianCycleObstruction` (condensed-graph Eulerian-cycle uniqueness) | **external, named**; `P2.BBTCompleteSpectrumUniqueness` and `P2.BBTUniqueAt` are now *derived* from it |
 
 `P2.mkGenome` is the bridge between the two word layers already in the
 repository: the reduction's `Fin G → α` word is read as
@@ -120,6 +126,26 @@ P2.BBTCompleteSpectrumUniqueness (hG : 0 < G) (L : ℕ) (S : Fin G → α) : Pro
 P2.BBTUniqueAt (L : ℕ) : Prop :=
   ∀ (K : ℕ) (hK : 0 < K) (W : Fin K → α), BBTCompleteSpectrumUniqueness hK L W
 ```
+
+`P2.BBTUniqueAt` is *not* this packet's premise any more: it is now derived
+from the Eulerian-cycle form of the same theorem,
+
+```text
+BBTEulerian.EulerianCycleObstruction (L : ℕ) : Prop :=
+  ∀ (K : ℕ) (hK : 0 < K) (S : Fin K → α), Ukkonen hK L S →
+    ∀ (σ : Fin K ≃ Fin K), BBTEulerian.EulerianCycle hK L S σ →
+      BBTEulerian.VertexCycleEq hK L S σ (Equiv.refl _) ∨
+      BBTEulerian.LongObstruction hK L S
+```
+
+by `BBTEulerian.bbtUniqueAt_of_obstruction` (from `2 ≤ L`, which `hL : 1 < L`
+supplies). `BBTEulerian.EulerianCycle` is a *presentation* of an Eulerian
+cycle of the condensed `(L-1)`-mer multigraph and `BBTEulerian.VertexCycleEq`
+is that cycle with the starting point forgotten, so the premise is Theorem 3
+of Bresler–Bresler–Tse verbatim: the condensed `K`-mer graph of a
+Ukkonen-satisfying genome has a **unique Eulerian cycle**, and a
+non-rotational one forces a maximal triple repeat or two interleaved maximal
+repeats of length `≥ L-1`. See `docs/bbt-eulerian-cycle-89.md`.
 
 Properties of this boundary statement:
 
@@ -175,7 +201,9 @@ refute the `W^g` competitor — is kernel-checked in this repository.
 
 ## What this does not do
 
-* It does not prove `BBTUniqueAt`; see the boundary above.
+* It does not prove `EulerianCycleObstruction` (equivalently
+  `BBTUniqueAt`); see the boundary above and
+  `docs/bbt-eulerian-cycle-89.md`.
 * It does not answer the finite 2016 question. It answers the population
   question, and the paper's scope note (oriented single-strand model only)
   is unchanged: nothing here transfers to reverse-complement-collapsed
@@ -193,11 +221,13 @@ refute the `W^g` competitor — is kernel-checked in this repository.
 population_unique_ML_up_to_rotation
   (L) (hG : 0 < G) (hL : 1 < L) (S : Fin G → α)
   (hPrimS : IsPrimitive S) (hP2S : P2 hG L S)
-  (hBBT : BBTUniqueAt L) : …
+  (hPevzner : BBTEulerian.EulerianCycleObstruction (α := α) L) : …
 ```
 
-so a caller still supplies the complete-spectrum uniqueness statement. Two
-routes were attempted; here is exactly where they stand.
+so a caller still supplies the uniqueness of the condensed graph's Eulerian
+cycle --- now in the source's own object rather than as a complete-spectrum
+black box (`BBTUniqueAt` is derived from it). Two routes were attempted; here
+is exactly where they stand.
 
 ### Route A — reuse `OrientedFinalRigidity`. Refuted, kernel-checked.
 
@@ -220,7 +250,16 @@ existing circulation layer (`OrientedRigidity`, `RepeatAdapter`) contains no
 statement about the *order* in which window edges are traversed, which is
 precisely what a rotation claim needs.
 
-### Route B — prove `BBTUniqueAt` in Lean. Identified precisely, not completed.
+### Route B — prove the Eulerian-cycle uniqueness in Lean. Identified precisely, not completed.
+
+`AssemblyP1/BBTEulerian.lean` isolates the statement
+(`EulerianCycleObstruction`, equivalently `UniqueEulerianCycle`) and proves the
+whole reduction around it, and `docs/bbt-eulerian-cycle-89.md` §6 lists the
+three remaining sub-steps (condensation bookkeeping, the maximal-extension
+bridge from branch occurrences to maximal repeats, and the
+triple-or-interleaved dichotomy), together with the exhaustive search
+`scripts/verify_eulerian_cycle_uniqueness_89.py` that finds no counterexample
+to the statement for `G ≤ 9` over alphabets of size `2` and `3`.
 
 What the project side already delivers, and what is kernel-checked:
 
@@ -240,8 +279,9 @@ focused packet, and the repository already records a *related* gap in the
 direct maximal-extension route
 (`docs/audit-p2-direct-proof-maximal-extension-2026-09-21.md`).
 
-A future packet that proves `BBTUniqueAt L` turns the exported theorem into
-an axiom-free end-to-end result **with no change to its statement** — the
+A future packet that proves `BBTEulerian.EulerianCycleObstruction L` turns the
+exported theorem into an axiom-free end-to-end result **with no change to its
+statement** — the
 hypothesis is already exactly the specialized theorem, nothing weaker and
 nothing stronger. That is the recommended next step; the surrounding
 infrastructure is in place and the reduction above is what the proof must
