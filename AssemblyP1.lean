@@ -14,3 +14,4 @@ import AssemblyP1.RepeatAdapter
 import AssemblyP1.OrientedFinalRigidity
 import AssemblyP1.PopulationUniqueness
 import AssemblyP1.AAABConverse
+import AssemblyP1.P2SpectrumUniqueness

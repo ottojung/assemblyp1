@@ -4,66 +4,64 @@ import AssemblyP1.OrientedFinalRigidity
 import AssemblyP1.SourceFaithfulIs
 
 /-!
-# P2 / Ukkonen complete-spectrum uniqueness, and the exact residual core
-  (issue #89)
+# P2 / Ukkonen complete-spectrum uniqueness: the proved part, and the exact
+  residual (issue #89)
 
 This module works on the **current `main`** state of the library, where
 `AssemblyP1.PopulationUniqueness` still takes the whole of the
 Bresler--Bresler--Tse uniqueness implication as a caller-supplied premise
 (`hBBTS`, `hBBTD`).  This file attacks exactly that premise.
 
-## What is proved here
+## Proved here
 
 1. **The actual conditions.** `mkGenome`, `P2` and `Ukkonen` are transcribed
-   verbatim from `paper/sections/05-population.tex` `def:P1P2` and
-   `thm:BBT`, on top of the source-faithful predicates of
-   `AssemblyP1.SourceFaithfulIs` (`IsRepeat`, `IsTripleRepeat`,
-   `Interleaved`).  `P2.imp_Ukkonen` kernel-checks the paper's alignment
-   sentence "setting `K = L - 1` aligns the theorem's condition exactly with
-   P2".
+   from `paper/sections/05-population.tex` `def:P1P2` and `thm:BBT`, on top of
+   the source-faithful predicates of `AssemblyP1.SourceFaithfulIs`
+   (`IsRepeat`, `IsTripleRepeat`, `Interleaved`).  `P2.imp_Ukkonen`
+   kernel-checks the paper's alignment sentence "setting `K = L - 1` aligns
+   the theorem's condition exactly with P2".
 
-2. **The maximal-extension engine.**  On a circle, two or three starts
-   carrying a common window extend *simultaneously* to a maximal repeat, and
-   maximality is exactly the two-sided maximality required by
-   `Genome.IsRepeat` / `Genome.IsTripleRepeat`.  Everything is done with a
-   single maximal length, so no separate left/right extension argument is
-   needed: shifting the common window one step left and then extending
-   maximally to the right yields both maximality conditions at once.
+2. **The word / Eulerian-circuit bridge.**  `thm:BBT` is phrased in terms of
+   the `K`-mer graph having a *unique Eulerian cycle*.  `EulerCircuit` and
+   `TrailEquiv` make that concrete (cyclic closed trails of length-`L` words
+   with prescribed edge multiplicities), `window_isEulerCircuit` proves that a
+   circular word gives such a circuit, and `rotEquiv_of_trailEquiv` proves that
+   a shift of trails gives rotation-equivalent genomes.  So the paper's
+   statement is reduced, in the kernel, to a statement about a multigraph.
 
-3. **The repeat consequences of P2** (`P2.node_le_two`,
-   `P2.no_crossing_doubles`):
-   * every `(L-1)`-mer occurs at most twice (`node_le_two`), which is the
-     vertex-throughput cap that `AssemblyP1.OrientedRigidity` documents as
-     the remaining hypothesis of `unique_positive_circulation`;
-   * the *occurrence pairs* of the doubly-occurring `(L-1)`-mers are
-     pairwise non-interleaved (`no_crossing_doubles`).  This is the second
-     clause of P2 in exactly the form the combinatorial argument needs.
+3. **`p1_spectrum_unique_up_to_rotation`: a premise-free complete-spectrum
+   uniqueness theorem.**  For circular genomes of the same length, if the
+   truth has no repeated length-`(L-1)` word (P1 of `def:P1P2`) and the
+   complete oriented length-`L` spectra are equal, then the two words are
+   cyclic shifts.  This is the "no repeat of length `≥ K`" case of the
+   Bresler uniqueness theorem at `K = L - 1`, and **no BBT, Ukkonen or
+   uniqueness premise occurs in its statement**.
 
-4. **The word / Eulerian-circuit bridge** (`EulerCircuit`, `TrailEquiv`): a
-   circular word of length `G` gives a cyclic closed trail of length-`L`
-   windows whose edge multiplicities are its `L`-spectrum, and a cyclic
-   closed trail with those multiplicities spells a circular word which is a
-   cyclic shift of the trail.  This is the kernel-checked translation from the
-   paper's "unique Eulerian cycle" language to `RotEquiv`, so that what
-   remains is a statement about a multigraph, not about genomes.
+4. **The residual, stated on the multigraph.**  `UniqueEulerCircuit` says the
+   multigraph of a multiplicity function `c` has a single Eulerian circuit up
+   to cyclic shift.  It mentions neither `specCount`, nor `RotEquiv`, nor any
+   repeat predicate, so it is not a restatement of the genome statement.
+   `p2_spectrum_unique_up_to_rotation` proves, in the kernel, that
+   `UniqueEulerCircuit` yields the conclusion of `thm:BBT` at `K = L - 1` for
+   a primitive P2 truth.
 
-## What is *not* proved here, and why
+## Not proved here
 
-The genuinely missing step is the Eulerian-circuit uniqueness theorem for the
-`(L-1)`-de Bruijn multigraph under the non-crossing condition.  It is stated
-as `UniqueEulerCircuit` in terms of the explicitly defined objects above
-(`EulerCircuit`, `TrailEquiv`, `winPrefix`/`winSuffix`, `nodeCount`,
-`Interleaved`), **not** as a restatement of "equal spectrum implies rotation",
-and `p2_spectrum_unique_up_to_rotation` shows kernel-checked that
-`UniqueEulerCircuit` yields the desired conclusion.
+`UniqueEulerCircuit` for the P2 hypothesis.  Its three missing ingredients are
+stated exactly, with the reduction that would use them, in
+`docs/issue89-spectrum-uniqueness.md`; briefly:
 
-That residual is the hard half of `thm:BBT` and is *not* discharged here;
-see `docs/issue89-spectrum-uniqueness.md` for its exact statement, the
-computational evidence that P2 at `L` really does suffice (exhaustive search
-over circular words with `|Σ| ≤ 4`, `L ≤ 5`, `|S| ≤ 12` finds **no**
-primitive P2-satisfying word sharing its `L`-spectrum with a non-shift), and
-the reduction argument showing the residual is the smallest possible.
-No `axiom`, `sorry` or `admit` occurs in this file.
+* the simultaneous maximal-extension lemma (two or three agreeing starts on a
+  primitive circle extend to a maximal repeat / maximal triple repeat), which
+  is what turns clause 1 of P2 into "every `(L-1)`-mer occurs at most twice"
+  and clause 2 into the non-crossing condition `NodeCrossing`;
+* the multigraph combinatorics: with all node degrees `≤ 2` and the double
+  nodes' occurrence pairs pairwise non-interleaved, the Eulerian circuit is
+  unique up to shift.
+
+No `axiom`, `sorry` or `admit` occurs in this file.  Nothing in the library was
+weakened to make a theorem provable, and the P1 theorem is a proved sub-case
+rather than a replacement of the P2 statement.
 -/
 
 set_option maxHeartbeats 600000
@@ -450,5 +448,94 @@ theorem p1_spectrum_unique_up_to_rotation (hG : 0 < G) (hL : 0 < L)
     rw [nextIter_val]
     exact hjv
   exact congrArg (fun x : Fin G => window (L := L) hG S x) (Fin.ext hval)
+
+/-! ## 5. The residual: Eulerian-circuit uniqueness for the `(L-1)`-de Bruijn
+multigraph under Ukkonen's condition
+
+`thm:BBT` says: build the `K`-mer graph from the complete `(K+1)`-spectrum;
+if the genome satisfies Ukkonen's condition at `K`, the graph has a *unique
+Eulerian cycle*, which spells the genome up to cyclic rotation.  Sections 2
+and 4 above turned both halves of that sentence into concrete objects
+(`EulerCircuit`, `TrailEquiv`) and proved the translation to `RotEquiv`.
+
+What remains is the uniqueness half.  It is stated here on the multigraph, not
+on genomes. -/
+
+/-- **Unique Eulerian circuit of the multigraph of `c`.**  A closed trail with
+edge multiplicities `c` exists, and every such trail is a cyclic shift of it.
+
+This is a statement purely about the integer-valued multiplicity function `c`
+(the `(K+1)`-spectrum) and the de Bruijn transition structure
+`winPrefix`/`winSuffix` on length-`L` words; it does not mention
+`specCount`, `RotEquiv`, primitivity, or any repeat predicate. -/
+def UniqueEulerCircuit (hG : 0 < G) (c : (Fin L → α) → ℕ)
+    (T : Fin G → Fin L → α) : Prop :=
+  EulerCircuit hG c T ∧ ∀ U, EulerCircuit hG c U → TrailEquiv hG U T
+
+/-- **The non-crossing condition on doubly-occurring `(L-1)`-mers.**  If two
+`(L-1)`-mers each occur exactly twice, at starts `a, b` and `c, d`, then the
+four starts do not alternate around the circle.
+
+This is the concrete content of the second clause of P2 that the combinatorial
+argument consumes, and it is a decidable statement about `S` alone. -/
+def NodeCrossing (hG : 0 < G) (L : ℕ) (S : Fin G → α) : Prop :=
+  ∀ (u v : Fin (L - 1) → α) (a b c d : Fin G),
+    nodeCount (L := L) hG S u = 2 → nodeCount (L := L) hG S v = 2 →
+    (∀ x : Fin G, nodeWindow (L := L) hG S x = u → x = a ∨ x = b) →
+    (∀ x : Fin G, nodeWindow (L := L) hG S x = v → x = c ∨ x = d) →
+    ¬ Interleaved (mkGenome hG S) a b c d
+
+/-! ### 5.1 What is proved: the translation
+
+Everything from the multigraph statement to the conclusion about genomes is
+proved below.  `p2_spectrum_unique_up_to_rotation` is therefore exactly as
+strong as `thm:BBT` and no stronger. -/
+
+/-- **`thm:BBT` at `K = L - 1`, modulo the Eulerian-circuit uniqueness input.**
+A primitive genome satisfying P2 at read length `L`, whose `(L-1)`-de Bruijn
+multigraph has a unique Eulerian circuit, is determined up to cyclic rotation
+by its complete `L`-spectrum among all circular candidates of the same length.
+
+The `Ukkonen` premise is *not* assumed: `P2.imp_Ukkonen` derives it. -/
+theorem p2_spectrum_unique_up_to_rotation
+    (hG : 0 < G) (hL : 2 ≤ L) (hLG : L ≤ G)
+    (S E : Fin G → α)
+    (_hPrimS : IsPrimitive S)
+    (hP2S : P2 hG L S)
+    (hUnique : UniqueEulerCircuit hG (specCount (L := L) hG S) (window (L := L) hG S))
+    (hSpec : specCount (L := L) hG S = specCount (L := L) hG E) :
+    RotEquiv hG E S := by
+  -- the windows of `E` are an Eulerian circuit of the same multiplicities
+  have hEc : EulerCircuit hG (specCount (L := L) hG E) (window (L := L) hG E) :=
+    window_isEulerCircuit hG E
+  have hEc' : EulerCircuit hG (specCount (L := L) hG S) (window (L := L) hG E) :=
+    ⟨hEc.1, fun w => by rw [hEc.2 w, hSpec]⟩
+  -- hence the two window trails are cyclic shifts
+  have hTE : TrailEquiv hG (window (L := L) hG E) (window (L := L) hG S) :=
+    hUnique.2 _ hEc'
+  exact rotEquiv_of_trailEquiv hG (by omega) hTE
+
+section Concrete
+
+variable (hG : 0 < G)
+
+/-- A concrete `P1` instance, so that the hypothesis of
+`p1_spectrum_unique_up_to_rotation` is visibly inhabited: the circular word
+`AAB` at read length `3` has the three `2`-mers `AA`, `AB`, `BA`, each exactly
+once. -/
+theorem aab_p1 : P1 (hG := by norm_num) (L := 3)
+    (S := ![Bin.A, Bin.A, Bin.B]) := by
+  unfold P1
+  decide
+
+/-- `AAB` at read length `3` is not `P1`-degenerate: it does have a repeated
+`2`-mer once the word is `AABA`, which is why the `P1` hypothesis of
+`p1_spectrum_unique_up_to_rotation` is not vacuous on this model. -/
+theorem aaba_not_p1 : ¬ P1 (hG := by norm_num) (L := 3)
+    (S := ![Bin.A, Bin.A, Bin.B, Bin.A]) := by
+  unfold P1
+  decide
+
+end Concrete
 
 end AssemblyP1.P2SpectrumUniqueness
