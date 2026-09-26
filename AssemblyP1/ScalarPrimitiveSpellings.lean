@@ -315,9 +315,8 @@ theorem two_excursions_of_branching {T : List E} {s : V}
     (edges : Finset E) (v : V) (e₁ e₂ : E) (he₁ : e₁ ∈ edges) (he₂ : e₂ ∈ edges)
     (he12 : e₁ ≠ e₂) (ht₁ : tail e₁ = v) (ht₂ : tail e₂ = v)
     (hpos : ∀ e ∈ edges, 0 < c e) :
-    ∃ (A B : List E), A ≠ [] ∧ B ≠ [] ∧
-      (∃ w, TrailEnds tail head A v w) ∧ (∃ w, TrailEnds tail head B v w) ∧
-      A[0]? ≠ B[0]? ∧ ∀ e, edgeUse A e + edgeUse B e = c e := by
+    ∃ (A B : List E) (w : V), TrailEnds tail head A w w ∧ TrailEnds tail head B w w ∧
+      A ≠ [] ∧ B ≠ [] ∧ A[0]? ≠ B[0]? ∧ ∀ e, edgeUse A e + edgeUse B e = c e := by
   -- `e₁` occurs in the spelling, at some position.
   have hpos₁ : 0 < edgeUse T e₁ := huse e₁ ▸ hpos e₁ he₁
   obtain ⟨i, hi, hiT⟩ := List.getElem_of_mem (mem_of_edgeUse_pos hpos₁)
@@ -383,7 +382,7 @@ theorem two_excursions_of_branching {T : List E} {s : V}
   -- The first edge of `A` is `e₁`.
   have hAhead : A[0]? = some e₁ := by
     simp [hAtake, List.getElem?_take, hq0.ne', hfirst']
-  refine ⟨A, B, hAne, hBne, ⟨v, hu ▸ hA⟩, ⟨v, hu ▸ hB⟩, ?_, ?_⟩
+  refine ⟨A, B, v, hu ▸ hA, hu ▸ hB, hAne, hBne, ?_, ?_⟩
   · rw [hAhead, hBhead]
     intro hcon
     exact he12 (Option.some.inj hcon)
@@ -744,3 +743,124 @@ theorem repeatedEdge_properPower_of_uniqueOut {T : List (Fin L → α)} {s : Fin
   exact ⟨l, hl, k, hk, heq⟩
 
 end FunctionalSupport
+
+/-! ## The two halves of the note, at the level of cyclic edge-type spellings -/
+
+section Spellings
+
+variable {α : Type} [DecidableEq α] {L : ℕ}
+
+/-- Edge use of a repetition. -/
+theorem edgeUse_nCopies (T : List (Fin L → α)) :
+    ∀ (m : ℕ) (e : Fin L → α), edgeUse (nCopies T m) e = m * edgeUse T e := by
+  intro m
+  induction m with
+  | zero => intro e; rw [nCopies_zero]; simp [edgeUse]
+  | succ m ih =>
+      intro e
+      rw [nCopies_succ, edgeUse_append, ih, Nat.succ_mul]
+      omega
+
+/-- A Finset of cardinality at least two has two distinct elements. -/
+theorem two_distinct_of_card {α : Type} (s : Finset α) (h : 2 ≤ s.card) :
+    ∃ x ∈ s, ∃ y ∈ s, x ≠ y := by
+  by_cases hall : ∀ a ∈ s, ∀ b ∈ s, a = b
+  · have hone : s.card ≤ 1 := Finset.card_le_one.mpr hall
+    omega
+  · simp only [not_forall, not_imp, not_and] at hall
+    obtain ⟨x, hx, y, hy, hxy⟩ := hall
+    exact ⟨x, hx, y, hy, hxy⟩
+
+/-- An edge with positive edge use occurs at some position. -/
+theorem exists_get_of_edgeUse_pos (T : List (Fin L → α)) (e : Fin L → α)
+    (h : 0 < edgeUse T e) :
+    ∃ (i : ℕ) (hi : i < T.length), T.get ⟨i, hi⟩ = e := by
+  have hcard : 0 < ({j : Fin T.length | T.get j = e} : Finset (Fin T.length)).card := by
+    rw [count_bridge T e]
+    exact h
+  obtain ⟨x, hx⟩ := Finset.card_pos.mp hcard
+  refine ⟨x.val, x.isLt, ?_⟩
+  exact (Finset.mem_filter.mp hx).2
+
+/-- An edge used at least twice occurs at two distinct positions. -/
+theorem two_positions_of_count_ge_two (T : List (Fin L → α)) (e : Fin L → α)
+    (h : 2 ≤ edgeUse T e) :
+    ∃ (i j : ℕ) (hi : i < j) (hj : j < T.length),
+      T.get ⟨i, Nat.lt_trans hi hj⟩ = e ∧ T.get ⟨j, hj⟩ = e := by
+  have hcard : 2 ≤ ({j : Fin T.length | T.get j = e} : Finset (Fin T.length)).card := by
+    rw [count_bridge T e]
+    exact h
+  obtain ⟨x, hx, y, hy, hne⟩ := two_distinct_of_card
+    ({j : Fin T.length | T.get j = e} : Finset (Fin T.length)) hcard
+  have hxg : T.get x = e := (Finset.mem_filter.mp hx).2
+  have hyg : T.get y = e := (Finset.mem_filter.mp hy).2
+  rcases lt_or_gt_of_ne hne with hlt | hgt
+  · exact ⟨x.val, y.val, hlt, y.isLt, hxg, hyg⟩
+  · exact ⟨y.val, x.val, hgt, x.isLt, hyg, hxg⟩
+
+/-- **Nonbranching: a primitive spelling uses every support edge exactly once.**
+On a support with at most one outgoing edge type per node, a primitive cyclic
+edge-type spelling of `c` has `c e = 1` on the whole support. -/
+theorem nonbranching_primitive_spelling_eq_one {T : List (Fin L → α)}
+    {s : Fin (L - 1) → α} (hT : TrailEnds winPrefix winSuffix T s s) (hne : T ≠ [])
+    (c : (Fin L → α) → ℕ) (huse : ∀ e, edgeUse T e = c e) (edges : Finset (Fin L → α))
+    (huniq : ∀ e₁ ∈ edges, ∀ e₂ ∈ edges, winPrefix e₁ = winPrefix e₂ → e₁ = e₂)
+    (hvan : ∀ e, e ∉ edges → c e = 0) (hpos : ∀ e ∈ edges, 0 < c e) (hprim : IsPrimitive T) :
+    ∀ e ∈ edges, c e = 1 := by
+  intro e he
+  by_contra hcon
+  have hge : 2 ≤ edgeUse T e := by
+    rw [huse e]
+    have h1 := hpos e he
+    omega
+  obtain ⟨i, j, hij, hjlt, hiT, hjT⟩ := two_positions_of_count_ge_two T e hge
+  have hinT : ∀ w ∈ T, w ∈ edges := by
+    intro w hw
+    by_contra hcon
+    have hzero : c w = 0 := hvan w hcon
+    have hle := huse w
+    rw [hzero] at hle
+    have hz : edgeUse T w = 0 := hle
+    have hz' : T.countP (fun x => decide (x = w)) = 0 := by
+      show edgeUse T w = 0
+      exact hz
+    obtain ⟨k, hk, hkw⟩ := List.getElem_of_mem hw
+    have hmem : w ∈ T := by
+      rw [← hkw]
+      exact List.get_mem T ⟨k, hk⟩
+    have hnot := (List.countP_eq_zero.mp hz') w hmem
+    simp at hnot
+  obtain ⟨l, hl, k, hk, hpow⟩ :=
+    repeatedEdge_properPower_of_uniqueOut edges hT hne hinT huniq i j hij hjlt (hiT.trans hjT.symm)
+  exact hprim ⟨l, hl, k, hk, hpow⟩
+
+/-- **Branching: a primitive spelling of every nontrivial multiple.**  If the
+support branches, then for every `m >= 2` the spectrum `m * c` has a *primitive*
+cyclic edge-type spelling, namely `A^m ++ B^m` for the two excursions of the
+two-excursion cut. -/
+theorem branching_primitive_spellings {T : List (Fin L → α)} {s : Fin (L - 1) → α}
+    (hT : TrailEnds winPrefix winSuffix T s s) (c : (Fin L → α) → ℕ)
+    (huse : ∀ e, edgeUse T e = c e) (nodes : Finset (Fin (L - 1) → α))
+    (edges : Finset (Fin L → α)) (hbranch : Branching nodes edges winPrefix winSuffix)
+    (hvan : ∀ e, e ∉ edges → c e = 0) (hpos : ∀ e ∈ edges, 0 < c e) (m : ℕ) (hm2 : 2 ≤ m) :
+    ∃ (A B : List (Fin L → α)) (v : Fin (L - 1) → α),
+      TrailEnds winPrefix winSuffix A v v ∧ TrailEnds winPrefix winSuffix B v v ∧
+      A ≠ [] ∧ B ≠ [] ∧ A[0]? ≠ B[0]? ∧
+      (∃ w, TrailEnds winPrefix winSuffix (nCopies A m ++ nCopies B m) w w) ∧
+      (∀ e, edgeUse (nCopies A m ++ nCopies B m) e = m * c e) ∧
+      IsPrimitive (nCopies A m ++ nCopies B m) := by
+  obtain ⟨v, e₁, he₁, e₂, he₂, he12, ht₁, ht₂⟩ := hbranch
+  obtain ⟨A, B, w, hA, hB, hAne, hBne, hneAB, hadd⟩ :=
+    two_excursions_of_branching (tail := winPrefix) (head := winSuffix) hT c huse edges v
+      e₁ e₂ he₁ he₂ he12 ht₁ ht₂ hpos
+  refine ⟨A, B, w, hA, hB, hAne, hBne, hneAB, ⟨w, trailNcopiesAppend (tail := winPrefix) (head := winSuffix) hA hB m⟩, ?_, ?_⟩
+  · intro e
+    calc edgeUse (nCopies A m ++ nCopies B m) e
+        = edgeUse (nCopies A m) e + edgeUse (nCopies B m) e := edgeUse_append _ _ _
+      _ = m * edgeUse A e + m * edgeUse B e := by
+        rw [edgeUse_nCopies A m e, edgeUse_nCopies B m e]
+      _ = m * (edgeUse A e + edgeUse B e) := (Nat.mul_add m _ _).symm
+      _ = m * c e := by rw [hadd e]
+  · exact ampbmp_isPrimitive_of_head_ne hAne hBne hm2 hneAB
+
+end Spellings
