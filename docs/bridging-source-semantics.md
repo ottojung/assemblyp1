@@ -27,6 +27,27 @@ Thus “contains the repeated substring” is not sufficient if the read starts 
 
 For a circular genome this interval formula is a **modeling normalization**, not source notation: it should be interpreted on a suitable integer lift of the circle, so occurrences/reads crossing the chosen origin are not treated differently.
 
+**Correction (this commit).** `AssemblyP1.SourceFaithfulIs.BridgesCopy` used to be transcribed *endpoint-wise*:
+
+```
+∃ r ∈ R, the read at r covers (t - 1) % G  and  the read at r covers (t + e) % G
+```
+
+That is **not** the condition above, and it is strictly weaker. A read of length `L` can reach the two endpoints of a long occurrence by travelling around the *complementary* circular arc, without ever containing the occurrence. `BridgesCopy` is now the source's straddling condition, minimally transcribed as
+
+```
+∃ r ∈ R, ∃ d : Fin L, d.val + e + 1 < L ∧ (r.val + d.val + 1) % S.len = t.val
+```
+
+i.e. the occurrence's start sits at offset `d + 1` of the realized read at `r`, so — reads being substrings of the genome — the predecessor of the occurrence is automatically at offset `d` and the successor at offset `d + e + 1` of *the same read interval*, and `d + e + 1 < L` says the successor is still inside that read. `AssemblyP1.SourceFaithfulIs.bridgesCopy_lifted_iff` proves this is exactly `r < t'` and `t' + e < r + L` on a suitable lift `t'`, which is the formula above.
+
+Two consequences, both kernel-checked:
+
+* `bridgesCopy_length : BridgesCopy S L R e t → e + 2 ≤ L`. A bridged occurrence is two bases shorter than the read that straddles it. The endpoint-wise reading could not give this at all.
+* Hence `BridgingBridge.informationFeasible_no_long_triple_repeat : 2 ≤ L → R ∈ I_s → ¬ HasLongTripleRepeat`: clause 2 of `I_s` forbids *every* maximal triple repeat of length `e ≥ L - 1`, with no wraparound exception.
+
+The endpoint-wise reading was the sole source of the "wraparound mode" in `AssemblyP1.BridgingBridge.bridgingLength` and of the whole downstream programme in `AssemblyP1.MLEscape` / `docs/issue88-wraparound-contrapositive.md`. `AssemblyP1.WraparoundTripleRepeat` used to kernel-check a counterexample to the nondegeneracy conclusion (`AAAAB`, `G = 5`, `L = 3`, all five starts); that instance is now kernel-checked as **not** `I_s`-feasible, which is the correct reading. See `docs/issue88-wraparound-contrapositive.md` §9.
+
 ## Bridged repeats and interleaving
 
 **Source fact.** Bresler et al. use the following abbreviations after Theorem 1:
