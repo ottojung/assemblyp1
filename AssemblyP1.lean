@@ -17,3 +17,4 @@ import AssemblyP1.AAABConverse
 import AssemblyP1.P2SpectrumUniqueness
 import AssemblyP1.P2RepeatResidual
 import AssemblyP1.P2EulerAdapter
+import AssemblyP1.P2LongObstruction
