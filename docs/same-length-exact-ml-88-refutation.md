@@ -1,4 +1,23 @@
-# #88 settled: the oriented same-length exact ML claim is false, with a kernel-checked refutation
+# #88: the oriented same-length exact ML claim is false without a candidate restriction (audited)
+
+> **Audit correction (see `docs/same-length-62-maximizer.md`).** The
+> counterexample below is sound and is retained unchanged, but two claims made
+> here and in the commit message overstated it, and are corrected in place:
+>
+> 1. `Is62MaximumLikelihood` is a **dominance** predicate — "no §6.2-feasible
+>    same-length candidate beats the truth" — not a maximizer predicate. It has
+>    no membership conjunct, so refuting it does not refute "the truth is a
+>    §6.2 candidate and maximises".
+> 2. The §6.2 "acceptance boundary" is not symmetric: the truth `AABB` is **not**
+>    itself a §6.2 candidate (its windows `AA`, `BB` were never observed, so its
+>    own window walk fails `VisitsObserved`). The maximizer-with-membership
+>    claim therefore has a false antecedent at this instance and is not refuted
+>    by it. What *is* refuted is dominance over the §6.2-feasible class.
+>
+> The repaired positive theorem — the truth *is* an exact same-length
+> maximiser over genuine §6.2 candidates — is in
+> `AssemblyP1/SameLength62Maximizer.lean`.
+
 
 This note records the outcome of issue #88. The target theorem — *information
 feasibility `I_s` implies the true sequence is a maximum-likelihood sequence* —

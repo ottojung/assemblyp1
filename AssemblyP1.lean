@@ -15,6 +15,8 @@ import AssemblyP1.OrientedFinalRigidity
 import AssemblyP1.BridgingBridge
 import AssemblyP1.OrientedSameLengthML
 import AssemblyP1.SameLengthExactMLCounterexample
+import AssemblyP1.SameLength62Maximizer
+import AssemblyP1.WraparoundTripleRepeat
 import AssemblyP1.PopulationUniqueness
 import AssemblyP1.AAABConverse
 
@@ -31,3 +33,12 @@ import AssemblyP1.AAABConverse
 #print axioms AssemblyP1.OrientedSameLengthML.informationFeasible_exactLik_maximizer
 #print axioms AssemblyP1.OrientedSameLengthML.covering_constant_reads_is_constant
 #print axioms AssemblyP1.OrientedSameLengthML.truth_is_spelled_candidate_of_realization
+#print axioms AssemblyP1.SameLength62Maximizer.informationFeasible_62_maximizer
+#print axioms AssemblyP1.SameLength62Maximizer.genuine62_is_spelled_candidate
+#print axioms AssemblyP1.SameLength62Maximizer.genuine62_support_eq
+#print axioms AssemblyP1.SameLength62Maximizer.genuine62_molecule_eq
+#print axioms AssemblyP1.SameLength62Maximizer.visited_of_positive_throughput
+#print axioms AssemblyP1.SameLength62Maximizer.oriented_support_eq_of_genuine62
+#print axioms AssemblyP1.WraparoundTripleRepeat.informationFeasible_does_not_exclude_long_triple_repeat
+#print axioms AssemblyP1.WraparoundTripleRepeat.wraparound_information_feasible
+#print axioms AssemblyP1.WraparoundTripleRepeat.wraparound_has_long_triple_repeat

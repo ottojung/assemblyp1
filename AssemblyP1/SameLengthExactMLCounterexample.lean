@@ -416,9 +416,20 @@ walk traverses each twice, giving throughput `4 · 2 = 8` at each of the two
 vertices. `d` is supplied to match, as the predicate intends. -/
 def candidateThroughput : W → ℕ := fun _ => 8
 
-/-- **The §6.2 acceptance boundary for the maximum-likelihood claim.** The
-circular candidate `c` maximises the exact objective over **every** same-length
-§6.2-feasible spelled candidate, relative to the truth `g`.
+-- AUDIT CORRECTION (see `docs/same-length-62-maximizer.md`): this predicate is
+-- a **dominance** statement, not a maximizer statement.  It says that no
+-- same-length §6.2-feasible spelled candidate has likelihood above the truth's.
+-- It contains NO conjunct asserting that the truth is itself a §6.2 candidate,
+-- so refuting it does NOT refute the maximizer-with-membership claim of #88.
+-- At the `AABB`/`ABAB` instance the truth is not a member of the class at all
+-- (see `truth_not_spelled_on_observed`), so the membership antecedent is false
+-- there.  The repaired positive theorem over genuine §6.2 candidates is
+-- `AssemblyP1.SameLength62Maximizer.informationFeasible_62_maximizer`.
+
+/-- **The §6.2 dominance boundary for the maximum-likelihood claim.** No
+same-length §6.2-feasible spelled candidate has exact likelihood above the
+truth's.  This is a dominance statement; it is *not* the maximizer statement of
+#88, which would additionally require the truth to be a §6.2 candidate.
 
 The candidate class is the *literal* merged predicate
 `AssemblyP1.Section62Flow.SpelledFeasible62` (#100) in strict oriented
