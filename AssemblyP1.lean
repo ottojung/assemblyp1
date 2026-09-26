@@ -6,6 +6,7 @@ import AssemblyP1.FixedLengthExactCounterexample
 import AssemblyP1.FixedLengthBinomialCounterexample
 import AssemblyP1.Section62BridgingCounterexample
 import AssemblyP1.SameLengthSection62Counterexample
+import AssemblyP1.Section62BidirectedFlow
 import AssemblyP1.FiniteSamplingCounterexample
 import AssemblyP1.PopulationReduction
 import AssemblyP1.OrientedRigidity
