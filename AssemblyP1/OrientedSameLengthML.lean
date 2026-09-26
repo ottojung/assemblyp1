@@ -23,12 +23,44 @@ things, and nothing else:
    the §6.1 separable binomial approximation at the external length `N = G`.
 
 Nothing here is `I_s`. The no-long-triple-repeat hypothesis is consumed as the
-chain's own boundary premise `hno`, which the shared information-feasibility
-layer (issue #90) is expected to discharge from the source-faithful `I_s`
-predicate via note §3 Fact D. That implication is **not** formalized anywhere in
-this repository, so `hno` is kept as an explicit premise in every theorem below
-and never hidden. See `docs/oriented-same-length-ml-88.md` for the exact
-reconciliation seam and for the residual-gap statement proved below.
+chain's own boundary premise `hno`, and the boundary premise is **discharged from
+the source-faithful `I_s` predicate itself**, by
+`AssemblyP1.BridgingBridge.informationFeasible_no_long_triple_repeat`
+(`2 ≤ L → R ∈ I_s → ¬ HasLongTripleRepeat`), which is note §3 Fact D and is
+kernel-checked. The end-to-end endpoint
+`informationFeasible_exactLik_maximizer` therefore carries no nondegeneracy
+premise at all. See `docs/oriented-same-length-ml-88.md` for the reconciliation
+seam.
+
+## The start set of the hypothesis is the realized start set
+
+`I_s` is a statement about the reads that were **actually taken**, so the
+`Finset` it is evaluated at must be the range of the realization `ρ` itself.
+`realizedStarts` below is that set, and it is the *only* start set the exported
+endpoints use. The audit that fixed this found the previous statement
+
+```
+InformationFeasible (asGenome hG S) L R   with   hR : ∀ i, ρ i ∈ R
+```
+
+which is **strictly weaker**: `hR` is one-sided, so `R` may carry start
+positions at which no read was ever drawn, and every clause of `I_s` is a
+"some `r ∈ R` does ..." or a coverage condition, so a spurious start can only
+make `I_s` *easier* to satisfy. Such an `R` can witness a bridging read that
+does not exist in the sample, so the hypothesis is not a hypothesis about the
+sample at all.
+
+Two things are therefore provided here and used by the exported endpoints:
+
+* `realizedStarts` and the transfer `informationFeasible_of_exact_subset`, which
+  says that an arbitrary-`R` hypothesis is equivalent to the faithful one **once
+  `R` is pinned down** (`hsub` together with `hanti` is exactly
+  `R = realizedStarts ρ`);
+* `informationFeasible_exactLik_maximizer_of_superset_starts`, which retains the
+  old, one-sided surface **under a name that says it is the weaker one**, so
+  that it cannot be mistaken for the target statement. The direction of the
+  weakness is the point: the faithful statement does *not* follow from it, and
+  no theorem here claims that it does.
 
 ## Modeling decisions recorded here (issue #88)
 
@@ -689,6 +721,78 @@ theorem covering_constant_reads_is_constant {α : Type} [DecidableEq α] {G L : 
   rw [h1]
   exact hobs r hr d
 
+/-! ## The realized start set: `I_s` at the *actual* sample
+
+`I_s` quantifies over the reads that were drawn, so the start set it is
+evaluated at is the range of the realization `ρ`. `realizedStarts` is that set
+and is the only start set the exported endpoints below use. -/
+
+/-- The `Genome` of a same-length truth, for the shared bridging layer. -/
+def asGenome {α : Type} {G : ℕ} (hG : 0 < G) (S : Fin G → α) :
+    SourceFaithfulIs.Genome α := ⟨G, hG, S⟩
+
+/-- **The set of distinct start positions actually realized by the reads `ρ`.**
+This is `range ρ` as a `Finset`, i.e. the start set the source's `I_s` is
+stated over. It is the canonical such set in this repository. -/
+def realizedStarts {G n : ℕ} (ρ : Realization G n) : Finset (Fin G) :=
+  Finset.univ.filter (fun r : Fin G => ∃ i : Fin n, ρ i = r)
+
+@[simp] theorem mem_realizedStarts {G n : ℕ} (ρ : Realization G n) (r : Fin G) :
+    r ∈ realizedStarts ρ ↔ ∃ i : Fin n, ρ i = r := by
+  simp [realizedStarts]
+
+/-- Every realized read start lies in `realizedStarts`. -/
+theorem mem_realizedStarts_self {G n : ℕ} (ρ : Realization G n) (i : Fin n) :
+    ρ i ∈ realizedStarts ρ :=
+  (mem_realizedStarts ρ _).mpr ⟨i, rfl⟩
+
+/-- **`I_s` at the realized start set follows from `I_s` at a start set that is
+*exactly* the realized start set.** The hypothesis needed on `R` is two-sided:
+`hsub` says the realized starts are in `R`, and `hanti` says every element of
+`R` is a realized start. Together they say `R = realizedStarts ρ` (`heq` below
+proves the two membership statements coincide), and then the two `I_s`
+hypotheses are literally the same proposition.
+
+The one-sided `hR : ∀ i, ρ i ∈ R` of the earlier surface is only half of this,
+and the missing half is exactly the defect the audit found: without `hanti`, `R`
+may carry bridging starts at which no read was drawn, and the conclusion below
+does **not** follow for a strict superset `R`. So this lemma is the precise
+statement of "exact-range semantics", and it is what an arbitrary-`R` endpoint
+would have to assume to be equivalent to the target statement. -/
+theorem informationFeasible_of_exact_subset {α : Type} [DecidableEq α] {G L n : ℕ}
+    (hG : 0 < G) (S : Fin G → α) (ρ : Realization G n) (R : Finset (Fin G))
+    (hsub : ∀ i : Fin n, ρ i ∈ R)
+    (hanti : ∀ r ∈ R, ∃ i : Fin n, ρ i = r)
+    (hfeas : SourceFaithfulIs.InformationFeasible (asGenome hG S) L R) :
+    SourceFaithfulIs.InformationFeasible (asGenome hG S) L (realizedStarts ρ) := by
+  have heq : ∀ r : Fin G, r ∈ realizedStarts ρ ↔ r ∈ R := by
+    intro r
+    rw [mem_realizedStarts]
+    constructor
+    · rintro ⟨i, hi⟩; simpa only [hi] using hsub i
+    · rintro hr; obtain ⟨i, hi⟩ := hanti r hr; exact ⟨i, hi⟩
+  have hbc : ∀ (e : ℕ) (t : Fin G),
+      SourceFaithfulIs.BridgesCopy (asGenome hG S) L R e t →
+        SourceFaithfulIs.BridgesCopy (asGenome hG S) L (realizedStarts ρ) e t := by
+    intro e t ht
+    obtain ⟨r, hr, d, hd, hpos⟩ := ht
+    obtain ⟨i, hi⟩ := hanti r hr
+    exact ⟨ρ i, (heq (ρ i)).mpr (hi ▸ hr), d, hd, hi ▸ hpos⟩
+  rcases hfeas with ⟨hcov, htri, hinter⟩
+  refine ⟨fun p => ?_, fun e a b c h => ?_, fun e₁ e₂ a b c d h₁ h₂ hi => ?_⟩
+  · obtain ⟨r, hr, hcov⟩ := hcov p
+    exact ⟨r, (heq r).mpr hr, hcov⟩
+  · obtain ⟨e, he⟩ := e
+    obtain ⟨ha, hb, hc⟩ := htri ⟨e, he⟩ a b c h
+    exact ⟨hbc e a ha, hbc e b hb, hbc e c hc⟩
+  · obtain ⟨e₁, he₁⟩ := e₁
+    obtain ⟨e₂, he₂⟩ := e₂
+    rcases hinter ⟨e₁, he₁⟩ ⟨e₂, he₂⟩ a b c d h₁ h₂ hi with h | h | h | h
+    · exact Or.inl (hbc e₁ a h)
+    · exact Or.inr (Or.inl (hbc e₁ b h))
+    · exact Or.inr (Or.inr (Or.inl (hbc e₂ c h)))
+    · exact Or.inr (Or.inr (Or.inr (hbc e₂ d h)))
+
 /-! ## The end-to-end endpoint, from `InformationFeasible` alone
 
 The theorem below is the #88 target statement, and with the corrected
@@ -697,23 +801,28 @@ all**: `2 ≤ L` and full `I_s` already give
 `¬ HasLongTripleRepeat` (`AssemblyP1.BridgingBridge.informationFeasible_no_long_triple_repeat`).
 The conclusion is the actual same-length exact Medvedev–Brudno objective.
 
-Up to this commit the same theorem needed the extra
-`BridgingBridge.SharpNoLongTripleRepeat` hypothesis, and `AssemblyP1.MLEscape`
-carried a further unproved combinatorial culprit statement to cover the
-"wraparound regime" that the extra hypothesis left open. Both existed only
-because `BridgesCopy` was read endpoint-wise rather than as the source's
-strict straddling of the occurrence; see `docs/bridging-source-semantics.md` and
-`docs/issue88-wraparound-contrapositive.md`. -/
+`I_s` is imposed at `realizedStarts ρ`, the *actual* start set of the sample, so
+the hypothesis is a statement about the reads that were drawn. Up to the audit
+that fixed this seam the statement carried an auxiliary `R : Finset (Fin G)` with
+the one-sided hypothesis `hR : ∀ i, ρ i ∈ R` and `hR` was not even used; the old
+form is retained below as
+`informationFeasible_exactLik_maximizer_of_superset_starts`, which is a
+**weaker** statement and is named accordingly. -/
 
-/-- The `Genome` of a same-length truth, for the shared bridging layer. -/
-def asGenome {α : Type} {G : ℕ} (hG : 0 < G) (S : Fin G → α) :
-    SourceFaithfulIs.Genome α := ⟨G, hG, S⟩
+/-- **The end-to-end endpoint, at the actual realized start set.** Let `ρ` be a
+genuine realization of `n` reads on the truth `S`, and suppose
+`InformationFeasible (asGenome hG S) L (realizedStarts ρ)` at full strength. Then
+for **every** `D : Fin G → α` that is an actual
+`IsSameLengthSpelledCandidate` for the observed read set, the exact finite
+oriented same-length Medvedev–Brudno likelihood of `D` is at most the truth's:
 
-/-- **The end-to-end endpoint.** Let `ρ` be a genuine realization of `n` reads on
-the truth `S`, let `R` be a set of latent starts containing all of them, and
-suppose `InformationFeasible (asGenome hG S) L R` at full strength. Then the
-truth maximises the oriented same-length exact multinomial objective over the
-strict spelled same-length candidate class: there is no nondegeneracy premise.
+```
+exactLik D (observedOf hG S ρ)  ≤  exactLik S (observedOf hG S ρ)
+```
+
+There is no nondegeneracy premise, no primitivity or period premise, and no
+auxiliary start set: the hypothesis is source-faithful `I_s` at the range of
+`ρ` itself.
 
 The hypothesis side is `AssemblyP1.BridgingBridge.informationFeasible_no_long_triple_repeat`,
 which discharges `¬ HasLongTripleRepeat` from `InformationFeasible` and `2 ≤ L`
@@ -722,8 +831,47 @@ congruence lemmas of this module. -/
 theorem informationFeasible_exactLik_maximizer
     {α : Type} [DecidableEq α] [Fintype α] {G L n : ℕ} (hG : 0 < G) (hL2 : 2 ≤ L)
     (hLG : L ≤ G) (S : Fin G → α) (ρ : Realization G n)
+    (hfeas : SourceFaithfulIs.InformationFeasible (asGenome hG S) L
+      (realizedStarts ρ))
+    (D : Fin G → α)
+    (hD : IsSameLengthSpelledCandidate (L := L) hG S D (observedOf hG S ρ)) :
+    exactLik (L := L) hG D (observedOf hG S ρ)
+      ≤ exactLik (L := L) hG S (observedOf hG S ρ) := by
+  have hno : ¬ RepeatAdapter.HasLongTripleRepeat hG S L :=
+    BridgingBridge.informationFeasible_no_long_triple_repeat hL2 hfeas
+  exact same_length_exactLik_maximizer hG S D hL2 hLG hno (observedOf hG S ρ) hD
+
+/-- **The weaker, historical surface: `I_s` at a start set `R` that merely
+*contains* the realized starts.**
+
+**This is strictly weaker than `informationFeasible_exactLik_maximizer` and is
+not the #88 target statement.** `hR` is one-sided, so `R` may carry start
+positions at which no read was ever drawn. Every clause of `I_s` is a
+"some `r ∈ R` does ..." or a coverage condition, so a spurious start can only
+make `I_s` *easier* to satisfy: adding a start manufactures a bridging read that
+was never sampled. Consequently
+
+* the converse of `informationFeasible_exactLik_maximizer` is **not** provable
+  here, and is not asserted: the faithful statement cannot be recovered from this
+  one;
+* the exact statement *is* recoverable from an arbitrary-`R` one once the
+  start set is pinned down: with `hanti : ∀ r ∈ R, ∃ i, ρ i = r` added,
+  `informationFeasible_of_exact_subset` shows `R = realizedStarts ρ` and the two
+  `I_s` hypotheses become the same proposition. The missing `hanti` here is
+  precisely the seam the audit found.
+
+The name says "of superset starts" so that this weaker statement cannot be
+mistaken for the target.
+
+`_hR` is deliberately unused, and that is the finding rather than an oversight:
+the containment hypothesis records a relation between `R` and the sample that
+the proof never needs, which is exactly what makes the statement weaker than the
+target. The target statement does not take an `R` at all. -/
+theorem informationFeasible_exactLik_maximizer_of_superset_starts
+    {α : Type} [DecidableEq α] [Fintype α] {G L n : ℕ} (hG : 0 < G) (hL2 : 2 ≤ L)
+    (hLG : L ≤ G) (S : Fin G → α) (ρ : Realization G n)
     (R : Finset (Fin G))
-    (hR : ∀ i : Fin n, ρ i ∈ R)
+    (_hR : ∀ i : Fin n, ρ i ∈ R)
     (hfeas : SourceFaithfulIs.InformationFeasible (asGenome hG S) L R)
     (D : Fin G → α)
     (hD : IsSameLengthSpelledCandidate (L := L) hG S D (observedOf hG S ρ)) :
@@ -732,6 +880,27 @@ theorem informationFeasible_exactLik_maximizer
   have hno : ¬ RepeatAdapter.HasLongTripleRepeat hG S L :=
     BridgingBridge.informationFeasible_no_long_triple_repeat hL2 hfeas
   exact same_length_exactLik_maximizer hG S D hL2 hLG hno (observedOf hG S ρ) hD
+
+/-- **The arbitrary-`R` surface with the start set pinned down to the actual
+sample.** Here `R` is *equal* to `realizedStarts ρ` (the two hypotheses `hR` and
+`hanti` say exactly that), so this statement is the faithful one, and it is
+literally `informationFeasible_exactLik_maximizer` re-exported through an
+explicit `R`. It is provided so that callers who hold an arbitrary-`R` `I_s`
+hypothesis can convert it into the target statement rather than silently
+weakening the conclusion's hypothesis list. -/
+theorem informationFeasible_exactLik_maximizer_of_exact_R
+    {α : Type} [DecidableEq α] [Fintype α] {G L n : ℕ} (hG : 0 < G) (hL2 : 2 ≤ L)
+    (hLG : L ≤ G) (S : Fin G → α) (ρ : Realization G n)
+    (R : Finset (Fin G))
+    (hR : ∀ i : Fin n, ρ i ∈ R)
+    (hanti : ∀ r ∈ R, ∃ i : Fin n, ρ i = r)
+    (hfeas : SourceFaithfulIs.InformationFeasible (asGenome hG S) L R)
+    (D : Fin G → α)
+    (hD : IsSameLengthSpelledCandidate (L := L) hG S D (observedOf hG S ρ)) :
+    exactLik (L := L) hG D (observedOf hG S ρ)
+      ≤ exactLik (L := L) hG S (observedOf hG S ρ) :=
+  informationFeasible_exactLik_maximizer hG hL2 hLG S ρ
+    (informationFeasible_of_exact_subset hG S ρ R hR hanti hfeas) D hD
 
 
 end

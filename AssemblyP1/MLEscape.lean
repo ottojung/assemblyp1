@@ -219,71 +219,52 @@ theorem longTripleFree_no_midRangeTriple {G L : ℕ} (hG : 0 < G) (hLG : L ≤ G
 
 Issue #88 states the hypothesis on the reads that were actually taken, so the
 start set entering `I_s` must be the range of the realization, not an
-over-approximation of it. The previous surface of this module took an arbitrary
+over-approximation of it. The earlier surface of this module took an arbitrary
 `R : Finset (Fin G)` together with `hR : ∀ i, ρ i ∈ R`, which lets `R` carry
 *spurious* starts. That is a strictly weaker hypothesis: every clause of
 `InformationFeasible` is a "some `r ∈ R` does …" or a coverage condition, so
-inflating `R` can only make `I_s` easier to satisfy. This section names the
-exact range and proves the transfer, so the final theorems of §5 can be stated
-with no `R` at all.
+inflating `R` can only make `I_s` easier to satisfy, and a spurious start
+manufactures a bridging read that was never sampled.
 
-The substantive content is `informationFeasible_of_exact_subset`: subset
-containment *together with* the absence of spurious starts recovers
-`I_s` at `realizedStarts ρ`. -/
+The canonical range and the transfer live with the realization, in
+`AssemblyP1.OrientedSameLengthML`; this section re-exports them so the module is
+self-contained:
+
+* `realizedStarts` = `range ρ`, the start set the source's `I_s` is stated over;
+* `informationFeasible_of_exact_subset`: subset containment **together with**
+  the absence of spurious starts recovers `I_s` at `realizedStarts ρ`, which is
+  the precise "exact-range" statement (the one-sided `hR` of the earlier surface
+  is only half of it). -/
 
 /-- **The set of distinct start positions actually realized by the reads `ρ`.**
-This is `range ρ` as a `Finset`; it is the start set the source's `I_s` is
-stated over. -/
-def realizedStarts {G n : ℕ} (ρ : OrientedSameLengthML.Realization G n) :
+The canonical definition is
+`AssemblyP1.OrientedSameLengthML.realizedStarts`; this is the same object,
+re-exported under the name this module has always used. -/
+abbrev realizedStarts {G n : ℕ} (ρ : OrientedSameLengthML.Realization G n) :
     Finset (Fin G) :=
-  Finset.univ.filter (fun r : Fin G => ∃ i : Fin n, ρ i = r)
+  OrientedSameLengthML.realizedStarts ρ
 
 @[simp] theorem mem_realizedStarts {G n : ℕ} (ρ : OrientedSameLengthML.Realization G n)
-    (r : Fin G) : r ∈ realizedStarts ρ ↔ ∃ i : Fin n, ρ i = r := by
-  simp [realizedStarts]
+    (r : Fin G) : r ∈ realizedStarts ρ ↔ ∃ i : Fin n, ρ i = r :=
+  OrientedSameLengthML.mem_realizedStarts ρ r
 
 /-- Every realized read start lies in `realizedStarts`. -/
 theorem mem_realizedStarts_self {G n : ℕ} (ρ : OrientedSameLengthML.Realization G n)
     (i : Fin n) : ρ i ∈ realizedStarts ρ :=
-  (mem_realizedStarts ρ _).mpr ⟨i, rfl⟩
+  OrientedSameLengthML.mem_realizedStarts_self ρ i
 
 /-- **`I_s` at the exact range of `ρ` follows from `I_s` at a start set that is
 exactly the range.** A start set `R` containing the range *and* carrying no
 spurious start is the range, so the two hypotheses agree; in particular the
 `hR : ∀ i, ρ i ∈ R` of the earlier surface is only half of what is needed, and
-`hRanti` is the missing half. -/
+`hanti` is the missing half. -/
 theorem informationFeasible_of_exact_subset {α : Type} [DecidableEq α] [Fintype α]
     {G L n : ℕ} (hG : 0 < G) (S : Fin G → α) (ρ : OrientedSameLengthML.Realization G n)
     (R : Finset (Fin G)) (hsub : ∀ i : Fin n, ρ i ∈ R)
     (hanti : ∀ r ∈ R, ∃ i : Fin n, ρ i = r)
     (hfeas : InformationFeasible ⟨G, hG, S⟩ L R) :
-    InformationFeasible ⟨G, hG, S⟩ L (realizedStarts ρ) := by
-  have heq : ∀ r : Fin G, r ∈ realizedStarts ρ ↔ r ∈ R := by
-    intro r
-    rw [mem_realizedStarts]
-    constructor
-    · rintro ⟨i, hi⟩; simpa only [hi] using hsub i
-    · rintro hr; obtain ⟨i, hi⟩ := hanti r hr; exact ⟨i, hi⟩
-  have hbc : ∀ (e : ℕ) (t : Fin G), BridgesCopy ⟨G, hG, S⟩ L R e t →
-      BridgesCopy ⟨G, hG, S⟩ L (realizedStarts ρ) e t := by
-    intro e t ht
-    obtain ⟨r, hr, d, hd, hpos⟩ := ht
-    obtain ⟨i, hi⟩ := hanti r hr
-    exact ⟨ρ i, (heq (ρ i)).mpr (hi ▸ hr), d, hd, hi ▸ hpos⟩
-  rcases hfeas with ⟨hcov, htri, hinter⟩
-  refine ⟨fun p => ?_, fun e a b c h => ?_, fun e₁ e₂ a b c d h₁ h₂ hi => ?_⟩
-  · obtain ⟨r, hr, hcov⟩ := hcov p
-    exact ⟨r, (heq r).mpr hr, hcov⟩
-  · obtain ⟨e, he⟩ := e
-    obtain ⟨ha, hb, hc⟩ := htri ⟨e, he⟩ a b c h
-    exact ⟨hbc e a ha, hbc e b hb, hbc e c hc⟩
-  · obtain ⟨e₁, he₁⟩ := e₁
-    obtain ⟨e₂, he₂⟩ := e₂
-    rcases hinter ⟨e₁, he₁⟩ ⟨e₂, he₂⟩ a b c d h₁ h₂ hi with h | h | h | h
-    · exact Or.inl (hbc e₁ a h)
-    · exact Or.inr (Or.inl (hbc e₁ b h))
-    · exact Or.inr (Or.inr (Or.inl (hbc e₂ c h)))
-    · exact Or.inr (Or.inr (Or.inr (hbc e₂ d h)))
+    InformationFeasible ⟨G, hG, S⟩ L (realizedStarts ρ) :=
+  OrientedSameLengthML.informationFeasible_of_exact_subset hG S ρ R hsub hanti hfeas
 
 /-! ## 3. The faithful §6.2 maximum-likelihood predicate -/
 
@@ -311,14 +292,23 @@ def Is62SpelledMLMax {G L : ℕ} (hG : 0 < G) (S : Fin G → α)
       OrientedSameLengthML.exactLik (L := L) hG D x
         ≤ OrientedSameLengthML.exactLik (L := L) hG S x
 
-/-- **The audited #88 result, in the faithful maximizer predicate.** Full `I_s`,
-a realization, a genuine §6.2 truth certificate, a genuine §6.2 candidate
-certificate and the residual `hno` premise give the maximizer statement *with
-membership*. -/
+/-- **The audited #88 result, in the faithful maximizer predicate, at the
+**strictly weaker** one-sided start set.** Full `I_s` at a start set `R` that
+merely contains the realized starts, a realization, a genuine §6.2 truth
+certificate, a genuine §6.2 candidate certificate and the residual `hno` premise
+give the maximizer statement *with membership*.
+
+**This is not the exported endpoint.** `R` may carry starts at which no read was
+drawn, and such a start manufactures a bridging read the sample does not
+contain, so the hypothesis is strictly weaker than
+`informationFeasible_62_spelledML`'s. It is retained under this name so that it
+cannot be mistaken for the target statement; see
+`informationFeasible_62_spelledML_of_exact_subset` for the faithful version
+through an explicit `R`. -/
 theorem informationFeasible_62_spelledML_of_no_long_triple {G L n : ℕ}
     (hG : 0 < G) (hL2 : 2 ≤ L) (hLG : L ≤ G) (S : Fin G → α)
     (ρ : OrientedSameLengthML.Realization G n) (R : Finset (Fin G))
-    (hR : ∀ i : Fin n, ρ i ∈ R)
+    (_hR : ∀ i : Fin n, ρ i ∈ R)
     (hfeas : InformationFeasible ⟨G, hG, S⟩ L R)
     {verts : List (Fin L → α)} {toList : (Fin L → α) → List α} {oMin : ℕ}
     (hwx : ∀ w : Fin L → α,
@@ -328,8 +318,8 @@ theorem informationFeasible_62_spelledML_of_no_long_triple {G L n : ℕ}
     Is62SpelledMLMax (verts := verts) (toList := toList) (oMin := oMin) hG S
       (OrientedSameLengthML.observedOf hG S ρ) := by
   refine ⟨hStruth, fun D hD => ?_⟩
-  exact SameLength62Maximizer.informationFeasible_62_maximizer hG hL2 hLG S D ρ R hR
-    hfeas hwx hStruth hD
+  exact SameLength62Maximizer.informationFeasible_62_maximizer_of_superset_starts
+    hG hL2 hLG S D ρ R _hR hfeas hwx hStruth hD
 
 /-! ## 3. The likelihood comparison is the spectral comparison
 
@@ -515,26 +505,38 @@ theorem observed_spectral_excess_of_ml_failure {G L n : ℕ} (hG : 0 < G)
   push Not at hcon
   exact hml (exactLik_le_of_spec_le hG S D ρ hsup hcon)
 
-/-! ## 4. The graph-level culprit, and the target theorem
+/-! ## 4. The graph-level reduction, and what it made unnecessary
 
-The culprit statement has three steps, and **two of them are proved here**:
+`informationFeasible_62_spelledML` below is proved by a three-step reduction, and
+**all three steps are now theorems**:
 
 * Step 1 (`spectralEscape_gives_longTriple`): a spectral escape forces a long
   maximal triple repeat of the truth, by applying the existing rigidity chain to
   the escaping circulation. This is at the `HasSpectralEscape` level, not only
   at the candidate level, because the chain's proof never uses that the
   circulation is the spectrum of a word.
-* Step 2 (`informationFeasible_escape_gives_wraparound`): under full `I_s`,
-  that long triple cannot lie in the mid-range band
-  (`informationFeasible_no_midRangeTriple`), so by `longTriple_band` it lies in
-  the **wraparound band** `max (L - 1) (G - L) ≤ ℓ < G`, named here by
-  `HasWraparoundTripleRepeat`. This is the regime the audited `hno` premise
-  excluded and `I_s` does not forbid.
-* Step 3 (**not** proved) is `EscapeForcesMidRangeRepeat`: an escape that also
-  produces a wraparound-bridged long triple repeat produces a *mid-range* one
-  as well. That is the whole remaining content, and
-  `informationFeasible_62_spelledML_of_escape_crux` takes it as its single
-  extra hypothesis. -/
+* Step 2 (`informationFeasible_no_midRangeTriple`, and more generally
+  `BridgingBridge.informationFeasible_no_long_triple_repeat`): under full `I_s`
+  there is **no** long triple repeat at all, in any band. The mid-range band
+  `L - 1 ≤ ℓ < G - L` is therefore a strict subset of the excluded range, and the
+  old "wraparound band" `max (L - 1) (G - L) ≤ ℓ < G` does not exist: a bridged
+  copy satisfies `e + 2 ≤ L`, so every band with `ℓ ≥ L - 1` is excluded.
+* Step 3 (`informationFeasible_no_escape`, then
+  `eq_specCount_of_massG_le` and `exactLik_le_of_spec_le`): the absence of an
+  escape bounds the candidate's spectrum pointwise by the truth's, total mass
+  `G` turns that into equality, and the likelihood comparison follows.
+
+**The culprit statement `EscapeForcesMidRangeRepeat` is retired.** It was the
+one proposition this module did not prove, it was carried as an explicit
+hypothesis of the exported theorem, and it existed only because `BridgesCopy`
+was read endpoint-wise. Under the canonical single-lift span semantics it is
+not a conjecture any more: it is subsumed by
+`BridgingBridge.informationFeasible_no_long_triple_repeat`, which is stronger
+(it rules out *all* long triple repeats, not just the mid-range band) and is
+kernel-checked. The cruxes recorded in
+`docs/issue88-wraparound-contrapositive.md` remain valid *negative* search
+evidence about the endpoint-only predicate, and are labelled as such there; they
+are not premises of anything below. -/
 
 /-- **A positive balanced circulation of total mass `G` on the truth's window
 support.** These are literally the three hypotheses
@@ -813,37 +815,18 @@ theorem informationFeasible_62_spelledML {G L n : ℕ}
       (hsupD w).symm
   exact exactLik_le_of_spec_le hG S D ρ hsup (fun w _ => Nat.le_of_eq (heq w))
 
-/-- **The audited #88 result in the exact-range semantics, with the residual
-`¬ HasLongTripleRepeat` premise made explicit.**
-
-Weaker in its hypotheses than `informationFeasible_62_spelledML` only in that it
-also exposes the nondegeneracy fact, which that theorem obtains from `I_s`
-itself. It is kept because it is the statement that
-`docs/same-length-62-maximizer.md` audits. -/
-theorem informationFeasible_62_spelledML_of_no_long_triple_exact {G L n : ℕ}
-    (hG : 0 < G) (hL2 : 2 ≤ L) (hLG : L ≤ G) (S : Fin G → α)
-    (ρ : OrientedSameLengthML.Realization G n)
-    (hfeas : InformationFeasible ⟨G, hG, S⟩ L (realizedStarts ρ))
-    {verts : List (Fin L → α)} {toList : (Fin L → α) → List α} {oMin : ℕ}
-    (hwx : ∀ w : Fin L → α,
-      0 < OrientedSameLengthML.observedOf hG S ρ w → w ∈ verts)
-    (hStruth : SameLength62Maximizer.Is62Candidate62 ⟨G, hG, S⟩ verts toList
-      (fun y => y) (fun y => y) oMin) :
-    Is62SpelledMLMax (verts := verts) (toList := toList) (oMin := oMin) hG S
-      (OrientedSameLengthML.observedOf hG S ρ) := by
-  refine ⟨hStruth, fun D hD => ?_⟩
-  exact SameLength62Maximizer.informationFeasible_62_maximizer hG hL2 hLG S D ρ
-    (realizedStarts ρ) (fun i => mem_realizedStarts_self ρ i) hfeas hwx hStruth hD
-
-/-- **The subset-start-set variant of the same statement, retained for
-comparison only.** `R` may carry starts that were never realized, which can only
-make `I_s` easier to satisfy, so this is *not* the faithful reading of issue #88;
-it is the weaker surface of the previous commit, kept so the two are directly
-comparable. The faithful statement is `informationFeasible_62_spelledML`. -/
-theorem informationFeasible_62_spelledML_of_subset_starts {G L n : ℕ}
+/-- **The exact-range endpoint re-exported through an explicit start set.** The
+hypotheses `hR` and `hanti` say exactly `R = realizedStarts ρ`, so this is the
+faithful statement, and it is the conversion a caller with an arbitrary-`R` `I_s`
+hypothesis should use. The theorem
+`AssemblyP1.SameLength62Maximizer.informationFeasible_62_maximizer` is the same
+statement with the start set already pinned down; this variant exists only so
+that the pinning is visible in the statement. -/
+theorem informationFeasible_62_spelledML_of_exact_subset {G L n : ℕ}
     (hG : 0 < G) (hL2 : 2 ≤ L) (hLG : L ≤ G) (S : Fin G → α)
     (ρ : OrientedSameLengthML.Realization G n) (R : Finset (Fin G))
     (hR : ∀ i : Fin n, ρ i ∈ R)
+    (hanti : ∀ r ∈ R, ∃ i : Fin n, ρ i = r)
     (hfeas : InformationFeasible ⟨G, hG, S⟩ L R)
     {verts : List (Fin L → α)} {toList : (Fin L → α) → List α} {oMin : ℕ}
     (hwx : ∀ w : Fin L → α,
@@ -853,33 +836,59 @@ theorem informationFeasible_62_spelledML_of_subset_starts {G L n : ℕ}
     Is62SpelledMLMax (verts := verts) (toList := toList) (oMin := oMin) hG S
       (OrientedSameLengthML.observedOf hG S ρ) := by
   refine ⟨hStruth, fun D hD => ?_⟩
-  exact SameLength62Maximizer.informationFeasible_62_maximizer hG hL2 hLG S D ρ R
-    hR hfeas hwx hStruth hD
+  exact SameLength62Maximizer.informationFeasible_62_maximizer_of_exact_R
+    hG hL2 hLG S D ρ R hR hanti hfeas hwx hStruth hD
 
-/-! ## 5. Finite evidence for the culprit statement
+/-- **The strictly weaker subset-start-set variant, retained for comparison
+only.** `R` may carry starts that were never realized, which can only make `I_s`
+easier to satisfy, so this is *not* the faithful reading of issue #88; it is the
+weaker surface of the previous commit, kept so the two are directly comparable.
+The faithful statement is `informationFeasible_62_spelledML`, and the conversion
+from a pinned-down `R` is `informationFeasible_62_spelledML_of_exact_subset`. -/
+theorem informationFeasible_62_spelledML_of_subset_starts {G L n : ℕ}
+    (hG : 0 < G) (hL2 : 2 ≤ L) (hLG : L ≤ G) (S : Fin G → α)
+    (ρ : OrientedSameLengthML.Realization G n) (R : Finset (Fin G))
+    (_hR : ∀ i : Fin n, ρ i ∈ R)
+    (hfeas : InformationFeasible ⟨G, hG, S⟩ L R)
+    {verts : List (Fin L → α)} {toList : (Fin L → α) → List α} {oMin : ℕ}
+    (hwx : ∀ w : Fin L → α,
+      0 < OrientedSameLengthML.observedOf hG S ρ w → w ∈ verts)
+    (hStruth : SameLength62Maximizer.Is62Candidate62 ⟨G, hG, S⟩ verts toList
+      (fun y => y) (fun y => y) oMin) :
+    Is62SpelledMLMax (verts := verts) (toList := toList) (oMin := oMin) hG S
+      (OrientedSameLengthML.observedOf hG S ρ) := by
+  refine ⟨hStruth, fun D hD => ?_⟩
+  exact SameLength62Maximizer.informationFeasible_62_maximizer_of_superset_starts
+    hG hL2 hLG S D ρ R _hR hfeas hwx hStruth hD
 
-`EscapeForcesMidRangeRepeat` is the one statement this module does not prove.
+/-! ## 5. Finite evidence: the escape is non-vacuous, and excluded by `I_s`
+
 The check below is a complete `decide` computation for **binary** truths and
 candidates of length `G = 7` and all read lengths `L` with `2 ≤ L ≤ 7`:
 whenever a candidate has the truth's window support and its spectrum strictly
 exceeds the truth's on a support read type, the truth carries a maximal triple
 repeat of length in the mid-range band `L - 1 ≤ ℓ < 7 - L`.
 
-`cand0_beats_truth0` and `candidate_escape_binary_witness` are included so that
-the check is **not vacuous**: the premise of the checked implication is
-realized, at the truth `0000001` and the candidate `0001001` with `L = 3`
-(read type `100`, whose multiplicity goes from `1` to `2`). The non-vacuity
-companion matters: an earlier harness in this repository's history was void for
-exactly this reason, and `docs/same-length-exact-ml-88-refutation.md` §4 records
-that incident.
+This is **no longer a conjectured lemma.** It was the finite shadow of
+`EscapeForcesMidRangeRepeat`, and both are now discharged from `I_s` by
+`informationFeasible_no_escape`. What the computation still establishes is worth
+keeping, and it is *non-vacuity*: the escape premise is realized at a concrete
+instance — the truth `0000001` and the candidate `0001001` with `L = 3`, read
+type `100`, whose multiplicity goes from `1` to `2`. The non-vacuity companion
+matters: an earlier harness in this repository's history was void for exactly
+this reason, and `docs/same-length-exact-ml-88-refutation.md` §4 records that
+incident.
 
-This is **evidence, not a completeness proof**: it says nothing about `G > 7`,
-about alphabets larger than binary, and it checks the *candidate-level* form of
-the culprit statement (a same-support competitor that beats the truth), not the
-`HasSpectralEscape` statement over arbitrary weightings `B`. It is recorded as
-evidence precisely so that the culprit statement is presented as a conjectured
-lemma, not as a proved one. Wider searches with the same definitions
-(binary `G ≤ 9`, `3`-letter `G ≤ 7`) are recorded in
+The instance above is **not** `I_s`-feasible, and under the canonical bridging
+semantics that is exactly as it should be: `informationFeasible_no_midRangeTriple`
+excludes it by clause 2 alone, because its mid-range triple repeat of length
+`2 = L - 1` would need a bridged copy with `e + 2 ≤ L`, i.e. `4 ≤ 3`.
+
+The computation says nothing about `G > 7` or about alphabets larger than
+binary, and it checks the *candidate-level* form of the escape (a same-support
+competitor that beats the truth), not the `HasSpectralEscape` statement over
+arbitrary weightings `B`. The wider searches with the same definitions (binary
+`G ≤ 9`, `3`-letter `G ≤ 7`) are recorded in
 `docs/issue88-wraparound-contrapositive.md`; they found no violation of the
 culprit statement, and no instance of full `I_s` with a same-support
 same-length competitor that beats the truth. -/

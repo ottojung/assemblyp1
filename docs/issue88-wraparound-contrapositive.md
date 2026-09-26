@@ -169,12 +169,18 @@ the finite search. One structural remark makes it cheap: **`I_s` is monotone in
 the start set** (every clause is a "some read does …" or coverage condition), so
 "Some `R ∈ I_s`" is decided at the maximal start set `R = Fin G`.
 
-| alphabet | `G ≤` | `I_s`-satisfiable `(S, L)` | escapes | escapes at an `I_s`-feasible `(S, L)` | culprit statement holds | violated |
-| --- | --- | --- | --- | --- | --- | --- |
-| binary | 7 | 908 | 258 | 0 | 258 | 0 |
-| binary | 9 | (census 7) | 1584 | 0 | 1584 | 0 |
-| 3-letter | 7 | (see below) | 1764 | 0 | 1764 | 0 |
-| 4-letter | 6 | (see below) | 972 | 0 | 972 | 0 |
+The script has been **corrected** to the canonical single-lift span bridging
+condition; `--endpoint-only` selects the old reading and reproduces the historical
+`I_s` column exactly. The `escapes`, `culprit statement holds` and
+`escapes at an I_s-feasible` columns do not depend on the bridging predicate, so
+only the `I_s`-satisfiable column differs.
+
+| alphabet | `G ≤` | `I_s`-satisfiable `(S, L)`, canonical | … endpoint-only (historical) | escapes | escapes at an `I_s`-feasible `(S, L)` | culprit statement holds | violated |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| binary | 7 | 830 | 908 | 258 | 0 | 258 | 0 |
+| binary | 9 | (census 7) | (census 7) | 1584 | 0 | 1584 | 0 |
+| 3-letter | 7 | 13896 | (see below) | 1764 | 0 | 1764 | 0 |
+| 4-letter | 6 | 21656 | (see below) | 972 | 0 | 972 | 0 |
 
 Reading the table:
 
@@ -184,7 +190,10 @@ Reading the table:
 * **no** escape occurs at an `I_s`-feasible instance, in any of these ranges;
   this is the finite evidence for the conclusion of the target theorem;
 * the culprit statement holds at **every** escape, including the ones that are
-  not `I_s`-feasible, so the band it produces is the right one.
+  not `I_s`-feasible. Under the canonical predicate this is no longer
+  informative: `I_s` forbids *all* long triple repeats (§9.2), so clause 2
+  decides the question structurally and the search is a consistency check on the
+  transcription rather than evidence for a conjecture.
 
 Reproduce with
 
@@ -192,6 +201,7 @@ Reproduce with
 python3 scripts/issue88-wraparound-search.py 9 2 7
 python3 scripts/issue88-wraparound-search.py 7 3 7
 python3 scripts/issue88-wraparound-search.py 6 4 6
+python3 scripts/issue88-wraparound-search.py 9 2 7 --endpoint-only   # historical
 ```
 
 **Why the quantified version is not in Lean.** The obvious
@@ -203,7 +213,12 @@ Lean side therefore keeps only the concrete, non-vacuous instance, which is the
 part that is cheap to check and the part that guards against a void harness.
 This is recorded as a deliberate build-cost decision, not as a proof.
 
-## 5. Proof strategy for the culprit statement
+## 5. Proof strategy for the culprit statement — RETRACTED (§9.3)
+
+> Everything in this section is void: `BridgesCopy` is the source's
+> single-lift span condition, so there is no wraparound band for clause 2 to miss
+> and the culprit statement is *proved*, not open. It is kept as the record of
+> the strategy that was pursued.
 
 The strategy is the contrapositive the question suggests, at the repeat level,
 not "I_s ⟹ ¬ long triple repeat" (which is false).
@@ -257,24 +272,37 @@ here so that partial progress is usable:
   there is a maximal triple repeat of length in `[L - 1, G - L)`. This closes the
   remaining regime `G ≥ 2L`.
 
-## 6. What remains open
+## 6. What remains open — RETRACTED, and what replaced it (§9.3)
 
-* `EscapeForcesMidRangeRepeat` (equivalently `HasMidRangeTripleRepeat`-free
-  spectrum rigidity, or the pair (H1)+(H2) above). Until it is proved,
-  `informationFeasible_62_spelledML_of_escape_crux` is a theorem *about* the
-  wraparound regime, not a proof of the §6.2 maximizer statement in it.
+> The first item below is not open: `EscapeForcesMidRangeRepeat` was deleted,
+> because `I_s` forbids every maximal triple repeat of length `≥ L - 1`. The
+> second and third items are unchanged and remain open.
+
+* ~~`EscapeForcesMidRangeRepeat`~~ — **closed**, by
+  `BridgingBridge.informationFeasible_no_long_triple_repeat` (a strictly stronger
+  statement: no long triple repeat at all, in any band).
 * The generalization of the culprit statement from *candidate-level* escapes (a
   same-support competitor) to `HasSpectralEscape` (arbitrary mass-`G` positive
   circulations of the support) is not formalized; the search only checks the
   candidate-level form. The two differ, since a mass-`G` circulation need not be
-  the spectrum of any word.
+  the spectrum of any word. (`informationFeasible_no_escape` *is* proved at the
+  `HasSpectralEscape` level, so this is about the standalone statement, not
+  about the endpoint.)
 * Whether the published 2016 sentence is meant with any support-based candidate
   restriction at all remains an interpretation question
   (`docs/source-notes/mb-formulation-referent-reconciliation.md`); the predicate
   of §2 is the literal §6.2 reading, and the note records that reading rather
   than resolving the question.
 
-## 7. Kernel-checked theorem surface
+## 7. Kernel-checked theorem surface (current)
+
+The surface below is the one that exists **now**, after the retraction of §9. The
+historical table is in the git history; the rows naming
+`HasWraparoundTripleRepeat`, `longTriple_band`, `EscapeForcesMidRangeRepeat`,
+`informationFeasible_escape_gives_wraparound`,
+`informationFeasible_no_escape_of_no_wraparound` and
+`informationFeasible_62_spelledML_of_escape_crux` were **deleted**, not merely
+deprecated, and no theorem in this repository mentions them.
 
 `AssemblyP1.MLEscape`:
 
@@ -284,22 +312,28 @@ here so that partial progress is usable:
 | `informationFeasible_no_midRangeTriple` | full `I_s` excludes the band `L - 1 ≤ ℓ < G - L` |
 | `longTripleFree_no_midRangeTriple` | `¬ HasLongTripleRepeat` implies `¬ HasMidRangeTripleRepeat` |
 | `Is62SpelledMLMax` | the faithful §6.2 maximizer predicate (membership + dominance) |
-| `informationFeasible_62_spelledML_of_no_long_triple` | the audited result in that predicate |
+| `informationFeasible_62_spelledML` | **the exported endpoint**: `I_s` at `realizedStarts ρ` + genuine §6.2 truth and candidate certificates ⟹ the maximizer statement, with no `hno` / escape / culprit premise |
+| `informationFeasible_62_spelledML_of_exact_subset` | the same, through a start set `R` pinned to `realizedStarts ρ` |
+| `informationFeasible_62_spelledML_of_no_long_triple`, `…_of_subset_starts` | the deliberately **weaker** one-sided surfaces (`R` may carry unsampled bridging starts) |
 | `observed_mem_support`, `specCount_le`, `factor_eq_one_of_not_mem` | factor-level facts: observation ⊆ support, multiplicity ≤ `G`, factor `1` off support |
 | `exactLik_eq_prod_support` | the objective is the product over the truth's window support |
 | `exactLik_le_of_spec_le` | pointwise spectral domination ⟹ likelihood inequality |
 | `observed_spectral_excess_of_ml_failure` | ML failure ⟹ an observed read type strictly over-counted |
-| `IsMassGPositiveCirculation`, `BeatsTruthSpectrum`, `HasSpectralEscape` | the graph-level culprit predicates |
-| `HasWraparoundTripleRepeat` | a long triple repeat in the wraparound band `max (L - 1) (G - L) ≤ ℓ < G` |
-| `isMaximalTriple_of_mod`, `longTriple_band` | transport to `Fin G` starts, and the split of the long triples into the two bands |
-| `spectralEscape_contradiction`, `spectralEscape_gives_longTriple` | **step 1** of the culprit statement |
-| `informationFeasible_escape_gives_wraparound`, `informationFeasible_no_escape_of_no_wraparound` | **step 2** of the culprit statement, and its contrapositive |
+| `IsMassGPositiveCirculation`, `BeatsTruthSpectrum`, `HasSpectralEscape` | the graph-level escape predicates |
+| `isMaximalTriple_of_mod` | transport to `Fin G` starts |
+| `spectralEscape_contradiction`, `spectralEscape_gives_longTriple` | an escape forces a long maximal triple repeat |
+| `informationFeasible_no_escape` | `I_s` forbids every spectral escape, from `I_s` alone |
 | `candidate_is_massG_positive_circulation` | a same-support candidate's spectrum is such a circulation |
 | `eq_specCount_of_massG_le` | a mass-`G` circulation bounded by the truth's spectrum is the truth's spectrum |
 | `ml_failure_gives_spectral_escape` | the §6.2 contrapositive |
-| `EscapeForcesMidRangeRepeat` | the culprit statement (**not** proved) |
-| `informationFeasible_62_spelledML_of_escape_crux` | the target-shaped theorem, with the culprit statement as its only extra hypothesis |
-| `cand0_is_escape`, `truth0_has_midrange_triple`, `culprit_instance_checked` | the non-vacuous kernel-checked instance |
+| `cand0_is_escape`, `truth0_has_midrange_triple`, `culprit_instance_checked` | the non-vacuous instance (the escape premise is realized, and the genome is excluded by `I_s` by clause 2) |
+
+Elsewhere: `SourceFaithfulIs.bridgesCopy_lifted_iff`,
+`SourceFaithfulIs.bridgesCopy_length`,
+`BridgingBridge.informationFeasible_no_long_triple_repeat`,
+`OrientedSameLengthML.informationFeasible_exactLik_maximizer`,
+`SameLength62Maximizer.informationFeasible_62_maximizer`,
+`WraparoundTripleRepeat.aaaab_not_information_feasible`.
 
 ## 8. Reproduction
 
@@ -307,15 +341,19 @@ here so that partial progress is usable:
 lake build
 lake env lean - <<'EOF'
 import AssemblyP1
-#print axioms AssemblyP1.MLEscape.informationFeasible_62_spelledML_of_escape_crux
+#print axioms AssemblyP1.MLEscape.informationFeasible_62_spelledML
+#print axioms AssemblyP1.SameLength62Maximizer.informationFeasible_62_maximizer
 #print axioms AssemblyP1.MLEscape.ml_failure_gives_spectral_escape
 #print axioms AssemblyP1.MLEscape.culprit_instance_checked
 EOF
 python3 scripts/issue88-wraparound-search.py 9 2 7
+python3 scripts/issue88-exact-range-search.py 5 2 3 2 5
+python3 scripts/issue88-exact-range-fast.py 5 2 3 2 5 --cross-check
 ```
 
-All three `#print axioms` must report only `propext`, `Classical.choice`,
-`Quot.sound`.
+All four `#print axioms` must report only `propext`, `Classical.choice`,
+`Quot.sound`, and the last two Python commands must print identical feasibility
+counts.
 
 
 ## 9. Retraction: the regime was an artifact of a wrong `BridgesCopy`
@@ -379,6 +417,10 @@ its second disjunct, and with it the entire `G - L` escape route of §5, is dead
   comparison.
 * §6's open item: `EscapeForcesMidRangeRepeat` is deleted, not left open. The
   ML question it was the last hurdle for is now answered from `I_s`.
+* §7 and §8 have been rewritten to describe the surface that exists now. The
+  previous §7 table asserted, in the present tense, theorems that no longer
+  exist; keeping a retracted document is fine, keeping a *false present-tense
+  index* is not.
 
 ### 9.4 What survives from this note
 
@@ -407,3 +449,10 @@ predicate and is not evidence about the corrected one. Two remarks:
   every `(G, L)` it examines, so the corrected `I_s` is **not** vacuous, and
   finds no feasible instance carrying a long triple repeat, as
   `informationFeasible_no_long_triple_repeat` says.
+
+After the harness corrections in `docs/bridging-lift-audit.md` (§7 there), the
+`I_s` census under the **canonical** predicate is smaller than under the
+endpoint-only one at every range checked, as it must be: binary `G ≤ 7` goes from
+908 to 830 satisfiable `(S, L)` pairs, and the exact-range feasibility counts in
+that note's table differ by roughly a factor of two. The qualitative conclusion —
+no escape at an `I_s`-feasible instance — is unchanged.
