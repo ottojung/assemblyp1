@@ -1,4 +1,5 @@
 import Mathlib
+import AssemblyP1.SourceFaithfulIs
 
 /-!
 # Fixed-length exact-multinomial counterexample (issue #31)
@@ -28,16 +29,25 @@ coefficient and the length factor cancel, so the exact likelihood ratio is
 exactly `2`: the competitor is strictly more likely than the truth, so the
 truth is not a maximum-likelihood maximizer even among same-length candidates.
 
-`SourceHypotheses` below records the concrete source-faithful certificate for
-this instance: the realized reads cover the circular truth, and the three
-length-1 `A` copies at starts `0, 1, 2` form a maximal triple repeat that is
-all-bridged by the reads at starts `4, 0, 1`.  This instance has no interleaved
-repeat pair; that finite check is recorded in
-`docs/fixed-length-exact-counterexample.md` rather than formalized here, so
-that no general repeat/interleaving infrastructure is introduced.
+The hypothesis side uses the shared source-faithful layer
+`AssemblyP1.SourceFaithfulIs` directly.  `truth_information_feasible` is a
+kernel-checked proof of **full** `I_s` membership, that is
+`SourceFaithfulIs.InformationFeasible truthGenome 3 readStarts`, not a
+weakened stand-in for it: `decide` discharges the coverage clause, the
+universally quantified all-bridged clause over *all* selected triple repeats at
+all admissible lengths, and the universally quantified bridged clause over *all*
+interleaved repeat pairs.  No repeat is enumerated by hand.
+
+For this instance that is a genuine content claim, not a formality: the truth
+`AAABB` has a maximal length-`1` repeat at starts `0, 2` and another at `3, 4`,
+the maximal length-`1` triple repeat at starts `0, 1, 2` is all-bridged by the
+reads at `4, 0, 1`, and there is in fact no interleaved repeat pair, so the
+third clause of `I_s` holds vacuously for this truth.
 -/
 
 namespace AssemblyP1.FixedLengthExactCounterexample
+
+open SourceFaithfulIs
 
 /-- Four-symbol alphabet for the fixed-length candidate universe.  It is the
 DNA alphabet under a renaming that keeps the two symbols `A`, `B` of the
@@ -74,11 +84,34 @@ def readBAA : Fin 3 → Base := ![Base.B, Base.A, Base.A]
 def occ (g : Genome) (w : Fin 3 → Base) : Nat :=
   (Finset.univ.filter (fun r : Fin 5 => window g r = w)).card
 
-/-- The true circular genome `S = AAABB`. -/
+/-- The true circular genome `S = AAABB`, as a shared-layer circular genome. -/
+/- This genome is a reducible abbreviation, not an opaque `def`, so that the
+   `Fin`-indexed numerals and the `Decidable` instances of the shared layer are
+   found by instance search when the finite `I_s` membership is decided. -/
+abbrev truthGenome : SourceFaithfulIs.Genome Base where
+  len := 5
+  len_pos := by norm_num
+  sym := ![Base.A, Base.A, Base.A, Base.B, Base.B]
+
+/-- The same-length competitor `D = AAAAB`, as a shared-layer circular genome. -/
+abbrev competitorGenome : SourceFaithfulIs.Genome Base where
+  len := 5
+  len_pos := by norm_num
+  sym := ![Base.A, Base.A, Base.A, Base.A, Base.B]
+
+/-- The true circular genome `S = AAABB` in the candidate universe. -/
 def truth : Genome := ![Base.A, Base.A, Base.A, Base.B, Base.B]
 
-/-- The same-length competitor `D = AAAAB`. -/
+/-- The same-length competitor `D = AAAAB` in the candidate universe. -/
 def competitor : Genome := ![Base.A, Base.A, Base.A, Base.A, Base.B]
+
+/-- The truth of the candidate universe and of the shared source-faithful layer
+are the same circular sequence; this pins the two presentations together so the
+likelihood and the hypothesis refer to one genome. -/
+theorem truth_eq_genome : truth = truthGenome.sym := rfl
+
+/-- Likewise for the competitor. -/
+theorem competitor_eq_genome : competitor = competitorGenome.sym := rfl
 
 /-! ## Exact fixed-length multinomial likelihood -/
 
@@ -143,67 +176,47 @@ theorem truth_not_maximum_likelihood : ¬ IsMaximumLikelihoodFixedLength truth :
   rw [likelihood_truth, likelihood_competitor] at hcomp
   norm_num at hcomp
 
-/-! ## Source-faithful `I_s` certificate for the instance -/
+/-! ## Source-faithful `I_s` for the instance
 
-/-- The realized read start positions `0, 1, 4`. -/
+The hypothesis side is the shared source-faithful predicate itself, at full
+strength. -/
+
+/-- The realized read start positions `0, 1, 4`.  These are the latent
+placements; the observed read multiset `{AAA, AAB, BAA}` is recoverable from them
+by `realized_reads` below. -/
 def readStarts : Finset (Fin 5) := {0, 1, 4}
 
-/--
-Coverage: the realized length-`3` reads at starts `0, 1, 4` cover all five
-circular positions of the truth.
--/
-def Covers : Prop :=
-  ∀ p : Fin 5, ∃ r ∈ readStarts, ∃ d : Fin 3, p.val = (r.val + d.val) % 5
+/-- The realized length-`3` reads at starts `0, 1, 4` return exactly the three
+observed read types, one each.  This ties the latent placements used on the
+hypothesis side to the read multiset consumed by `likelihood`. -/
+theorem realized_reads :
+    window truth 0 = readAAA ∧ window truth 1 = readAAB ∧ window truth 4 = readBAA :=
+  ⟨by decide, by decide, by decide⟩
 
-/-- The realized reads cover the truth. -/
-theorem truth_covered : Covers := by
-  unfold Covers
+/-- Coverage: the realized length-`3` reads at starts `0, 1, 4` cover all five
+circular positions of the truth.  This is the first clause of `I_s`, stated with
+the shared `Covers` predicate. -/
+theorem truth_covers : SourceFaithfulIs.Covers truthGenome 3 readStarts := by
+  unfold SourceFaithfulIs.Covers
   decide
 
-/--
-Concrete source-faithful triple-repeat certificate: the length-`1` windows at
-starts `0, 1, 2` are equal (`A`), the three-copy maximality condition holds
-(the preceding symbols `B, A, A` are not all equal and the following symbols
-`A, A, B` are not all equal), and every one of the three copies is bridged by a
-realized read: the read at `4` bridges the copy at `0`, the read at `0` bridges
-the copy at `1`, and the read at `1` bridges the copy at `2`.
-
-Bridging a length-`1` copy at `t` by a length-`3` read starting at `r` means
-`t = r + 1` (mod `5`), i.e. the copy is strictly interior to the read, as
-required by the strict-extension source convention.
--/
-def TripleRepeatAllBridged (g : Genome) : Prop :=
-  g 0 = g 1 ∧ g 1 = g 2 ∧
-  ¬(g 4 = g 0 ∧ g 0 = g 1) ∧
-  ¬(g 1 = g 2 ∧ g 2 = g 3) ∧
-  (∀ t : Fin 5, (t.val = 0 ∨ t.val = 1 ∨ t.val = 2) →
-    ∃ r ∈ readStarts, (r.val + 1) % 5 = t.val)
-
-/-- The concrete triple-repeat certificate holds for the truth. -/
-theorem truth_triple_repeat_all_bridged : TripleRepeatAllBridged truth := by
-  unfold TripleRepeatAllBridged
+/-- **Full source-faithful `I_s` membership**, not a hand-listed certificate:
+all three clauses of Shomorony et al. Eq. (1) hold for the truth under the
+realized read placements.  Clause 2 is quantified over every admissible repeat
+length and every ordered triple of selected starts, and clause 3 over every pair
+of maximal repeats and every ordering of their four selected starts. -/
+theorem truth_information_feasible :
+    SourceFaithfulIs.InformationFeasible truthGenome 3 readStarts := by
+  unfold SourceFaithfulIs.InformationFeasible
   decide
-
-/--
-The instance-specific part of the source-faithful `I_s` hypothesis that is
-kernel-checked here: coverage plus the maximal, all-bridged length-`1` triple
-repeat.  Absence of interleaved repeat pairs for this instance is recorded in
-`docs/fixed-length-exact-counterexample.md`.
--/
-def SourceHypotheses (g : Genome) : Prop :=
-  Covers ∧ TripleRepeatAllBridged g
-
-/-- The truth satisfies the kernel-checked `I_s` certificate. -/
-theorem truth_source_hypotheses : SourceHypotheses truth :=
-  ⟨truth_covered, truth_triple_repeat_all_bridged⟩
 
 /-! ## Main finite theorem -/
 
 /--
 Kernel-checked finite counterexample to the fixed-length exact-multinomial
-variant: the concrete instance satisfies the source-faithful coverage and
-all-bridged-triple-repeat certificate, yet the true sequence is not an exact
-maximum-likelihood assembly among circular candidates of the same length.
+variant: the concrete instance satisfies the *full* source-faithful
+information-feasibility condition `R ∈ I_s`, yet the true sequence is not an
+exact maximum-likelihood assembly among circular candidates of the same length.
 
 This theorem is deliberately limited to the fixed-length exact multinomial
 variant and to this finite instance.  It does not settle unrestricted-length
@@ -211,7 +224,8 @@ exact ML, the separable/binomial approximation, the Section 6.2 flow feasible
 set, or the source-ambiguous Shomorony et al. open question.
 -/
 theorem fixed_length_exact_counterexample :
-    SourceHypotheses truth ∧ ¬ IsMaximumLikelihoodFixedLength truth :=
-  ⟨truth_source_hypotheses, truth_not_maximum_likelihood⟩
+    SourceFaithfulIs.InformationFeasible truthGenome 3 readStarts ∧
+      ¬ IsMaximumLikelihoodFixedLength truth :=
+  ⟨truth_information_feasible, truth_not_maximum_likelihood⟩
 
 end AssemblyP1.FixedLengthExactCounterexample

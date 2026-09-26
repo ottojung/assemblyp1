@@ -58,13 +58,15 @@ in `AssemblyP1/FixedLengthBinomialCounterexample.lean`. The Lean file defines th
 literal full-type-space product of binomial marginals, proves that the types
 outside the six observed-or-positive-multiplicity types contribute factor one,
 and evaluates the exact rational likelihoods `452984832/30517578125`,
-`7962624/244140625`, and ratio `1125/512`. It also kernel-checks the same
-coverage and all-bridged-triple-repeat certificate as the exact-multinomial
+`7962624/244140625`, and ratio `1125/512`. It also kernel-checks the same full
+`SourceFaithfulIs.InformationFeasible` hypothesis as the exact-multinomial
 note, so the zero-count factors are genuinely what changes the ratio.
 
 ## Bridging hypothesis
 
-This is the `AAABB / AAAAB` witness from issue #31 with `B` relabeled to `C`. The relabeling preserves the equality pattern on which repeats, coverage, and bridging depend. The source-faithful certificate established for #31 therefore transfers directly:
+This is the `AAABB / AAAAB` witness from issue #31 with `B` relabeled to `C`. The relabeling preserves the equality pattern on which repeats, coverage, and bridging depend. The source-faithful predicate established for #31 therefore applies directly,
+and the Lean module proves the instance's `I_s` membership by computation rather
+than by appeal to the relabeling:
 
 1. starts `0,1,4` cover all five positions;
 2. the three `A` copies at starts `0,1,2` form the maximal length-1 triple repeat;
@@ -83,4 +85,4 @@ Most importantly, this does not by itself resolve which Medvedev–Brudno formul
 
 ## Remaining verification boundary
 
-The finite arithmetic and source interpretation above are independently checked and durable, and the finite instance and likelihood ratio are now kernel-checked (see `AssemblyP1/FixedLengthBinomialCounterexample.lean`). What the kernel check does **not** establish is the source-correspondence claim that this literal product-of-binomial-marginals expression is the objective Shomorony et al. intended, nor that the `I_s` bridging hypothesis transfers to this candidate universe. The absence of interleaved repeat pairs for the instance is recorded in this note and in the source-semantics note rather than formalized in Lean, so no general repeat/interleaving infrastructure is introduced. Issue #32 remains the coordination point for any further source-correspondence work needed before changing the epistemic status of the scoped negative result.
+The finite arithmetic and source interpretation above are independently checked and durable, and the finite instance and likelihood ratio are now kernel-checked (see `AssemblyP1/FixedLengthBinomialCounterexample.lean`). What the kernel check does **not** establish is the source-correspondence claim that this literal product-of-binomial-marginals expression is the objective Shomorony et al. intended, nor that the `I_s` bridging hypothesis transfers to this candidate universe. The absence of interleaved repeat pairs for the instance is a *conclusion* of the kernel-checked `SourceFaithfulIs.InformationFeasible truthGenome 3 readStarts` in the Lean module, since the general repeat/interleaving infrastructure lives in `AssemblyP1/SourceFaithfulIs.lean` and is discharged by `decide` over all admissible repeats. Issue #32 remains the coordination point for any further source-correspondence work needed before changing the epistemic status of the scoped negative result.
