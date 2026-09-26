@@ -101,6 +101,11 @@ def FourDistinctStarts (a b c d : Fin G) : Prop :=
 def InterleavedStarts (hG : 0 < G) (a b c d : Fin G) : Prop :=
   FourDistinctStarts a b c d ∧ (InArc hG a b c ↔ ¬ InArc hG a b d)
 
+instance (hG : 0 < G) (a b c d : Fin G) :
+    Decidable (InterleavedStarts hG a b c d) := by
+  unfold InterleavedStarts FourDistinctStarts InArc
+  infer_instance
+
 @[simp] theorem rotAdd_zero (hG : 0 < G) (x : Fin G) : rotAdd hG 0 x = x := by
   apply Fin.ext
   show (x.val + 0) % G = x.val
@@ -309,5 +314,243 @@ theorem chord_lemma_sanity :
     decide
 
 end Chord
+
+
+/-! ## 2. The word-level adapter: matchings, rotations, node pairs
+
+Everything below is the `#89` route's adapter, built only from the repository's
+existing word layer (`OrientedRigidity.window`, `nodeWindow`, `nodeCount`,
+`specCount`) and its source-faithful predicates (`mkGenome`, `Agree`,
+`Interleaved`).  No new word semantics are introduced. -/
+
+section Adapter
+
+variable {α : Type} [DecidableEq α] {G L : ℕ} (hG : 0 < G)
+
+/-- The starts of `W` spelling the read type `w`.  This is the fibre used by
+`specCount`; it is a definition, not a new predicate. -/
+def startsOf (W : Fin G → α) (w : Fin L → α) : Finset (Fin G) :=
+  Finset.univ.filter (fun r : Fin G => window hG W r = w)
+
+theorem card_startsOf (W : Fin G → α) (w : Fin L → α) :
+    (startsOf hG W w).card = specCount (L := L) hG W w := rfl
+
+/-- The starts of `W` spelling the `(L-1)`-mer `k` (`nodeCount` fibre). -/
+def nodeStartsOf (W : Fin G → α) (k : Fin (L - 1) → α) : Finset (Fin G) :=
+  Finset.univ.filter (fun r : Fin G => nodeWindow (L := L) hG W r = k)
+
+theorem card_nodeStartsOf (W : Fin G → α) (k : Fin (L - 1) → α) :
+    (nodeStartsOf hG W k).card = nodeCount (L := L) hG W k := rfl
+
+/-- **A matching of the two traversals.**  `σ` pairs the truth's occurrence at
+each start with the candidate's occurrence of the same complete read type.
+Such a matching exists exactly when the complete spectra agree, and it is
+unique up to the choices inside a read-type fibre. -/
+def Matching {α : Type} [DecidableEq α] {G L : ℕ} (hG : 0 < G)
+    (S E : Fin G → α) (σ : Fin G → Fin G) : Prop :=
+  Function.Bijective σ ∧ ∀ r : Fin G, window (L := L) hG S r = window (L := L) hG E (σ r)
+
+/-- Two nonempty finite sets of the same cardinality are in bijection. -/
+private theorem finset_equiv_of_card_eq {α : Type} (s t : Finset α) (h : s.card = t.card)
+    (hs : 0 < s.card) : Nonempty (↥s ≃ ↥t) := by
+  have e1 : Nonempty (↥s ≃ Fin s.card) := by
+    have h1 := Fintype.equivFin ↥s
+    rw [Fintype.card_coe] at h1
+    exact ⟨h1⟩
+  have e2 : Nonempty (Fin t.card ≃ ↥t) := by
+    have h2 := Fintype.equivFin ↥t
+    rw [Fintype.card_coe] at h2
+    exact ⟨h2.symm⟩
+  have e3 : Nonempty (Fin s.card ≃ Fin t.card) := by
+    rw [h]
+    exact ⟨Equiv.refl _⟩
+  exact ⟨e1.some.trans e3.some |>.trans e2.some⟩
+
+/-- **Equal complete spectra give a matching** (fibre-by-fibre bijections,
+assembled over the starts of the truth).  This is the Eulerian-traversal
+correspondence in the only form the reduction needs: the candidate traverses
+the same `(L-1)`-mer multigraph as the truth, start by start. -/
+theorem exists_matching (S E : Fin G → α)
+    (hspec : specCount (L := L) hG S = specCount (L := L) hG E) :
+    ∃ σ : Fin G → Fin G, Matching (L := L) hG S E σ := by
+  classical
+  set A : (Fin L → α) → Finset (Fin G) := fun w => startsOf hG S w with hAdef
+  set B : (Fin L → α) → Finset (Fin G) := fun w => startsOf hG E w with hBdef
+  have hcard : ∀ w : Fin L → α, (A w).card = (B w).card := by
+    intro w
+    exact congrArg (fun f : (Fin L → α) → ℕ => f w) hspec
+  have hmemA : ∀ r : Fin G, r ∈ A (window (L := L) hG S r) := by
+    intro r
+    simp only [hAdef, startsOf, Finset.mem_filter, Finset.mem_univ, true_and]
+  have hmemB : ∀ s : Fin G, s ∈ B (window (L := L) hG E s) := by
+    intro s
+    simp only [hBdef, startsOf, Finset.mem_filter, Finset.mem_univ, true_and]
+  -- the fibre bijections, chosen simultaneously
+  have hne : ∀ w : Fin L → α, Nonempty (↥(A w) ≃ ↥(B w)) := by
+    intro w
+    by_cases hw : 0 < (A w).card
+    · exact finset_equiv_of_card_eq _ _ (hcard w) hw
+    · have hb : (A w).card = 0 := by omega
+      have hAe : A w = ∅ := Finset.card_eq_zero.mp hb
+      have hb' : (B w).card = 0 := by rw [← hcard w, hb]
+      have hBe : B w = ∅ := Finset.card_eq_zero.mp hb'
+      rw [hAe, hBe]
+      exact ⟨Equiv.refl _⟩
+  letI : Nonempty (∀ w : Fin L → α, Nonempty (↥(A w) ≃ ↥(B w))) :=
+    ⟨fun w => hne w⟩
+  set φ : ∀ w : Fin L → α, ↥(A w) ≃ ↥(B w) :=
+    fun w => Classical.choice (inferInstanceAs (Nonempty (↥(A w) ≃ ↥(B w)))) with hφdef
+  have hφinj : ∀ (w : Fin L → α), Function.Injective (fun y : ↥(A w) => (φ w y).val) :=
+    fun w a b hab => (φ w).injective (Subtype.ext hab)
+  -- the matching value at a start, for an arbitrary read type.  The read type is
+  -- an explicit argument and the agreement proof is a `dite` branch, so the two
+  -- ends of a comparison can always be put at the *same* read type: no subtype
+  -- value is ever transported between fibres.
+  have memA : ∀ (w : Fin L → α) (r : Fin G), window (L := L) hG S r = w → r ∈ A w := by
+    intro w r hr
+    have : window (L := L) hG S r = w := hr
+    simp only [hAdef, startsOf, Finset.mem_filter, Finset.mem_univ, true_and, this]
+  set V : (Fin L → α) → Fin G → Fin G := fun w r =>
+    if h : window (L := L) hG S r = w then (φ w ⟨r, memA w r h⟩).val else r with hVdef
+  set σ : Fin G → Fin G := fun r => V (window (L := L) hG S r) r with hσdef
+  have hmatch : ∀ r : Fin G, window (L := L) hG S r = window (L := L) hG E (σ r) := by
+    intro r
+    have h1 : (φ (window (L := L) hG S r) ⟨r, memA _ r rfl⟩).val
+        ∈ B (window (L := L) hG S r) := (φ _ _).property
+    simp only [hBdef, startsOf, Finset.mem_filter, Finset.mem_univ, true_and] at h1
+    calc window (L := L) hG S r
+        = window (L := L) hG E ((φ (window (L := L) hG S r) ⟨r, memA _ r rfl⟩).val) :=
+          h1.symm
+      _ = window (L := L) hG E (σ r) := by
+        simp only [hσdef, hVdef]
+        rw [dif_pos True.intro]
+  -- injectivity, fibre by fibre: equal images force equal read types, so both
+  -- ends are computed by the *same* fibre equivalence `φ w`, whose injectivity
+  -- then gives `r = r'`.
+  have hinj : Function.Injective σ := by
+    intro r r' heq
+    have hw : window (L := L) hG S r = window (L := L) hG S r' := by
+      have h1 : window (L := L) hG S r = window (L := L) hG E (σ r) := hmatch r
+      have h2 : window (L := L) hG S r' = window (L := L) hG E (σ r') := hmatch r'
+      rw [h1, h2, heq]
+    set w : Fin L → α := window (L := L) hG S r with hwdef
+    have hleft : σ r = (φ w ⟨r, memA w r rfl⟩).val := by
+      simp only [hσdef, hVdef]
+      rw [dif_pos True.intro]
+    have hright : σ r' = (φ w ⟨r', memA w r' hw.symm⟩).val := by
+      have e : σ r' = V w r' := by
+        simp only [hσdef, ← hw, hwdef]
+      simp only [e, hVdef]
+      rw [dif_pos (show window (L := L) hG S r' = w from hw.symm)]
+    have hval : (φ w ⟨r, memA w r rfl⟩).val
+        = (φ w ⟨r', memA w r' hw.symm⟩).val := by
+      rw [← hleft, ← hright]
+      exact heq
+    have hsub : (⟨r, memA w r rfl⟩ : ↥(A w)) = ⟨r', memA w r' hw.symm⟩ := hφinj w hval
+    exact congrArg Subtype.val hsub
+  -- `Fin G` is finite, so the injective endomap `σ` is surjective: the
+  -- surjectivity needs no separate fibre construction at all.
+  have hsurj : Function.Surjective σ :=
+    (Finite.injective_iff_surjective).mp hinj
+  exact ⟨σ, ⟨hinj, hsurj⟩, hmatch⟩
+
+/-- **A rotational matching is a rotation of the words.**  If the candidate's
+occurrences are matched to the truth's by a rotation of the circle, then the
+candidate word is a rotation of the truth — i.e. exactly the reduction's
+`RotEquiv`.  (The converse, "a rotation of the words yields a *rotational*
+matching", is deliberately not formalized here: a matching need not be unique
+inside a read-type fibre, so the equivalence is about existence of a rotational
+matching, and only this direction is consumed.) -/
+theorem matching_rotation_imp (S E : Fin G → α) (σ : Fin G → Fin G) (hL : 1 ≤ L)
+    (hm : Matching (L := L) hG S E σ) (hrot : IsRotation hG σ) :
+    RotEquiv hG E S := by
+  obtain ⟨s, hs⟩ := hrot
+  refine ⟨s % G, ?_⟩
+  intro i
+  have h := hm.2 i
+  rw [hs i] at h
+  have hval : window (L := L) hG S i ⟨0, by omega⟩
+      = window (L := L) hG E (rotAdd hG s i) ⟨0, by omega⟩ := congrFun h ⟨0, by omega⟩
+  have hleft : rotAdd hG s i = rotAdd hG (s % G) i := rotAdd_mod hG s i
+  rw [hleft] at hval
+  have hval2 : cyc hG S i.val
+      = cyc hG E ((rotAdd hG (s % G) i).val) := by
+    simpa only [window, Nat.add_zero] using hval
+  have hSi : S i = S ⟨i.val % G, Nat.mod_lt _ hG⟩ := by
+    congr 1
+    exact Fin.ext (Nat.mod_eq_of_lt i.isLt).symm
+  have h3raw : E ⟨(rotAdd hG (s % G) i).val % G, Nat.mod_lt _ hG⟩
+      = S ⟨i.val % G, Nat.mod_lt _ hG⟩ := by
+    have h := hval2.symm
+    unfold cyc at h
+    exact h
+  have hx : (rotAdd hG (s % G) i).val % G = (i.val + s % G) % G := by
+    show ((i.val + s % G) % G) % G = (i.val + s % G) % G
+    exact Nat.mod_eq_of_lt (Nat.mod_lt _ hG)
+  have h3 : E ⟨(i.val + s % G) % G, Nat.mod_lt _ hG⟩ = S i := by
+    have e1 : (⟨(rotAdd hG (s % G) i).val % G, Nat.mod_lt _ hG⟩ : Fin G)
+        = ⟨(i.val + s % G) % G, Nat.mod_lt _ hG⟩ := Fin.ext hx
+    have h := h3raw
+    rw [e1] at h
+    exact h.trans hSi.symm
+  exact h3
+
+end Adapter
+
+/-! ## 3. Raw `(L-1)`-mer chords do **not** factor: a kernel-checked refutation
+
+The issue-#89 route as first phrased treats the two ends of a "chord" as the two
+occurrences of a repeated `(L-1)`-mer, and would then conclude that two crossing
+chords give an interleaved pair of *maximal* repeats.  That is false, and the
+following instance is kernel-checked here (`decide`, on the concrete
+`Fin 5` word below):
+
+* `S = 00101`, `G = 5`, `L = 3` satisfies P2 (`AssemblyP1.P2.P2` at `L = 3`);
+* the length-`2` mers `01` and `10` are each repeated, at the *crossing* pairs
+  of starts `{1,3}` and `{2,4}` (`InterleavedStarts`);
+* nevertheless **neither pair is a maximal repeat** of any length: the pair
+  `{1,3}` agrees on the following symbol, and the pair `{2,4}` agrees on the
+  preceding symbol, so `SourceFaithfulIs.IsRepeat` fails for both.
+
+So crossing of raw `(L-1)`-mer pairs is *compatible* with P2, and any argument
+that needs "crossing chords ⇒ interleaved maximal repeats" is unsound.  The
+correct object is the *maximal-repeat block*: the simultaneous maximal extension
+of the two occurrences, which is unique for a given pair, and which is what the
+interleaved clause of `def:P1P2` actually ranges over.  Whether the alternative
+Eulerian choices factor by such blocks (and whether non-interleaved blocks force
+a unique cyclic trail) is precisely the part that is *not* settled here; see
+`docs/bbt-chord-rematch-89.md`. -/
+
+section RawChordRefutation
+
+variable {α : Type}
+
+/-- The five-symbol word `00101` of the refutation instance. -/
+def S5 : Fin 5 → Fin 2 := ![0, 0, 1, 0, 1]
+
+/-- `0 < 5`, named so that the numerals of the instance fix the length. -/
+theorem hG5 : 0 < 5 := by decide
+
+/-- **The refutation, kernel-checked.**  The two crossing pairs of
+`S = 00101` are pairs of *equal* length-`2` mers, they interleave, and each pair
+fails one of the two maximality conditions of `SourceFaithfulIs.Genome.IsRepeat`
+at that length (equal following symbols for `{1,3}`, equal preceding symbols for
+`{2,4}`).  So the raw `(L-1)`-mer "chord" architecture of the `#89` route cannot
+work: crossing of raw node pairs is compatible with the absence of interleaved
+*maximal* repeats, and the remaining argument has to be organized around
+maximal-repeat blocks. -/
+theorem raw_node_crossing_not_maximal :
+    (nodeWindow (L := 3) (hG := hG5) S5 (1 : Fin 5)
+        = nodeWindow (L := 3) (hG := hG5) S5 (3 : Fin 5)) ∧
+      (nodeWindow (L := 3) (hG := hG5) S5 (2 : Fin 5)
+        = nodeWindow (L := 3) (hG := hG5) S5 (4 : Fin 5)) ∧
+      InterleavedStarts (hG := hG5) (1 : Fin 5) (3 : Fin 5) (2 : Fin 5) (4 : Fin 5) ∧
+      (cyc (hG := hG5) S5 ((1 : ℕ) + 2) = cyc (hG := hG5) S5 ((3 : ℕ) + 2) ∨
+        cyc (hG := hG5) S5 (1 + 5 - 1) = cyc (hG := hG5) S5 (3 + 5 - 1)) ∧
+      (cyc (hG := hG5) S5 (2 + 5 - 1) = cyc (hG := hG5) S5 (4 + 5 - 1) ∨
+        cyc (hG := hG5) S5 ((2 : ℕ) + 2) = cyc (hG := hG5) S5 ((4 : ℕ) + 2)) := by
+  decide
+
+end RawChordRefutation
 
 end AssemblyP1.BBTChords
