@@ -1,5 +1,6 @@
 import Mathlib
 import AssemblyP1.P2EulerAdapter
+import AssemblyP1.PopulationUniqueness
 
 /-!
 # The `LongObstruction` statement of #89, and the proved part of (R3)
@@ -424,5 +425,24 @@ theorem p2_spectrum_ambiguity (hG : 0 < G) (hL : 2 ≤ L) (hLG : L ≤ G)
     RotEquiv hG E S := by
   by_contra hnot
   exact (P2.imp_noLongObstruction hG hL S hP2) (hRes hprim hSpec hnot)
+
+/-- **The same conclusion in the exact shape of
+`AssemblyP1.PopulationUniqueness`'s `hBBTS` premise.**  `hBBTS` there is
+
+```text
+∀ E : Fin G → α, AdmP2 S → specCount hG S = specCount hG E → RotEquiv hG E S
+```
+
+so with `AdmP2 := fun {K} W => P2 hG K W`, `hprim := hPrimS`, `hP2 := hP2S`
+and `hSpec` the spectrum equality delivered by `hGibbs`, this is the argument
+`population_tie_implies_rotation` and `population_unique_ML_up_to_rotation`
+consume.  The only premise carried in addition to primitivity and `P2` is the
+residual `SpectrumLongObstruction`, which mentions no BBT object. -/
+theorem p2_hBBTS (hG : 0 < G) (hL : 2 ≤ L) (hLG : L ≤ G) (S : Fin G → α)
+    (hprim : IsPrimitive hG S) (hP2 : P2 hG L S)
+    (hRes : ∀ (E : Fin G → α), SpectrumLongObstruction hG L S E) :
+    ∀ (E : Fin G → α), specCount (L := L) hG S = specCount (L := L) hG E →
+      RotEquiv hG E S :=
+  fun _ hSpec => p2_spectrum_ambiguity hG hL hLG S _ hprim hP2 (hRes _) hSpec
 
 end AssemblyP1.P2LongObstruction
