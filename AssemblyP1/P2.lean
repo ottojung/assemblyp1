@@ -152,9 +152,18 @@ Gibbs/KL layer, the P2-to-Ukkonen alignment, the division/Eulerian
 gcd-one argument, the proportional-cancellation lemma) is
 kernel-checked. -/
 def BBTCompleteSpectrumUniqueness
-    {G : ℕ} (hG : 0 < G) (L : ℕ) (S : Fin G → α) : Prop :=
+    {α : Type} [DecidableEq α] {G : ℕ} (hG : 0 < G) (L : ℕ) (S : Fin G → α) : Prop :=
   ∀ E : Fin G → α, Ukkonen hG L S →
     specCount (L := L) hG S = specCount (L := L) hG E → RotEquiv hG E S
+
+/-- **`thm:BBT` as the project uses it**: the complete `L`-spectrum
+determines a Ukkonen-satisfying circular word up to cyclic rotation,
+uniformly over all genome lengths. The external theorem is a theorem
+about *all* circular words, so the honest hypothesis is the global
+statement rather than a per-genome instance, and a consumer supplies one
+premise rather than one per candidate. -/
+def BBTUniqueAt {α : Type} [DecidableEq α] (L : ℕ) : Prop :=
+  ∀ (K : ℕ) (hK : 0 < K) (W : Fin K → α), BBTCompleteSpectrumUniqueness hK L W
 
 /-- P2 turns the BBT boundary into something applicable, for **any**
 circular word of the candidate class. This is the only place the

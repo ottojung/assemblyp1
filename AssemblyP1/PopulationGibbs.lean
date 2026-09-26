@@ -42,6 +42,7 @@ namespace AssemblyP1.PopulationGibbs
 open BigOperators
 
 variable {W : Type} [Fintype W]
+variable {n : ℕ}
 
 /-- The population read distribution of a circular word with integer
 spectrum `c` on `n` positions: `p(w) = c(w)/n`
