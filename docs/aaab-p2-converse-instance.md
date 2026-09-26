@@ -1,4 +1,53 @@
-tion.RotEquiv hG` | #70, consumed by the population theorem #73 |
+# Kernel-checked `AAAB`, `G = 4`, `L = 2` converse: P2 failure with a singleton spectrum fibre
+
+_Status: kernel-checked Lean instance (issue #92), 2026-09-26. Companion to
+the mature converse note `docs/research/spectrum-identifiability-converse.md`
+on branch `agent/converse-82` (not yet merged). This file adds **no** new
+mathematics: it re-states that note's witness against the repository's
+existing predicates and checks it with the kernel._
+
+## Claim
+
+Let the alphabet be the repository's two-letter type
+`AssemblyP1.PopulationReduction.Bin` (`A`, `B`), let `G = 4` and `L = 2`,
+and let the truth be the oriented circular word
+
+```text
+S = AAAB.
+```
+
+Then
+
+1. `S` fails the project's P2 / BBT-Ukkonen repeat condition, in the exact
+   form the repository has formalized:
+   `RepeatAdapter.HasLongTripleRepeat hG4 S 2` holds, i.e. the hypothesis
+   `¬ HasLongTripleRepeat` required by the forward same-length rigidity
+   theorem `OrientedFinal.oriented_same_length_spectrum_rigidity` (#74) and
+   by the repeat-theory route of #71/#76 is **violated**; and
+2. the complete oriented length-`2` spectrum fibre at the same candidate
+   length is a **singleton modulo rotation**: for every same-length circular
+   candidate `D : Fin 4 → Bin`,
+
+   ```text
+   OrientedRigidity.specCount hG4 D = OrientedRigidity.specCount hG4 S
+     ⟹  PopulationReduction.RotEquiv hG4 D S.
+   ```
+
+So complete-spectrum identifiability does **not** imply P2: the converse
+`identifiability ⟹ P2` is false, while the forward implications of
+#70/#73/#74 are untouched.
+
+## Predicates used (no new repeat semantics)
+
+Everything is stated with the objects the forward results already consume,
+so this instance cannot drift from the forward theorems:
+
+| role | predicate | origin |
+|---|---|---|
+| P2 failure | `RepeatAdapter.HasLongTripleRepeat hG S L` | #71/#76 (`L - 1 ≤ ℓ`, maximal Bresler triple repeat) |
+| observation | `OrientedRigidity.specCount hG S : Fin L → α → ℕ` | #69 word layer (complete oriented spectrum, no reverse-complement collapse) |
+| candidate universe | `Fin G → α` (oriented circular words of exactly length `G`) | #69/#70 |
+| genome equivalence | `PopulationReduction.RotEquiv hG` | #70, consumed by the population theorem #73 |
 | forward multiplicity cap | `∀ k ∈ genomeNodes, nodeCount k ≤ 2` | #69 `rigidity_same_spectrum` |
 
 No second notion of P2, of maximal repeat, or of interleaving is introduced
