@@ -46,8 +46,10 @@ The length-`3` reads at starts `0, 1, 4` cover the circular positions as
 - start `1`: positions `1, 2, 3`;
 - start `4`: positions `4, 0, 1`.
 
-The union is all five positions, so `R` covers `S`. This is the kernel-checked
-`Covers`/`truth_covered` certificate.
+The union is all five positions, so `R` covers `S`. This is the first clause of
+`I_s`, kernel-checked as `SourceFaithfulIs.Covers truthGenome 3 readStarts` in
+the Lean theorem `truth_covers`, using the shared predicate from
+`AssemblyP1/SourceFaithfulIs.lean`.
 
 ## Repeat and bridging certificate
 
@@ -85,17 +87,24 @@ read. The three `A` copies are bridged respectively by the reads at starts
 - copy `1` is bridged by the read at `0` (covering `0, 1, 2`);
 - copy `2` is bridged by the read at `1` (covering `1, 2, 3`).
 
-`TripleRepeatAllBridged`/`truth_triple_repeat_all_bridged` kernel-checks this.
 The all-bridged clause is therefore genuinely exercised rather than vacuous.
+It is no longer kernel-checked by a hand-listed proxy: the Lean theorem
+`truth_information_feasible` proves full
+`SourceFaithfulIs.InformationFeasible truthGenome 3 readStarts`, whose second
+clause is quantified over *every* admissible repeat length and *every* ordered
+triple of selected starts, and whose third clause is quantified over *every*
+pair of maximal repeats and *every* ordering of their four selected starts.
+The finite check below is therefore an explanation of what that single
+computation is verifying, not a substitute for it.
 
 **Interleaved repeats.** Among the maximal repeat pairs listed above, no two
 have four starts alternating in cyclic order: the `A` pair `{0,2}` and the `B`
 pair `{3,4}` occupy the cyclic label pattern `A A B B`, and the `AA` pair
 `{0,1}` shares a start with the `A` pair and again does not alternate with the
 `B` pair. Hence `S` has no interleaved repeat pair, so `I_s` imposes no
-additional bridging obligation here. This finite check is recorded here rather
-than formalized in Lean so that no general repeat/interleaving infrastructure
-is introduced.
+additional bridging obligation here. The general repeat/interleaving
+infrastructure now lives in `AssemblyP1/SourceFaithfulIs.lean` and this fact is
+consequently part of the kernel-checked statement, not a note about it.
 
 In particular, the length-`2` `AA` repeat at `0, 1` is *not* bridged by
 `R` (a length-`3` read cannot strictly extend beyond a length-`2` copy), but it
@@ -104,8 +113,11 @@ do not require it to be bridged. This is why the example is source-faithful
 while the earlier exploratory `AACAGG`/`AAAGGC`, `G = 6, L = 2` candidate is
 not: there the all-bridged triple-repeat clause genuinely fails.
 
-The conjunction of coverage and the kernel-checked all-bridged triple repeat is
-`SourceHypotheses` in the Lean module.
+The full conjunction of the three source clauses is
+`SourceFaithfulIs.InformationFeasible truthGenome 3 readStarts` in the Lean
+module, and the headline theorem
+`fixed_length_exact_counterexample` now concludes with that predicate rather
+than with a local proxy.
 
 ## Exact likelihood comparison
 
