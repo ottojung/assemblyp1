@@ -17,3 +17,4 @@ import AssemblyP1.AAABConverse
 import AssemblyP1.WordPeriodicity
 import AssemblyP1.AmpBmpPrimitivity
 import AssemblyP1.LyndonSchutzenberger
+import AssemblyP1.ScalarPrimitiveSpellings
