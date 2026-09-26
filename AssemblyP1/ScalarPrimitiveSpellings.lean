@@ -1512,3 +1512,225 @@ theorem spectrum_on_ray {G H g : ℕ} (hG : 0 < G) (hH : 0 < H) (hg0 : 0 < g)
     exact hD w
 
 end Ray
+
+/-! ## The final classification
+
+Everything above lives on the real `OrientedRigidity` graph.  We now state the
+fixed-truth classification of `docs/scalar-primitive-spellings-83.md`:
+
+> A primitive truth is identifiable among variable-length primitive candidates
+> from its normalized complete spectrum **iff** its spectrum support has no
+> vertex with two distinct outgoing edge types.
+
+The hypotheses are model-level only: the truth `S` is a circular word of length
+`G > 0` over `α` with `L > 1`, `S` is primitive, and BBT same-length
+complete-spectrum uniqueness is available for `S`.  Candidates are *primitive
+circular words of arbitrary positive length*; identification is up to cyclic
+rotation, as in `PopulationReduction.RotEquiv`. -/
+
+section Classification
+
+variable {α : Type} [DecidableEq α]
+
+variable {α : Type} [DecidableEq α] [Fintype α] {G : ℕ} {L : ℕ}
+
+/-- **Identification of a candidate with the truth**: given that the candidate
+has the truth's length, it is a rotation of the truth.  This is exactly
+`PopulationReduction.RotEquiv` on the identified index carrier. -/
+def Identified {G : ℕ} (hG : 0 < G) {m : ℕ} (D : Fin m → α) (hm : m = G)
+    (S : Fin G → α) : Prop :=
+  RotEquiv hG (fun i => D (Fin.cast hm.symm i)) S
+
+/-- Identification is exactly rotation-equivivalence. -/
+theorem identified_iff_rotEquiv {G m : ℕ} (hG : 0 < G) (D : Fin m → α) (hm : m = G)
+    (S : Fin G → α) :
+    Identified hG D hm S ↔ RotEquiv hG (fun i => D (Fin.cast hm.symm i)) S := by
+  rfl
+
+/-- **Identifiability from the normalized complete spectrum**, among primitive
+candidates of arbitrary length.  A candidate `D : Fin m → α` is identified with
+`S` when it has the same length `G` and is a rotation of `S`.  The normalized
+spectrum condition is multiplicative (no division): the candidate spectrum
+scaled by `G` equals the truth spectrum scaled by the candidate length `m`. -/
+def Identifiable {G : ℕ} {L : ℕ} (hG : 0 < G) (hL : 1 < L) (S : Fin G → α) : Prop :=
+  ∀ (m : ℕ) (D : Fin m → α) (hD : 0 < m), PopulationReduction.IsPrimitive D →
+    (∀ w, specCount (L := L) hG S w * m = specCount (L := L) hD D w * G) →
+    ∃ hm : m = G, Identified hG D hm S
+
+/-- The truth's window trail is a closed edge-type trail, and it spells the
+truth's complete spectrum. -/
+theorem truth_trail_closed {hG : 0 < G} (S : Fin G → α) :
+    ∃ s, TrailEnds winPrefix winSuffix (winTrail (L := L) hG S) s s :=
+  winTrail_closed hG S
+
+theorem truth_trail_spectrum {hG : 0 < G} (S : Fin G → α) :
+    ∀ w, edgeUse (winTrail (L := L) hG S) w = specCount (L := L) hG S w :=
+  fun w => winTrail_edgeUse hG S w
+
+/-- The truth's window trail is primitive, since it is the window reading of a
+primitive word. -/
+theorem truth_trail_primitive {hG : 0 < G} {hL : 1 < L} (S : Fin G → α)
+    (hS : PopulationReduction.IsPrimitive S) : IsPrimitive (winTrail (L := L) hG S) := by
+  intro hpow
+  obtain ⟨l, hl, k, hk, hp⟩ := hpow
+  exact not_primitive_of_properPowerTrail hG hL S hl hk hp hS
+
+/-- **Every support edge type of the truth has at most one successor.**  This is
+the "uniqueness" hypothesis extracted from nonbranching of the spectrum-support
+graph: two support edges leaving the same node are equal. -/
+theorem uniqueOut_of_nonbranching {hG : 0 < G} {hL : 1 < L} {S : Fin G → α}
+    (hnb : NonBranching (genomeNodes (L := L) hG S) (support (L := L) hG S)
+      (winPrefix (L := L)) (winSuffix (L := L)))
+    (e₁ e₂ : Fin L → α) (h₁ : e₁ ∈ support (L := L) hG S)
+    (h₂ : e₂ ∈ support (L := L) hG S)
+    (ht : winPrefix (L := L) e₁ = winPrefix (L := L) e₂) : e₁ = e₂ := by
+  exact hnb (winPrefix (L := L) e₁) e₁ h₁ e₂ h₂ (by rfl) ht.symm
+
+/-- **The nonbranching direction.**  If the truth's spectrum-support graph does
+not branch, then any primitive candidate with the truth's normalized complete
+spectrum is identified with the truth.
+
+Proof.  The truth spectrum is gcd-one (`gcd_one_of_primitive_P2_words`, whose
+only external input is the explicit BBT hypothesis), so the ray decomposition
+`cS = g * c0` has `g = 1` and `c0 = cS`.  The ray lemma puts the candidate at
+multiplier `m >= 1` on the same ray.  The candidate's window trail is a cyclic
+spelling of `cD = m * cS` and, since the candidate is primitive, that trail is
+primitive.  Nonbranching gives at most one outgoing edge type per node on the
+support, so `nonbranching_primitive_spelling_eq_one` forces every support count
+of `cD` to be `1`; as `cD w = m * cS w` with `cS w >= 1` on the support, `m = 1`
+and `cD = cS`.  The candidate therefore has the truth's length and spectrum, and
+BBT same-length uniqueness gives the rotation. -/
+theorem identifiable_of_nonbranching {hG : 0 < G} {hL : 1 < L} {S : Fin G → α}
+    (AdmP2 : ∀ {K : ℕ}, (Fin K → α) → Prop)
+    (hS : PopulationReduction.IsPrimitive S) (hP2S : AdmP2 S)
+    (hBBT : ∀ D : Fin G → α, AdmP2 S →
+      specCount (L := L) hG S = specCount (L := L) hG D → RotEquiv hG D S)
+    (hnb : NonBranching (genomeNodes (L := L) hG S) (support (L := L) hG S)
+      (winPrefix (L := L)) (winSuffix (L := L))) :
+    Identifiable hG hL S := by
+  intro m D hD hDprim hNorm
+  -- the truth spectrum is gcd-one
+  have hgcdS : IsGcdOne (W := Fin L → α) (specCount (L := L) hG S) :=
+    gcd_one_of_primitive_P2_words AdmP2 hG S hL hS hP2S hBBT
+  have hsupIff : ∀ w, w ∈ support (L := L) hG S ↔ 0 < specCount (L := L) hG S w :=
+    fun w => mem_support_iff (L := L) hG S w
+  have hout : ∀ w, w ∉ support (L := L) hG S → specCount (L := L) hG S w = 0 := by
+    intro w hw
+    have h1 := (mem_support_iff (L := L) hG S w).mpr
+    by_contra hc
+    exact absurd (h1 (by omega)) hw
+  -- the truth totals its spectrum over the support
+  have h2' : ∑ w : Fin L → α, specCount (L := L) hG S w
+      = ∑ w ∈ support (L := L) hG S, specCount (L := L) hG S w := by
+    exact (Finset.sum_subset (fun b _ => Finset.mem_univ _)
+      (fun b _ hb => hout b hb)).symm
+  have hSsum : ∑ w : Fin L → α, specCount (L := L) hG S w = G := by
+    have h1 := truth_total (L := L) hG S
+    have h2 : ∑ w : Fin L → α, specCount (L := L) hG S w
+        = ∑ w ∈ support (L := L) hG S, specCount (L := L) hG S w := by
+      exact (Finset.sum_subset (fun b _ => Finset.mem_univ _)
+        (fun b _ hb => hout b hb)).symm
+    rw [h2]
+    exact h1
+  -- the candidate is on the same ray, and the ray multiplier of the truth is 1
+  obtain ⟨mm, hmm1, hmmG, hDm⟩ :=
+    spectrum_on_ray hG hD (Nat.succ_pos 0)
+      (specCount (L := L) hG S) (specCount (L := L) hG S) (specCount (L := L) hD D)
+      (fun w => by rw [Nat.one_mul]) hSsum
+      (fun w => by rw [← hNorm w]) hgcdS
+  have hsupD : ∀ w, w ∈ support (L := L) hD D ↔ w ∈ support (L := L) hG S := by
+    intro w
+    have h1 := (mem_support_iff (L := L) hD D w)
+    have h2 := hsupIff w
+    have h3 := hDm w
+    constructor
+    · intro hw
+      have h4 : 0 < specCount (L := L) hG S w := by
+        have h5 : 0 < specCount (L := L) hD D w := h1.mp hw
+        by_contra hc
+        have h6 : specCount (L := L) hG S w = 0 := by omega
+        have h7 : specCount (L := L) hD D w = 0 := by rw [h3, h6]; rfl
+        omega
+      exact h2.mpr h4
+    · intro hw
+      have h4 : 0 < specCount (L := L) hG S w := h2.mp hw
+      have h6 : 0 < specCount (L := L) hD D w := by
+        have h5 := h3
+        exact h5 ▸ Nat.mul_pos (by omega) h4
+      exact h1.mpr h6
+  -- the candidate's window trail is a primitive cyclic spelling of `cD`
+  obtain ⟨sD, hTrailD⟩ := winTrail_closed (L := L) hD D
+  have huseD : ∀ e, edgeUse (winTrail (L := L) hD D) e = specCount (L := L) hD D e :=
+    fun e => winTrail_edgeUse hD D e
+  have hprimD : IsPrimitive (winTrail (L := L) hD D) :=
+    truth_trail_primitive (L := L) (hG := hD) (hL := hL) D hDprim
+  have htrailNe : winTrail (L := L) hD D ≠ [] := by
+    intro h0
+    have hz : (winTrail (L := L) hD D).length = 0 := by rw [h0, List.length_nil]
+    have := winTrail_length (L := L) hD D
+    rw [this] at hz
+    omega
+  -- nonbranching forces every support count of the candidate to be one
+  have hone : ∀ e ∈ support (L := L) hG S, specCount (L := L) hD D e = 1 := by
+    intro e he
+    have honeD : ∀ e ∈ support (L := L) hD D, specCount (L := L) hD D e = 1 :=
+      nonbranching_primitive_spelling_eq_one hTrailD htrailNe
+        (specCount (L := L) hD D) huseD (support (L := L) hD D)
+        (fun e₁ he₁ e₂ he₂ ht => uniqueOut_of_nonbranching (hL := hL) hnb e₁ e₂
+          ((hsupD e₁).mp he₁) ((hsupD e₂).mp he₂) ht)
+        (fun e' he' => by
+          have h4 := hDm e'
+          by_cases hz : specCount (L := L) hG S e' = 0
+          · rw [h4, hz]
+            rfl
+          · have hposD : 0 < specCount (L := L) hD D e' := by
+              rw [h4]
+              exact Nat.mul_pos (by omega) (by omega)
+            exact absurd ((mem_support_iff (L := L) hD D e').mpr hposD) he')
+        (fun e' he' => by
+          have hposS : 0 < specCount (L := L) hG S e' :=
+            (hsupIff e').mp ((hsupD e').mp he')
+          have h4 := hDm e'
+          have h5 : 0 < mm * specCount (L := L) hG S e' :=
+            Nat.mul_pos (by omega) hposS
+          rw [h4]
+          exact h5)
+        hprimD
+    exact honeD e ((hsupD e).mpr he)
+  -- hence the ray multiplier is one and the spectra agree
+  have hne : (support (L := L) hG S).Nonempty := by
+    have h1 := hSsum
+    rw [h2'] at h1
+    by_contra hcon
+    have h5 : support (L := L) hG S = ∅ := by simpa using hcon
+    have h1' : (∑ w ∈ support (L := L) hG S, specCount (L := L) hG S w) = 0 := by
+      rw [h5]
+      simp
+    rw [h1'] at h1
+    omega
+  obtain ⟨e, he⟩ := hne
+  have hone1 := hone e he
+  have hDm1e := hDm e
+  have hpos : 1 ≤ specCount (L := L) hG S e :=
+    truth_pos_on_support (L := L) hG S e he
+  have hone1'' : 1 = mm * specCount (L := L) hG S e := by
+    have h2 := hDm1e
+    rwa [hone1] at h2
+  have hmm : mm = 1 := by
+    have hdvd : mm ∣ (1 : ℕ) := by
+      rw [hone1'']
+      have h2 := dvd_mul_left mm (specCount (L := L) hG S e)
+      rwa [Nat.mul_comm] at h2
+    exact Nat.eq_one_of_dvd_one hdvd
+  have hmmG' : m = G := by
+    have h1 := hmmG
+    rw [hmm, Nat.succ_eq_add_one, Nat.div_one, Nat.one_mul] at h1
+    exact h1
+  subst hmmG'
+  have hspec : specCount (L := L) hG S = specCount (L := L) hG D := by
+    funext w
+    rw [hDm w, hmm, one_mul]
+  refine ⟨rfl, ?_⟩
+  exact (identified_iff_rotEquiv hG D rfl S).mpr (hBBT D hP2S hspec)
+
+end Classification
