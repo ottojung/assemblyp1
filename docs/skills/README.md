@@ -7,6 +7,7 @@ These guides are the operational playbooks for AI-assisted research in assemblyp
 - [`literature-search.md`](literature-search.md) — recover exact source definitions, theorem statements, later citations, and unresolved semantics.
 - [`formalization.md`](formalization.md) — translate stable mathematical objects and propositions into Lean without changing the target.
 - [`lean-on-marceline-dev.md`](lean-on-marceline-dev.md) — configure AssemblyP1's preferred Marceline execution host, including the pinned wrapper-backed `lubko-agent` runtime and Lean smoke-test setup.
+- [`lean-on-phoebe-dev.md`](lean-on-phoebe-dev.md) — legacy fallback pointer retained for older branches and issue links; new work should use Marceline.
 - [`proof-search.md`](proof-search.md) — explore proof structure, derive lemmas, test them adversarially, and refine approaches from verifier feedback.
 - [`counterexample-search.md`](counterexample-search.md) — perform bounded finite search, symmetry reduction, witness minimization, and certificate production.
 - [`reconciliation.md`](reconciliation.md) — compare partial outputs, resolve assumption mismatches, and maintain the research dependency graph.
