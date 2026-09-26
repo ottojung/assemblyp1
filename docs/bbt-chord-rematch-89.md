@@ -1,23 +1,30 @@
-# #89 BBT chord/rematch work: what is proved, and the exact remaining adapter gap
+# #89 BBT chord/rematch work: what is proved, and the exact remaining gap
 
-_Status: kernel-checked partial results, 2026-09-26. `P2.BBTUniqueAt` is **not**
-closed; the exported theorem
+_Status: kernel-checked partial results, 2026-09-26 (`c39108d` + this packet).
+`P2.BBTUniqueAt` is **not** closed; the exported theorem
 `AssemblyP1.PopulationUniqueness.population_unique_ML_up_to_rotation` still takes
 `(hBBT : BBTUniqueAt L)`. No `sorry`, no `admit`, no new axiom; `#print axioms`
 reports only `propext`, `Classical.choice`, `Quot.sound` for every theorem
-mentioned below._
+mentioned below. Full `lake build` passes._
 
-This note records the packet that followed the route sketched in the #89 comments
-(condense unambiguous paths / maximal repeats, alternate Eulerian traversal as a
-local rematching, transposition/chord lemma, non-interleaving chords force a
-unique cyclic trail). It contains one proved combinatorial core, one proved
-generic adapter, one proved refutation of the route's raw-node formulation, and a
-precisely located remaining gap.
+This note records two layers of work on the #89 route (chords / local rematching
+of truth boundary occurrences, uniqueness of the Eulerian cycle at `K = L-1`):
+
+* §1–§3: the previously proved abstract core, the matching adapter, and the
+  kernel-checked refutation of the raw `(L-1)`-mer chord instantiation
+  (`AssemblyP1/BBTChords.lean`, unchanged in this packet);
+* §4 (new): the **condensed `(L-1)`-mer graph of `thm:BBT`** and the
+  traversal-choice dichotomy for an alternative Eulerian traversal
+  (`AssemblyP1/BBTCondense.lean`), including a closed complete-spectrum
+  uniqueness theorem in the `P1` stratum;
+* §5: the exact remaining implication, now stated in the *known-multiplicity*
+  (Pevzner) form, together with the two interface facts still missing and the
+  discipline the sibling audit imposed on the argument.
 
 ## 1. Proved: the abstract cyclic transposition / chord lemma
 
-`AssemblyP1/BBTChords.lean`, section 1, on the smallest useful data structure — an
-abstract permutation of `Fin G`, rotations of the circle, and interleaving of
+`AssemblyP1/BBTChords.lean`, section 1, on the smallest useful data structure —
+an abstract permutation of `Fin G`, rotations of the circle, and interleaving of
 four starts, with no words, spectra or graphs:
 
 ```text
@@ -37,10 +44,15 @@ The proof is a two-case split on the shift `t` (`0 < t < G`, then `t ≠ 1` beca
 `{0, t}` and `{1, R 1}` by modular arithmetic. This is the abstract
 "non-interleaving chords forbid a single cyclic trail" step of the route.
 
+**Limitation relevant to §5.** `chord_lemma` needs an *involution*. The map
+induced by an alternative Eulerian traversal is a permutation, not known to be an
+involution; see §5.
+
 ## 2. Proved: the generic equal-spectrum matching adapter
 
-Section 2. These lemmas are the Eulerian-traversal correspondence in the form the
-reduction needs, and they do **not** depend on the chord analysis:
+`BBTChords.lean`, section 2. These lemmas are the Eulerian-traversal
+correspondence in the form the reduction needs, and they do **not** depend on the
+condensation analysis:
 
 | theorem | content |
 | --- | --- |
@@ -61,7 +73,7 @@ The route as first phrased instantiates the two ends of a chord as the two
 occurrences of a repeated `(L-1)`-mer, and would conclude that two crossing
 chords yield an interleaved pair of *maximal* repeats, contradicting the
 interleaved clause of `def:P1P2`. **That inference is false**, and the packet
-now contains a kernel-checked refutation (`raw_node_crossing_not_maximal`, plus
+contains a kernel-checked refutation (`raw_node_crossing_not_maximal`, plus
 `scripts/verify_raw_node_chord_refutation.py`):
 
 * `S = 00101`, `G = 5`, `L = 3` **satisfies P2** (exhaustively verified; the P2
@@ -82,69 +94,129 @@ can collapse onto the same maximal pair). Consequently:
   node pairs are its chords; it is a statement about an abstract involution and
   is retained unchanged;
 * what is invalidated is the *instantiation* of that involution by raw node
-  pairs. The correct object is the **maximal-repeat block**: the simultaneous
-  two-sided maximal extension of the occurrences of a repeated `(L-1)`-mer.
-  This block is unique for a given pair, and it is what the interleaved clause
-  of `def:P1P2` ranges over (it is an object of `IsRepeat`). P2 forbids *blocks*
-  of length `≥ L-1` from interleaving, while internal duplicate nodes may cross,
-  exactly as the counterexample shows.
+  pairs. The correct object is the one `thm:BBT` itself uses: the **condensed
+  `(K+1)`-mer graph**, contracted along unambiguous vertices (§4).
 
-## 4. The exact remaining adapter gap
+## 4. Proved: the condensed `(L-1)`-mer graph and the traversal-choice dichotomy
 
-`BBTUniqueAt` is still open. Everything below is the honest residue, in the order
-it has to be attacked.
+`AssemblyP1/BBTCondense.lean`, source-aligned with `thm:BBT` (Bresler–Bresler–Tse
+2013, Theorem 3, read with Bresler's dissertation, Appendix B): build the
+`K`-mer graph from the spectrum, contract the **unambiguous** vertices (vertices
+of multiplicity one), and what remains has as vertices the **branch objects**
+(vertices of multiplicity `≥ 2`). The module encodes that architecture directly
+on the de Bruijn multigraph of the word, with no bespoke "block" concept:
 
-1. **Block assignment (not formalized).** For a repeated `(L-1)`-mer `v` with
-   occurrence set `A_v`, form the simultaneous maximal extension
-   `(A_v, e_v)` — the largest `e` for which the occurrences of `v` agree on a
-   window of length `e` at suitably shifted starts, together with the two-sided
-   maximality making `IsRepeat e_v a' b'` true. This is the analogue of
-   `RepeatAdapter.extend_triple` (private) for pairs; it must also be proved
-   **unique** for a given pair, because the chord lemma needs a well-defined
-   involution.
+| theorem | content |
+| --- | --- |
+| `vtx`, `deg`, `inDeg`, `Branch` | the `(L-1)`-mer multigraph of the truth: vertex at a start, out-degree = `nodeCount`, in-degree, branch object |
+| `nextPos_inj`, `nextPrev`, `prevNext` | the one-step rotation of the circle is a bijection (the modular arithmetic used throughout) |
+| `inDeg_eq_deg` | **balance**: in-degree = out-degree, vertex by vertex |
+| `deg_two_of_occ_ne`, `occ_of_branch`, `branch_has_two_occurrences` | a branch object is a vertex with two distinct occurrences, i.e. a repeated `K`-mer |
+| `branchVerts`, `mem_branchVerts` | the **condensed vertex set** (the image of the branch occurrences — a finset of vertices even though the vertex type is not a `Fintype`) |
+| `branchStarts_eq_biUnion` | the branch occurrences are the disjoint union of the fibres of the condensed vertices |
+| `card_branchStarts_le_two_mul_branchVerts` | under the multiplicity cap, branch occurrences ≤ `2 ×` condensed vertices |
+| `P1` | `def:P1P2`'s P1, in multigraph language: no branch object at all |
+| `pullback`, `pullback_window`, `pullback_isEquiv` | the candidate→truth map of a matching: an `Equiv` of the circle that preserves read types |
+| `match_next_vtx` | **both traversals enter the same vertex**: the vertex the candidate enters at `s` is the vertex the truth enters at the truth start carrying the candidate's read at `s` |
+| `forced_at_unambiguous` | **no choice at an unambiguous vertex**: if that vertex is not a branch object, the two traversals agree there |
+| `choices_only_at_branch` | **traversals differ only at branch objects** |
+| `choiceSet`, `card_choices_le_branchStarts`, `card_choices_le_card` | the choice points inject into the branch occurrences; their number is bounded by the size of the condensation |
+| `card_choices_le_two_mul_branchVerts` | with the multiplicity cap, the choice points are charged to the condensed vertices |
+| `isRotation_of_step` | a step-by-step successor map on a circle is a rotation |
+| `pullback_isRotation` | under P1, the pull-back of any matching is a rotation |
+| `pullback_rotation_RotEquiv`, `rotAdd_neg_cancel` | a rotational pull-back is a rotation of the words: `RotEquiv hG E S` |
+| `bbt_of_unambiguous`, `spectrum_unique_of_P1` | **`thm:BBT` in the branch-free (P1) stratum**: the complete `L`-spectrum determines such a word up to cyclic rotation |
+| `condense_sanity_00101` | kernel-checked (`decide`): for `S = 00101`, `L = 3` the branch objects are `01` and `10`, both of degree `2`, their occurrences are `1,2,3,4`, and the segment leaving a branch occurrence is *degenerate* |
 
-2. **Factoring of the alternative Eulerian choices by blocks (open, and the
-   real content).** Two traversals of the same multigraph differ by local
-   switches at the doubly-visited nodes. Under the `(L-1)`-mer multiplicity cap
-   (the triple-repeat clause of P2, available as
-   `RepeatAdapter.primitive_nodeCount_le_two` given primitivity and
-   `¬ HasLongTripleRepeat`) each doubled node contributes one switch. What has
-   to be shown, and is *not* shown, is:
+`condense_sanity_00101` also records, in prose, why §3's refutation is not an
+artifact of a wrong object choice: branch objects and maximal repeats are
+different objects (a maximal repeat of `00101` has length `3 > K = 2`, while a
+branch object is a repeat of length exactly `K`), and the maximal unambiguous
+segment leaving a branch occurrence can be trivial. §3/§4 use respectively the
+second and the first of these objects, and the P2 clauses of `def:P1P2` speak
+about maximal repeats, so both are needed.
 
-   ```text
-   the set of switched nodes is a union of whole maximal-repeat blocks, and
-   the switched blocks factor the alternative traversal, so that
-   "no two switched blocks of length ≥ L-1 interleave" forces the
-   candidate traversal to be the truth traversal up to cyclic shift.
-   ```
+### 4.1 The map is a permutation, not an arbitrary start map
 
-   This is the step at which the audited failure bites, and the #89 packet
-   cannot shortcut it: the block assignment is not fibre-local, so the fibrewise
-   matching of §2 says nothing about it.
+A sibling audit (direct `#89` worker) found that a "step map" version of the
+traversal argument is **false for arbitrary start maps**: `S = 0001`, `G = 4`,
+`L = 3` is primitive and satisfies P2, yet admits a constant such map. Every
+statement of `BBTCondense` is therefore about a *permutation that preserves read
+types*:
 
-3. **Where the chord lemma would then apply.** Once (1) and (2) are available, the
-   proved §1 applies verbatim: the induced permutation of truth boundary
-   occurrences is a product of disjoint transpositions, its two-element orbits
-   are the switched blocks, and pairwise non-interleaving of those blocks (P2)
-   contradicts `chord_lemma`. `matching_rotation_imp` then converts the
-   conclusion into `RotEquiv`, and `BBTCompleteSpectrumUniqueness` follows
-   without any change of statement.
+* `pullback` is a `Fin G ≃ Fin G` (`pullback_isEquiv`), built from
+  `Matching.1 : Function.Bijective σ`, i.e. from the equal-spectrum matching
+  itself, not from a hand-chosen map;
+* `pullback_window` is the fibre-preservation statement: the truth start
+  assigned to a candidate start carries the same read;
+* `not_const_of_injective` records (kernel-checked) that injectivity alone
+  excludes constant maps, with no fixed-point assumption.
 
-4. **Small unsolved interface, for the record.** Two P2-adjacent facts are used
-   as hypotheses above and are *not* bridged in this repository:
-   `¬ HasLongTripleRepeat` from the triple-repeat clause of `P2`
-   (`SourceFaithfulIs.IsTripleRepeat` vs `RepeatAdapter.IsMaximalTriple`), and
-   the two notions of primitivity (`PopulationReduction.IsPrimitive` vs
-   `RepeatAdapter.IsPrimitive`). Both are needed to invoke
-   `RepeatAdapter.primitive_nodeCount_le_two` and hence the multiplicity cap.
-   They are ordinary comparison lemmas, not mathematical obstacles, but they are
-   not written.
+No theorem in this module is stated for a non-injective start map, and none
+would be sound.
 
-## 5. What this does not do
+## 5. The exact remaining gap: the Pevzner known-multiplicity step
 
+`spectrum_unique_of_P1` closes `thm:BBT` for words with **no** branch object. For
+a word that *has* branch objects, §4 confines every alternative traversal to the
+branch occurrences and bounds how many choice points there are, but the
+uniqueness of the Eulerian cycle is not proved. Reading Bresler's dissertation
+(Appendix B), the input that closes it is **not** the unknown-multiplicity
+condensation theorem but Pevzner 1995, Lemma 9, in its *known-multiplicity* form
+— which is exactly our setting, since the complete spectrum supplies every edge
+multiplicity. The single remaining statement is:
+
+```text
+remaining:  a read-type-preserving permutation μ of the starts, coming from an
+            equal-spectrum matching, which is not a rotation, either has two
+            interleaving maximal repeats of length ≥ L-1, or forces a maximal
+            triple repeat of length ≥ L-1.
+```
+
+Given §4, it is enough to state it for the pull-back: given
+`μ = pullback hm.1` with `¬ IsRotation μ`, produce either
+
+* `e₁ e₂ a b c d` with `IsRepeat e₁ a b`, `IsRepeat e₂ c d`,
+  `Interleaved a b c d`, `L - 1 ≤ e₁` and `L - 1 ≤ e₂` — contradicted by
+  `P2.interleaved`; or
+* `e a b c` with `IsTripleRepeat e a b c` and `L - 1 ≤ e` — contradicted by
+  `P2.triple`.
+
+That statement would give `BBTUniqueAt` in the `2 ≤ L`, `3 ≤ G` regime: the
+remaining `G ≤ 2` cases are finite and can be discharged separately, and
+`L = 1` is not in the range of the project (`def:population` fixes `L ≥ 2`).
+
+**Why the chord lemma of §1 does not supply it.** `chord_lemma` produces two
+crossing orbits of a nontrivial rotational involution. In the Pevzner setting
+the induced permutation is not known to be an involution, so `chord_lemma` cannot
+be applied; and the alternative Eulerian cycle of the *truth* is a rotation, so
+one must first prove that the pull-back is a rotation. Concretely, the missing
+link is: *the choice points of §4 are non-empty and force the two long
+interleaved repeats* — i.e. the count bound of §4 must be upgraded from
+quantitative to the Pevzner dichotomy. Nothing in this packet establishes that.
+
+**Interface facts still not bridged** (as in the previous revision of this note):
+
+* `¬ HasLongTripleRepeat` from the triple-repeat clause of `P2`
+  (`SourceFaithfulIs.IsTripleRepeat` vs `RepeatAdapter.IsMaximalTriple`), and
+* the two notions of primitivity (`PopulationReduction.IsPrimitive` vs
+  `RepeatAdapter.IsPrimitive`),
+
+both needed to invoke `RepeatAdapter.primitive_nodeCount_le_two`. In
+`BBTCondense` the multiplicity cap is instead an explicit hypothesis
+(`hcap : ∀ v, deg v ≤ 2`), so nothing in this module depends on those bridges.
+
+## 6. Coordination and what this does not do
+
+* Coordinated conceptually with the sibling `P2RepeatResidual` packet (separate
+  branch/worktree; no shared state, no shared files).
 * It does not prove `BBTUniqueAt`, and does not change the statement of any
-  exported theorem.
+  exported theorem. `spectrum_unique_of_P1` is a *new, additional* theorem about
+  the `P1` stratum; it is not wired into `BBTCompleteSpectrumUniqueness`, whose
+  statement is untouched.
 * It does not revive the raw-`K`-mer maximal-extension argument; the packet
   contains a counterexample to it.
+* It does not formalize the unknown-multiplicity condensation theorem of
+  Appendix B, which is not needed here: multiplicities are known.
 * It does not touch the finite-sampling or reverse-complement-collapsed parts of
   the model, and the #70 regression `primitivity_insufficient` is unaffected.

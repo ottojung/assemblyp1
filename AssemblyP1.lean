@@ -16,5 +16,6 @@ import AssemblyP1.PopulationGibbs
 import AssemblyP1.P2
 import AssemblyP1.PopulationUniqueness
 import AssemblyP1.BBTChords
+import AssemblyP1.BBTCondense
 import AssemblyP1.AAABConverse
 import AssemblyP1.InterleavingNeededCounterexample
