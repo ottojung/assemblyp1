@@ -1,61 +1,17 @@
-# #88 in the wraparound regime: the faithful §6.2 ML predicate, the graph-level
-# contrapositive, and the one statement that is still missing
+# #88 in the "wraparound regime": RETRACTED
 
-This note records the outcome of the wraparound-regime question left open at
-the audited head `679e758`. Everything named `kernel-checked` below is proved in
-`AssemblyP1/MLEscape.lean`, is in the default build, and appears in the
-`#print axioms` audit of `AssemblyP1.lean`.
-
-## 0. What this note does and does not settle
-
-**Settled (kernel-checked).**
-
-1. A *genuinely faithful* §6.2 maximum-likelihood predicate
-   `Is62SpelledMLMax`: truth membership in the literal strict-oriented §6.2
-   spelled-candidate class **and** dominance of every same-length candidate in
-   that class under the exact finite likelihood.
-2. The likelihood comparison in that class is the pointwise spectral comparison
-   on the observed read types (`exactLik_le_of_spec_le`,
-   `observed_spectral_excess_of_ml_failure`), with the direction of the
-   implication stated and justified — the converse is *false*, see §3.
-3. The graph-level reformulation of the whole question (`IsMassGPositiveCirculation`,
-   `BeatsTruthSpectrum`, `HasSpectralEscape`) and the contrapositive
-   `ml_failure_gives_spectral_escape`: a §6.2 same-length candidate that beats
-   the truth's exact likelihood yields a positive balanced circulation of total
-   mass `G` on the truth's window support that strictly exceeds the truth's
-   spectrum.
-4. **Two of the three steps of the culprit statement**, at the graph level:
-   `spectralEscape_gives_longTriple` (an escape forces a long maximal triple
-   repeat, by applying the existing rigidity chain to the escaping circulation)
-   and `informationFeasible_escape_gives_wraparound` (under `I_s` that repeat
-   cannot be mid-range, so it lies in the **wraparound band**
-   `max (L - 1) (G - L) ≤ ℓ < G`, named by `HasWraparoundTripleRepeat`).
-5. The target-shaped theorem
-   `informationFeasible_62_spelledML_of_escape_crux`: **full `I_s` + a genuine
-   §6.2 truth certificate + a realization + a genuine §6.2 candidate certificate
-   ⟹ exact same-length ML dominance, with no long-triple-repeat premise at
-   all**, covering the whole wraparound regime. Its single extra hypothesis is
-   the culprit statement `EscapeForcesMidRangeRepeat`, which is a *combinatorial*
-   assertion about the truth's own repeats and is stated at the graph/repeat
-   level.
-6. The precise content of the residual band: `HasMidRangeTripleRepeat`
-   (`L - 1 ≤ ℓ < G - L`) is exactly the band clause 2 of `I_s` forbids
-   (`informationFeasible_no_midRangeTriple`, from the sharp bridging dichotomy),
-   and `¬ HasLongTripleRepeat` implies `¬ HasMidRangeTripleRepeat`, so the new
-   nondegeneracy premise is strictly weaker than `hno` while being equivalent to
-   it under `I_s`.
-
-**Not settled.** Step 3, i.e. `EscapeForcesMidRangeRepeat`, is not proved. It is
-stated as a `def` and used as an explicit hypothesis of the target theorem; no
-`sorry`, no `admit`, no `axiom`. Steps 1 and 2 *are* proved, so the residual is
-exactly: *an escape that also produces a wraparound-bridged long triple repeat
-produces a mid-range one as well*. §4 gives the evidence, §5 the strategy and
-the two sufficient intermediate goals, §6 what remains.
-
-**Not revived.** The earlier `AABB`/`ABAB` instance is *not* a refutation of the
-literal §6.2 maximizer theorem (truth membership fails there) and is not used
-here; the audited correction in `docs/same-length-exact-ml-88-refutation.md` and
-`docs/same-length-62-maximizer.md` stands.
+> **Status: retracted at this commit.** Everything below §1–§8 described a
+> research programme that was built on a wrong transcription of the source's
+> bridging condition, and it is kept only as the record of what was believed and
+> why it was wrong. See §9 for the retraction. The short version:
+> `SourceFaithfulIs.BridgesCopy` was read endpoint-wise instead of as the source's
+> strict straddling of the occurrence, which manufactured a "wraparound mode" in
+> which a read reaches a long repeat's two endpoints around the *complementary*
+> circular arc. With the source's condition, `bridgesCopy_length : e + 2 ≤ L`
+> and therefore `I_s` forbids **every** maximal triple repeat of length
+> `≥ L - 1`. The wraparound regime is empty, the culprit statement
+> `EscapeForcesMidRangeRepeat` is deleted, and the §6.2 maximum-likelihood
+> statement follows from full `I_s` with no nondegeneracy premise at all.
 
 ## 1. Why the residual is a *band*, and which band
 
@@ -360,3 +316,94 @@ python3 scripts/issue88-wraparound-search.py 9 2 7
 
 All three `#print axioms` must report only `propext`, `Classical.choice`,
 `Quot.sound`.
+
+
+## 9. Retraction: the regime was an artifact of a wrong `BridgesCopy`
+
+### 9.1 The bug
+
+`SourceFaithfulIs.BridgesCopy` was, up to this commit,
+
+```
+∃ r ∈ R, ReadCovers S L r ((t - 1) % S.len) ∧ ReadCovers S L r ((t + e) % S.len)
+```
+
+`docs/bridging-source-semantics.md` records the source's actual condition: a
+read interval `[r, r+L)` bridges a lifted occurrence interval `[t', t'+e)`
+exactly when `r < t'` and `t' + e < r+L`, i.e. one read must *strictly straddle*
+the occurrence (Bresler et al., Fig. 5 and the paragraph before Theorem 1;
+Shomorony et al. §3/Fig. 6). The endpoint-wise condition is strictly weaker: a
+read of length `L` can cover `(t-1) % G` and `(t+e) % G` by going around the
+complementary arc, so it "bridges" an occurrence of length up to `G - 2` that it
+does not contain at all.
+
+Concretely, for the triple repeat of length `2` at starts `0, 1, 2` of `AAAAB`
+(`G = 5`, `L = 3`): the endpoints of the copy at `0` are positions `4` and `2`.
+A length-`3` read covers at most three consecutive positions, and no length-`3`
+read contains positions `4, 0, 1` *and* `0, 1, 2`; the endpoint-wise condition
+was nevertheless satisfiable via the complementary arc, which is how
+`AAAAB` passed clause 2 of `I_s`.
+
+### 9.2 The fix and its two consequences
+
+`BridgesCopy` is now the straddling condition, minimally transcribed (a single
+realized read `r`, a single offset `d`, the occurrence at offset `d + 1`, with
+`d + e + 1 < L`); `bridgesCopy_lifted_iff` proves it is exactly the source's
+interval condition on a suitable lift. Then:
+
+| statement | content |
+| --- | --- |
+| `SourceFaithfulIs.bridgesCopy_length` | `BridgesCopy → e + 2 ≤ L` |
+| `BridgingBridge.informationFeasible_no_long_triple_repeat` | `2 ≤ L → R ∈ I_s → ¬ HasLongTripleRepeat` |
+| `BridgingBridge.bridgingLength` | kept with its old shape; the `G - e ≤ L` disjunct is now unreachable |
+| `WraparoundTripleRepeat.aaaab_not_information_feasible` | the former witness, refuted |
+| `MLEscape.informationFeasible_no_escape` | `I_s → ¬ HasSpectralEscape` |
+| `MLEscape.informationFeasible_62_spelledML` | the §6.2 ML statement from `I_s` alone |
+
+`bridgingLength` is retained only so that downstream references do not break;
+its second disjunct, and with it the entire `G - L` escape route of §5, is dead.
+
+### 9.3 What is retracted from this note
+
+* §1's band split (`L - 1 ≤ ℓ < G - L` forbidden, `max (L-1) (G-L) ≤ ℓ < G` a
+  live "wraparound regime"): the second band does not exist. Clause 2 of `I_s`
+  forbids all of `ℓ ≥ L - 1`.
+* §4's `HasWraparoundTripleRepeat`, and §4.1's non-vacuous instance pairing as
+  evidence *for the culprit statement*: the instance `0000001` is not
+  `I_s`-feasible and never was meant to be; it remains a true fact about that
+  genome and is now recorded as such.
+* §5 Steps 1–3 and the goals (H1)/(H2): all void. (H1) — "if `2L - 1 ≥ G`, two
+  same-length circular words with the same window support have the same
+  spectrum" — is *not* thereby proved; it is subsumed by the much stronger
+  `I_s → ¬ HasLongTripleRepeat → no escape`, which does not need any length
+  comparison.
+* §6's open item: `EscapeForcesMidRangeRepeat` is deleted, not left open. The
+  ML question it was the last hurdle for is now answered from `I_s`.
+
+### 9.4 What survives from this note
+
+* §2's conventions table for the §6.2 predicate `Is62SpelledMLMax` (unchanged).
+* §3: the likelihood comparison in the §6.2 class is the pointwise spectral
+  comparison on observed read types, **in that direction only**, with the
+  `00001` / `00101` instance showing the converse is false. Unchanged and still
+  kernel-checked (`exactLik_le_of_spec_le`, `observed_spectral_excess_of_ml_failure`).
+* §4's graph-level reformulation `IsMassGPositiveCirculation` /
+  `BeatsTruthSpectrum` / `HasSpectralEscape`, `eq_specCount_of_massG_le`, and
+  `ml_failure_gives_spectral_escape`. These are unaffected by the bridging fix
+  and remain the right language for the question; what changed is that
+  `I_s` now *decides* it.
+
+### 9.5 On the finite searches
+
+§4.2's searches were run against the *old* `BridgesCopy` for the `I_s` column, so
+the "escapes at an `I_s`-feasible instance: 0" row was measuring the endpoint-wise
+predicate and is not evidence about the corrected one. Two remarks:
+
+* the searches *did* find no violation of the culprit statement itself, over
+  binary `G ≤ 9`, `3`-letter `G ≤ 7` and `4`-letter `G ≤ 6` — that conclusion is
+  about the truth's own repeats and is independent of `I_s`, so it stands;
+* an independent re-check of the corrected semantics over all genomes
+  (`scripts/issue88-source-semantics-check.py`) finds `I_s`-feasible instances at
+  every `(G, L)` it examines, so the corrected `I_s` is **not** vacuous, and
+  finds no feasible instance carrying a long triple repeat, as
+  `informationFeasible_no_long_triple_repeat` says.

@@ -198,8 +198,15 @@ Independently of the counterexample, the intended route to a *positive* theorem
 was blocked, and `AssemblyP1/BridgingBridge.lean` records the exact reason. The
 previously external "Fact D" claimed that a length-`L` read bridges a repeat copy
 only if the copy has length `≤ L - 2`, so that `I_s` forbids long Bresler triple
-repeats. That is **false**, because a read can bridge a copy by going the other
-way around the circle.
+repeats. ~~That is **false**, because a read can bridge a copy by going the other
+way around the circle.~~ **RETRACTED at this commit.** The "going the other way
+around the circle" was an artifact of an endpoint-wise transcription of
+`BridgesCopy`; the source's condition is a strict straddling of the occurrence,
+and `SourceFaithfulIs.bridgesCopy_length : BridgesCopy → e + 2 ≤ L` is now
+kernel-checked. The corollary
+`BridgingBridge.informationFeasible_no_long_triple_repeat : 2 ≤ L → R ∈ I_s →
+¬ HasLongTripleRepeat` is kernel-checked too, so `I_s` **does** forbid long
+Bresler triple repeats. See `docs/bridging-source-semantics.md` ("Correction").
 
 `bridgingLength` is the sharp, kernel-checked replacement:
 
@@ -209,9 +216,9 @@ BridgesCopy S L R e t  →  e + 2 ≤ L  ∨  S.len - e ≤ L
 
 * the first disjunct is the intended straddling mode: the read covers a base
   before `t - 1` and a base after `t + e`, so it spans `≥ e + 2` bases;
-* the second is the **wraparound mode**: the read covers the whole *complement*
-  arc `[t + e, t - 1]` of length `S.len - e`, which a read of length `L` can do
-  whenever `S.len - e ≤ L`.
+* ~~the second is the **wraparound mode**~~ — **now unreachable.**
+  `bridgingLength` is kept with its old two-disjunct shape only so that
+  downstream references do not break; the first disjunct is forced.
 
 Consequently `informationFeasible_tripleRepeat_ge_G_sub_L` gives the sharp
 statement: if `R ∈ I_s`, `2 ≤ L ≤ S.len`, and the truth carries a triple repeat
@@ -229,9 +236,11 @@ positive theorem `informationFeasible_exactLik_maximizer`, which is preserved
 separately and is **not** refuted by §1, because it ranges over the
 support-equality candidate class.
 
-Note that `I_s → ¬ HasLongTripleRepeat` is *not* asserted anywhere in this
-branch. It is false, and the wraparound counterexample is recorded in
-`docs/oriented-same-length-ml-88.md` §"Fact D".
+Note that `I_s → ¬ HasLongTripleRepeat` was *not* asserted in this branch at
+this commit. It is now asserted and proved:
+`BridgingBridge.informationFeasible_no_long_triple_repeat`. The wraparound
+counterexample it rested on is refuted in
+`AssemblyP1/WraparoundTripleRepeat.lean`.
 
 ## 6. Exact theorem surface
 
@@ -254,20 +263,27 @@ Positive results preserved separately:
 | --- | --- |
 | `BridgingBridge.bridgingLength` | the sharp bridging-length dichotomy |
 | `BridgingBridge.informationFeasible_tripleRepeat_ge_G_sub_L` | `I_s` bounds long triple-repeat lengths from below by `G - L` |
-| `BridgingBridge.informationFeasible_sharp_no_long_triple_repeat` | `I_s` + nondegeneracy ⟹ no long triple repeat |
-| `OrientedSameLengthML.informationFeasible_exactLik_maximizer` | **the preserved positive partial theorem**: full `I_s` + a genuine realization + nondegeneracy ⟹ exact ML maximizer over the support-equality class |
+| `BridgingBridge.informationFeasible_no_long_triple_repeat` | **`I_s` ⟹ no long triple repeat**, no nondegeneracy premise |
+| `OrientedSameLengthML.informationFeasible_exactLik_maximizer` | **the positive theorem**: full `I_s` + a genuine realization |
+| `MLEscape.informationFeasible_62_spelledML` | **the §6.2 theorem**: full `I_s` at the realized starts + the §6.2 truth certificate | ⟹ exact ML maximizer over the support-equality class |
 | `OrientedSameLengthML.covering_constant_reads_is_constant` | covering constant reads force a constant genome, hence a maximizer |
 | `OrientedSameLengthML.truth_is_spelled_candidate_of_realization` | the realization layer; removes the former `hobs` premise |
 
 ## 7. What would still be open
 
-* The same-length claim restricted to the **support-equality** candidate class is
-  still open modulo the wraparound regime, and is exactly
-  `informationFeasible_exactLik_maximizer` plus the characterization in §5.
-* An `I_s`-derived replacement for the wraparound regime — e.g. a theorem that
-  wraparound-bridged long triple repeats are themselves impossible, or that they
-  still force spectrum rigidity — is not formalized. §1 shows this is no longer
-  urgent for the ML claim, but it is the natural next repeat-theoretic question.
+> **Both items closed at this commit**, by the source-semantics fix:
+> `I_s`-derived replacement for the wraparound regime is
+> `informationFeasible_no_long_triple_repeat` (the wraparound regime is empty),
+> and the same-length claim over the support-equality / §6.2 candidate class is
+> `MLEscape.informationFeasible_62_spelledML`.
+
+* ~~The same-length claim restricted to the **support-equality** candidate class
+  is still open modulo the wraparound regime.~~ Closed:
+  `informationFeasible_exactLik_maximizer` and, in the literal §6.2 class,
+  `MLEscape.informationFeasible_62_spelledML`.
+* ~~An `I_s`-derived replacement for the wraparound regime is not
+  formalized.~~ Closed: the regime does not exist under the source's bridging
+  condition.
 * Whether the published 2016 sentence was intended with *any* support-based
   candidate restriction at all remains an interpretation question; §3 shows that
   the natural §6.2 restriction, read as "candidates live on the observed read

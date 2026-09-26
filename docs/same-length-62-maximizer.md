@@ -164,7 +164,21 @@ theorem informationFeasible_62_maximizer
     exactLik hG D (observedOf hG S ρ) ≤ exactLik hG S (observedOf hG S ρ)
 ```
 
-### The residual regime is isolated, and it is non-empty
+### RETRACTED at this commit: the residual regime is empty
+
+> **The two claims of this subsection are retracted.** `hno` **is** discharged
+> from `InformationFeasible` (with `2 ≤ L`), by
+> `BridgingBridge.informationFeasible_no_long_triple_repeat`; the `AAAAB`
+> counterexample below is **not** `I_s`-feasible under the source's bridging
+> condition, and is kernel-checked as such
+> (`WraparoundTripleRepeat.aaaab_not_information_feasible`). The reason is a
+> source-semantics fix: `BridgesCopy` had been transcribed endpoint-wise, which
+> let a read reach a long repeat's two endpoints around the *complementary*
+> circular arc. See `docs/bridging-source-semantics.md` ("Correction") and
+> `docs/issue88-wraparound-contrapositive.md` §9. What follows is kept as the
+> record of the superseded state.
+
+### (Superseded) The residual regime is isolated, and it is non-empty
 
 `hno` is the long-standing interface hypothesis of
 `AssemblyP1.OrientedFinal.oriented_same_length_spectrum_rigidity`. It is an
@@ -186,7 +200,13 @@ the regime contains no counterexample there — but no theorem is claimed about 
 
 ## 5. An audit finding that strengthens the theorem: `I_s` is not needed
 
-`_hfeas` and `_hR` are unused, and Lean's linter says so; they are underscore-
+> **Superseded.** `_hfeas` is now genuinely used: it is what yields
+> `¬ HasLongTripleRepeat` in `informationFeasible_62_maximizer`. The rest of
+> this section still describes the *candidate-class* half of the finding, which
+> stands: the §6.2 support-spelling restriction is derived from the §6.2
+> certificate alone and needs no bridging theory.
+
+`_hfeas` and `_hR` were unused, and Lean's linter said so; they were underscore-
 prefixed to keep it visible. This is structural, not an accident:
 `genuine62_molecule_eq` derives the candidate class entirely from the §6.2
 certificate, using only `VisitsObserved` and the vertex lower bound of `1`.
@@ -243,22 +263,25 @@ not proved. It is recorded as such.
   `genuine62_is_spelled_candidate`: the §6.2 restriction *equals* the
   spelled-candidate class;
 * `informationFeasible_62_maximizer`, the positive same-length maximizer theorem
-  over genuine §6.2 candidates, modulo the isolated
-  `¬ HasLongTripleRepeat`.
+  over genuine §6.2 candidates — now with **no** `¬ HasLongTripleRepeat`
+  premise, the hypothesis being discharged from `I_s`.
 
 **Not asserted:**
 
 * that the maximizer-with-membership claim of #88 is refuted. It is not, by this
   witness; the membership antecedent fails.
-* that `InformationFeasible` implies `¬ HasLongTripleRepeat`, even restricted to
-  truth-feasible realizations. `AAAAB` refutes it.
-* anything about the residual long-triple-repeat regime beyond its
-  non-emptiness.
+* ~~that `InformationFeasible` implies `¬ HasLongTripleRepeat`~~ — **no longer
+  in this list.** It is now proved:
+  `BridgingBridge.informationFeasible_no_long_triple_repeat`.
+* ~~anything about the residual long-triple-repeat regime beyond its
+  non-emptiness~~ — the regime is empty, so there is nothing left to say about
+  it.
 
 **Superseded in part.** The successor to this packet is
 `AssemblyP1/MLEscape` with the note `docs/issue88-wraparound-contrapositive.md`:
 it states the faithful §6.2 maximizer predicate *with* membership, identifies
-the exact band that clause 2 of `I_s` forbids (`L - 1 ≤ ℓ < G - L`), reduces the
-residual regime to a single graph/repeat-level culprit statement, and proves the
-target-shaped theorem with that culprit statement in place of `hno`. The
-culprit statement itself is not proved; the finite evidence is recorded there.
+the exact band that clause 2 of `I_s` forbids (`L - 1 ≤ ℓ < G - L`), and reduces
+the residual regime to a single graph/repeat-level culprit statement. Its
+culprit statement and its `hno` premise are both **now discharged**: the culprit
+statement `EscapeForcesMidRangeRepeat` is deleted as void, and
+`hno` follows from `I_s`. See §9 of that note.

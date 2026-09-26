@@ -9,6 +9,17 @@
 > section below is refuted by `AssemblyP1/BridgingBridge.lean`: `I_s` does
 > **not** imply `¬ HasLongTripleRepeat`, because a read may bridge a long copy
 > by spanning the complement arc.
+>
+> **AND `Fact D` IS NOW PROVED, because that "complement arc" was an
+> artifact.** `SourceFaithfulIs.BridgesCopy` had been transcribed endpoint-wise;
+> the source's condition is a strict straddling of the occurrence
+> (`docs/bridging-source-semantics.md`), under which
+> `SourceFaithfulIs.bridgesCopy_length : BridgesCopy → e + 2 ≤ L` and
+> `BridgingBridge.informationFeasible_no_long_triple_repeat : 2 ≤ L → R ∈ I_s →
+> ¬ HasLongTripleRepeat`. The "Fact D" claim in this note is therefore correct
+> after all, and the §6.2 statement of issue #88 is proved as
+> `AssemblyP1.MLEscape.informationFeasible_62_spelledML`. See
+> `docs/issue88-wraparound-contrapositive.md` §9.
 
 # Oriented same-length ML at the model boundary (issue #88)
 

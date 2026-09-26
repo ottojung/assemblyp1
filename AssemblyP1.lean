@@ -30,7 +30,9 @@ import AssemblyP1.AAABConverse
 #print axioms AssemblyP1.SameLengthExactMLCounterexample.truth_no_long_triple_repeat
 #print axioms AssemblyP1.BridgingBridge.bridgingLength
 #print axioms AssemblyP1.BridgingBridge.informationFeasible_tripleRepeat_ge_G_sub_L
-#print axioms AssemblyP1.BridgingBridge.informationFeasible_sharp_no_long_triple_repeat
+#print axioms AssemblyP1.BridgingBridge.informationFeasible_no_long_triple_repeat
+#print axioms AssemblyP1.SourceFaithfulIs.bridgesCopy_length
+#print axioms AssemblyP1.SourceFaithfulIs.bridgesCopy_lifted_iff
 #print axioms AssemblyP1.OrientedSameLengthML.informationFeasible_exactLik_maximizer
 #print axioms AssemblyP1.OrientedSameLengthML.covering_constant_reads_is_constant
 #print axioms AssemblyP1.OrientedSameLengthML.truth_is_spelled_candidate_of_realization
@@ -40,12 +42,16 @@ import AssemblyP1.AAABConverse
 #print axioms AssemblyP1.SameLength62Maximizer.genuine62_molecule_eq
 #print axioms AssemblyP1.SameLength62Maximizer.visited_of_positive_throughput
 #print axioms AssemblyP1.SameLength62Maximizer.oriented_support_eq_of_genuine62
-#print axioms AssemblyP1.WraparoundTripleRepeat.informationFeasible_does_not_exclude_long_triple_repeat
-#print axioms AssemblyP1.WraparoundTripleRepeat.wraparound_information_feasible
-#print axioms AssemblyP1.WraparoundTripleRepeat.wraparound_has_long_triple_repeat
+#print axioms AssemblyP1.WraparoundTripleRepeat.informationFeasible_excludes_this_instance
+#print axioms AssemblyP1.WraparoundTripleRepeat.aaaab_not_information_feasible
+#print axioms AssemblyP1.WraparoundTripleRepeat.aaaab_has_long_triple_repeat
 
-/-! ## Axiom audit for the wraparound-regime result of #88
-(`AssemblyP1.MLEscape`) -/
+/-! ## Axiom audit for the §6.2 maximum-likelihood result of #88
+(`AssemblyP1.MLEscape`).
+
+`informationFeasible_62_spelledML` is the target-shaped theorem: full `I_s` at
+the exact range of the realization, plus the §6.2 truth certificate, and no
+long-triple-repeat, escape or culprit premise of any kind. -/
 
 #print axioms AssemblyP1.MLEscape.Is62SpelledMLMax
 #print axioms AssemblyP1.MLEscape.informationFeasible_62_spelledML_of_no_long_triple
@@ -58,12 +64,14 @@ import AssemblyP1.AAABConverse
 #print axioms AssemblyP1.MLEscape.eq_specCount_of_massG_le
 #print axioms AssemblyP1.MLEscape.ml_failure_gives_spectral_escape
 #print axioms AssemblyP1.MLEscape.isMaximalTriple_of_mod
-#print axioms AssemblyP1.MLEscape.longTriple_band
 #print axioms AssemblyP1.MLEscape.spectralEscape_contradiction
 #print axioms AssemblyP1.MLEscape.spectralEscape_gives_longTriple
-#print axioms AssemblyP1.MLEscape.informationFeasible_escape_gives_wraparound
-#print axioms AssemblyP1.MLEscape.informationFeasible_no_escape_of_no_wraparound
-#print axioms AssemblyP1.MLEscape.informationFeasible_62_spelledML_of_escape_crux
+#print axioms AssemblyP1.MLEscape.informationFeasible_no_escape
+#print axioms AssemblyP1.MLEscape.informationFeasible_62_spelledML
+#print axioms AssemblyP1.MLEscape.informationFeasible_62_spelledML_of_no_long_triple_exact
+#print axioms AssemblyP1.MLEscape.informationFeasible_62_spelledML_of_subset_starts
+#print axioms AssemblyP1.MLEscape.informationFeasible_of_exact_subset
+#print axioms AssemblyP1.MLEscape.mem_realizedStarts
 #print axioms AssemblyP1.MLEscape.culprit_instance_checked
 #print axioms AssemblyP1.MLEscape.cand0_is_escape
 #print axioms AssemblyP1.MLEscape.truth0_has_midrange_triple

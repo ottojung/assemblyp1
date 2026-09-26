@@ -2,72 +2,65 @@ import AssemblyP1.SourceFaithfulIs
 import AssemblyP1.RepeatAdapter
 
 /-!
-# The bridging-length bridge: what `I_s` really implies about long triple repeats
+# What `I_s` really implies about long triple repeats
 
-This module is the *new bridge* of issue #88. It replaces the previously
-external "Fact D" recorded in `docs/oriented-same-length-ml-88.md` §3, which
-asserted
+This module is the *bridge* of issue #88: it turns clause 2 of the
+source-faithful `InformationFeasible` predicate into the nondegeneracy fact the
+maximum-likelihood reduction needs.
 
-> a length-`L` read bridges a repeat copy only if its length is `≤ L - 2`, so a
-> read realization in `I_s` forbids Bresler triple repeats of length `≥ L - 1`
+## The result
 
-by a theorem that is (a) actually provable, (b) **sharp**, and (c) explains
-why Fact D is **false**.
-
-## The theorem (`bridgingLength`)
-
-Let `S` be the circular genome of length `G := S.len`, let the read length
-satisfy `L ≤ G`, and let the copy of length `e` (`1 ≤ e < G`) at start `t` be
-**bridged** by the realized start set `R`. Then
+`informationFeasible_no_long_triple_repeat`: if `2 ≤ L` and `R ∈ I_s`, then
 
 ```
-e + 2 ≤ L   ∨   G - e ≤ L
+¬ RepeatAdapter.HasLongTripleRepeat S.len_pos S.sym L
 ```
 
-The first disjunct is the intended one: the bridging read *straddles* the
-copy, covering a base before position `t - 1` and a base after position
-`t + e`, hence spanning at least `e + 2 ≤ L` bases.
+i.e. the truth carries **no** maximal triple repeat of length `e ≥ L - 1`,
+whatever the start set is. No bound relating `L` to the genome length is needed.
 
-The second disjunct is the **wraparound mode**: the read does not straddle the
-copy at all. It covers position `t - 1` and position `t + e` by going the
-other way around the circle, so it covers the entire *complement* arc
-`[t + e, t - 1]`, of length `G - e`; a read of length `L` can do that exactly
-when `G - e ≤ L`. Differences of two or more full turns are excluded by
-`L ≤ G`, which is why that hypothesis appears.
+The proof is short. A long maximal triple repeat is a `Genome.IsTripleRepeat`, so
+clause 2 of `I_s` says all three of its copies are bridged; a bridged copy
+satisfies `e + 2 ≤ L` (`SourceFaithfulIs.bridgesCopy_length`); and `e ≥ L - 1`
+gives `e + 2 ≥ L + 1`.
 
-Wraparound is not a formal artifact. In
-`AssemblyP1.BridgingWraparoundCounterexample` there is a kernel-checked genome
-and realized start set satisfying **full** source-faithful
-`InformationFeasible` and nevertheless carrying a maximal triple repeat of
-length `2 = L - 1`. So
+## Why this used to be false, and what changed
 
-```
-InformationFeasible → ¬ HasLongTripleRepeat
-```
+This is the external "Fact D" recorded in `docs/oriented-same-length-ml-88.md` §3.
+Until this commit the repository could not prove it, and instead carried
 
-is **false**, and the maximum-likelihood endpoint must be stated with the
-wraparound regime visible rather than hidden.
+* `bridgingLength : e + 2 ≤ L ∨ G - e ≤ L`, whose second disjunct was the
+  "wraparound mode", and
+* `AssemblyP1.WraparoundTripleRepeat`, a kernel-checked instance (`AAAAB`,
+  `G = 5`, `L = 3`, all five starts) of `R ∈ I_s` together with a long triple
+  repeat, i.e. a kernel-checked *counterexample* to Fact D,
 
-## Consequence (`informationFeasible_tripleRepeat_ge_G_sub_L`)
+and a whole research programme (`AssemblyP1.MLEscape`,
+`docs/issue88-wraparound-contrapositive.md`) built on the resulting
+"wraparound regime".
 
-Combining `bridgingLength` with clause 2 of `InformationFeasible` gives the
-sharp statement about long triple repeats:
+Both rested on an endpoint-only reading of `SourceFaithfulIs.BridgesCopy`: that a
+copy is bridged when a realized read covers `(t-1) % G` and covers `(t+e) % G`.
+That is not the source's condition. Bresler et al. and Shomorony et al. require
+one read to *strictly straddle* the occurrence, i.e. on a suitable lift
+`r < t` and `t + e < r + L` (`docs/bridging-source-semantics.md`); the
+endpoint-only reading lets a read reach a long copy's two endpoints by travelling
+around the *complementary* circular arc without ever containing the copy. The
+corrected `BridgesCopy` (a single read, a single offset `d`, the copy at offset
+`d+1`, with `d + e + 1 < L`) rules that out, `bridgesCopy_length` follows, and
+the wraparound regime is empty.
 
-> If `R ∈ I_s`, `2 ≤ L ≤ G`, and the truth carries a triple repeat of length
-> `e` with `L - 1 ≤ e`, then `G - L ≤ e`.
+`bridgingLength` is kept with its old two-disjunct shape, and its second
+disjunct is now unreachable, only so that downstream references do not break.
 
-Equivalently: `I_s` forbids every triple repeat of length `e` with
+## Layout
 
-```
-L - 1 ≤ e   ∧   e < G - L,
-```
-
-that is, every long triple repeat whose complement arc is longer than a read.
-`SharpNoLongTripleRepeat` is exactly that hypothesis, written on the genome;
-`informationFeasible_sharp_no_long_triple_repeat` derives
-`¬ HasLongTripleRepeat` from `InformationFeasible` plus it. This is the
-replacement for the lost Fact D, and it is the exact premise consumed by
-`AssemblyP1.OrientedFinal.oriented_same_length_spectrum_rigidity`.
+* `bridgingLength` — the two-disjunct statement, now degenerate.
+* `tripleRepeat_bridged_length`, `informationFeasible_tripleRepeat_ge_G_sub_L` —
+  the clause-2 length bounds, kept because they remain true and are used by
+  `AssemblyP1.MLEscape` to name the band clause 2 forbids.
+* `isTripleRepeat_of_maximalTriple` — the `RepeatAdapter` ↔ `Genome` transfer.
+* `informationFeasible_no_long_triple_repeat` — the result above.
 -/
 
 namespace AssemblyP1.BridgingBridge
@@ -166,94 +159,24 @@ private theorem cycl_to_following {α : Type} [DecidableEq α] {S : Genome α} (
 
 /-- **Sharp bridging-length restriction.** If the copy of length `e` at start
 `t` is bridged by the realized reads, whose length satisfies `L ≤ S.len`, then
-either
 
 * `e + 2 ≤ L`: the bridging read strictly straddles the copy, entering before
-  `t - 1` and leaving after `t + e`; or
-* `S.len - e ≤ L`: the bridging read goes around the other way and covers the
-  whole complement arc `[t + e, t - 1]`, of length `S.len - e`.
+  `t - 1` and leaving after `t + e`.
 
-These are the only two possibilities. -/
+Up to this commit the statement had a second disjunct, `S.len - e ≤ L`,
+corresponding to a "bridging" read that reaches the copy's two endpoints by
+travelling around the *complementary* circular arc. That disjunct was an
+artifact of an endpoint-only reading of `BridgesCopy` which is not the source's
+condition (`docs/bridging-source-semantics.md`); with the corrected
+`BridgesCopy` the first disjunct is forced, and
+`AssemblyP1.SourceFaithfulIs.bridgesCopy_length` is the one-line reason. The
+statement is kept with its old shape so that downstream references do not
+break. -/
 theorem bridgingLength {α : Type} [DecidableEq α] {L e : ℕ} {S : Genome α}
-    {R : Finset (Fin S.len)} {t : Fin S.len} (hLG : L ≤ S.len)
-    (he : 1 ≤ e) (heG : e < S.len) (hb : BridgesCopy S L R e t) :
-    e + 2 ≤ L ∨ S.len - e ≤ L := by
-  classical
-  obtain ⟨r, hr, ⟨d₁, h₁⟩, ⟨d₂, h₂⟩⟩ := hb
-  set a : ℕ := d₁.val with ha
-  set b : ℕ := d₂.val with hb
-  have haL : a < L := ha.symm ▸ d₁.isLt
-  have hbL : b < L := hb.symm ▸ d₂.isLt
-  -- The two coverage equations, as modular equalities.
-  have hform₁ : t.val + S.len - 1 = t.val + (S.len - 1) := by omega
-  have hm₁ : t.val + (S.len - 1) ≡ r.val + a [MOD S.len] := by
-    rw [← hform₁]; exact h₁
-  have hm₂ : t.val + e ≡ r.val + b [MOD S.len] := h₂
-  -- Add the respective wrap-around offsets, so that the start `r` drops out.
-  have hmk : (t.val + (S.len - 1)) + (S.len - a) ≡ (t.val + e) + (S.len - b)
-      [MOD S.len] := by
-    have hx : r.val + a + (S.len - a) = r.val + S.len := by omega
-    have hy : r.val + b + (S.len - b) = r.val + S.len := by omega
-    calc (t.val + (S.len - 1)) + (S.len - a) ≡ (r.val + a) + (S.len - a)
-        [MOD S.len] := hm₁.add_right (S.len - a)
-      _ = r.val + S.len := hx
-      _ = (r.val + b) + (S.len - b) := hy.symm
-      _ ≡ (t.val + e) + (S.len - b) [MOD S.len] :=
-        (hm₂.add_right (S.len - b)).symm
-  -- Cancel the shared `t.val`.
-  have hmod : S.len - 1 + (S.len - a) ≡ e + (S.len - b) [MOD S.len] := by
-    have hk : t.val + ((S.len - 1) + (S.len - a)) ≡ t.val + (e + (S.len - b))
-        [MOD S.len] := by rw [← Nat.add_assoc, ← Nat.add_assoc]; exact hmk
-    exact hk.add_left_cancel' t.val
-  -- Both sides lie in `(0, 2 * S.len)`, so the congruence has exactly the
-  -- three possibilities `P = Q`, `P = Q + S.len`, `Q = P + S.len`.
-  have hP0 : 0 < S.len - 1 + (S.len - a) := by
-    have : 0 < S.len - a := by omega
-    omega
-  have hQ0 : 0 < e + (S.len - b) := by
-    have : 0 < S.len - b := by omega
-    omega
-  have hQlt : e + (S.len - b) < 2 * S.len := by omega
-  rcases lt_trichotomy (S.len - 1 + (S.len - a)) (e + (S.len - b))
-    with hPQ | hPeq | hQP
-  · -- `P < Q`: then `Q = P + S.len * t` with `t ≥ 1`, and `t = 1` would give
-    -- `e = 2 * S.len - 1 - b + a ≥ S.len`, contradicting `e < S.len`.
-    obtain ⟨t, ht⟩ := (Nat.modEq_iff_exists_eq_add (Nat.le_of_lt hPQ)).mp hmod
-    have htlt : S.len * t < 2 * S.len := by omega
-    have ht0 : 1 ≤ t := by
-      by_contra hc
-      have hz : t = 0 := by omega
-      rw [hz, Nat.mul_zero] at ht
-      omega
-    have ht1 : t = 1 := by
-      by_contra hne
-      have h2 : 2 ≤ t := by omega
-      have hm := Nat.mul_le_mul_left S.len h2
-      omega
-    rw [ht1, Nat.mul_one] at ht
-    omega
-  · -- `P = Q`, i.e. `e = S.len - 1 + b - a`, so `S.len - e = a - b + 1 ≤ L`:
-    -- the complement arc fits inside one read.
-    right
-    omega
-  · -- `Q < P`: then `P = Q + S.len * t`; `t = 0` contradicts `Q < P`, so
-    -- `t = 1`, i.e. `P = Q + S.len`, which is the straddling case.
-    obtain ⟨t, ht⟩ :=
-      (Nat.modEq_iff_exists_eq_add (Nat.le_of_lt hQP)).mp hmod.symm
-    have htlt : S.len * t < 2 * S.len := by omega
-    have ht0 : 1 ≤ t := by
-      by_contra hc
-      have hz : t = 0 := by omega
-      rw [hz, Nat.mul_zero] at ht
-      omega
-    have ht1 : t = 1 := by
-      by_contra hne
-      have h2 : 2 ≤ t := by omega
-      have hm := Nat.mul_le_mul_left S.len h2
-      omega
-    rw [ht1, Nat.mul_one] at ht
-    left
-    omega
+    {R : Finset (Fin S.len)} {t : Fin S.len} (_hLG : L ≤ S.len)
+    (_he : 1 ≤ e) (_heG : e < S.len) (hb : BridgesCopy S L R e t) :
+    e + 2 ≤ L ∨ S.len - e ≤ L :=
+  Or.inl (bridgesCopy_length hb)
 
 /-! ## Clause 2 of `I_s` bounds the length of every triple repeat -/
 
@@ -279,21 +202,6 @@ theorem informationFeasible_tripleRepeat_ge_G_sub_L {α : Type} [DecidableEq α]
   rcases tripleRepeat_bridged_length hLG h ht heG he1' with h' | h'
   · omega
   · omega
-
-/-! ## The sharp nondegeneracy hypothesis, and the replacement for Fact D -/
-
-/-- **The sharp nondegeneracy hypothesis on the truth.** The truth carries no
-triple repeat of length `e` in the bridging-permitted regime
-`max (L - 1) (S.len - L) ≤ e`.
-
-This is the weakest hypothesis under which the oriented same-length rigidity
-chain can be run: everything strictly below `max (L - 1) (S.len - L)` is
-already excluded by clause 2 of `I_s` alone
-(`informationFeasible_tripleRepeat_ge_G_sub_L`), and the hypothesis excludes
-precisely the wraparound regime that clause 2 cannot reach. -/
-def SharpNoLongTripleRepeat {α : Type} [DecidableEq α] {L : ℕ} {S : Genome α} : Prop :=
-  ∀ (e : Fin S.len) (a b c : Fin S.len),
-    max (L - 1) (S.len - L) ≤ e.val → ¬ S.IsTripleRepeat e.val a b c
 
 /-- A Bresler maximal triple repeat at natural-number starts `a, b, c` of length
 `ℓ` is a `Genome.IsTripleRepeat` at the representative starts: distinct residues
@@ -349,27 +257,39 @@ theorem isTripleRepeat_of_maximalTriple {α : Type} [DecidableEq α] {S : Genome
         _ = OrientedRigidity.cyc S.len_pos S.sym (c + ℓ) :=
             (cycl_to_following (S := S) c ℓ).symm
 
-/-- **The replacement for Fact D.** If `R ∈ I_s`, `2 ≤ L ≤ S.len`, and the truth
-satisfies the sharp nondegeneracy hypothesis, then the truth has no long
-Bresler triple repeat — exactly the hypothesis consumed by
-`AssemblyP1.OrientedFinal.oriented_same_length_spectrum_rigidity`.
+/-! ## Full `I_s` excludes long triple repeats outright -/
 
-This is the strongest *true* statement of the `I_s → no long triple repeat`
-shape. Without the nondegeneracy hypothesis it is false, as
-`AssemblyP1.BridgingWraparoundCounterexample` kernel-checks. -/
-theorem informationFeasible_sharp_no_long_triple_repeat {α : Type} [DecidableEq α]
-    {L : ℕ} {S : Genome α} {R : Finset (Fin S.len)} (hL2 : 2 ≤ L) (hLG : L ≤ S.len)
-    (h : InformationFeasible S L R) (hnr : SharpNoLongTripleRepeat (L := L) (S := S)) :
+/-- **Full source-faithful `I_s` excludes every long Bresler triple repeat.**
+
+If `2 ≤ L` and `R ∈ I_s`, then the truth carries no maximal triple repeat of
+length `e ≥ L - 1`, whatever the start set is.
+
+The argument is one line of arithmetic once `bridgesCopy_length` is available: a
+long triple repeat is a triple repeat of clause 2, so `I_s` makes all three of
+its copies bridged, and a bridged copy satisfies `e + 2 ≤ L`, whereas
+`e ≥ L - 1` gives `e + 2 ≥ L + 1`.
+
+This is the statement that `docs/oriented-same-length-ml-88.md` §3 recorded as
+the external "Fact D". Up to this commit the repository could not prove it, and
+`AssemblyP1.WraparoundTripleRepeat` kernel-checked its *negation* (`AAAAB` at
+`G = 5`, `L = 3`, all five starts) on the strength of an endpoint-only reading
+of `BridgesCopy` that let a read reach a copy's two endpoints around the
+complementary circular arc. That reading is not the source's condition
+(`docs/bridging-source-semantics.md`); under the corrected `BridgesCopy` the
+instance is not `I_s`-feasible and the whole "wraparound" regime disappears.
+`L ≤ S.len` is not needed: `bridgesCopy_length` is unconditional. -/
+theorem informationFeasible_no_long_triple_repeat {α : Type} [DecidableEq α]
+    {L : ℕ} {S : Genome α} {R : Finset (Fin S.len)} (_hL2 : 2 ≤ L)
+    (h : InformationFeasible S L R) :
     ¬ RepeatAdapter.HasLongTripleRepeat S.len_pos S.sym L := by
-  intro hlt
-  obtain ⟨a, b, c, ℓ, hℓ1, hℓG, hab, hbc, hac, hmax⟩ := hlt
+  rintro ⟨a, b, c, ℓ, hLong, hEllG, hab, hbc, hac, hmax⟩
   have h1 : 1 ≤ ℓ := by omega
   obtain ⟨hag, hpre, hfol⟩ := hmax
   have hrep : S.IsTripleRepeat ℓ (rep S a) (rep S b) (rep S c) :=
-    isTripleRepeat_of_maximalTriple h1 hℓG hab hac hbc hag hpre hfol
-  have hge : S.len - L ≤ ℓ :=
-    informationFeasible_tripleRepeat_ge_G_sub_L (L := L) hL2 hLG h hℓ1 hℓG hrep
-  exact hnr ⟨ℓ, hℓG⟩ _ _ _ (max_le hℓ1 hge) hrep
+    isTripleRepeat_of_maximalTriple h1 hEllG hab hac hbc hag hpre hfol
+  have hall := h.triples hrep hEllG
+  have hlen : ℓ + 2 ≤ L := bridgesCopy_length hall.1
+  omega
 
 end
 

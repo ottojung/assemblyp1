@@ -420,13 +420,13 @@ theorem genuine62_is_spelled_candidate {α : Type} [DecidableEq α] [Fintype α]
 
 
 
-/-- **The repaired #88 maximizer theorem.**
+/-- **The #88 maximizer theorem, with `I_s` doing the work.**
 
 Let the truth `S` be a circular word of length `G` and let `R` be a set of
 latent read starts carrying **full source-faithful** information feasibility at
 read length `L`. Let `ρ` be a genuine realization of `n` reads on `S` whose
-starts all lie in `R`, so the observation `x = observedOf hG S ρ` is the
-realized read multiset. Suppose
+starts all lie in `R`, so the observation `x = observedOf hG S ρ` is the realized
+read multiset. Suppose
 
 * the truth is itself a genuine §6.2 candidate for the observed read set
   (`hStruth`), and
@@ -434,14 +434,16 @@ realized read multiset. Suppose
   realization gives for free);
 
 and let `D` be a **same-length genuine §6.2 candidate** for the same observed
-read set. Then, provided the truth carries no Bresler triple repeat of length
-`≥ L - 1` (`hno`), the exact same-length Medvedev–Brudno likelihood of `D` is at
+read set. Then the exact same-length Medvedev–Brudno likelihood of `D` is at
 most that of `S`.
 
-The likelihood is `AssemblyP1.SameLengthExactMLCounterexample.sameLengthExactLik`
-— the same objective the negative theorem
-`AssemblyP1.SameLengthExactMLCounterexample.same_length_exact_ML_refutation_62`
-refutes, so the two results are directly comparable.
+**There is no nondegeneracy premise.** Up to this commit the theorem carried an
+explicit `hno : ¬ RepeatAdapter.HasLongTripleRepeat` hypothesis, and
+`AssemblyP1.WraparoundTripleRepeat` kernel-checked that this premise was not
+dischargeable from `I_s`. That counterexample was an artifact of an endpoint-only
+reading of `SourceFaithfulIs.BridgesCopy`; with the source's strict-straddling
+reading, `BridgingBridge.informationFeasible_no_long_triple_repeat` discharges
+`hno` from `I_s` and `2 ≤ L` alone, and it is used here.
 
 What is *new* here relative to
 `AssemblyP1.OrientedSameLengthML.informationFeasible_exactLik_maximizer` is that
@@ -450,52 +452,29 @@ What is *new* here relative to
 with the trivial observation that realized read types are observed read types.
 That theorem needed it as a premise; here it is a consequence.
 
-**An audit finding, stated as a fact about this theorem's proof rather than as a
-claim about it.** `_hfeas` and `_hR` are *not used*. Lean's linter reports this
-and the names are underscore-prefixed so that it is visible. The reason is
-structural: `genuine62_molecule_eq` derives the candidate class entirely from
-the §6.2 certificate, using `VisitsObserved` and the vertex lower bound of `1`
-(`visited_of_positive_throughput`). Neither the information-feasible predicate
-nor the start set enters. So the honest reading of this theorem is:
-
-* the §6.2 support-spelling restriction, read literally, is *by itself* enough
-  to make the truth an exact maximum-likelihood same-length candidate over the
-  §6.2-feasible class; and
-
-* the residual hypothesis is only `¬ HasLongTripleRepeat`, the pre-existing
-  interface boundary of the rigidity chain — **not** an `I_s`-derived
-  conclusion.
-
-This is stronger than "full `I_s` plus a certificate suffices", and it is worth
-recording precisely because it relocates where the open difficulty lies: it is
-not in transferring `I_s` into the §6.2 candidate class (that transfer is
-automatic), and it is not in the coverage interpretation. It is entirely in the
-long-triple-repeat regime of `AssemblyP1.BridgingBridge`.
-
-`hno` is the long-standing interface hypothesis of
-`AssemblyP1.OrientedFinal.oriented_same_length_spectrum_rigidity`. It is stated
-explicitly and is *not* claimed to follow from `InformationFeasible`: it does
-not, and `AssemblyP1.WraparoundTripleRepeat` kernel-checks a truth-feasible
-full-`I_s` instance that carries such a triple repeat. See the module header
-and `docs/same-length-62-maximizer.md`. -/
+**An audit finding, now partly obsolete.** Up to this commit `_hfeas` and `_hR`
+were *not used* at all — the §6.2 support-spelling restriction, read literally,
+was by itself enough. `_hfeas` is now genuinely used, to obtain `hno`; `_hR`
+remains unused, which is correct: the start set plays no role beyond `I_s`. -/
 theorem informationFeasible_62_maximizer {α : Type} [DecidableEq α] [Fintype α]
     {G L n : ℕ} (hG : 0 < G) (hL2 : 2 ≤ L) (hLG : L ≤ G)
     (S D : Fin G → α) (ρ : OrientedSameLengthML.Realization G n)
     (R : Finset (Fin G))
     (_hR : ∀ i : Fin n, ρ i ∈ R)
-    (_hfeas : SourceFaithfulIs.InformationFeasible ⟨G, hG, S⟩ L R)
-    (hno : ¬ RepeatAdapter.HasLongTripleRepeat hG S L)
+    (hfeas : SourceFaithfulIs.InformationFeasible ⟨G, hG, S⟩ L R)
     {verts : List (Fin L → α)} {toList : (Fin L → α) → List α} {oMin : ℕ}
-    (hwx : ∀ w : Fin L → α, 0 < OrientedSameLengthML.observedOf (L := L) hG S ρ w → w ∈ verts)
+    (hwx : ∀ w : Fin L → α,
+      0 < OrientedSameLengthML.observedOf (L := L) hG S ρ w → w ∈ verts)
     (hStruth : Is62Candidate62 ⟨G, hG, S⟩ verts toList (fun y => y) (fun y => y) oMin)
     (hCand : Is62Candidate62 ⟨G, hG, D⟩ verts toList (fun y => y) (fun y => y) oMin) :
     OrientedSameLengthML.exactLik (L := L) hG D (OrientedSameLengthML.observedOf hG S ρ)
       ≤ OrientedSameLengthML.exactLik (L := L) hG S (OrientedSameLengthML.observedOf hG S ρ) := by
-  have hD := OrientedSameLengthML.same_length_exactLik_maximizer hG S D hL2 hLG hno
+  have hno : ¬ RepeatAdapter.HasLongTripleRepeat hG S L :=
+    BridgingBridge.informationFeasible_no_long_triple_repeat hL2 hfeas
+  exact OrientedSameLengthML.same_length_exactLik_maximizer hG S D hL2 hLG hno
     (OrientedSameLengthML.observedOf hG S ρ)
     (genuine62_is_spelled_candidate hG S D (OrientedSameLengthML.observedOf hG S ρ)
       hStruth hCand hwx)
-  exact hD
 
 end
 

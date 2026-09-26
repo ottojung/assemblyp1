@@ -689,19 +689,21 @@ theorem covering_constant_reads_is_constant {α : Type} [DecidableEq α] {G L : 
   rw [h1]
   exact hobs r hr d
 
-/-! ## The honest end-to-end endpoint, from `InformationFeasible`
+/-! ## The end-to-end endpoint, from `InformationFeasible` alone
 
-The theorem below is the strongest statement of the #88 target that is *true*
-in this repository. Its premise is a genuine realization together with **full
-source-faithful** information feasibility of the set of distinct latent starts,
-plus the sharp nondegeneracy condition on the truth; its conclusion is the
-actual same-length exact Medvedev–Brudno objective. The wraparound regime that
-`AssemblyP1.BridgingBridge` shows `I_s` cannot exclude is an explicit premise
-here, and is *not* assumed away.
+The theorem below is the #88 target statement, and with the corrected
+source-faithful bridging semantics it needs **no nondegeneracy premise at
+all**: `2 ≤ L` and full `I_s` already give
+`¬ HasLongTripleRepeat` (`AssemblyP1.BridgingBridge.informationFeasible_no_long_triple_repeat`).
+The conclusion is the actual same-length exact Medvedev–Brudno objective.
 
-`AssemblyP1.SameLengthExactMLCounterexample` shows that without the
-nondegeneracy — and, more decisively, without restricting the candidate class —
-the same conclusion is false, and pins down exactly where the boundary lies. -/
+Up to this commit the same theorem needed the extra
+`BridgingBridge.SharpNoLongTripleRepeat` hypothesis, and `AssemblyP1.MLEscape`
+carried a further unproved combinatorial culprit statement to cover the
+"wraparound regime" that the extra hypothesis left open. Both existed only
+because `BridgesCopy` was read endpoint-wise rather than as the source's
+strict straddling of the occurrence; see `docs/bridging-source-semantics.md` and
+`docs/issue88-wraparound-contrapositive.md`. -/
 
 /-- The `Genome` of a same-length truth, for the shared bridging layer. -/
 def asGenome {α : Type} {G : ℕ} (hG : 0 < G) (S : Fin G → α) :
@@ -709,28 +711,26 @@ def asGenome {α : Type} {G : ℕ} (hG : 0 < G) (S : Fin G → α) :
 
 /-- **The end-to-end endpoint.** Let `ρ` be a genuine realization of `n` reads on
 the truth `S`, let `R` be a set of latent starts containing all of them, and
-suppose `InformationFeasible (asGenome hG S) L R` at full strength. If the
-truth carries no triple repeat in the bridging-permitted regime
-`max (L - 1) (G - L) ≤ e`, then the truth maximises the oriented same-length
-exact multinomial objective over the strict spelled same-length candidate class.
+suppose `InformationFeasible (asGenome hG S) L R` at full strength. Then the
+truth maximises the oriented same-length exact multinomial objective over the
+strict spelled same-length candidate class: there is no nondegeneracy premise.
 
-The hypothesis side goes through `AssemblyP1.BridgingBridge`, which discharges
-`¬ HasLongTripleRepeat` from `InformationFeasible` plus exactly that
-nondegeneracy; the conclusion side is the spectrum-rigidity chain composed with
-the congruence lemmas of this module. -/
+The hypothesis side is `AssemblyP1.BridgingBridge.informationFeasible_no_long_triple_repeat`,
+which discharges `¬ HasLongTripleRepeat` from `InformationFeasible` and `2 ≤ L`
+alone; the conclusion side is the spectrum-rigidity chain composed with the
+congruence lemmas of this module. -/
 theorem informationFeasible_exactLik_maximizer
     {α : Type} [DecidableEq α] [Fintype α] {G L n : ℕ} (hG : 0 < G) (hL2 : 2 ≤ L)
     (hLG : L ≤ G) (S : Fin G → α) (ρ : Realization G n)
     (R : Finset (Fin G))
     (hR : ∀ i : Fin n, ρ i ∈ R)
     (hfeas : SourceFaithfulIs.InformationFeasible (asGenome hG S) L R)
-    (hnr : BridgingBridge.SharpNoLongTripleRepeat (L := L) (S := asGenome hG S))
     (D : Fin G → α)
     (hD : IsSameLengthSpelledCandidate (L := L) hG S D (observedOf hG S ρ)) :
     exactLik (L := L) hG D (observedOf hG S ρ)
       ≤ exactLik (L := L) hG S (observedOf hG S ρ) := by
   have hno : ¬ RepeatAdapter.HasLongTripleRepeat hG S L :=
-    BridgingBridge.informationFeasible_sharp_no_long_triple_repeat hL2 hLG hfeas hnr
+    BridgingBridge.informationFeasible_no_long_triple_repeat hL2 hfeas
   exact same_length_exactLik_maximizer hG S D hL2 hLG hno (observedOf hG S ρ) hD
 
 
