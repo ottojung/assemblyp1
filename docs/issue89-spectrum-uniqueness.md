@@ -216,6 +216,67 @@ Probe scripts: kept out of the library; they are pure Python over
 `itertools.product` with the P2 test transcribed from
 `AssemblyP1.SourceFaithfulIs`.
 
+## 4b. (R3) as a genome-side statement, and what it still needs
+
+New module: `AssemblyP1/P2EulerAdapter.lean`.  It removes the multigraph layer
+from the (R3) residual and proves the transfer to it.
+
+**The transfer, kernel-checked.**  The classical route matches the two
+traversals of the `(L-1)`-de Bruijn multigraph start by start and needs a
+*bijection* of the starts.  That is unnecessary: equal complete `L`-spectra give
+a *choice* `τ : Fin G → Fin G` with `window S (τ j) = window E j`
+(`exists_startChoice`), and for such a choice the node-step condition
+
+```text
+nodeWindow hG L S (τ j + 1) = nodeWindow hG L S (τ (j + 1))
+```
+
+is **automatic** (`nodeStep_of_choice`): both sides are the `(L-1)`-suffix of
+the same length-`L` read type.  Also `E j = S (τ j)` (`symbol_of_choice`).  So
+the whole spectrum-to-traversal step is proved with no premise and no bijectivity.
+
+**The exact residual.**  `NodeStepUnique hG L S` says: every map of the starts
+satisfying `NodeStep` spells the truth up to cyclic shift.  It mentions only
+`nodeWindow`, `Fin G` and the successor map.  `p2_of_nodeStepUnique` proves
+
+```text
+specCount hG L S = specCount hG L E  ->  NodeStepUnique hG L S  ->  RotEquiv hG E S
+```
+
+so `NodeStepUnique` **replaces** the `hUnique : UniqueEulerCircuit …` premise of
+§2's `p2_spectrum_unique_up_to_rotation` by a single decidable combinatorial
+statement about the truth alone: no `EulerCircuit`, no `TrailEquiv`, no
+multigraph, no `UniqueEulerCircuit`, no `specCount`, no BBT/Ukkonen premise.
+
+**Which hypothesis `NodeStepUnique` needs — kernel-checked.**  It cannot be
+derived from "node multiplicity `≤ 2`" alone.  With `G = 6`, `L = 3`,
+`S = 0 0 1 0 1 1` and `E = 0 0 1 1 0 1`:
+
+| fact | name |
+| --- | --- |
+| every length-`2` word of `S` occurs at most twice | `cex_nodeCount_le_two` |
+| `S` and `E` have the same complete length-`3` spectrum | `cex_spec` |
+| `E` is not a cyclic shift of `S` | `cex_not_rotEquiv` |
+| the only maximal repeats of length `≥ L - 1 = 2` are at starts `1, 3` and `2, 5` | `cex_interleaved_long_repeats` |
+| those two pairs interleave, so `S` is not `P2` at `L = 3` | `cex_not_p2` |
+
+So the two traversals of the multigraph are separated by exactly one interleaved
+pair of **maximal repeats** of length `≥ L - 1`, i.e. by clause 2 of `P2`.
+`noInterleavedLongRepeat` is clause 2 in exactly the form the (R3) combinatorics
+consumes: it ranges over `SourceFaithfulIs.Genome.IsRepeat` (maximal on *both*
+sides) and **not** over the un-extended node pairs, which §3(R2) shows is false
+for `P2`.  Note that this is the maximal-repeat form, not `ExtCrossing`: the two
+are consequences of the same clause, but they are stated on different starts
+(`ExtCrossing` is about the shifted starts of `maxPair_isRepeat`), and the
+counterexample above shows the *unshifted* version is false.
+
+**`NodeStepUnique` is not proved.**  The remaining step is the (R3)
+combinatorial theorem: for a primitive `P2` truth whose `(L-1)`-mers each occur
+at most twice, every `NodeStep` map is a rotation up to the truth's symbols.
+The table above shows this is a genuine statement and identifies the hypothesis
+it must use; it is the laminar-chord / block-coherence argument of §3(R3) and
+`docs/bbt-chord-rematch-89.md` §4, and it is not attempted in this packet.
+
 ## 5. Honest status
 
 * Closed in the kernel: the P1 complete-spectrum uniqueness theorem, the
@@ -227,12 +288,18 @@ Probe scripts: kept out of the library; they are pure Python over
   counterexamples showing that the (R1)/(R2) statements of §3 as previously
   written are false, and the corrected `ExtCrossing` that replaces
   `NodeCrossing` for the chord worker.
-* **Not** closed: `UniqueEulerCircuit` under the P2 hypothesis, i.e. (R3) of §3
-  (the multigraph/chord combinatorics), and the bridge from (R1)+(R2) to
-  `UniqueEulerCircuit` for the corrected `ExtCrossing` rather than
-  `NodeCrossing`. Consequently
-  `p2_spectrum_unique_up_to_rotation` still takes `hUnique`, and the
-  `PopulationUniqueness` chain on `main` still takes `hBBTS`/`hBBTD`.
+* Closed in the kernel since this packet: the spectrum-to-traversal transfer
+  (no bijectivity needed), and the reduction of the (R3) residual to
+  `NodeStepUnique` — a genome-side statement with no multigraph, no
+  `UniqueEulerCircuit` and no BBT premise — together with a kernel-checked
+  instance showing node multiplicity `≤ 2` is insufficient and that clause 2
+  (in maximal-repeat form) is the load-bearing hypothesis.
+* **Not** closed: `NodeStepUnique` for a `P2` truth, i.e. the combinatorial
+  core of (R3). Consequently `p2_spectrum_unique_up_to_rotation` still takes
+  `hUnique`, and the `PopulationUniqueness` chain still takes
+  `hBBTS`/`hBBTD`; but the residual is now a single decidable statement about
+  `nodeWindow` alone, with the exact hypothesis it needs identified and
+  separated by a kernel-checked counterexample.
 * No `axiom`, `sorry` or `admit` was introduced; nothing in the library was
   weakened to make a theorem provable; the P1 theorem is a proved sub-case,
   not a replacement of the P2 statement by a weaker one.
