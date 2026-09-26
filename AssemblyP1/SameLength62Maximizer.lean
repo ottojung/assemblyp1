@@ -99,13 +99,27 @@ and is **not** opaque:
   `AssemblyP1.BridgingBridge.informationFeasible_sharp_no_long_triple_repeat`.
 
 It is an explicit premise and is **not** claimed to follow from `InformationFeasible`
-plus the truth's certificate. It does not, and that is provable rather than
-merely suspected: the genome `AAAAB` of length `5` with read length `3`, read at
-all five starts, satisfies full source-faithful `InformationFeasible`, has every
-one of its length-`3` windows observed (so it is a §6.2 candidate in the sense of
+plus the truth's certificate. It does not — for the *endpoint-only* bridging
+predicate that `SourceFaithfulIs.InformationFeasible` uses. That is provable
+rather than merely suspected: the genome `AAAAB` of length `5` with read length
+`3`, read at all five starts, satisfies full `InformationFeasible`, has every one
+of its length-`3` windows observed (so it is a §6.2 candidate in the sense of
 `genuine62_support_eq`), and nonetheless carries a maximal triple repeat of
-length `2 = L - 1`. The residual regime is therefore non-empty, which is exactly
-why the premise is left visible here instead of being discharged. What this
+length `2 = L - 1`. The residual regime is therefore non-empty for that
+predicate, which is why the premise is left visible here instead of being
+discharged.
+
+**Audit note (`docs/bridging-lift-audit.md`).** That `AAAAB` instance is
+bridged only in the *wraparound* mode: the bridging read reaches the two flank
+bases across the complement arc, and `ℓ + 2 = 4 > L = 3`. The source's
+single-lift interval condition (`r < t`, `t + ℓ < r + L`) does not count that
+as bridging, and `AssemblyP1.LiftAudit.wraparound_not_informationFeasible_lift`
+kernel-checks that `AAAAB` is **not** information-feasible in that reading,
+while `informationFeasibleLift_no_longTripleRepeat` shows that the same-lift
+reading of `I_s` **discharges** `hno` outright. So the premise is residual only
+for the endpoint-only predicate; under the source-faithful same-lift predicate
+the endpoint of this module needs no such premise
+(`AssemblyP1.LiftAudit.informationFeasibleLift_62_spelledML`). What this
 module adds on top of
 `AssemblyP1.OrientedSameLengthML.informationFeasible_exactLik_maximizer` is the
 removal of the observation-level hypothesis: that theorem needs

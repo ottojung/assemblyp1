@@ -238,6 +238,33 @@ python3 scripts/issue88-wraparound-search.py 7 3 7
 python3 scripts/issue88-wraparound-search.py 6 4 6
 ```
 
+**A circulation-level search (added later).** The culprit statement is stated
+at the `HasSpectralEscape` level, i.e. over *arbitrary* mass-`G` positive
+balanced circulations `B` on the truth's window support, not only over
+candidate word spectra; §6 lists that gap. `scripts/issue88-blevel-search.py`
+closes the *search* half of it: it enumerates all mass-`G` positive balanced
+circulations on the truth's support (all positive compositions of `G` over the
+support, filtered by the `Balanced` clause at the truth's nodes) and checks the
+implication against `HasMidRangeTripleRepeat` for every read length. No
+violation was found for binary `G ≤ 8` (`L ≤ G`), 3-letter `G ≤ 8` and 4-letter
+`G = 7` at `L ∈ {2,3}`; the number of escaping instances is large
+(348 at binary `G = 8`, 5520 at 3-letter `G = 8`), so the harness is not void.
+
+```
+python3 scripts/issue88-blevel-search.py 8 2 2
+python3 scripts/issue88-blevel-targeted.py 8 3 2,3
+```
+
+A second, independent observation from the same enumeration: every escaping
+circulation found was the spectrum of *some* circular word of length `G`
+(`0` exceptions in 5825 circulations at `G ≤ 7` binary/3-letter), which is what
+one expects from Euler's theorem, since the support graph of a circular word is
+strongly connected and a positive balanced circulation on a connected multigraph
+is the edge-multiplicity function of a closed walk of the same length. That is
+**not** proved in Lean here; until it is, the candidate-level search is evidence
+for the `HasSpectralEscape`-level statement only through this finite agreement,
+which is exactly the gap §6 records.
+
 **Why the quantified version is not in Lean.** The obvious
 `decide`-statement — all binary truths and candidates at `G = 7`, all
 `2 ≤ L ≤ 7` — was attempted and abandoned: with `Finset`-based `support` and

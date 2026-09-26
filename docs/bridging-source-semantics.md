@@ -27,6 +27,18 @@ Thus “contains the repeated substring” is not sufficient if the read starts 
 
 For a circular genome this interval formula is a **modeling normalization**, not source notation: it should be interpreted on a suitable integer lift of the circle, so occurrences/reads crossing the chosen origin are not treated differently.
 
+**Audit note (kernel-checked correction).** The endpoint-only modular reading of
+this formula, which is what `AssemblyP1.SourceFaithfulIs.BridgesCopy` implements,
+is *strictly weaker* than the formula above: it asks a read to touch the base
+before the copy and the base after it, without asking it to contain the copy, so
+a read can bridge a copy of length `ℓ` with `ℓ + 2 > L` by reaching both flank
+bases across the complement arc. `docs/bridging-lift-audit.md` records the
+finding, the corrected predicate `AssemblyP1.LiftAudit.BridgesCopyLift`, the
+proved bound `ℓ + 2 ≤ L`, the kernel-checked non-equivalence, and the
+consequence that `I_s` in the same-lift reading **excludes** long triple
+repeats. Any claim of the form "this read collection is `I_s`-feasible" must be
+read with that correction in mind.
+
 ## Bridged repeats and interleaving
 
 **Source fact.** Bresler et al. use the following abbreviations after Theorem 1:

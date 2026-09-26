@@ -45,6 +45,37 @@ In this particular instance the truth nevertheless *is* a maximiser over every
 same-support length-`5` competitor (both the truth and the best competitor score
 `4/3125` in the exact objective), so the regime contains no counterexample
 *here*. No theorem is claimed about the regime in general.
+
+## Audit note (bridging predicate, see `docs/bridging-lift-audit.md`)
+
+The bridging used here is `AssemblyP1.SourceFaithfulIs.BridgesCopy`, which is
+**endpoint-only and modular**: it asks a read to touch the base before the copy
+and the base after it, without asking it to contain the copy. That is what makes
+the `e = 2` copies of this instance bridged — by the read at start `2`, which
+covers position `4` and position `2` across the complement arc `{2,3,4}`, with
+`e + 2 = 4 > L = 3`.
+
+`docs/bridging-source-semantics.md` records the source's condition as a
+*single-lift interval* condition (`r < t` and `t + ℓ < r + L`), i.e. the read
+strictly contains the copy, and in that reading a bridged copy must satisfy
+`ℓ + 2 ≤ L`. The distinction is not cosmetic, and it is now kernel-checked in
+`AssemblyP1.LiftAudit`:
+
+* `wraparound_witness_bridges_with_complement_arc` — this instance, bridged;
+* `wraparound_witness_not_bridged_lift` — this instance, **not** bridged in the
+  same-lift reading;
+* `BridgesCopy_ne_BridgesCopyLift` — the two predicates are not equivalent;
+* `wraparound_not_informationFeasible_lift` — this instance is **not**
+  information-feasible in the same-lift reading;
+* `informationFeasibleLift_no_longTripleRepeat` — under that reading, `I_s`
+  excludes long triple repeats, so the "residual regime is non-empty" claim made
+  in this module's header does not survive it.
+
+This module is therefore **rescoped, not deleted**: it remains a correct
+witness that the *endpoint-only* predicate admits the wraparound mode, and it is
+the reason that predicate was the one in the merged development. It is not a
+witness about the source-faithful predicate, and its header claim must be read
+with the audit note above.
 -/
 
 namespace AssemblyP1.WraparoundTripleRepeat

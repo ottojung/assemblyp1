@@ -18,6 +18,7 @@ import AssemblyP1.SameLengthExactMLCounterexample
 import AssemblyP1.SameLength62Maximizer
 import AssemblyP1.WraparoundTripleRepeat
 import AssemblyP1.MLEscape
+import AssemblyP1.BridgesCopyLift
 import AssemblyP1.PopulationUniqueness
 import AssemblyP1.AAABConverse
 
@@ -67,3 +68,29 @@ import AssemblyP1.AAABConverse
 #print axioms AssemblyP1.MLEscape.culprit_instance_checked
 #print axioms AssemblyP1.MLEscape.cand0_is_escape
 #print axioms AssemblyP1.MLEscape.truth0_has_midrange_triple
+
+/-! ## Axiom audit for the bridging-predicate correction
+(`AssemblyP1.LiftAudit`): the same-lift reading of `BridgesCopy`, the
+`ℓ + 2 ≤ L` consequence, the corrected-`I_s` exclusion of long triple repeats,
+the #88 endpoint under that reading, and the instance audit. -/
+
+#print axioms AssemblyP1.LiftAudit.BridgesCopyLift
+#print axioms AssemblyP1.LiftAudit.BridgesCopyLift.to_old
+#print axioms AssemblyP1.LiftAudit.BridgesCopyLift.length_bound
+#print axioms AssemblyP1.LiftAudit.wraparound_witness_bridges_with_complement_arc
+#print axioms AssemblyP1.LiftAudit.wraparound_witness_not_bridged_lift
+#print axioms AssemblyP1.LiftAudit.BridgesCopy_ne_BridgesCopyLift
+#print axioms AssemblyP1.LiftAudit.InformationFeasibleLift
+#print axioms AssemblyP1.LiftAudit.InformationFeasibleLift.to_old
+#print axioms AssemblyP1.LiftAudit.informationFeasibleLift_triple_le
+#print axioms AssemblyP1.LiftAudit.informationFeasibleLift_no_longTripleRepeat
+#print axioms AssemblyP1.LiftAudit.informationFeasibleLift_62_spelledML
+#print axioms AssemblyP1.LiftAudit.wraparound_not_informationFeasible_lift
+#print axioms AssemblyP1.LiftAudit.truth0_not_information_feasible_lift
+#print axioms AssemblyP1.LiftAudit.fixedLengthExact_witness_corrected
+#print axioms AssemblyP1.LiftAudit.fixedLengthBinomial_witness_corrected
+#print axioms AssemblyP1.LiftAudit.finiteSampling_witness_corrected
+#print axioms AssemblyP1.LiftAudit.exactVariantE_witness_corrected
+#print axioms AssemblyP1.LiftAudit.sameLengthExactML_witness_corrected
+#print axioms AssemblyP1.LiftAudit.sameLengthSection62_witness_corrected
+#print axioms AssemblyP1.LiftAudit.section62Bridging_witness_corrected
