@@ -599,3 +599,148 @@ theorem properPower_of_cyclicPeriod {T : List E} (hne : T ≠ [])
       omega
 
 end Periods
+
+/-! ## Primitivity forces a proper power on a functional support
+
+This section is where the two halves of the note meet the Lyndon–Schützenberger
+step.  All of it is on the real oriented window graph: `edges` is a set of
+length-`L` windows, `winPrefix`/`winSuffix` are the tail/head, and a closed trail
+of windows is a cyclic edge-type spelling. -/
+
+section FunctionalSupport
+
+variable {α : Type} [DecidableEq α] {L : ℕ}
+variable (edges : Finset (Fin L → α))
+
+/-- The edge at position `j` of a nonempty window trail. -/
+private theorem cycEdge_get {T : List (Fin L → α)} (hpos : 0 < T.length) (j : ℕ)
+    (hj : j < T.length) : PopulationReduction.cycEdge T hpos j = T.get ⟨j, hj⟩ := by
+  unfold PopulationReduction.cycEdge
+  congr 1
+  exact Fin.ext (Nat.mod_eq_of_lt hj)
+
+/-- Incrementing a residue class: `(x + 1) % n = ((x % n) + 1) % n` for `n > 1`. -/
+theorem mod_succ_eq (n : ℕ) (hn : 1 < n) (x : ℕ) :
+    (x + 1) % n = ((x % n) + 1) % n := by
+  have h1 : (x + 1) % n = (x % n + 1 % n) % n := Nat.add_mod x 1 n
+  have h2 : 1 % n = 1 := Nat.mod_eq_of_lt hn
+  rw [h1, h2]
+
+/-- Arithmetic helper: stepping forward past the end of a modular index. -/
+theorem mod_index_add (n i m : ℕ) (hi : i ≤ n) : i + (m + n - i) = m + n := by
+  have h2 : i + ((m + n) - i) = m + n := Nat.add_sub_of_le (by omega)
+  omega
+
+/-- Arithmetic helper: the same step from a later index. -/
+theorem mod_index_add' (n i j m : ℕ) (hi : i ≤ n) (hij : i ≤ j) :
+    j + (m + n - i) = (m + (j - i)) + n := by
+  have h4 : (j - i) + i = j := Nat.sub_add_cancel hij
+  have h1 : j + (m + n - i) = (j - i) + (m + n) := by
+    have h5 : j + (m + n - i) = (j - i) + (i + (m + n - i)) := by omega
+    rw [h5, mod_index_add n i m hi]
+  rw [h1, Nat.add_comm (j - i) (m + n),
+    show m + n + (j - i) = m + (j - i) + n by omega]
+
+/-- **A repeated edge in a functional-support trail makes it a proper power.**
+If every node of the support has at most one outgoing edge type, the closed
+trail is a walk in a functional graph: its successor at each position is
+determined by the current edge.  Hence two occurrences of the same edge force a
+nontrivial cyclic period, i.e. a proper power. -/
+theorem repeatedEdge_properPower_of_uniqueOut {T : List (Fin L → α)} {s : Fin (L - 1) → α}
+    (hT : TrailEnds winPrefix winSuffix T s s) (hne : T ≠ [])
+    (hin : ∀ e ∈ T, e ∈ edges) (huniq : ∀ e₁ ∈ edges, ∀ e₂ ∈ edges,
+      winPrefix e₁ = winPrefix e₂ → e₁ = e₂)
+    (i j : ℕ) (hij : i < j) (hjlt : j < T.length)
+    (heq : T.get ⟨i, by omega⟩ = T.get ⟨j, hjlt⟩) :
+    ∃ l, l ≠ [] ∧ ∃ k, 2 ≤ k ∧ T = nCopies l k := by
+  have hpos : 0 < T.length := length_pos_of_ne_nil hne
+  have hil : i < T.length := by omega
+  have hn2 : 1 < T.length := by omega
+  -- One step of a closed window trail is incidence-compatible, cyclically.
+  have hstep : ∀ (a b : ℕ) (ha : a < T.length) (hb : b < T.length),
+      T.get ⟨a, ha⟩ = T.get ⟨b, hb⟩ →
+      T[(a + 1) % T.length]? = T[(b + 1) % T.length]? := by
+    intro a b ha hb hab
+    have hcyc1 := trail_cyc_adj hT hpos (a % T.length) (Nat.mod_lt _ (by omega))
+    have hcyc2 := trail_cyc_adj hT hpos (b % T.length) (Nat.mod_lt _ (by omega))
+    have e1 : PopulationReduction.cycEdge T hpos (a % T.length) = T.get ⟨a, ha⟩ := by
+      rw [Nat.mod_eq_of_lt ha]
+      exact cycEdge_get hpos a ha
+    have e2 : PopulationReduction.cycEdge T hpos (b % T.length) = T.get ⟨b, hb⟩ := by
+      rw [Nat.mod_eq_of_lt hb]
+      exact cycEdge_get hpos b hb
+    have e3 : PopulationReduction.cycEdge T hpos ((a % T.length + 1) % T.length)
+        = T.get ⟨(a + 1) % T.length, Nat.mod_lt _ (by omega)⟩ := by
+      rw [show (a % T.length + 1) % T.length = (a + 1) % T.length by
+        rw [Nat.mod_eq_of_lt ha]]
+      exact cycEdge_get hpos ((a + 1) % T.length) (Nat.mod_lt _ (by omega))
+    have e4 : PopulationReduction.cycEdge T hpos ((b % T.length + 1) % T.length)
+        = T.get ⟨(b + 1) % T.length, Nat.mod_lt _ (by omega)⟩ := by
+      rw [show (b % T.length + 1) % T.length = (b + 1) % T.length by
+        rw [Nat.mod_eq_of_lt hb]]
+      exact cycEdge_get hpos ((b + 1) % T.length) (Nat.mod_lt _ (by omega))
+    have hqa : (a + 1) % T.length < T.length := Nat.mod_lt _ (by omega)
+    have hqb : (b + 1) % T.length < T.length := Nat.mod_lt _ (by omega)
+    have h1 : winSuffix (T.get ⟨a, ha⟩) = winPrefix (T.get ⟨(a + 1) % T.length, hqa⟩) := by
+      rw [← e3, ← e1]
+      exact hcyc1
+    have h2 : winSuffix (T.get ⟨b, hb⟩) = winPrefix (T.get ⟨(b + 1) % T.length, hqb⟩) := by
+      rw [← e4, ← e2]
+      exact hcyc2
+    have hmem1 : T.get ⟨(a + 1) % T.length, hqa⟩ ∈ edges :=
+      hin _ (List.get_mem T ⟨(a + 1) % T.length, hqa⟩)
+    have hmem2 : T.get ⟨(b + 1) % T.length, hqb⟩ ∈ edges :=
+      hin _ (List.get_mem T ⟨(b + 1) % T.length, hqb⟩)
+    have hEq : T.get ⟨(a + 1) % T.length, hqa⟩ = T.get ⟨(b + 1) % T.length, hqb⟩ :=
+      huniq _ hmem1 _ hmem2 (h1.symm.trans ((congrArg winSuffix hab).trans h2))
+    have hL1 : T[(a + 1) % T.length]? = some (T.get ⟨(a + 1) % T.length, hqa⟩) :=
+      List.getElem?_eq_getElem hqa
+    have hL2 : T[(b + 1) % T.length]? = some (T.get ⟨(b + 1) % T.length, hqb⟩) :=
+      List.getElem?_eq_getElem hqb
+    rw [hL1, hL2]
+    exact congrArg some hEq
+  -- The trail is determined by its first edge: the two occurrences stay in sync.
+  have hprop : ∀ (k : ℕ), T[(i + k) % T.length]? = T[(j + k) % T.length]? := by
+    intro k
+    induction k with
+    | zero =>
+        have h1 : (i + 0) % T.length = i := by rw [Nat.add_zero, Nat.mod_eq_of_lt hil]
+        have h2 : (j + 0) % T.length = j := by rw [Nat.add_zero, Nat.mod_eq_of_lt hjlt]
+        rw [h1, h2, List.getElem?_eq_getElem hil, List.getElem?_eq_getElem hjlt]
+        exact congrArg some heq
+    | succ k ih =>
+        have ha : (i + k) % T.length < T.length := Nat.mod_lt _ (by omega)
+        have hb : (j + k) % T.length < T.length := Nat.mod_lt _ (by omega)
+        have hq1 : ((i + k) % T.length + 1) % T.length = (i + (k + 1)) % T.length :=
+          (mod_succ_eq T.length (by omega) (i + k)).symm
+        have hq2 : ((j + k) % T.length + 1) % T.length = (j + (k + 1)) % T.length :=
+          (mod_succ_eq T.length (by omega) (j + k)).symm
+        have ih' : T.get ⟨(i + k) % T.length, ha⟩ = T.get ⟨(j + k) % T.length, hb⟩ :=
+          Option.some.inj ((List.getElem?_eq_getElem ha).symm.trans
+            (ih.trans (List.getElem?_eq_getElem hb)))
+        have h6 := hstep ((i + k) % T.length) ((j + k) % T.length) ha hb ih'
+        rw [hq1, hq2] at h6
+        exact h6
+  -- A period on all positions.
+  have hlink : ∀ (x k : ℕ), (x + k) % T.length = (x + k % T.length) % T.length := by
+    intro x k
+    simp [Nat.add_mod]
+  have hper : CyclicPeriod T (j - i) := by
+    intro m hm
+    have h1 : (i + (m + T.length - i)) % T.length = m := by
+      rw [mod_index_add T.length i m (Nat.le_of_lt hil), mod_add_self,
+        Nat.mod_eq_of_lt hm]
+    have h2 : (j + (m + T.length - i)) % T.length = (m + (j - i)) % T.length := by
+      rw [mod_index_add' T.length i j m (Nat.le_of_lt hil) (Nat.le_of_lt hij),
+        mod_add_self]
+    have h3 : (i + ((m + T.length - i) % T.length)) % T.length = m :=
+      (hlink i (m + T.length - i)).symm.trans h1
+    have h4 : (j + ((m + T.length - i) % T.length)) % T.length = (m + (j - i)) % T.length :=
+      (hlink j (m + T.length - i)).symm.trans h2
+    have h5 := hprop ((m + T.length - i) % T.length)
+    rw [h3, h4] at h5
+    exact h5
+  obtain ⟨l, hl, k, hk, heq⟩ := properPower_of_cyclicPeriod hne (by omega) (by omega) hper
+  exact ⟨l, hl, k, hk, heq⟩
+
+end FunctionalSupport
