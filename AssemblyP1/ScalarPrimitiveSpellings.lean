@@ -290,6 +290,312 @@ theorem rotate_closed {T : List E} {s : V} (h : TrailEnds tail head T s s)
         rw [hBdrop, hAtake]
         exact List.rotate_eq_drop_append_take (l := T) (n := i) (Nat.le_of_lt hlt)
       rw [hR, List.getElem?_rotate (l := T) (n := i) (m := 0) (hml := hTlen),
-        Nat.add_zero, Nat.mod_eq_of_lt hlt]
+        Nat.zero_add, Nat.mod_eq_of_lt hlt]
 
 end Cutting
+
+/-! ## The two-excursion cut at a branching node -/
+
+section BranchingCut
+
+variable {V E : Type} [DecidableEq V] [DecidableEq E]
+variable (tail head : E → V)
+
+/-- **The two-excursion cut.**  Let `T` be a closed edge-type trail spelling the
+spectrum `c` on the support `edges`, and suppose the support branches at `v`:
+there are two distinct support edge types `e₁`, `e₂` leaving `v`.  Cutting the
+cyclic spelling at a visit of `e₁` and at a visit of `e₂` splits it into two
+nonempty closed excursions `A`, `B` at `v` whose first edge types are `e₁` and
+`e₂` resp., hence differ, and whose edge multiplicities add up to `c`.
+
+This is the graph-side step of `docs/scalar-primitive-spellings-83.md` that the
+word-equation step needed and did not have. -/
+theorem two_excursions_of_branching {T : List E} {s : V}
+    (hT : TrailEnds tail head T s s) (c : E → ℕ) (huse : ∀ e, edgeUse T e = c e)
+    (edges : Finset E) (v : V) (e₁ e₂ : E) (he₁ : e₁ ∈ edges) (he₂ : e₂ ∈ edges)
+    (he12 : e₁ ≠ e₂) (ht₁ : tail e₁ = v) (ht₂ : tail e₂ = v)
+    (hpos : ∀ e ∈ edges, 0 < c e) :
+    ∃ (A B : List E), A ≠ [] ∧ B ≠ [] ∧
+      (∃ w, TrailEnds tail head A v w) ∧ (∃ w, TrailEnds tail head B v w) ∧
+      A[0]? ≠ B[0]? ∧ ∀ e, edgeUse A e + edgeUse B e = c e := by
+  -- `e₁` occurs in the spelling, at some position.
+  have hpos₁ : 0 < edgeUse T e₁ := huse e₁ ▸ hpos e₁ he₁
+  obtain ⟨i, hi, hiT⟩ := List.getElem_of_mem (mem_of_edgeUse_pos hpos₁)
+  -- Rotate the cyclic spelling so that it starts at `e₁`.
+  obtain ⟨T', hT', huseT', hmemT', hfirst⟩ :=
+    rotate_closed (tail := tail) (head := head) hT i hi
+  have hfirst' : T'[0]? = some e₁ := by
+    have h1 := hfirst
+    rwa [List.getElem?_eq_getElem hi, hiT] at h1
+  have hne : T' ≠ [] := by
+    intro h0
+    rw [h0] at hfirst'
+    simp at hfirst'
+  -- The rotated spelling is a closed trail at `v`: it starts with `e₁`.
+  obtain ⟨v₀, hT'⟩ := hT'
+  obtain ⟨T'', f, hT'1, htf, hT'2⟩ :=
+    trailHead (tail := tail) (head := head) hT' hne
+  have hff : f = e₁ := by
+    have h1 : T'[0]? = some f := by
+      rw [hT'1]
+      exact List.getElem?_cons_zero
+    rw [hfirst'] at h1
+    exact Option.some.inj h1.symm
+  have hvv : v₀ = v := by
+    calc v₀ = tail f := htf.symm
+      _ = tail e₁ := by rw [hff]
+      _ = v := ht₁
+  -- `e₂` occurs in the rotated spelling, at a nonzero position.
+  have hpos₂ : 0 < edgeUse T' e₂ := huseT' e₂ ▸ (huse e₂ ▸ hpos e₂ he₂)
+  have hmem₂ : e₂ ∈ T' := (hmemT' e₂).mp (mem_of_edgeUse_pos (huseT' e₂ ▸ hpos₂))
+  obtain ⟨q, hq, hqT'⟩ := List.getElem_of_mem hmem₂
+  have hq0 : 0 < q := by
+    by_contra hcon
+    have hq0' : q = 0 := by omega
+    subst hq0'
+    have hT'len : 0 < T'.length := by
+      rw [hT'1]
+      simp
+    have h1 := hfirst'
+    have h2' : T'[0]? = some e₂ :=
+      (List.getElem?_eq_getElem hT'len).trans (congrArg some hqT')
+    have h3 : e₁ = e₂ := Option.some.inj (h1.symm.trans h2')
+    exact he12 h3
+  -- Cut the (rotated) closed trail at `q`.
+  obtain ⟨A, B, u, hT'3, hAne, hBne, hAtake, hBdrop, hA, hB⟩ :=
+    trailSplitClosed (tail := tail) (head := head) (hvv ▸ hT') q hq0 hq
+  -- The first edge of `B` is `e₂`, so `B` runs from `v` to `v`.
+  have hBhead : B[0]? = some e₂ := by
+    rw [hBdrop, List.getElem?_drop, show q + 0 = q by rfl,
+      List.getElem?_eq_getElem hq, hqT']
+  have hu : u = v := by
+    obtain ⟨B', g, hB1, htg, hB2⟩ := trailHead (tail := tail) (head := head) hB hBne
+    have hg : g = e₂ := by
+      have h1 : B[0]? = some g := by
+        rw [hB1]
+        exact List.getElem?_cons_zero
+      rw [hBhead] at h1
+      exact Option.some.inj h1.symm
+    have hu' : u = tail e₂ := by
+      calc u = tail g := htg.symm
+        _ = tail e₂ := by rw [hg]
+    exact hu'.trans ht₂
+  -- The first edge of `A` is `e₁`.
+  have hAhead : A[0]? = some e₁ := by
+    simp [hAtake, List.getElem?_take, hq0.ne', hfirst']
+  refine ⟨A, B, hAne, hBne, ⟨v, hu ▸ hA⟩, ⟨v, hu ▸ hB⟩, ?_, ?_⟩
+  · rw [hAhead, hBhead]
+    intro hcon
+    exact he12 (Option.some.inj hcon)
+  · intro e
+    calc edgeUse A e + edgeUse B e = edgeUse (A ++ B) e := (edgeUse_append A B e).symm
+      _ = edgeUse T' e := by rw [hT'3]
+      _ = c e := huseT' e ▸ huse e
+
+end BranchingCut
+
+/-! ## Cyclic periods: a nontrivial period forces a proper power
+
+This section is the analytic core of the *nonbranching* half of
+`docs/scalar-primitive-spellings-83.md`: a cyclic edge-type spelling whose
+support has at most one outgoing edge type per node is a cyclic walk of a
+functional graph, hence periodic, hence (if not of minimal length) a proper
+power. -/
+
+section Periods
+
+variable {E : Type}
+
+/-- `p` is a cyclic period of `T`: shifting an index by `p` does not change the entry. -/
+def CyclicPeriod (T : List E) (p : ℕ) : Prop :=
+  ∀ (j : ℕ), j < T.length → T[j]? = T[(j + p) % T.length]?
+
+theorem CyclicPeriod.zero (T : List E) : CyclicPeriod T 0 := by
+  intro j hj
+  rw [Nat.add_zero, Nat.mod_eq_of_lt hj]
+
+theorem CyclicPeriod.self (T : List E) : CyclicPeriod T T.length := by
+  intro j hj
+  rw [Nat.add_mod_right, Nat.mod_eq_of_lt hj]
+
+theorem CyclicPeriod.add {T : List E} {p q : ℕ} (hp : CyclicPeriod T p) (hq : CyclicPeriod T q) :
+    CyclicPeriod T (p + q) := by
+  intro j hj
+  rw [hp j hj, hq ((j + p) % T.length) (Nat.mod_lt _ (by omega)), Nat.mod_add_mod,
+    show j + p + q = j + (p + q) by omega]
+
+theorem CyclicPeriod.neg {T : List E} {q : ℕ} (hq : CyclicPeriod T q)
+    (hqn : q < T.length) : CyclicPeriod T (T.length - q) := by
+  intro j hj
+  have h1 := hq ((j + (T.length - q)) % T.length) (Nat.mod_lt _ (by omega))
+  have hidx2 : (j + T.length) % T.length = j := by
+    rw [Nat.add_mod, Nat.mod_self, Nat.add_zero, Nat.mod_mod, Nat.mod_eq_of_lt hj]
+  rw [h1, Nat.mod_add_mod,
+    show (j + (T.length - q) + q) = j + T.length by omega, hidx2]
+
+theorem CyclicPeriod.sub {T : List E} {p q : ℕ} (hp : CyclicPeriod T p) (hq : CyclicPeriod T q)
+    (hq0 : 0 < q) (hqn : q < T.length) (hpn : p < T.length) (hqp : q ≤ p) :
+    CyclicPeriod T (p - q) := by
+  intro j hj
+  have h1 := CyclicPeriod.neg hq hqn ((j + p) % T.length) (Nat.mod_lt _ (by omega))
+  have hjn : (j + T.length) % T.length = j := by
+    rw [Nat.add_mod, Nat.mod_self, Nat.add_zero, Nat.mod_mod, Nat.mod_eq_of_lt hj]
+  have hstep : (j + p + (T.length - q)) % T.length = (j + (p - q)) % T.length := by
+    rw [show j + p + (T.length - q) = (j + T.length) + (p - q) by omega]
+    rw [Nat.add_mod, hjn, Nat.add_mod, Nat.mod_mod]
+    exact (Nat.add_mod j (p - q) T.length).symm
+  rw [hp j hj, h1, Nat.mod_add_mod, hstep]
+
+theorem gcd_add_right (a b : ℕ) : Nat.gcd a (a + b) = Nat.gcd a b := by
+  apply Nat.dvd_antisymm
+  · exact Nat.dvd_gcd (Nat.gcd_dvd_left _ _)
+      ((Nat.dvd_add_right (a := Nat.gcd a (a + b)) (b := a) (c := b)
+        (Nat.gcd_dvd_left _ _)).mp (Nat.gcd_dvd_right _ _))
+  · exact Nat.dvd_gcd (Nat.gcd_dvd_left _ _)
+      ((Nat.dvd_add_right (a := Nat.gcd a b) (b := a) (c := b)
+        (Nat.gcd_dvd_left a b)).mpr (Nat.gcd_dvd_right a b))
+
+theorem gcd_add_left (a b : ℕ) : Nat.gcd (a + b) a = Nat.gcd a b := by
+  rw [Nat.gcd_comm, gcd_add_right]
+
+/-- The gcd of two periods is a period. -/
+theorem CyclicPeriod.gcd {T : List E} {p q : ℕ} (hp : CyclicPeriod T p) (hq : CyclicPeriod T q)
+    (hp0 : 0 < p) (hpn : p < T.length) (hq0 : 0 < q) (hqn : q < T.length) :
+    CyclicPeriod T (Nat.gcd p q) := by
+  have aux : ∀ n : ℕ, ∀ (a b : ℕ), a + b = n → 0 < a → 0 < b → a < T.length → b < T.length →
+      CyclicPeriod T a → CyclicPeriod T b → CyclicPeriod T (Nat.gcd a b) := by
+    intro n
+    induction n using Nat.strong_induction_on with
+    | h n ih =>
+        intro a b hab ha hb han hbn hpa hpb
+        by_cases hbeq : a = b
+        · rw [hbeq, Nat.gcd_self]
+          exact hpb
+        · by_cases hab' : a < b
+          · have hsub0 := CyclicPeriod.sub (p := b) (q := a) hpb hpa ha han hbn hab'.le
+            have hrec := ih (a + (b - a)) (by omega) a (b - a) (by omega) (by omega) (by omega)
+              (by omega) (by omega) hpa hsub0
+            have h1 : Nat.gcd a b = Nat.gcd a (a + (b - a)) := by
+              rw [show a + (b - a) = b by omega]
+            have hg : Nat.gcd a b = Nat.gcd a (b - a) :=
+              h1.trans (gcd_add_right a (b - a))
+            rw [hg]
+            exact hrec
+          · have hle : b ≤ a := Nat.le_of_not_gt hab'
+            have hba : b < a := lt_of_le_of_ne hle (fun h => hbeq h.symm)
+            have hsub0 := CyclicPeriod.sub (p := a) (q := b) hpa hpb hb hbn han hle
+            have hab1 : 0 < a - b := by omega
+            have hab2 : a - b < T.length := by omega
+            have hrec := ih ((a - b) + b) (by omega) (a - b) b (by omega) hab1 hb hab2 hbn
+              hsub0 hpb
+            have h1 : Nat.gcd a b = Nat.gcd ((a - b) + b) b := by
+              rw [show (a - b) + b = a by omega]
+            have h2 : Nat.gcd ((a - b) + b) b = Nat.gcd b (a - b) := by
+              rw [show (a - b) + b = b + (a - b) by omega, ← Nat.gcd_comm]
+              exact gcd_add_right b (a - b)
+            have hg : Nat.gcd a b = Nat.gcd (a - b) b := h1.trans (h2.trans (Nat.gcd_comm _ _))
+            rw [hg]
+            exact hrec
+  exact aux (p + q) p q rfl hp0 hq0 hpn hqn hp hq
+
+theorem CyclicPeriod.iter {T : List E} {g : ℕ} (hg : CyclicPeriod T g) :
+    ∀ (j k : ℕ), j < T.length → T[j]? = T[(j + k * g) % T.length]? := by
+  intro j k
+  induction k with
+  | zero =>
+      intro hj
+      rw [Nat.zero_mul, Nat.add_zero, Nat.mod_eq_of_lt hj]
+  | succ k ih =>
+      intro hj
+      rw [ih hj, hg ((j + k * g) % T.length) (Nat.mod_lt _ (by omega)),
+        Nat.mod_add_mod, show j + k * g + g = j + (k + 1) * g by ring]
+
+theorem CyclicPeriod.of_div {T : List E} {g p : ℕ} (hp : CyclicPeriod T p) (hg : CyclicPeriod T g)
+    (hg0 : 0 < g) (hgn : g < T.length) (hdiv : g ∣ T.length) :
+    ∀ (j : ℕ), j < T.length → T[j]? = T[j % g]? := by
+  intro j hj
+  have hidx : (j + (T.length / g - j / g) * g) % T.length = j % g := by
+    have hq : g * (T.length / g) = T.length := Nat.mul_div_cancel' hdiv
+    have hdiv' := Nat.div_add_mod j g
+    rw [Nat.mul_comm] at hdiv'
+    have hmul : (T.length / g - j / g) * g = T.length - j / g * g := by
+      have h1 : (T.length / g - j / g) * g = (T.length / g) * g - (j / g) * g :=
+        Nat.sub_mul _ _ _
+      have h2 : (T.length / g) * g - (j / g) * g = g * (T.length / g) - g * (j / g) := by
+        rw [Nat.mul_comm (T.length / g) g, Nat.mul_comm (j / g) g]
+      have h3 : g * (T.length / g) - g * (j / g) = T.length - g * (j / g) := by rw [hq]
+      have h4 : T.length - g * (j / g) = T.length - j / g * g := by rw [Nat.mul_comm]
+      rw [h1, h2, h3, h4]
+    have hstep : j + (T.length / g - j / g) * g = j % g + T.length := by
+      rw [hmul]
+      have hle1 : j / g * g ≤ j := by omega
+      have hjle : j ≤ T.length := by omega
+      have hrem : j - j / g * g = j % g := by omega
+      omega
+    rw [hstep, mod_add_self, Nat.mod_eq_of_lt (by omega)]
+  rw [← hidx]
+  exact CyclicPeriod.iter hg j (T.length / g - j / g) hj
+
+/-- **A nontrivial cyclic period forces a proper power.** -/
+theorem properPower_of_cyclicPeriod {T : List E} (hne : T ≠ [])
+    {p : ℕ} (hp : 0 < p) (hpn : p < T.length) (hper : CyclicPeriod T p) :
+    ∃ l, l ≠ [] ∧ ∃ k, 2 ≤ k ∧ T = nCopies l k := by
+  have hqlen : 0 < T.length := length_pos_of_ne_nil hne
+  have hdiv : Nat.gcd p T.length ∣ T.length := Nat.gcd_dvd_right _ _
+  have hg0 : 0 < Nat.gcd p T.length :=
+    Nat.pos_of_dvd_of_pos (Nat.gcd_dvd_left p T.length) hp
+  have hgle : Nat.gcd p T.length ≤ p := Nat.le_of_dvd hp (Nat.gcd_dvd_left _ _)
+  have hgn : Nat.gcd p T.length < T.length := lt_of_le_of_lt hgle hpn
+  have hper' : CyclicPeriod T (T.length - p) := CyclicPeriod.neg hper hpn
+  have hsub0 : 0 < T.length - p := by omega
+  have hsublt : T.length - p < T.length := by omega
+  have hid : Nat.gcd p T.length = Nat.gcd p (T.length - p) := by
+    rw [← gcd_add_right p (T.length - p), show p + (T.length - p) = T.length by omega]
+  have hgper : CyclicPeriod T (Nat.gcd p T.length) := by
+    rw [hid]
+    exact CyclicPeriod.gcd (p := p) (q := T.length - p) hper hper' hp hpn hsub0 hsublt
+  have hmod := CyclicPeriod.of_div hper hgper hg0 hgn hdiv
+  refine ⟨T.take (Nat.gcd p T.length), ?_, T.length / Nat.gcd p T.length, ?_, ?_⟩
+  · have hlen0 : 0 < (T.take (Nat.gcd p T.length)).length := by
+      rw [List.length_take, Nat.min_eq_left (by omega)]
+      exact hg0
+    exact ne_nil_of_length_pos hlen0
+  · have hq2 : Nat.gcd p T.length * (T.length / Nat.gcd p T.length) = T.length :=
+      Nat.mul_div_cancel' hdiv
+    by_contra hcon
+    have hle : T.length / Nat.gcd p T.length ≤ 1 := by omega
+    have h3 : Nat.gcd p T.length * (T.length / Nat.gcd p T.length)
+        ≤ Nat.gcd p T.length * 1 := by
+      calc Nat.gcd p T.length * (T.length / Nat.gcd p T.length)
+          = (T.length / Nat.gcd p T.length) * Nat.gcd p T.length := Nat.mul_comm _ _
+        _ ≤ 1 * Nat.gcd p T.length := Nat.mul_le_mul_right (Nat.gcd p T.length) hle
+        _ = Nat.gcd p T.length * 1 := by rw [Nat.mul_comm]
+    omega
+  · apply List.ext_getElem?
+    intro j
+    have hlen : (nCopies (T.take (Nat.gcd p T.length))
+        (T.length / Nat.gcd p T.length)).length = T.length := by
+      rw [nCopies_length, List.length_take]
+      have hq3 : Nat.gcd p T.length * (T.length / Nat.gcd p T.length) = T.length :=
+        Nat.mul_div_cancel' hdiv
+      rw [Nat.min_eq_left hgn.le, Nat.mul_comm, hq3]
+    by_cases hj : j < T.length
+    · have hL : T[j % Nat.gcd p T.length]? =
+          (T.take (Nat.gcd p T.length))[j % Nat.gcd p T.length]? := by
+        simp [Nat.mod_lt _ hg0]
+      have hmin : min (Nat.gcd p T.length) T.length = Nat.gcd p T.length :=
+        Nat.min_eq_left hgn.le
+      have hjlt : j < (nCopies (T.take (Nat.gcd p T.length))
+          (T.length / Nat.gcd p T.length)).length := by
+        rw [hlen]
+        exact hj
+      rw [hmod j hj, hL, nCopies_getElem? hjlt]
+      simp only [List.length_take, hmin]
+    · have h1 : (nCopies (T.take (Nat.gcd p T.length))
+          (T.length / Nat.gcd p T.length))[j]? = none := by
+        rw [List.getElem?_eq_none_iff]
+        omega
+      rw [h1, List.getElem?_eq_none_iff]
+      omega
+
+end Periods
