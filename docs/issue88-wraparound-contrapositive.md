@@ -24,7 +24,13 @@ the audited head `679e758`. Everything named `kernel-checked` below is proved in
    the truth's exact likelihood yields a positive balanced circulation of total
    mass `G` on the truth's window support that strictly exceeds the truth's
    spectrum.
-4. The target-shaped theorem
+4. **Two of the three steps of the culprit statement**, at the graph level:
+   `spectralEscape_gives_longTriple` (an escape forces a long maximal triple
+   repeat, by applying the existing rigidity chain to the escaping circulation)
+   and `informationFeasible_escape_gives_wraparound` (under `I_s` that repeat
+   cannot be mid-range, so it lies in the **wraparound band**
+   `max (L - 1) (G - L) ≤ ℓ < G`, named by `HasWraparoundTripleRepeat`).
+5. The target-shaped theorem
    `informationFeasible_62_spelledML_of_escape_crux`: **full `I_s` + a genuine
    §6.2 truth certificate + a realization + a genuine §6.2 candidate certificate
    ⟹ exact same-length ML dominance, with no long-triple-repeat premise at
@@ -32,17 +38,19 @@ the audited head `679e758`. Everything named `kernel-checked` below is proved in
    the culprit statement `EscapeForcesMidRangeRepeat`, which is a *combinatorial*
    assertion about the truth's own repeats and is stated at the graph/repeat
    level.
-5. The precise content of the residual band: `HasMidRangeTripleRepeat`
+6. The precise content of the residual band: `HasMidRangeTripleRepeat`
    (`L - 1 ≤ ℓ < G - L`) is exactly the band clause 2 of `I_s` forbids
    (`informationFeasible_no_midRangeTriple`, from the sharp bridging dichotomy),
    and `¬ HasLongTripleRepeat` implies `¬ HasMidRangeTripleRepeat`, so the new
    nondegeneracy premise is strictly weaker than `hno` while being equivalent to
    it under `I_s`.
 
-**Not settled.** `EscapeForcesMidRangeRepeat` is not proved. It is stated as a
-`def` and used as an explicit hypothesis of the target theorem; no `sorry`, no
-`admit`, no `axiom`. §4 gives the evidence, §5 the proof strategy, §6 what
-remains.
+**Not settled.** Step 3, i.e. `EscapeForcesMidRangeRepeat`, is not proved. It is
+stated as a `def` and used as an explicit hypothesis of the target theorem; no
+`sorry`, no `admit`, no `axiom`. Steps 1 and 2 *are* proved, so the residual is
+exactly: *an escape that also produces a wraparound-bridged long triple repeat
+produces a mid-range one as well*. §4 gives the evidence, §5 the strategy and
+the two sufficient intermediate goals, §6 what remains.
 
 **Not revived.** The earlier `AABB`/`ABAB` instance is *not* a refutation of the
 literal §6.2 maximizer theorem (truth membership fails there) and is not used
@@ -226,18 +234,25 @@ This is recorded as a deliberate build-cost decision, not as a proof.
 The strategy is the contrapositive the question suggests, at the repeat level,
 not "I_s ⟹ ¬ long triple repeat" (which is false).
 
-**Step 1 (already kernel-checked, by the existing chain).**
+**Step 1 (kernel-checked: `spectralEscape_gives_longTriple`).**
 `AssemblyP1.OrientedFinal.oriented_same_length_spectrum_rigidity` proves that
-`¬ HasLongTripleRepeat` gives spectrum rigidity, so contrapositively an escape
-gives a maximal triple repeat of the truth of length `≥ L - 1`.
+`¬ HasLongTripleRepeat` gives spectrum rigidity for *any* mass-`G` positive
+circulation of the support — its proof never uses that the circulation is the
+spectrum of a word — so an escape forces a maximal triple repeat of the truth
+of length `≥ L - 1`. Equivalently, `spectralEscape_contradiction` says an
+escape and the absence of long triple repeats are incompatible.
 
-**Step 2 (kernel-checked here).** If that repeat has length `< G - L`, clause 2
-of `I_s` forbids it (`informationFeasible_no_midRangeTriple`), so the culprit
-statement is done. The only remaining case is a *wraparound* repeat of length
-`≥ G - L`, i.e. one whose complement arc has length `≤ L` and which is therefore
-bridged by a read lying inside its own complement arc.
+**Step 2 (kernel-checked: `informationFeasible_escape_gives_wraparound`).** The
+repeat of Step 1 cannot have length `< G - L`, because clause 2 of `I_s` forbids
+that band (`informationFeasible_no_midRangeTriple`) and
+`longTriple_band` splits the long triples into the mid-range band and the
+wraparound band. So an escape forces a *wraparound* maximal triple repeat: one
+whose complement arc has length `≤ L` and which is therefore bridged by a single
+read lying inside its own complement arc. This is exactly the regime the
+audited `hno` premise excluded and `I_s` does not forbid, and it is now a named,
+decidable predicate, `HasWraparoundTripleRepeat`.
 
-**Step 3 (the open combinatorial core).** Show that a wraparound-bridged maximal
+**Step 3 (the open combinatorial core, `EscapeForcesMidRangeRepeat`).** Show that a wraparound-bridged maximal
 triple repeat of length `≥ G - L`, together with the existence of an escape,
 forces a *shorter* maximal triple repeat inside the band `L - 1 ≤ ℓ < G - L`.
 The search data says this is exactly what happens, and it says something
@@ -301,6 +316,10 @@ here so that partial progress is usable:
 | `exactLik_le_of_spec_le` | pointwise spectral domination ⟹ likelihood inequality |
 | `observed_spectral_excess_of_ml_failure` | ML failure ⟹ an observed read type strictly over-counted |
 | `IsMassGPositiveCirculation`, `BeatsTruthSpectrum`, `HasSpectralEscape` | the graph-level culprit predicates |
+| `HasWraparoundTripleRepeat` | a long triple repeat in the wraparound band `max (L - 1) (G - L) ≤ ℓ < G` |
+| `isMaximalTriple_of_mod`, `longTriple_band` | transport to `Fin G` starts, and the split of the long triples into the two bands |
+| `spectralEscape_contradiction`, `spectralEscape_gives_longTriple` | **step 1** of the culprit statement |
+| `informationFeasible_escape_gives_wraparound`, `informationFeasible_no_escape_of_no_wraparound` | **step 2** of the culprit statement, and its contrapositive |
 | `candidate_is_massG_positive_circulation` | a same-support candidate's spectrum is such a circulation |
 | `eq_specCount_of_massG_le` | a mass-`G` circulation bounded by the truth's spectrum is the truth's spectrum |
 | `ml_failure_gives_spectral_escape` | the §6.2 contrapositive |

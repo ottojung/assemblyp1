@@ -57,6 +57,12 @@ import AssemblyP1.AAABConverse
 #print axioms AssemblyP1.MLEscape.candidate_is_massG_positive_circulation
 #print axioms AssemblyP1.MLEscape.eq_specCount_of_massG_le
 #print axioms AssemblyP1.MLEscape.ml_failure_gives_spectral_escape
+#print axioms AssemblyP1.MLEscape.isMaximalTriple_of_mod
+#print axioms AssemblyP1.MLEscape.longTriple_band
+#print axioms AssemblyP1.MLEscape.spectralEscape_contradiction
+#print axioms AssemblyP1.MLEscape.spectralEscape_gives_longTriple
+#print axioms AssemblyP1.MLEscape.informationFeasible_escape_gives_wraparound
+#print axioms AssemblyP1.MLEscape.informationFeasible_no_escape_of_no_wraparound
 #print axioms AssemblyP1.MLEscape.informationFeasible_62_spelledML_of_escape_crux
 #print axioms AssemblyP1.MLEscape.culprit_instance_checked
 #print axioms AssemblyP1.MLEscape.cand0_is_escape

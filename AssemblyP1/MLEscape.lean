@@ -468,7 +468,26 @@ theorem observed_spectral_excess_of_ml_failure {G L n : ℕ} (hG : 0 < G)
   push Not at hcon
   exact hml (exactLik_le_of_spec_le hG S D ρ hsup hcon)
 
-/-! ## 4. The graph-level culprit, and the target theorem -/
+/-! ## 4. The graph-level culprit, and the target theorem
+
+The culprit statement has three steps, and **two of them are proved here**:
+
+* Step 1 (`spectralEscape_gives_longTriple`): a spectral escape forces a long
+  maximal triple repeat of the truth, by applying the existing rigidity chain to
+  the escaping circulation. This is at the `HasSpectralEscape` level, not only
+  at the candidate level, because the chain's proof never uses that the
+  circulation is the spectrum of a word.
+* Step 2 (`informationFeasible_escape_gives_wraparound`): under full `I_s`,
+  that long triple cannot lie in the mid-range band
+  (`informationFeasible_no_midRangeTriple`), so by `longTriple_band` it lies in
+  the **wraparound band** `max (L - 1) (G - L) ≤ ℓ < G`, named here by
+  `HasWraparoundTripleRepeat`. This is the regime the audited `hno` premise
+  excluded and `I_s` does not forbid.
+* Step 3 (**not** proved) is `EscapeForcesMidRangeRepeat`: an escape that also
+  produces a wraparound-bridged long triple repeat produces a *mid-range* one
+  as well. That is the whole remaining content, and
+  `informationFeasible_62_spelledML_of_escape_crux` takes it as its single
+  extra hypothesis. -/
 
 /-- **A positive balanced circulation of total mass `G` on the truth's window
 support.** These are literally the three hypotheses
@@ -557,6 +576,167 @@ the mid-range band `L - 1 ≤ ℓ < G - L` — the band that clause 2 of `I_s`
 decides. -/
 def EscapeForcesMidRangeRepeat {G : ℕ} (hG : 0 < G) (S : Fin G → α) (L : ℕ) : Prop :=
   HasSpectralEscape hG S L → HasMidRangeTripleRepeat hG S L
+
+/-- **A maximal triple repeat of the truth in the wraparound band
+`max (L - 1) (G - L) ≤ ℓ < G`** — that is, a long triple repeat that clause 2
+of `I_s` permits, because its complement arc has length `≤ L` and can be
+bridged by a single read lying inside it. This is the band the audited `hno`
+premise excludes and `I_s` does not. -/
+def HasWraparoundTripleRepeat {G : ℕ} (hG : 0 < G) (S : Fin G → α) (L : ℕ) : Prop :=
+  ∃ (a b c ℓ : Fin G),
+    L - 1 ≤ ℓ.val ∧ ℓ.val < G ∧
+      a.val % G ≠ b.val % G ∧ b.val % G ≠ c.val % G ∧ a.val % G ≠ c.val % G ∧
+      RepeatAdapter.IsMaximalTriple hG S a.val b.val c.val ℓ.val
+
+instance {α : Type} [DecidableEq α] {G : ℕ} (hG : 0 < G) (S : Fin G → α)
+    (L : ℕ) : Decidable (HasWraparoundTripleRepeat hG S L) := by
+  unfold HasWraparoundTripleRepeat RepeatAdapter.IsMaximalTriple
+    RepeatAdapter.TripleAgree
+  infer_instance
+
+/-- `cyc` depends only on the residue mod `G`, so a maximal triple repeat at
+starts `a, b, c` is also one at the reduced starts `a % G, b % G, c % G`. This
+is the transport from the `ℕ`-indexed `RepeatAdapter.HasLongTripleRepeat` to the
+`Fin G`-indexed predicates of this module. -/
+theorem isMaximalTriple_of_mod {G : ℕ} (hG : 0 < G) {S : Fin G → α}
+    {a b c ℓ a' b' c' : ℕ} (htri : RepeatAdapter.IsMaximalTriple hG S a b c ℓ)
+    (ha : a % G = a' % G) (hb : b % G = b' % G) (hc : c % G = c' % G) :
+    RepeatAdapter.IsMaximalTriple hG S a' b' c' ℓ := by
+  have hcyc : ∀ (x y : ℕ), x % G = y % G →
+      OrientedRigidity.cyc hG S x = OrientedRigidity.cyc hG S y := by
+    intro x y hxy
+    unfold OrientedRigidity.cyc
+    exact congrArg S (Fin.ext hxy)
+  have hshift : ∀ (x y k : ℕ), x % G = y % G → (x + k) % G = (y + k) % G := by
+    intro x y k hxy
+    simp only [Nat.add_mod, Nat.mod_mod]
+    rw [hxy, Nat.add_mod]
+  have hshift : ∀ (x y k : ℕ), x % G = y % G → (x + k) % G = (y + k) % G := by
+    intro x y k hxy
+    simp only [Nat.add_mod, Nat.mod_mod]
+    rw [hxy, Nat.add_mod]
+  have hcycp : ∀ (x y k : ℕ), x % G = y % G →
+      OrientedRigidity.cyc hG S (x + k) = OrientedRigidity.cyc hG S (y + k) := by
+    intro x y k hxy
+    exact hcyc (x + k) (y + k) (hshift x y k hxy)
+  have hform : ∀ (x : ℕ), x + G - 1 = x + (G - 1) := by
+    intro x
+    omega
+  have hag' : RepeatAdapter.TripleAgree hG S a' b' c' ℓ := by
+    intro d hd
+    have h1 := (htri.1 d hd).1
+    have h2 := (htri.1 d hd).2
+    refine ⟨?_, ?_⟩
+    · rw [← hcycp a a' d ha, ← hcycp b b' d hb]
+      exact h1
+    · rw [← hcycp b b' d hb, ← hcycp c c' d hc]
+      exact h2
+  refine ⟨hag', ?_, ?_⟩
+  · intro hccon
+    refine htri.2.1 ?_
+    have e1 : OrientedRigidity.cyc hG S (a' + (G - 1))
+        = OrientedRigidity.cyc hG S (a + (G - 1)) := (hcycp a a' (G - 1) ha).symm
+    have e2 : OrientedRigidity.cyc hG S (b' + (G - 1))
+        = OrientedRigidity.cyc hG S (b + (G - 1)) := (hcycp b b' (G - 1) hb).symm
+    have e3 : OrientedRigidity.cyc hG S (c' + (G - 1))
+        = OrientedRigidity.cyc hG S (c + (G - 1)) := (hcycp c c' (G - 1) hc).symm
+    rw [hform, hform, hform] at hccon
+    rw [e1, e2, e3] at hccon
+    rw [hform, hform, hform]
+    exact hccon
+  · intro hccon
+    refine htri.2.2 ?_
+    have e1 : OrientedRigidity.cyc hG S (a' + ℓ)
+        = OrientedRigidity.cyc hG S (a + ℓ) := (hcycp a a' ℓ ha).symm
+    have e2 : OrientedRigidity.cyc hG S (b' + ℓ)
+        = OrientedRigidity.cyc hG S (b + ℓ) := (hcycp b b' ℓ hb).symm
+    have e3 : OrientedRigidity.cyc hG S (c' + ℓ)
+        = OrientedRigidity.cyc hG S (c + ℓ) := (hcycp c c' ℓ hc).symm
+    rw [e1, e2, e3] at hccon
+    exact hccon
+
+/-- **A long maximal triple repeat is a mid-range one or a wraparound one.** So
+`¬ HasMidRangeTripleRepeat` and `¬ HasWraparoundTripleRepeat` together give
+`¬ HasLongTripleRepeat`: the two bands partition the long triples, and the
+mid-range one is the part `I_s` forbids. -/
+theorem longTriple_band {G L : ℕ} (hG : 0 < G) (hLG : L ≤ G)
+    {S : Fin G → α} {h : RepeatAdapter.HasLongTripleRepeat hG S L} :
+    HasMidRangeTripleRepeat hG S L ∨ HasWraparoundTripleRepeat hG S L := by
+  obtain ⟨a, b, c, ℓ, hℓ1, hℓG, hab, hbc, hac, htri⟩ := h
+  have hpa : a % G < G := Nat.mod_lt _ (by omega)
+  have hpb : b % G < G := Nat.mod_lt _ (by omega)
+  have hpc : c % G < G := Nat.mod_lt _ (by omega)
+  have hpl : ℓ < G := hℓG
+  have htri' := isMaximalTriple_of_mod hG htri (a' := a % G) (b' := b % G) (c' := c % G)
+    (by rw [Nat.mod_mod]) (by rw [Nat.mod_mod]) (by rw [Nat.mod_mod])
+  have hab' : (⟨a % G, hpa⟩ : Fin G).val % G ≠ (⟨b % G, hpb⟩ : Fin G).val % G := by
+    simpa only [Nat.mod_mod] using hab
+  have hbc' : (⟨b % G, hpb⟩ : Fin G).val % G ≠ (⟨c % G, hpc⟩ : Fin G).val % G := by
+    simpa only [Nat.mod_mod] using hbc
+  have hac' : (⟨a % G, hpa⟩ : Fin G).val % G ≠ (⟨c % G, hpc⟩ : Fin G).val % G := by
+    simpa only [Nat.mod_mod] using hac
+  by_cases hsplit : ℓ < G - L
+  · exact Or.inl (Exists.intro ⟨a % G, hpa⟩
+      (Exists.intro ⟨b % G, hpb⟩ (Exists.intro ⟨c % G, hpc⟩
+        (Exists.intro ⟨ℓ, hpl⟩ ⟨hℓ1, hsplit, hab', hbc', hac', htri'⟩))))
+  · exact Or.inr (Exists.intro ⟨a % G, hpa⟩
+      (Exists.intro ⟨b % G, hpb⟩ (Exists.intro ⟨c % G, hpc⟩
+        (Exists.intro ⟨ℓ, hpl⟩ ⟨hℓ1, hℓG, hab', hbc', hac', htri'⟩))))
+
+/-- **Step 1 of the culprit statement, kernel-checked at the graph level.** A
+spectral escape is incompatible with the absence of a long maximal triple
+repeat of the truth: apply the existing rigidity chain to the escaping
+circulation, which is one of its permitted inputs (its proof never uses that the
+circulation comes from a word, so this step is about `HasSpectralEscape`, not
+only about candidates). -/
+theorem spectralEscape_contradiction {G L : ℕ} (hG : 0 < G) (hL2 : 2 ≤ L)
+    (hLG : L ≤ G) (S : Fin G → α) (hesc : HasSpectralEscape hG S L)
+    (hno : ¬ RepeatAdapter.HasLongTripleRepeat hG S L) : False := by
+  obtain ⟨B, hB, hbeats⟩ := hesc
+  obtain ⟨w, hgt⟩ := hbeats
+  have heq := OrientedFinal.oriented_same_length_spectrum_rigidity hG S hL2 hLG hno
+    B hB.1 hB.2.1 hB.2.2
+  exact absurd (heq w ▸ hgt) (Nat.lt_irrefl _)
+
+/-- **Step 1, positive form.** A spectral escape forces a long maximal triple
+repeat of the truth: if there were none, the rigidity chain applied to the
+escaping circulation would make it equal to the truth's spectrum. -/
+theorem spectralEscape_gives_longTriple {G L : ℕ} (hG : 0 < G) (hL2 : 2 ≤ L)
+    (hLG : L ≤ G) (S : Fin G → α) (hesc : HasSpectralEscape hG S L) :
+    RepeatAdapter.HasLongTripleRepeat hG S L := by
+  by_cases hp : RepeatAdapter.HasLongTripleRepeat hG S L
+  · exact hp
+  · exact False.elim (spectralEscape_contradiction hG hL2 hLG S hesc hp)
+
+/-- **Step 2 of the culprit statement, kernel-checked at the graph level.**
+Under full `I_s`, a spectral escape forces a *wraparound* maximal triple
+repeat of the truth: the long triple of Step 1 cannot lie in the mid-range
+band, so by `longTriple_band` it lies in the wraparound band.
+
+This is the exact shape of what remains. Two of the three steps of the culprit
+statement are therefore proved here, and the third — *an escape that produces a
+wraparound-bridged long triple repeat also produces a mid-range one* — is the
+whole content of `EscapeForcesMidRangeRepeat`. -/
+theorem informationFeasible_escape_gives_wraparound {G L : ℕ} (hG : 0 < G)
+    (hL2 : 2 ≤ L) (hLG : L ≤ G) (S : Fin G → α) (R : Finset (Fin G))
+    (hfeas : InformationFeasible ⟨G, hG, S⟩ L R) (hesc : HasSpectralEscape hG S L) :
+    HasWraparoundTripleRepeat hG S L := by
+  have hlong : RepeatAdapter.HasLongTripleRepeat hG S L :=
+    spectralEscape_gives_longTriple hG hL2 hLG S hesc
+  have hnomid : ¬ HasMidRangeTripleRepeat hG S L :=
+    informationFeasible_no_midRangeTriple hG hL2 hLG S R hfeas
+  exact Or.elim (longTriple_band hG hLG (h := hlong))
+    (fun hm => absurd hm hnomid) id
+
+/-- **Step 2 contrapositive, the form used below.** If the truth carries no
+wraparound maximal triple repeat, then there is no spectral escape. -/
+theorem informationFeasible_no_escape_of_no_wraparound {G L : ℕ} (hG : 0 < G)
+    (hL2 : 2 ≤ L) (hLG : L ≤ G) (S : Fin G → α) (R : Finset (Fin G))
+    (hfeas : InformationFeasible ⟨G, hG, S⟩ L R)
+    (hnw : ¬ HasWraparoundTripleRepeat hG S L) :
+    ¬ HasSpectralEscape hG S L := by
+  intro hesc
+  exact hnw (informationFeasible_escape_gives_wraparound hG hL2 hLG S R hfeas hesc)
 
 /-- **ML failure in the §6.2 same-length class produces a spectral escape.**
 
