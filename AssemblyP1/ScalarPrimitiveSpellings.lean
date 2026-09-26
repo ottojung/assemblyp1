@@ -1733,4 +1733,115 @@ theorem identifiable_of_nonbranching {hG : 0 < G} {hL : 1 < L} {S : Fin G → α
   refine ⟨rfl, ?_⟩
   exact (identified_iff_rotEquiv hG D rfl S).mpr (hBBT D hP2S hspec)
 
+/-- **The branching direction.**  If the truth's spectrum-support graph branches,
+then the truth is *not* identifiable from the normalized complete spectrum among
+primitive candidates: doubling the two excursions of the truth's window trail and
+concatenating them yields a primitive circular word of length `2 * G` whose
+complete spectrum is exactly twice the truth's, hence which satisfies the
+normalized-spectrum condition but has a different length.
+
+Proof.  `branching_primitive_spellings` splits the truth's window trail (a closed
+spelling of the truth's complete spectrum) at a branching node into two nonempty
+closed excursions `A` and `B` with `edgeUse A + edgeUse B = cS`, and shows that for
+every `m >= 2` the closed trail `nCopies A m ++ nCopies B m` is a primitive trail
+whose edge use is `m * cS`.  With `m = 2` the length is `2 * G > 0`, and
+`word_of_closed_trail` turns it into a circular word of that length with exactly
+that spectrum; `isPrimitive_of_primitiveTrail` transfers primitivity. -/
+theorem not_identifiable_of_branching {hG : 0 < G} {hL : 1 < L} {S : Fin G → α}
+    (hbr : Branching (genomeNodes (L := L) hG S) (support (L := L) hG S)
+      (winPrefix (L := L)) (winSuffix (L := L))) :
+    ¬ Identifiable hG hL S := by
+  intro hIdent
+  have hout : ∀ w, w ∉ support (L := L) hG S → specCount (L := L) hG S w = 0 := by
+    intro w hw
+    have h1 := (mem_support_iff (L := L) hG S w).mpr
+    by_contra hc
+    exact absurd (h1 (by omega)) hw
+  have hSsum : ∑ w : Fin L → α, specCount (L := L) hG S w = G := by
+    have h2 : ∑ w : Fin L → α, specCount (L := L) hG S w
+        = ∑ w ∈ support (L := L) hG S, specCount (L := L) hG S w :=
+      (Finset.sum_subset (fun b _ => Finset.mem_univ _)
+        (fun b _ hb => hout b hb)).symm
+    rw [h2]
+    exact truth_total (L := L) hG S
+  obtain ⟨s0, hTclosed⟩ := truth_trail_closed (L := L) S
+  obtain ⟨A, B, v, hA, hB, hAne, hBne, hneAB, hclosedT', huseT', hprimT'⟩ :=
+    branching_primitive_spellings
+      hTclosed (specCount (L := L) hG S)
+      (truth_trail_spectrum (L := L) S)
+      (genomeNodes (L := L) hG S) (support (L := L) hG S) hbr hout
+      (fun w hw => truth_pos_on_support (L := L) hG S w hw) 2 (by omega)
+  have hT'ne : nCopies A 2 ++ nCopies B 2 ≠ [] := by
+    intro h0
+    have h1 := congrArg List.length h0
+    simp only [List.length_append, List.length_nil, nCopies_length] at h1
+    have h3 : 0 < A.length := List.length_pos_iff_ne_nil.mpr hAne
+    omega
+  have hlenT' : (nCopies A 2 ++ nCopies B 2).length = 2 * G := by
+    have h1 := length_eq_sum_edgeUse (nCopies A 2 ++ nCopies B 2)
+    have h2 : ∑ e : Fin L → α, edgeUse (nCopies A 2 ++ nCopies B 2) e = 2 * G := by
+      have h3 : ∑ e : Fin L → α, edgeUse (nCopies A 2 ++ nCopies B 2) e
+          = ∑ w : Fin L → α, 2 * specCount (L := L) hG S w :=
+        Finset.sum_congr rfl (fun e _ => huseT' e)
+      have h4 : ∑ w : Fin L → α, 2 * specCount (L := L) hG S w
+          = 2 * ∑ w : Fin L → α, specCount (L := L) hG S w := by
+        rw [Finset.mul_sum]
+      rw [h3, h4, hSsum]
+    rw [h1, h2]
+  obtain ⟨s', hT'closed⟩ := hclosedT'
+  have hHpos : 0 < (nCopies A 2 ++ nCopies B 2).length := by rw [hlenT']; omega
+  obtain ⟨W, hspecW, hwinW⟩ := word_of_closed_trail hT'closed hT'ne hL
+  have hcyc : ∀ r : Fin (nCopies A 2 ++ nCopies B 2).length,
+      window (L := L) hHpos W r
+        = PopulationReduction.cycEdge (nCopies A 2 ++ nCopies B 2) hHpos r.val := by
+    intro r
+    rw [hwinW r]
+    exact (cycEdge_get hHpos r.val r.isLt).symm
+  have hWprim : PopulationReduction.IsPrimitive W :=
+    isPrimitive_of_primitiveTrail hHpos W (nCopies A 2 ++ nCopies B 2) rfl hcyc hprimT'
+  have h2 : ∀ w : Fin L → α,
+      specCount (L := L) hHpos W w = 2 * specCount (L := L) hG S w := by
+    intro w
+    rw [congrFun hspecW w, huseT' w]
+  have hNorm : ∀ w : Fin L → α,
+      specCount (L := L) hG S w * (nCopies A 2 ++ nCopies B 2).length
+        = specCount (L := L) hHpos W w * G := by
+    intro w
+    calc specCount (L := L) hG S w * (nCopies A 2 ++ nCopies B 2).length
+        = specCount (L := L) hG S w * (2 * G) := by rw [hlenT']
+      _ = (2 * specCount (L := L) hG S w) * G := by ring
+      _ = specCount (L := L) hHpos W w * G := by rw [h2 w]
+  obtain ⟨hm, hIdent'⟩ :=
+    hIdent (nCopies A 2 ++ nCopies B 2).length W hHpos hWprim hNorm
+  rw [hlenT'] at hm
+  omega
+
+/-- **Classification (issue #92).**  A primitive truth is identifiable from the
+normalized complete spectrum among primitive candidates of arbitrary length if
+and only if its spectrum-support graph does not branch.
+
+The only external input is the explicit BBT hypothesis `hBBT`, giving same-length
+rotation uniqueness among `AdmP2` words. -/
+theorem identifiable_iff_nonbranching {hG : 0 < G} {hL : 1 < L} {S : Fin G → α}
+    (AdmP2 : ∀ {K : ℕ}, (Fin K → α) → Prop)
+    (hS : PopulationReduction.IsPrimitive S) (hP2S : AdmP2 S)
+    (hBBT : ∀ D : Fin G → α, AdmP2 S →
+      specCount (L := L) hG S = specCount (L := L) hG D → RotEquiv hG D S) :
+    Identifiable hG hL S ↔
+      NonBranching (genomeNodes (L := L) hG S) (support (L := L) hG S)
+        (winPrefix (L := L)) (winSuffix (L := L)) := by
+  constructor
+  · intro hI hnb
+    by_contra hcon
+    have hbr : Branching (genomeNodes (L := L) hG S) (support (L := L) hG S)
+        (winPrefix (L := L)) (winSuffix (L := L)) := by
+      unfold Branching
+      push_neg at hcon
+      obtain ⟨e₁, he₁, e₂, he₂, hp₁, hp₂, hne⟩ := hcon
+      have h12 : winPrefix e₁ = winPrefix e₂ := hp₁.trans hp₂.symm
+      exact ⟨winPrefix e₁, e₁, he₁, e₂, he₂, hne, rfl, h12.symm⟩
+    exact not_identifiable_of_branching hbr hI
+  · intro hnb
+    exact identifiable_of_nonbranching AdmP2 hS hP2S hBBT hnb
+
 end Classification
