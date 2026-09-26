@@ -218,64 +218,130 @@ Probe scripts: kept out of the library; they are pure Python over
 
 ## 4b. (R3) as a genome-side statement, and what it still needs
 
-New module: `AssemblyP1/P2EulerAdapter.lean`.  It removes the multigraph layer
-from the (R3) residual and proves the transfer to it.
+New modules: `AssemblyP1/P2EulerAdapter.lean` and
+`AssemblyP1/P2LongObstruction.lean`.  They remove the multigraph layer from the
+(R3) residual and prove the transfer to it.
 
-**The transfer, kernel-checked.**  The classical route matches the two
-traversals of the `(L-1)`-de Bruijn multigraph start by start and needs a
-*bijection* of the starts.  That is unnecessary: equal complete `L`-spectra give
-a *choice* `τ : Fin G → Fin G` with `window S (τ j) = window E j`
-(`exists_startChoice`), and for such a choice the node-step condition
+### 4b.0 Two corrections to the residual statement, forced by counterexamples
+
+Two formulations of the residual that look right are **false**, and both are now
+refuted in the kernel on *primitive `P2`* instances, so neither is a matter of
+degenerate words:
+
+| refuted statement | instance | name |
+| --- | --- | --- |
+| every map `τ : Fin G → Fin G` with `NodeStep` spells the truth up to shift | `S = AAAB`, `G = 4`, `L = 3`; the **constant** start map is a `NodeStep` map (the `(L-1)`-mers at the starts `0` and `1` coincide) and spells `AAAA` | `P2EulerAdapter.cexConst_not_NodeStepUnique` |
+| every *bijection* `σ` with `NodeStep` is a cyclic shift of the starts | `S = AABAB`, `G = 5`, `L = 3`; `σ = (0, 3, 2, 1, 4)` is a `NodeStep` bijection and is not a rotation — it spells `S` itself, because switching the two copies of a repeated `(L-1)`-mer that swaps *equal symbols* changes the traversal without changing the genome | `P2EulerAdapter.cexPerm_not_NodeStepPermUnique` |
+
+The first defect is a defect of *quantifying over arbitrary maps*; the second is
+a defect of *stating the conclusion about the map*.  Both instances are
+primitive and satisfy the repository's actual `P2` (`cexConst_p2`,
+`cexPerm_p2`), so neither can be restored by any later refinement of the repeat
+theory.  The two refuted definitions are kept, under names that say they are
+refuted (`NodeStepUniqueArbitrary`, `NodeStepPermUnique`), and are used in no
+theorem, so the regression cannot return silently.
+
+### 4b.1 The transfer, kernel-checked
+
+Equal complete `L`-spectra give a **bijection** `τ` of the starts carrying the
+read types — not merely a choice.  `P2EulerAdapter.exists_matching` builds it
+fibre by fibre (`startsOf`, `card_startsOf` are the `specCount` fibres; one
+`Finset` equivalence per read type), with injectivity from the fibre
+equivalences and surjectivity from finiteness, and returns an `Equiv`.  For such
+a `Matching` the node-step condition
 
 ```text
 nodeWindow hG L S (τ j + 1) = nodeWindow hG L S (τ (j + 1))
 ```
 
-is **automatic** (`nodeStep_of_choice`): both sides are the `(L-1)`-suffix of
-the same length-`L` read type.  Also `E j = S (τ j)` (`symbol_of_choice`).  So
-the whole spectrum-to-traversal step is proved with no premise and no bijectivity.
-
-**The exact residual.**  `NodeStepUnique hG L S` says: every map of the starts
-satisfying `NodeStep` spells the truth up to cyclic shift.  It mentions only
-`nodeWindow`, `Fin G` and the successor map.  `p2_of_nodeStepUnique` proves
+is **automatic** (`nodeStep_of_matching`): the candidate's node at `j + 1` and
+the truth's node at `τ j + 1` are both the `L-1`-suffix of the same length-`L`
+read type.  Also `E j = S (τ j)` (`symbol_of_choice`), and
 
 ```text
-specCount hG L S = specCount hG L E  ->  NodeStepUnique hG L S  ->  RotEquiv hG E S
+nodeWindow hG L E j = nodeWindow hG L S (τ j)          (nodeWindow_E_of_matching)
+nodeCount  hG L E v = nodeCount  hG L S v            (nodeCount_E_of_matching)
 ```
 
-so `NodeStepUnique` **replaces** the `hUnique : UniqueEulerCircuit …` premise of
-§2's `p2_spectrum_unique_up_to_rotation` by a single decidable combinatorial
-statement about the truth alone: no `EulerCircuit`, no `TrailEquiv`, no
-multigraph, no `UniqueEulerCircuit`, no `specCount`, no BBT/Ukkonen premise.
+so the alternative traversal runs on the truth's multigraph and inherits the
+truth's node multiplicities.
 
-**Which hypothesis `NodeStepUnique` needs — kernel-checked.**  It cannot be
-derived from "node multiplicity `≤ 2`" alone.  With `G = 6`, `L = 3`,
-`S = 0 0 1 0 1 1` and `E = 0 0 1 1 0 1`:
+**The exact residual, in the corrected `NodeStepRot` form.**  Every *bijection*
+of the starts that walks the truth's `(L-1)`-mer multigraph spells the truth up
+to cyclic shift:
 
-| fact | name |
+```text
+NodeStepRot hG L S :=
+  ∀ σ : Fin G ≃ Fin G, NodeStep hG L S σ → RotEquiv hG (fun j => S (σ j)) S
+```
+
+`P2EulerAdapter.p2_of_NodeStepRot` gives
+`specCount S = specCount E → NodeStepRot → RotEquiv hG E S`, so `NodeStepRot`
+**replaces** the `hUnique : UniqueEulerCircuit …` premise of
+`P2SpectrumUniqueness.p2_spectrum_unique_up_to_rotation` by a single statement
+about the truth's `nodeWindow`, with no multigraph, no `TrailEquiv`, no
+`specCount` and no BBT/Ukkonen premise.
+
+### 4b.2 The residual, restated at the spectrum level (the shipped target)
+
+`P2LongObstruction.SpectrumLongObstruction` states the residual in the shape the
+brute-force probe of §4 actually tested, and the shape the clauses of `P2` are
+stated against:
+
+```text
+IsPrimitive S → specCount S = specCount E → ¬ RotEquiv hG E S →
+  LongObstruction hG L S
+```
+
+`LongObstruction` is the `P2`-shaped obstruction itself: a maximal triple repeat
+of length `≥ L - 1` (clause 1 of `def:P1P2`) **or** two interleaved maximal
+repeats each of length `≥ L - 1` (clause 2).  `P2.imp_noLongObstruction`
+discharges it from actual `P2`, clause by clause, and
+`P2LongObstruction.p2_spectrum_ambiguity` derives the complete-spectrum
+uniqueness conclusion (in the shape of `PopulationUniqueness`'s `hBBTS`) from
+the residual.  No `NodeStep`, no `UniqueEulerCircuit`, no `BBTUniqueAt`, no BBT
+premise appears in it.
+
+**Evidence.**  Exhaustive search over circular binary words up to rotation,
+`G ≤ 10`, `L ≤ G`: **631** ambiguous `(S, E, L)` configurations (equal complete
+`L`-spectrum, `E` not a cyclic shift of `S`) and **zero** of them without a
+long obstruction on `S`.  Finite evidence, not a proof.
+
+### 4b.3 What *is* proved of the combinatorics
+
+| name | content |
 | --- | --- |
-| every length-`2` word of `S` occurs at most twice | `cex_nodeCount_le_two` |
-| `S` and `E` have the same complete length-`3` spectrum | `cex_spec` |
-| `E` is not a cyclic shift of `S` | `cex_not_rotEquiv` |
-| the only maximal repeats of length `≥ L - 1 = 2` are at starts `1, 3` and `2, 5` | `cex_interleaved_long_repeats` |
-| those two pairs interleave, so `S` is not `P2` at `L = 3` | `cex_not_p2` |
+| `P2LongObstruction.rotEquiv_of_noSwitch` | a `NodeStep` map with no switch is a rotation of the starts and spells a rotation of the genome: the residual is confined to the switched case |
+| `P2LongObstruction.switch_longRepeat` | **every switch of the matched traversal produces a long maximal repeat on the truth** (via `P2RepeatResidual.maxPair_isRepeat`) |
+| `P2LongObstruction.nodeCount_ge_two_of_switch` | a switch lands twice on one node |
+| `P2LongObstruction.switch_doubleNode_inj_or_pair` | **two-switch lemma**: two switches at the same node are the same switch, or are paired (`τ(j+1) = (τ j')+1`); the switch sites form a double cover of the switched nodes |
+| `P2EulerAdapter.nodeStep_rotAdd`, `rotEquiv_rotAdd` | rotations are `NodeStep` maps and spell rotations of the genome |
+| `P2EulerAdapter.cex_nodeCount_le_two`, `cex_spec`, `cex_not_rotEquiv`, `cex_interleaved_long_repeats`, `cex_not_p2` | node multiplicity `≤ 2` is not enough; the two traversals of `S = 001011` are separated by exactly one interleaved pair of maximal repeats of length `2 > L - 2` |
 
-So the two traversals of the multigraph are separated by exactly one interleaved
-pair of **maximal repeats** of length `≥ L - 1`, i.e. by clause 2 of `P2`.
-`noInterleavedLongRepeat` is clause 2 in exactly the form the (R3) combinatorics
-consumes: it ranges over `SourceFaithfulIs.Genome.IsRepeat` (maximal on *both*
-sides) and **not** over the un-extended node pairs, which §3(R2) shows is false
-for `P2`.  Note that this is the maximal-repeat form, not `ExtCrossing`: the two
-are consequences of the same clause, but they are stated on different starts
-(`ExtCrossing` is about the shifted starts of `maxPair_isRepeat`), and the
-counterexample above shows the *unshifted* version is false.
+**Load-bearing hypothesis, kernel-checked.**  `S = 0 0 1 0 1 1` at `G = 6`,
+`L = 3` has every length-`2` word at most twice (`cex_nodeCount_le_two`), has a
+competitor `E = 0 0 1 1 0 1` with the same complete length-`3` spectrum
+(`cex_spec`) that is not a cyclic shift of `S` (`cex_not_rotEquiv`), and the
+only maximal repeats of length `≥ L - 1` are at `1, 3` and `2, 5`, which
+interleave (`cex_interleaved_long_repeats`).  So `S` is **not** `P2` at `L = 3`
+(`cex_not_p2`): the two traversals are separated by clause 2 and by nothing
+else.
 
-**`NodeStepUnique` is not proved.**  The remaining step is the (R3)
-combinatorial theorem: for a primitive `P2` truth whose `(L-1)`-mers each occur
-at most twice, every `NodeStep` map is a rotation up to the truth's symbols.
-The table above shows this is a genuine statement and identifies the hypothesis
-it must use; it is the laminar-chord / block-coherence argument of §3(R3) and
-`docs/bbt-chord-rematch-89.md` §4, and it is not attempted in this packet.
+### 4b.4 What is *not* proved
+
+`spectrum_ambiguity_gives_longObstruction` is **not** proved.  The remaining
+step is the chord geometry of the double cover: given a matched traversal with at
+least one switch, show that the switched nodes yield **two interleaved**
+maximal repeats of length `≥ L - 1`, or a maximal triple repeat of length
+`≥ L - 1`.  `switch_doubleNode_inj_or_pair` is the structural input (each
+switched node is accounted for by at most two, mutually determined, switch
+sites); the crossing property of the resulting maximal repeats is not
+formalized.  Consequently `P2EulerAdapter.p2_of_NodeStepRot` and
+`P2LongObstruction.p2_spectrum_ambiguity` both still take one explicit premise,
+and `PopulationUniqueness` still takes `hBBTS`/`hBBTD`; but the residual is now a
+single spectrum-level statement about the truth's own repeats, with the exact
+hypothesis it must use identified and separated by kernel-checked
+counterexamples.
 
 ## 5. Honest status
 
@@ -294,12 +360,24 @@ it must use; it is the laminar-chord / block-coherence argument of §3(R3) and
   `UniqueEulerCircuit` and no BBT premise — together with a kernel-checked
   instance showing node multiplicity `≤ 2` is insufficient and that clause 2
   (in maximal-repeat form) is the load-bearing hypothesis.
-* **Not** closed: `NodeStepUnique` for a `P2` truth, i.e. the combinatorial
-  core of (R3). Consequently `p2_spectrum_unique_up_to_rotation` still takes
-  `hUnique`, and the `PopulationUniqueness` chain still takes
-  `hBBTS`/`hBBTD`; but the residual is now a single decidable statement about
-  `nodeWindow` alone, with the exact hypothesis it needs identified and
-  separated by a kernel-checked counterexample.
+* **Refuted since**: the two quantifications of the residual — arbitrary maps
+  (`NodeStepUniqueArbitrary`) and maps-is-a-rotation (`NodeStepPermUnique`) —
+  are false even for primitive `P2` words; see §4b.0.
+* **Closed in the kernel**: the spectrum-to-traversal transfer as a genuine
+  `Equiv` (`exists_matching`), the corrected residual `NodeStepRot`
+  (bijections, conclusion about the spelled genome), the spectrum-level residual
+  `SpectrumLongObstruction` with `P2.imp_noLongObstruction` and
+  `p2_spectrum_ambiguity`, and the switched case of the combinatorics
+  (`switch_longRepeat`, `switch_doubleNode_inj_or_pair`,
+  `rotEquiv_of_noSwitch`).
+* **Not** closed: `SpectrumLongObstruction`, i.e. the combinatorial core of
+  (R3): two switched nodes must yield two *interleaved* maximal repeats, or a
+  long triple repeat. Consequently `p2_spectrum_unique_up_to_rotation` still
+  takes `hUnique`, and the `PopulationUniqueness` chain still takes
+  `hBBTS`/`hBBTD`; but the residual is now a single spectrum-level statement
+  about the truth's own repeats, supported by 631 counterexample-free
+  configurations in the search range and separated from its neighbours by
+  kernel-checked counterexamples.
 * No `axiom`, `sorry` or `admit` was introduced; nothing in the library was
   weakened to make a theorem provable; the P1 theorem is a proved sub-case,
   not a replacement of the P2 statement by a weaker one.
