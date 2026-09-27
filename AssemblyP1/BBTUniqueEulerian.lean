@@ -832,6 +832,82 @@ theorem not_visitsAll_of_innermost_chord {G : ℕ} (hG : 0 < G) {f : Fin G → F
     omega
   exact absurd (Nat.le_of_dvd (by omega) hdiv) (by omega)
 
+
+/-! ## 5. `thm:BBT` in Eulerian-cycle form: what the innermost-chord lemma
+gives, and the one step still missing
+
+§4's combinatorial lemma is stated for an abstract `f : Fin G → Fin G`.  The
+master reformulation of §2 identifies that `f` with a *concrete* object of the
+repository, and this section is the identification, so that the combinatorial
+lemma is immediately about `BBTEulerian.EulerianCycle`:
+
+* `AltF hG σ = Succ hG σ ∘ prevPos` is the label-preserving permutation of
+  §2 (`AltF_vtx`: `traverses` says exactly that it preserves the `(L-1)`-mer at
+  every start);
+* `AltF hG σ ∘ nextPos = Succ hG σ` (`AltF_succ`), and `Succ hG σ` is
+  *literally* the successor `σ ∘ ρ ∘ σ⁻¹` whose `VisitsAll (·) (origin hG)` is
+  the `single` clause of `EulerianCycle`;
+* hence `EulerianCycle` rules out an innermost chord of `AltF hG σ`
+  (`EulerianCycle_no_innermost_chord` below).
+
+`Succ hG σ` and `AltF hG σ` are conjugate by `prevPos`, so the whole
+construction is *rotation-invariant*: an innermost chord of one is an innermost
+chord of the other, transported by the rotation `a ↦ a - 1`.  Nothing here
+uses `Ukkonen`; that is the point of separating the combinatorial step from the
+repeat-theoretic ones. -/
+
+theorem AltF_comp_nextPos {G : ℕ} (hG : 0 < G) (σ : Fin G ≃ Fin G) (q : Fin G) :
+    AltF hG σ (nextPos hG q) = Succ hG σ q :=
+  AltF_succ hG σ q
+
+theorem Succ_eq_altF {G : ℕ} (hG : 0 < G) (σ : Fin G ≃ Fin G) :
+    ∀ x : Fin G, Succ hG σ x = AltF hG σ (nextPos hG x) :=
+  fun x => (AltF_succ hG σ x).symm
+
+/-- **`AltF` is a permutation of the starts:** it is a conjugate of `Succ σ`
+by `prevPos`, and `Succ σ` is a bijection (`Succ_injective` composed with
+`nextPos`).  Together with `AltF_vtx` this is the whole content of the master
+reformulation (★) of `docs/bbt-unique-eulerian-89.md` §2. -/
+theorem AltF_bijective {G : ℕ} (hG : 0 < G) (σ : Fin G ≃ Fin G) :
+    Function.Bijective (AltF hG σ) := by
+  have hinj : Function.Injective (AltF hG σ) := by
+    intro x y hxy
+    have e : Succ hG σ (prevPos hG x) = Succ hG σ (prevPos hG y) := by
+      unfold AltF at hxy
+      exact hxy
+    have e2 := Succ_injective hG σ e
+    calc x = nextPos hG (prevPos hG x) := (nextPrev hG x).symm
+      _ = nextPos hG (prevPos hG y) := congrArg (nextPos hG) e2
+      _ = y := nextPrev hG y
+  exact ⟨hinj, (Finite.injective_iff_surjective).mp hinj⟩
+
+/-- **`EulerianCycle` rules out an innermost chord of the alternative
+traversal.**  An alternative Eulerian cycle whose label-preserving permutation
+`f` has a chord `(a, b)` with `f b = a` and with `f` the identity on the open
+arc from `a` to `b` is *not* an Eulerian cycle of the `(L-1)`-mer multigraph:
+its successor permutation is not a `G`-cycle, contradicting the `single` clause
+of `BBTEulerian.EulerianCycle`. -/
+theorem EulerianCycle_no_innermost_chord {α : Type} {G : ℕ} (hG : 0 < G) (L : ℕ)
+    (S : Fin G → α) {σ : Fin G ≃ Fin G} (hEul : EulerianCycle hG L S σ)
+    {a b : Fin G} (hg : 1 ≤ sh hG a b) (hgb : sh hG a b < G)
+    (hfree : ∀ x : Fin G, InArc hG a b x → AltF hG σ x = x)
+    (hfb : AltF hG σ b = a) : False := by
+  have hV : VisitsAll (Succ hG σ) (origin hG) := by
+    have hh := hEul.2
+    show VisitsAll (fun x => σ (nextPos hG (σ.symm x))) (origin hG)
+    exact hh
+  unfold VisitsAll at hV
+  have hfun : (fun n : Fin G => (Succ hG σ)^[n.val] (origin hG))
+      = (fun n : Fin G => (fun x => AltF hG σ (nextPos hG x))^[n.val] (origin hG)) := by
+    funext n
+    exact congrArg (fun θ : Fin G → Fin G => θ^[n.val] (origin hG))
+      (funext (Succ_eq_altF hG σ))
+  have hV' : VisitsAll (fun x => AltF hG σ (nextPos hG x)) (origin hG) := by
+    unfold VisitsAll
+    rw [← hfun]
+    exact hV
+  exact not_visitsAll_of_innermost_chord hG (AltF_bijective hG σ) hg hgb hfree hfb hV'
+
 end Windows
 
 end AssemblyP1.BBTUniqueEulerian
