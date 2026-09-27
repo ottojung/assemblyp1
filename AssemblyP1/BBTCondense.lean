@@ -117,6 +117,9 @@ open OrientedRigidity
 open PopulationReduction
 open AssemblyP1.BBTChords
 
+set_option linter.unusedSectionVars false
+set_option linter.unusedVariables false
+
 /-! ## 1. The `(L-1)`-mer multigraph and its condensation data
 
 The `K`-mer graph of `thm:BBT` at `K = L-1`, on the truth's starts: vertex
@@ -395,7 +398,7 @@ theorem card_branchStarts_le_two_mul_branchVerts
         rw [card_fibre]
         exact hcap v
     _ = 2 * (branchVerts hG L S).card := by
-        simp [Finset.sum_const, nsmul_eq_mul, Nat.mul_comm]
+        simp [Finset.sum_const, Nat.mul_comm]
 
 end Condense
 

@@ -354,7 +354,7 @@ def Matching {α : Type} [DecidableEq α] {G L : ℕ} (hG : 0 < G)
 
 /-- Two nonempty finite sets of the same cardinality are in bijection. -/
 private theorem finset_equiv_of_card_eq {α : Type} (s t : Finset α) (h : s.card = t.card)
-    (hs : 0 < s.card) : Nonempty (↥s ≃ ↥t) := by
+    (_hs : 0 < s.card) : Nonempty (↥s ≃ ↥t) := by
   have e1 : Nonempty (↥s ≃ Fin s.card) := by
     have h1 := Fintype.equivFin ↥s
     rw [Fintype.card_coe] at h1
@@ -398,10 +398,8 @@ theorem exists_matching (S E : Fin G → α)
       have hBe : B w = ∅ := Finset.card_eq_zero.mp hb'
       rw [hAe, hBe]
       exact ⟨Equiv.refl _⟩
-  letI : Nonempty (∀ w : Fin L → α, Nonempty (↥(A w) ≃ ↥(B w))) :=
-    ⟨fun w => hne w⟩
   set φ : ∀ w : Fin L → α, ↥(A w) ≃ ↥(B w) :=
-    fun w => Classical.choice (inferInstanceAs (Nonempty (↥(A w) ≃ ↥(B w)))) with hφdef
+    fun w => Classical.choice (hne w) with hφdef
   have hφinj : ∀ (w : Fin L → α), Function.Injective (fun y : ↥(A w) => (φ w y).val) :=
     fun w a b hab => (φ w).injective (Subtype.ext hab)
   -- the matching value at a start, for an arbitrary read type.  The read type is
@@ -425,7 +423,7 @@ theorem exists_matching (S E : Fin G → α)
           h1.symm
       _ = window (L := L) hG E (σ r) := by
         simp only [hσdef, hVdef]
-        rw [dif_pos True.intro]
+        rw [dite_eq_left True.intro]
   -- injectivity, fibre by fibre: equal images force equal read types, so both
   -- ends are computed by the *same* fibre equivalence `φ w`, whose injectivity
   -- then gives `r = r'`.
@@ -438,12 +436,12 @@ theorem exists_matching (S E : Fin G → α)
     set w : Fin L → α := window (L := L) hG S r with hwdef
     have hleft : σ r = (φ w ⟨r, memA w r rfl⟩).val := by
       simp only [hσdef, hVdef]
-      rw [dif_pos True.intro]
+      rw [dite_eq_left True.intro]
     have hright : σ r' = (φ w ⟨r', memA w r' hw.symm⟩).val := by
       have e : σ r' = V w r' := by
         simp only [hσdef, ← hw, hwdef]
       simp only [e, hVdef]
-      rw [dif_pos (show window (L := L) hG S r' = w from hw.symm)]
+      rw [dite_eq_left (show window (L := L) hG S r' = w from hw.symm)]
     have hval : (φ w ⟨r, memA w r rfl⟩).val
         = (φ w ⟨r', memA w r' hw.symm⟩).val := by
       rw [← hleft, ← hright]
