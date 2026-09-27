@@ -80,7 +80,7 @@ open AssemblyP1
 open AssemblyP1.BBTChords
 open AssemblyP1.BBTSequenceGraph
 
-variable {α : Type} [DecidableEq α] {G : ℕ} (hG : 0 < G) (S : Fin G → α)
+variable {α : Type} [DecidableEq α] {G : ℕ} (hG : 0 < G) (S : Fin G → α) (a b : Fin G)
 
 /-! ## 1. Agreement of two occurrences -/
 
@@ -225,7 +225,7 @@ theorem maximalRepeat_of_branch {L : ℕ} (hL : 2 ≤ L) {a b : Fin G}
   · obtain ⟨e, he, hlen⟩ :=
       exists_maximalRepeat (α := α) hG S hab hK1 hle hag hprec
     exact ⟨e, he, hlen⟩
-  · exact absurd (preceding_eq_of_agrees_ge (α := α) hG S hag (by omega)) hprec
+  · exact absurd (preceding_eq_of_agrees_ge (α := α) hG S a b hag (by omega)) hprec
 
 /-- ... read at a branch vertex: two distinct realisations of one branch
 object, with different preceding symbols, are a maximal repeat of length
