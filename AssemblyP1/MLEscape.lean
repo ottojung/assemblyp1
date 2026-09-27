@@ -179,11 +179,11 @@ instance {α : Type} [DecidableEq α] {G : ℕ} (hG : 0 < G) (S : Fin G → α)
   unfold RepeatAdapter.IsMaximalTriple RepeatAdapter.TripleAgree
   infer_instance
 
+omit [DecidableEq α] [Fintype α] in
 /-- **A mid-range maximal triple repeat is a long maximal triple repeat.** So
 `¬ HasLongTripleRepeat` implies `¬ HasMidRangeTripleRepeat`: a theorem stated
 with the mid-range premise is strictly stronger than the audited one with
 `hno`, and under `I_s` the two premises agree. -/
-omit [DecidableEq α] [Fintype α] in
 theorem HasMidRangeTripleRepeat.longTriple {G L : ℕ} (hG : 0 < G) (_hLG : L ≤ G)
     {S : Fin G → α} (h : HasMidRangeTripleRepeat hG S L) :
     RepeatAdapter.HasLongTripleRepeat hG S L := by
@@ -191,10 +191,10 @@ theorem HasMidRangeTripleRepeat.longTriple {G L : ℕ} (hG : 0 < G) (_hLG : L �
   refine ⟨a.val, b.val, c.val, ℓ.val, hℓ1, ?_, hab, hbc, hac, htri⟩
   omega
 
+omit [Fintype α] in
 /-- **Full `I_s` excludes the mid-range band.** Clause 2 of `I_s`, read through
 the sharp bridging dichotomy, rules out every maximal triple repeat of the
 truth of length `L - 1 ≤ ℓ < G - L`. -/
-omit [Fintype α] in
 theorem informationFeasible_no_midRangeTriple {G L : ℕ} (hG : 0 < G) (hL2 : 2 ≤ L)
     (hLG : L ≤ G) (S : Fin G → α) (R : Finset (Fin G))
     (hfeas : InformationFeasible ⟨G, hG, S⟩ L R) :
@@ -393,9 +393,9 @@ theorem observed_mem_support' {G L n : ℕ} (hG : 0 < G) (S : Fin G → α)
     simp [hne (ρ i)]
   omega
 
+omit [Fintype α] in
 /-- A read type's multiplicity is at most the genome length, so every factor
 base `d w / G` lies in `[0, 1]`. -/
-omit [Fintype α] in
 theorem specCount_le {G L : ℕ} (hG : 0 < G) (S : Fin G → α) (w : Fin L → α) :
     OrientedRigidity.specCount (L := L) hG S w ≤ G := by
   unfold OrientedRigidity.specCount
@@ -622,11 +622,11 @@ theorem eq_specCount_of_massG_le {G : ℕ} {L : ℕ} (hG : 0 < G) (S : Fin G →
   rw [htot, htot'] at hlt
   omega
 
+omit [DecidableEq α] [Fintype α] in
 /-- `cyc` depends only on the residue mod `G`, so a maximal triple repeat at
 starts `a, b, c` is also one at the reduced starts `a % G, b % G, c % G`. This
 is the transport from the `ℕ`-indexed `RepeatAdapter.HasLongTripleRepeat` to the
 `Fin G`-indexed predicates of this module. -/
-omit [DecidableEq α] [Fintype α] in
 theorem isMaximalTriple_of_mod {G : ℕ} (hG : 0 < G) {S : Fin G → α}
     {a b c ℓ a' b' c' : ℕ} (htri : RepeatAdapter.IsMaximalTriple hG S a b c ℓ)
     (ha : a % G = a' % G) (hb : b % G = b' % G) (hc : c % G = c' % G) :
@@ -684,13 +684,13 @@ theorem isMaximalTriple_of_mod {G : ℕ} (hG : 0 < G) {S : Fin G → α}
     rw [e1, e2, e3] at hccon
     exact hccon
 
+omit [Fintype α] in
 /-- **Step 1 of the culprit statement, kernel-checked at the graph level.** A
 spectral escape is incompatible with the absence of a long maximal triple
 repeat of the truth: apply the existing rigidity chain to the escaping
 circulation, which is one of its permitted inputs (its proof never uses that the
 circulation comes from a word, so this step is about `HasSpectralEscape`, not
 only about candidates). -/
-omit [Fintype α] in
 theorem spectralEscape_contradiction {G L : ℕ} (hG : 0 < G) (hL2 : 2 ≤ L)
     (hLG : L ≤ G) (S : Fin G → α) (hesc : HasSpectralEscape hG S L)
     (hno : ¬ RepeatAdapter.HasLongTripleRepeat hG S L) : False := by
