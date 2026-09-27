@@ -81,17 +81,17 @@ variable {V E : Type} [DecidableEq V] [DecidableEq E]
 
 /-- The support of a spectrum (the "spectrum-support graph" of the note): the
 edge types with positive multiplicity. -/
-def Support {V E : Type} [DecidableEq E] [Fintype E] (c : E → ℕ) : Finset E :=
+def Support {_V E : Type} [DecidableEq E] [Fintype E] (c : E → ℕ) : Finset E :=
   Finset.univ.filter (fun e => 0 < c e)
 
 /-- **Branching:** some node of the graph has two distinct outgoing edge types. -/
-def Branching {V E : Type} [DecidableEq V] [DecidableEq E] (nodes : Finset V)
-    (edges : Finset E) (tail head : E → V) : Prop :=
+def Branching {V E : Type} [DecidableEq V] [DecidableEq E] (_nodes : Finset V)
+    (edges : Finset E) (tail _head : E → V) : Prop :=
   ∃ v, ∃ e₁ ∈ edges, ∃ e₂ ∈ edges, e₁ ≠ e₂ ∧ tail e₁ = v ∧ tail e₂ = v
 
 /-- **Nonbranching:** no node has two distinct outgoing edge types. -/
-def NonBranching {V E : Type} [DecidableEq V] [DecidableEq E] (nodes : Finset V)
-    (edges : Finset E) (tail head : E → V) : Prop :=
+def NonBranching {V E : Type} [DecidableEq V] [DecidableEq E] (_nodes : Finset V)
+    (edges : Finset E) (tail _head : E → V) : Prop :=
   ∀ v, ∀ e₁ ∈ edges, ∀ e₂ ∈ edges, tail e₁ = v → tail e₂ = v → e₁ = e₂
 
 /-- **Cyclic edge-type spelling of the spectrum `c`:** a closed edge-type trail
@@ -133,10 +133,11 @@ theorem mem_of_edgeUse_pos {T : List E} {e : E} (h : 0 < edgeUse T e) : e ∈ T 
       by_cases hx : x = e
       · subst hx
         exact List.mem_cons_self
-      · rw [if_neg hx] at h
+      · simp [hx] at h
         exact List.mem_cons_of_mem _ (ih (by omega))
 
 /-- Concatenating two trails matching at the junction. -/
+omit [DecidableEq V] [DecidableEq E] in
 theorem trailAppend {T₁ T₂ : List E} {s u t : V}
     (h₁ : TrailEnds tail head T₁ s u) (h₂ : TrailEnds tail head T₂ u t) :
     TrailEnds tail head (T₁ ++ T₂) s t := by
@@ -147,6 +148,7 @@ theorem trailAppend {T₁ T₂ : List E} {s u t : V}
       | cons _ _ _ _ hte hT => exact TrailEnds.cons x (T₁ ++ T₂) _ _ hte (ih hT)
 
 /-- Appending a final edge to a trail. -/
+omit [DecidableEq V] [DecidableEq E] in
 theorem trailAppendLast {T₁ : List E} {p q : V} (h₁ : TrailEnds tail head T₁ p q)
     (x : E) (hx : tail x = q) : TrailEnds tail head (T₁ ++ [x]) p (head x) := by
   induction T₁ generalizing p with
@@ -173,6 +175,7 @@ theorem trailRevAppend {T₁ T₂ : List E} {p q : V}
         (trailAppendLast (tail := tail) (head := head) h₁ x hx) hT
 
 /-- The first edge of a nonempty trail leaves the start vertex. -/
+omit [DecidableEq V] [DecidableEq E] in
 theorem trailHead {T : List E} {s t : V} (h : TrailEnds tail head T s t)
     (hne : T ≠ []) :
     ∃ T' f, T = f :: T' ∧ tail f = s ∧ TrailEnds tail head T' (head f) t := by
@@ -210,6 +213,7 @@ variable (tail head : E → V)
 /-- **Splitting a trail.** Cutting a trail strictly inside it yields a prefix
 running from the start vertex and a suffix running to the end vertex, meeting at
 an intermediate vertex `u`. -/
+omit [DecidableEq V] [DecidableEq E] in
 theorem trailSplit {T : List E} {s t : V} (h : TrailEnds tail head T s t) :
     ∀ (i : ℕ), 0 < i → i < T.length →
       ∃ (A B : List E) (u : V), T = A ++ B ∧ A ≠ [] ∧ B ≠ [] ∧
@@ -445,7 +449,7 @@ theorem CyclicPeriod.neg {T : List E} {q : ℕ} (hq : CyclicPeriod T q)
     show (j + (T.length - q) + q) = j + T.length by omega, hidx2]
 
 theorem CyclicPeriod.sub {T : List E} {p q : ℕ} (hp : CyclicPeriod T p) (hq : CyclicPeriod T q)
-    (hq0 : 0 < q) (hqn : q < T.length) (hpn : p < T.length) (hqp : q ≤ p) :
+    (_hq0 : 0 < q) (hqn : q < T.length) (hpn : p < T.length) (hqp : q ≤ p) :
     CyclicPeriod T (p - q) := by
   intro j hj
   have h1 := CyclicPeriod.neg hq hqn ((j + p) % T.length) (Nat.mod_lt _ (by omega))
@@ -521,8 +525,8 @@ theorem CyclicPeriod.iter {T : List E} {g : ℕ} (hg : CyclicPeriod T g) :
       rw [ih hj, hg ((j + k * g) % T.length) (Nat.mod_lt _ (by omega)),
         Nat.mod_add_mod, show j + k * g + g = j + (k + 1) * g by ring]
 
-theorem CyclicPeriod.of_div {T : List E} {g p : ℕ} (hp : CyclicPeriod T p) (hg : CyclicPeriod T g)
-    (hg0 : 0 < g) (hgn : g < T.length) (hdiv : g ∣ T.length) :
+theorem CyclicPeriod.of_div {T : List E} {g p : ℕ} (_hp : CyclicPeriod T p) (hg : CyclicPeriod T g)
+    (_hg0 : 0 < g) (_hgn : g < T.length) (hdiv : g ∣ T.length) :
     ∀ (j : ℕ), j < T.length → T[j]? = T[j % g]? := by
   intro j hj
   have hidx : (j + (T.length / g - j / g) * g) % T.length = j % g := by
@@ -624,6 +628,7 @@ variable {α : Type} [DecidableEq α] {L : ℕ}
 variable (edges : Finset (Fin L → α))
 
 /-- The edge at position `j` of a nonempty window trail. -/
+omit [DecidableEq α] in
 private theorem cycEdge_get {T : List (Fin L → α)} (hpos : 0 < T.length) (j : ℕ)
     (hj : j < T.length) : PopulationReduction.cycEdge T hpos j = T.get ⟨j, hj⟩ := by
   unfold PopulationReduction.cycEdge
@@ -779,7 +784,7 @@ theorem two_distinct_of_card {α : Type} (s : Finset α) (h : 2 ≤ s.card) :
   by_cases hall : ∀ a ∈ s, ∀ b ∈ s, a = b
   · have hone : s.card ≤ 1 := Finset.card_le_one.mpr hall
     omega
-  · simp only [not_forall, not_imp, not_and] at hall
+  · simp only [not_forall] at hall
     obtain ⟨x, hx, y, hy, hxy⟩ := hall
     exact ⟨x, hx, y, hy, hxy⟩
 
@@ -817,7 +822,7 @@ theorem nonbranching_primitive_spelling_eq_one {T : List (Fin L → α)}
     {s : Fin (L - 1) → α} (hT : TrailEnds winPrefix winSuffix T s s) (hne : T ≠ [])
     (c : (Fin L → α) → ℕ) (huse : ∀ e, edgeUse T e = c e) (edges : Finset (Fin L → α))
     (huniq : ∀ e₁ ∈ edges, ∀ e₂ ∈ edges, winPrefix e₁ = winPrefix e₂ → e₁ = e₂)
-    (hvan : ∀ e, e ∉ edges → c e = 0) (hpos : ∀ e ∈ edges, 0 < c e) (hprim : IsPrimitive T) :
+    (_hvan : ∀ e, e ∉ edges → c e = 0) (hpos : ∀ e ∈ edges, 0 < c e) (hprim : IsPrimitive T) :
     ∀ e ∈ edges, c e = 1 := by
   intro e he
   by_contra hcon
@@ -895,7 +900,7 @@ This is the `g = 1` case of `PopulationReduction.spell_exists_divided`: Hierholz
 gives a closed trail with the prescribed multiplicities, and the repository's
 `spell_window`/`count_bridge` turn it into a word whose length-`L` windows are the
 trail edges. -/
-theorem spell_exists_circulation {G : ℕ} (hG : 0 < G) (S : Fin G → α) (hL : 1 < L)
+theorem spell_exists_circulation {G : ℕ} (hG : 0 < G) (_S : Fin G → α) (hL : 1 < L)
     (q : (Fin L → α) → ℕ) (hbal : CircBalanced winPrefix winSuffix q)
     (supp : Finset (Fin L → α)) (hsupp : ∀ e, e ∈ supp ↔ 0 < q e)
     (hne : supp.Nonempty) (hconn : WeakConn winPrefix winSuffix supp)
@@ -966,6 +971,7 @@ window trail — and hence the edge-type spelling — is a proper power, contrad
 primitivity of the trail.  This is the word-level counterpart of
 `properPower_of_cyclicPeriod`, and it is what makes the branching competitor a
 *genome* rather than an edge-type list. -/
+omit [DecidableEq α] [Fintype α] in
 theorem isPrimitive_of_primitiveTrail {H : ℕ} (hH0 : 0 < H) (W : Fin H → α)
     (T : List (Fin L → α)) (hlen : T.length = H)
     (hwin : ∀ r : Fin H, window (L := L) hH0 W r
@@ -1060,9 +1066,11 @@ window/node lemmas its edges are incidence-compatible in the cycle. -/
 def winTrail {H : ℕ} (hH : 0 < H) (D : Fin H → α) : List (Fin L → α) :=
   List.ofFn fun r : Fin H => window (L := L) hH D r
 
+omit [DecidableEq α] [Fintype α] in
 theorem winTrail_length {H : ℕ} (hH : 0 < H) (D : Fin H → α) :
     (winTrail (L := L) hH D).length = H := List.length_ofFn
 
+omit [DecidableEq α] [Fintype α] in
 theorem winTrail_get {H : ℕ} (hH : 0 < H) (D : Fin H → α) (i : ℕ) (hi : i < H) :
     (winTrail (L := L) hH D)[i]? = some (window (L := L) hH D ⟨i, hi⟩) := by
   show (List.ofFn (fun r : Fin H => window (L := L) hH D r))[i]? = _
@@ -1070,6 +1078,7 @@ theorem winTrail_get {H : ℕ} (hH : 0 < H) (D : Fin H → α) (i : ℕ) (hi : i
   simp [hi]
 
 /-- The prefix (node) of the window at `r`. -/
+omit [DecidableEq α] [Fintype α] in
 theorem winPrefix_window' {H : ℕ} (hH : 0 < H) (D : Fin H → α) (r : Fin H) :
     winPrefix (window (L := L) hH D r : Fin L → α) = nodeWindow hH D r := by
   funext d
@@ -1077,6 +1086,7 @@ theorem winPrefix_window' {H : ℕ} (hH : 0 < H) (D : Fin H → α) (r : Fin H) 
 
 /-- The suffix (node) of the window at `r` is the node window at the next
 start. -/
+omit [DecidableEq α] [Fintype α] in
 theorem winSuffix_window' {H : ℕ} (hH : 0 < H) (D : Fin H → α) (r : Fin H) :
     winSuffix (window (L := L) hH D r : Fin L → α)
       = nodeWindow hH D ⟨(r.val + 1) % H, Nat.mod_lt _ hH⟩ := by
@@ -1096,7 +1106,7 @@ first entry's tail is `s` while the last entry's head is `s`, then `T` is a
 closed trail based at `s`. -/
 theorem trail_of_step {E V : Type} [DecidableEq E] [DecidableEq V]
     (tail head : E → V) : ∀ (T : List E) (u v : V), T ≠ [] →
-      (∀ (i : ℕ) (hi : i + 1 < T.length) (e₁ e₂ : E),
+      (∀ (i : ℕ) (_hi : i + 1 < T.length) (e₁ e₂ : E),
         T[i]? = some e₁ → T[i + 1]? = some e₂ → head e₁ = tail e₂) →
       (∃ e, T[0]? = some e ∧ tail e = u) →
       (∃ e, T[T.length - 1]? = some e ∧ head e = v) →
@@ -1153,7 +1163,7 @@ theorem trail_of_step {E V : Type} [DecidableEq E] [DecidableEq V]
 /-- A closed trail from incidence-compatible consecutive entries. -/
 theorem trail_closed_of_step {E V : Type} [DecidableEq E] [DecidableEq V]
     (tail head : E → V) (T : List E) (s : V) (hne : T ≠ [])
-    (hstep : ∀ (i : ℕ) (hi : i + 1 < T.length) (e₁ e₂ : E),
+    (hstep : ∀ (i : ℕ) (_hi : i + 1 < T.length) (e₁ e₂ : E),
       T[i]? = some e₁ → T[i + 1]? = some e₂ → head e₁ = tail e₂)
     (hfirst : ∃ e, T[0]? = some e ∧ tail e = s)
     (hlast : ∃ e, T[T.length - 1]? = some e ∧ head e = s) :
@@ -1276,6 +1286,7 @@ theorem countP_ofFn {Y : ℕ} {X : Type} (f : Fin Y → X) (p : X → Bool) :
       rw [h1, h2, ih]
 
 /-- The window trail spells the complete spectrum of the word. -/
+omit [Fintype α] in
 theorem winTrail_edgeUse {H : ℕ} (hH : 0 < H) (D : Fin H → α) (e : Fin L → α) :
     edgeUse (winTrail (L := L) hH D) e = specCount (L := L) hH D e := by
   show (winTrail (L := L) hH D).countP (fun x => decide (x = e)) = _
@@ -1309,6 +1320,7 @@ variable {α : Type} [DecidableEq α] {L : ℕ} [Fintype α]
 closed edge-type trail over `winPrefix`/`winSuffix` of positive length, then
 there is a circular word `W` of length `|T|` whose complete spectrum is
 `edgeUse T` and whose windows are the entries of `T`. -/
+omit [Fintype α] in
 theorem word_of_closed_trail {T : List (Fin L → α)} {s : Fin (L - 1) → α}
     (hT : TrailEnds winPrefix winSuffix T s s) (hTne : T ≠ []) (hL : 1 < L) :
     ∃ (W : Fin T.length → α),
@@ -1424,6 +1436,7 @@ private theorem mul_cancel_left' {E A C : ℕ} (hE : 0 < E)
 
 /-- If `cD w * d = c0 w * H` for every `w`, `0 < d`, and `c0` is gcd-one, then
 `d` divides `H` and `cD w = (H / d) * c0 w`. -/
+omit [DecidableEq W] [Fintype W] in
 theorem ray_multiple {d H : ℕ} (c0 cD : W → ℕ)
     (hd : 0 < d) (hgcd : IsGcdOne c0) (hmul : ∀ w, cD w * d = c0 w * H) :
     d ∣ H ∧ ∀ w, cD w = (H / d) * c0 w := by
@@ -1492,7 +1505,7 @@ theorem spectrum_on_ray {G H g : ℕ} (hG : 0 < G) (hH : 0 < H) (hg0 : 0 < g)
     calc G = ∑ w : W, cS w := hSsum.symm
       _ = ∑ w : W, g * c0 w := Finset.sum_congr rfl (fun w _ => hS w)
       _ = g * ∑ w : W, c0 w := by
-          simpa [Finset.mul_sum]
+          rw [Finset.mul_sum]
   have hcomm := hexp
   rw [Nat.mul_comm] at hcomm
   have hS0 : (∑ w : W, c0 w) = G / g :=
@@ -1552,6 +1565,7 @@ def Identified {G : ℕ} (hG : 0 < G) {m : ℕ} (D : Fin m → α) (hm : m = G)
   RotEquiv hG (fun i => D (Fin.cast hm.symm i)) S
 
 /-- Identification is exactly rotation-equivivalence. -/
+omit [DecidableEq α] [Fintype α] in
 theorem identified_iff_rotEquiv {G m : ℕ} (hG : 0 < G) (D : Fin m → α) (hm : m = G)
     (S : Fin G → α) :
     Identified hG D hm S ↔ RotEquiv hG (fun i => D (Fin.cast hm.symm i)) S := by
@@ -1562,7 +1576,7 @@ candidates of arbitrary length.  A candidate `D : Fin m → α` is identified wi
 `S` when it has the same length `G` and is a rotation of `S`.  The normalized
 spectrum condition is multiplicative (no division): the candidate spectrum
 scaled by `G` equals the truth spectrum scaled by the candidate length `m`. -/
-def Identifiable {G : ℕ} {L : ℕ} (hG : 0 < G) (hL : 1 < L) (S : Fin G → α) : Prop :=
+def Identifiable {G : ℕ} {L : ℕ} (hG : 0 < G) (_hL : 1 < L) (S : Fin G → α) : Prop :=
   ∀ (m : ℕ) (D : Fin m → α) (hD : 0 < m), PopulationReduction.IsPrimitive D →
     (∀ w, specCount (L := L) hG S w * m = specCount (L := L) hD D w * G) →
     ∃ hm : m = G, Identified hG D hm S
@@ -1588,7 +1602,8 @@ theorem truth_trail_primitive {hG : 0 < G} {hL : 1 < L} (S : Fin G → α)
 /-- **Every support edge type of the truth has at most one successor.**  This is
 the "uniqueness" hypothesis extracted from nonbranching of the spectrum-support
 graph: two support edges leaving the same node are equal. -/
-theorem uniqueOut_of_nonbranching {hG : 0 < G} {hL : 1 < L} {S : Fin G → α}
+omit [Fintype α] in
+theorem uniqueOut_of_nonbranching {hG : 0 < G} {_hL : 1 < L} {S : Fin G → α}
     (hnb : NonBranching (genomeNodes (L := L) hG S) (support (L := L) hG S)
       (winPrefix (L := L)) (winSuffix (L := L)))
     (e₁ e₂ : Fin L → α) (h₁ : e₁ ∈ support (L := L) hG S)
@@ -1597,6 +1612,7 @@ theorem uniqueOut_of_nonbranching {hG : 0 < G} {hL : 1 < L} {S : Fin G → α}
   exact hnb (winPrefix (L := L) e₁) e₁ h₁ e₂ h₂ (by rfl) ht.symm
 
 /-- Off the support the truth's complete spectrum vanishes. -/
+omit [Fintype α] in
 theorem truth_van {hG : 0 < G} (S : Fin G → α) (w : Fin L → α)
     (hw : w ∉ support (L := L) hG S) : specCount (L := L) hG S w = 0 := by
   have h1 := (mem_support_iff (L := L) hG S w).mpr
@@ -1641,6 +1657,7 @@ theorem truth_total_all {hG : 0 < G} (S : Fin G → α) :
   exact h1
 
 /-- The truth's support is nonempty: its complete spectrum totals `G > 0`. -/
+omit [Fintype α] in
 theorem support_ne_nil_of_truth {hG : 0 < G} (S : Fin G → α) :
     (support (L := L) hG S).Nonempty := by
   have h1 := truth_total (L := L) hG S
@@ -1692,6 +1709,7 @@ def winAt {H : ℕ} (hH : 0 < H) (D : Fin H → α) (j : Fin H) (t : ℕ) : Fin 
   window (L := L) hH D ⟨(j.val + t) % H, Nat.mod_lt _ hH⟩
 
 /-- `winAt` at step `0` is the window itself. -/
+omit [DecidableEq α] [Fintype α] in
 theorem winAt_zero' {H : ℕ} (hH : 0 < H) (D : Fin H → α) (r : Fin H) :
     winAt (L := L) hH D r 0 = window (L := L) hH D r := by
   unfold winAt
@@ -1701,6 +1719,7 @@ theorem winAt_zero' {H : ℕ} (hH : 0 < H) (D : Fin H → α) (r : Fin H) :
 
 /-- The prefix of the window at the next start is the suffix of the current one:
 the deterministic step of the walk. -/
+omit [DecidableEq α] [Fintype α] in
 theorem winPrefix_winAt {H : ℕ} (hH : 0 < H) (D : Fin H → α) (j : Fin H) (t : ℕ) :
     winPrefix (L := L) (winAt (L := L) hH D j (t + 1))
       = winSuffix (L := L) (winAt (L := L) hH D j t) := by
@@ -1714,6 +1733,7 @@ theorem winPrefix_winAt {H : ℕ} (hH : 0 < H) (D : Fin H → α) (j : Fin H) (t
   exact Fin.ext (by simpa using hmod)
 
 /-- `winAt` read from the zero start. -/
+omit [DecidableEq α] [Fintype α] in
 theorem winAt_B {H : ℕ} (hH : 0 < H) (B : Fin H → α) (t : ℕ) :
     winAt (L := L) hH B ⟨0, hH⟩ t
       = window (L := L) hH B ⟨t % H, Nat.mod_lt _ hH⟩ := by
@@ -1723,11 +1743,13 @@ theorem winAt_B {H : ℕ} (hH : 0 < H) (B : Fin H → α) (t : ℕ) :
   simp
 
 /-- `winAt` from an arbitrary start is the window at the shifted start. -/
+omit [DecidableEq α] [Fintype α] in
 theorem winAt_A {H : ℕ} (hH : 0 < H) (B : Fin H → α) (j : Fin H) (t : ℕ) :
     winAt (L := L) hH B j t
       = window (L := L) hH B ⟨(j.val + t) % H, Nat.mod_lt _ hH⟩ := rfl
 
 /-- A support window is a member of the support. -/
+omit [Fintype α] in
 theorem mem_support_window (S : Fin G → α) (hG : 0 < G) (j : Fin G) :
     window (L := L) hG S j ∈ support (L := L) hG S :=
   Finset.mem_image.mpr ⟨j, Finset.mem_univ _, rfl⟩
@@ -1776,6 +1798,7 @@ whole content, and it is arithmetic only:
 `(s + (i + (G - s)) mod G) mod G = (i + G) mod G = i mod G = i`, by
 `Nat.add_mod_mod`, `Nat.sub_add_cancel` (using `s ≤ G`), the repository's
 `AmpBmpPrimitivity.mod_add_self` and `Nat.mod_eq_of_lt`. -/
+omit [DecidableEq α] [Fintype α] in
 theorem rotEquiv_of_shift {G : ℕ} (hG : 0 < G) {D S : Fin G → α} (s : ℕ)
     (hslt : s < G)
     (hs : ∀ (n : ℕ) (hn : n < G), D ⟨n, hn⟩

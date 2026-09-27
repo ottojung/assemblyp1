@@ -198,15 +198,13 @@ theorem competitor_winCount_BA : winCount competitorGenome 2 observedBA = 2 := b
 
 theorem truth_likelihood :
     sameLengthExactLik truthGenome 2 realizedReads = 1 / 16 := by
-  simp only [sameLengthExactLik, realizedReads, List.map, List.prod_cons, List.prod_nil,
-    List.prod_singleton]
+  simp only [sameLengthExactLik, realizedReads, List.map, List.prod_cons, List.prod_nil]
   rw [truth_winCount_AB, truth_winCount_BA]
   norm_num [truthGenome]
 
 theorem competitor_likelihood :
     sameLengthExactLik competitorGenome 2 realizedReads = 1 / 4 := by
-  simp only [sameLengthExactLik, realizedReads, List.map, List.prod_cons, List.prod_nil,
-    List.prod_singleton]
+  simp only [sameLengthExactLik, realizedReads, List.map, List.prod_cons, List.prod_nil]
   rw [competitor_winCount_AB, competitor_winCount_BA]
   norm_num [competitorGenome]
 

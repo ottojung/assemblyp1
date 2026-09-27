@@ -416,9 +416,9 @@ theorem nCopies_suffix (l : List α) (k m : ℕ) (hm : m ≤ k) :
       rw [h1]
       refine Nat.mod_eq_of_modEq (b := i % l.length) ?_ (Nat.mod_lt (x := i) (y := l.length) hpos)
       have h3 : (k - m) * l.length + i ≡ i [MOD l.length] := by
-        simpa using
+        convert
           (Nat.ModEq.add (Nat.modEq_zero_iff_dvd.mpr (Nat.dvd_mul_left l.length (k - m)))
-            (Nat.ModEq.refl i))
+            (Nat.ModEq.refl i)) using 1 <;> simp
           (Nat.modEq_zero_iff_dvd.mpr (Nat.dvd_mul_left l.length (k - m))) (Nat.ModEq.refl i)
       exact h3.trans (Nat.ModEq.symm (Nat.mod_modEq i l.length))
     have hmk : (nCopies l k).length = k * l.length := nCopies_length l k

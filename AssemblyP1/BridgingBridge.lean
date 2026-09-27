@@ -109,7 +109,7 @@ private theorem mod_add_mod (n x y : ℕ) : (x + y) % n = (x + y % n) % n := by
     have hdvd : n ∣ n * k := ⟨k, rfl⟩
     exact (Nat.modEq_zero_iff_dvd).mpr hdvd
   rw [hk]
-  simp only [Nat.add_mod, hz, Nat.zero_add, Nat.add_zero, Nat.mod_mod]
+  simp only [Nat.add_mod, hz, Nat.add_zero, Nat.mod_mod]
 
 /-- Agreement at natural-number starts transfers to the representative starts:
 the length-`e` window at `rep a` is the `S.cycl` read at the raw index `a + d`. -/

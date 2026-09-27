@@ -677,9 +677,9 @@ theorem observedOf_mem_support {α : Type} [DecidableEq α] [Fintype α] {G L n 
   have hz : observedOf (L := L) hG S ρ w = 0 := by
     apply Finset.sum_eq_zero
     intro i _
-    refine if_neg ?_
-    intro he
-    exact hn (Finset.mem_image.mpr ⟨ρ i, Finset.mem_univ _, he⟩)
+    by_cases he : window (L := L) hG S (ρ i) = w
+    · exact (hn (Finset.mem_image.mpr ⟨ρ i, Finset.mem_univ _, he⟩)).elim
+    · simp [he]
   omega
 
 /-- **The truth is a strict same-length spelled candidate of its own
@@ -706,7 +706,7 @@ repeat-theoretic consideration, but because of clause 1 of `I_s` alone. -/
 at every start in `R` returns the symbol `v`, and the realized starts cover the
 genome, then every position carries `v`. -/
 theorem covering_constant_reads_is_constant {α : Type} [DecidableEq α] {G L : ℕ}
-    (hG : 0 < G) (hLG : L ≤ G) (S : Fin G → α) (v : α) (R : Finset (Fin G))
+    (hG : 0 < G) (_hLG : L ≤ G) (S : Fin G → α) (v : α) (R : Finset (Fin G))
     (hobs : ∀ r ∈ R, ∀ d : Fin L, OrientedRigidity.cyc hG S (r.val + d.val) = v)
     (hcov : ∀ p : Fin G, ∃ r ∈ R, ∃ d : Fin L, p.val = (r.val + d.val) % G) :
     ∀ i : Fin G, OrientedRigidity.cyc hG S i.val = v := by

@@ -115,7 +115,7 @@ instance; it is only the `I_s` membership that fails. -/
 theorem wraparound_all_windows_observed :
     ∀ r : Fin 5, truth.window 3 r ∈ observedReads := by
   intro r
-  fin_cases r <;> simp [observedReads] <;> decide
+  fin_cases r <;> simp [observedReads]
 
 /-- **And yet the truth carries a long Bresler triple repeat**, of length
 `2 = L - 1`, at starts `0, 1, 2`: the three length-`2` windows are all `AA`, the

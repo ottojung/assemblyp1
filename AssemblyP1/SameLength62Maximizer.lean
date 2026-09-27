@@ -351,7 +351,7 @@ theorem support62_eq_of_genuine62 {L : ℕ} {C D : Genome α}
     {verts : List (Fin L → α)} {toList : (Fin L → α) → List α} {oMin : ℕ}
     (hC : Is62Candidate62 C verts toList (fun y => y) (fun y => y) oMin)
     (hD : Is62Candidate62 D verts toList (fun y => y) (fun y => y) oMin)
-    (hlen : D.len = C.len) :
+    (_hlen : D.len = C.len) :
     (Finset.univ.image (fun r : Fin D.len => D.window L r) : Finset (Fin L → α))
       = Finset.univ.image (fun r : Fin C.len => C.window L r) := by
   rw [support62_eq_observedTypes (L := L) (toList := toList) hD,

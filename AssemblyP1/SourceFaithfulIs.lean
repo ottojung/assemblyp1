@@ -285,6 +285,7 @@ length `e` at `t` is bridged iff some realized read interval `[r, r+L)` and some
 lift `t'` of the copy's start satisfy `r < t'` and `t' + e < r+L` — verbatim the
 condition of `docs/bridging-source-semantics.md`, and the reason the definition
 above needs no separate modular endpoint clauses. -/
+omit [DecidableEq α] in
 theorem bridgesCopy_lifted_iff :
     BridgesCopy S L R e t ↔
       ∃ (r : Fin S.len) (t' : ℕ),
@@ -315,6 +316,7 @@ This is what the endpoint-only reading could not give, and it is what makes the
 whole "wraparound" regime of `docs/issue88-wraparound-contrapositive.md` an
 artifact of that reading: a copy with `e ≥ L - 1` can never be bridged, whatever
 the start set is. -/
+omit [DecidableEq α] in
 theorem bridgesCopy_length (hb : BridgesCopy S L R e t) : e + 2 ≤ L := by
   obtain ⟨r, hr, d, hd, ht⟩ := hb
   omega
