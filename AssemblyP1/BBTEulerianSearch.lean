@@ -153,6 +153,22 @@ def OrbitVertexEq (θ : Fin G → Fin G) : Prop :=
   ∃ k : Fin G, ∀ j : Fin G,
     vtx hG L S (θ^[j.val] (origin hG)) = vtx hG L S (rotAdd hG (j.val + k.val) (origin hG))
 
+/-- The three clauses above are decidable, which is what makes the finite
+verification of the reformulated statement possible at all.  (Without these,
+`decide` cannot even state the goal, so the kernel-checked evidence in this
+module and in `AssemblyP1.BBTSupportInvariant` would be unobtainable.) -/
+instance (hG : 0 < G) (L : ℕ) (S : Fin G → α) (θ : Fin G → Fin G) :
+    Decidable (FibrePreserving hG L S θ) := by
+  unfold FibrePreserving; infer_instance
+
+instance (hG : 0 < G) (θ : Fin G → Fin G) :
+    Decidable (OneCycle hG θ) := by
+  unfold OneCycle VisitsAll; infer_instance
+
+instance (hG : 0 < G) (L : ℕ) (S : Fin G → α) (θ : Fin G → Fin G) :
+    Decidable (OrbitVertexEq hG L S θ) := by
+  unfold OrbitVertexEq; infer_instance
+
 /-- The truth's own successor is the one-step rotation, and it is one cycle:
 this is the anti-vacuity anchor of the reformulation, which is not vacuous,
 since it holds of the truth.  (`L` and `S` are bound locally: `OneCycle`
