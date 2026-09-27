@@ -1,8 +1,13 @@
-# #89: a complete proof strategy for `UniqueEulerianCycle`
+# #89: `thm:BBT` — uniqueness of the condensed Eulerian cycle
 
-_Status: the mathematical core is settled (proved here, and re-verified by
-exhaustive search over small instances); the Lean formalization of the
-remaining steps is in progress in `AssemblyP1/BBTUniqueEulerian.lean`._
+_Status (2026-09-27, branch `agent/issue89-direct-final`, commits `640135e`,
+`082768a`, and the checkpoint after it): **the combinatorial half of `thm:BBT`
+is proved in the kernel; the two repeat-theoretic lemmas it needs are not.**
+`AssemblyP1.BBTEulerian.UniqueEulerianCycle` is *not* proved, `P2.BBTUniqueAt`
+is *not* closed, and `AssemblyP1.PopulationUniqueness.population_unique_ML_up_to_rotation`
+still takes `(hBBT : BBTUniqueAt L)` as a hypothesis. No `sorry`, no `admit`, no
+new axiom; `#print axioms` reports only `propext`, `Classical.choice`,
+`Quot.sound` for everything listed below. Full `lake build` passes.*
 
 ## 1. The statement to be proved
 
@@ -11,11 +16,11 @@ remaining steps is in progress in `AssemblyP1/BBTUniqueEulerian.lean`._
 `σ : Fin K ≃ Fin K` satisfying `EulerianCycle hK L S σ`, the vertex cycle of
 `σ` is the truth's vertex cycle, i.e. `VertexCycleEq hK L S σ id`.
 
-`EulerianCycle` has two clauses.  The `single` clause
-(`VisitsAll (fun x => σ (nextPos (σ.symm x))) (origin hG)`) is **automatic**:
+`EulerianCycle` has two clauses. The `single` clause
+(`VisitsAll (fun x => σ (nextPos (σ.symm x))) (origin hK)`) is **automatic**:
 the successor of a pull-back presentation is the conjugate
 `σ ∘ rot₁ ∘ σ⁻¹` of the one-step rotation, hence a `G`-cycle, and
-`pullback_isEulerianCycle` already proves it.  So the hypothesis reduces to
+`pullback_isEulerianCycle` already proves it. So the hypothesis reduces to
 
 ```text
 traverses  ∀ i, vtx (σ (nextPos i)) = vtx (nextPos (σ i))          (T)
@@ -24,99 +29,155 @@ traverses  ∀ i, vtx (σ (nextPos i)) = vtx (nextPos (σ i))          (T)
 and the whole content is: (T) forces the vertex cycle to be a rotation of the
 truth's, under `Ukkonen`.
 
-## 2. The master reformulation
+## 2. The master reformulation (kernel-checked, §2 of the module)
 
 Write `ρ = nextPos`, `W = vtx` (the `(L-1)`-mer at a start), `K = L - 1`, and
-let `J := σ ρ σ⁻¹` be the successor permutation *of the listing* `σ 0, σ 1, …`
-(i.e. `J (σ i) = σ (i+1)`).  Then (T) is exactly
+let `Succ σ = σ ρ σ⁻¹` be the successor permutation *of the listing*
+`σ 0, σ 1, …` (i.e. `Succ σ (σ i) = σ (i+1)`). Then (T) is exactly
 
 ```text
-∀ x, W (J x) = W (ρ x)                    (T')
+∀ x, W (Succ σ x) = W (ρ x)                                     (T')
 ```
 
-because `x = σ i` ranges over all positions.  Putting `f := J ∘ ρ⁻¹` gives
+Proved: `AssemblyP1.BBTUniqueEulerian.AltF_vtx`. Putting
+`f := AltF hG σ = Succ σ ∘ prevPos`, (T') is `W (f q) = W q`; proved:
+`AltF_bijective` (so `f` is a permutation). And `Succ_eq_altF` says
+`f ρ = Succ σ`, so the alternative traversal is the `f ρ`-cycle and the `single`
+clause is "`f ρ` is a `G`-cycle". This is the classical reformulation: `f`
+chooses, at every step, *which occurrence* of the next `(L-1)`-mer to visit.
+
+The listing lemmas (`succ_listing'`, `listing_surj`) are re-derived from the
+reduction's own `altSucc_iterate`, so no new word semantics is introduced.
+
+## 3. The combinatorial core: an innermost chord breaks the cycle (§4)
+
+`AssemblyP1.BBTUniqueEulerian.not_visitsAll_of_innermost_chord`:
+
+> Let `f : Fin G → Fin G` be a bijection, and let `a, b` satisfy
+> `1 ≤ sh a b < G`, `f b = a`, and `f x = x` for every `x` on the open arc
+> from `a` to `b`. Then `x ↦ f (ρ x)` is **not** a `G`-cycle, i.e.
+> `¬ VisitsAll (fun x => f (nextPos x)) (origin hG)`.
+
+This is **strictly sharper** than the "minimal gap" version sketched below in
+§5: it assumes neither that `f` is an involution nor that its chords are
+globally non-crossing. A single chord whose open arc contains no support point
+already breaks the cycle. Proof: read the orbit of `a` in the shift coordinate;
+it is the sub-cycle `0, 1, …, sh a b − 1, 0`, of length `sh a b < G`. The
+orbit of the origin meets `a` (surjectivity of the iterate map), so that length
+is a period of the circle, contradiction. Two ingredients are needed to land
+this in the form `EulerianCycle` uses — "being a single `G`-cycle does not
+depend on the base point" — and are proved separately in §4.1 of the module:
 
 ```text
-W (f q) = W (q)  ∀q,  f bijective,  J = f ∘ ρ,  σ i = Jⁱ (σ 0).   (★)
+iterate_G_eq : VisitsAll J (origin hG) → Bijective J → J^[G] (origin hG) = origin hG
+iterate_mod   : J^[G] x = x → ∀ m, J^[m] x = J^[m % G] x
 ```
 
-So: **alternative Eulerian cycles are exactly the label-preserving
-permutations `f` for which `f ∘ ρ` is a `G`-cycle** (a `G`-cycle
-automatically, since `J = σρσ⁻¹`), and the vertex cycle of the listing is the
-label sequence along the `J`-cycle.  This is the classical reformulation:
-`f` chooses, at every step, *which occurrence* of the next `(L-1)`-mer to
-visit.
+The shift coordinate makes the arc combinatorics elementary (§3 of the module):
+`sh a (rotAdd t a) = t % G`, and
 
-## 3. The three lemmas the proof needs
+```text
+inArc_iff : InArc hG a b x ↔ 0 < sh hG a x ∧ sh hG a x < sh hG a b
+```
 
-**Lemma 1 (three occurrences).**  If three distinct starts spell the same
-`(L-1)`-mer and they are *not* all congruent modulo the least period `p` of
-`S`, they extend simultaneously to a **maximal triple repeat** of length
-`≥ K`; hence `Ukkonen` forbids it.  So under `Ukkonen`, three occurrences of
-one `(L-1)`-mer force all three starts to be congruent mod `p`.  In
-particular:
+*definitionally*, because `BBTChords.InArc` is already stated with the
+coordinate `sh`. So the "chords of a non-crossing configuration" of §5 are
+intervals of `sh`, and no separate chord theory is needed.
 
-* `p = G` (primitive truth): every `(L-1)`-mer occurs **at most twice**;
-* `p < G` (non-primitive): two starts spelling the same `(L-1)`-mer are
-  congruent mod `p` (take a third occurrence at `a + p`), so the
-  `(L-1)`-mers of the primitive root are pairwise distinct.
+The identification with the repository's own object is §5 of the module:
+`EulerianCycle_no_innermost_chord` — *an alternative Eulerian cycle cannot
+have an innermost chord of `f`*. So the combinatorial content of `thm:BBT` is
+now in the kernel, with the two repeat-theoretic inputs below removed.
 
-**Lemma 2 (crossing pairs).**  If two doubled pairs — `W a = W b`,
-`W c = W d`, four distinct starts — *interleave*, then (primitivity gives
-termination of the simultaneous extension) they extend to two **interleaved
-maximal repeats**, both of length `≥ K`, contradicting `Ukkonen`.  So under
-`Ukkonen` the doubled pairs of the primitive truth are pairwise
-non-interleaving.
+## 4. The two remaining lemmas
 
-**Lemma 3 (the minimal chord).**  Let `f` be a bijection with
-`W (f q) = W q`, whose support is a set of *non-crossing* pairs, and let
-`J = f ∘ ρ` be a `G`-cycle.  Then `f = id`.
+**Lemma 1 (multiplicity; the triple-repeat clause of `Ukkonen`).** Three
+distinct starts spelling the same `(L-1)`-mer, not congruent modulo the least
+period `p` of `S`, extend to a maximal triple repeat of length `≥ K`. Hence
+under `Ukkonen` every `(L-1)`-mer occurs **at most twice** in the primitive
+case, and starts congruent modulo `p` spell the same `(L-1)`-mer.
 
-*Proof.*  Fibres have size `≤ 2`, so `f` is an involution which is a product
-of disjoint transpositions, each on a doubled pair.  Suppose `f ≠ id` and
-choose a support pair `(a, b)`, `a < b`, minimizing `b - a`.  By
-non-crossing, no support pair has an endpoint strictly between `a` and `b`
-(otherwise it is nested inside `(a, b)` and shorter, or it crosses).  Hence
-`J x = f (x+1) = x + 1` for `a ≤ x < b - 1` and `J (b-1) = f b = a`, so
-`J` restricts to the cycle `a, a+1, …, b-1, a` of length `b - a < G`: `J` is
-not a `G`-cycle.  Contradiction. ∎
+The period-arithmetic input is in place and kernel-checked
+(`period_of_agree_all`, `agree_all_of_period`, `least_period_dvd`,
+`leastPeriod_dvd_period`, `leastPeriod_dvd_G`, `sh_add`, `sh_dvd_trans`,
+`cyc_of_period`, `vtx_eq_of_sh`). What is missing is the **two-sided maximal
+extension** of three agreeing starts: the argument that a maximal element of
+`AgrSet3`, shifted to the left frontier, is a
+`SourceFaithfulIs.Genome.IsTripleRepeat`.
 
-This is the heart of `thm:BBT`, and it is the classical
-"non-crossing chords force a single cyclic trail" step, in the exact shape
-the `Fin G → α` word layer supports.
+The one-sided version is **false**, and the counterexample is worth recording
+because it dictates the shape of the correct statement: for
+`S = 012012012`, `G = 9`, `K = 3`, the three starts `0, 3, 6` all spell `012`,
+and *all three preceding symbols* (2, 2, 2) and *all three following symbols*
+(0, 0, 0) are equal, so there is no maximal triple repeat at that triple at
+all. This is the `p = 3` case, and it is precisely the second alternative of
+Lemma 1: `sh 0 3 = 3` and `leastPeriod = 3`. Both maximality clauses of
+`IsTripleRepeat` must be handled by a *joint* two-sided extension, not one
+after the other.
 
-## 4. The two cases
+**Lemma 2 (the crossing clause, a.k.a. the "rematch" step).** Two *doubled*
+pairs that interleave force two interleaved maximal repeats both of length
+`≥ K`.
 
-* **`p = G` (primitive).**  By Lemma 1 every `(L-1)`-mer occurs `≤ 2` times;
-  by Lemma 2 the doubled pairs are non-crossing.  Since `J` is a `G`-cycle,
-  Lemma 3 gives `f = id`, i.e. `J = ρ`, i.e. `σ i = σ 0 + i` and
+This is **not** available at the level of raw `(L-1)`-mer pairs:
+`BBTChords.raw_node_crossing_not_maximal` is a kernel-checked refutation
+(`S = 00101`, `G = 5`, `L = 3`, which satisfies `P2`: the length-`2` mers `01`
+and `10` repeat at the *crossing* pairs `{1,3}` and `{2,4}`, yet neither pair is
+a maximal repeat). So crossing of raw node pairs is *compatible* with `P2`, and
+the argument must be organised around maximal-repeat **blocks** — the
+simultaneous two-sided maximal extension of a node's occurrences. Whether the
+alternative Eulerian choices factor by such blocks, and whether non-interleaved
+blocks force a unique cyclic trail, is the open step recorded in
+`docs/bbt-chord-rematch-89.md` §5–§6.
 
-  ```text
-  W (σ i) = W (rotAdd (σ 0) i).
-  ```
+Note that Lemma 2 is a statement about *node* pairs while §3 is a statement
+about *block* pairs, and it is exactly this mismatch that the refutation
+exploits: the blocks of two crossing node pairs need not interleave. This is
+why the chord route was abandoned and the innermost-chord form of §3 adopted.
 
-* **`p < G` (a power).**  By Lemma 1 two starts with the same `(L-1)`-mer are
-  congruent mod `p`, so `f` preserves residues mod `p`; hence
-  `J x = f (x+1) ≡ x + 1 (mod p)`, so `σ i ≡ σ 0 + i (mod p)`, and as `W`
-  is `p`-periodic,
+## 5. Why these two lemmas are the whole remainder
 
-  ```text
-  W (σ i) = W (rotAdd (σ 0) i).
-  ```
+With §3 in hand the argument is four lines:
 
-In both cases `VertexCycleEq hK L S σ id` holds with the single shift
-`k = σ 0`, i.e. the vertex cycle of `σ` is not merely *a* rotation of the
-truth's: it is the truth's own vertex cycle read from the start `σ 0`.
+1. Under `Ukkonen` + Lemma 1, every `(L-1)`-mer occurs at most twice, so `f`
+   (a label-preserving permutation) is a product of disjoint transpositions,
+   one per doubled pair.
+2. Under `Ukkonen` + Lemma 2, the support chords of `f` are pairwise
+   non-interleaved.
+3. A non-crossing configuration of chords on a circle has an *innermost* chord:
+   a chord `(a, b)` whose open arc contains no support point. (Equivalently,
+   take the chord minimising the number of support points on one of its arcs.)
+4. §3 says an innermost chord makes `f ρ` not a `G`-cycle, contradicting the
+   `single` clause of `EulerianCycle`. Hence `f = id`, i.e. `Succ σ = ρ`, i.e.
+   `σ i = rotAdd (σ 0) i`, and therefore `W (σ i) = W (rotAdd (σ 0) i)`, which
+   is `VertexCycleEq hK L S σ id` with `k = σ 0`.
 
-`L ≤ 1` is vacuous (`vtx` has empty domain, so all `vtx` agree), so the
-theorem holds for every `L`, exactly as `UniqueEulerianCycle` is stated.
+Because `W` is `p`-periodic and `f` preserves `W`, the non-primitive case only
+requires the weaker conclusion `σ i ≡ σ 0 + i (mod p)`, which the same four
+steps give once Lemma 1 is read in its `p`-congruence form. `L ≤ 1` is
+vacuous (`vtx` has empty domain, so all `vtx` agree).
 
-## 5. Evidence
+## 6. What this file does and does not do
 
-`scripts/verify_eulerian_cycle_uniqueness_89.py` (exhaustive search over all
-circular words, all traversals) found no counterexample; re-run here with the
-*faithful* formal definitions of `IsRepeat`, `IsTripleRepeat`, `Interleaved`
-and `Ukkonen` (`scripts/verify_eulerian_unique_faithful_89.py`):
+**Does:** §1 (window + period arithmetic, with the WIP's broken `leastPeriod`
+repaired), §2 (the master reformulation, kernel-checked), §3 (the shift
+coordinate and the arc), §4 (the innermost-chord cycle-breaking step, in the
+form `EulerianCycle` uses), §5 (the identification with `EulerianCycle`).
+
+**Does not:** Lemma 1 and Lemma 2 above, hence
+`BBTEulerian.UniqueEulerianCycle`, hence `EulerianCycleObstruction`, hence
+`P2.BBTUniqueAt`. No `sorry`, no `admit`, no new axiom.
+
+## 7. Evidence for the unproved part
+
+`scripts/verify_eulerian_cycle_uniqueness_89.py` searches exhaustively over all
+circular words, all read lengths, and all traversals of the multigraph,
+filtered by Ukkonen's condition. Its traversal notion is the *multigraph*
+one (consecutive `(K)`-mers are shifts of one another, and the successor is a
+`G`-cycle), which is the condensed-graph reading of `thm:BBT`; it is **not**
+the pull-back presentation `σ` of `AssemblyP1.BBTEulerian`, so it explores
+strictly more traversals than the formalized statement and is correspondingly
+stronger evidence. Reported output:
 
 ```text
 G = 2 … 10, alphabet size 2, K = 1 … 4, all words satisfying Ukkonen,
@@ -126,14 +187,5 @@ no traversal whose vertex cycle is not a rotation of the truth's.
 
 The same search **without** the `Ukkonen` filter does produce failures — e.g.
 `S = 001001`, `G = 6`, `K = 1`, listing `0 3 1 2 4 5`, whose label sequence
-`000011` is not a rotation of `001001` — so both clauses of `Ukkonen` are
-load-bearing, as Lemma 1 and Lemma 2 predict (`001001` violates the
-triple-repeat clause: the starts `0, 1, 3` spell a maximal triple repeat of
-length `1`).
-
-## 6. Formalization status
-
-`AssemblyP1/BBTUniqueEulerian.lean` develops, in order: the `WSeq`/`Agree`
-layer and the de Bruijn shift; the period arithmetic (least period divides
-every period); the master reformulation (★); Lemma 1; Lemma 2; Lemma 3; and
-the two cases.  `L ≤ 1` is discharged separately.
+`000011` is not a rotation of `001001` — so the hypotheses are load-bearing.
+This is evidence, not a proof: completeness of the search is not itself proved.

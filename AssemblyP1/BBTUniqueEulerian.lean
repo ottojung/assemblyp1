@@ -3,19 +3,22 @@ import AssemblyP1.BBTEulerian
 /-!
 # `thm:BBT`: uniqueness of the Eulerian cycle of the condensed graph (#89)
 
-This module works towards `AssemblyP1.BBTEulerian.UniqueEulerianCycle` --- and
-hence `EulerianCycleObstruction`, the one hypothesis that
-`AssemblyP1.PopulationUniqueness` still takes --- from `Ukkonen` alone.  See
-`docs/bbt-unique-eulerian-89.md` for the mathematical write-up and for the exact
-statement of the step that is still open.
+**Status: not closed.**  `AssemblyP1.BBTEulerian.UniqueEulerianCycle` is *not*
+proved here.  What is proved here is the whole combinatorial half of the
+argument, in the kernel, and the two repeat-theoretic lemmas that remain are
+stated below with their exact content.  `P2.BBTUniqueAt` therefore remains the
+one hypothesis of `AssemblyP1.PopulationUniqueness`, exactly as in
+`d1a6a9b` / `398e1fd`.  See `docs/bbt-unique-eulerian-89.md` for the
+prose-level account, §6 for the remaining step, and
+`docs/bbt-chord-rematch-89.md` for the earlier chord-route attempt.
 
 The object is the pull-back presentation `σ : Fin G ≃ Fin G` of an
 equal-spectrum matching, exactly as in `AssemblyP1.BBTEulerian`.  Write
 
 * `W = vtx` for the `(L-1)`-mer at a start, `ρ = nextPos` for the one-step
   rotation, `K = L - 1`;
-* `Succ σ` for the successor permutation *of the listing* `σ 0, σ 1, …`, so
-  that `Succ σ (σ i) = σ (i+1)`.
+* `Succ σ = σ ρ σ⁻¹` for the successor permutation *of the listing*
+  `σ 0, σ 1, …`, so that `Succ σ (σ i) = σ (i+1)`.
 
 The `traverses` clause of `EulerianCycle`, read at `x = σ i`, is
 
@@ -23,28 +26,80 @@ The `traverses` clause of `EulerianCycle`, read at `x = σ i`, is
 W (Succ σ x) = W (ρ x)   for every x.                                (T')
 ```
 
-and with `f := Succ σ ∘ ρ⁻¹` this is `W (f q) = W q`: **`f` is a permutation
-of the starts preserving the `(L-1)`-mer at every start**, and the
-alternative traversal is the `f ρ`-cycle.
+and with `f := AltF hG σ = Succ σ ∘ prevPos` this is `W (f q) = W q`
+(`AltF_vtx`): **`f` is a permutation of the starts preserving the
+`(L-1)`-mer at every start** (`AltF_bijective`), and the alternative traversal
+is the `f ρ`-cycle (`Succ_eq_altF`).  The `single` clause of `EulerianCycle`
+is `VisitsAll (Succ σ) (origin hG)`, i.e. `Succ σ` is a `G`-cycle.  So the
+whole of `thm:BBT` on this object is:
 
-The steps developed here, in order:
+```text
+   P2/Ukkonen  ⟹  (f ρ is a G-cycle)  ⟹  f = id  ⟹  σ i = σ 0 + i
+   ⟹  W (σ i) = W (rotAdd (σ 0) i)  ⟹  VertexCycleEq.
+```
 
-* §1 the window layer (`WSeq`, the de Bruijn shift, the sets of agreement
-  lengths) and the period arithmetic of the circular word, including the
-  fact that the least period divides every period;
-* §2 the master reformulation above;
-* §3 the *right* and *left* maximal agreement of a pair of starts, the
-  maximal-repeat block it produces, and the **three-occurrences lemma**:
-  three distinct starts spelling the same `(L-1)`-mer either extend to a
-  maximal triple repeat of length `≥ K`, or are congruent modulo the least
-  period.  This is the doc's Lemma 1, and its primitive corollary
-  (`fibre_le_two_of_primitive`) is a closed theorem;
-* §4 the *combinatorial cycle-breaking step*: a label-preserving `f ≠ id`
-  with an "innermost chord" cannot have `f ρ` a `G`-cycle.  This is a
-  strictly sharper form of the doc's Lemma 3 (it needs neither an involution
-  hypothesis nor a global non-crossing hypothesis), and with §3 it yields the
-  whole **primitive case of the theorem** (Theorem 4.4).
+## What is proved here
+
+* **§1 — the window and period layer.**  `WSeq`, the de Bruijn shift, the
+  agreement predicates and their downward closure, the shift coordinate `sh`
+  and the arc predicate, and the period arithmetic, including
+  `least_period_dvd` (a period divides every period) and
+  `leastPeriod_dvd_period` / `leastPeriod_dvd_G`.  `cyc_of_period`,
+  `vtx_of_period`, `vtx_of_period_mul` and `vtx_eq_of_sh` read the `(L-1)`-mer
+  labelling modulo the least period.
+* **§2 — the master reformulation.**  `Succ`, `AltF`, `succ_listing'`,
+  `listing_surj`, `AltF_bijective`, and `AltF_vtx`: `traverses` says exactly
+  that `f` is a label-preserving permutation.
+* **§3 — the shift coordinate and the arc.**  `sh_rotAdd_left` and
+  `inArc_iff` (`InArc a b x ↔ 0 < sh a x < sh a b`, *definitionally*, because
+  `BBTChords.InArc` is already stated with the coordinate `sh`), so the arc
+  combinatorics of `thm:BBT` is arithmetic on `sh`.
+* **§4 — the combinatorial cycle-breaking step.**
+  `not_visitsAll_of_innermost_chord`: if `f` is a bijection which is the
+  identity on the open arc from `a` to `b` and sends `b` to `a`, and that arc
+  is nonempty and shorter than a full turn, then `f ρ` is **not** a `G`-cycle.
+  This is strictly sharper than the "minimal gap" version sketched in
+  `docs/bbt-unique-eulerian-89.md` §3 — it assumes neither that `f` is an
+  involution nor that its chords are globally non-crossing — and it is
+  proved in the form `EulerianCycle` actually uses (`VisitsAll … (origin hG)`)
+  via §4.1 (`iterate_G_eq`, `iterate_mod`).
+* **§5 — the identification.**  `EulerianCycle_no_innermost_chord`: an
+  alternative Eulerian cycle cannot have an innermost chord of `f`.  With §4
+  this is the exact combinatorial content of `thm:BBT`, with the two
+  repeat-theoretic inputs below removed.
+
+## What is still missing (the two repeat-theoretic lemmas)
+
+**Lemma 1 (multiplicity / the triple-repeat clause).**  Three distinct starts
+spelling the same `(L-1)`-mer, and not congruent modulo the least period `p`
+of `S`, extend to a maximal triple repeat of length `≥ K`; hence under
+`Ukkonen` every `(L-1)`-mer occurs **at most twice** (in the primitive case)
+and any two starts congruent modulo `p` spell the same `(L-1)`-mer.  The
+period-arithmetic input is in place (`period_of_agree_all`,
+`leastPeriod_dvd_period`, `AgrSet3`, `vtx_agr3`, `agrSet3_of_vtx`); the missing
+part is the *two-sided maximal extension* of three agreeing starts, i.e. the
+argument that a maximal element of a set of agreement lengths, shifted to the
+left frontier, is a `SourceFaithfulIs.Genome.IsTripleRepeat`.  (Note the
+naive one-sided version is **false**: `S = 012012012`, `G = 9`, `K = 3` has
+three starts `0, 3, 6` spelling `012` with *all* preceding and all following
+symbols equal, so no maximal triple repeat exists at that triple — this is the
+`p = 3` case, and it is exactly the alternative in Lemma 1.)
+
+**Lemma 2 (the crossing clause, a.k.a. the "rematch" step).**  Two *doubled*
+pairs that interleave force two interleaved maximal repeats both of length
+`≥ K`.  This is **not** available at the level of raw `(L-1)`-mer pairs:
+`BBTChords.raw_node_crossing_not_maximal` is a kernel-checked refutation
+(`S = 00101`), so the argument has to be organised around maximal-repeat
+*blocks*, and whether the alternative Eulerian choices factor by such blocks
+is the open step recorded in `docs/bbt-chord-rematch-89.md`.
+
+With §4 in hand, Lemmas 1 and 2 are exactly what is needed:
+Lemma 1 makes `f` a product of disjoint transpositions, Lemma 2 makes their
+support chords pairwise non-interleaved, and a non-crossing configuration has
+an innermost chord, which §4 rules out.  So the remaining content of
+`thm:BBT` is these two repeat-theory lemmas and nothing else.
 -/
+
 namespace AssemblyP1.BBTUniqueEulerian
 
 open SourceFaithfulIs
