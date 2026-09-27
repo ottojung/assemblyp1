@@ -1827,21 +1827,19 @@ theorem gcd_one_of_primitive_P2_words {G : ℕ}
     have hNonPrim := power_nonprim hm W g hlenW hlt
     exact absurd hPrimW hNonPrim
 
-/-- End-to-end project-level reduction for primitive P2 genomes:
-normalized equality forces equal lengths and equal ordinary spectra.
-Rotation then follows by substituting the length identity into BBT
-uniqueness (one line at the use site). -/
-theorem population_uniqueness_primitive_P2_words {G H : ℕ}
-    (AdmP2 : ∀ {K : ℕ}, (Fin K → α) → Prop)
+/-- **The arithmetic of the population reduction, with no genome-side
+hypothesis at all.**  Normalized equality of two complete spectra, together
+with gcd one on each side, forces equal lengths and equal spectra.  This is the
+proportional-cancellation step (`lem:scaling`) on its own: the only inputs are
+positivity of the two lengths, the normalized equality, and the two gcd-one
+facts, so it is reusable by any route that discharges gcd one — in particular
+`AssemblyP1.P2GcdOne.gcd_one_of_primitive_P2`, which needs no external
+complete-spectrum uniqueness. -/
+theorem population_uniqueness_of_spectra {G H : ℕ}
     (hG : 0 < G) (hH : 0 < H) (S : Fin G → α) (D : Fin H → α)
-    (hL : 1 < L)
-    (hPrimS : IsPrimitive S) (hPrimD : IsPrimitive D)
-    (hP2S : AdmP2 S) (hP2D : AdmP2 D)
     (hNormEq : NormalizedEqual (W := Fin L → α) (specCount (L := L) hG S) (specCount (L := L) hH D) G H)
-    (hBBTS : ∀ E : Fin G → α, AdmP2 S →
-      specCount (L := L) hG S = specCount (L := L) hG E → RotEquiv hG E S)
-    (hBBTD : ∀ E : Fin H → α, AdmP2 D →
-      specCount (L := L) hH D = specCount (L := L) hH E → RotEquiv hH E D) :
+    (hGcdS : IsGcdOne (W := Fin L → α) (specCount (L := L) hG S))
+    (hGcdD : IsGcdOne (W := Fin L → α) (specCount (L := L) hH D)) :
     G = H ∧ specCount (L := L) hG S = specCount (L := L) hH D := by
   have hSumS : ∑ w : Fin L → α, specCount (L := L) hG S w = G := by
     have htot := truth_total (L := L) hG S
@@ -1867,12 +1865,29 @@ theorem population_uniqueness_primitive_P2_words {G H : ℕ}
         omega
       exact h0
     omega
+  exact normalized_to_ordinary hG hH hSumS hSumD hNormEq hGcdS hGcdD
+
+/-- End-to-end project-level reduction for primitive P2 genomes:
+normalized equality forces equal lengths and equal ordinary spectra.
+Rotation then follows by substituting the length identity into BBT
+uniqueness (one line at the use site). -/
+theorem population_uniqueness_primitive_P2_words {G H : ℕ}
+    (AdmP2 : ∀ {K : ℕ}, (Fin K → α) → Prop)
+    (hG : 0 < G) (hH : 0 < H) (S : Fin G → α) (D : Fin H → α)
+    (hL : 1 < L)
+    (hPrimS : IsPrimitive S) (hPrimD : IsPrimitive D)
+    (hP2S : AdmP2 S) (hP2D : AdmP2 D)
+    (hNormEq : NormalizedEqual (W := Fin L → α) (specCount (L := L) hG S) (specCount (L := L) hH D) G H)
+    (hBBTS : ∀ E : Fin G → α, AdmP2 S →
+      specCount (L := L) hG S = specCount (L := L) hG E → RotEquiv hG E S)
+    (hBBTD : ∀ E : Fin H → α, AdmP2 D →
+      specCount (L := L) hH D = specCount (L := L) hH E → RotEquiv hH E D) :
+    G = H ∧ specCount (L := L) hG S = specCount (L := L) hH D := by
   have hGcdS : IsGcdOne (W := Fin L → α) (specCount (L := L) hG S) :=
     gcd_one_of_primitive_P2_words AdmP2 hG S hL hPrimS hP2S hBBTS
   have hGcdD : IsGcdOne (W := Fin L → α) (specCount (L := L) hH D) :=
     gcd_one_of_primitive_P2_words AdmP2 hH D hL hPrimD hP2D hBBTD
-  have hOrd := normalized_to_ordinary hG hH hSumS hSumD hNormEq hGcdS hGcdD
-  exact hOrd
+  exact population_uniqueness_of_spectra hG hH S D hNormEq hGcdS hGcdD
 
 end ConcreteGcd
 
