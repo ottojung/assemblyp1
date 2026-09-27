@@ -95,29 +95,20 @@ set_option linter.unusedVariables false
 
 variable {α : Type} [DecidableEq α] {G L : ℕ} (hG : 0 < G) (S : Fin G → α)
 
-/-- **The starts at which the `(L-1)`-mer `v` of the truth is spelled.** -/
-def Fiber (v : Fin (L - 1) → α) : Finset (Fin G) := nodeStartsOf hG S v
-
-theorem card_Fiber (v : Fin (L - 1) → α) : (Fiber hG L S v).card = nodeCount (L := L) hG S v :=
-  card_nodeStartsOf hG S v
-
-theorem mem_Fiber {v : Fin (L - 1) → α} {r : Fin G} :
-    r ∈ Fiber hG L S v ↔ nodeWindow (L := L) hG S r = v := Iff.rfl
-
 /-- A finset containing three distinct members has cardinality `≥ 3`. -/
 private theorem card_ge_three {s : Finset (Fin G)} {a b c : Fin G}
     (ha : a ∈ s) (hb : b ∈ s) (hc : c ∈ s) (hab : a ≠ b) (hac : a ≠ c) (hbc : b ≠ c) :
     3 ≤ s.card := by
   have hsub : ({a, b, c} : Finset (Fin G)) ⊆ s := by
     intro x hx
-    simp only [Finset.mem_insert] at hx
+    simp only [Finset.mem_insert, Finset.mem_singleton, false_or] at hx
     rcases hx with h | h | h
-    · exact ha h
-    · exact hb h
-    · exact hc h
-  have hcard : ({a, b, c} : Finset (Fin G)).card = 3 :=
+    · exact h ▸ ha
+    · exact h ▸ hb
+    · exact h ▸ hc
+  have hcard : (({a, b, c} : Finset (Fin G))).card = 3 :=
     Finset.card_eq_three.mpr ⟨a, b, c, hab, hac, hbc, rfl⟩
-  exact le_trans hcard (Finset.card_le_card hsub)
+  exact le_trans hcard.ge (Finset.card_le_card hsub)
 
 /-! ## 1. The deterministic extension is a rotation of the pair -/
 
@@ -129,9 +120,13 @@ theorem sh_rotAdd (t : ℕ) (a b : Fin G) :
     sh hG (rotAdd hG t a) (rotAdd hG t b) = sh hG a b := by
   have key : rotAdd hG (sh hG a b) (rotAdd hG t a) = rotAdd hG t b := by
     calc rotAdd hG (sh hG a b) (rotAdd hG t a)
-        = rotAdd hG (t + sh hG a b) a := rotAdd_add hG (sh hG a b) t a
-      _ = rotAdd hG t (rotAdd hG (sh hG a b) a) := by rw [rotAdd_add]
-      _ = rotAdd hG t b := rotAdd_sh hG a b
+        = rotAdd hG (t + sh hG a b) a := by
+          rw [rotAdd_add hG (sh hG a b) t a]
+          congr 1
+          omega
+      _ = rotAdd hG t (rotAdd hG (sh hG a b) a) :=
+          (rotAdd_add hG t (sh hG a b) a).symm
+      _ = rotAdd hG t b := by rw [rotAdd_sh hG a b]
   rw [← key, sh_rotAdd_left, Nat.mod_eq_of_lt (sh_lt hG a b)]
 
 /-- **The deterministic extension start of `a`, relative to `b`, is `a` rotated
@@ -139,7 +134,11 @@ back by the maximal backward agreement length of the pair.** -/
 theorem maxPairStart_eq (a b : Fin G) :
     maxPairStart hG S a b = rotAdd hG (G - pairBack hG S a.val b.val) a := by
   unfold maxPairStart rotAdd
-  rfl
+  apply Fin.ext
+  show (a.val + G - pairBack hG S a.val b.val) % G
+      = (a.val + (G - pairBack hG S a.val b.val)) % G
+  have hβle : pairBack hG S a.val b.val ≤ G := (pairBack_spec hG S a.val b.val).2
+  rw [Nat.add_sub_assoc hβle]
 
 /-- **The deterministic maximal extension of the pair `(a, b)` is the pair
 `(a, b)` rotated back by its maximal backward agreement length** --- the same
@@ -153,20 +152,23 @@ theorem maxPairStart_rotAdd (a b : Fin G) :
       rotAdd hG ℓ (maxPairStart hG S b a) = b := by
   refine ⟨pairBack hG S a.val b.val, maxPairStart_eq hG S a b, ?_, ?_, ?_⟩
   · rw [maxPairStart_eq]
-    congr 1
-    exact pairBack_comm hG S a.val b.val
-  · have hkey : rotAdd hG (pairBack hG S a.val b.val)
+    unfold rotAdd
+    apply Fin.ext
+    show (b.val + (G - pairBack hG S b.val a.val)) % G
+        = (b.val + (G - pairBack hG S a.val b.val)) % G
+    rw [← pairBack_comm hG S b.val a.val]
+  · have hβle : pairBack hG S a.val b.val ≤ G := (pairBack_spec hG S a.val b.val).2
+    have hsum : pairBack hG S a.val b.val + (G - pairBack hG S a.val b.val) = G := by omega
+    have hkey : rotAdd hG (pairBack hG S a.val b.val)
         (rotAdd hG (G - pairBack hG S a.val b.val) a) = rotAdd hG G a := by
-      rw [rotAdd_add]
-      congr 1
-      omega
-    rwa [rotAdd_full] at hkey
-  · have hkey : rotAdd hG (pairBack hG S a.val b.val)
+      rw [rotAdd_add hG (pairBack hG S a.val b.val) (G - pairBack hG S a.val b.val) a, hsum]
+    rw [maxPairStart_eq, hkey, rotAdd_full]
+  · have hβle : pairBack hG S a.val b.val ≤ G := (pairBack_spec hG S a.val b.val).2
+    have hsum : pairBack hG S a.val b.val + (G - pairBack hG S a.val b.val) = G := by omega
+    have hkey : rotAdd hG (pairBack hG S a.val b.val)
         (rotAdd hG (G - pairBack hG S a.val b.val) b) = rotAdd hG G b := by
-      rw [rotAdd_add]
-      congr 1
-      omega
-    rwa [rotAdd_full] at hkey
+      rw [rotAdd_add hG (pairBack hG S a.val b.val) (G - pairBack hG S a.val b.val) b, hsum]
+    rw [maxPairStart_eq, ← pairBack_comm hG S b.val a.val, hkey, rotAdd_full]
 
 /-! ## 2. The support chords of `AltF` are involution orbits of doubled pairs -/
 
@@ -179,7 +181,7 @@ def DoubledPair (a b : Fin G) : Prop :=
     (∀ x : Fin G, nodeWindow (L := L) hG S x = vtx hG L S a → x = a ∨ x = b) ∧
     vtx hG L S b = vtx hG L S a
 
-instance (a b : Fin G) : Decidable (DoubledPair hG L S a b) := by
+instance (a b : Fin G) : Decidable (DoubledPair (L := L) hG S a b) := by
   unfold DoubledPair
   infer_instance
 
@@ -189,7 +191,7 @@ def Support (f : Fin G → Fin G) : Finset (Fin G) :=
   Finset.univ.filter (fun x => f x ≠ x)
 
 theorem mem_Support {f : Fin G → Fin G} {x : Fin G} :
-    x ∈ Support f ↔ f x ≠ x := Iff.rfl
+    x ∈ Support f ↔ f x ≠ x := by simp [Support]
 
 /-- **`AltF` preserves the `(L-1)`-mer at every start**: the `traverses` clause
 of `EulerianCycle`, read on the alternative traversal. -/
@@ -211,29 +213,29 @@ theorem AltF_sq {σ : Fin G ≃ Fin G} (hEul : EulerianCycle hG L S σ)
     (hL : 2 ≤ L) (hLG : L ≤ G)
     (hprim : RepeatAdapter.IsPrimitive hG S) (hP2 : P2 hG L S) (x : Fin G) :
     AltF hG σ (AltF hG σ x) = x := by
-  have hcap : ∀ v : Fin (L - 1) → α, (Fiber hG L S v).card ≤ 2 := by
+  have hcap : ∀ v : Fin (L - 1) → α, (nodeStartsOf (L := L) hG S v).card ≤ 2 := by
     intro v
-    rw [card_Fiber]
+    rw [card_nodeStartsOf]
     exact P2.imp_nodeCount_le_two hG hL hLG S hprim hP2 v
   have hinj : Function.Injective (AltF hG σ) := AltF_bijective hG σ |>.1
-  by_cases hfix : AltF hG σ x = x
-  · rw [hfix]
-    exact hfix
-  · have h2 : AltF hG σ (AltF hG σ x) ≠ AltF hG σ x := by
-      intro h
-      exact hfix (hinj h)
-    have h3 : AltF hG σ (AltF hG σ x) ≠ x := by
-      intro h
-      exact h2 (h ▸ rfl)
-    have ha : x ∈ Fiber hG L S (vtx hG L S x) := by
-      exact Finset.mem_filter.mpr ⟨Finset.mem_univ _, rfl⟩
-    have hb : AltF hG σ x ∈ Fiber hG L S (vtx hG L S x) := by
-      exact Finset.mem_filter.mpr ⟨Finset.mem_univ _, (AltF_vtx' hG L S σ hEul x).symm⟩
-    have hc : AltF hG σ (AltF hG σ x) ∈ Fiber hG L S (vtx hG L S x) := by
-      refine Finset.mem_filter.mpr ⟨Finset.mem_univ _, ?_⟩
-      have := AltF_vtx' hG L S σ hEul (AltF hG σ x)
-      rwa [this]
-    exact absurd (hcap (vtx hG L S x) (card_ge_three ha hb hc (Ne.symm hfix) h3 h2)) (by omega)
+  by_cases h3 : AltF hG σ (AltF hG σ x) = x
+  · exact h3
+  · have hfix : AltF hG σ x ≠ x := by
+      intro hz
+      have : AltF hG σ (AltF hG σ x) = AltF hG σ x := congrArg (AltF hG σ) hz
+      exact h3 (this.trans hz)
+    have h2 : AltF hG σ (AltF hG σ x) ≠ AltF hG σ x := by
+      intro hz
+      exact hfix (hinj hz)
+    have ha : x ∈ nodeStartsOf (L := L) hG S (vtx hG L S x) :=
+      Finset.mem_filter.mpr ⟨Finset.mem_univ _, rfl⟩
+    have hb : AltF hG σ x ∈ nodeStartsOf (L := L) hG S (vtx hG L S x) :=
+      Finset.mem_filter.mpr ⟨Finset.mem_univ _, AltF_vtx' hG S hEul x⟩
+    have hc : AltF hG σ (AltF hG σ x) ∈ nodeStartsOf (L := L) hG S (vtx hG L S x) :=
+      Finset.mem_filter.mpr ⟨Finset.mem_univ _,
+        (AltF_vtx' hG S hEul _).trans (AltF_vtx' hG S hEul x)⟩
+    exact absurd (le_trans (card_ge_three ha hb hc (Ne.symm hfix) (Ne.symm h3) (Ne.symm h2)) (hcap (vtx hG L S x)))
+      (by omega)
 
 /-- **A two-element orbit of `AltF` is a transposition of a doubled
 `(L-1)`-mer pair.**  The two occurrences it exchanges are exactly the two
@@ -242,46 +244,40 @@ a chord of the alternative traversal is. -/
 theorem orbit_is_doubledPair {σ : Fin G ≃ Fin G} (hEul : EulerianCycle hG L S σ)
     (hL : 2 ≤ L) (hLG : L ≤ G) (hprim : RepeatAdapter.IsPrimitive hG S)
     (hP2 : P2 hG L S) {a b : Fin G} (hab : a ≠ b) (hfx : AltF hG σ a = b) :
-    DoubledPair hG L S a b := by
-  have hfb : AltF hG σ b = a := by rw [← AltF_sq hEul hL hLG hprim hP2 a, hfx]
-  have hcap : ∀ v : Fin (L - 1) → α, (Fiber hG L S v).card ≤ 2 := by
+    DoubledPair (L := L) hG S a b := by
+  have hfb : AltF hG σ b = a := by rw [← AltF_sq hG S hEul hL hLG hprim hP2 a, hfx]
+  have hcap : ∀ v : Fin (L - 1) → α, (nodeStartsOf (L := L) hG S v).card ≤ 2 := by
     intro v
-    rw [card_Fiber]
+    rw [card_nodeStartsOf]
     exact P2.imp_nodeCount_le_two hG hL hLG S hprim hP2 v
-  have hvb : vtx hG L S b = vtx hG L S a := (AltF_vtx' hG L S σ hEul a).symm
-  have ha : a ∈ Fiber hG L S (vtx hG L S a) := by
-    exact Finset.mem_filter.mpr ⟨Finset.mem_univ _, rfl⟩
-  have hb : b ∈ Fiber hG L S (vtx hG L S a) :=
+  have hvb : vtx hG L S b = vtx hG L S a := by
+    rw [← hfx]
+    exact AltF_vtx' hG S hEul a
+  have ha : a ∈ nodeStartsOf (L := L) hG S (vtx hG L S a) :=
+    Finset.mem_filter.mpr ⟨Finset.mem_univ _, rfl⟩
+  have hb : b ∈ nodeStartsOf (L := L) hG S (vtx hG L S a) :=
     Finset.mem_filter.mpr ⟨Finset.mem_univ _, hvb⟩
   -- the fibre has at most two members and already contains the two distinct
   -- members `a, b`, so it *is* `{a, b}`
-  have hsub : ({a, b} : Finset (Fin G)) ⊆ Fiber hG L S (vtx hG L S a) := by
-    intro x hx
-    simp only [Finset.mem_insert] at hx
-    rcases hx with h | h
-    · exact ha h
-    · exact hb h
+  have hsub : ({a, b} : Finset (Fin G)) ⊆ nodeStartsOf (L := L) hG S (vtx hG L S a) := by
+    intro z hz
+    rcases Finset.mem_insert.mp hz with h | h
+    · exact h ▸ ha
+    · exact Finset.mem_singleton.mp h ▸ hb
   have hcard2 : (({a, b} : Finset (Fin G))).card = 2 :=
     Finset.card_eq_two.mpr ⟨a, b, hab, rfl⟩
-  have hcard : (Fiber hG L S (vtx hG L S a)).card = 2 :=
-    le_antisymm (hcap _) (le_trans hcard2 (Finset.card_le_card hsub))
-  obtain ⟨x, y, hxy, hset⟩ := Finset.card_eq_two.mp hcard
-  have hsubxy : ({a, b} : Finset (Fin G)) ⊆ ({x, y} : Finset (Fin G)) := by
-    intro z hz
-    simp only [Finset.mem_insert] at hz
-    rcases hz with h | h
-    · rw [hset] at ha
-      simp only [Finset.mem_insert, Finset.mem_singleton, or_false] at ha
-      exact ha
-    · rw [hset] at hb
-      simp only [Finset.mem_insert, Finset.mem_singleton, false_or] at hb
-      exact hb
-  refine ⟨by rw [card_Fiber, hcard], ?_, hvb⟩
-  intro x hx
-  rw [← Finset.Subset.antisymm hsubxy (Finset.Subset.rfl : ({x, y} : Finset (Fin G))
-    ⊆ ({x, y} : Finset (Fin G))), hset] at hx
-  simp only [Finset.mem_insert, Finset.mem_singleton, or_false] at hx
-  exact hx
+  have hcard : (nodeStartsOf (L := L) hG S (vtx hG L S a)).card = 2 :=
+    le_antisymm (hcap _) (le_trans hcard2.ge (Finset.card_le_card hsub))
+  refine ⟨by rw [← card_nodeStartsOf, hcard], ?_, hvb⟩
+  intro z hz
+  have hz' : z ∈ nodeStartsOf (L := L) hG S (vtx hG L S a) :=
+    Finset.mem_filter.mpr ⟨Finset.mem_univ _, hz⟩
+  by_cases hza : z = a
+  · exact Or.inl hza
+  by_cases hzb : z = b
+  · exact Or.inr hzb
+  exact absurd (le_trans (card_ge_three ha hb hz' hab (Ne.symm hza) (Ne.symm hzb))
+    (hcap (vtx hG L S a))) (by omega)
 
 /-- **A support point of `AltF` is exchanged with a support point carrying the
 same `(L-1)`-mer.**  Together with `AltF_sq` and `orbit_is_doubledPair` this
@@ -291,10 +287,11 @@ ends of each chord. -/
 theorem AltF_support_swap {σ : Fin G ≃ Fin G} (hEul : EulerianCycle hG L S σ)
     (hL : 2 ≤ L) (hLG : L ≤ G) (hprim : RepeatAdapter.IsPrimitive hG S)
     (hP2 : P2 hG L S) {a : Fin G} (hne : AltF hG σ a ≠ a) (b : Fin G) (hfx : AltF hG σ a = b) :
-    AltF hG σ b = a ∧ vtx hG L S b = vtx hG L S a ∧ DoubledPair hG L S a b := by
-  exact ⟨by rw [← AltF_sq hEul hL hLG hprim hP2 a, hfx],
-    (AltF_vtx' hG L S σ hEul a).symm,
-    orbit_is_doubledPair hEul hL hLG hprim hP2 hne hfx⟩
+    AltF hG σ b = a ∧ vtx hG L S b = vtx hG L S a ∧ DoubledPair (L := L) hG S a b := by
+  have hab : a ≠ b := by rw [hfx] at hne; exact Ne.symm hne
+  exact ⟨by rw [← AltF_sq hG S hEul hL hLG hprim hP2 a, hfx],
+    by rw [← hfx]; exact AltF_vtx' hG S hEul a,
+    orbit_is_doubledPair hG S hEul hL hLG hprim hP2 hab hfx⟩
 
 /-! ## 3. The deterministic maximal repeat is unique -/
 
@@ -304,28 +301,16 @@ extensions coincide" is a statement about one maximal repeat. -/
 theorem isRepeat_len_unique {e e' : ℕ} {a b : Fin G}
     (h1 : (mkGenome hG S).IsRepeat e a b) (h2 : (mkGenome hG S).IsRepeat e' a b) :
     e = e' := by
-  rcases lt_or_gt_of_ne (fun h => h rfl) with hlt | hlt
-  · -- `e < e'`: the agreement at `e'` contradicts right-maximality at `e`
-    have hag : ∀ d : Fin (e' - e), cyc hG S (a.val + d.val) = cyc hG S (b.val + d.val) := by
-      intro d
-      have h2d := h2.2.2.2 d
-      have h1d := h1.2.2.2 ⟨d.val + e, by omega⟩
-      simpa only [SourceFaithfulIs.Genome.Agree, SourceFaithfulIs.Genome.window,
-        SourceFaithfulIs.Genome.cycl, cycl_mkGenome] using h2d.symm.trans h1d
-    have hltG : e < G := h1.2.1
-    have hfol : (mkGenome hG S).Following e a = (mkGenome hG S).Following e b := by
-      have h := hag ⟨e' - e - 1, by omega⟩
-      have h1' : (mkGenome hG S).Following e a = cyc hG S (a.val + e) := by
-        simp only [SourceFaithfulIs.Genome.Following, len_mkGenome, cycl_mkGenome]
-      have h2' : (mkGenome hG S).Following e b = cyc hG S (b.val + e) := by
-        simp only [SourceFaithfulIs.Genome.Following, len_mkGenome, cycl_mkGenome]
-      rw [h1', h2']
-      have hkey : a.val + e + (e' - e - 1) = a.val + e' - 1 := by omega
-      rw [← hkey] at h
-      exact h
-    exact absurd hfol h1.2.2.2.2
-  · by_contra hcon
-    exact absurd (h2 ▸ isRepeat_len_unique hG S h2 h1) (by omega)
+  by_cases hlt : e < e'
+  · -- right-maximality at `e` contradicts the agreement at `e'`
+    have hstep : (mkGenome hG S).Following e a = (mkGenome hG S).Following e b :=
+      h2.2.2.2.1 ⟨e, hlt⟩
+    exact absurd hstep h1.2.2.2.2.2
+  by_cases hgt : e' < e
+  · have hstep : (mkGenome hG S).Following e' a = (mkGenome hG S).Following e' b :=
+      h1.2.2.2.1 ⟨e', hgt⟩
+    exact absurd hstep h2.2.2.2.2.2
+  · omega
 
 /-! ## 4. The rematch / ladder theorem -/
 
@@ -348,85 +333,140 @@ theorem ladder_of_coalescing {a b c d p q : Fin G} (hne : a ≠ c)
   obtain ⟨ℓ', h3', h4', h7, h8⟩ := maxPairStart_rotAdd hG S c d
   have hℓ : ℓ ≠ ℓ' := by
     intro hc
-    rw [← h5, ← h7, hc] at hne
-    exact hne rfl
+    have : a = c := by rw [← h5, ← h7, h1, h3, hc]
+    exact hne this
   refine ⟨ℓ, ℓ', hℓ, ?_, ?_, ?_, ?_⟩
-  · rw [← h1', h1]
-  · rw [← h2', h2]
-  · rw [← h3', h3]
-  · rw [← h4', h4]
+  · rw [← h5, h1]
+  · rw [← h6, h2]
+  · rw [← h7, h3]
+  · rw [← h8, h4]
 
 /-- **The two chords of a ladder are parallel**: they have the same length, and
 the offset between their left ends equals the offset between their right ends.
 This is the chord identity that makes the collapse *invisible* to the traversal:
 the alternative traversal moves both ends of each chord by the same amount, so it
 reads the same `(L-1)`-mers at both ends. -/
-theorem ladder_chord_identities {p q : Fin G} {ℓ ℓ' : ℕ}
+theorem ladder_chord_identities {a b c d p q : Fin G} {ℓ ℓ' : ℕ}
     (ha : a = rotAdd hG ℓ p) (hb : b = rotAdd hG ℓ q)
     (hc : c = rotAdd hG ℓ' p) (hd : d = rotAdd hG ℓ' q) :
-    sh hG a b = sh hG p q ∧ sh hG c d = sh hG p q ∧ sh hG a c = sh hG b d := by
+    sh hG a b = sh hG p q ∧ sh hG c d = sh hG p q := by
   have key : ∀ (t : ℕ) (x y : Fin G),
       sh hG (rotAdd hG t x) (rotAdd hG t y) = sh hG x y := sh_rotAdd hG
-  refine ⟨?_, ?_, ?_⟩
+  refine ⟨?_, ?_⟩
   · rw [ha, hb, key]
   · rw [hc, hd, key]
-  · rw [ha, hc, key, hb, hd, key]
 
 /-- **The common extension length of a ladder.**  If the two pairs of a ladder
 have the same deterministic maximal extension, then their `maxPairLen` values
 agree, and each is the length of a maximal repeat at `(p, q)`. -/
 theorem ladder_len {a b c d p q : Fin G} (hprim : RepeatAdapter.IsPrimitive hG S)
-    (h1 : maxPairStart hG S a b = p) (h2 : maxPairStart hG S b a = q)
-    (h3 : maxPairStart hG S c d = p) (h4 : maxPairStart hG S d c = q)
+    (h1 : maxPairStart hG S a b = maxPairStart hG S c d)
+    (h2 : maxPairStart hG S b a = maxPairStart hG S d c)
     (hL : 2 ≤ L) (hLG : L ≤ G) (hab : a ≠ b) (hcd : c ≠ d)
     (hagab : vtx hG L S a = vtx hG L S b) (hagcd : vtx hG L S c = vtx hG L S d) :
     maxPairLen hG S a b = maxPairLen hG S c d ∧ L - 1 ≤ maxPairLen hG S a b := by
   obtain ⟨hR₁, hℓ₁⟩ :=
-    maxPair_isRepeat hG S hprim hab (by omega) (by omega) (agree_of_nodeWindow_eq hG S hagab)
+    maxPair_isRepeat (a := a) (b := b) hG S hprim hab (by omega) (by omega)
+      (agree_of_nodeWindow_eq hG S hagab)
   obtain ⟨hR₂, hℓ₂⟩ :=
-    maxPair_isRepeat hG S hprim hcd (by omega) (by omega) (agree_of_nodeWindow_eq hG S hagcd)
-  have h1' : maxPairStart hG S a b = p := h1
-  have h2' : maxPairStart hG S b a = q := h2
-  have h3' : maxPairStart hG S c d = p := h3
-  have h4' : maxPairStart hG S d c = q := h4
-  rw [h1', h2'] at hR₁
-  rw [h3', h4'] at hR₂
-  refine ⟨isRepeat_len_unique hG S hR₁ hR₂, le_trans (by omega) hℓ₁⟩
+    maxPair_isRepeat (a := c) (b := d) hG S hprim hcd (by omega) (by omega)
+      (agree_of_nodeWindow_eq hG S hagcd)
+  have key : (mkGenome hG S).IsRepeat (maxPairLen hG S c d) (maxPairStart hG S a b)
+      (maxPairStart hG S b a) := h2 ▸ (h1 ▸ hR₂)
+  exact ⟨isRepeat_len_unique hG S hR₁ key,
+    le_trans (by omega) hℓ₁⟩
 
 /-! ## 5. Why a ladder is benign: the two copies spell the same vertices -/
 
-/-- **Inside one maximal repeat, the two shifted copies spell the same
-`(L-1)`-mers.**  If `(e, p, q)` is a maximal repeat of the truth then
-`vtx (p + i) = vtx (q + i)` for every `i + 1 ≤ e`: the two occurrences of the
-repeat agree over its whole length, and so do all their common shifts.
+/-- **Inside one maximal repeat, the two occurrences spell the same
+`(L-1)`-mers.**  If `(e, p, q)` is a maximal repeat of the truth, i.e. the two
+occurrences agree over its whole length, and `L - 1 ≤ e`, then the vertices at
+`p` and `q` coincide: they carry the same `(L-1)`-mer. -/
+theorem repeat_copies_vtx {e : ℕ} {p q : Fin G} (hL : 2 ≤ L)
+    (hag : ∀ d : Fin e, cyc hG S (p.val + d.val) = cyc hG S (q.val + d.val))
+    (he : L - 1 ≤ e) : vtx hG L S p = vtx hG L S q := by
+  funext d
+  change cyc hG S (p.val + d.val) = cyc hG S (q.val + d.val)
+  exact hag ⟨d.val, by omega⟩
+
+/-- **Congruent positions read the same symbol.** -/
+theorem cyc_congr (x y : ℕ) (h : x % G = y % G) : cyc hG S x = cyc hG S y := by
+  unfold cyc
+  apply congrArg S
+  apply Fin.ext
+  exact h
+
+/-- **Inside one maximal repeat, the two *shifted* copies spell the same
+`(L-1)`-mers**: `vtx (p + i) = vtx (q + i)` whenever `i + (L-1)` still fits in
+the repeat.  The two occurrences of the repeat agree over its whole length, and
+so do all their common shifts.
 
 This is the local reason a *ladder* --- a collapse of two chords onto one
 maximal repeat --- is **invisible at the level of the vertex cycle**: the
-alternative traversal's two chords move both ends by the same amount, and the
-vertices read at the two ends of a chord are equal.  It is the ingredient any
-completion of `LadderRotationGap` (§6) needs. -/
+alternative traversal's two chords move both ends by the same amount
+(`ladder_of_coalescing`), and the vertices read at the two ends of a chord are
+equal (`AltF_vtx'`).  It is the ingredient any completion of `LadderRotationGap`
+needs. -/
 theorem ladder_arc_eq {e : ℕ} {p q : Fin G} (hL : 2 ≤ L)
     (hag : ∀ d : Fin e, cyc hG S (p.val + d.val) = cyc hG S (q.val + d.val))
     (he : L - 1 ≤ e) {i : ℕ} (hi : i + (L - 1) ≤ e) :
     vtx hG L S (rotAdd hG i p) = vtx hG L S (rotAdd hG i q) := by
   funext d
   change cyc hG S ((rotAdd hG i p).val + d.val) = cyc hG S ((rotAdd hG i q).val + d.val)
-  unfold cyc
-  congr 1
-  apply Fin.ext
-  have h1 : (rotAdd hG i p).val = (p.val + i) % G := rfl
-  have h2 : (rotAdd hG i q).val = (q.val + i) % G := rfl
-  rw [h1, h2, ← mod_add_shl (p.val + i) d.val, ← mod_add_shl (q.val + i) d.val]
-  have hstep : i + d.val < e := by omega
-  have hag' := hag ⟨i + d.val, hstep⟩
-  unfold cyc at hag'
-  have h1' : cyc hG S (p.val + (i + d.val)) = S (rotAdd hG (i + d.val) p) := by
-    unfold cyc rotAdd
-    rfl
-  have h2' : cyc hG S (q.val + (i + d.val)) = S (rotAdd hG (i + d.val) q) := by
-    unfold cyc rotAdd
-    rfl
-  rw [h1', h2'] at hag'
-  exact congrArg S hag'
+  have e1 : ((rotAdd hG i p).val + d.val) % G = (p.val + (i + d.val)) % G := by
+    rw [show (rotAdd hG i p).val = (p.val + i) % G from rfl,
+      ← mod_add_shl (p.val + i) d.val, Nat.add_assoc]
+  have e2 : ((rotAdd hG i q).val + d.val) % G = (q.val + (i + d.val)) % G := by
+    rw [show (rotAdd hG i q).val = (q.val + i) % G from rfl,
+      ← mod_add_shl (q.val + i) d.val, Nat.add_assoc]
+  rw [cyc_congr hG S _ _ e1, cyc_congr hG S _ _ e2]
+  have h1 : cyc hG S (p.val + (i + d.val))
+      = S ⟨(p.val + (i + d.val)) % G, Nat.mod_lt _ hG⟩ := rfl
+  have h2 : cyc hG S (q.val + (i + d.val))
+      = S ⟨(q.val + (i + d.val)) % G, Nat.mod_lt _ hG⟩ := rfl
+  have key : S ⟨(p.val + (i + d.val)) % G, Nat.mod_lt _ hG⟩
+      = S ⟨(q.val + (i + d.val)) % G, Nat.mod_lt _ hG⟩ := by
+    have hstep : cyc hG S (p.val + (i + d.val)) = cyc hG S (q.val + (i + d.val)) :=
+      hag ⟨i + d.val, by omega⟩
+    rw [← h1, ← h2]
+    exact hstep
+  exact key
+
+/-! ## 6. The remaining gap, as a `Prop` with no inhabitant -/
+
+/-- **The remaining step of the `#89` rematch route** (`LadderRotationGap`).
+
+In the genuine Eulerian setting --- `σ` a presentation of an alternative
+Eulerian cycle of the `(L-1)`-mer multigraph of a `P2` truth, `f = AltF hG σ` an
+involution whose two-element orbits are doubled `(L-1)`-mer pairs --- suppose two
+orbits of `f` **collapse** onto the same deterministic maximal extension, i.e.
+`maxPairStart hG S a b = maxPairStart hG S c d` and
+`maxPairStart hG S b a = maxPairStart hG S d c`.  Then the vertex cycle of `σ`
+is a rotation of the truth's vertex cycle.
+
+§4--§5 make this precise: the collapse is a **ladder**
+(`ladder_of_coalescing`: the two pairs are two distinct rotations of the single
+maximal repeat's pair, with equal chord lengths), and a ladder is vertex-invisible
+(`ladder_arc_eq`, `AltF_vtx'`).  What is *not* proved is the combinatorial core:
+that the block permutation of the alternative traversal, which is generated by
+`Φ = f ∘ nextSupport` on the support of `f`, is vertex-compatible --- i.e. that
+it moves only whole ladder pairs, or equivalently that the two copies of each
+ladder offset cut off equal vertex blocks.  The naive replacement
+("a collapse gives two *interleaved* maximal extensions") is **false**, refuted
+by `S = 00101` (§`e89b1d42`), so the gap has to be closed in this form and not
+in that one.
+
+This is a `Prop`; it is **not** an inhabitant, and nothing in the library depends
+on it. -/
+def LadderRotationGap (L : ℕ) : Prop :=
+  ∀ (K : ℕ) (hK : 0 < K) (S : Fin K → α) (hP2 : P2 hK L S)
+    (hprim : RepeatAdapter.IsPrimitive hK S), Ukkonen hK L S →
+    ∀ (σ : Fin K ≃ Fin K), EulerianCycle hK L S σ →
+      ∀ (a b c d : Fin K),
+        AltF hK σ a = b → AltF hK σ b = a → AltF hK σ c = d → AltF hK σ d = c →
+        a ≠ c →
+        maxPairStart hK S a b = maxPairStart hK S c d →
+        maxPairStart hK S b a = maxPairStart hK S d c →
+        VertexCycleEq hK L S σ (Equiv.refl (α := Fin K))
 
 end AssemblyP1.BBTLadder
