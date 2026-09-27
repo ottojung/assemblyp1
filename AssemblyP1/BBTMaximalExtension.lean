@@ -109,7 +109,7 @@ theorem len_mkGenome (hG : 0 < G) (S : Fin G → α) : (mkGenome hG S).len = G :
 
 /-- **Agreement is downward closed in the length**: a shorter agreement is
 a prefix of a longer one. -/
-theorem agrees_mono (hG : 0 < G) (S : Fin G → α) {e e' : ℕ} (he' : e' ≤ e)
+theorem agrees_mono (hG : 0 < G) (S : Fin G → α) {e e' : ℕ} {a b : Fin G} (he' : e' ≤ e)
     (hag : Agrees hG S e a b) : Agrees hG S e' a b := by
   intro d
   have hd : d.val < e := lt_of_lt_of_le d.isLt he'
@@ -121,7 +121,7 @@ coincide, so `(a, b)` is a *periodic* pair: no maximal repeat is available
 at these starts at all.  This is the case in which the maximal extension
 of §2 is unbounded, and it is why `exists_maximalRepeat` needs the
 preceding-symbol hypothesis; no primitivity of the truth is required. -/
-theorem preceding_eq_of_agrees_ge {e : ℕ} (hag : Agrees hG S e a b) (he : G ≤ e) :
+theorem preceding_eq_of_agrees_ge {e : ℕ} {a b : Fin G} (hag : Agrees hG S e a b) (he : G ≤ e) :
     (mkGenome hG S).Preceding a = (mkGenome hG S).Preceding b := by
   have h := hag ⟨G - 1, by omega⟩
   have h2 : cyc hG S (a.val + G - 1) = cyc hG S (b.val + G - 1) := by
