@@ -242,19 +242,84 @@ theorem Covers.ofNat (S : Genome α) (L : ℕ) (R : Finset (Fin S.len))
     (h : Covers S L R) (p : ℕ) : ∃ r ∈ R, ReadCovers S L r (p % S.len) := by
   exact h ⟨p % S.len, Nat.mod_lt _ S.len_pos⟩
 
-/-- The selected length-`e` copy at `t` is **bridged** by the realized reads
-when some single read covers at least one base strictly before the copy and at
-least one base strictly after it, i.e. the positions `t - 1` and `t + e`.
+/-- **The selected length-`e` copy at `t` is bridged by the realized reads.**
 
-This is the source's strict-extension convention (Bresler et al., Fig. 5 and the
-paragraph before Theorem 1; Shomorony et al. §3/Fig. 6).  Containing the
-repeated substring is *not* enough: a read starting exactly at the copy, or
-ending exactly at its last base, does not bridge it. -/
+Bresler et al. (Fig. 5 and the paragraph immediately before Theorem 1) and
+Shomorony et al. (§3/Fig. 6) require a *single* read to cover at least one base
+strictly before the copy and at least one base strictly after it. In the
+half-open interval normalization recorded in
+`docs/bridging-source-semantics.md` ("Bridging a copy"), a read interval
+`[r, r+L)` bridges a lifted copy interval `[t', t' + e)` exactly when
+
+`r < t'` and `t' + e < r + L`,
+
+on a suitable integer lift of the circle.
+
+The definition below is that condition, minimally transcribed. The copy's start
+`t` sits at offset `d + 1` of the realized read at `r`, so — reads being
+substrings of the genome — the predecessor of the copy is automatically at
+offset `d` and the successor at offset `d + e + 1` of **the same read
+interval**; the single remaining requirement `d + e + 1 < L` says the successor
+is still inside that read. `bridgesCopy_lifted_iff` below proves the
+correspondence to the source's interval formulation, and
+`bridgesCopy_length` gives its sharp consequence.
+
+**Why the endpoint-only condition is wrong.** Requiring only that a realized
+read covers `(t-1) % S.len` and covers `(t+e) % S.len` is strictly weaker: a
+read of length `L` can hit both endpoints of a *long* copy by travelling around
+the complementary circular arc, without ever containing the copy. That was the
+definition used up to this commit, and it is what manufactured the spurious
+"wraparound" regime analysed in `docs/issue88-wraparound-contrapositive.md`.
+`bridgesCopy_length` is exactly what the old condition could not give. -/
 def BridgesCopy (S : Genome α) (L : ℕ) (R : Finset (Fin S.len)) (e : ℕ)
     (t : Fin S.len) : Prop :=
-  ∃ r ∈ R,
-    ReadCovers S L r ((t.val + S.len - 1) % S.len) ∧
-      ReadCovers S L r ((t.val + e) % S.len)
+  ∃ r ∈ R, ∃ d : Fin L, d.val + e + 1 < L ∧ (r.val + d.val + 1) % S.len = t.val
+
+section BridgingCopy
+
+variable {S : Genome α} {L e : ℕ} {R : Finset (Fin S.len)}
+  {t : Fin S.len}
+
+/-- **The source's interval formulation, on a suitable integer lift.** A copy of
+length `e` at `t` is bridged iff some realized read interval `[r, r+L)` and some
+lift `t'` of the copy's start satisfy `r < t'` and `t' + e < r+L` — verbatim the
+condition of `docs/bridging-source-semantics.md`, and the reason the definition
+above needs no separate modular endpoint clauses. -/
+theorem bridgesCopy_lifted_iff :
+    BridgesCopy S L R e t ↔
+      ∃ (r : Fin S.len) (t' : ℕ),
+        r ∈ R ∧ t' % S.len = t.val % S.len ∧ r.val < t' ∧ t' + e < r.val + L := by
+  have htred : t.val % S.len = t.val := Nat.mod_eq_of_lt t.isLt
+  constructor
+  · rintro ⟨r, hr, d, hd, ht⟩
+    exact ⟨r, r.val + d.val + 1, hr, ht.trans htred.symm, by omega, by omega⟩
+  · rintro ⟨r, t', hr, ht', hlt, hlt'⟩
+    set dv : ℕ := t' - r.val - 1
+    have hrdv : r.val + dv + 1 = t' := by
+      dsimp [dv]; omega
+    have hdL : dv < L := by
+      dsimp [dv]; omega
+    have hbound : dv + e + 1 < L := by
+      dsimp [dv]; omega
+    refine ⟨r, hr, ⟨dv, hdL⟩, hbound, ?_⟩
+    change (r.val + dv + 1) % S.len = t.val
+    rw [hrdv]
+    exact ht'.trans htred
+
+/-- **The sharp length consequence of the source's strict-extension
+convention.** A bridged copy of length `e` is straddled by a read of length `L`,
+so `e + 2 ≤ L`: the read must fit a base before the copy and a base after it on
+top of the `e` bases of the copy itself.
+
+This is what the endpoint-only reading could not give, and it is what makes the
+whole "wraparound" regime of `docs/issue88-wraparound-contrapositive.md` an
+artifact of that reading: a copy with `e ≥ L - 1` can never be bridged, whatever
+the start set is. -/
+theorem bridgesCopy_length (hb : BridgesCopy S L R e t) : e + 2 ≤ L := by
+  obtain ⟨r, hr, d, hd, ht⟩ := hb
+  omega
+
+end BridgingCopy
 
 /-- A repeat (given by its two selected starts) is *bridged* in Bresler's
 shorthand: at least one of its selected copies is bridged. -/
