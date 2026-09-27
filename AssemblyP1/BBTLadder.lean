@@ -109,8 +109,6 @@ open AssemblyP1.BBTUniqueEulerian
 open AssemblyP1.P2RepeatResidual
 
 set_option maxHeartbeats 1000000
-set_option linter.unusedSectionVars false
-set_option linter.unusedVariables false
 
 variable {α : Type} [DecidableEq α] {G L : ℕ} (hG : 0 < G) (S : Fin G → α)
 
@@ -506,10 +504,27 @@ theorem support_blocks_nonCrossing {σ : Fin G ≃ Fin G} (hEul : EulerianCycle 
 
 /-! ## 7. The remaining step, as `Prop`s with no inhabitant
 
+**The two statements are about *unordered* extension pairs, and this is
+load-bearing.**  `Interleaved (mkGenome hK S) a b c d` is symmetric in `c` and
+`d` (`SourceFaithfulIs.Interleaved` is `FourDistinct a b c d ∧ (InOpenArc a b c ↔
+¬ InOpenArc a b d)`), so a hypothesis about `(a, b, c, d)` is a hypothesis about
+`(a, b, d, c)` as well.  An *ordered* conclusion
+`maxPairStart a b = maxPairStart c d ∧ maxPairStart b a = maxPairStart d c`
+therefore cannot be right in general: it is refuted by `S = 00101`, `G = 5`,
+`L = 3`, the genuine traversal `f = (1 3)(2 4)` (so `VertexCycleEq` holds and
+`f ≠ id`), with `a = 1`, `b = 3`, `c = 4`, `d = 2`.  There `Interleaved 1 3 4 2`
+holds, and the ordered conclusion reads `1 = 3 ∧ 3 = 1`, which is false; the
+*unordered* conclusion holds, because `maxPairStart 1 3 = 1`,
+`maxPairStart 3 1 = 3`, `maxPairStart 4 2 = 3`, `maxPairStart 2 4 = 1`, so the
+two unordered extension pairs are both `{1, 3}`.
+
+`SameExtension` below is that unordered statement, written as the disjunction of
+the two orientations; it is the only form used from here on.
+
 §6 reduces `#89` to **two** statements, and it is worth being precise about
-which is which, because the earlier formulation (`LadderRotationGap`, replaced
-below) had them the wrong way round and was stated in a form that could not be
-applied.
+which is which, because the earlier formulation (`LadderRotationGap`, and the
+first draft of `LadderVertexCycle` in this packet) had them the wrong way round
+and was stated in a form that could not be applied.
 
 The first, `CrossingChordsCoalesce`, is the *repeat-theoretic* core: in the
 genuine Eulerian setting, two **crossing** support chords must carry the **same**
@@ -566,15 +581,35 @@ support) it finds
 This is evidence, not a proof: the completeness of the search is not itself
 proved.  No `sorry`, no `admit`, no new axiom. -/
 
+/-- **Two pairs of starts carry the same deterministic maximal extension**, as
+an **unordered** pair of extension starts.
+
+This is the disjunction of the two orientations, and it must be: `Interleaved`
+is symmetric in its last two arguments, so `(a, b, c, d)` and `(a, b, d, c)` are
+interchangeable in any hypothesis built on it, while `maxPairStart a b` and
+`maxPairStart b a` are the two *swapped* starts of one repeat.  See the head of
+§7 for the `S = 00101` refutation of the ordered form. -/
+def SameExtension (K : ℕ) (hK : 0 < K) (S : Fin K → α) (a b c d : Fin K) : Prop :=
+  (maxPairStart hK S a b = maxPairStart hK S c d ∧
+      maxPairStart hK S b a = maxPairStart hK S d c) ∨
+    (maxPairStart hK S a b = maxPairStart hK S d c ∧
+      maxPairStart hK S b a = maxPairStart hK S c d)
+
 /-- **The repeat-theoretic core of `#89` (`CrossingChordsCoalesce`):** in the
 genuine Eulerian setting, two **crossing** chords of the support of
-`f = AltF hK σ` carry the **same** deterministic maximal extension.
+`f = AltF hK σ` carry the **same** deterministic maximal extension, as unordered
+pairs (`SameExtension`).
 
 `§6.1` makes every support chord extensible to a maximal repeat of length
 `≥ L - 1`, and `§6.2` (`support_blocks_nonCrossing`) makes the blocks laminar.
 What is missing is the remaining direction: that *crossing forces coalescence*,
 so that the support is a single laminar family of ladder blocks rather than
-several.  This is a `Prop`; it is **not** an inhabitant. -/
+several.  This is a `Prop`; it is **not** an inhabitant.
+
+It is word-level in essence: `AltF_vtx'` gives `vtx a = vtx b` and
+`vtx c = vtx d` for the two chords, so the word-level statement
+`BBTCrossingCoalesce.CrossingPairsCoalesce` --- which mentions no `EulerianCycle`
+and no `AltF` at all --- implies this one outright. -/
 def CrossingChordsCoalesce (L : ℕ) : Prop :=
   ∀ (K : ℕ) (hK : 0 < K) (S : Fin K → α) (hP2 : P2 hK L S)
     (hprim : RepeatAdapter.IsPrimitive hK S), Ukkonen hK L S →
@@ -583,13 +618,20 @@ def CrossingChordsCoalesce (L : ℕ) : Prop :=
         AltF hK σ a = b → AltF hK σ b = a → AltF hK σ c = d → AltF hK σ d = c →
         a ≠ c → b ≠ c → a ≠ d → b ≠ d →
         Interleaved (mkGenome hK S) a b c d →
-        maxPairStart hK S a b = maxPairStart hK S c d ∧
-          maxPairStart hK S b a = maxPairStart hK S d c
+        SameExtension hK S a b c d
 
 /-- **The global block lemma of `#89` (`LadderVertexCycle`):** if the support of
-the alternative traversal is a laminar family of blocks, and in each block the
-two orbits are two rotations of one pair, then the vertex listing of the
-traversal is a rotation of the truth's vertex listing.
+the alternative traversal is a laminar family of blocks --- that is, if
+**every** pair of crossing support chords carries the same deterministic
+maximal extension --- then the vertex listing of the traversal is a rotation of
+the truth's vertex listing.
+
+The hypothesis quantifies over **all** crossing quadruples of support points, not
+over one chosen pair.  An earlier draft of this packet had it the other way
+round, with a single crossing pair as the antecedent, and that is the same
+defect as the original `LadderRotationGap`: it makes the block structure an
+assumption in a form that cannot be applied to a support which does not
+coalesce, and it reads as a local hypothesis with a global conclusion.
 
 Each block is vertex-invisible --- `ladder_of_coalescing` puts its two orbits at
 `rotAdd ℓ p`, `rotAdd ℓ q`, and `ladder_arc_eq` gives
@@ -599,21 +641,17 @@ the same vertex.  What is missing is that these local facts assemble into a
 statement about the *whole* listing: the blocks are only known to be laminar, and
 one has to show that the traversal walks them in the geometric order.
 
-This is a `Prop`; it is **not** an inhabitant, and it replaces the previous,
-over-strong `LadderRotationGap`, which asked for `VertexCycleEq` from the
-*coalescing of one pair of orbits* --- a hypothesis that need not hold at all,
-and that in any case makes the block structure an assumption rather than the
-thing to be proved. -/
+The conclusion is the full `VertexCycleEq` and is not weakened.  This is a
+`Prop`; it is **not** an inhabitant. -/
 def LadderVertexCycle (L : ℕ) : Prop :=
   ∀ (K : ℕ) (hK : 0 < K) (S : Fin K → α), P2 hK L S →
     RepeatAdapter.IsPrimitive hK S → 2 ≤ L → L ≤ K → Ukkonen hK L S →
     ∀ (σ : Fin K ≃ Fin K), EulerianCycle hK L S σ →
-      ∀ (a b c d : Fin K),
+      (∀ (a b c d : Fin K),
         AltF hK σ a = b → AltF hK σ b = a → AltF hK σ c = d → AltF hK σ d = c →
         a ≠ c → b ≠ c → a ≠ d → b ≠ d →
         Interleaved (mkGenome hK S) a b c d →
-        maxPairStart hK S a b = maxPairStart hK S c d →
-        maxPairStart hK S b a = maxPairStart hK S d c →
-        VertexCycleEq hK L S σ (Equiv.refl (α := Fin K))
+        SameExtension hK S a b c d) →
+      VertexCycleEq hK L S σ (Equiv.refl (α := Fin K))
 
 end AssemblyP1.BBTLadder

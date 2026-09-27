@@ -184,3 +184,104 @@ python3 scripts/verify_ladder_blocks_89.py --bin 10 --tri 7
 ```
 
 Roughly 20 minutes. `--bin 6 --tri 5` is a fast smoke test.
+
+## 5. Corrections: the coalescence statement is about *unordered* pairs, and
+## the block lemma needs a *global* antecedent
+
+Two defects were found by audit of this branch's `AssemblyP1/BBTLadder.lean`
+after §1--§4 above were written.  Both are recorded here because they are easy
+to reintroduce.
+
+### 5.1 Ordered `maxPairStart` equality is refuted
+
+`Interleaved (mkGenome hK S) a b c d` is
+`FourDistinct a b c d ∧ (InOpenArc a b c ↔ ¬ InOpenArc a b d)`
+(`SourceFaithfulIs.Interleaved`, line 365), so it is **symmetric in `c` and
+`d`**.  A hypothesis about `(a, b, c, d)` is therefore a hypothesis about
+`(a, b, d, c)`, while `maxPairStart a b` and `maxPairStart b a` are the two
+*swapped* starts of one repeat.  So the ordered conclusion
+
+```text
+  maxPairStart a b = maxPairStart c d  ∧  maxPairStart b a = maxPairStart d c
+```
+
+cannot hold in general.  Witness, from the search's own vocabulary:
+
+```text
+S = 00101,  G = 5,  L = 3,  f = (1 3)(2 4)   -- a genuine traversal, VertexCycleEq holds
+a = 1, b = 3, c = 4, d = 2
+Interleaved 1 3 4 2      : the open arc from 1 to 3 is {2}, so 4 is outside and 2 inside
+maxPairStart 1 3 = 1     maxPairStart 3 1 = 3
+maxPairStart 4 2 = 3     maxPairStart 2 4 = 1
+ordered conclusion       : 1 = 3 ∧ 3 = 1        -- FALSE
+unordered conclusion     : {1,3} = {1,3}        -- TRUE
+```
+
+The fixed interface is `BBTLadder.SameExtension hK S a b c d`, the disjunction
+of the two orientations.  Every statement in this branch now uses it, and the
+one-step-slide proof of §6 needs it in that form.
+
+### 5.2 The block lemma's antecedent must quantify over *all* crossing pairs
+
+`LadderVertexCycle` in its first draft took a *single* crossing pair of support
+chords coalescing as its antecedent and concluded the global `VertexCycleEq`.
+That is the same defect as the original `LadderRotationGap`: a local hypothesis
+with a global conclusion.  It cannot be applied to a support that does not
+coalesce, and it makes the block structure an assumption rather than the thing
+to be derived.  The fixed form quantifies over **all** crossing quadruples:
+
+```text
+  (∀ a b c d, support chords ∧ Interleaved → SameExtension)  ⟹  VertexCycleEq
+```
+
+The conclusion is the full `VertexCycleEq` and is not weakened.
+
+This is also the reduction the search supports: "every crossing support pair
+coalesces" implies `VertexCycleEq` on the *unfiltered* set too --- 1110 of 1832
+binary and 1050 of 1614 ternary instances satisfy the hypothesis, and **none**
+of those fails `VertexCycleEq`.  Note the hypothesis holds in *exactly* the
+primitive-`P2` instances in that range, which is a consistency check on the
+statement rather than on the proof.
+
+## 6. The coalescence proof, and the three `Prop`s that remain
+
+Let `k = L - 1 ≥ 1`, let `w = vtx` be the `(L-1)`-window labelling, and call
+`{a, b}` with `a ≠ b` and `w a = w b` a **chord**.
+
+1. **Fibres have size two**, so two chords sharing an endpoint are *equal*
+   (`BBTCrossingCoalesce.three_starts_ne`, proved).
+2. **The canonical unordered extension is constant along a component.**  Join
+   `{a, b}` to `ρ {a, b}` when the latter is a chord.  The `ρ`-orbit of a chord
+   is the finite backward list `C_j = {a - j, b - j}`, `j ≤ β`, whose head is
+   the chord `{maxPairStart a b, maxPairStart b a}`; the canonical extension is
+   constant on the list, hence on each component.  Primitivity excludes a cyclic
+   component, since a cycle would propagate `S x = S (x + (b - a))` round the
+   circle, a nontrivial period.  So components are paths.
+3. **Slides never meet a chord of another component**, by (1).
+4. **A one-step slide preserves interleaving** provided no endpoint collision
+   (`SlidePreservesInterleaved`).  By (3) the condition holds all the way down,
+   so sliding each chord to its component head preserves the crossing.  Hence
+   the two heads cross.
+5. **Contradiction**: the heads are maximal repeats of length `≥ L - 1`
+   (`maxPair_isRepeat`), so they cannot cross --- that is `P2`'s clause 2, read
+   as `P2.imp_ExtCrossing`.  So the two chords are in one component and share
+   their canonical unordered extension.
+
+So the whole of `#89` on this route is three `Prop`s, and nothing else:
+
+| `Prop` | module | kind | instances checked |
+| --- | --- | --- | --- |
+| `CrossingPairsCoalesce` | `BBTCrossingCoalesce` | target | 2534 + 168, 0 failures |
+| `SlidePreservesInterleaved` | `BBTCrossingCoalesce` | new cyclic-order fact | 2490, 0 failures |
+| `ShiftLeftPersistence` | `BBTCrossingCoalesce` | word-level | (endpoint case proved) |
+
+`ShiftLeftPersistence` is stated for a plain shift amount rather than for
+`pairBack`, and is not proved here for a *visibility* reason rather than a
+mathematical one: the predicate `P2RepeatResidual.backAgree` behind `pairBack`,
+`pairBack_ge` and `pairBack_spec` is `private` to
+`AssemblyP1/P2RepeatResidual.lean`, so `pairBack_ge` cannot be applied from
+another module.  That lemma belongs next to `pairBack`, in that file.
+
+Everything else in `BBTLadder.lean` §1--§6 and in `BBTCrossingCoalesce.lean`
+§1--§4 is **proved** (subject to the build status recorded in the commit
+messages).  No `sorry`, no `admit`, no new `axiom`, no linter suppression.
