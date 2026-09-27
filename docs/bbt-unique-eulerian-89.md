@@ -115,20 +115,50 @@ Lemma 1: `sh 0 3 = 3` and `leastPeriod = 3`. Both maximality clauses of
 `IsTripleRepeat` must be handled by a *joint* two-sided extension, not one
 after the other.
 
-**Lemma 2 (the crossing clause, a.k.a. the "rematch" step).** Two *doubled*
+**Lemma 2 (the crossing clause, a.k.a. the "rematch" step).** ~~Two *doubled*
 pairs that interleave force two interleaved maximal repeats both of length
-`≥ K`.
+`≥ K`.~~ **FALSE; see `docs/bbt-ladder-rematch-89.md`.**
 
-This is **not** available at the level of raw `(L-1)`-mer pairs:
-`BBTChords.raw_node_crossing_not_maximal` is a kernel-checked refutation
-(`S = 00101`, `G = 5`, `L = 3`, which satisfies `P2`: the length-`2` mers `01`
-and `10` repeat at the *crossing* pairs `{1,3}` and `{2,4}`, yet neither pair is
-a maximal repeat). So crossing of raw node pairs is *compatible* with `P2`, and
-the argument must be organised around maximal-repeat **blocks** — the
-simultaneous two-sided maximal extension of a node's occurrences. Whether the
-alternative Eulerian choices factor by such blocks, and whether non-interleaved
-blocks force a unique cyclic trail, is the open step recorded in
-`docs/bbt-chord-rematch-89.md` §5–§6.
+The correct statement is the *rematch* one, and it is a **discharge** rather
+than a refutation.  On a genuine `EulerianCycle` of a primitive `P2` word two
+crossing doubled pairs can have maximal extensions that **coalesce** onto one
+and the same maximal repeat --- the instance is `S = 00101`, `G = 5`, `L = 3`,
+crossing pairs `{1,3}` and `{2,4}`, both extending to the single maximal repeat
+`{1,3}` of length `3` --- and in every such instance the vertex cycle is still a
+rotation of the truth's (exhaustively checked in
+`docs/bbt-ladder-rematch-89.md` §4: 192260 genuine traversals, 0 violations).
+A crossing of doubled chords is therefore not a counterexample to `thm:BBT`; it
+is the *ladder* configuration, and it has to be shown benign.
+
+What is kernel-checked in `AssemblyP1.BBTLadder.lean`, on top of the
+deterministic pair-extension layer of `1c67a14` (`maxPairStart`, `maxPairLen`,
+`P2.imp_ExtCrossing`):
+
+* `AltF_sq`: in the genuine Eulerian setting under `P2` and primitivity the
+  alternative traversal `f = AltF hG σ` is an **involution**, and
+  `orbit_is_doubledPair`: its two-element orbits are *doubled* `(L-1)`-mer
+  pairs, i.e. the two realisations of one branch object;
+* `ladder_of_coalescing`, `ladder_chord_identities`, `ladder_len`: two such
+  orbits with the *same* deterministic maximal extension are two **distinct
+  rotations of the one pair** `{p, q}` (`a = p + ℓ`, `b = q + ℓ`,
+  `c = p + ℓ'`, `d = q + ℓ'`, `ℓ ≠ ℓ'`), with equal chord length
+  `sh a b = sh c d = sh p q` and a common extension length: a collapse of two
+  chords onto one maximal repeat is exactly a **ladder**;
+* `ladder_arc_eq`: inside one maximal repeat the two (and their common) shifted
+  copies spell the *same* `(L-1)`-mers, so a ladder is invisible at the level
+  of the vertex cycle.
+
+The remaining step is `AssemblyP1.BBTLadder.LadderRotationGap`, a `Prop` with
+no inhabitant: a genuine `EulerianCycle` whose crossing transposition pairs
+coalesce has the vertex cycle of a rotation of the truth's.  Its local content
+is what is listed above; its global content --- that the block permutation
+`Φ = f ∘ nextSupport` of the support is vertex-compatible --- is open.  Two
+consequences for §5 of this file are recorded in
+`docs/bbt-ladder-rematch-89.md` §6: step 2 ("the support chords are pairwise
+non-interleaved") is **false**, and step 4 ("hence `f = id`") is **false** --- on
+`S = 00101` the genuine traversal `f = (1 3)(2 4)` is not the identity while its
+vertex cycle is a rotation of the truth's.  The correct conclusion of the whole
+argument is `VertexCycleEq`.
 
 Note that Lemma 2 is a statement about *node* pairs while §3 is a statement
 about *block* pairs, and it is exactly this mismatch that the refutation
@@ -141,9 +171,13 @@ With §3 in hand the argument is four lines:
 
 1. Under `Ukkonen` + Lemma 1, every `(L-1)`-mer occurs at most twice, so `f`
    (a label-preserving permutation) is a product of disjoint transpositions,
-   one per doubled pair.
-2. Under `Ukkonen` + Lemma 2, the support chords of `f` are pairwise
-   non-interleaved.
+   one per doubled pair.  In the genuine Eulerian setting this is
+   `BBTLadder.AltF_sq`, which gives the involution directly.
+2. ~~Under `Ukkonen` + Lemma 2, the support chords of `f` are pairwise
+   non-interleaved.~~ **FALSE**: a ladder's two chords cross by construction
+   (`docs/bbt-ladder-rematch-89.md` §6).  The correct step 2 is the global block
+   statement `BBTLadder.LadderRotationGap` (a collapse forces the vertex cycle
+   to be a rotation), which is open.
 3. A non-crossing configuration of chords on a circle has an *innermost* chord:
    a chord `(a, b)` whose open arc contains no support point. (Equivalently,
    take the chord minimising the number of support points on one of its arcs.)
@@ -151,6 +185,11 @@ With §3 in hand the argument is four lines:
    `single` clause of `EulerianCycle`. Hence `f = id`, i.e. `Succ σ = ρ`, i.e.
    `σ i = rotAdd (σ 0) i`, and therefore `W (σ i) = W (rotAdd (σ 0) i)`, which
    is `VertexCycleEq hK L S σ id` with `k = σ 0`.
+   **Correction** (`docs/bbt-ladder-rematch-89.md` §6): `f = id` is **false**.
+   On `S = 00101`, `G = 5`, `K = 2`, the genuine `EulerianCycle` with
+   `f = (1 3)(2 4)` has `f ρ` a `G`-cycle, `f ≠ id`, and its vertex cycle *is* a
+   rotation of the truth's.  Steps 2--3 apply only in the non-crossing case; the
+   crossing case is the ladder case and has to be discharged, not refuted.
 
 Because `W` is `p`-periodic and `f` preserves `W`, the non-primitive case only
 requires the weaker conclusion `σ i ≡ σ 0 + i (mod p)`, which the same four
