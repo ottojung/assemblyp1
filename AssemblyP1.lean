@@ -18,6 +18,7 @@ import AssemblyP1.PopulationUniqueness
 import AssemblyP1.BBTChords
 import AssemblyP1.BBTCondense
 import AssemblyP1.BBTEulerian
+import AssemblyP1.P2RepeatResidual
 import AssemblyP1.AAABConverse
 import AssemblyP1.InterleavingNeededCounterexample
 import AssemblyP1.BBTUniqueEulerian
