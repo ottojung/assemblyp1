@@ -324,7 +324,8 @@ clause --- then its orbit is a cycle of length exactly `G`, so the iterate at
 `G` is the origin again.  This is the only fact about one-cycles needed to
 turn an orbit listing into a genuine presentation, and it is exactly the
 place where "one circuit" is load-bearing. -/
-theorem iterate_G_of_oneCycle (hθ : Function.Bijective θ) (ho : OneCycle hG θ) :
+theorem iterate_G_of_oneCycle {θ : Fin G → Fin G} (hθ : Function.Bijective θ)
+    (ho : OneCycle hG θ) :
     θ^[G] (origin hG) = origin hG := by
   have hinjφ : Function.Injective (fun j : Fin G => θ^[j.val] (origin hG)) := ho
   have hφ : Function.Bijective (fun j : Fin G => θ^[j.val] (origin hG)) :=
@@ -363,7 +364,8 @@ theorem iterate_G_of_oneCycle (hθ : Function.Bijective θ) (ho : OneCycle hG θ
   exact hcontra
 
 /-- **The orbit listing of a one-cycle respects the one-step rotation.** -/
-theorem listingOf_step (hθ : Function.Bijective θ) (ho : OneCycle hG θ) (y : Fin G) :
+theorem listingOf_step {θ : Fin G → Fin G} (hθ : Function.Bijective θ)
+    (ho : OneCycle hG θ) (y : Fin G) :
     listingOf θ (origin hG) (nextPos hG y) = θ (listingOf θ (origin hG) y) := by
   unfold listingOf
   simp only [nextPos, rotAdd, Fin.val_mk]
