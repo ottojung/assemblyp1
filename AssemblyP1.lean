@@ -22,3 +22,4 @@ import AssemblyP1.P2RepeatResidual
 import AssemblyP1.AAABConverse
 import AssemblyP1.InterleavingNeededCounterexample
 import AssemblyP1.BBTMaximalExtension
+import AssemblyP1.BBTVertexCycle
