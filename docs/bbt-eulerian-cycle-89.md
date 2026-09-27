@@ -228,6 +228,103 @@ two one-sided full-turn boundaries and the joint bound `ℓ + (L-1) + r < G`).
 hypothesis; see `P2RepeatResidual` §6 for why that is left to step 3.
 Step 3 is the combinatorial core and is not attempted here.
 
+## 6a. Step 2 as proved (`AssemblyP1/BBTMaximalExtension.lean`)
+
+Step 2 is now **proved, kernel-checked**, in
+`AssemblyP1/BBTMaximalExtension.lean`, and two of the claims recorded above
+are corrected by it.
+
+| theorem | content |
+| --- | --- |
+| `Agrees`, `agrees_iff_agree` | agreement of two occurrences at an arbitrary length, identified with `Genome.Agree` on the same word |
+| `agrees_mono` | agreement is downward closed in the length |
+| `preceding_eq_of_agrees_ge` | agreement over a full turn makes the two **preceding** symbols agree: the pair is periodic and carries no maximal repeat at all |
+| `max_of_agrees` | the agreement lengths below `G` have a maximum `m ≥ e₀`, `m < G`, and `m+1` is not an agreement length whenever `m+1 < G` |
+| `exists_maximalRepeat` | **the maximal extension**: if `a ≠ b` agree at length `1 ≤ e₀ < G` and their preceding symbols differ, then `(a, b)` is a maximal repeat of length `e` with `e₀ ≤ e < G` |
+| `maximalRepeat_of_branch` | **step 2 for a branch pair**: two distinct starts carrying the same `(L-1)`-mer whose preceding symbols differ give a maximal repeat of length `≥ L-1`, with the `L-1 ≥ G` case discharged by `preceding_eq_of_agrees_ge` |
+| `maximalRepeat_of_branchVertex` | the same, read at a branch vertex, so the occurrences are the two realisations of one condensed vertex |
+| `interleaved_disjunct`, `triple_disjunct` | the two disjuncts of `LongObstruction` are *assembled* from repeats of length `≥ L-1` obtained as above |
+| `BackAgrees`, `backAgreeSet` | the backward analogue: the two occurrences agree at the `p` positions immediately *preceding* them |
+| `max_back_agrees` | the backward agreement lengths have a maximum `p ≤ G`, and if `p < G` the agreement stops at `p`; `p = G` is the periodic case |
+| `preceding_ne_of_max_back` | **stepping backwards, the preceding symbols eventually differ**: at a maximal backward step of size `p < G`, the backward-extended pair `prevPos^[p] a`, `prevPos^[p] b` has differing preceding symbols, so `maximalRepeat_of_branch` applies to it |
+
+Two corrections.
+
+* **Primitivity is not needed for the length bound.**  The claim recorded
+  in the audit and in §6 above ("step 2 needs primitivity to keep the
+  maximal extension below `G`") is refuted by `exists_maximalRepeat` and
+  `maximalRepeat_of_branch`: the agreement lengths are capped at `G - 1`,
+  and `Genome.IsRepeat` only asks for `e < S.len`, so the produced maximal
+  repeat always has `e < G` for **any** truth, periodic or not.  What
+  primitivity would exclude is the *unbounded* extension, and that case is
+  excluded here by the weaker, local hypothesis that the two preceding
+  symbols differ (`preceding_eq_of_agrees_ge`).  No primitivity hypothesis
+  has to be threaded into `BBTCompleteSpectrumUniqueness`.
+* **A raw branch pair is not a maximal repeat, and this is now recorded as
+  a kernel-checked instance rather than prose.**  `S = 0111`, `G = 4`,
+  `L = 2`: the symbol `1` is a branch object of multiplicity 3
+  (`branch_0111`), realised at the starts `2` and `3`
+  (`branchPair_0111`), and those starts have *equal* preceding symbols
+  (`preceding_eq_branchPair_0111`), so they support **no** maximal repeat
+  at any length below `|S|` (`not_maximalRepeat_branchPair_0111`).
+  Stepping the pair one position backwards gives the starts `1`, `2`, which
+  do support the maximal repeat of length `2 ≥ L-1 = 1`
+  (`maximalRepeat_of_branch_0111`, `maximalRepeat_of_extendedBranchPair_0111`).
+  So the occurrence pair must be **extended backwards** before it can be
+  used as a constituent of `def:P1P2`; the `Preceding a ≠ Preceding b`
+  hypothesis of `maximalRepeat_of_branch` is doing real work, and the
+  instance shows exactly why the raw branch-pair claim of
+  `docs/bbt-chord-rematch-89.md` §5 is refuted.
+
+`#print axioms` for every theorem named above reports only `propext`,
+`Classical.choice` and `Quot.sound`.  No `sorry`, no `admit`, no new
+axiom.
+
+### What is still missing, precisely
+
+1. **Composing the backward step with the forward agreement.**
+   `preceding_ne_of_max_back` produces a pair to which
+   `maximalRepeat_of_branch` applies, but the index arithmetic that a
+   backward step of size `p` together with the original forward agreement
+   of length `e₀` yields an agreement of length `e₀ + p` *at the extended
+   pair* is not carried out; that is the remaining arithmetic of step 2.
+   The periodic case (`p = G` in `max_back_agrees`) is also still to be
+   turned into either a long obstruction or a uniqueness statement: there
+   the extension never terminates and no maximal repeat exists at all.
+2. **Step 3, the dichotomy.**  Nothing here produces *two* maximal repeats
+   with alternating starts, or a maximal triple repeat: one maximal repeat
+   is a single constituent of the interleaved clause, and `interleaved_disjunct`
+   still needs a second one whose starts interleave.  This is the
+   combinatorial core and is untouched.
+3. Consequently `EulerianCycleObstruction` is **still not proved**, and it
+   remains the single open input of
+   `population_unique_ML_up_to_rotation`.  `BBTMaximalExtension.EulerianCycleGap`
+   names the missing statement as a `Prop`; it is not inhabited and nothing
+   depends on it.
+
+### Extra search evidence for the statement itself
+
+The statement was re-verified on two further ranges of
+`scripts/verify_eulerian_cycle_uniqueness_89.py` (finite search, evidence
+only, not a proof):
+
+```text
+$ python3 scripts/verify_eulerian_cycle_uniqueness_89.py 10 2
+G = 10, alphabet size 2, 1024 words
+  (word, K) pairs satisfying Ukkonen at K : 6890
+  max number of traversals of one multigraph : 362880
+  all traversals have the same vertex cycle : YES
+
+$ python3 scripts/verify_eulerian_cycle_uniqueness_89.py 8 3
+G = 8, alphabet size 3, 6561 words
+  (word, K) pairs satisfying Ukkonen at K : 42000
+  all traversals have the same vertex cycle : YES
+```
+
+The `G = 10` range includes non-primitive words (e.g. every word of period
+`5`), so the uniqueness statement is not merely true on primitive words in
+this range.
+
 ## 7. Scope and non-goals
 
 * `AssemblyP1/BBTCondense.lean` is unchanged. Its §4 result
