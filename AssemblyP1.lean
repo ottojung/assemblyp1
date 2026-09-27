@@ -19,5 +19,6 @@ import AssemblyP1.BBTChords
 import AssemblyP1.BBTCondense
 import AssemblyP1.BBTEulerian
 import AssemblyP1.BBTEulerianSearch
+import AssemblyP1.BBTTransposition
 import AssemblyP1.AAABConverse
 import AssemblyP1.InterleavingNeededCounterexample
