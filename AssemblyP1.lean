@@ -1,3 +1,4 @@
+import AssemblyP1.P2RepeatAdapter
 import AssemblyP1.BBTMaximalExtension
 import AssemblyP1.P2RepeatResidual
 import AssemblyP1.BBTUniqueEulerian
