@@ -623,6 +623,215 @@ theorem AltF_vtx {α : Type} {G : ℕ} (hG : 0 < G) (L : ℕ) (S : Fin G → α)
   unfold AltF at ⊢
   simpa only [Succ, Equiv.symm_apply_apply, Equiv.apply_symm_apply, nextPrev] using h1
 
+
+/-! ## 3. The circle: the shift coordinate and the open arc
+
+Two facts about the "shift coordinate" `sh` that §4 needs, both elementary
+arithmetic on the circle and neither of them about words.
+
+* `sh a (rotAdd t a) = t % G` --- a shift measured from `a` of a point that is
+  itself `t` steps from `a` is just `t`;
+* `InArc a b x ↔ 0 < sh a x < sh a b` --- *definitionally*, since
+  `InArc` (`BBTChords`) is stated with exactly the coordinate `sh`.  This is
+  the identification used throughout: an "arc" is an interval of the shift
+  coordinate, and the four steps of §4 are pure statements about intervals of
+  that coordinate. -/
+theorem sh_rotAdd_left (a : Fin G) (t : ℕ) : sh hG a (rotAdd hG t a) = t % G := by
+  have key := Nat.mod_add_div (a.val + t) G
+  have hkey : ((a.val + t) % G + G - a.val) + G * ((a.val + t) / G) = t + G := by
+    omega
+  have hmod : (t + G) % G = t % G := by
+    rw [Nat.add_comm, Nat.add_mod, Nat.mod_self, Nat.zero_add,
+      Nat.mod_eq_of_lt (Nat.mod_lt _ hG)]
+  calc sh hG a (rotAdd hG t a) = (((a.val + t) % G + G - a.val) % G) := rfl
+    _ = (((a.val + t) % G + G - a.val) + G * ((a.val + t) / G)) % G := by
+      rw [Nat.add_mul_mod_self_left]
+    _ = (t + G) % G := by rw [hkey]
+    _ = t % G := hmod
+
+/-- **The open arc from `a` to `b` is an interval of the shift coordinate.** -/
+theorem inArc_iff (a b x : Fin G) :
+    InArc hG a b x ↔ 0 < sh hG a x ∧ sh hG a x < sh hG a b := Iff.rfl
+
+/-- A point `t` steps clockwise from `a` lies on the open arc from `a` to `b`
+exactly when `t` is strictly between `0` and `sh a b`. -/
+theorem inArc_rotAdd (a b : Fin G) (t : ℕ) (h1 : 0 < t) (h2 : t < sh hG a b)
+    (h3 : t < G) : InArc hG a b (rotAdd hG t a) := by
+  rw [inArc_iff, sh_rotAdd_left, Nat.mod_eq_of_lt h3]
+  exact ⟨h1, by omega⟩
+
+/-- One more step of the circle, spelled on the shift coordinate. -/
+theorem nextPos_rotAdd (a : Fin G) (t : ℕ) :
+    nextPos hG (rotAdd hG t a) = rotAdd hG (t + 1) a := by
+  unfold nextPos
+  apply Fin.ext
+  show ((a.val + t) % G + 1) % G = (a.val + (t + 1)) % G
+  have hh := mod_add_shl (G := G) (a.val + t) 1
+  refine hh.symm.trans (congrArg (fun v : ℕ => v % G) ?_)
+  omega
+
+/-! ## 4. The combinatorial cycle-breaking step
+
+`VisitsAll θ x` (`BBTEulerian`) says the first `G` iterates of `θ` at `x` are
+pairwise distinct: `θ` is a `G`-cycle, i.e. the walk is *one* circuit of the
+graph.  The lemma below is the combinatorial core of `thm:BBT`, in a form
+strictly sharper than the one sketched in `docs/bbt-unique-eulerian-89.md` §3
+(there: "choose a support pair minimising `b - a`"):
+
+> **An innermost chord breaks the cycle.**  Let `f` be any endomap of the
+> circle which is the identity on the open arc from `a` to `b` and sends `b`
+> to `a`.  If the arc is nonempty and shorter than a full turn, then
+> `f ∘ ρ` is **not** a `G`-cycle: the `ρ`-coordinates `{0, 1, …, sh a b}` of
+> the arc together with `a` carry a proper sub-`G`-cycle of `f ∘ ρ`.
+
+Notice what is *not* assumed: `f` need not be an involution, and the
+non-crossing of its chords is not used --- the single "innermost" chord, whose
+open arc contains no point where `f` moves anything, is already enough.  This
+is why the primitive case of `thm:BBT` needs only the **multiplicity bound**
+of §3 (Lemma 1) and *not* the interleaving clause of `Ukkonen` once the
+minimality argument has been made into a statement about arcs: with `f ≠ id`
+some support point exists, and the non-crossing of the support chords is what
+produces the innermost one.  `BBTChords.chord_lemma` is the rotation-shaped
+sibling of this lemma and is not needed here. -/
+
+/-! ### 4.1 "One `G`-cycle" is a property of the permutation, not of the base point
+
+`VisitsAll θ x` is read at the origin `x = origin hG` in
+`BBTEulerian.EulerianCycle`, whereas the combinatorial lemma below produces a
+*point* `a` whose `θ`-orbit is too short.  The three lemmas of this subsection
+bridge the two: for a bijection of `Fin G`, being a single `G`-cycle is
+independent of the base point, and the orbit closes after exactly `G` steps.
+
+None of them mentions words. -/
+
+/-- **A `G`-cycle returns to its base point after `G` steps.** -/
+theorem iterate_G_eq {G : ℕ} (hG : 0 < G) (J : Fin G → Fin G)
+    (hbij : Function.Bijective J) (hV : VisitsAll J (origin hG)) :
+    J^[G] (origin hG) = origin hG := by
+  have hpinj : Function.Injective (fun n : Fin G => J^[n.val] (origin hG)) := hV
+  have hJn : Function.Injective (fun n : Fin G => J (J^[n.val] (origin hG))) :=
+    fun a b hab => hpinj (hbij.injective hab)
+  have hJsurj : Function.Surjective (fun n : Fin G => J (J^[n.val] (origin hG))) :=
+    (Finite.injective_iff_surjective).mp hJn
+  obtain ⟨m, hm⟩ := hJsurj (origin hG)
+  have hm' : J (J^[m.val] (origin hG)) = origin hG := hm
+  by_cases hlt : m.val + 1 < G
+  · exfalso
+    have h1 : J (J^[m.val] (origin hG)) = J^[m.val + 1] (origin hG) := by
+      rw [Function.iterate_succ_apply']
+    rw [h1] at hm'
+    have hne : (⟨m.val + 1, hlt⟩ : Fin G) = ⟨0, hG⟩ :=
+      hpinj (by simpa using hm')
+    have hne' := congrArg Fin.val hne
+    simp only [Fin.val_mk] at hne'
+    omega
+  · have hmval : m.val = G - 1 := by omega
+    have hmm : J (J^[G - 1] (origin hG)) = origin hG :=
+      (congrArg (fun n : ℕ => J (J^[n] (origin hG))) hmval).symm.trans hm'
+    have hstep : J^[G] (origin hG) = J (J^[G - 1] (origin hG)) :=
+      (congrArg (fun n : ℕ => J^[n] (origin hG)) ((by omega : (G - 1).succ = G))).symm.trans
+        (Function.iterate_succ_apply' (f := J) (n := G - 1) (x := origin hG))
+    show J^[G] (origin hG) = origin hG
+    rw [hstep]
+    exact hmm
+
+/-- **Iterates of a `G`-cycle are read modulo `G`.** -/
+theorem iterate_mod {G : ℕ} (hG : 0 < G) (J : Fin G → Fin G) (x : Fin G)
+    (hfix : J^[G] x = x) (m : ℕ) : J^[m] x = J^[m % G] x := by
+  have hmul : ∀ k : ℕ, J^[G * k] x = x := by
+    intro k
+    induction k with
+    | zero => simp
+    | succ k ih =>
+        have hk : G * (k + 1) = G * k + G := by
+          calc G * (k + 1) = (k + 1) * G := Nat.mul_comm G _
+            _ = k * G + G := Nat.succ_mul k G
+            _ = G * k + G := by rw [Nat.mul_comm k G]
+        have hstep : J^[G * k] (J^[G] x) = J^[G * k + G] x :=
+          (congrFun (Function.iterate_add J (G * k) G) x).symm
+        rw [hk, ← hstep, hfix, ih]
+  have hk : m % G + G * (m / G) = m := Nat.mod_add_div m G
+  have hstep : J^[m % G] (J^[G * (m / G)] x) = J^[m] x :=
+    (congrFun (Function.iterate_add J (m % G) (G * (m / G))) x).symm.trans
+      (congrArg (fun n : ℕ => J^[n] x) hk)
+  rw [← hstep, hmul]
+
+/-- **The combinatorial cycle-breaking step, at a prescribed base point.**
+This is the form consumed below: the successor permutation of an alternative
+traversal, if it is a single `G`-cycle, cannot have an innermost chord. -/
+theorem not_visitsAll_of_innermost_chord {G : ℕ} (hG : 0 < G) {f : Fin G → Fin G}
+    (hbij : Function.Bijective f) {a b : Fin G} (hg : 1 ≤ sh hG a b)
+    (hgb : sh hG a b < G) (hfree : ∀ x : Fin G, InArc hG a b x → f x = x)
+    (hfb : f b = a) : ¬ VisitsAll (fun x => f (nextPos hG x)) (origin hG) := by
+  intro hV
+  have hgt : 1 ≤ sh hG a b := hg
+  have hgg : sh hG a b < G := hgb
+  have horbit : ∀ t : ℕ, t ≤ sh hG a b →
+      (fun x => f (nextPos hG x))^[t] a = rotAdd hG (t % sh hG a b) a := by
+    intro t
+    induction t with
+    | zero => intro _; simp
+    | succ t ih =>
+        intro ht
+        have htp : t < sh hG a b := by omega
+        rw [Function.iterate_succ_apply', ih (by omega : t ≤ sh hG a b)]
+        have hmodt : t % sh hG a b = t := Nat.mod_eq_of_lt htp
+        rw [hmodt]
+        show f (nextPos hG (rotAdd hG t a)) = _
+        rw [nextPos_rotAdd]
+        by_cases heq : t + 1 = sh hG a b
+        · have h1 : rotAdd hG (t + 1) a = b := by
+            rw [heq]; exact rotAdd_sh hG a b
+          have h2 : rotAdd hG ((t + 1) % sh hG a b) a = a := by
+            rw [heq, Nat.mod_self, rotAdd_zero]
+          rw [h1, h2]
+          exact hfb
+        · have hlt : t + 1 < sh hG a b := by omega
+          have htg : t + 1 < G := by omega
+          have h2 : InArc hG a b (rotAdd hG (t + 1) a) :=
+            inArc_rotAdd hG a b (t + 1) (by omega) hlt htg
+          rw [hfree _ h2, Nat.mod_eq_of_lt (by omega : t + 1 < sh hG a b)]
+  -- the `J`-orbit of `a` returns to `a` after `sh a b < G` steps
+  have hJg : (fun x => f (nextPos hG x))^[sh hG a b] a = a := by
+    have hh := horbit (sh hG a b) (le_refl _)
+    rwa [Nat.mod_self, rotAdd_zero] at hh
+  have hnextbij : Function.Bijective (nextPos hG : Fin G → Fin G) :=
+    ⟨nextPos_inj hG, (Finite.injective_iff_surjective).mp (nextPos_inj hG)⟩
+  have hbijJ : Function.Bijective (fun x => f (nextPos hG x)) := hbij.comp hnextbij
+  have hJ : (fun x => f (nextPos hG x))^[G] (origin hG) = origin hG := by
+    have hh := iterate_G_eq hG (fun x => f (nextPos hG x)) hbijJ hV
+    exact hh
+  -- the `J`-orbit of the origin meets `a`
+  obtain ⟨nn, hnn⟩ : ∃ nn : Fin G,
+      (fun x => f (nextPos hG x))^[nn.val] (origin hG) = a :=
+    (Finite.injective_iff_surjective).mp hV a
+  have key : ∀ m : ℕ, (fun x => f (nextPos hG x))^[m] a
+      = (fun x => f (nextPos hG x))^[(m + nn.val) % G] (origin hG) := by
+    intro m
+    calc (fun x => f (nextPos hG x))^[m] a
+        = (fun x => f (nextPos hG x))^[m]
+            ((fun x => f (nextPos hG x))^[nn.val] (origin hG)) := by rw [hnn]
+      _ = (fun x => f (nextPos hG x))^[m + nn.val] (origin hG) := by
+        have hh := congrFun
+          (Function.iterate_add (fun x => f (nextPos hG x)) m nn.val) (origin hG)
+        simpa only [Function.comp_apply] using hh.symm
+      _ = (fun x => f (nextPos hG x))^[(m + nn.val) % G] (origin hG) := by
+        have hh := iterate_mod hG _ (origin hG) hJ (m + nn.val)
+        exact hh
+  -- hence the period `sh a b` of the orbit of `a` is a period of the circle
+  have h1 := key (sh hG a b)
+  rw [hJg] at h1
+  have hfirst : (fun x => f (nextPos hG x))^[(sh hG a b + nn.val) % G] (origin hG)
+      = (fun x => f (nextPos hG x))^[nn.val] (origin hG) := h1.symm.trans hnn.symm
+  have h4 : ((sh hG a b + nn.val) % G) = nn.val := by
+    have hh := hV (a₁ := ⟨(sh hG a b + nn.val) % G, Nat.mod_lt _ hG⟩) (a₂ := nn) hfirst
+    exact congrArg Fin.val hh
+  have hdiv : G ∣ sh hG a b := by
+    have e := Nat.mod_add_div (sh hG a b + nn.val) G
+    refine ⟨(sh hG a b + nn.val) / G, ?_⟩
+    omega
+  exact absurd (Nat.le_of_dvd (by omega) hdiv) (by omega)
+
 end Windows
 
 end AssemblyP1.BBTUniqueEulerian
