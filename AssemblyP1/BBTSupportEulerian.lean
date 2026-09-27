@@ -159,15 +159,13 @@ theorem eq_rotAdd_of_comm {σ : Fin G ≃ Fin G}
             apply Fin.ext
             show ((n + 1) % G) = ((n % G + 1) % G)
             rw [Nat.add_mod, Nat.mod_eq_of_lt hn]
-          rw [hprev] at hrec'
+          rw [← hprev] at hrec'
           have hih := ih hn
           rw [hrec', hih, nextPos_rotAdd, rotAdd]
-          apply congrArg (fun w : Fin G => w)
           apply Fin.ext
-          show (n + (σ (origin hG)).val + 1) % G
-              = ((n + 1) + (σ (origin hG)).val) % G
-          congr 2
-          omega
+          have hkm : n + (σ (origin hG)).val + 1 = (n + 1) + (σ (origin hG)).val := by
+            omega
+          rw [hkm]
         · exact absurd h hG1
   intro i
   exact key i.val i.isLt
