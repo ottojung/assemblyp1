@@ -160,6 +160,7 @@ theorem trailAppendLast {T₁ : List E} {p q : V} (h₁ : TrailEnds tail head T�
       cases h₁ with
       | cons _ _ _ _ hte hT => exact TrailEnds.cons y (T₁ ++ [x]) _ _ hte (ih hT)
 
+omit [DecidableEq V] [DecidableEq E] in
 /-- **Cyclic concatenation.** If `T₁` runs from `u` to `s` and `T₂` from `s`
 back to `u`, then `T₁ ++ T₂` is a closed trail at `u`.  This is the trail-level
 form of "the two excursions of a cut closed trail concatenate to a cycle". -/
@@ -183,6 +184,7 @@ theorem trailHead {T : List E} {s t : V} (h : TrailEnds tail head T s t)
   | nil s => exact absurd rfl hne
   | cons f T s t htf hT => exact ⟨T, f, rfl, htf, hT⟩
 
+omit [DecidableEq V] [DecidableEq E] in
 /-- A repetition of a closed trail is a closed trail. -/
 theorem trailNcopies {T : List E} {s : V} (hT : TrailEnds tail head T s s)
     (m : ℕ) : TrailEnds tail head (nCopies T m) s s := by
@@ -192,6 +194,7 @@ theorem trailNcopies {T : List E} {s : V} (hT : TrailEnds tail head T s s)
       rw [nCopies_succ]
       exact trailAppend (tail := tail) (head := head) hT ih
 
+omit [DecidableEq V] [DecidableEq E] in
 /-- A repetition of two closed excursions based at the same node is a closed
 trail: this is what makes `A^m ++ B^m` a cyclic edge-type spelling. -/
 theorem trailNcopiesAppend {A B : List E} {v : V}
@@ -257,6 +260,7 @@ theorem trailSplit {T : List E} {s t : V} (h : TrailEnds tail head T s t) :
                   · simp [List.drop, hBdrop]
                   · exact TrailEnds.cons x A s u htf hA
 
+omit [DecidableEq V] [DecidableEq E] in
 /-- **Cutting a closed trail into two closed excursions.**  For `0 < i < |T|`,
 the prefix `T.take i` runs from the start vertex to the tail of the edge at
 position `i`, and the suffix `T.drop i` runs from there back to the start. -/
@@ -269,6 +273,7 @@ theorem trailSplitClosed {T : List E} {s : V} (h : TrailEnds tail head T s s)
     trailSplit (tail := tail) (head := head) h i hpos hlt
   exact ⟨A, B, u, hT1, hAne, hBne, hAtake, hBdrop, hA, hB⟩
 
+omit [DecidableEq V] in
 /-- **Rotating a closed trail.**  Rotating by `i` positions gives another closed
 trail with the same edge multiplicities and the same elements; the rotated trail
 starts with the edge that was at position `i`.  This is the formal version of
@@ -317,6 +322,7 @@ section BranchingCut
 variable {V E : Type} [DecidableEq V] [DecidableEq E]
 variable (tail head : E → V)
 
+omit [DecidableEq V] in
 /-- **The two-excursion cut.**  Let `T` be a closed edge-type trail spelling the
 spectrum `c` on the support `edges`, and suppose the support branches at `v`:
 there are two distinct support edge types `e₁`, `e₂` leaving `v`.  Cutting the
@@ -657,6 +663,7 @@ theorem mod_index_add' (n i j m : ℕ) (hi : i ≤ n) (hij : i ≤ j) :
   rw [h1, Nat.add_comm (j - i) (m + n),
     show m + n + (j - i) = m + (j - i) + n by omega]
 
+omit [DecidableEq α] in
 /-- **A repeated edge in a functional-support trail makes it a proper power.**
 If every node of the support has at most one outgoing edge type, the closed
 trail is a walk in a functional graph: its successor at each position is
@@ -822,7 +829,7 @@ theorem nonbranching_primitive_spelling_eq_one {T : List (Fin L → α)}
     {s : Fin (L - 1) → α} (hT : TrailEnds winPrefix winSuffix T s s) (hne : T ≠ [])
     (c : (Fin L → α) → ℕ) (huse : ∀ e, edgeUse T e = c e) (edges : Finset (Fin L → α))
     (huniq : ∀ e₁ ∈ edges, ∀ e₂ ∈ edges, winPrefix e₁ = winPrefix e₂ → e₁ = e₂)
-    (_hvan : ∀ e, e ∉ edges → c e = 0) (hpos : ∀ e ∈ edges, 0 < c e) (hprim : IsPrimitive T) :
+    (hvan : ∀ e, e ∉ edges → c e = 0) (hpos : ∀ e ∈ edges, 0 < c e) (hprim : IsPrimitive T) :
     ∀ e ∈ edges, c e = 1 := by
   intro e he
   by_contra hcon
@@ -859,7 +866,7 @@ theorem branching_primitive_spellings {T : List (Fin L → α)} {s : Fin (L - 1)
     (hT : TrailEnds winPrefix winSuffix T s s) (c : (Fin L → α) → ℕ)
     (huse : ∀ e, edgeUse T e = c e) (nodes : Finset (Fin (L - 1) → α))
     (edges : Finset (Fin L → α)) (hbranch : Branching nodes edges winPrefix winSuffix)
-    (hvan : ∀ e, e ∉ edges → c e = 0) (hpos : ∀ e ∈ edges, 0 < c e) (m : ℕ) (hm2 : 2 ≤ m) :
+    (_hvan : ∀ e, e ∉ edges → c e = 0) (hpos : ∀ e ∈ edges, 0 < c e) (m : ℕ) (hm2 : 2 ≤ m) :
     ∃ (A B : List (Fin L → α)) (v : Fin (L - 1) → α),
       TrailEnds winPrefix winSuffix A v v ∧ TrailEnds winPrefix winSuffix B v v ∧
       A ≠ [] ∧ B ≠ [] ∧ A[0]? ≠ B[0]? ∧
@@ -1237,6 +1244,7 @@ theorem ofFn_trail {E V : Type} [DecidableEq E] [DecidableEq V]
           exact ihm (fun i : Fin (m + 1) => f (Fin.succ i)) (head (f 0)) v
             (by omega) hlast'' hadj' hstart
 
+omit [Fintype α] in
 /-- **The window trail of a circular word is a closed trail**: the `L`-windows of
 a circular word read a closed edge-type trail, since the suffix of the window at
 `r` is the prefix of the window at the next start. -/
@@ -1364,6 +1372,7 @@ theorem word_of_closed_trail {T : List (Fin L → α)} {s : Fin (L - 1) → α}
   · intro r
     exact spell_window T.get hlenT hL0 hadj r
 
+omit [DecidableEq α] [Fintype α] in
 /-- **A proper power window trail forces a proper power word.**  If the window
 trail of a circular word is a nontrivial repetition, then the word itself is a
 nontrivial repetition. -/
@@ -1489,6 +1498,7 @@ theorem ray_multiple {d H : ℕ} (c0 cD : W → ℕ)
   rw [Nat.mul_comm]
   exact h3.symm
 
+omit [DecidableEq W] in
 /-- **Normalized-spectrum equality means membership on the same integer ray.**
 If the truth spectrum is `g * c0` on the primitive point `c0` (`IsGcdOne c0`),
 the truth totals `G`, and a candidate of length `H` has the same normalized
@@ -1581,16 +1591,20 @@ def Identifiable {G : ℕ} {L : ℕ} (hG : 0 < G) (_hL : 1 < L) (S : Fin G → �
     (∀ w, specCount (L := L) hG S w * m = specCount (L := L) hD D w * G) →
     ∃ hm : m = G, Identified hG D hm S
 
+omit [Fintype α] in
 /-- The truth's window trail is a closed edge-type trail, and it spells the
 truth's complete spectrum. -/
 theorem truth_trail_closed {hG : 0 < G} (S : Fin G → α) :
     ∃ s, TrailEnds winPrefix winSuffix (winTrail (L := L) hG S) s s :=
   winTrail_closed hG S
 
+omit [Fintype α] in
 theorem truth_trail_spectrum {hG : 0 < G} (S : Fin G → α) :
     ∀ w, edgeUse (winTrail (L := L) hG S) w = specCount (L := L) hG S w :=
   fun w => winTrail_edgeUse hG S w
 
+omit [Fintype α] in
+omit [DecidableEq α] in
 /-- The truth's window trail is primitive, since it is the window reading of a
 primitive word. -/
 theorem truth_trail_primitive {hG : 0 < G} {hL : 1 < L} (S : Fin G → α)
@@ -1619,6 +1633,7 @@ theorem truth_van {hG : 0 < G} (S : Fin G → α) (w : Fin L → α)
   by_contra hc
   exact absurd (h1 (by omega)) hw
 
+omit [Fintype α] in
 /-- **The truth's complete spectrum on a nonbranching support.**  A primitive
 truth whose spectrum-support graph does not branch has `specCount = 1` on its
 whole support: its own window trail is a primitive cyclic spelling of its
@@ -1639,7 +1654,7 @@ theorem one_on_support_of_nonbranching_primitive {hG : 0 < G} {hL : 1 < L}
     omega
   exact nonbranching_primitive_spelling_eq_one hT hne (specCount (L := L) hG S)
     (truth_trail_spectrum (L := L) S) (support (L := L) hG S)
-    (fun e₁ he₁ e₂ he₂ ht => uniqueOut_of_nonbranching (hL := hL) hnb e₁ e₂ he₁ he₂ ht)
+    (fun e₁ he₁ e₂ he₂ ht => uniqueOut_of_nonbranching (_hL := hL) hnb e₁ e₂ he₁ he₂ ht)
     (fun e' he' => truth_van (L := L) S e' he')
     (fun e' he' => truth_pos_on_support (L := L) hG S e' he')
     (truth_trail_primitive (L := L) (hL := hL) S hS)
@@ -1669,6 +1684,7 @@ theorem support_ne_nil_of_truth {hG : 0 < G} (S : Fin G → α) :
   rw [h1'] at h1
   omega
 
+omit [Fintype α] in
 /-- **Nonbranching makes the truth's spectrum gcd-one.**  Every support count is
 `1` and every off-support count is `0`, so the gcd of the complete spectrum is
 `1`.  This is the primitive point of the integer spectrum ray, and it is
@@ -1754,6 +1770,7 @@ theorem mem_support_window (S : Fin G → α) (hG : 0 < G) (j : Fin G) :
     window (L := L) hG S j ∈ support (L := L) hG S :=
   Finset.mem_image.mpr ⟨j, Finset.mem_univ _, rfl⟩
 
+omit [Fintype α] in
 /-- **Forced traversal on a nonbranching support.**  If the truth's and the
 candidate's windows agree at one start, they agree at every start.
 
@@ -1776,12 +1793,13 @@ theorem winAt_agrees {G : ℕ} (hG : 0 < G) {hL : 1 < L} (S D : Fin G → α) (j
           = winPrefix (L := L) (winAt (L := L) hG D ⟨0, hG⟩ (t + 1)) := by
         rw [winPrefix_winAt, winPrefix_winAt,
           congrArg (fun e : Fin L → α => winSuffix (L := L) e) ih]
-      exact uniqueOut_of_nonbranching (hL := hL) hnb
+      exact uniqueOut_of_nonbranching (_hL := hL) hnb
         (winAt (L := L) hG S j (t + 1)) (winAt (L := L) hG D ⟨0, hG⟩ (t + 1))
         (by unfold winAt; exact mem_support_window S hG _)
         (by refine hsup ▸ ?_; unfold winAt; exact mem_support_window D hG _)
         hpf
 
+omit [Fintype α] in
 /-- A window prefix of a support window is a prefix of a support element. -/
 theorem winPrefix_mem_image (S : Fin G → α) (hG : 0 < G) (j : Fin G) :
     winPrefix (L := L) (window (L := L) hG S j)
@@ -1817,6 +1835,7 @@ theorem rotEquiv_of_shift {G : ℕ} (hG : 0 < G) {D S : Fin G → α} (s : ℕ)
   apply Fin.ext
   exact hmod
 
+omit [Fintype α] in
 /-- **Same-length complete-spectrum uniqueness.**  Two circular words of the same
 length with the same complete `L`-spectrum differ by a rotation.
 
@@ -1895,7 +1914,8 @@ makes it a rotation of the truth.
 
 No complete-spectrum uniqueness premise is used: the equal-length step is
 proved from the traversal itself. -/
-theorem identifiable_of_nonbranching {hG : 0 < G} {hL : 1 < L} {S : Fin G → α}
+theorem identifiable_of_nonbranching {α : Type} [DecidableEq α] [Fintype α]
+    {G L : ℕ} {hG : 0 < G} {hL : 1 < L} {S : Fin G → α}
     (hS : PopulationReduction.IsPrimitive S)
     (hnb : NonBranching (genomeNodes (L := L) hG S) (support (L := L) hG S)
       (winPrefix (L := L)) (winSuffix (L := L))) :
@@ -1945,7 +1965,7 @@ theorem identifiable_of_nonbranching {hG : 0 < G} {hL : 1 < L} {S : Fin G → α
     have heD : e ∈ support (L := L) hD D := (hsupD e).mp he
     exact nonbranching_primitive_spelling_eq_one hTrailD htrailNe
       (specCount (L := L) hD D) huseD (support (L := L) hD D)
-      (fun e₁ he₁ e₂ he₂ ht => uniqueOut_of_nonbranching (hL := hL) hnb e₁ e₂
+      (fun e₁ he₁ e₂ he₂ ht => uniqueOut_of_nonbranching (_hL := hL) hnb e₁ e₂
         ((hsupD e₁).mpr he₁) ((hsupD e₂).mpr he₂) ht)
       (fun e' he' => by
         have h4 := hDm e'

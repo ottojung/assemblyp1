@@ -677,7 +677,7 @@ theorem observedOf_mem_support {α : Type} [DecidableEq α] [Fintype α] {G L n 
   have hz : observedOf (L := L) hG S ρ w = 0 := by
     apply Finset.sum_eq_zero
     intro i _
-    by_cases he : window (L := L) hG S (ρ i) = w
+    by_cases he : OrientedRigidity.window (L := L) hG S (ρ i) = w
     · exact (hn (Finset.mem_image.mpr ⟨ρ i, Finset.mem_univ _, he⟩)).elim
     · simp [he]
   omega

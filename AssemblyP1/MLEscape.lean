@@ -211,6 +211,7 @@ theorem informationFeasible_no_midRangeTriple {G L : ℕ} (hG : 0 < G) (hL2 : 2 
     BridgingBridge.informationFeasible_tripleRepeat_ge_G_sub_L hL2 hLG hfeas hℓ1 hℓG ht
   omega
 
+omit [DecidableEq α] [Fintype α] in
 /-- The audited premise implies the mid-range premise. -/
 theorem longTripleFree_no_midRangeTriple {G L : ℕ} (hG : 0 < G) (hLG : L ≤ G)
     {S : Fin G → α} (hno : ¬ RepeatAdapter.HasLongTripleRepeat hG S L) :
@@ -700,6 +701,7 @@ theorem spectralEscape_contradiction {G L : ℕ} (hG : 0 < G) (hL2 : 2 ≤ L)
     B hB.1 hB.2.1 hB.2.2
   exact absurd (heq w ▸ hgt) (Nat.lt_irrefl _)
 
+omit [Fintype α] in
 /-- **Step 1, positive form.** A spectral escape forces a long maximal triple
 repeat of the truth: if there were none, the rigidity chain applied to the
 escaping circulation would make it equal to the truth's spectrum. -/
@@ -745,6 +747,7 @@ theorem ml_failure_gives_spectral_escape {G L n : ℕ} (hG : 0 < G) (S : Fin G �
   exact ⟨OrientedRigidity.specCount (L := L) hG D,
     candidate_is_massG_positive_circulation hG S D ρ hsup, ⟨w, hgt⟩⟩
 
+omit [Fintype α] in
 /-- **No spectral escape under full `I_s`.**
 
 If `2 ≤ L`, `L ≤ G` and the realized reads are `I_s`-feasible, then no positive

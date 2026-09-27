@@ -414,7 +414,7 @@ theorem nCopies_suffix (l : List α) (k m : ℕ) (hm : m ≤ k) :
         congr 1
         omega
       rw [h1]
-      rw [h1, Nat.add_mod]
+      rw [Nat.add_mod]
       simp
     have hmk : (nCopies l k).length = k * l.length := nCopies_length l k
     have hml : (nCopies l m).length = m * l.length := nCopies_length l m
