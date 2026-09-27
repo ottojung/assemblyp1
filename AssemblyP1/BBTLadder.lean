@@ -54,27 +54,46 @@ The audit (`e89b1d42`) and the exhaustive search recorded in
   the two shifted copies spell the *same* vertices, `vtx (p + i) = vtx (q + i)`
   for `i + 1 ≤ e`; so a ladder is invisible at the level of the vertex cycle,
   which is the local reason a collapse cannot manufacture a new vertex cycle.
+* **§6 — the support is a laminar family of ladder blocks**
+  (`orbit_maxPair_isRepeat`, `support_blocks_nonCrossing`): every support chord
+  extends to a maximal repeat of length `≥ L - 1`, and two *crossing* support
+  chords do not have *crossing* maximal extensions.  Both are `P2` alone.
 
 ## What is still missing
 
-`LadderRotationGap` (§6) is the remaining step, as a `Prop` with **no
-inhabitant**: in the genuine Eulerian setting, if the transposition orbits of
-`f` coalesce into one maximal repeat (a ladder), then the vertex cycle of the
-alternative traversal is a rotation of the truth's.  §4--§5 make the statement
-precise and reduce it to the block structure of the support of `f`; the
-combinatorial core --- that the block permutation `Φ = f ∘ nextSupport` moves
-only whole ladder pairs, or equivalently that the two copies of each ladder
-offset cut off equal vertex blocks --- is *not* proved here.
+`#89` reduces to two `Prop`s with **no inhabitant**, §7:
 
-Exhaustive search (`scripts/verify_ladder_rematch_89.py`) over all primitive
-binary and ternary words of length `≤ 9`, all `2 ≤ L ≤ G`, and every
-window-preserving involution whose `f ∘ nextPos` is a `G`-cycle: 192260 genuine
-traversals, of which 17746 have a non-trivial support; in **all** of them the
-vertex cycle is a rotation of the truth's, and in all of them the support chords
-that cross coalesce into a single maximal repeat ("one ladder") in 17628 cases
-and into two ladders in 118 cases.  This is evidence, not a proof: the
-completeness of the search is not itself proved.  No `sorry`, no `admit`, no new
-axiom.
+* `CrossingChordsCoalesce` --- the repeat-theoretic core: two crossing support
+  chords must carry the **same** deterministic maximal extension.  This is the
+  direction that was missing.  The earlier formulation made coalescence an
+  *assumption*; it has to be *derived*, because the support need not be a single
+  ladder: over binary `G ≤ 10` there are genuine traversals whose support spans
+  **two** maximal repeats.
+* `LadderVertexCycle` --- the global block lemma: a laminar family of ladder
+  blocks, each vertex-invisible, forces the vertex listing to be a rotation.
+  This replaces the previous `LadderRotationGap`, which was stated with a
+  *local* antecedent (one pair of coalescing orbits) and a *global* conclusion,
+  and so could not be applied to a support that does not coalesce.
+
+§4--§6 make both precise; the combinatorial core that is *not* proved is that
+the traversal walks the laminar blocks in the geometric order.  Note the target
+is `VertexCycleEq`, never start-level equality and never `AltF = id`: `S = 00101`
+has `f = (1 3)(2 4) ≠ id` and a correct `VertexCycleEq`.
+
+Exhaustive search (`scripts/verify_ladder_blocks_89.py`) over all primitive
+binary words of length `≤ 10` and ternary words of length `≤ 7`, all
+`2 ≤ L ≤ G`, and every `(L-1)`-mer-preserving involution `f` whose
+`f ∘ nextPos` is a `G`-cycle: 3770 genuine traversals with nontrivial support,
+**zero** failures of `VertexCycleEq` and **zero** of `CrossingChordsCoalesce`.
+The same search **refutes** the intermediate invariant
+`nextSupport (f x) = f (nextSupport x)` (`nextSupport x` = next support point
+clockwise): verified for `G ≤ 9` (1110 cases), refuted at `G = 10` by
+`S = 0010010101`, `L = 5`, `f = (0 3)(1 8)(4 6)(5 7)`.  It also refutes
+"the support is the disjoint union of the full ladders of all maximal repeats of
+length `≥ L - 1`" (`S = 000101`, `L = 3`) and "the geometric gap lengths of a
+ladder are equal" (`S = 00101`, `L = 3`: gaps of length 1 and 2).  This is
+evidence, not a proof: the completeness of the search is not itself proved.
+No `sorry`, no `admit`, no new `axiom`.
 -/
 
 namespace AssemblyP1.BBTLadder
@@ -432,39 +451,167 @@ theorem ladder_arc_eq {e : ℕ} {p q : Fin G} (hL : 2 ≤ L)
     exact hstep
   exact key
 
-/-! ## 6. The remaining gap, as a `Prop` with no inhabitant -/
+/-! ## 6. The support is a laminar family of ladder blocks
 
-/-- **The remaining step of the `#89` rematch route** (`LadderRotationGap`).
+The support of `f = AltF hG σ` splits into **blocks**: two support points are in
+the same block when their transposition orbits carry the *same* deterministic
+maximal extension.  Two facts about that decomposition are proved here.
 
-In the genuine Eulerian setting --- `σ` a presentation of an alternative
-Eulerian cycle of the `(L-1)`-mer multigraph of a `P2` truth, `f = AltF hG σ` an
-involution whose two-element orbits are doubled `(L-1)`-mer pairs --- suppose two
-orbits of `f` **collapse** onto the same deterministic maximal extension, i.e.
-`maxPairStart hG S a b = maxPairStart hG S c d` and
-`maxPairStart hG S b a = maxPairStart hG S d c`.  Then the vertex cycle of `σ`
-is a rotation of the truth's vertex cycle.
+* **§6.1** (`orbit_maxPair_isRepeat`) every transposition orbit of `f` sits in a
+  maximal repeat of length `≥ L - 1`.  This is what makes the support chords
+  *extensible* objects rather than raw `(L-1)`-mer pairs, and it is the input
+  `P2.imp_ExtCrossing` needs.
+* **§6.2** (`support_blocks_nonCrossing`) two **crossing** support chords do not
+  have crossing maximal extensions --- the blocks are *laminar*.  This is
+  `P2.imp_ExtCrossing` read at the support of `f`, i.e. exactly the "crossing
+  deterministic maximal extensions contradict `P2`" ingredient the rematch route
+  is organised around.
 
-§4--§5 make this precise: the collapse is a **ladder**
-(`ladder_of_coalescing`: the two pairs are two distinct rotations of the single
-maximal repeat's pair, with equal chord lengths), and a ladder is vertex-invisible
-(`ladder_arc_eq`, `AltF_vtx'`).  What is *not* proved is the combinatorial core:
-that the block permutation of the alternative traversal, which is generated by
-`Φ = f ∘ nextSupport` on the support of `f`, is vertex-compatible --- i.e. that
-it moves only whole ladder pairs, or equivalently that the two copies of each
-ladder offset cut off equal vertex blocks.  The naive replacement
-("a collapse gives two *interleaved* maximal extensions") is **false**, refuted
-by `S = 00101` (§`e89b1d42`), so the gap has to be closed in this form and not
-in that one.
+Both are consequences of `P2` alone; neither mentions the traversal beyond the
+`vtx`-preservation `AltF_vtx'`. -/
 
-This is a `Prop`; it is **not** an inhabitant, and nothing in the library depends
-on it. -/
-def LadderRotationGap (L : ℕ) : Prop :=
+/-- **A transposition orbit of `AltF` lies in a maximal repeat of length
+`≥ L - 1`.**  The two ends of the chord carry the same `(L-1)`-mer
+(`AltF_vtx'`), so their deterministic maximal extension (`maxPair_isRepeat`,
+`R1` at `n = 2`) is a genuine `IsRepeat` of length at least `L - 1`, sitting at
+the *shifted* starts `maxPairStart hG S a b` and `maxPairStart hG S b a`. -/
+theorem orbit_maxPair_isRepeat {σ : Fin G ≃ Fin G} (hEul : EulerianCycle hG L S σ)
+    (hL : 2 ≤ L) (hLG : L ≤ G) (hprim : RepeatAdapter.IsPrimitive hG S)
+    (hP2 : P2 hG L S) {a b : Fin G} (hab : a ≠ b) (hfx : AltF hG σ a = b) :
+    (mkGenome hG S).IsRepeat (maxPairLen hG S a b)
+        (maxPairStart hG S a b) (maxPairStart hG S b a) ∧
+      L - 1 ≤ maxPairLen hG S a b :=
+  maxPair_isRepeat hG S hprim hab (by omega) (by omega)
+    (agree_of_nodeWindow_eq hG S (hfx ▸ AltF_vtx' hG S hEul a).symm)
+
+/-- **Two crossing support chords do not have crossing maximal extensions.**
+The blocks of the support are therefore *laminar*: crossing chords are
+necessarily in the same block, and chords in different blocks never cross.
+
+This is `P2.imp_ExtCrossing` instantiated at the support of the alternative
+traversal: the two hypotheses `ExtCrossing` asks for are exactly
+`vtx a = vtx b` and `vtx c = vtx d`, read off `AltF_vtx'`. -/
+theorem support_blocks_nonCrossing {σ : Fin G ≃ Fin G} (hEul : EulerianCycle hG L S σ)
+    (hL : 2 ≤ L) (hLG : L ≤ G) (hprim : RepeatAdapter.IsPrimitive hG S)
+    (hP2 : P2 hG L S) {a b c d : Fin G}
+    (hab : a ≠ b) (hcd : c ≠ d)
+    (hfx : AltF hG σ a = b) (hfd : AltF hG σ c = d)
+    (hI : Interleaved (mkGenome hG S) a b c d) :
+    ¬ Interleaved (mkGenome hG S) (maxPairStart hG S a b) (maxPairStart hG S b a)
+        (maxPairStart hG S c d) (maxPairStart hG S d c) ∧
+      ¬ Interleaved (mkGenome hG S) (maxPairStart hG S b a) (maxPairStart hG S a b)
+        (maxPairStart hG S c d) (maxPairStart hG S d c) :=
+  (P2.imp_ExtCrossing hG hL hLG S hprim hP2) a b c d hab hcd
+    (hfx ▸ AltF_vtx' hG S hEul a).symm (hfd ▸ AltF_vtx' hG S hEul c).symm hI
+
+/-! ## 7. The remaining step, as `Prop`s with no inhabitant
+
+§6 reduces `#89` to **two** statements, and it is worth being precise about
+which is which, because the earlier formulation (`LadderRotationGap`, replaced
+below) had them the wrong way round and was stated in a form that could not be
+applied.
+
+The first, `CrossingChordsCoalesce`, is the *repeat-theoretic* core: in the
+genuine Eulerian setting, two **crossing** support chords must carry the **same**
+determinimal maximal extension.  Note the direction: the old statement assumed
+coalescing and concluded a rotation, i.e. it made the block structure an
+*assumption*.  The block structure is not an assumption --- §6.1 and §6.2 make
+every support chord extensible and make the blocks laminar, and what is missing
+is that *crossing forces coalescence*.  This is the corrected form of the
+correction recorded at `e89b1d42`: it is **false** that crossing raw chords have
+*interleaved* maximal extensions (`S = 00101`, `G = 5`, `L = 2` at the `(L-1)`-mers,
+kernel-checked as `BBTChords.raw_node_crossing_not_maximal`), and the true
+statement is the opposite one --- their maximal extensions *coalesce*.
+
+The second, `LadderVertexCycle`, is the *global* block lemma: a support that is a
+laminar family of ladder blocks, together with the two facts that a block is two
+rotations of one pair (`ladder_of_coalescing`) and that such a block is
+vertex-invisible (`ladder_arc_eq`, `AltF_vtx'`), forces the vertex listing to be
+a rotation of the truth's.  It is a statement about the *whole* support, not
+about one pair of chords, which is what is needed: the target is
+`VertexCycleEq`, never start-level equality, and never `AltF = id` --- `S = 00101`
+has a nonidentity `AltF` (`f = (1 3)(2 4)`) and a correct `VertexCycleEq`.
+
+Both are `Prop`s; **neither is an inhabitant**, and nothing in the library
+depends on them.
+
+### Evidence, and its limits
+
+`scripts/verify_ladder_blocks_89.py` enumerates, over all primitive `P2` words,
+every `vtx`-preserving involution `f` with `J = f ∘ nextPos` a `G`-cycle (the
+`J = f ∘ ρ` representation, which is the only safe one: `σ` is an arbitrary
+presentation and `prevPos` is geometric, so `AltF (σ i) ≠ σ (i + 1)` in general).
+For binary `G ≤ 10` and ternary `G ≤ 7` (3770 traversals with nontrivial
+support) it finds
+
+* **zero** failures of `VertexCycleEq` --- so `thm:BBT` at `K = L - 1` survives
+  the enlargement to `G = 10`;
+* **zero** failures of `CrossingChordsCoalesce`;
+* **zero** failures of `LadderVertexCycle` read off the listing;
+* and, importantly, **70 refutations of a tempting intermediate lemma**: the
+  claim `nextSupport (f x) = f (nextSupport x)` for `x ∈ Support f`, where
+  `nextSupport x` is the next support point clockwise after `x`.  It is
+  verified for `G ≤ 9` (1110 cases) and fails at `G = 10`, e.g.
+  `S = 0010010101`, `L = 5`, `f = (0 3)(1 8)(4 6)(5 7)`, whose four chords carry
+  only **two** maximal extensions, one at the start pair `{1, 8}` of length 6 and
+  one at `{4, 6}` of length 5.  So neither the
+  support-commutation invariant nor the single-ladder invariant is available
+  here, and the block argument has to be genuinely global.  Equally, the support
+  need **not** be the disjoint union of the full ladders of all maximal repeats
+  of length `≥ L - 1`, because a traversal need not swap at every branch vertex
+  (`S = 000101`, `L = 3`, support `{2,3,4,5}` while the full ladder union is
+  all of `Fin 6`).  Equal geometric gap lengths are likewise false
+  (`S = 00101`, `L = 3`: the gaps `2 → 3` and `4 → 1` have lengths 1 and 2).
+
+This is evidence, not a proof: the completeness of the search is not itself
+proved.  No `sorry`, no `admit`, no new axiom. -/
+
+/-- **The repeat-theoretic core of `#89` (`CrossingChordsCoalesce`):** in the
+genuine Eulerian setting, two **crossing** chords of the support of
+`f = AltF hK σ` carry the **same** deterministic maximal extension.
+
+`§6.1` makes every support chord extensible to a maximal repeat of length
+`≥ L - 1`, and `§6.2` (`support_blocks_nonCrossing`) makes the blocks laminar.
+What is missing is the remaining direction: that *crossing forces coalescence*,
+so that the support is a single laminar family of ladder blocks rather than
+several.  This is a `Prop`; it is **not** an inhabitant. -/
+def CrossingChordsCoalesce (L : ℕ) : Prop :=
   ∀ (K : ℕ) (hK : 0 < K) (S : Fin K → α) (hP2 : P2 hK L S)
     (hprim : RepeatAdapter.IsPrimitive hK S), Ukkonen hK L S →
+    ∀ (σ : Fin K ≃ Fin K) (hEul : EulerianCycle hK L S σ),
+      ∀ (a b c d : Fin K),
+        AltF hK σ a = b → AltF hK σ b = a → AltF hK σ c = d → AltF hK σ d = c →
+        a ≠ c → b ≠ c → a ≠ d → b ≠ d →
+        Interleaved (mkGenome hK S) a b c d →
+        maxPairStart hK S a b = maxPairStart hK S c d ∧
+          maxPairStart hK S b a = maxPairStart hK S d c
+
+/-- **The global block lemma of `#89` (`LadderVertexCycle`):** if the support of
+the alternative traversal is a laminar family of blocks, and in each block the
+two orbits are two rotations of one pair, then the vertex listing of the
+traversal is a rotation of the truth's vertex listing.
+
+Each block is vertex-invisible --- `ladder_of_coalescing` puts its two orbits at
+`rotAdd ℓ p`, `rotAdd ℓ q`, and `ladder_arc_eq` gives
+`vtx (rotAdd i p) = vtx (rotAdd i q)` for every shift that still fits in the
+block's maximal repeat --- and `AltF_vtx'` says the two ends of each chord read
+the same vertex.  What is missing is that these local facts assemble into a
+statement about the *whole* listing: the blocks are only known to be laminar, and
+one has to show that the traversal walks them in the geometric order.
+
+This is a `Prop`; it is **not** an inhabitant, and it replaces the previous,
+over-strong `LadderRotationGap`, which asked for `VertexCycleEq` from the
+*coalescing of one pair of orbits* --- a hypothesis that need not hold at all,
+and that in any case makes the block structure an assumption rather than the
+thing to be proved. -/
+def LadderVertexCycle (L : ℕ) : Prop :=
+  ∀ (K : ℕ) (hK : 0 < K) (S : Fin K → α), P2 hK L S →
+    RepeatAdapter.IsPrimitive hK S → 2 ≤ L → L ≤ K → Ukkonen hK L S →
     ∀ (σ : Fin K ≃ Fin K), EulerianCycle hK L S σ →
       ∀ (a b c d : Fin K),
         AltF hK σ a = b → AltF hK σ b = a → AltF hK σ c = d → AltF hK σ d = c →
-        a ≠ c →
+        a ≠ c → b ≠ c → a ≠ d → b ≠ d →
+        Interleaved (mkGenome hK S) a b c d →
         maxPairStart hK S a b = maxPairStart hK S c d →
         maxPairStart hK S b a = maxPairStart hK S d c →
         VertexCycleEq hK L S σ (Equiv.refl (α := Fin K))
