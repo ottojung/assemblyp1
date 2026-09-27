@@ -302,6 +302,50 @@ axiom.
    names the missing statement as a `Prop`; it is not inhabited and nothing
    depends on it.
 
+## 6b. The fibre/period lemma (`AssemblyP1/BBTFibrePeriod.lean`)
+
+Step 3 needs, before it can produce *two* interleaved repeats, a bound on how
+many starts can carry **one** `(L-1)`-mer --- the fibres of the vertex
+labelling.  That bound is now proved, kernel-checked, in
+`AssemblyP1/BBTFibrePeriod.lean`, with no hypothesis beyond `2 ≤ L` and the
+three starts being distinct.
+
+| theorem | content |
+| --- | --- |
+| `three_occurrences_collapse_or_tripleRepeat` | **the fibre/period lemma**: three distinct starts carrying one `(L-1)`-mer either have two of them congruent modulo `leastPeriod`, or the three occurrences --- extended backwards as far as they agree --- carry a `Genome.IsTripleRepeat` of length `≥ L-1` |
+| `three_occurrences_collapse_of_Ukkonen` | under `Ukkonen` the triple-repeat alternative is a `LongObstruction`, so two of the three are congruent modulo the least period |
+| `backAgr3F_add` | the index arithmetic composing a backward step of size `q` with a forward agreement of size `m` at **three** occurrences (§6, item 1, for two occurrences, is still open) |
+| `classOf`, `mem_classOf`, `mem_fibre_of_mem_classOf`, `classOf_subset_fibre` | the period class `{x | leastPeriod ∣ sh a x}` is carried by one vertex |
+| `fibre_subset_two_classes` | under `Ukkonen` the starts realising one vertex lie in **at most two** period classes |
+| `shiftInvariant_of_period`, `leastPeriod_eq_G_of_primitive` | the primitivity bridge to `RepeatAdapter.IsPrimitive` |
+| `classOf_singleton`, `fibre_card_le_two_of_primitive` | in the primitive stratum (`leastPeriod = G`) every fibre of the `(L-1)`-mer labelling has **at most two** starts |
+
+The dichotomy is exhaustive with no Fine--Wilf argument: take the maximal
+forward agreement `m ≤ G` and the maximal backward agreement `q ≤ G` of the
+three occurrences (the two maximal extensions of
+`AssemblyP1/BBTMaximalExtension` §2/§3a, read at three occurrences).  If
+`m = G` or `q = G` the three agree for a full turn, so `sh a b` is a period
+and the least period divides it.  Otherwise the backward step gives a triple
+agreeing on `q + m` positions whose preceding *and* following symbols are not
+all equal (by maximality), and `q + m ≥ G` is again a full turn while
+`q + m < G` is exactly a `Genome.IsTripleRepeat` of length `≥ L-1`.
+
+**What this changes.**  Step 3's *triple-repeat* disjunct is now reachable,
+and the fibres --- hence the multiplicity of the branch objects of the
+condensation --- are bounded.  **What it does not change.**  The
+*interleaved* disjunct still has no supplier: nothing produces a second
+maximal repeat, so `EulerianCycleObstruction` is still not proved and
+`BBTMaximalExtension.EulerianCycleGap` is still a `Prop` with no
+inhabitant.  The next step is the shift-left argument of the
+transposition-based proof, whose effect/nontriviality clause would in fact
+reduce the whole dichotomy to the triple-repeat clause alone; see
+`docs/arratia-shift-left-invariant-89.md`.
+
+Not attempted: the counting form `card (classOf a) = G / leastPeriod`, hence
+`card (fibre v) ≤ 2 * (G / p)`; it follows from the same collapse lemma plus
+`Nat.card_multiples'` and is not needed in the primitive stratum, which is
+the one the population chain uses.
+
 ### Extra search evidence for the statement itself
 
 The statement was re-verified on two further ranges of
