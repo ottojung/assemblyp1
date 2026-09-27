@@ -168,8 +168,10 @@ theorem nonbranching_of_primitive_P2_of_divisible (hG : 0 < G) (hL : 2 ≤ L)
     exact Nat.le_of_dvd (by omega) (hg e)
   intro v e₁ h₁ e₂ h₂ htail htail₂
   by_contra hne
-  obtain ⟨hcapk, hsum⟩ :=
-    nodeCount_ge_two_specs hG S e₁ e₂ hne htail.symm
+  have hpre : winPrefix (L := L) e₁ = winPrefix (L := L) e₂ :=
+    htail.trans htail₂.symm
+  have hsum := nodeCount_ge_two_specs hG S e₁ e₂ hne hpre
+  have hcapk := hcap (winPrefix (L := L) e₁)
   have h1 := hge e₁ h₁
   have h2 := hge e₂ h₂
   have h4 : 4 ≤ specCount (L := L) hG S e₁ + specCount (L := L) hG S e₂ := by omega
