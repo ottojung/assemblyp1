@@ -324,7 +324,8 @@ clause --- then its orbit is a cycle of length exactly `G`, so the iterate at
 `G` is the origin again.  This is the only fact about one-cycles needed to
 turn an orbit listing into a genuine presentation, and it is exactly the
 place where "one circuit" is load-bearing. -/
-theorem iterate_G_of_oneCycle (hθ : Function.Bijective θ) (ho : OneCycle hG θ) :
+theorem iterate_G_of_oneCycle (θ : Fin G → Fin G) (hθ : Function.Bijective θ)
+    (ho : OneCycle hG θ) :
     θ^[G] (origin hG) = origin hG := by
   have hinjφ : Function.Injective (fun j : Fin G => θ^[j.val] (origin hG)) := ho
   have hφ : Function.Bijective (fun j : Fin G => θ^[j.val] (origin hG)) :=
@@ -363,7 +364,8 @@ theorem iterate_G_of_oneCycle (hθ : Function.Bijective θ) (ho : OneCycle hG θ
   exact hcontra
 
 /-- **The orbit listing of a one-cycle respects the one-step rotation.** -/
-theorem listingOf_step (hθ : Function.Bijective θ) (ho : OneCycle hG θ) (y : Fin G) :
+theorem listingOf_step (θ : Fin G → Fin G) (hθ : Function.Bijective θ)
+    (ho : OneCycle hG θ) (y : Fin G) :
     listingOf θ (origin hG) (nextPos hG y) = θ (listingOf θ (origin hG) y) := by
   unfold listingOf
   simp only [nextPos, rotAdd, Fin.val_mk]
@@ -376,7 +378,7 @@ theorem listingOf_step (hθ : Function.Bijective θ) (ho : OneCycle hG θ) (y : 
       Function.iterate_succ_apply' θ y.val (origin hG)
     have hR : θ (θ^[y.val] (origin hG)) = θ^[G] (origin hG) := by
       rw [← hstep', h1]
-    rw [h2, hR, iterate_G_of_oneCycle hG hθ ho, Function.iterate_zero]
+    rw [h2, hR, iterate_G_of_oneCycle hG θ hθ ho, Function.iterate_zero]
     rfl
 
 /-- **Every one-cycle, fibre-preserving map is the successor of a genuine
@@ -395,7 +397,7 @@ theorem isEulerianCycle_of_oneCycle (θ : Fin G → Fin G)
   have hbi : Function.Bijective (listingOf θ (origin hG)) :=
     ⟨hinj, Finite.surjective_of_injective hinj⟩
   have hstep : ∀ y : Fin G, listingOf θ (origin hG) (nextPos hG y)
-      = θ (listingOf θ (origin hG) y) := listingOf_step hG hb ho
+      = θ (listingOf θ (origin hG) y) := listingOf_step hG θ hb ho
   have hSucc : succOf hG (Equiv.ofBijective (listingOf θ (origin hG)) hbi) = θ := by
     funext x
     obtain ⟨y, hy⟩ := hbi.2 x
@@ -436,23 +438,514 @@ theorem isEulerianCycle_of_oneCycle (θ : Fin G → Fin G)
   apply Fin.ext
   simp only [rotAdd, Fin.val_mk, origin_val, Nat.zero_add]
 
-/-- **The exact reformulation of `UniqueAt`.**  The first clause of `thm:BBT`
-is: every one-cycle, fibre-preserving permutation of the starts reads the
-`(L-1)`-mers in the truth's own cyclic order.  This is the same statement as
-`UniqueAt` --- an `iff`, not an implication --- with
-`vertexCycleEq_iff_orbit` and `isEulerianCycle_of_oneCycle` as the two
-halves, so nothing is weakened by the reformulation. -/
-theorem uniqueAt_iff_orbit :
-    UniqueAt hG L S
-      ↔ ∀ θ : Fin G → Fin G, Function.Bijective θ → FibrePreserving hG L S θ →
-          OneCycle hG θ → OrbitVertexEq hG L S θ := by
+/-! ## 2. The circuits: an exhaustive enumeration of one-cycle, fibre-preserving
+listings, with a completeness proof -/
+
+/-- Extending a listing of the first `n` starts by one more start. -/
+def extendAt {n : ℕ} (f : Fin n → Fin G) (y : Fin G) : Fin (n + 1) → Fin G :=
+  fun i => if hi : i.val < n then f ⟨i.val, hi⟩ else y
+
+theorem extendAt_of_lt {n : ℕ} (f : Fin n → Fin G) (y : Fin G) (i : Fin (n + 1))
+    (hi : i.val < n) : extendAt f y i = f ⟨i.val, by omega⟩ := by
+  simp [extendAt, hi]
+
+theorem extendAt_new {n : ℕ} (f : Fin n → Fin G) (y : Fin G) :
+    extendAt f y ⟨n, Nat.lt_succ_self n⟩ = y := by
+  simp [extendAt]
+
+/-- **The step condition on a new start `y` following the last start `prev`
+of a listing.**  `y` must carry the `(L-1)`-mer of the start one step after
+`prev`: this is the fibre-preserving condition of §1, on a partial listing. -/
+def stepOk (hG : 0 < G) (L : ℕ) (S : Fin G → α) (y prev : Fin G) : Bool :=
+  decide (vtx hG L S y = vtx hG L S (nextPos hG prev))
+
+/-- ... on a partial listing of `n` starts, where there is nothing to check
+at `n = 0`. -/
+def stepPred (hG : 0 < G) (L : ℕ) (S : Fin G → α) :
+    (n : ℕ) → (f : Fin n → Fin G) → Fin G → Bool
+  | 0, _, _ => true
+  | m + 1, f, y => stepOk hG L S y (f ⟨m, Nat.lt_succ_self m⟩)
+
+/-- The last index of `Fin G`, for `0 < G`. -/
+theorem lastIdx_lt (G : ℕ) (hG : 0 < G) : G - 1 < G := by omega
+
+/-- All `G` starts of the circle, as a computable list (so that the
+enumeration below can be *decided*, not merely stated). -/
+def allStarts (hG : 0 < G) : List (Fin G) := List.finRange G
+
+theorem mem_allStarts (y : Fin G) : y ∈ allStarts hG := List.mem_finRange y
+
+/-- **The partial circuits of the `(L-1)`-mer multigraph.**  `partials n` is
+the list of all listings of `n` *pairwise distinct* starts whose consecutive
+`(L-1)`-mers overlap.  The recursion backtracks over the fibres of `vtx`
+(`stepPred`) and prunes non-injective extensions, so the size of the list is
+the number of partial Eulerian circuits rather than the number of injections
+--- which is what makes the finite check of §3 cheap. -/
+
+def partials (hG : 0 < G) (L : ℕ) (S : Fin G → α) : (n : ℕ) → List (Fin n → Fin G)
+  | 0 => [Fin.elim0]
+  | n + 1 =>
+      (partials hG L S n).flatMap fun f =>
+        ((allStarts hG).filter fun y =>
+          (stepPred hG L S n f y) && decide (Function.Injective (extendAt f y))).map
+            (fun y => extendAt f y)
+
+/-- **Membership in `partials` is exactly injectivity plus the overlap
+condition.**  The two directions are proved by induction on the length, and
+together they say that `partials` is a *complete* enumeration of the partial
+Eulerian circuits of the `(L-1)`-mer multigraph.  This is the point the finite
+check of §3 rests on: a search over `partials G` that finds nothing is a
+search over *all* circuits, not over a sample. -/
+theorem mem_partials_iff (hG : 0 < G) (L : ℕ) (S : Fin G → α) :
+    ∀ {n : ℕ} (p : Fin n → Fin G), p ∈ partials hG L S n ↔
+      Function.Injective p ∧
+        ∀ (i j : Fin n), j.val = i.val + 1 →
+          vtx hG L S (p j) = vtx hG L S (nextPos hG (p i)) := by
+  intro n
+  induction n with
+  | zero =>
+      intro p
+      constructor
+      · intro hp
+        simp only [partials, List.mem_singleton] at hp
+        rw [hp]
+        refine ⟨?_, fun i j hj => ?_⟩
+        · intro a b _
+          exact nomatch a
+        · exact nomatch i
+      · intro _
+        have hp0 : p = Fin.elim0 := Subsingleton.elim _ _
+        simp [partials, hp0]
+  | succ n ih =>
+      intro p
+      constructor
+      · intro hp
+        simp only [partials] at hp
+        obtain ⟨f, hf, hp'⟩ := List.mem_flatMap.mp hp
+        obtain ⟨y, hpy, heq⟩ := List.mem_map.mp hp'
+        subst heq
+        have hy0 := List.mem_filter.mp hpy
+        have hy' : stepPred hG L S n f y = true ∧
+            decide (Function.Injective (extendAt f y)) = true := by
+          rw [← Bool.and_eq_true]
+          exact hy0.2
+        have hinj : Function.Injective (extendAt f y) := of_decide_eq_true (And.right hy')
+        obtain ⟨hinj', hov⟩ := (ih f).mp hf
+        refine ⟨hinj, ?_⟩
+        intro i j hj
+        by_cases hlt : j.val < n
+        · rw [extendAt_of_lt f y j hlt, extendAt_of_lt f y i (by omega)]
+          exact hov ⟨i.val, by omega⟩ ⟨j.val, hlt⟩ hj
+        · have hjn : j.val = n := by omega
+          have hjn' : (⟨n, Nat.lt_succ_self n⟩ : Fin (n + 1)) = j := Fin.ext hjn.symm
+          have hj' : (n : ℕ) = i.val + 1 := by omega
+          rw [← hjn', extendAt_new f y, extendAt_of_lt f y i (by omega)]
+          cases n with
+          | zero => omega
+          | succ m =>
+              have hiv : i.val = m := by omega
+              have h1 : vtx hG L S y = vtx hG L S (nextPos hG (f ⟨m, by omega⟩)) := by
+                simpa only [stepPred, Bool.false_eq_true, ↓reduceIte] using
+                  of_decide_eq_true (And.left hy')
+              rw [h1]
+              congr 1
+              congr 1
+              apply congrArg f
+              apply Fin.ext
+              exact hiv.symm
+      · rintro ⟨hp, hov⟩
+        simp only [partials]
+        have heq : p = extendAt (fun (i : Fin n) => p ⟨i.val, by omega⟩)
+            (p ⟨n, Nat.lt_succ_self n⟩) := by
+          funext i
+          by_cases h : i.val < n
+          · simp [extendAt, h]
+          · have hn : i.val = n := by omega
+            simp [extendAt, h, hn]
+            exact congrArg p (Fin.ext hn)
+        refine List.mem_flatMap.mpr
+          ⟨(fun (i : Fin n) => p ⟨i.val, by omega⟩),
+            (ih _).mpr ⟨?_, ?_⟩,
+            List.mem_map.mpr ⟨(p ⟨n, Nat.lt_succ_self n⟩ : Fin G), ?_, heq.symm⟩⟩
+        · intro a b hab
+          refine Fin.ext (congrArg (fun t => t.val)
+            (hp (Fin.ext (congrArg (fun t => t.val) hab))))
+        · intro i j hj
+          exact hov ⟨i.val, by omega⟩ ⟨j.val, by omega⟩ hj
+        · refine List.mem_filter.mpr ⟨mem_allStarts hG _, ?_⟩
+          have hinj' : Function.Injective
+              (extendAt (fun (i : Fin n) => p ⟨i.val, by omega⟩)
+                (p ⟨n, Nat.lt_succ_self n⟩)) :=
+            fun a b hab => by
+              have hab' : p a = p b := by
+                rw [congrFun heq a, congrFun heq b]
+                exact hab
+              exact Fin.ext (congrArg (fun t : Fin (n + 1) => t.val) (hp hab'))
+          have hstep' : stepPred hG L S n (fun (i : Fin n) => p ⟨i.val, by omega⟩)
+              (p ⟨n, Nat.lt_succ_self n⟩) = true := by
+            cases n with
+            | zero => simp only [stepPred, ↓reduceIte]
+            | succ m =>
+                have h1 : vtx hG L S (p ⟨m + 1, by omega⟩)
+                    = vtx hG L S (nextPos hG (p ⟨m, by omega⟩)) :=
+                  hov ⟨m, by omega⟩ ⟨m + 1, by omega⟩ rfl
+                simpa only [stepPred, stepOk, h1, decide_eq_true]
+          simp [hstep', hinj']
+
+/-! ## 3. The circuits, and the exact finite statement -/
+
+/-- **A circuit reads the `(L-1)`-mers in the truth's cyclic order.**  This is
+`OrbitVertexEq` for the successor map of the circuit, i.e. the conclusion of
+`UniqueAt` in the object of §1. -/
+def CircuitEq (p : Fin G → Fin G) : Prop :=
+  ∃ k : Fin G, ∀ j : Fin G,
+    vtx hG L S (p j) = vtx hG L S (rotAdd hG (j.val + k.val) (origin hG))
+
+/-- **The circuits of the `(L-1)`-mer multigraph**, read from the origin: the
+listings of `G` pairwise distinct starts, beginning at the origin, along
+which consecutive `(L-1)`-mers overlap and which close up. -/
+def circuits : List (Fin G → Fin G) :=
+  ((partials hG L S G).filter fun p =>
+    p (⟨0, hG⟩ : Fin G) = origin hG ∧
+      vtx hG L S (origin hG) = vtx hG L S (nextPos hG (p ⟨G - 1, by omega⟩)))
+
+theorem mem_circuits {p : Fin G → Fin G} :
+    p ∈ circuits hG L S ↔ Function.Injective p ∧ p (⟨0, hG⟩ : Fin G) = origin hG ∧
+      (∀ (i j : Fin G), j.val = i.val + 1 →
+        vtx hG L S (p j) = vtx hG L S (nextPos hG (p i))) ∧
+      vtx hG L S (origin hG) = vtx hG L S (nextPos hG (p ⟨G - 1, by omega⟩)) := by
   constructor
-  · intro hu θ hb hf ho
-    obtain ⟨σ, hEul, hSucc, -⟩ := isEulerianCycle_of_oneCycle hG L S θ hb hf ho
-    exact hSucc ▸ vertexCycleEq_to_orbit hG L S σ (hu σ hEul)
-  · intro hu σ hEul
-    exact orbit_to_vertexCycleEq hG L S σ
-      (hu (succOf hG σ) (succOf_bijective hG σ)
-        (fibrePreserving_succOf hG L S σ hEul) (oneCycle_succOf hG L S σ hEul))
+  · intro hp
+    have hp' := (mem_partials_iff hG L S p).mp ((List.mem_filter.mp hp).1)
+    have hc : p (⟨0, hG⟩ : Fin G) = origin hG ∧
+        vtx hG L S (origin hG) = vtx hG L S (nextPos hG (p ⟨G - 1, by omega⟩)) :=
+      of_decide_eq_true (List.mem_filter.mp hp).2
+    exact ⟨hp'.1, hc.1, hp'.2, hc.2⟩
+  · rintro ⟨hinj, h0, hov, hcl⟩
+    refine List.mem_filter.mpr ⟨(mem_partials_iff hG L S p).mpr ⟨hinj, hov⟩, ?_⟩
+    show decide (p (⟨0, hG⟩ : Fin G) = origin hG ∧
+        vtx hG L S (origin hG) = vtx hG L S (nextPos hG (p ⟨G - 1, by omega⟩))) = true
+    rw [decide_eq_true_eq]
+    exact ⟨h0, hcl⟩
+
+theorem bijective_of_mem_circuits {p : Fin G → Fin G} (hp : p ∈ circuits hG L S) :
+    Function.Bijective p :=
+  ⟨(mem_circuits hG L S (p := p)).mp hp |>.1,
+    Finite.surjective_of_injective ((mem_circuits hG L S (p := p)).mp hp |>.1)⟩
+
+/-- **The successor map of a circuit.**  A circuit `p` is a listing of the
+starts, so its successor is `p ∘ nextPos ∘ p⁻¹`: send the start `p j` to the
+start listed after it. -/
+noncomputable def circuitSucc (hG : 0 < G) (L : ℕ) (S : Fin G → α) (p : Fin G → Fin G)
+    (hp : Function.Bijective p) : Fin G → Fin G :=
+  fun x => p (nextPos hG ((Equiv.ofBijective p hp).symm x))
+
+theorem circuitSucc_bijective (p : Fin G → Fin G) (hp : Function.Bijective p) :
+    Function.Bijective (circuitSucc hG L S p hp) := by
+  refine Function.Bijective.comp ?_ (Function.Bijective.comp ?_ ?_)
+  · exact hp
+  · exact bijective_nextPos hG
+  · exact (Equiv.ofBijective p hp).symm.bijective
+
+theorem circuitSucc_step (p : Fin G → Fin G) (hp : Function.Bijective p) (j : Fin G) :
+    circuitSucc hG L S p hp (p j) = p (nextPos hG j) := by
+  simp only [circuitSucc]
+  have h : (Equiv.ofBijective p hp).symm (p j) = j := Equiv.symm_apply_apply _ _
+  rw [h]
+
+/-- **Shifting a step commutes with reducing modulo the circle.** -/
+theorem mod_succ_mod (G n : ℕ) (hG : 0 < G) :
+    (n + 1) % G = ((n % G) + 1) % G :=
+  (Nat.mod_add_mod n G 1).symm
+
+theorem circuitSucc_iterate (p : Fin G → Fin G) (hp : Function.Bijective p)
+    (h0 : p (⟨0, hG⟩ : Fin G) = origin hG) (n : ℕ) :
+    (circuitSucc hG L S p hp)^[n] (origin hG) = p ⟨n % G, Nat.mod_lt _ hG⟩ := by
+  induction n with
+  | zero =>
+      have hfin : (⟨0 % G, Nat.mod_lt _ hG⟩ : Fin G) = (⟨0, hG⟩ : Fin G) :=
+        Fin.ext (Nat.zero_mod _)
+      simp only [Function.iterate_zero, Function.id_def]
+      rw [hfin]
+      exact h0.symm
+  | succ n ih =>
+      rw [Function.iterate_succ_apply', ih]
+      rw [circuitSucc_step hG L S p hp ⟨n % G, Nat.mod_lt _ hG⟩]
+      have hfin : nextPos hG ⟨n % G, Nat.mod_lt _ hG⟩
+          = ⟨(n + 1) % G, Nat.mod_lt _ hG⟩ := by
+        apply Fin.ext
+        show ((n % G) + 1) % G = (n + 1) % G
+        exact (mod_succ_mod G n hG).symm
+      rw [hfin]
+
+theorem circuitSucc_oneCycle (p : Fin G → Fin G) (hp : Function.Bijective p)
+    (h0 : p (⟨0, hG⟩ : Fin G) = origin hG) :
+    OneCycle hG (circuitSucc hG L S p hp) := by
+  intro a b hab
+  have hab' : (circuitSucc hG L S p hp)^[a.val] (origin hG)
+      = (circuitSucc hG L S p hp)^[b.val] (origin hG) := hab
+  have h1 := circuitSucc_iterate hG L S p hp h0 a.val
+  have h2 := circuitSucc_iterate hG L S p hp h0 b.val
+  rw [h1, h2] at hab'
+  have hfin : (⟨a.val % G, Nat.mod_lt _ hG⟩ : Fin G)
+      = ⟨b.val % G, Nat.mod_lt _ hG⟩ := hp.injective hab'
+  have : a.val = b.val := by
+    have := congrArg Fin.val hfin
+    simpa only [Fin.val_mk, Nat.mod_eq_of_lt a.isLt, Nat.mod_eq_of_lt b.isLt] using this
+  exact Fin.val_inj.mp this
+
+theorem circuitSucc_fibrePreserving {p : Fin G → Fin G} (hp : p ∈ circuits hG L S) :
+    FibrePreserving hG L S (circuitSucc hG L S p (bijective_of_mem_circuits hG L S hp)) := by
+  have hc := (mem_circuits hG L S (p := p)).mp hp
+  have hpb : Function.Bijective p := ⟨hc.1, Finite.surjective_of_injective hc.1⟩
+  intro x
+  have hx : x = p ((Equiv.ofBijective p hpb).symm x) := by
+    have h1 := Equiv.ofBijective_apply p hpb ((Equiv.ofBijective p hpb).symm x)
+    rwa [Equiv.apply_symm_apply] at h1
+  show vtx hG L S (p (nextPos hG ((Equiv.ofBijective p hpb).symm x)))
+      = vtx hG L S (nextPos hG x)
+  rw [show nextPos hG x = nextPos hG (p ((Equiv.ofBijective p hpb).symm x))
+    from congrArg (nextPos hG) hx]
+  by_cases hlt : ((Equiv.ofBijective p hpb).symm x).val + 1 < G
+  · exact hc.2.2.1 ((Equiv.ofBijective p hpb).symm x)
+      (nextPos hG ((Equiv.ofBijective p hpb).symm x))
+      (by rw [nextPos, rotAdd]; exact Nat.mod_eq_of_lt hlt)
+  · have hlast : ((Equiv.ofBijective p hpb).symm x).val + 1 = G := by omega
+    have hnp : nextPos hG ((Equiv.ofBijective p hpb).symm x) = origin hG := by
+      apply Fin.ext
+      show (((Equiv.ofBijective p hpb).symm x).val + 1) % G = 0
+      rw [hlast, Nat.mod_self]
+    have hj1 : (Equiv.ofBijective p hpb).symm x = ⟨G - 1, lastIdx_lt G hG⟩ := by
+      apply Fin.ext
+      show ((Equiv.ofBijective p hpb).symm x).val = G - 1
+      omega
+    have hp0 : p (origin hG) = origin hG := by
+      simpa only [origin] using hc.2.1
+    rw [hnp, hj1, hp0]
+    exact hc.2.2.2
+
+/-- **Every circuit is the orbit listing of a one-cycle, fibre-preserving
+permutation, and presents an Eulerian cycle of the multigraph.**  Together
+with §1 this says the enumeration `circuits` is not a proxy for the
+statement: it is the statement, with the presentations and the successors both
+made explicit. -/
+theorem isEulerianCycle_circuit {p : Fin G → Fin G} (hp : p ∈ circuits hG L S) :
+    ∃ σ : Fin G ≃ Fin G, EulerianCycle hG L S σ ∧ (∀ j : Fin G, σ j = p j) ∧
+      succOf hG σ = circuitSucc hG L S p (bijective_of_mem_circuits hG L S hp) := by
+  have hc := (mem_circuits hG L S (p := p)).mp hp
+  have hpb := bijective_of_mem_circuits hG L S hp
+  have hsucc : succOf hG (Equiv.ofBijective p hpb) = circuitSucc hG L S p hpb := by
+    funext x
+    simp only [succOf, circuitSucc]
+    exact Equiv.ofBijective_apply p hpb _
+
+  have hEul : EulerianCycle hG L S (Equiv.ofBijective p hpb) := by
+    constructor
+    · intro i
+      rw [Equiv.ofBijective_apply, Equiv.ofBijective_apply]
+      by_cases hlt : i.val + 1 < G
+      · exact hc.2.2.1 i (nextPos hG i)
+          (by rw [nextPos, rotAdd]; exact Nat.mod_eq_of_lt hlt)
+      · have hlast : i.val + 1 = G := by omega
+        have hpi : i = ⟨G - 1, lastIdx_lt G hG⟩ := by
+          apply Fin.ext
+          show i.val = G - 1
+          omega
+        have hnp : nextPos hG i = origin hG := by
+          apply Fin.ext
+          show (i.val + 1) % G = 0
+          rw [hlast, Nat.mod_self]
+        have hp0 : p (origin hG) = origin hG := by
+          simpa only [origin] using hc.2.1
+        rw [hnp, hpi, hp0]
+        exact hc.2.2.2
+    · show VisitsAll (succOf hG (Equiv.ofBijective p hpb)) (origin hG)
+      rw [hsucc]
+      exact circuitSucc_oneCycle hG L S p hpb hc.2.1
+  exact ⟨Equiv.ofBijective p hpb, hEul, fun j => Equiv.ofBijective_apply p hpb j, hsucc⟩
+
+/-- **The orbit listing of a one-cycle, fibre-preserving permutation is a
+circuit.**  The converse direction, needed for the reduction of §1 to the
+enumeration. -/
+theorem mem_circuits_of_oneCycle (θ : Fin G → Fin G) (hb : Function.Bijective θ)
+    (hf : FibrePreserving hG L S θ) (ho : OneCycle hG θ) :
+    (fun j => θ^[j.val] (origin hG)) ∈ circuits hG L S := by
+  have hinj : Function.Injective (listingOf θ (origin hG)) := listingOf_injective ho
+  have hpb : Function.Bijective (listingOf θ (origin hG)) :=
+    ⟨hinj, Finite.surjective_of_injective hinj⟩
+  have hcong : (Equiv.ofBijective (listingOf θ (origin hG)) hpb)
+      = listingOf θ (origin hG) := by
+    funext y
+    exact Equiv.ofBijective_apply _ _ _
+  refine (mem_circuits hG L S (p := fun j => θ^[j.val] (origin hG))).mpr
+    ⟨hinj, ?_, ?_, ?_⟩
+  · show θ^[0] (origin hG) = origin hG
+    simp
+  · intro i j hj
+    show vtx hG L S (listingOf θ (origin hG) j)
+      = vtx hG L S (nextPos hG (listingOf θ (origin hG) i))
+    have hmod : i.val + 1 < G := by omega
+    have hji : j = nextPos hG i := by
+      apply Fin.ext
+      show j.val = (i.val + 1) % G
+      rw [hj]
+      exact (Nat.mod_eq_of_lt hmod).symm
+    rw [hji, listingOf_step hG θ hb ho i]
+    have h1 := hf (listingOf θ (origin hG) i)
+    simpa only [listingOf] using h1
+  · have hcl := iterate_G_of_oneCycle hG θ hb ho
+    have h0 : listingOf θ (origin hG) ⟨0, hG⟩ = origin hG := by
+      simp [listingOf]
+    have h1 := hf (θ^[G - 1] (origin hG))
+    have hsucc1 : θ^[(G - 1).succ] (origin hG) = θ (θ^[G - 1] (origin hG)) :=
+      Function.iterate_succ_apply' θ (G - 1) (origin hG)
+    have hgm : (G - 1).succ = G := by omega
+    have hit : θ^[G] (origin hG) = θ (θ^[G - 1] (origin hG)) :=
+      ((congrArg (fun n : ℕ => θ^[n] (origin hG)) hgm.symm).trans hsucc1)
+    rw [← hit, hcl] at h1
+    show vtx hG L S (⟨0, hG⟩ : Fin G)
+      = vtx hG L S (nextPos hG (listingOf θ (origin hG) ⟨G - 1, lastIdx_lt G hG⟩))
+    have h1' : vtx hG L S (origin hG)
+        = vtx hG L S (nextPos hG (listingOf θ (origin hG) ⟨G - 1, lastIdx_lt G hG⟩)) := by
+      simpa only [listingOf] using h1
+    exact h1'
+
+/-- **The exact finite statement of `UniqueAt`.**  The first clause of
+`thm:BBT` at `(G, L, S)` holds if and only if every circuit of the
+`(L-1)`-mer multigraph reads the `(L-1)`-mers in the truth's own cyclic
+order.  The two directions are `isEulerianCycle_circuit` (every circuit
+presents an Eulerian cycle, so it is one of the `σ` that `UniqueAt`
+quantifies over) and `mem_circuits_of_oneCycle` (the successor of an Eulerian
+cycle is a one-cycle, fibre-preserving map, whose orbit listing is a circuit,
+so no `σ` escapes the enumeration).  So this is an `iff`, and the search
+below is over the *statement*. -/
+theorem uniqueAt_iff_circuits :
+    UniqueAt hG L S ↔ ∀ p ∈ circuits hG L S, CircuitEq hG L S p := by
+  constructor
+  · intro hu p hp
+    obtain ⟨σ, hEul, hσ, -⟩ := isEulerianCycle_circuit hG L S hp
+    obtain ⟨k, hk⟩ := hu σ hEul
+    have hps : ∀ j : Fin G, p j = σ j := fun j => (hσ j).symm
+    refine ⟨k, ?_⟩
+    intro j
+    rw [hps]
+    have : vtx hG L S (rotAdd hG k.val j)
+        = vtx hG L S (rotAdd hG (j.val + k.val) (origin hG)) := by
+      apply congrArg (vtx hG L S)
+      apply Fin.ext
+      simp only [rotAdd, Fin.val_mk, origin_val, Nat.add_comm, Nat.add_zero]
+    exact (hk j).trans this
+  · intro hall σ hEul
+    exact (vertexCycleEq_iff_orbit hG L S σ).mpr
+      (hall (fun j => (succOf hG σ)^[j.val] (origin hG))
+        (mem_circuits_of_oneCycle hG L S (succOf hG σ) (succOf_bijective hG σ)
+          (fibrePreserving_succOf hG L S σ hEul) (oneCycle_succOf hG L S σ hEul)))
+/-! ### 3.5 The `Decidable` instances the finite check needs -/
+
+/-- **`Decidable` for the source-faithful repeat predicates read through
+`mkGenome`.**  `AssemblyP1.SourceFaithfulIs` provides `Decidable (S.IsRepeat
+e a b)` and `Decidable (S.IsTripleRepeat e a b c)` for a *variable* genome
+`S : Genome α`, but instance search does not fire through `mkGenome hG S`: the
+def `Genome.IsRepeat` takes `[DecidableEq α]` as an instance-implicit argument,
+so unifying it with the concrete `(mkGenome hG S).IsRepeat e a b` leaves the
+instance argument as a metavariable and the search fails.  These three
+instances are the *same* decision procedures (`unfold` + `infer_instance`), so
+the predicates decided here are literally `P2`'s and `Ukkonen`'s clauses, and
+in particular `FiniteStatement` below quantifies over `P2` itself and not over
+a surrogate. -/
+instance decIsRepeat (W : Fin G → α) (hG : 0 < G) (e : ℕ) (a b : Fin G) :
+    Decidable ((mkGenome hG W).IsRepeat e a b) := by
+  unfold mkGenome Genome.IsRepeat Genome.Agree Genome.Preceding Genome.Following
+    Genome.window Genome.cycl
+  infer_instance
+
+instance decIsTripleRepeat (W : Fin G → α) (hG : 0 < G) (e : ℕ) (a b c : Fin G) :
+    Decidable ((mkGenome hG W).IsTripleRepeat e a b c) := by
+  unfold mkGenome Genome.IsTripleRepeat Genome.Agree Genome.Preceding
+    Genome.Following Genome.window Genome.cycl
+  infer_instance
+
+instance decInterleaved (W : Fin G → α) (hG : 0 < G) (a b c d : Fin G) :
+    Decidable (Interleaved (mkGenome hG W) a b c d) := by
+  unfold mkGenome Interleaved FourDistinct InOpenArc
+  infer_instance
+
+/-- **The `Decidable` instance for `P2` itself**, which the previous packet
+needed and did not have.  The three `haveI` steps are *explicit
+applications* of the instances above to the bound variables: instance search
+alone cannot derive `Decidable (∀ e a b c : Fin G, IsTripleRepeat e a b c →
+_)` from pointwise instances, because that is not an instance derivation, so
+the pointwise decisions have to be supplied as local instances by hand. -/
+instance decP2 (W : Fin G → α) (L : ℕ) : Decidable (P2 hG L W) := by
+  unfold P2
+  haveI h1 : ∀ (e a b c : Fin G),
+      Decidable ((mkGenome hG W).IsTripleRepeat e a b c → e.val < L - 1) :=
+    fun _ _ _ _ => inferInstance
+  haveI h2 : ∀ (e₁ e₂ a b c d : Fin G),
+      Decidable ((mkGenome hG W).IsRepeat e₁ a b →
+        (mkGenome hG W).IsRepeat e₂ c d → Interleaved (mkGenome hG W) a b c d →
+          e₁.val ≤ L - 2 ∨ e₂.val ≤ L - 2) :=
+    fun _ _ _ _ _ _ => inferInstance
+  infer_instance
+
+/-! ## 4. The finite class: the exact statement, and the equivalent search -/
+
+/-- **The exact #89 statement, on a finite class of binary circular genomes.**
+Every binary circular genome of length at most `maxG`, every read length
+`2 ≤ L ≤ maxL`: if the genome satisfies `P2` of `def:P1P2`, then every
+alternative Eulerian cycle of its condensed `(L-1)`-mer multigraph spells its
+own vertex cycle.  This is `BBTEulerian.UniqueAt`, literally; no hypothesis is
+added, dropped or weakened, and the inner quantifier over the alternative
+traversal is `UniqueAt`'s own. -/
+def FiniteStatement (maxG maxL : ℕ) : Prop :=
+  ∀ g ∈ List.range (maxG + 1), ∀ l ∈ List.range (maxL + 1), 2 ≤ l → ∀ hg : 0 < g,
+    ∀ S : Fin g → Fin 2, P2 hg l S → UniqueAt hg l S
+
+/-- **The same statement, on the enumeration of §3**: every *circuit* of the
+`(L-1)`-mer multigraph reads the `(L-1)`-mers in the truth's own cyclic order.
+`finiteStatement_iff_search` is the kernel proof that the two are the same
+statement, so a search over circuits decides the statement itself. -/
+def FiniteSearch (maxG maxL : ℕ) : Prop :=
+  ∀ g ∈ List.range (maxG + 1), ∀ l ∈ List.range (maxL + 1), 2 ≤ l → ∀ hg : 0 < g,
+    ∀ S : Fin g → Fin 2, P2 hg l S →
+      ∀ p ∈ circuits hg l S, CircuitEq hg l S p
+
+/-- The statement form is decidable, so it can be *decided* rather than merely
+stated.  (The instances of §3.5 are what make `P2` decidable at all; the
+search form needs one instance more --- `Decidable` for a `∀` over the
+*function* type `Fin G → Fin G` with a `List`-membership test --- and that
+instance is not yet available, which is the one mechanical step left before
+the search form can be decided.  It is plumbing, not mathematics: the two
+forms are proved equal below.) -/
+instance (maxG maxL : ℕ) : Decidable (FiniteStatement maxG maxL) := by
+  unfold FiniteStatement
+  infer_instance
+
+/-- **The search over circuits decides the statement.**  Each `(G, L, S)` is
+handled by `uniqueAt_iff_circuits`, and the outer quantifiers are the ones of
+`FiniteStatement`. -/
+theorem finiteStatement_iff_search (maxG maxL : ℕ) :
+    FiniteStatement maxG maxL ↔ FiniteSearch maxG maxL := by
+  constructor
+  · intro hG
+    refine fun g hgr l hlr hl hg hS hp p hpc => ?_
+    exact (uniqueAt_iff_circuits hg l hS).mp (hG g hgr l hlr hl hg hS hp) p hpc
+  · intro hG
+    refine fun g hgr l hlr hl hg hS hp σ hEul => ?_
+    exact (vertexCycleEq_iff_orbit hg l hS σ).mpr
+      (hG g hgr l hlr hl hg hS hp (fun j => (succOf hg σ)^[j.val] (origin hg))
+        (mem_circuits_of_oneCycle hg l hS (succOf hg σ) (succOf_bijective hg σ)
+          (fibrePreserving_succOf hg l hS σ hEul) (oneCycle_succOf hg l hS σ hEul)))
+
+/-- **The two-clause form of `thm:BBT` follows from the search**, so a finite
+check of `FiniteSearch` is a check of `thm:BBT` at those instances. -/
+theorem finiteObstruction_of_search {maxG maxL : ℕ} (h : FiniteSearch maxG maxL) :
+    ∀ g ∈ List.range (maxG + 1), ∀ l ∈ List.range (maxL + 1), 2 ≤ l → ∀ hg : 0 < g,
+      ∀ S : Fin g → Fin 2, P2 hg l S →
+        ∀ σ : Fin g ≃ Fin g, EulerianCycle hg l S σ →
+          VertexCycleEq hg l S σ (Equiv.refl (α := Fin g)) ∨ LongObstruction hg l S := by
+  intro g hgr l hlr hl hg hS hp σ hEul
+  exact (obstruction_of_uniqueAt hg l hS hl hp
+    ((uniqueAt_iff_circuits hg l hS).mpr (h g hgr l hlr hl hg hS hp))) σ hEul
 
 end AssemblyP1.BBTEulerianSearch
