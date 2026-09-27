@@ -82,6 +82,21 @@ Two points in the existing write-up are settled by what is proved here.
   hypotheses (`2 ≤ L`, `a ≠ b`, equal `(L-1)`-mers, primitivity), no
   `Preceding a ≠ Preceding b`, and a length bound that follows from
   primitivity rather than being assumed.
+* **Proved (kernel-checked).**  §4a.4: the backward step is a *rotation* of
+  the circle, hence preserves cyclic order: `openArc_backward` (three
+  occurrences lie in the open arc from `a` to `b` iff they do after all
+  three are stepped back by `p`) and `interleaved_backward` (likewise for
+  `Interleaved`, at a common step count).  This is the cyclic-order
+  relationship between a branch pair and the maximal repeat built out of
+  it.  Its docstring also records the one thing it does *not* give: at two
+  *different* step counts the shifted starts can collide
+  (`prevPos^[1] 1 = prevPos^[2] 2` on the circle), so the dichotomy must take
+  the interleaving of the two maximal repeats' starts as a hypothesis ---
+  which is exactly what `LongObstruction`'s second disjunct does --- and
+  cannot deduce it from the interleaving of the two occurrence pairs.
+* **Proved (kernel-checked).**  §4a.6: `S0111_primitive` and
+  `maximalRepeat_branch_backward_0111`, an end-to-end instance of the whole
+  route on the word `0111` of §3.
 * **Proved (kernel-checked).**  `interleaved_disjunct` and `triple_disjunct`:
   the two disjuncts of `AssemblyP1.BBTEulerian.LongObstruction` are
   *assembled* from repeats of length `≥ L-1` obtained in this module, so
@@ -850,7 +865,107 @@ theorem exists_backStep_lt_G {a b : Fin G} (hab : a ≠ b) (hprim : RepeatAdapte
     have hbpG : BackAgrees hG S a b G := by rw [hpG] at hbp; exact hbp
     exact (not_primitive_of_backAgrees_G hG S hab hbpG hprim).elim
 
-/-! ### 4a.4 The backward maximal extension of a branch pair
+/-! ### 4a.4 The backward step is a rotation: cyclic order is preserved
+
+The maximal repeats of §4a.5 are built at the *shifted* starts
+`prevPos^[p] a`, `prevPos^[p] b`, so the dichotomy has to be able to read
+cyclic order at those starts.  The good news, recorded here, is that the
+backward step is a rotation of the circle, so every arc relation --- in
+particular `InOpenArc`, and hence `Interleaved` --- is unaffected by it.
+This is the "correct cyclic-order relationship" the `#89` route needs: the
+maximal repeat of a branch pair sits at a rotation of the pair, so an
+interleaving of two such repeats is an interleaving of the two branch
+occurrence pairs, and conversely. -/
+
+/-- **The backward step preserves open arcs.**  For `p ≤ G`, three
+occurrences lie in the open clockwise arc from `a` to `b` iff they do so
+after all three are stepped backwards by `p`.  This is the rotation
+invariance that lets the dichotomy of §4a.5 be phrased at the shifted
+starts. -/
+theorem openArc_backward {a b c : Fin G} {p : ℕ} (hp : p ≤ G) :
+    InOpenArc (mkGenome hG S) a b c ↔
+      InOpenArc (mkGenome hG S) ((prevPos hG)^[p] a) ((prevPos hG)^[p] b) ((prevPos hG)^[p] c) := by
+  have hres : ∀ x : Fin G, (prevPos hG)^[p] x = ⟨(x.val + G - p) % G, Nat.mod_lt _ hG⟩ :=
+    fun x => backResidue hG p x hp
+  have hlt : ∀ x : Fin G, ((prevPos hG)^[p] x).val < G := by
+    intro x
+    rw [hres x]
+    exact Nat.mod_lt _ hG
+  have hmod : ∀ x : Fin G, Nat.ModEq G (x.val + G - p) ((prevPos hG)^[p] x).val := by
+    intro x
+    have e : ((prevPos hG)^[p] x).val % G = (x.val + G - p) % G := by
+      rw [hres x]
+      exact Nat.mod_eq_of_lt (Nat.mod_lt _ hG)
+    exact e.symm
+  have key : ∀ (u v : Fin G),
+      (((prevPos hG)^[p] u).val + G - ((prevPos hG)^[p] v).val) % G
+        = (u.val + G - v.val) % G := by
+    intro u v
+    have hsub := Nat.ModEq.sub (n := G)
+      (a := ((prevPos hG)^[p] u).val + G) (b := (u.val + G - p) + G)
+      (c := ((prevPos hG)^[p] v).val) (d := v.val + G - p)
+      (Nat.le_trans (hlt v).le (Nat.le_add_left _ _))
+      (by have := v.isLt; have := hp; omega)
+      ((hmod u).add_right G).symm (hmod v).symm
+    rw [show (u.val + G - p) + G - (v.val + G - p) = u.val + G - v.val from by omega] at hsub
+    exact hsub
+  refine Iff.intro (fun h => ?_) (fun h => ?_)
+  · unfold InOpenArc at h ⊢
+    simp only [len_mkGenome] at h ⊢
+    obtain ⟨h1, h2⟩ := h
+    have h3 := key c a
+    have h4 := key b a
+    rw [h3, h4]
+    exact ⟨h1, h2⟩
+  · unfold InOpenArc at h ⊢
+    simp only [len_mkGenome] at h ⊢
+    obtain ⟨h1, h2⟩ := h
+    have h3 := key c a
+    have h4 := key b a
+    rw [h3] at h1 h2
+    rw [h4] at h2
+    exact ⟨h1, h2⟩
+
+/-- **... and therefore preserves interleavings, at a common step count.**
+Two pairs of occurrences that interleave still interleave after all four
+starts are stepped backwards by the same amount.
+
+The common step count is not a technicality, and the reason is worth
+recording for the dichotomy.  Backward iteration is injective *at a fixed
+step count* (`prevIter_ne`), so pairwise distinctness is preserved there; but
+two *different* step counts can collide, e.g. `prevPos^[1] 1 = prevPos^[2] 2` on
+the circle.  So one may not transport an interleaving from two pairs of
+branch occurrences to the two maximal repeats built out of them when the two
+pairs needed different backward steps.  The dichotomy of step 3 therefore
+has to use the interleaving of the two maximal repeats' starts as a
+*hypothesis* (`LongObstruction`'s second disjunct), which is where
+`interleaved_disjunct` consumes it, rather than deduce it. -/
+theorem interleaved_backward {a b c d : Fin G} {p : ℕ} (hp : p ≤ G)
+    (h : Interleaved (mkGenome hG S) a b c d) :
+    Interleaved (mkGenome hG S) ((prevPos hG)^[p] a) ((prevPos hG)^[p] b)
+      ((prevPos hG)^[p] c) ((prevPos hG)^[p] d) := by
+  obtain ⟨hff, har⟩ := h
+  obtain ⟨h1, h2, h3, h4, h5, h6⟩ := hff
+  have hfd : @FourDistinct α (mkGenome hG S) ((prevPos hG)^[p] a) ((prevPos hG)^[p] b)
+      ((prevPos hG)^[p] c) ((prevPos hG)^[p] d) := by
+    refine ⟨?_, ?_, ?_, ?_, ?_, ?_⟩
+    · intro e; exact h1 (prevIter_injective hG p e)
+    · intro e; exact h2 (prevIter_injective hG p e)
+    · intro e; exact h3 (prevIter_injective hG p e)
+    · intro e; exact h4 (prevIter_injective hG p e)
+    · intro e; exact h5 (prevIter_injective hG p e)
+    · intro e; exact h6 (prevIter_injective hG p e)
+  have hb : ∀ x : Fin G, InOpenArc (mkGenome hG S) a b x ↔
+      InOpenArc (mkGenome hG S) ((prevPos hG)^[p] a) ((prevPos hG)^[p] b) ((prevPos hG)^[p] x) := by
+    intro x
+    exact openArc_backward hG S (a := a) (b := b) (c := x) (p := p) hp
+  refine And.intro hfd ?_
+  refine Iff.intro (fun hc => ?_) (fun hd => ?_)
+  · exact fun hd => har.mp ((hb c).mpr hc) ((hb d).mpr hd)
+  · have hnd : ¬ InOpenArc (mkGenome hG S) a b d := fun hd' => hd ((hb d).mp hd')
+    exact (hb c).mp (har.mpr hnd)
+
+/-! ### 4a.5 The backward maximal extension of a branch pair
 
 The theorem the `#89` route consumes.  Two distinct occurrences of one
 `(L-1)`-mer, at *arbitrary* starts, lie inside a maximal repeat of length
@@ -898,6 +1013,35 @@ theorem maximalRepeat_of_branch_backward {L : ℕ} (hL : 2 ≤ L) {a b : Fin G}
     maximalRepeat_of_branch (L := L) (α := α) hG S hL (prevIter_ne hG hq hab)
       (vtx_eq_of_agrees hG S hag2) hprec
   exact ⟨⟨p, hp⟩, e, he, hlen⟩
+
+/-! ### 4a.6 A kernel-checked instance of the whole backward route -/
+
+/-- The word `S0111` of §3 is **primitive**: it is not a power.  The
+maximal-extension route of §4a.5 is stated for a primitive truth, so this
+instance is the one on which that route is exercised. -/
+theorem S0111_primitive : RepeatAdapter.IsPrimitive hG4b S0111 := by
+  rintro s hs hsG hsi
+  have hcases : s = 1 ∨ s = 2 ∨ s = 3 := by omega
+  rcases hcases with rfl | rfl | rfl
+  · exact absurd (hsi 0) (by decide)
+  · exact absurd (hsi 0) (by decide)
+  · exact absurd (hsi 0) (by decide)
+
+/-- ... and the backward maximal extension of its branch pair `2`, `3` is
+available: the primitive truth of the previous lemma turns the branch pair
+`2`, `3` --- whose preceding symbols agree, so which carries no maximal
+repeat at all (§3) --- into a maximal repeat of length `≥ L-1 = 1`, at the
+two occurrences moved back together by the same maximal backward step.  The
+concrete maximal repeat at the pair `1`, `2` is `maximalRepeat_of_branch_0111`
+of §3, and the step of the present lemma is `p = 2`, since
+`prevPos^[2] 2 = 1` and `prevPos^[2] 3 = 2`. -/
+theorem maximalRepeat_branch_backward_0111 :
+    ∃ (p e : Fin 4), (mkGenome hG4b S0111).IsRepeat e
+        ((prevPos hG4b)^[p.val] (2 : Fin 4)) ((prevPos hG4b)^[p.val] (3 : Fin 4)) ∧
+      (2 - 1 : ℕ) ≤ e.val := by
+  have hab : (2 : Fin 4) ≠ 3 := by decide
+  have hvt : vtx hG4b 2 S0111 (2 : Fin 4) = vtx hG4b 2 S0111 (3 : Fin 4) := by decide
+  exact maximalRepeat_of_branch_backward hG4b S0111 (by decide) hab hvt S0111_primitive
 
 /- ## 5. The remaining gap, stated and left open
 
