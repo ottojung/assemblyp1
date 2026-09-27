@@ -1,3 +1,7 @@
+import AssemblyP1.ScalarPrimitiveSpellings
+import AssemblyP1.LyndonSchutzenberger
+import AssemblyP1.AmpBmpPrimitivity
+import AssemblyP1.WordPeriodicity
 import AssemblyP1.Model
 import AssemblyP1.OpenProblem
 import AssemblyP1.SourceFaithfulIs

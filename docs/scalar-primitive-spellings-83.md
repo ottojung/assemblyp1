@@ -41,6 +41,18 @@ for some `k>1`. Every edge-type multiplicity in the left-hand word is then divis
 
 Thus `m >= 2` and `k >= 2`. By the Lyndon–Schützenberger word-equation theorem, an equation `x^n y^p = z^q` with nonempty words and `n,p,q >= 2` forces `x,y,z` to commute, equivalently to be powers of a common primitive word. Applied here, `A` and `B` must have the same first symbol. But the cuts were chosen so that their first edge types differ. Contradiction. Hence `A^m B^m` is primitive for every `m >= 2`.
 
+> **Formal status (2026-09).** The word-equation step used above is no longer a black
+> box: `AssemblyP1/LyndonSchutzenberger.lean` proves the full Lyndon–Schützenberger
+> theorem (`lyndonSchutzenberger`) from Fine–Wilf alone, and derives exactly the
+> contradiction needed here as
+> `ampbmp_primitive_of_head_ne_uncond`: for nonempty `A, B` and every `m >= 2`, if
+> `A^m ++ B^m` is a proper power then `A[0]? = B[0]?`.  The counting half
+> ("`k` divides every edge-type multiplicity, hence `k | m`") is formalised as
+> `dvd_mul_of_letterCount_eq_one` in `AssemblyP1/AmpBmpPrimitivity.lean`.  What is
+> still purely mathematical is the graph-side step that produces the two excursions
+> `A`, `B` with different first edge types from a branching support vertex; see
+> `docs/amp-bmp-primitive-92.md`.
+
 This argument deliberately avoids the false stronger claim that branching produces multiple base necklaces. A figure-eight support can have a unique base cyclic spelling up to rotation even though every multiplied count vector `m c0`, `m>=2`, has a primitive spelling obtained as `A^m B^m`.
 
 ## Proof: no branching forbids every primitive scalar multiple
