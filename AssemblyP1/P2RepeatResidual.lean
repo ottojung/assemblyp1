@@ -1,577 +1,918 @@
+import Mathlib
 import AssemblyP1.P2
 import AssemblyP1.BBTCondense
 
 /-!
-# The maximal-extension bridge from branch occurrences to maximal repeats (#89)
+# The R1 / R2 side of the #89 P2 spectrum-uniqueness residual
 
-_This module proves step 2 of the reduction isolated in
-`docs/bbt-eulerian-cycle-89.md` §6.  Step 1 (condensation bookkeeping) and
-the objects of `AssemblyP1.BBTEulerian` are already in the kernel; step 3
-(the dichotomy) is not attempted here.  See §6 of this file for exactly what
-is and is not proved._
+`AssemblyP1.P2SpectrumUniqueness` reduces `thm:BBT` at `K = L - 1` to
+`UniqueEulerCircuit` for the `(L-1)`-de Bruijn multigraph, and documents the two
+missing repeat-theoretic ingredients on the *genome* side:
 
-## The gap being bridged
+* **(R1)** simultaneous maximal extension of agreeing starts to a maximal
+  repeat / maximal triple repeat;
+* **(R2)** the consequences of actual `P2` for the multigraph: node
+  multiplicity `≤ 2` and the non-interleaving property.
 
-`AssemblyP1.BBTCondense` gives the condensed objects of `thm:BBT`: the
-`(L-1)`-mers of the truth, the multiplicity `deg`, and `Branch v := 2 ≤ deg v`
-(§1 there).  `AssemblyP1.P2` / `def:P1P2` ranges over a different object
-entirely: `Genome.IsRepeat`, a *maximal* two-sided repeat, with
-`Preceding a ≠ Preceding b` and `Following e a ≠ Following e b`.
+This module proves the genome-side parts of (R1) and (R2), reusing
+`SourceFaithfulIs` maximal-repeat definitions and the `RepeatAdapter`
+extension engine. It deliberately does **not** touch the multigraph/chord
+combinatorics ((R3), handled elsewhere).
 
-So an alternative Eulerian cycle of the condensed graph is a statement about
-*raw* repeated `(L-1)`-mer occurrences, while `EulerianCycleObstruction` is a
-statement about *maximal* repeats.  This module proves the bridge between the
-two: a raw repeated occurrence extends to a maximal repeat of the truth whose
-length is `≥ L - 1`.
+## Two corrections to the residual, forced by counterexamples
 
-This is precisely the step that **cannot** be replaced by "`raw` node pairs
-are maximal repeats": `AssemblyP1.BBTChords.raw_node_crossing_not_maximal` is
-the kernel-checked counterexample, and
-`docs/audit-p2-direct-proof-maximal-extension-2026-09-21.md` gives the exact
-word (`S = AABCBCBAB`, `L = 3`) at which a raw pair extends to a *longer*
-maximal repeat.  The raw pair is only a **seed**: the extension below is
-genuinely two-sided, and its length is whatever maximality forces, not
-`L - 1`.
+The residual as written in `docs/issue89-spectrum-uniqueness.md` §3 states
 
-## Where primitivity enters, and only there
+* (R1) "there are `E` and **the same starts** `r₁, …, rₙ` …";
+* (R2) "`P2` (clause 2) + (R1) with `n = 2` gives `NodeCrossing`", i.e. that
+  the `NodeCrossing` of `P2SpectrumUniqueness` is a consequence of `P2`.
 
-`Genome.IsRepeat` requires `e < G`.  This is the only place the argument can
-fail, and it is exactly where primitivity is used: if the two-sided extension
-of two occurrences in distinct residue classes ever reached length `G`, the
-two copies would agree on `G` consecutive positions, i.e. on a whole turn of
-the circle, which forces invariance under a nonzero shift --- precisely
-`AssemblyP1.RepeatAdapter.not_primitive_of_ge_G_agree`, already proved in the
-kernel.
+**Both are false**, and the false step in both is the same one: a maximal
+extension does not stay at the selected starts.  The kernel-checked
+counterexample for both is the **primitive** circular word `S = AABAB`
+(`G = 5`) at read length `L = 3` — it satisfies the repository's actual `P2`
+(`cex_is_p2`), its two repeated `2`-mers are `01` (starts `1, 3`) and `10`
+(starts `2, 4`), and `Interleaved 1 3 2 4` holds:
 
-The two maxima are taken over `Finset.range G`, so each *one-sided* extension
-is bounded by construction; primitivity is needed only at the boundary case
-`ℓ + 1 = G` (resp. `r + 1 = G`), where the extension has reached a full turn
-and the two copies would coincide all the way round.  Concretely, primitivity
-is used in exactly three places, and nowhere else:
+* (R1) the starts `2, 4` carry the common `2`-mer `10`
+  (`cex_pair_agrees`), but there is **no** `e` with `2 ≤ e < 5` for which
+  `IsRepeat e 2 4` holds: the two copies are preceded by the same symbol
+  (`S 1 = S 3 = A`), so no extension *at these starts* is left-maximal
+  (`cex_not_maximalRepeat_at_same_starts`).
+* (R2) the two occurrence pairs *do* interleave on that word
+  (`cex_pairs_cross`, `cex_pair_agrees'`), so the un-extended non-crossing
+  statement is false there.
 
-* `no_left_ext_of_G`, at the boundary `ℓ + 1 = G` in `exists_maxLeft`: this is
-  the only way a left extension can leave the search range `0 ≤ k < G`;
-* `no_right_ext_of_G`, at the boundary `r + 1 = G` in `exists_maxRight`, the
-  same for the right extension;
-* `maximal_extension_of_repeated`, step `heG`: the **joint** bound
-  `ℓ + (L-1) + r < G`.  Neither `ℓ < G` nor `r < G` suffices, and this is
-  where the *combined* copy matters: the extended pair agrees on
-  `ℓ + (L-1) + r` consecutive positions, so a combined length `≥ G` again
-  forces shift-invariance.
+Nothing in the library was weakened.  The corrected (R1) keeps
+`Genome.IsRepeat` / `Genome.IsTripleRepeat` exactly as they are, but the
+maximal extension is taken at the **shifted** starts
+(`maxPairStart`, `maxPairLen`); the corrected (R2) non-crossing statement
+(`ExtCrossing`, `P2.imp_ExtCrossing`) is about those **extended** pairs, which
+is exactly what clause 2 of `P2` forbids: each extension is a maximal repeat of
+length `≥ L - 1 > L - 2`.  Exhaustive search over primitive binary words of
+length `≤ 10` (all `2 ≤ L ≤ G`) finds 4838 interleaving double-node
+configurations, 2534 of them on words satisfying actual `P2`; of the 1320
+configurations **whose maximal extensions interleave**, *none* lies on a `P2`
+word.  The smallest `P2` word carrying an interleaving double-node
+configuration is `AABAB` at `L = 3`, exactly the counterexample above.
 
-`docs/bbt-eulerian-cycle-89.md` §6 flagged exactly this: *"Step 2 needs
-primitivity of the truth to keep the maximal extension below `G` …; the BBT
-step is applied to the truth alone, so a primitivity hypothesis has to be
-threaded into `BBTCompleteSpectrumUniqueness` or an extension bound proved
-directly."*  This module proves the extension bound, under primitivity stated
-as an explicit hypothesis of the bridge lemma.  It deliberately does **not**
-restate `EulerianCycleObstruction` with a primitivity hypothesis added; see §6.
+## What is proved here
 
-## What is proved here, and what is not
+* `IsPrimitive.shiftPrimitive`: the primitivity hypothesis actually carried by
+  `p2_spectrum_unique_up_to_rotation` (`PopulationReduction.IsPrimitive`, "not
+  a nontrivial power") implies the shift-invariance primitivity
+  (`RepeatAdapter.IsPrimitive`, "minimal period `G`") that the repeat theory
+  needs.  So the two notions *do* coincide in the direction used here; the
+  Euclidean reduction `s ↦ G mod s` is proved rather than assumed.
+* **(R1, `n = 3`)** `isTripleRepeat_of_maximalTriple` and
+  `P2.imp_noLongTripleRepeat`: `RepeatAdapter.IsMaximalTriple` at natural
+  starts *is* a source-faithful maximal triple repeat at the residues, so
+  actual `P2` forbids `HasLongTripleRepeat` at `L`.
+* **(R1, `n = 2`)** `pairBack` / `pairFwd` / `maxPair_isRepeat`: two distinct
+  agreeing starts on a primitive circle extend (maximally backwards, then
+  maximally forwards) to a **maximal repeat** of length `e` with
+  `ℓ ≤ e < G`, at the shifted starts.  This is the full pair side of the
+  simultaneous-maximal-extension lemma.
+* **(R2a)** `P2.imp_nodeCount_le_two`: under actual `P2` and primitivity,
+  **every** `(L-1)`-mer of `S` is spelled at most twice, i.e. every node of
+  the `(L-1)`-de Bruijn multigraph of `S` has multiplicity `≤ 2`.
+* **(R2b)** `P2.imp_ExtCrossing`: if two pairs of distinct starts each carry a
+  common `(L-1)`-mer and the four starts interleave, then the two maximal
+  extensions of those pairs do not interleave (in either ordering of the first
+  pair).  This is the corrected non-interleaving property the chord worker
+  consumes.
 
-* **Proved (kernel-checked).**  `maximal_extension_of_repeated`: a raw
-  repeated `(L-1)`-mer occurrence of the truth, at two distinct positions of a
-  primitive truth, lies inside a **maximal** repeat of length `e ≥ L - 1`
-  with `e < G`; the two starts of that maximal repeat are the two occurrences
-  shifted left by the same amount.  `Branch_of_vtx_eq_ne` shows the input is
-  genuinely a branch object of the condensation.
-* **Not proved.**  The dichotomy (step 3 of `docs/bbt-eulerian-cycle-89.md` §6):
-  that a genuinely distinct Eulerian cycle supplies either a maximal *triple*
-  repeat or two interleaved maximal repeats.  `EulerianCycleObstruction` is
-  therefore still open, and `AssemblyP1.P2.BBTUniqueAt` remains derived in
-  the population chain from it as an explicit hypothesis.  No `sorry`, no
-  `admit`, no new axiom.
-
-Nothing here assumes `NodeCrossing` or any raw chord-laminarity statement;
-both are known false (`BBTChords` §5, `BBTChords.raw_node_crossing_not_maximal`)
-and are not used.
+No `axiom`, `sorry` or `admit` occurs in this file, and no definition in the
+library was changed to make a theorem provable.
 -/
-
 set_option maxHeartbeats 800000
 set_option linter.unusedSectionVars false
+set_option linter.unusedVariables false
+set_option linter.style.haveILetI false
+set_option linter.unnecessarySeqFocus false
+set_option linter.unusedSimpArgs false
 
 namespace AssemblyP1.P2RepeatResidual
 
-open SourceFaithfulIs
-open OrientedRigidity
-open AssemblyP1.RepeatAdapter
-open AssemblyP1.BBTSequenceGraph
-open AssemblyP1
+open AssemblyP1.PopulationReduction
+open AssemblyP1.SourceFaithfulIs
+open AssemblyP1.OrientedRigidity
 
-variable {α : Type} [DecidableEq α] {G : ℕ} (hG : 0 < G) (L : ℕ) (S : Fin G → α)
+variable {α : Type} [DecidableEq α] {G L : ℕ}
 
-/-! ## 1. Small helpers
+/-! ## 1. Primitivity: the two notions do coincide, in the direction we need
 
-Everything below is stated on the residues `A`, `B` of the two occurrences
-with `G` as modulus, so that no `Fin` index arithmetic enters the definitions
-and no negative offsets appear: for `d < k ≤ G` and `A ≥ 0` the position
-`A + G - 1 - d` is a genuine nonneg index reading the position `A - 1 - d`
-around the circle. -/
+`p2_spectrum_unique_up_to_rotation` carries `PopulationReduction.IsPrimitive`
+("`S` is not an *exact* `q`-fold power"), while the repeat theory of
+`RepeatAdapter` uses `RepeatAdapter.IsPrimitive` ("no shift by `0 < s < G`
+preserves the word"), which is the hypothesis of Bresler's Lemma B (minimal
+period `G`) consumed by `RepeatAdapter.primitive_nodeCount_le_two`.
 
-/-- `cyc` depends only on its argument modulo `G`.  (A local copy of
-`AssemblyP1.RepeatAdapter.cyc_congr`, which is `private` there.) -/
-theorem cyc_congr' {G : ℕ} (hG : 0 < G) (S : Fin G → α) {x y : ℕ}
+The two are not definitionally the same, so the implication is proved:
+invariance under a shift `s` makes `S` constant on the cosets of
+`gcd s G` inside `ℤ / Gℤ`, hence a `G / gcd s G`-fold repetition of its first
+`gcd s G` symbols — an exact power.  The reduction is the Euclidean one
+(`s ↦ G mod s`), which *is* valid here because invariance by `s` iterates. -/
+
+/-- `cyc` is `G`-periodic. -/
+private theorem cyc_add_G (hG : 0 < G) (S : Fin G → α) (x : ℕ) :
+    cyc hG S (x + G) = cyc hG S x := by
+  unfold cyc
+  apply congrArg S
+  apply Fin.ext
+  show (x + G) % G = x % G
+  calc (x + G) % G = (x % G + G) % G := (Nat.mod_add_mod x G G).symm
+    _ = x % G := by
+      rw [Nat.add_mod, Nat.mod_self, Nat.mod_mod, Nat.add_zero, Nat.mod_mod]
+
+/-- Shift-invariance by `s` iterates. -/
+private theorem shiftIter (hG : 0 < G) (S : Fin G → α) {s : ℕ}
+    (hper : RepeatAdapter.ShiftInvariant hG S s) (x m : ℕ) :
+    cyc hG S x = cyc hG S (x + s * m) := by
+  induction m with
+  | zero => rw [Nat.mul_zero, Nat.add_zero]
+  | succ n ih =>
+      rw [Nat.mul_succ, show x + (s * n + s) = (x + s * n) + s by omega]
+      exact ih.trans (hper (x + s * n))
+
+/-- **Invariance under a shift is an exact power decomposition.**  Strong
+induction on the shift `s`, with the Euclidean reduction `s ↦ G mod s` (which is
+available because invariance by `s` iterates, and `cyc` is `G`-periodic).  This
+is the minimal-counterexample engine behind `IsPrimitive.shiftPrimitive`. -/
+private theorem invShift_isPower (hG : 0 < G) (S : Fin G → α) :
+    ∀ (s : ℕ), 0 < s → s < G → RepeatAdapter.ShiftInvariant hG S s →
+      ∃ (H q : ℕ), 0 < H ∧ H ≤ G ∧ 1 < q ∧ H * q = G ∧
+        ∀ (i : Fin G) (hi : 0 < H) (hiG : H ≤ G),
+          S i = S ⟨i.val % H, Nat.lt_of_lt_of_le (Nat.mod_lt _ hi) hiG⟩ := by
+  intro s
+  induction s using Nat.strong_induction_on with
+  | _ s ih =>
+    intro hs0 hsG hper
+    by_cases hm : G % s = 0
+    · -- `s ∣ G`: the word is `G / s` copies of its first `s` symbols.
+      have hdiv : s ∣ G := Nat.dvd_of_mod_eq_zero hm
+      have hsG' : s ≤ G := Nat.le_of_dvd hG hdiv
+      refine ⟨s, G / s, hs0, hsG', ?_, ?_, ?_⟩
+      · by_contra hc
+        have hq1 : G / s ≤ 1 := by omega
+        have hmul : s * (G / s) = G := by
+          rw [Nat.mul_comm]
+          exact Nat.div_mul_cancel hdiv
+        have hle := Nat.mul_le_mul_left s hq1
+        omega
+      · rw [Nat.mul_comm, Nat.div_mul_cancel hdiv]
+      · intro i hi hiG
+        have hkey := shiftIter hG S hper (i.val % s) (i.val / s)
+        have hdecomp : i.val % s + s * (i.val / s) = i.val := Nat.mod_add_div i.val s
+        have hmodlt : i.val % s < G := by
+          have hlt := Nat.lt_of_lt_of_le (Nat.mod_lt i.val hi) hiG
+          omega
+        have h1 : cyc hG S i.val = S ⟨i.val, i.isLt⟩ := by
+          unfold cyc
+          exact congrArg S (Fin.ext (Nat.mod_eq_of_lt i.isLt))
+        calc S i = S ⟨i.val, i.isLt⟩ := (congrArg S (Fin.eta i i.isLt)).symm
+          _ = cyc hG S i.val := h1.symm
+          _ = cyc hG S (i.val % s) := by rw [hkey, hdecomp]
+          _ = S ⟨i.val % s, hmodlt⟩ := by
+            unfold cyc
+            exact congrArg S (Fin.ext (Nat.mod_eq_of_lt hmodlt))
+    · -- Euclidean step: `G mod s` is a smaller positive shift invariance.
+      have hm0 : 0 < G % s := by omega
+      have hmG : G % s < G := by
+        have hltmod := Nat.mod_lt G hs0
+        omega
+      have hmul : s * (G / s) + G % s = G := by
+        rw [Nat.add_comm]
+        exact Nat.mod_add_div G s
+      have hper' : RepeatAdapter.ShiftInvariant hG S (G % s) := by
+        intro i
+        have hstep : cyc hG S (i + G % s)
+            = cyc hG S ((i + G % s) + s * (G / s)) :=
+          shiftIter hG S hper (i + G % s) (G / s)
+        have hid : (i + G % s) + s * (G / s) = i + G := by omega
+        rw [hid] at hstep
+        exact (hstep.trans (cyc_add_G hG S i)).symm
+      obtain ⟨H, q, hH, hHG, hq1, hlen, hfac⟩ :=
+        ih (G % s) (Nat.mod_lt G hs0) hm0 hmG hper'
+      exact ⟨H, q, hH, hHG, hq1, hlen, fun i hi hiG => hfac i hi hiG⟩
+
+/-- **The primitivity hypothesis of `thm:BBT` is enough for the repeat
+theory.**  `PopulationReduction.IsPrimitive` ("not an exact nontrivial power")
+implies `RepeatAdapter.IsPrimitive` ("minimal period `G`"), which is what every
+maximal-extension argument below consumes.  This is the bridge that makes the
+`_hPrimS` of `p2_spectrum_unique_up_to_rotation` usable here. -/
+theorem IsPrimitive.shiftPrimitive (hG : 0 < G) {S : Fin G → α}
+    (h : PopulationReduction.IsPrimitive S) : RepeatAdapter.IsPrimitive hG S := by
+  intro s hs0 hsG hsInv
+  obtain ⟨H, q, hH, hHG, hq1, hlen, hfac⟩ :=
+    invShift_isPower hG S s hs0 hsG hsInv
+  refine h ⟨H, hH, fun j => S ⟨j.val, by omega⟩, q, hq1, hlen, fun i => ?_⟩
+  exact hfac i hH hHG
+
+/-! ## 2. `cyc` bookkeeping -/
+
+/-- `cyc` depends only on the residue mod `G`. -/
+private theorem cyc_congr (hG : 0 < G) (S : Fin G → α) {x y : ℕ}
     (h : x % G = y % G) : cyc hG S x = cyc hG S y := by
   unfold cyc
   exact congrArg S (Fin.ext h)
 
-/-- `(x + G) % G = x % G`, the residue form. -/
-theorem add_G_mod' {G : ℕ} (x : ℕ) : (x + G) % G = x % G := by
-  rw [Nat.add_mod, Nat.mod_self, Nat.add_zero, Nat.mod_mod]
+private theorem cyc_plus_G (hG : 0 < G) (S : Fin G → α) (x d : ℕ) :
+    cyc hG S (x + G + d) = cyc hG S (x + d) := by
+  have h := cyc_add_G hG S (x + d)
+  rwa [show x + G + d = (x + d) + G from by omega]
 
-/-- `Genome.cycl` of the truth, read at an integer position, is `cyc` of the
-truth.  This is what lets the `Genome.IsRepeat` maximality conditions be
-discharged as congruence statements about `cyc`. -/
-theorem Genome_cycl_eq_cyc (hG : 0 < G) (S : Fin G → α) (i : ℕ) :
-    Genome.cycl (mkGenome hG S) i = cyc hG S i := rfl
+/-- `(x % G + y) % G = (x + y) % G`. -/
+private theorem mod_add_mod (hG : 0 < G) (x y : ℕ) :
+    (x % G + y) % G = (x + y) % G := by
+  calc (x % G + y) % G = (x % G + (y % G + G * (y / G))) % G := by
+        rw [Nat.mod_add_div y G]
+    _ = ((x % G + y % G) + G * (y / G)) % G := by rw [Nat.add_assoc]
+    _ = (x % G + y % G) % G := Nat.add_mul_mod_self_left _ _ _
+    _ = (x + y) % G := (Nat.add_mod x y G).symm
 
-/-- **Cancelling a common shift in a residue comparison.**  Shifting both
-positions by the same amount and reducing modulo `G` does not change whether
-the two residues agree; this is what lets `not_right_ext_of_G` be used with the
-offset `n = L - 1` while only the *unshifted* residues are known to differ. -/
-theorem mod_add_cancel_right {G c x y : ℕ} (h : (x + c) % G = (y + c) % G) :
-    x % G = y % G :=
-  Nat.ModEq.add_right_cancel' c h
+/-- Shifting both starts back by `β` preserves the distinctness of their
+residues: the shift is the *same* amount at both starts. -/
+private theorem sub_ne_mod (hG : 0 < G) (x y β : ℕ) (hβ : β ≤ G)
+    (hne : x % G ≠ y % G) : (x + G - β) % G ≠ (y + G - β) % G := by
+  intro hcon
+  have h1 := congrArg (fun z : ℕ => (z + β) % G) hcon
+  rw [mod_add_mod hG, mod_add_mod hG] at h1
+  have h2 : x % G = y % G := by
+    rwa [show x + G - β + β = x + G from by omega,
+      show y + G - β + β = y + G from by omega,
+      Nat.add_mod_right, Nat.add_mod_right] at h1
+  exact hne h2
 
-/-- The `k` positions immediately preceding `A` agree with those preceding
-`B`.  For `k ≤ G` the index `A + G - 1 - d` is the position `A - 1 - d`. -/
-def LeftAgree (hG : 0 < G) (S : Fin G → α) (A B k : ℕ) : Prop :=
-  ∀ d : ℕ, d < k → cyc hG S (A + G - 1 - d) = cyc hG S (B + G - 1 - d)
+/-- Re-indexing a start by its residue does not change the symbols it reads. -/
+private theorem cyc_of_start (hG : 0 < G) (S : Fin G → α) (a d : ℕ) :
+    cyc hG S (a % G + d) = cyc hG S (a + d) :=
+  cyc_congr hG S (Nat.mod_add_mod a G d)
 
-/-- The `k` positions from `A + n` onwards agree with those from `B + n`. -/
-def RightAgree (hG : 0 < G) (S : Fin G → α) (A B n k : ℕ) : Prop :=
-  ∀ d : ℕ, d < k → cyc hG S (A + n + d) = cyc hG S (B + n + d)
+/-- Same, for the preceding offset. -/
+private theorem cyc_of_start_pred (hG : 0 < G) (S : Fin G → α) (a : ℕ) :
+    cyc hG S (a % G + G - 1) = cyc hG S (a + G - 1) := by
+  calc cyc hG S (a % G + G - 1) = cyc hG S (a % G + (G - 1)) := by
+        congr 3 <;> omega
+    _ = cyc hG S (a + (G - 1)) := cyc_of_start hG S a (G - 1)
+    _ = cyc hG S (a + G - 1) := by congr 3 <;> omega
 
-instance (hG : 0 < G) (S : Fin G → α) (A B k : ℕ) :
-    Decidable (LeftAgree hG S A B k) := by unfold LeftAgree; infer_instance
+/-- `Preceding` at the explicit start `⟨a, ha⟩`. -/
+private theorem gen_preceding_of (hG : 0 < G) (S : Fin G → α) (a : ℕ) (ha : a < G) :
+    (mkGenome hG S).Preceding ⟨a, ha⟩ = cyc hG S (a + G - 1) := rfl
 
-instance (hG : 0 < G) (S : Fin G → α) (A B n k : ℕ) :
-    Decidable (RightAgree hG S A B n k) := by unfold RightAgree; infer_instance
+/-- `Following` at the explicit start `⟨a, ha⟩`. -/
+private theorem gen_following_of (hG : 0 < G) (S : Fin G → α) (a ℓ : ℕ) (ha : a < G) :
+    (mkGenome hG S).Following ℓ ⟨a, ha⟩ = cyc hG S (a + ℓ) := rfl
 
-/-- **Left agreement is downward closed:** a sub-window of an agreeing window
-agrees.  This is what makes the maximum below carry a maximality statement. -/
-theorem LeftAgree_mono {hG : 0 < G} {S : Fin G → α} {A B k k' : ℕ}
-    (h : LeftAgree hG S A B k) (hkk' : k' ≤ k) : LeftAgree hG S A B k' := by
-  intro d hd
-  have hdk : d < k := by omega
-  exact h d hdk
+/-! ## 3. (R1, `n = 3`): actual `P2` forbids long maximal triple repeats
 
-/-- **Right agreement is downward closed.** -/
-theorem RightAgree_mono {hG : 0 < G} {S : Fin G → α} {A B n k k' : ℕ}
-    (h : RightAgree hG S A B n k) (hkk' : k' ≤ k) : RightAgree hG S A B n k' := by
-  intro d hd
-  have hdk : d < k := by omega
-  exact h d hdk
+`RepeatAdapter.extend_triple` already produces, from three distinct starts
+carrying a common `(L-1)`-window and a primitive `S`, a maximal triple repeat of
+length `≥ L - 1` — at *shifted* starts.  The only missing step was the
+translation of `RepeatAdapter.IsMaximalTriple` (natural starts) into the
+source-faithful `Genome.IsTripleRepeat` of `SourceFaithfulIs` (which is what
+`P2` quantifies over).  That translation is proved here. -/
 
-/-- Reading the circle from the extended start `A' = (A + G - ℓ) % G` at
-offset `d` reads the same position as `A + G - ℓ + d`.  This is the only
-congruence the bridge needs. -/
-theorem cyc_shift {G : ℕ} {A' A ℓ d : ℕ} (hA' : A' % G = (A + G - ℓ) % G) :
-    (A' + d) % G = (A + G - ℓ + d) % G :=
-  Nat.add_mod_eq_add_mod_right d hA'
+/-- **The `RepeatAdapter` maximal-triple condition is a source-faithful
+maximal triple repeat at the residues.**  `Preceding`/`Following`/`window` of
+`mkGenome hG S` are exactly `cyc` at `start + G - 1`, `start + e` and
+`start + d`, so the natural-start formulation and the `Fin G`-start
+formulation coincide. -/
+theorem isTripleRepeat_of_maximalTriple (hG : 0 < G) (S : Fin G → α)
+    (a b c ℓ : ℕ) (h1 : 1 ≤ ℓ) (hℓ : ℓ < G)
+    (hd : a % G ≠ b % G ∧ b % G ≠ c % G ∧ a % G ≠ c % G)
+    (h : RepeatAdapter.IsMaximalTriple hG S a b c ℓ) :
+    (mkGenome hG S).IsTripleRepeat ℓ ⟨a % G, Nat.mod_lt _ hG⟩ ⟨b % G, Nat.mod_lt _ hG⟩
+      ⟨c % G, Nat.mod_lt _ hG⟩ := by
+  obtain ⟨hag, hpre, hfol⟩ := h
+  have h12 : (⟨a % G, Nat.mod_lt _ hG⟩ : Fin G) ≠ ⟨b % G, Nat.mod_lt _ hG⟩ :=
+    fun e => hd.1 (congrArg Fin.val e)
+  have h13 : (⟨a % G, Nat.mod_lt _ hG⟩ : Fin G) ≠ ⟨c % G, Nat.mod_lt _ hG⟩ :=
+    fun e => hd.2.2 (congrArg Fin.val e)
+  have h23 : (⟨b % G, Nat.mod_lt _ hG⟩ : Fin G) ≠ ⟨c % G, Nat.mod_lt _ hG⟩ :=
+    fun e => hd.2.1 (congrArg Fin.val e)
+  refine ⟨h1, hℓ, h12, h13, h23, ?_, ?_, ?_, ?_, ?_⟩
+  · intro d
+    calc cyc hG S (a % G + d.val) = cyc hG S (a + d.val) := cyc_of_start hG S a d.val
+      _ = cyc hG S (b + d.val) := (hag d.val d.isLt).1
+      _ = cyc hG S (b % G + d.val) := (cyc_of_start hG S b d.val).symm
+  · intro d
+    calc cyc hG S (a % G + d.val) = cyc hG S (a + d.val) := cyc_of_start hG S a d.val
+      _ = cyc hG S (b + d.val) := (hag d.val d.isLt).1
+      _ = cyc hG S (c + d.val) := (hag d.val d.isLt).2
+      _ = cyc hG S (c % G + d.val) := (cyc_of_start hG S c d.val).symm
+  · intro d
+    calc cyc hG S (b % G + d.val) = cyc hG S (b + d.val) := cyc_of_start hG S b d.val
+      _ = cyc hG S (c + d.val) := (hag d.val d.isLt).2
+      _ = cyc hG S (c % G + d.val) := (cyc_of_start hG S c d.val).symm
+  · intro hcon
+    obtain ⟨h1', h2'⟩ := hcon
+    have e1 : (mkGenome hG S).Preceding ⟨a % G, Nat.mod_lt _ hG⟩
+        = cyc hG S (a + G - 1) :=
+      (gen_preceding_of hG S (a % G) (Nat.mod_lt _ hG)).trans
+        (cyc_of_start_pred hG S a)
+    have e2 : (mkGenome hG S).Preceding ⟨b % G, Nat.mod_lt _ hG⟩
+        = cyc hG S (b + G - 1) :=
+      (gen_preceding_of hG S (b % G) (Nat.mod_lt _ hG)).trans
+        (cyc_of_start_pred hG S b)
+    have e3 : (mkGenome hG S).Preceding ⟨c % G, Nat.mod_lt _ hG⟩
+        = cyc hG S (c + G - 1) :=
+      (gen_preceding_of hG S (c % G) (Nat.mod_lt _ hG)).trans
+        (cyc_of_start_pred hG S c)
+    exact hpre ⟨e1.symm.trans (h1'.trans e2), e2.symm.trans (h2'.trans e3)⟩
+  · intro hcon
+    obtain ⟨h1', h2'⟩ := hcon
+    have e1 : (mkGenome hG S).Following ℓ ⟨a % G, Nat.mod_lt _ hG⟩
+        = cyc hG S (a + ℓ) :=
+      (gen_following_of hG S (a % G) ℓ (Nat.mod_lt _ hG)).trans
+        (cyc_of_start hG S a ℓ)
+    have e2 : (mkGenome hG S).Following ℓ ⟨b % G, Nat.mod_lt _ hG⟩
+        = cyc hG S (b + ℓ) :=
+      (gen_following_of hG S (b % G) ℓ (Nat.mod_lt _ hG)).trans
+        (cyc_of_start hG S b ℓ)
+    have e3 : (mkGenome hG S).Following ℓ ⟨c % G, Nat.mod_lt _ hG⟩
+        = cyc hG S (c + ℓ) :=
+      (gen_following_of hG S (c % G) ℓ (Nat.mod_lt _ hG)).trans
+        (cyc_of_start hG S c ℓ)
+    exact hfol ⟨e1.symm.trans (h1'.trans e2), e2.symm.trans (h2'.trans e3)⟩
 
-/-- **The pointwise consequence of left maximality.**  If agreement holds
-for the `ℓ` positions preceding `A` and `B` but fails for the `ℓ + 1`
-positions, then it fails exactly at the `ℓ`-th position: the predecessor
-symbols of `A` and `B` differ.  (The witness of the failure is forced to be
-`d = ℓ`, because every `d < ℓ` is covered by `h`.) -/
-theorem LeftAgree_not_succ {hG : 0 < G} {S : Fin G → α} {A B ℓ : ℕ}
-    (h : LeftAgree hG S A B ℓ) (hn : ¬ LeftAgree hG S A B (ℓ + 1)) :
-    cyc hG S (A + G - 1 - ℓ) ≠ cyc hG S (B + G - 1 - ℓ) := by
-  have hnot : ¬ ∀ d : ℕ, d < ℓ + 1 →
-      cyc hG S (A + G - 1 - d) = cyc hG S (B + G - 1 - d) := hn
-  push Not at hnot
-  obtain ⟨d, hdle, hne⟩ := hnot
-  have hdl : d = ℓ := by
-    by_contra hc
-    exact absurd (h d (by omega)) hne
-  exact hdl ▸ hne
-
-/-- **The pointwise consequence of right maximality.**  Likewise, the symbols
-following the length-`(n + r)` copies differ. -/
-theorem RightAgree_not_succ {hG : 0 < G} {S : Fin G → α} {A B n r : ℕ}
-    (h : RightAgree hG S A B n r) (hn : ¬ RightAgree hG S A B n (r + 1)) :
-    cyc hG S (A + n + r) ≠ cyc hG S (B + n + r) := by
-  have hnot : ¬ ∀ d : ℕ, d < r + 1 →
-      cyc hG S (A + n + d) = cyc hG S (B + n + d) := hn
-  push Not at hnot
-  obtain ⟨d, hdle, hne⟩ := hnot
-  have hdl : d = r := by
-    by_contra hc
-    exact absurd (h d (by omega)) hne
-  exact hdl ▸ hne
-
-/-! ## 2. Primitivity forbids an extension of a full turn -/
-
-/-- **A left extension of a full turn contradicts primitivity.**  Agreement on
-the `G` positions preceding `A` and `B` is, after re-indexing by
-`i = G - 1 - d`, agreement on the `G` positions *starting* at `A` and `B`;
-the residues are distinct, so `not_primitive_of_ge_G_agree` applies. -/
-theorem no_left_ext_of_G {G : ℕ} (hG : 0 < G) (S : Fin G → α) {A B : ℕ}
-    (hAB : A % G ≠ B % G) (h : LeftAgree hG S A B G)
-    (hprim : IsPrimitive hG S) : False := by
-  have hag : ∀ d : ℕ, d < G → cyc hG S (A + d) = cyc hG S (B + d) := by
-    intro d hd
-    have hd' : G - 1 - d < G := by omega
-    have hdd := h (G - 1 - d) hd'
-    have e1 : A + G - 1 - (G - 1 - d) = A + d := by omega
-    have e2 : B + G - 1 - (G - 1 - d) = B + d := by omega
-    rw [e1, e2] at hdd
-    exact hdd
-  exact not_primitive_of_ge_G_agree hG S A B G hAB (le_refl G) hag hprim
-
-/-- **A right extension of a full turn contradicts primitivity.**  No
-re-indexing is needed: `RightAgree n G` is directly a whole-turn agreement
-between the distinct residues `A + n` and `B + n`. -/
-theorem no_right_ext_of_G {G : ℕ} (hG : 0 < G) (S : Fin G → α) {A B n : ℕ}
-    (hAB : (A + n) % G ≠ (B + n) % G) (h : RightAgree hG S A B n G)
-    (hprim : IsPrimitive hG S) : False :=
-  not_primitive_of_ge_G_agree hG S (A + n) (B + n) G hAB (le_refl G) h hprim
-
-/-! ## 3. The two maximal extensions -/
-
-/-- The left extension amounts available: `0 ≤ k ≤ G` with `LeftAgree k`. -/
-def leftExt (hG : 0 < G) (S : Fin G → α) (A B : ℕ) : Finset ℕ :=
-  (Finset.range G).filter (LeftAgree hG S A B)
-
-/-- The right extension amounts available: `0 ≤ k ≤ G` with `RightAgree n k`. -/
-def rightExt (hG : 0 < G) (S : Fin G → α) (A B n : ℕ) : Finset ℕ :=
-  (Finset.range G).filter (RightAgree hG S A B n)
-
-theorem zero_mem_leftExt (hG : 0 < G) (S : Fin G → α) (A B : ℕ) :
-    0 ∈ leftExt hG S A B := by
-  refine Finset.mem_filter.mpr ⟨Finset.mem_range.mpr (by omega), ?_⟩
-  intro d hd
+/-- **Actual `P2` implies `¬ HasLongTripleRepeat` at `L`.**  This is clause 1 of
+`def:P1P2` ("no maximal triple repeat of length `≥ L - 1`") transferred to the
+`RepeatAdapter` interface, with no primitivity needed: the maximal triple
+repeat produced by `extend_triple` is a source-faithful one, so `P2` forbids
+it directly. -/
+theorem P2.imp_noLongTripleRepeat (hG : 0 < G) (hL : 2 ≤ L) (S : Fin G → α)
+    (hP2 : P2 hG L S) : ¬ RepeatAdapter.HasLongTripleRepeat hG S L := by
+  rintro ⟨a, b, c, ℓ, hℓ1, hℓ2, hda, hdb, hac, h⟩
+  have h1 : 1 ≤ ℓ := by omega
+  have ht := isTripleRepeat_of_maximalTriple hG S a b c ℓ h1 hℓ2 ⟨hda, hdb, hac⟩ h
+  have hlt := hP2.1 ⟨ℓ, hℓ2⟩ ⟨a % G, Nat.mod_lt _ hG⟩ ⟨b % G, Nat.mod_lt _ hG⟩
+    ⟨c % G, Nat.mod_lt _ hG⟩ ht
+  have hgl : (⟨ℓ, hℓ2⟩ : Fin G).val = ℓ := rfl
   omega
 
-theorem zero_mem_rightExt (hG : 0 < G) (S : Fin G → α) (A B n : ℕ) :
-    0 ∈ rightExt hG S A B n := by
-  refine Finset.mem_filter.mpr ⟨Finset.mem_range.mpr (by omega), ?_⟩
-  intro d hd
+/-! ## 4. (R2a): every `(L-1)`-mer of a `P2` truth occurs at most twice
+
+This is the "node multiplicity `≤ 2`" hypothesis of the multigraph side, and it
+is exactly what `docs/issue89-spectrum-uniqueness.md` §3(R2) asks for from
+clause 1 of `P2`.  It is *not* a restatement of `P1`: double nodes are allowed,
+only triples are forbidden. -/
+
+/-- **Node multiplicity `≤ 2` from actual `P2` + primitivity.**  Every
+`(L-1)`-mer of a primitive `P2` truth is spelled at most twice, i.e. every node
+of the `(L-1)`-de Bruijn multigraph of `S` has throughput at most two. -/
+theorem P2.imp_nodeCount_le_two (hG : 0 < G) (hL : 2 ≤ L) (hLG : L ≤ G)
+    (S : Fin G → α) (hprim : RepeatAdapter.IsPrimitive hG S) (hP2 : P2 hG L S) :
+    ∀ k : Fin (L - 1) → α, nodeCount (L := L) hG S k ≤ 2 := by
+  have hno : ¬ RepeatAdapter.HasLongTripleRepeat hG S L :=
+    P2.imp_noLongTripleRepeat hG hL S hP2
+  intro k
+  by_contra hgt
+  have h3 : 2 < nodeCount (L := L) hG S k := lt_of_not_ge hgt
+  have h3' : 0 < nodeCount (L := L) hG S k := by omega
+  unfold nodeCount at h3 h3' hgt
+  obtain ⟨r, hr⟩ := Finset.card_pos.mp h3'
+  have hk : nodeWindow (L := L) hG S r = k := (Finset.mem_filter.mp hr).2
+  have hmem : k ∈ genomeNodes (L := L) hG S :=
+    Finset.mem_image.mpr ⟨r, Finset.mem_univ _, hk⟩
+  have h2 := RepeatAdapter.primitive_nodeCount_le_two hG S hL hLG hprim hno k hmem
+  unfold nodeCount at h2
   omega
 
-theorem leftExt_nonempty (hG : 0 < G) (S : Fin G → α) (A B : ℕ) :
-    (leftExt hG S A B).Nonempty :=
-  ⟨0, zero_mem_leftExt hG S A B⟩
+/-! ## 5. (R1, `n = 2`): the maximal extension of two agreeing starts
 
-theorem rightExt_nonempty (hG : 0 < G) (S : Fin G → α) (A B n : ℕ) :
-    (rightExt hG S A B n).Nonempty :=
-  ⟨0, zero_mem_rightExt hG S A B n⟩
+This is the corrected form of (R1) for `n = 2`.  The maximal extension of a pair
+of agreeing starts is taken at the **shifted** starts
+`a + G - β, b + G - β` (`β` = maximal backward extension), and the length is
+`β + γ` (`γ` = maximal forward extension from there).  `docs/issue89-spectrum-uniqueness.md`
+§3 states (R1) "at the same starts"; that is false, see
+`counterexample_R1_same_starts` in §7. -/
 
-/-- **The left extension cannot reach a full turn**, so the maximum of
-`leftExt` is below `G`. -/
-theorem not_mem_leftExt_G {G : ℕ} (hG : 0 < G) (S : Fin G → α) {A B : ℕ}
-    (hAB : A % G ≠ B % G) (hprim : IsPrimitive hG S) : G ∉ leftExt hG S A B := by
-  intro hmem
-  exact (no_left_ext_of_G hG S hAB (Finset.mem_filter.mp hmem).2 hprim).elim
+/-- The two starts `a, b` agree on the `t` positions `[a + G - t, a + G)`. -/
+private def backAgree (hG : 0 < G) (S : Fin G → α) (a b t : ℕ) : Prop :=
+  ∀ u : ℕ, u < t → cyc hG S (a + G - t + u) = cyc hG S (b + G - t + u)
 
-/-- Likewise for the right extension. -/
-theorem not_mem_rightExt_G {G : ℕ} (hG : 0 < G) (S : Fin G → α) {A B n : ℕ}
-    (hAB : (A + n) % G ≠ (B + n) % G) (hprim : IsPrimitive hG S) : G ∉ rightExt hG S A B n := by
-  intro hmem
-  exact (no_right_ext_of_G hG S hAB (Finset.mem_filter.mp hmem).2 hprim).elim
+private noncomputable def backSet (hG : 0 < G) (S : Fin G → α) (a b : ℕ) : Finset ℕ := by
+  classical
+  exact Finset.Icc 0 G |>.filter (backAgree hG S a b)
 
-/-- **The maximal left extension exists, is shorter than a full turn, and is
-not extendable by one symbol.**  The last clause is the left half of the
-maximality of the resulting `Genome.IsRepeat`. -/
-theorem exists_maxLeft {G : ℕ} (hG : 0 < G) (S : Fin G → α) {A B : ℕ}
-    (hAB : A % G ≠ B % G) (hprim : IsPrimitive hG S) :
-    ∃ ℓ : ℕ, ℓ < G ∧ LeftAgree hG S A B ℓ ∧ ¬ LeftAgree hG S A B (ℓ + 1) := by
-  have hne := leftExt_nonempty hG S A B
-  have hmax : (leftExt hG S A B).max' hne ∈ leftExt hG S A B := Finset.max'_mem _ _
-  have hmax_lt : (leftExt hG S A B).max' hne < G :=
-    Finset.mem_range.mp (Finset.mem_filter.mp hmax).1
-  have hmax_bound : ∀ k ∈ leftExt hG S A B, k ≤ (leftExt hG S A B).max' hne :=
-    fun k hk => Finset.le_max' _ _ hk
-  have hLag : LeftAgree hG S A B ((leftExt hG S A B).max' hne) :=
-    (Finset.mem_filter.mp hmax).2
-  refine ⟨(leftExt hG S A B).max' hne, hmax_lt, hLag, ?_⟩
-  intro hc
-  by_cases hlt : (leftExt hG S A B).max' hne + 1 < G
-  · have hmem1 : (leftExt hG S A B).max' hne + 1 ∈ leftExt hG S A B := by
-      refine Finset.mem_filter.mpr ⟨Finset.mem_range.mpr hlt, hc⟩
-    have h1 := hmax_bound ((leftExt hG S A B).max' hne + 1) hmem1
-    omega
-  · -- `ℓ + 1 = G`: a left extension of a full turn, ruled out by primitivity
-    have he : (leftExt hG S A B).max' hne + 1 = G := by omega
-    have h1 : LeftAgree hG S A B G := Eq.mp (congrArg (fun k : ℕ => LeftAgree hG S A B k) he) hc
-    exact (no_left_ext_of_G hG S hAB h1 hprim).elim
+/-- The maximal backward extension of the pair of starts `a, b`: the largest
+`t ≤ G` for which the two starts agree on the `t` positions immediately before
+`a`.  The set is never empty (`t = 0` is vacuous). -/
+noncomputable def pairBack (hG : 0 < G) (S : Fin G → α) (a b : ℕ) : ℕ := by
+  classical
+  exact (backSet hG S a b).max'
+    ⟨0, Finset.mem_filter.mpr ⟨Finset.mem_Icc.mpr ⟨Nat.zero_le _, Nat.zero_le _⟩,
+      fun _ hu => absurd hu (by omega)⟩⟩
 
-/-- **The maximal right extension exists, is shorter than a full turn, and is
-not extendable by one symbol.**  The last clause is the right half of the
-maximality of the resulting `Genome.IsRepeat`. -/
-theorem exists_maxRight {G : ℕ} (hG : 0 < G) (S : Fin G → α) {A B n : ℕ}
-    (hAB : (A + n) % G ≠ (B + n) % G) (hprim : IsPrimitive hG S) :
-    ∃ r : ℕ, r < G ∧ RightAgree hG S A B n r ∧ ¬ RightAgree hG S A B n (r + 1) := by
-  have hne := rightExt_nonempty hG S A B n
-  have hmax : (rightExt hG S A B n).max' hne ∈ rightExt hG S A B n := Finset.max'_mem _ _
-  have hmax_lt : (rightExt hG S A B n).max' hne < G :=
-    Finset.mem_range.mp (Finset.mem_filter.mp hmax).1
-  have hmax_bound : ∀ k ∈ rightExt hG S A B n, k ≤ (rightExt hG S A B n).max' hne :=
-    fun k hk => Finset.le_max' _ _ hk
-  have hRag : RightAgree hG S A B n ((rightExt hG S A B n).max' hne) :=
-    (Finset.mem_filter.mp hmax).2
-  refine ⟨(rightExt hG S A B n).max' hne, hmax_lt, hRag, ?_⟩
-  intro hc
-  by_cases hlt : (rightExt hG S A B n).max' hne + 1 < G
-  · have hmem1 : (rightExt hG S A B n).max' hne + 1 ∈ rightExt hG S A B n := by
-      refine Finset.mem_filter.mpr ⟨Finset.mem_range.mpr hlt, hc⟩
-    have h1 := hmax_bound ((rightExt hG S A B n).max' hne + 1) hmem1
-    omega
-  · -- `r + 1 = G`: a right extension of a full turn, ruled out by primitivity
-    have he : (rightExt hG S A B n).max' hne + 1 = G := by omega
-    have h1 : RightAgree hG S A B n G :=
-      Eq.mp (congrArg (fun k : ℕ => RightAgree hG S A B n k) he) hc
-    exact (no_right_ext_of_G hG S hAB h1 hprim).elim
+/-- The maximal backward extension agrees, and is at most `G`. -/
+theorem pairBack_spec (hG : 0 < G) (S : Fin G → α) (a b : ℕ) :
+    backAgree hG S a b (pairBack hG S a b) ∧ pairBack hG S a b ≤ G := by
+  classical
+  have hmem : pairBack hG S a b ∈ backSet hG S a b := by
+    unfold pairBack
+    exact Finset.max'_mem _ _
+  have h := Finset.mem_filter.mp hmem
+  exact ⟨h.2, (Finset.mem_Icc.mp h.1).2⟩
 
-/-! ## 4. The bridge lemma -/
+/-- Maximality of `pairBack`. -/
+theorem pairBack_ge (hG : 0 < G) (S : Fin G → α) (a b t : ℕ) (ht : t ≤ G)
+    (h : backAgree hG S a b t) : t ≤ pairBack hG S a b := by
+  classical
+  have hmem : t ∈ backSet hG S a b := by
+    unfold backSet
+    exact Finset.mem_filter.mpr ⟨Finset.mem_Icc.mpr ⟨Nat.zero_le _, ht⟩, h⟩
+  exact Finset.le_max' _ _ hmem
 
-/-- **The maximal-extension bridge (step 2 of #89).**  A *raw* repeated
-`(L-1)`-mer occurrence of a primitive truth --- two distinct starts spelling
-the same `(L-1)`-mer, i.e. a branch occurrence of the condensation --- lies
-inside a **maximal** repeat of the truth of length `e` with
-`L - 1 ≤ e < G`.
+/-- **The backward extension is maximal: one more position breaks the
+agreement.**  The blocks `[a + G - t, a + G)` are nested in `t`, so the only
+position the `β`-block does not cover is `a + G - β - 1`. -/
+theorem pairBack_succ (hG : 0 < G) (S : Fin G → α) (a b : ℕ)
+    (hβ : pairBack hG S a b < G) :
+    cyc hG S (a + G - pairBack hG S a b - 1)
+      ≠ cyc hG S (b + G - pairBack hG S a b - 1) := by
+  classical
+  intro hcon
+  have hβ1 : pairBack hG S a b + 1 ≤ G := by omega
+  have hnew : backAgree hG S a b (pairBack hG S a b + 1) := by
+    intro u hu
+    by_cases hu0 : u = 0
+    · subst hu0
+      have harg : a + G - (pairBack hG S a b + 1) + 0
+          = a + G - pairBack hG S a b - 1 := by omega
+      rw [harg]
+      exact hcon
+    · obtain ⟨v, rfl⟩ := Nat.exists_eq_succ_of_ne_zero hu0
+      have hv : v < pairBack hG S a b := by omega
+      have hag := (pairBack_spec hG S a b).1 v hv
+      have harg : a + G - (pairBack hG S a b + 1) + (v + 1)
+          = a + G - pairBack hG S a b + v := by omega
+      have harg2 : b + G - (pairBack hG S a b + 1) + (v + 1)
+          = b + G - pairBack hG S a b + v := by omega
+      rw [harg, harg2]
+      exact hag
+  exact absurd (pairBack_ge hG S a b _ hβ1 hnew) (by omega)
 
-The two starts of that maximal repeat are the two occurrences shifted left by
-the *same* amount, which is what makes the resulting `Genome.IsRepeat` well
-formed.  The amount is `ℓ`, the maximal left extension of §3, and
-`e = ℓ + (L-1) + r` with `r` the maximal right extension.  `e < G` is the
-step in which primitivity is used. -/
-theorem maximal_extension_of_repeated {G : ℕ} (hG : 0 < G) {L : ℕ} (hL : 2 ≤ L)
-    (S : Fin G → α) {a b : Fin G} (hne : a ≠ b) (hvtx : vtx hG L S a = vtx hG L S b)
-    (hprim : IsPrimitive hG S) :
-    ∃ (e : ℕ) (a' b' : Fin G),
-      L - 1 ≤ e ∧ e < G ∧ a' ≠ b' ∧ (mkGenome hG S).IsRepeat e a' b' := by
-  have hnpos : 1 ≤ L - 1 := by omega
-  have hAB : a.val % G ≠ b.val % G := by
-    intro h
-    exact hne (Fin.ext ((Nat.mod_eq_of_lt a.isLt).symm.trans
-      (h.trans (Nat.mod_eq_of_lt b.isLt))))
-  -- the seed: the two occurrences spell the same `(L-1)`-mer
-  have hag : ∀ d : ℕ, d < L - 1 → cyc hG S (a.val + d) = cyc hG S (b.val + d) := by
+/-- The two starts `a, b` agree on the `t` positions `[a, a + t)`. -/
+private def fwdAgree (hG : 0 < G) (S : Fin G → α) (a b t : ℕ) : Prop :=
+  ∀ u : ℕ, u < t → cyc hG S (a + u) = cyc hG S (b + u)
+
+private noncomputable def fwdSet (hG : 0 < G) (S : Fin G → α) (a b : ℕ) : Finset ℕ := by
+  classical
+  exact Finset.Icc 0 G |>.filter (fwdAgree hG S a b)
+
+/-- The maximal forward extension of the pair of starts `a, b`. -/
+noncomputable def pairFwd (hG : 0 < G) (S : Fin G → α) (a b : ℕ) : ℕ := by
+  classical
+  exact (fwdSet hG S a b).max'
+    ⟨0, Finset.mem_filter.mpr ⟨Finset.mem_Icc.mpr ⟨Nat.zero_le _, Nat.zero_le _⟩,
+      fun _ hu => absurd hu (by omega)⟩⟩
+
+theorem pairFwd_spec (hG : 0 < G) (S : Fin G → α) (a b : ℕ) :
+    fwdAgree hG S a b (pairFwd hG S a b) ∧ pairFwd hG S a b ≤ G := by
+  classical
+  have hmem : pairFwd hG S a b ∈ fwdSet hG S a b := by
+    unfold pairFwd
+    exact Finset.max'_mem _ _
+  have h := Finset.mem_filter.mp hmem
+  exact ⟨h.2, (Finset.mem_Icc.mp h.1).2⟩
+
+theorem pairFwd_ge (hG : 0 < G) (S : Fin G → α) (a b t : ℕ) (ht : t ≤ G)
+    (h : fwdAgree hG S a b t) : t ≤ pairFwd hG S a b := by
+  classical
+  have hmem : t ∈ fwdSet hG S a b := by
+    unfold fwdSet
+    exact Finset.mem_filter.mpr ⟨Finset.mem_Icc.mpr ⟨Nat.zero_le _, ht⟩, h⟩
+  exact Finset.le_max' _ _ hmem
+
+theorem pairFwd_succ (hG : 0 < G) (S : Fin G → α) (a b : ℕ)
+    (hγ : pairFwd hG S a b < G) :
+    cyc hG S (a + pairFwd hG S a b) ≠ cyc hG S (b + pairFwd hG S a b) := by
+  classical
+  intro hcon
+  have hγ1 : pairFwd hG S a b + 1 ≤ G := by omega
+  have hnew : fwdAgree hG S a b (pairFwd hG S a b + 1) := by
+    intro u hu
+    by_cases hu0 : u = pairFwd hG S a b
+    · subst hu0
+      exact hcon
+    · have hu' : u < pairFwd hG S a b := by omega
+      exact (pairFwd_spec hG S a b).1 u hu'
+  exact absurd (pairFwd_ge hG S a b _ hγ1 hnew) (by omega)
+
+/-- Two distinct residues cannot agree on `G` consecutive positions on a
+primitive circle. -/
+private theorem not_agree_G (hG : 0 < G) (S : Fin G → α)
+    (hprim : RepeatAdapter.IsPrimitive hG S) {x y : ℕ} (hne : x % G ≠ y % G)
+    (hag : ∀ d : ℕ, d < G → cyc hG S (x + d) = cyc hG S (y + d)) : False :=
+  (RepeatAdapter.not_primitive_of_ge_G_agree hG S x y G hne (le_refl _) hag) hprim
+
+/-- **On a primitive circle the backward extension stays below `G`.** -/
+theorem pairBack_lt_G (hG : 0 < G) (S : Fin G → α)
+    (hprim : RepeatAdapter.IsPrimitive hG S) {a b : Fin G} (hab : a ≠ b) :
+    pairBack hG S a.val b.val < G := by
+  have hne : a.val % G ≠ b.val % G := by
+    intro hcon
+    exact hab (Fin.ext (by
+      rw [Nat.mod_eq_of_lt a.isLt] at hcon
+      rw [Nat.mod_eq_of_lt b.isLt] at hcon
+      exact hcon))
+  by_contra hnot
+  have hβle := (pairBack_spec hG S a.val b.val).2
+  have hβeq : pairBack hG S a.val b.val = G := by omega
+  have hag : ∀ d : ℕ, d < G → cyc hG S (a.val + d) = cyc hG S (b.val + d) := by
     intro d hd
-    have hv := congrFun hvtx (⟨d, hd⟩ : Fin (L - 1))
-    simpa only [vtx, nodeWindow, cyc] using hv
-  obtain ⟨ℓ, hℓG, hLag, hLag'⟩ := exists_maxLeft hG S hAB hprim
-  have hABn : (a.val + (L - 1)) % G ≠ (b.val + (L - 1)) % G := by
-    intro h
-    exact hAB (mod_add_cancel_right h)
-  obtain ⟨r, hrG, hRag, hRag'⟩ := exists_maxRight hG S hABn hprim
-  -- the extended starts are the two occurrences shifted left by `ℓ`
-  have hA'lt : (a.val + G - ℓ) % G < G := Nat.mod_lt _ hG
-  have hB'lt : (b.val + G - ℓ) % G < G := Nat.mod_lt _ hG
-  have hAl : ((a.val + G - ℓ) % G + ℓ) % G = a.val % G := by
-    rw [Nat.add_mod_eq_add_mod_right ℓ (Nat.mod_mod (a.val + G - ℓ) G),
-      show a.val + G - ℓ + ℓ = a.val + G from by omega, add_G_mod']
-  have hBl : ((b.val + G - ℓ) % G + ℓ) % G = b.val % G := by
-    rw [Nat.add_mod_eq_add_mod_right ℓ (Nat.mod_mod (b.val + G - ℓ) G),
-      show b.val + G - ℓ + ℓ = b.val + G from by omega, add_G_mod']
-  have hA'B'mod : (a.val + G - ℓ) % G ≠ (b.val + G - ℓ) % G := by
-    intro h
-    have h1 : ((a.val + G - ℓ) % G + ℓ) % G = ((b.val + G - ℓ) % G + ℓ) % G :=
-      congrArg (fun t : ℕ => (t + ℓ) % G) h
-    exact hAB (hAl.symm.trans (h1.trans hBl))
-  -- the combined copies agree on `e = ℓ + (L - 1) + r` consecutive positions
-  have hag' : ∀ d : ℕ, d < ℓ + (L - 1) + r →
-      cyc hG S ((a.val + G - ℓ) % G + d) = cyc hG S ((b.val + G - ℓ) % G + d) := by
+    have hd' : d < pairBack hG S a.val b.val := by omega
+    have h := (pairBack_spec hG S a.val b.val).1 d hd'
+    rw [hβeq] at h
+    rwa [show a.val + G - G + d = a.val + d from by omega,
+      show b.val + G - G + d = b.val + d from by omega] at h
+  exact not_agree_G hG S hprim hne hag
+
+/-- **On a primitive circle the forward extension stays below `G`.** -/
+theorem pairFwd_of_pairBack_lt_G (hG : 0 < G) (S : Fin G → α)
+    (hprim : RepeatAdapter.IsPrimitive hG S) {a b : Fin G} (hab : a ≠ b) :
+    pairFwd hG S (a.val + G - pairBack hG S a.val b.val)
+        (b.val + G - pairBack hG S a.val b.val) < G := by
+  have hβle := (pairBack_spec hG S a.val b.val).2
+  have hab' : a.val % G ≠ b.val % G := by
+    intro hcon
+    have h1 : a.val = b.val := by
+      rw [Nat.mod_eq_of_lt a.isLt, Nat.mod_eq_of_lt b.isLt] at hcon
+      exact hcon
+    exact hab (Fin.ext h1)
+  have hne : (a.val + G - pairBack hG S a.val b.val) % G
+      ≠ (b.val + G - pairBack hG S a.val b.val) % G :=
+    sub_ne_mod hG a.val b.val (pairBack hG S a.val b.val) hβle hab'
+  by_contra hnot
+  have hγle := (pairFwd_spec hG S (a.val + G - pairBack hG S a.val b.val)
+      (b.val + G - pairBack hG S a.val b.val)).2
+  have hag : ∀ d : ℕ, d < G →
+      cyc hG S (a.val + G - pairBack hG S a.val b.val + d)
+        = cyc hG S (b.val + G - pairBack hG S a.val b.val + d) := by
     intro d hd
-    have hdA : ((a.val + G - ℓ) % G + d) % G = (a.val + G - ℓ + d) % G :=
-      Nat.add_mod_eq_add_mod_right d (Nat.mod_mod (a.val + G - ℓ) G)
-    have hdB : ((b.val + G - ℓ) % G + d) % G = (b.val + G - ℓ + d) % G :=
-      Nat.add_mod_eq_add_mod_right d (Nat.mod_mod (b.val + G - ℓ) G)
-    rw [cyc_congr' hG S hdA, cyc_congr' hG S hdB]
-    by_cases hd1 : d < ℓ
-    · -- inside the maximal left extension
-      have hd' : ℓ - 1 - d < ℓ := by omega
-      have h := hLag (ℓ - 1 - d) hd'
-      calc cyc hG S (a.val + G - ℓ + d)
-          = cyc hG S (a.val + G - 1 - (ℓ - 1 - d)) := by rw [show
-              a.val + G - ℓ + d = a.val + G - 1 - (ℓ - 1 - d) from by omega]
-        _ = cyc hG S (b.val + G - 1 - (ℓ - 1 - d)) := h
-        _ = cyc hG S (b.val + G - ℓ + d) := by rw [show
-              b.val + G - 1 - (ℓ - 1 - d) = b.val + G - ℓ + d from by omega]
-    · by_cases hd2 : d < ℓ + (L - 1)
-      · -- inside the seed
-        have hd' : d - ℓ < L - 1 := by omega
-        calc cyc hG S (a.val + G - ℓ + d)
-            = cyc hG S ((a.val + (d - ℓ)) + G) := by rw [show
-                a.val + G - ℓ + d = (a.val + (d - ℓ)) + G from by omega]
-          _ = cyc hG S (a.val + (d - ℓ)) := cyc_congr' hG S (add_G_mod' _)
-          _ = cyc hG S (b.val + (d - ℓ)) := hag _ hd'
-          _ = cyc hG S (b.val + G - ℓ + d) := by rw [show
-                b.val + G - ℓ + d = (b.val + (d - ℓ)) + G from by omega,
-              ← cyc_congr' hG S (add_G_mod' _)]
-      · -- inside the maximal right extension
-        have hd' : d - (ℓ + (L - 1)) < r := by omega
-        calc cyc hG S (a.val + G - ℓ + d)
-            = cyc hG S ((a.val + (L - 1) + (d - (ℓ + (L - 1)))) + G) := by rw [show
-                a.val + G - ℓ + d = (a.val + (L - 1) + (d - (ℓ + (L - 1)))) + G
-                  from by omega]
-          _ = cyc hG S (a.val + (L - 1) + (d - (ℓ + (L - 1)))) :=
-            cyc_congr' hG S (add_G_mod' _)
-          _ = cyc hG S (b.val + (L - 1) + (d - (ℓ + (L - 1)))) := hRag _ hd'
-          _ = cyc hG S (b.val + G - ℓ + d) := by rw [show
-                b.val + G - ℓ + d = (b.val + (L - 1) + (d - (ℓ + (L - 1)))) + G
-                  from by omega,
-              ← cyc_congr' hG S (add_G_mod' _)]
-  -- **primitivity bounds the combined extension**
-  have heG : ℓ + (L - 1) + r < G := by
-    by_contra hcon
-    have heG' : G ≤ ℓ + (L - 1) + r := by omega
-    exact not_primitive_of_ge_G_agree hG S ((a.val + G - ℓ) % G) ((b.val + G - ℓ) % G)
-      (ℓ + (L - 1) + r) (by simpa only [Nat.mod_mod] using hA'B'mod) heG' hag' hprim
-  have hA'B'Fin : (⟨(a.val + G - ℓ) % G, hA'lt⟩ : Fin G) ≠ ⟨(b.val + G - ℓ) % G, hB'lt⟩ := by
-    intro h
-    have h1 := congrArg Fin.val h
-    exact hA'B'mod h1
-  refine ⟨ℓ + (L - 1) + r, ⟨(a.val + G - ℓ) % G, hA'lt⟩, ⟨(b.val + G - ℓ) % G, hB'lt⟩,
-    by omega, heG, hA'B'Fin, ?_⟩
-  refine ⟨?_, heG, ?_, ?_, ?_⟩
-  · have h1 : 1 ≤ ℓ + (L - 1) + r := by omega
-    exact h1
-  · exact hA'B'Fin
-  · -- `Agree e a' b'`
-    intro d
-    have hd' : d.val < ℓ + (L - 1) + r := d.isLt
-    have h := hag' d.val hd'
-    show cyc hG S ((a.val + G - ℓ) % G + d.val) = cyc hG S ((b.val + G - ℓ) % G + d.val)
-    exact h
-  · refine ⟨?_, ?_⟩
-    · -- `Preceding a' ≠ Preceding b'`: maximality of the left extension
-      have hneP : cyc hG S (a.val + G - 1 - ℓ) ≠ cyc hG S (b.val + G - 1 - ℓ) :=
-        LeftAgree_not_succ hLag hLag'
-      intro hc
-      apply hneP
-      have h3' : cyc hG S ((a.val + G - ℓ) % G + G - 1)
-          = cyc hG S ((b.val + G - ℓ) % G + G - 1) := by
-        show Genome.cycl (mkGenome hG S) ((a.val + G - ℓ) % G + G - 1)
-          = Genome.cycl (mkGenome hG S) ((b.val + G - ℓ) % G + G - 1)
-        exact hc
-      have h1 : cyc hG S ((a.val + G - ℓ) % G + G - 1)
-          = cyc hG S (a.val + G - 1 - ℓ) := by
-        refine cyc_congr' hG S ?_
-        have h2 := Nat.add_mod_eq_add_mod_right (G - 1) (Nat.mod_mod (a.val + G - ℓ) G)
-        rw [show (a.val + G - ℓ) % G + (G - 1) = (a.val + G - ℓ) % G + G - 1 from by omega,
-          show a.val + G - ℓ + (G - 1) = (a.val + G - 1 - ℓ) + G from by omega,
-          add_G_mod'] at h2
-        exact h2
-      have h2' : cyc hG S ((b.val + G - ℓ) % G + G - 1)
-          = cyc hG S (b.val + G - 1 - ℓ) := by
-        refine cyc_congr' hG S ?_
-        have h2 := Nat.add_mod_eq_add_mod_right (G - 1) (Nat.mod_mod (b.val + G - ℓ) G)
-        rw [show (b.val + G - ℓ) % G + (G - 1) = (b.val + G - ℓ) % G + G - 1 from by omega,
-          show b.val + G - ℓ + (G - 1) = (b.val + G - 1 - ℓ) + G from by omega,
-          add_G_mod'] at h2
-        exact h2
-      exact h1.symm.trans (h3'.trans h2')
-    · -- `Following e a' ≠ Following e b'`: maximality of the right extension
-      have hneF : cyc hG S (a.val + (L - 1) + r) ≠ cyc hG S (b.val + (L - 1) + r) :=
-        RightAgree_not_succ hRag hRag'
-      intro hc
-      apply hneF
-      have h3' : cyc hG S ((a.val + G - ℓ) % G + (ℓ + (L - 1) + r))
-          = cyc hG S ((b.val + G - ℓ) % G + (ℓ + (L - 1) + r)) := by
-        show Genome.cycl (mkGenome hG S) ((a.val + G - ℓ) % G + (ℓ + (L - 1) + r))
-          = Genome.cycl (mkGenome hG S) ((b.val + G - ℓ) % G + (ℓ + (L - 1) + r))
-        exact hc
-      have h1 : cyc hG S ((a.val + G - ℓ) % G + (ℓ + (L - 1) + r))
-          = cyc hG S (a.val + (L - 1) + r) := by
-        refine cyc_congr' hG S ?_
-        have h2 := Nat.add_mod_eq_add_mod_right (ℓ + (L - 1) + r)
-          (Nat.mod_mod (a.val + G - ℓ) G)
-        rw [show a.val + G - ℓ + (ℓ + (L - 1) + r) = (a.val + (L - 1) + r) + G
-          from by omega, add_G_mod'] at h2
-        exact h2
-      have h2' : cyc hG S ((b.val + G - ℓ) % G + (ℓ + (L - 1) + r))
-          = cyc hG S (b.val + (L - 1) + r) := by
-        refine cyc_congr' hG S ?_
-        have h2 := Nat.add_mod_eq_add_mod_right (ℓ + (L - 1) + r)
-          (Nat.mod_mod (b.val + G - ℓ) G)
-        rw [show b.val + G - ℓ + (ℓ + (L - 1) + r) = (b.val + (L - 1) + r) + G
-          from by omega, add_G_mod'] at h2
-        exact h2
-      exact h1.symm.trans (h3'.trans h2')
+    have hd' : d < pairFwd hG S (a.val + G - pairBack hG S a.val b.val)
+        (b.val + G - pairBack hG S a.val b.val) := by omega
+    exact (pairFwd_spec hG S (a.val + G - pairBack hG S a.val b.val)
+      (b.val + G - pairBack hG S a.val b.val)).1 d hd'
+  exact not_agree_G hG S hprim hne hag
 
-/-- **A raw repeated `(L-1)`-mer is a branch object**, i.e. the hypothesis of
-the bridge really is a branch occurrence of the condensation and nothing
-weaker.  This is why the bridge needs no separate `Branch` hypothesis: the
-seed already has multiplicity `≥ 2`. -/
-theorem Branch_of_vtx_eq_ne {G : ℕ} (hG : 0 < G) {L : ℕ} (S : Fin G → α)
-    {a b : Fin G} (hne : a ≠ b) (hvtx : vtx hG L S a = vtx hG L S b) :
-    Branch hG L S (vtx hG L S a) := by
-  have ha : a ∈ fibre hG L S (vtx hG L S a) :=
-    (mem_fibre hG L S (v := vtx hG L S a) (r := a)).mpr rfl
-  have hb : b ∈ fibre hG L S (vtx hG L S a) := by
-    rw [hvtx]
-    exact (mem_fibre hG L S (v := vtx hG L S b) (r := b)).mpr rfl
-  have hcard : 2 ≤ (fibre hG L S (vtx hG L S a)).card := by
-    have h2 : ({a, b} : Finset (Fin G)).card = 2 := by
-      rw [Finset.card_insert_of_notMem (by
-        intro hmem
-        exact hne (Finset.mem_singleton.mp hmem))]
-      simp
-    calc 2 = ({a, b} : Finset (Fin G)).card := h2.symm
-      _ ≤ (fibre hG L S (vtx hG L S a)).card := by
-          apply Finset.card_le_card
-          refine Finset.insert_subset ha ?_
-          intro b' hb'
-          rw [Finset.mem_singleton.mp hb']
-          exact hb
-  unfold Branch
-  rw [← card_fibre hG L S (vtx hG L S a)]
-  exact hcard
+/-- `IsRepeat` along a pair of equalities of starts. -/
+private theorem isRepeat_congr (hG : 0 < G) (S : Fin G → α) (e : ℕ) {a a' b b' : Fin G}
+    (ha : a = a') (hb : b = b') (h : (mkGenome hG S).IsRepeat e a' b') :
+    (mkGenome hG S).IsRepeat e a b := by
+  subst ha
+  subst hb
+  exact h
 
-/-! ## 5. The bridge in obstruction form
+/-- The backward extension does not depend on the order of the two starts. -/
+theorem pairBack_comm (hG : 0 < G) (S : Fin G → α) (a b : ℕ) :
+    pairBack hG S b a = pairBack hG S a b := by
+  classical
+  refine le_antisymm
+    (pairBack_ge hG S a b (pairBack hG S b a) (pairBack_spec hG S b a).2 ?_)
+    (pairBack_ge hG S b a (pairBack hG S a b) (pairBack_spec hG S a b).2 ?_)
+  · intro u hu
+    exact ((pairBack_spec hG S b a).1 u hu).symm
+  · intro u hu
+    exact ((pairBack_spec hG S a b).1 u hu).symm
 
-The bridge, packaged with the fact that the seed is a branch object of the
-condensed `(L-1)`-mer graph, and with the residue condition of the seed made
-explicit.  This is the form a step-3 proof would consume: two distinct branch
-occurrences of a repeated `(L-1)`-mer of a primitive truth give a maximal
-repeat of length `≥ L - 1`. -/
+/-- **The starts of the maximal extension**: both agreeing starts shifted back
+by the maximal backward extension. -/
+noncomputable def maxPairStart (hG : 0 < G) (S : Fin G → α) (a b : Fin G) : Fin G :=
+  ⟨(a.val + G - pairBack hG S a.val b.val) % G, Nat.mod_lt _ hG⟩
 
-theorem repeated_occurrence_gives_long_maximal_repeat {G : ℕ} (hG : 0 < G) {L : ℕ}
-    (hL : 2 ≤ L) (S : Fin G → α) {a b : Fin G} (hne : a ≠ b)
-    (hvtx : vtx hG L S a = vtx hG L S b) (hprim : IsPrimitive hG S) :
-    (Branch hG L S (vtx hG L S a)) ∧
-      (∃ (e : ℕ) (a' b' : Fin G), L - 1 ≤ e ∧ e < G ∧ a' ≠ b' ∧
-        (mkGenome hG S).IsRepeat e a' b') :=
-  ⟨Branch_of_vtx_eq_ne hG S hne hvtx,
-   maximal_extension_of_repeated hG hL S hne hvtx hprim⟩
+/-- **The length of the maximal extension**: the maximal forward extension of
+the shifted pair.  It is `≥` the length of the initial agreement, because the
+shifted pair already agrees on the `pairBack` positions covered by the backward
+extension. -/
+noncomputable def maxPairLen (hG : 0 < G) (S : Fin G → α) (a b : Fin G) : ℕ :=
+  pairFwd hG S (a.val + G - pairBack hG S a.val b.val)
+    (b.val + G - pairBack hG S a.val b.val)
 
-/-! ## 6. Scope: the residual gap, stated precisely
+/-- **(R1, `n = 2`), the corrected form.**  Two distinct starts of a *primitive*
+circular word that carry a common `ℓ`-window extend to a **maximal repeat** —
+`SourceFaithfulIs.Genome.IsRepeat` — of some length `e` with `ℓ ≤ e < G`.  The
+maximal repeat sits at the *shifted* starts `maxPairStart hG S a b`,
+`maxPairStart hG S b a`; it is not in general at `a, b` themselves, and
+`counterexample_R1_same_stats` (§7) exhibits the smallest failure of the
+"same starts" version. -/
+theorem maxPair_isRepeat (hG : 0 < G) (S : Fin G → α)
+    (hprim : RepeatAdapter.IsPrimitive hG S) {a b : Fin G} (hab : a ≠ b) {ℓ : ℕ}
+    (h1 : 1 ≤ ℓ) (hℓG : ℓ ≤ G)
+    (hag : ∀ d : Fin ℓ, cyc hG S (a.val + d.val) = cyc hG S (b.val + d.val)) :
+    (mkGenome hG S).IsRepeat (maxPairLen hG S a b) (maxPairStart hG S a b)
+        (maxPairStart hG S b a) ∧ ℓ ≤ maxPairLen hG S a b := by
+  classical
+  set β := pairBack hG S a.val b.val
+  set ap := a.val + G - β
+  set bp := b.val + G - β
+  set γ := pairFwd hG S ap bp
+  have hβle : β ≤ G := (pairBack_spec hG S a.val b.val).2
+  have hβlt : β < G := pairBack_lt_G hG S hprim hab
+  have hγlt : γ < G := pairFwd_of_pairBack_lt_G hG S hprim hab
+  have hspec := pairFwd_spec hG S ap bp
+  have hγag : ∀ u : ℕ, u < γ → cyc hG S (ap + u) = cyc hG S (bp + u) := hspec.1
+  have hA : maxPairStart hG S a b = ⟨ap % G, Nat.mod_lt _ hG⟩ := by
+    apply Fin.ext
+    show (a.val + G - pairBack hG S a.val b.val) % G = (a.val + G - β) % G
+    rfl
+  have hB : maxPairStart hG S b a = ⟨bp % G, Nat.mod_lt _ hG⟩ := by
+    apply Fin.ext
+    show (b.val + G - pairBack hG S b.val a.val) % G = (b.val + G - β) % G
+    rw [pairBack_comm]
+  have hne : ap % G ≠ bp % G := by
+    have hab' : a.val % G ≠ b.val % G := by
+      intro hcon
+      have h1' : a.val = b.val := by
+        rw [Nat.mod_eq_of_lt a.isLt, Nat.mod_eq_of_lt b.isLt] at hcon
+        exact hcon
+      exact hab (Fin.ext h1')
+    exact sub_ne_mod hG a.val b.val β hβle hab'
+  -- the shifted pair agrees on the initial `ℓ` positions
+  have hagfwd : fwdAgree hG S ap bp ℓ := by
+    intro u hu
+    by_cases huβ : u < β
+    · have h := (pairBack_spec hG S a.val b.val).1 u huβ
+      rwa [show a.val + G - β + u = ap + u from by omega,
+        show b.val + G - β + u = bp + u from by omega] at h
+    · have hule : β ≤ u := Nat.le_of_not_gt huβ
+      have huv : u - β < ℓ := by omega
+      obtain ⟨v, hv⟩ := Nat.exists_eq_add_of_le hule
+      have hvg : v < ℓ := by omega
+      have hagv := hag ⟨v, hvg⟩
+      have hAp : ap + u = a + G + v := by omega
+      have hBp : bp + u = b + G + v := by omega
+      calc cyc hG S (ap + u) = cyc hG S (a + G + v) := by rw [hAp]
+        _ = cyc hG S (a + v) := cyc_plus_G hG S a v
+        _ = cyc hG S (b + v) := hagv
+        _ = cyc hG S (b + G + v) := (cyc_plus_G hG S b v).symm
+        _ = cyc hG S (bp + u) := by rw [hBp]
+  have hγge : ℓ ≤ γ := pairFwd_ge hG S ap bp ℓ hℓG hagfwd
+  have hpre : (mkGenome hG S).Preceding ⟨ap % G, Nat.mod_lt _ hG⟩
+      ≠ (mkGenome hG S).Preceding ⟨bp % G, Nat.mod_lt _ hG⟩ := by
+    calc (mkGenome hG S).Preceding ⟨ap % G, Nat.mod_lt _ hG⟩
+        = cyc hG S (ap + G - 1) :=
+          (gen_preceding_of hG S (ap % G) (Nat.mod_lt _ hG)).trans
+            (cyc_of_start_pred hG S ap)
+      _ = cyc hG S (ap - 1) := by
+          rw [show ap + G - 1 = (ap - 1) + G from by omega]
+          exact cyc_add_G hG S (ap - 1)
+      _ ≠ cyc hG S (bp - 1) := by
+          intro hcon
+          exact pairBack_succ hG S a.val b.val hβlt hcon
+      _ = cyc hG S (bp + G - 1) := by
+          rw [show bp + G - 1 = (bp - 1) + G from by omega]
+          exact (cyc_add_G hG S (bp - 1)).symm
+      _ = (mkGenome hG S).Preceding ⟨bp % G, Nat.mod_lt _ hG⟩ :=
+          by rw [← cyc_of_start_pred hG S bp]
+             exact (gen_preceding_of hG S (bp % G) (Nat.mod_lt _ hG)).symm
+  have hfol : (mkGenome hG S).Following γ ⟨ap % G, Nat.mod_lt _ hG⟩
+      ≠ (mkGenome hG S).Following γ ⟨bp % G, Nat.mod_lt _ hG⟩ := by
+    calc (mkGenome hG S).Following γ ⟨ap % G, Nat.mod_lt _ hG⟩
+        = cyc hG S (ap + γ) :=
+          (gen_following_of hG S (ap % G) γ (Nat.mod_lt _ hG)).trans
+            (cyc_of_start hG S ap γ)
+      _ ≠ cyc hG S (bp + γ) := pairFwd_succ hG S ap bp hγlt
+      _ = (mkGenome hG S).Following γ ⟨bp % G, Nat.mod_lt _ hG⟩ :=
+          by rw [← cyc_of_start hG S bp γ]
+             exact (gen_following_of hG S (bp % G) γ (Nat.mod_lt _ hG)).symm
+  refine ⟨?_, ?_⟩
+  · have hR : (mkGenome hG S).IsRepeat γ ⟨ap % G, Nat.mod_lt _ hG⟩
+        ⟨bp % G, Nat.mod_lt _ hG⟩ := by
+      refine ⟨by omega, ?_, ?_, ?_, hpre, hfol⟩
+      · simpa only [mkGenome, SourceFaithfulIs.Genome.len] using hγlt
+      · intro e
+        exact hne (congrArg Fin.val e)
+      · intro d
+        exact (cyc_of_start hG S ap d.val).trans
+          ((hγag d.val d.isLt).trans (cyc_of_start hG S bp d.val).symm)
+    exact isRepeat_congr (hG := hG) (S := S) (e := γ)
+      (a := maxPairStart hG S a b) (a' := ⟨ap % G, Nat.mod_lt _ hG⟩)
+      (b := maxPairStart hG S b a) (b' := ⟨bp % G, Nat.mod_lt _ hG⟩)
+      hA hB hR
+  · show ℓ ≤ γ
+    exact hγge
 
-**Proved here (step 2 of `docs/bbt-eulerian-cycle-89.md` §6).**  A raw
-repeated `(L-1)`-mer occurrence of a primitive truth extends to a maximal
-repeat of length `≥ L - 1`, with the `e < G` bound contributed by
-`not_primitive_of_ge_G_agree`.  Primitivity is used in exactly two places,
-both listed in the file header, and both only to keep an extension below a
-full turn.
+/-! ## 6. (R2b): the corrected non-crossing consequence of `P2`
 
-**Not proved here (step 3 of the same §6).**  That a genuinely distinct
-Eulerian cycle of the condensed graph supplies *either* a maximal **triple**
-repeat of length `≥ L - 1` *or* two **interleaved** maximal repeats both of
-length `≥ L - 1`.  That is the combinatorial core of `thm:BBT`, it is the
-single remaining input of the exported population theorem, and
-`AssemblyP1.BBTEulerian.EulerianCycleObstruction` is still an explicit
-hypothesis of `AssemblyP1.PopulationUniqueness` rather than a theorem.  The
-bridge above removes one of the three sub-steps listed in §6 of that note; the
-other two (condensation bookkeeping, already available as
-`BBTSequenceGraph.branchStarts_eq_biUnion` and `choices_only_at_branch`, and
-the dichotomy itself) are untouched.
+`NodeCrossing` of `P2SpectrumUniqueness` (the occurrence pairs of double
+`(L-1)`-mers do not interleave) is **false** for `P2` truths; §7 exhibits the
+smallest counterexample.  The true consequence of clause 2 of `P2` is about the
+*maximal extensions* of those pairs: each pair extends to a maximal repeat of
+length `≥ L - 1 > L - 2` (§5), and two interleaved maximal repeats are
+forbidden by clause 2. -/
 
-**Not done deliberately.**  `EulerianCycleObstruction` is *not* restated here
-with a primitivity hypothesis, even though the extension bound of step 2 needs
-one: `docs/bbt-eulerian-cycle-89.md` §6 offers "thread primitivity into
-`BBTCompleteSpectrumUniqueness`" as one of two routes, and taking it would
-change the statement of an exported input rather than prove it.  The other
-route, an extension bound proved from the assumptions already present, is
-blocked because `EulerianCycleObstruction` is stated for arbitrary `Ukkonen`
-words, and a non-primitive `Ukkonen` word has no maximal repeat of any
-length `≥ L - 1` to conclude from (§5 of
-`docs/audit-p2-direct-proof-maximal-extension-2026-09-21.md` records the
-related obstruction).  The honest statement is therefore the one proved: the
-bridge holds for a primitive truth.  Resolving this discrepancy is part of
-step 3, not of step 2.
--/
+/-- Two starts carrying the same `(L-1)`-mer agree on it. -/
+theorem agree_of_nodeWindow_eq (hG : 0 < G) (S : Fin G → α) {a b : Fin G}
+    (h : nodeWindow (L := L) hG S a = nodeWindow (L := L) hG S b) :
+    ∀ d : Fin (L - 1), cyc hG S (a.val + d.val) = cyc hG S (b.val + d.val) :=
+  fun d => congrFun h d
+
+/-- **The corrected second residual (R2b).**  Two pairs of distinct starts, each
+pair carrying a common `(L-1)`-mer, that interleave, have *non-interleaving*
+maximal extensions.  This replaces `NodeCrossing`, which is not a consequence
+of `P2`; see `cex_not_NodeCrossing` in §7.
+
+**What this says, exactly.**  For any two pairs of starts `(a, b)` and
+`(c, d)`, with `a ≠ b`, `c ≠ d`, with `a, b` carrying the same `(L-1)`-mer and
+`c, d` carrying the same `(L-1)`-mer: if the four starts interleave, then the
+four *extended* starts
+`maxPairStart hG S a b`, `maxPairStart hG S b a`,
+`maxPairStart hG S c d`, `maxPairStart hG S d c` do not interleave, in either
+ordering of the first pair.  It is a statement purely about `S`; it mentions no
+spectrum, no graph and no trail.
+
+**What this does NOT give.**
+
+* It does **not** give `NodeCrossing` (the un-extended pairs); that statement is
+  false, see `cex_not_NodeCrossing`.
+* It does **not** give `UniqueEulerCircuit` for the `(L-1)`-de Bruijn
+  multigraph, and it is not a lemma about Eulerian circuits at all: no
+  `EulerCircuit`, `TrailEquiv`, `specCount` or `RotEquiv` occurs in it.  The
+  missing step is still the multigraph/chord combinatorics (R3): that node
+  multiplicity `≤ 2` (from `P2.imp_nodeCount_le_two`) together with the
+  non-interleaving of the double nodes' *extended* pairs (this definition) forces
+  a single Eulerian circuit of `specCount` up to cyclic shift.  The laminar-chord
+  / flip-set argument that would do it is not in this file and is not attempted
+  here.
+* It does **not** settle `p2_spectrum_unique_up_to_rotation`, which still takes
+  `hUnique : UniqueEulerCircuit …`; combining (R2a) and (R2b) with that lemma is
+  the block-factorization worker's layer, and it must be redone against
+  `ExtCrossing` rather than against `NodeCrossing`. -/
+def ExtCrossing (hG : 0 < G) (L : ℕ) (S : Fin G → α) : Prop :=
+  ∀ (a b c d : Fin G), a ≠ b → c ≠ d →
+    nodeWindow (L := L) hG S a = nodeWindow (L := L) hG S b →
+    nodeWindow (L := L) hG S c = nodeWindow (L := L) hG S d →
+    Interleaved (mkGenome hG S) a b c d →
+    (¬ Interleaved (mkGenome hG S) (maxPairStart hG S a b) (maxPairStart hG S b a)
+        (maxPairStart hG S c d) (maxPairStart hG S d c)) ∧
+      (¬ Interleaved (mkGenome hG S) (maxPairStart hG S b a) (maxPairStart hG S a b)
+        (maxPairStart hG S c d) (maxPairStart hG S d c))
+
+/-- **Clause 2 of `P2` forbids interleaving maximal extensions.**  On a
+primitive `P2` truth, if two pairs of distinct starts each carry a common
+`(L-1)`-mer and the four starts interleave, then the two maximal extensions
+(`maxPair_isRepeat`, each a maximal repeat of length `≥ L - 1 > L - 2`) do
+*not* interleave, in either ordering of the first pair.  This is the
+non-interleaving property the chord worker consumes, and it is exactly what
+`ExtCrossing` states. -/
+theorem P2.imp_ExtCrossing (hG : 0 < G) (hL : 2 ≤ L) (_hLG : L ≤ G) (S : Fin G → α)
+    (hprim : RepeatAdapter.IsPrimitive hG S) (hP2 : P2 hG L S) :
+    ExtCrossing hG L S := by
+  have hℓ1 : 1 ≤ L - 1 := by omega
+  have hℓG : L - 1 ≤ G := by omega
+  intro a b c d hab hcd hab' hcd' hI
+  obtain ⟨hR₁, hℓ1'⟩ :=
+    maxPair_isRepeat hG S hprim hab hℓ1 hℓG (agree_of_nodeWindow_eq hG S hab')
+  obtain ⟨hR₂, hℓ2'⟩ :=
+    maxPair_isRepeat hG S hprim hcd hℓ1 hℓG (agree_of_nodeWindow_eq hG S hcd')
+  have hsw : (mkGenome hG S).IsRepeat (maxPairLen hG S a b)
+      (maxPairStart hG S b a) (maxPairStart hG S a b) :=
+    (Genome.IsRepeat_comm (mkGenome hG S) (maxPairLen hG S a b)
+      (maxPairStart hG S a b) (maxPairStart hG S b a)).mp hR₁
+  refine ⟨?_, ?_⟩
+  · intro hI'
+    have hP := hP2.2 ⟨maxPairLen hG S a b, hR₁.2.1⟩
+      ⟨maxPairLen hG S c d, hR₂.2.1⟩
+      (maxPairStart hG S a b) (maxPairStart hG S b a)
+      (maxPairStart hG S c d) (maxPairStart hG S d c) hR₁ hR₂ hI'
+    simp only [Fin.val_mk] at hP
+    rcases hP with hP | hP <;> omega
+  · intro hI'
+    have hP := hP2.2 ⟨maxPairLen hG S a b, hR₁.2.1⟩
+      ⟨maxPairLen hG S c d, hR₂.2.1⟩
+      (maxPairStart hG S b a) (maxPairStart hG S a b)
+      (maxPairStart hG S c d) (maxPairStart hG S d c) hsw hR₂ hI'
+    simp only [Fin.val_mk] at hP
+    rcases hP with hP | hP <;> omega
+
+/-! ## 6b. The two (R2) consequences for the primitivity of `thm:BBT`
+
+`p2_spectrum_unique_up_to_rotation` carries `PopulationReduction.IsPrimitive`
+as `_hPrimS`.  With `IsPrimitive.shiftPrimitive` the two (R2) consequences are
+therefore available under exactly the hypothesis the paper states. -/
+
+/-- **(R2a) for the primitivity of `thm:BBT`**: every `(L-1)`-mer of a
+non-power `P2` truth is spelled at most twice. -/
+theorem P2.imp_nodeCount_le_two_of_powerPrimitive (hG : 0 < G) (hL : 2 ≤ L)
+    (hLG : L ≤ G) (S : Fin G → α) (hprim : PopulationReduction.IsPrimitive S)
+    (hP2 : P2 hG L S) :
+    ∀ k : Fin (L - 1) → α, nodeCount (L := L) hG S k ≤ 2 :=
+  P2.imp_nodeCount_le_two hG hL hLG S (IsPrimitive.shiftPrimitive hG hprim) hP2
+
+/-- **(R2b) for the primitivity of `thm:BBT`**: the maximal extensions of two
+interleaving double-node pairs do not interleave. -/
+theorem P2.imp_ExtCrossing_of_powerPrimitive (hG : 0 < G) (hL : 2 ≤ L)
+    (hLG : L ≤ G) (S : Fin G → α) (hprim : PopulationReduction.IsPrimitive S)
+    (hP2 : P2 hG L S) : ExtCrossing hG L S :=
+  P2.imp_ExtCrossing hG hL hLG S (IsPrimitive.shiftPrimitive hG hprim) hP2
+
+/-! ## 7. Kernel-checked counterexamples: the "same starts" (R1) and
+`NodeCrossing` (R2b) versions are false
+
+The word is `S = A A B A B` (`G = 5`), read at `L = 3`, so the de Bruijn nodes are
+the `2`-mers.  It is **primitive** (`G = 5` is prime and the word is not
+constant), and it satisfies **actual `P2`** at `L = 3`
+(`cex_is_p2`): the only repeated `2`-mers are `01` (at starts `1, 3`) and `10`
+(at starts `2, 4`), each occurring exactly twice, so there is no maximal triple
+repeat of length `≥ 2` at all; and the two occurrence pairs *do* interleave,
+while neither pair is a maximal repeat (the two copies of `10` are preceded by
+the same symbol), so clause 2 is vacuous.
+
+The three facts below are what force the corrections of §5 and §6. -/
+
+/-- `S = AABAB` on five positions. -/
+def cexWord : Fin 5 → PopulationReduction.Bin :=
+  ![Bin.A, Bin.A, Bin.B, Bin.A, Bin.B]
+
+/-- `AABAB` is primitive: no shift by `0 < s < 5` preserves it.  (Checked
+against the shift-invariance definition, `RepeatAdapter.IsPrimitive`.) -/
+theorem cex_is_shiftPrimitive :
+    RepeatAdapter.IsPrimitive (hG := by norm_num) cexWord := by
+  intro s hs0 hsG
+  have hcases : s = 1 ∨ s = 2 ∨ s = 3 ∨ s = 4 := by omega
+  rcases hcases with rfl | rfl | rfl | rfl
+  · intro hcon
+    exact absurd (hcon 1) (by decide)
+  · intro hcon
+    exact absurd (hcon 0) (by decide)
+  · intro hcon
+    exact absurd (hcon 1) (by decide)
+  · intro hcon
+    exact absurd (hcon 0) (by decide)
+
+/-- Clause 1 of `P2` for `cexWord` at `L = 3`, over the admissible repeat
+lengths `e < 5` (which is all `IsTripleRepeat` allows). -/
+theorem cex_clause1 : ∀ (e : Fin 5) (a b c : Fin 5),
+    (mkGenome (hG := by norm_num) (S := cexWord)).IsTripleRepeat e a b c →
+      e.val < 2 := by
+  unfold mkGenome
+  decide
+
+/-- Clause 2 of `P2` for `cexWord` at `L = 3`, over the admissible repeat
+lengths `e < 5`. -/
+theorem cex_clause2 : ∀ (e₁ e₂ : Fin 5) (a b c d : Fin 5),
+    (mkGenome (hG := by norm_num) (S := cexWord)).IsRepeat e₁ a b →
+    (mkGenome (hG := by norm_num) (S := cexWord)).IsRepeat e₂ c d →
+    Interleaved (mkGenome (hG := by norm_num) (S := cexWord)) a b c d →
+      e₁.val ≤ 1 ∨ e₂.val ≤ 1 := by
+  unfold mkGenome
+  decide
+
+/-- **`cexWord` satisfies the repository's actual `P2` at `L = 3`.** -/
+theorem cex_is_p2 : P2 (hG := by norm_num) (L := 3) (S := cexWord) := by
+  refine ⟨?_, ?_⟩
+  · intro e a b c h
+    exact cex_clause1 e a b c h
+  · intro e₁ e₂ a b c d h₁ h₂ hI
+    have h₁5 : e₁ < (mkGenome (hG := by norm_num) (S := cexWord)).len := h₁.2.1
+    have h₂5 : e₂ < (mkGenome (hG := by norm_num) (S := cexWord)).len := h₂.2.1
+    exact cex_clause2 ⟨e₁, h₁5⟩ ⟨e₂, h₂5⟩ a b c d h₁ h₂ hI
+
+/-- **The crossing configuration the residual (R2) forbade really does occur
+on a `P2` word.**  On `S = AABAB` at `L = 3` the `2`-mer `01` occurs exactly at
+starts `1, 3` and `10` exactly at starts `2, 4`, and those four starts
+interleave.  Since `cex_is_p2` and `cex_is_shiftPrimitive` hold, the
+occurrence-pair non-crossing statement that the residual of
+`docs/issue89-spectrum-uniqueness.md` §3(R2) would need ("`P2` gives
+`NodeCrossing`") is **false**; the corrected statement is `ExtCrossing` (§6),
+about the maximal extensions rather than the pairs themselves. -/
+theorem cex_pairs_cross :
+    Interleaved (mkGenome (hG := by norm_num) (S := cexWord))
+      (1 : Fin 5) (3 : Fin 5) (2 : Fin 5) (4 : Fin 5) := by
+  unfold Interleaved FourDistinct InOpenArc mkGenome
+  decide
+
+/-- ... and the two pairs really do carry common `2`-mers, so this is a
+crossing configuration of two *double* nodes, not a degenerate one. -/
+theorem cex_pair_agrees' : ∀ d : Fin 2,
+    (mkGenome (hG := by norm_num) (S := cexWord)).window 2 (1 : Fin 5) d
+      = (mkGenome (hG := by norm_num) (S := cexWord)).window 2 (3 : Fin 5) d := by
+  unfold mkGenome
+  decide
+
+/-- **(R1) at the *same* starts is false.**  On `S = AABAB` at `L = 3` the
+starts `2, 4` carry the common `2`-mer `10` (see `cex_pair_agrees`), but there
+is **no** `e` with `2 ≤ e < 5` for which the two copies are a maximal repeat:
+they are preceded by the same symbol, so the repeat is never left-maximal at
+these starts.  The maximal extension exists only at the shifted starts, which is
+what `maxPair_isRepeat` proves. -/
+theorem cex_pair_agrees : ∀ d : Fin 2,
+    (mkGenome (hG := by norm_num) (S := cexWord)).window 2 (2 : Fin 5) d
+      = (mkGenome (hG := by norm_num) (S := cexWord)).window 2 (4 : Fin 5) d := by
+  unfold mkGenome
+  decide
+
+theorem cex_not_maximalRepeat_at_same_starts :
+    ∀ e : Fin 4, ¬ (mkGenome (hG := by norm_num) (S := cexWord)).IsRepeat
+      ((e : ℕ) + 2) (2 : Fin 5) (4 : Fin 5) := by
+  have h4 : ∀ k : Fin 4, ¬ (Genome.mk 5 (by norm_num) cexWord).IsRepeat
+      ((k : ℕ) + 2) (2 : Fin 5) (4 : Fin 5) := by
+    intro k
+    fin_cases k <;> decide
+  unfold mkGenome
+  exact h4
 
 end AssemblyP1.P2RepeatResidual
