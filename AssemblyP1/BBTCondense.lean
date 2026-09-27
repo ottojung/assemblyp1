@@ -153,6 +153,7 @@ theorem two_of_card_ge_two {α' : Type} [DecidableEq α'] {s : Finset α'}
     have h2 : s.card ≤ 1 := Finset.card_le_one.mpr (fun a ha b hb => h1 a b ha hb)
     omega
 
+omit [DecidableEq α] in
 /-- Cyclic access ignores whole turns of the circle. -/
 theorem cycl_add_mul (W : Fin G → α) (i n : ℕ) : cyc hG W (i + G * n) = cyc hG W i := by
   simp only [cyc]
@@ -160,6 +161,7 @@ theorem cycl_add_mul (W : Fin G → α) (i n : ℕ) : cyc hG W (i + G * n) = cyc
   apply Fin.ext
   exact Nat.add_mul_mod_self_left i G n
 
+omit [DecidableEq α] in
 /-- **Sliding a window by one position.**  The `j`-th symbol of the
 length-`L` window at `r` is the `(j+1)`-st symbol of the window at
 `nextPos r`; the overlap identity used throughout §3. -/
@@ -395,7 +397,7 @@ theorem card_branchStarts_le_two_mul_branchVerts
         rw [card_fibre]
         exact hcap v
     _ = 2 * (branchVerts hG L S).card := by
-        simp [Finset.sum_const, nsmul_eq_mul, Nat.mul_comm]
+        simp [Finset.sum_const, Nat.mul_comm]
 
 end Condense
 
@@ -459,7 +461,7 @@ variable {α : Type} [DecidableEq α] {G : ℕ} (hG : 0 < G) (L : ℕ) (S E : Fi
 `BBTChords.Matching` `σ` matches the truth's read at `r` with the
 candidate's read at `σ r`; `pullback` is the converse bijection, which sends
 a candidate start to the truth start carrying the same read. -/
-noncomputable def pullback (hG : 0 < G) (L : ℕ) (S E : Fin G → α)
+noncomputable def pullback (_hG : 0 < G) (_L : ℕ) (_S _E : Fin G → α)
     {σ : Fin G → Fin G} (hσ : Function.Bijective σ) : Fin G ≃ Fin G :=
   (Equiv.ofBijective σ hσ).symm
 
@@ -693,7 +695,7 @@ theorem pullback_isRotation {σ : Fin G → Fin G} (hm : Matching (L := L) hG S 
   exact forced_at_unambiguous hG L S E hm s (hfree _)
 
 /-- **Shifting forward by `k` and then by `G - k` is the identity.** -/
-theorem rotAdd_neg_cancel (hG : 0 < G) (k r : ℕ) (hr : r < G) (hk : k < G) :
+theorem rotAdd_neg_cancel (_hG : 0 < G) (k r : ℕ) (hr : r < G) (hk : k < G) :
     ((r + (G - k)) % G + k) % G = r := by
   have h1 : ((r + (G - k)) % G + k) % G = (r + (G - k) + k) % G :=
     Nat.mod_add_mod _ _ _

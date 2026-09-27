@@ -153,14 +153,14 @@ theorem sW_noLongTriple : ¬ RepeatAdapter.HasLongTripleRepeat h6 sW 2 := by
   refine noLongTriple_of_letterCap h6 sW (by norm_num) ?_
   intro x y z hxy hxz hyz
   fin_cases x <;> fin_cases y <;> fin_cases z <;>
-    simp_all [sW] <;> decide
+    simp_all [sW]
 
 /-- `¬ HasLongTripleRepeat h6 eW 2`: likewise for `E`. -/
 theorem eW_noLongTriple : ¬ RepeatAdapter.HasLongTripleRepeat h6 eW 2 := by
   refine noLongTriple_of_letterCap h6 eW (by norm_num) ?_
   intro x y z hxy hxz hyz
   fin_cases x <;> fin_cases y <;> fin_cases z <;>
-    simp_all [eW] <;> decide
+    simp_all [eW]
 
 /-- Modulo bookkeeping: if `H` divides `G` then advancing by `H` and
 reducing mod `G` does not change the residue mod `H`. -/

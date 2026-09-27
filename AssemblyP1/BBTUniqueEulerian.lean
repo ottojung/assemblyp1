@@ -778,7 +778,7 @@ theorem iterate_G_eq {G : ℕ} (hG : 0 < G) (J : Fin G → Fin G)
     have hne : (⟨m.val + 1, hlt⟩ : Fin G) = ⟨0, hG⟩ :=
       hpinj (by simpa using hm')
     have hne' := congrArg Fin.val hne
-    simp only [Fin.val_mk] at hne'
+    simp only at hne'
     omega
   · have hmval : m.val = G - 1 := by omega
     have hmm : J (J^[G - 1] (origin hG)) = origin hG :=
