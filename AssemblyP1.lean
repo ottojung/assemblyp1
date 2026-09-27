@@ -1,4 +1,5 @@
 import AssemblyP1.BBTMaximalExtension
+import AssemblyP1.BBTFibrePeriod
 import AssemblyP1.P2RepeatResidual
 import AssemblyP1.BBTUniqueEulerian
 import AssemblyP1.InterleavingNeededCounterexample
@@ -161,3 +162,20 @@ than assumed. -/
 #print axioms AssemblyP1.SameLengthExactMLCounterexample.truth_information_feasible
 #print axioms AssemblyP1.SameLengthSection62Counterexample.truth_information_feasible
 #print axioms AssemblyP1.Section62BridgingCounterexample.truth_information_feasible
+
+/-! ## Axiom audit for the `#89` fibre/period lemma
+
+`AssemblyP1.BBTFibrePeriod` proves the fibre/period bound of the `#89`
+dichotomy: three occurrences of one `(L-1)`-mer of an `Ukkonen` word collapse
+modulo the least period, and in the primitive stratum every fibre of the
+vertex labelling has at most two starts.  `EulerianCycleGap` itself remains a
+`Prop` with no inhabitant; the statements below are the whole of what the
+module adds. -/
+
+#print axioms AssemblyP1.BBTEulerian.three_occurrences_collapse_or_tripleRepeat
+#print axioms AssemblyP1.BBTEulerian.three_occurrences_collapse_of_Ukkonen
+#print axioms AssemblyP1.BBTEulerian.fibre_subset_two_classes
+#print axioms AssemblyP1.BBTEulerian.fibre_card_le_two_of_primitive
+#print axioms AssemblyP1.BBTEulerian.leastPeriod_eq_G_of_primitive
+#print axioms AssemblyP1.BBTEulerian.backAgr3F_add
+#print axioms AssemblyP1.BBTEulerian.agr3F_G_of_shifted
