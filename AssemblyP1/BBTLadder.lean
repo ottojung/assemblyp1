@@ -519,7 +519,10 @@ holds, and the ordered conclusion reads `1 = 3 ∧ 3 = 1`, which is false; the
 two unordered extension pairs are both `{1, 3}`.
 
 `SameExtension` below is that unordered statement, written as the disjunction of
-the two orientations; it is the only form used from here on.
+the two orientations; it is the only form used from here on.  It is a *shared
+abbreviation*, not a third gap: it is what both remaining `Prop`s take as a
+hypothesis, and the word-level statement that would prove it for the support is
+`BBTCrossingCoalesce.CrossingPairsCoalesce`.
 
 §6 reduces `#89` to **two** statements, and it is worth being precise about
 which is which, because the earlier formulation (`LadderRotationGap`, and the
