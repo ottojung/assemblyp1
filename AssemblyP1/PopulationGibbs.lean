@@ -102,7 +102,7 @@ theorem suppEq_refl (p : W → ℝ) : SuppEq p p := fun _ => Iff.rfl
 /-- The likelihood is finite as soon as the supports agree. -/
 theorem popLogLik_of {pS pD : W → ℝ} (h : SuppEq pS pD) :
     PopLogLik pS pD = (PopLogLikValue pS pD : WithBot ℝ) := by
-  rw [PopLogLik, if_pos h]
+  rw [PopLogLik, ite_eq_left h]
 
 /-- `ℓpop_S(S)`, which is always finite. -/
 theorem popLogLik_self (pS : W → ℝ) :
@@ -117,7 +117,7 @@ theorem popLogLik_self_ne_bot (pS : W → ℝ) : PopLogLik pS pS ≠ (⊥ : With
 /-- `ℓpop_S(D) = -∞` as soon as the supports disagree. -/
 theorem popLogLik_bot_of {pS pD : W → ℝ} (h : ¬ SuppEq pS pD) :
     PopLogLik pS pD = (⊥ : WithBot ℝ) := by
-  rw [PopLogLik, if_neg h]
+  rw [PopLogLik, ite_eq_right h]
 
 /-- The population log-likelihood is finite exactly when the supports
 agree, i.e. it is `-∞` exactly in the published
@@ -271,7 +271,7 @@ theorem popLogLik_le_self' {pS pD : W → ℝ} (hS : IsProb pS) (hD : IsProb pD)
     PopLogLik pS pD ≤ PopLogLik pS pS := by
   by_cases hSupp : SuppEq pS pD
   · exact popLogLik_le_self hS hD hSupp
-  · rw [PopLogLik, if_neg hSupp]
+  · rw [PopLogLik, ite_eq_right hSupp]
     exact bot_le
 
 /-- A population tie at a point where the distributions differ is
