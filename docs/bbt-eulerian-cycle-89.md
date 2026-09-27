@@ -198,22 +198,34 @@ proof would take them:
    `card_choices_le_branchStarts`; an alternative Eulerian cycle differs
    from the truth's only at branch occurrences, by
    `BBTSequenceGraph.choices_only_at_branch`;
-2. **maximal extension of a branch pair**: two distinct occurrences of the
-   same `(L-1)`-mer extend to a *maximal* repeat of length `≥ L-1`. This is
-   the bridge between the condensed objects (`Branch`, branch occurrences)
-   and the maximal repeats ranged over by `def:P1P2`, and it is the step
-   the maximal-extension audit (`docs/audit-p2-direct-proof-maximal-extension-2026-09-21.md`)
-   shows cannot be replaced by "raw node pairs are maximal repeats";
+2. **maximal extension of a branch pair** — **proved, kernel-checked, in
+   `AssemblyP1/P2RepeatResidual.lean`**: two distinct occurrences of the same
+   `(L-1)`-mer extend to a *maximal* repeat of length `≥ L-1`
+   (`P2RepeatResidual.maximal_extension_of_repeated`, packaged with the
+   branch-object statement as
+   `P2RepeatResidual.repeated_occurrence_gives_long_maximal_repeat`). This is
+   the bridge between the condensed objects (`Branch`, branch occurrences) and
+   the maximal repeats ranged over by `def:P1P2`, and it is the step the
+   maximal-extension audit (`docs/audit-p2-direct-proof-maximal-extension-2026-09-21.md`)
+   shows cannot be replaced by "raw node pairs are maximal repeats". The
+   extension is genuinely two-sided, and the audit's obstruction is respected:
+   the length produced is whatever maximality forces, not `L-1`;
 3. **the dichotomy**: a non-trivial difference of two Eulerian cycles of the
    condensed graph produces either three occurrences of one branch object
    (a maximal triple repeat of length `≥ L-1`) or two interleaved pairs of
-   branch occurrences whose maximal extensions interleave.
+   branch occurrences whose maximal extensions interleave. **Still open.**
 
-Step 2 needs primitivity of the truth to keep the maximal extension below
+Step 2 needed primitivity of the truth to keep the maximal extension below
 `G` (an extension of length `≥ G` makes the truth a power); the population
 chain has `IsPrimitive` for the truth, but the BBT step is applied to the
-truth alone, so a primitivity hypothesis has to be threaded into
+truth alone, so a primitivity hypothesis had to be threaded into
 `BBTCompleteSpectrumUniqueness` or an extension bound proved directly.
+`P2RepeatResidual` took the second route: the extension bound is *proved*
+under an explicit `AssemblyP1.RepeatAdapter.IsPrimitive` hypothesis, applied
+by `RepeatAdapter.not_primitive_of_ge_G_agree` in exactly three places (the
+two one-sided full-turn boundaries and the joint bound `ℓ + (L-1) + r < G`).
+`EulerianCycleObstruction` itself is **not** restated with a primitivity
+hypothesis; see `P2RepeatResidual` §6 for why that is left to step 3.
 Step 3 is the combinatorial core and is not attempted here.
 
 ## 7. Scope and non-goals
