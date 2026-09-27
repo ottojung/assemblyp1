@@ -1,5 +1,5 @@
-# `#89`: the support-permutation route --- master theorem, interface, and a
-# kernel-checked obstruction to finishing it
+# `#89`: the support-permutation route --- master theorem, interface, and an
+# obstruction to finishing it
 
 Branch: `agent/issue89-alt-final2`.  Extends the WIP of `dae70b8`
 (`AssemblyP1.BBTSupportChords`).
@@ -27,7 +27,7 @@ disjuncts are statements about **real** starts of the truth:
 * **(W)** three distinct starts spelling the same `(L-1)`-mer;
 * **(X)** two *doubled* `(L-1)`-mer pairs whose four starts interleave.
 
-## 2. The master theorem (kernel-checked)
+## 2. The master theorem (UNVERIFIED at this checkpoint -- see the status table)
 
 `AssemblyP1.BBTSupportEulerian.vertexCycleEq_of_noTriple_noCross`:
 
@@ -53,7 +53,7 @@ plainly: **the vertex cycle of an alternative Eulerian cycle is a rotation of
 the truth's as soon as the support permutation has no wide label and no
 crossing pair.**  Nothing about repeats, spectra or graphs enters.
 
-## 3. The interface theorem (kernel-checked)
+## 3. The interface theorem (UNVERIFIED at this checkpoint -- see the status table)
 
 `obstruction_of_wordLevel` and `obstruction_of_P2_wordLevel` conclude
 `EulerianCycleObstruction` --- the single hypothesis of
@@ -118,9 +118,32 @@ Status of the pieces in this branch:
 
 | module | status |
 | --- | --- |
-| `AssemblyP1.BBTSupportChords` | kernel-checked (abstract support dichotomy) |
-| `AssemblyP1.BBTSupportEulerian` | kernel-checked (master theorem + interface) |
-| `AssemblyP1.BBTSupportCrossing` | kernel-checked (refutation of the crossing clause) |
+| `AssemblyP1.BBTSupportChords` | **UNVERIFIED** (drafted, never built) |
+| `AssemblyP1.BBTSupportEulerian` | **UNVERIFIED** (drafted, never built) |
+| `AssemblyP1.BBTSupportCrossing` | **UNVERIFIED** (drafted, never built) |
 | `NoTripleVertex` for `Ukkonen` words | **open** (three-copy maximal extension) |
 | block statement for the collapse regime | **open** |
 | `EulerianCycleObstruction` | **open**; consequence of the two rows above |
+
+## Status correction (independent audit pass)
+
+The three modules above were **drafted but never compiled**: no `lake build`
+in this worktree produced a single `AssemblyP1/*.olean` (the worktree's
+`.lake/packages` is a symlink to a shared checkout, and the build never got
+past dependency setup).  The earlier revision of this file described them as
+"kernel-checked"; that was wrong and is corrected here.  Treat every claim
+above about them as a *proof sketch*, not as a verified result, until a
+`lake build` actually passes.
+
+What **is** durable in this branch is the computational evidence, which
+re-runs in seconds and is not a completeness claim:
+
+| script | range | result |
+| --- | --- | --- |
+| `scripts/verify_support_chord_dichotomy_89.py` | `G ≤ 14`, binary-independent (all set partitions of the circle into classes of size ≤ 2) | 0 counterexamples; at `G = 14`, 97 724 419 nontrivial label-preserving permutations tested, **0** with `f ∘ ρ` a `G`-cycle outside the crossing regime |
+| `scripts/verify_crossing_collapse_89.py` | `G ≤ 9`, binary words, all `K`, all single-circuit traversals | 392 `USABLE` rows and 2416 `COLLAPSE` rows; **all** 2416 collapse rows have the same vertex cycle as the truth, 0 with a different one |
+
+The second row is the evidence for the collapse/ladder lemma: in the collapse
+regime the alternative traversal always normalises to the truth's vertex
+cycle, so non-`VertexCycleEq` forces the interleaving-extension case.  A
+finite search is evidence, not a proved completeness statement.
