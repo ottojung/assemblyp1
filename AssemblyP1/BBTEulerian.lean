@@ -552,4 +552,524 @@ theorem not_rotation_S4 : ¬ IsRotation hG4 tau4 := by
 
 end Objects
 
+/-! ## 5. The condensation bookkeeping of an alternative Eulerian cycle
+
+`docs/bbt-eulerian-cycle-89.md` §6 lists the sub-steps a proof of
+`EulerianCycleObstruction` needs.  The first of them --- *"an alternative
+Eulerian cycle differs from the truth's only at branch occurrences"* --- was
+available only for the pull-back of an equal-spectrum `Matching`
+(`BBTSequenceGraph.match_next_vtx`, `choices_only_at_branch`), because §2's
+object was tied to a matching.  `EulerianCycle` is *not* tied to a matching,
+and this section redoes the bookkeeping for an arbitrary `EulerianCycle` of
+the condensed `(L-1)`-mer multigraph, in the form the final theorem consumes.
+
+Three points are separated, because they are three different claims and only
+the first is bookkeeping.
+
+* **Multiplicity.**  `card_visits_eq_deg` and `card_succVisits_eq_deg`: an
+  Eulerian cycle enters a vertex exactly `deg` times, i.e. it uses every
+  edge of the multigraph exactly once, so the multiset of visited vertices is
+  a *presentation-independent* property of the multigraph.  Hence an
+  alternative Eulerian cycle cannot be a genuine rematching of the truth at
+  more places than the number of occurrences of the vertices involved
+  (`card_departCharged_le_deg`).
+* **Locality at branch objects.**  `altSucc_same_vtx`,
+  `forced_at_unambiguous_of_eulerian` and `departure_at_branch`: at an
+  occurrence `x` of the truth, the alternative cycle leaves along an edge
+  with *the same target vertex* as the truth
+  (`vtx (altSucc σ x) = vtx (nextPos x)`), so a departure is a *rematching
+  of two distinct occurrences of one and the same vertex*, and it can happen
+  only where that vertex is a branch object.  `card_depart_le_branchStarts`
+  is the quantitative form.
+* **Excluding relabelled presentations.**  `departSet_empty_iff_isRotation`:
+  a presentation with no departures at all is a rotation of the circle, and
+  a rotation has the truth's vertex cycle
+  (`vertexCycleEq_of_isRotation`).  So the only presentations excluded by
+  the bookkeeping are the relabellings of the truth's own cycle, and
+  `branchDeparture_of_nonVertexCycleEq` shows that anything else produces a
+  genuine branch occurrence of the truth's traversal.
+
+`condensationBookkeeping` bundles the whole bookkeeping into one statement
+and `branchDeparture_of_nonVertexCycleEq` is the single theorem the final
+uniqueness step should cite: an alternative Eulerian cycle whose *vertex
+cycle* is not the truth's yields, in the truth's own traversal, a branch
+occurrence carrying a pair of distinct occurrences of the same vertex.
+**No hypothesis at all is used** --- in particular no `Ukkonen`, no `P2` and
+no primitivity: the bookkeeping is a property of the multigraph, not of the
+admissibility of the word.  Primitivity is needed only by the *next* step,
+the maximal extension of a branch pair to a maximal repeat
+(`docs/audit-p2-direct-proof-maximal-extension-2026-09-21.md`), which this
+section does not touch; the multiplicity cap `∀ v, deg v ≤ 2` needed by
+`card_depart_le_two_mul_branchVerts` is likewise taken as a hypothesis,
+because deriving it from `P2` is part of that same step. -/
+
+section Bookkeeping
+
+variable {G : ℕ} (hG : 0 < G) (L : ℕ) (S : Fin G → α)
+
+/-- **The successor of the alternative traversal, in the truth's own
+frame.**  `altSucc hG σ x` is the truth start at which the alternative
+Eulerian cycle continues after its occurrence at `x`: the alternative cycle
+is a cyclic listing `σ 0, σ 1, …` of the edges of the multigraph, and
+`altSucc` is the successor relation of that listing, transported to the
+truth's positions.  It is a bijection, being the conjugate of `nextPos` by
+`σ`. -/
+def altSucc (hG : 0 < G) (σ : Fin G ≃ Fin G) : Fin G → Fin G :=
+  fun x => σ (nextPos hG (σ.symm x))
+
+theorem altSucc_apply (hG : 0 < G) (σ : Fin G ≃ Fin G) (x : Fin G) :
+    altSucc hG σ x = σ (nextPos hG (σ.symm x)) := rfl
+
+/-- **The successor of an alternative Eulerian cycle is a permutation of the
+circle**: the walk is a single circuit, so no position is visited twice and
+none is skipped.  (The `single` clause of `EulerianCycle` says this; this is
+the same fact as an injectivity of the successor map.) -/
+theorem altSucc_bij (hG : 0 < G) (σ : Fin G ≃ Fin G) :
+    Function.Bijective (altSucc hG σ) := by
+  constructor
+  · intro a b h
+    have h' : σ (nextPos hG (σ.symm a)) = σ (nextPos hG (σ.symm b)) := h
+    have h'' : nextPos hG (σ.symm a) = nextPos hG (σ.symm b) := σ.injective h'
+    exact σ.injective (nextPos_inj hG h'')
+  · intro b
+    refine ⟨σ (nextPos hG (σ.symm b)), ?_⟩
+    have h' : σ (nextPos hG (σ.symm (σ (nextPos hG (σ.symm b))))) = b := by
+      rw [Equiv.symm_apply_apply]
+      exact Equiv.apply_symm_apply σ b
+    exact h'
+
+/-- **The occurrences at which the alternative Eulerian cycle departs from
+the truth's traversal.**  These are the *chords* of the condensation in the
+truth's own frame. -/
+noncomputable def departSet (hG : 0 < G) (L : ℕ) (S : Fin G → α)
+    (σ : Fin G ≃ Fin G) : Finset (Fin G) :=
+  Finset.univ.filter (fun x : Fin G => altSucc hG σ x ≠ nextPos hG x)
+
+instance (hG : 0 < G) (σ : Fin G ≃ Fin G) :
+    DecidablePred (fun x : Fin G => altSucc hG σ x ≠ nextPos hG x) :=
+  fun x => inferInstanceAs (Decidable (altSucc hG σ x ≠ nextPos hG x))
+
+theorem mem_departSet (hG : 0 < G) (L : ℕ) (S : Fin G → α) (σ : Fin G ≃ Fin G)
+    {x : Fin G} :
+    x ∈ departSet hG L S σ ↔ altSucc hG σ x ≠ nextPos hG x := by
+  simp only [departSet, Finset.mem_filter, Finset.mem_univ, true_and]
+
+/-- **Multiplicity: an Eulerian cycle enters a vertex exactly `deg` times.**
+The listing `σ 0, σ 1, …` of an Eulerian cycle is a permutation of the
+starts, so the number of positions at which it enters the vertex `v` is the
+number of occurrences of `v`, i.e. its out-degree --- the same number the
+truth's own traversal has.  This is the *edge-multiset* content of
+"Eulerian", and it holds for every `σ`, in particular for every alternative
+Eulerian cycle. -/
+theorem card_visits_eq_deg (σ : Fin G ≃ Fin G) (v : Fin (L - 1) → α) :
+    (Finset.univ.filter (fun i : Fin G => vtx hG L S (σ i) = v)).card = deg hG L S v := by
+  calc (Finset.univ.filter (fun i : Fin G => vtx hG L S (σ i) = v)).card
+      = (fibre hG L S v).card := by
+        refine Finset.card_bij (fun i _ => σ i) ?_ ?_ ?_
+        · intro i hi
+          exact Finset.mem_filter.mpr ⟨Finset.mem_univ _,
+            (mem_fibre hG S (v := v) (r := σ i)).mpr (Finset.mem_filter.mp hi).2⟩
+        · intro _ _ _ _ heq
+          exact σ.injective heq
+        · intro b hb
+          refine ⟨σ.symm b, Finset.mem_filter.mpr ⟨Finset.mem_univ _, ?_⟩, ?_⟩
+          · exact (mem_fibre hG S (v := v) (r := σ.symm b)).mpr hb
+          · exact Equiv.apply_symm_apply σ b
+    _ = deg hG L S v := card_fibre hG L S v
+
+/-- **... and it *leaves* a vertex exactly `deg` times too**, the
+`altSucc` version of `card_visits_eq_deg`.  So the in-degree bookkeeping of
+the multigraph (`inDeg_eq_deg`) is reproduced by every Eulerian cycle. -/
+theorem card_succVisits_eq_deg (σ : Fin G ≃ Fin G) (v : Fin (L - 1) → α) :
+    (Finset.univ.filter (fun x : Fin G => vtx hG L S (altSucc hG σ x) = v)).card
+      = deg hG L S v := by
+  calc (Finset.univ.filter (fun x : Fin G => vtx hG L S (altSucc hG σ x) = v)).card
+      = (fibre hG L S v).card := by
+        refine Finset.card_bij (fun x _ => altSucc hG σ x) ?_ ?_ ?_
+        · intro x hx
+          exact Finset.mem_filter.mpr ⟨Finset.mem_univ _,
+            (mem_fibre hG S (v := v) (r := altSucc hG σ x)).mpr
+              (Finset.mem_filter.mp hx).2⟩
+        · intro _ _ _ _ heq
+          exact (altSucc_bij hG σ).1 heq
+        · intro b hb
+          refine ⟨σ (nextPos hG (σ.symm b)), Finset.mem_filter.mpr ⟨Finset.mem_univ _, ?_⟩, ?_⟩
+          · rw [altSucc, Equiv.symm_apply_apply]
+            exact (mem_fibre hG S (v := v) (r := b)).mpr hb
+          · rw [altSucc, Equiv.symm_apply_apply]
+            exact Equiv.apply_symm_apply σ b
+    _ = deg hG L S v := card_fibre hG L S v
+
+/-- **Multiplicity in the truth's frame: the occurrences entered *after* the
+position `x` are `deg` many.**  This is the count the departures are charged
+against. -/
+theorem card_nextPosVisits_eq_deg (v : Fin (L - 1) → α) :
+    (Finset.univ.filter (fun x : Fin G => vtx hG L S (nextPos hG x) = v)).card
+      = deg hG L S v := by
+  calc (Finset.univ.filter (fun x : Fin G => vtx hG L S (nextPos hG x) = v)).card
+      = (fibre hG L S v).card := by
+        refine Finset.card_bij (fun x _ => nextPos hG x) ?_ ?_ ?_
+        · intro x hx
+          exact Finset.mem_filter.mpr ⟨Finset.mem_univ _,
+            (mem_fibre hG S (v := v) (r := nextPos hG x)).mpr
+              (Finset.mem_filter.mp hx).2⟩
+        · intro _ _ _ _ heq
+          exact nextPos_inj hG heq
+        · intro b hb
+          refine ⟨prevPos hG b, Finset.mem_filter.mpr ⟨Finset.mem_univ _, ?_⟩, ?_⟩
+          · rw [nextPrev hG b]
+            exact (mem_fibre hG S (v := v) (r := b)).mpr hb
+          · exact nextPrev hG b
+    _ = deg hG L S v := card_fibre hG L S v
+
+/-- **The target vertex of a departure.**  The `traverses` clause of
+`EulerianCycle`, read in the truth's frame: the alternative cycle leaves the
+occurrence `x` along an edge whose *target vertex* is the target vertex of
+the truth's own edge out of `x`.  Consequently a departure at `x` is a
+*rematching of occurrences of one and the same vertex*, not a visit to a new
+vertex: the alternative cycle reuses exactly the vertex multiset of the
+truth.  This is the bridge between the multigraph layer and the condensed
+branch objects. -/
+theorem altSucc_same_vtx (σ : Fin G ≃ Fin G)
+    (hEul : EulerianCycle hG L S σ) (x : Fin G) :
+    vtx hG L S (altSucc hG σ x) = vtx hG L S (nextPos hG x) := by
+  have h1 := hEul.1 (σ.symm x)
+  have h2 : σ (σ.symm x) = x := Equiv.apply_symm_apply σ x
+  simpa only [altSucc, h2] using h1
+
+/-- **No choice at an unambiguous vertex, for an arbitrary Eulerian cycle.**
+If the vertex the truth enters at `x` is not a branch object, the
+alternative cycle is forced to continue exactly where the truth does: the
+two occurrences spelling that vertex are the same occurrence.  This is
+`BBTSequenceGraph.forced_at_unambiguous` re-proved without any `Matching`
+hypothesis, which is what an alternative Eulerian cycle of the condensed
+graph needs. -/
+theorem forced_at_unambiguous_of_eulerian (σ : Fin G ≃ Fin G)
+    (hEul : EulerianCycle hG L S σ) {x : Fin G}
+    (hdeg : deg hG L S (vtx hG L S (nextPos hG x)) ≤ 1) :
+    altSucc hG σ x = nextPos hG x :=
+  occ_unique hG L S _ hdeg (altSucc_same_vtx hG L S σ hEul x) rfl
+
+/-- **Departures of an alternative Eulerian cycle live at branch
+occurrences.**  If the alternative Eulerian cycle continues somewhere other
+than where the truth does, then the vertex the truth enters there is a
+branch object, i.e. an occurrence of a condensed vertex --- so the
+alternative cycle uses every edge of the multigraph exactly once, *except*
+that at branch objects it permutes the occurrences.  No `Matching`, no
+`Ukkonen`, no primitivity. -/
+theorem departure_at_branch (σ : Fin G ≃ Fin G) (hEul : EulerianCycle hG L S σ)
+    {x : Fin G} (hd : altSucc hG σ x ≠ nextPos hG x) :
+    Branch hG L S (vtx hG L S (nextPos hG x)) := by
+  by_contra hn
+  have hdeg : deg hG L S (vtx hG L S (nextPos hG x)) ≤ 1 := by
+    unfold Branch deg at hn
+    unfold deg
+    omega
+  exact hd (forced_at_unambiguous_of_eulerian hG L S σ hEul hdeg)
+
+/-- ... i.e. the *vertex* the truth enters at a departure is a condensed
+vertex of `thm:BBT`. -/
+theorem mem_branchStarts_of_departure (σ : Fin G ≃ Fin G)
+    (hEul : EulerianCycle hG L S σ) {x : Fin G}
+    (hd : altSucc hG σ x ≠ nextPos hG x) :
+    nextPos hG x ∈ branchStarts hG L S :=
+  Finset.mem_filter.mpr ⟨Finset.mem_univ _,
+    departure_at_branch hG L S σ hEul hd⟩
+
+/-- **Multiplicity, quantitatively: the departures charged to a vertex `v`
+are charged against its `deg` occurrences.**  So the freedom of an
+alternative Eulerian cycle at a condensed vertex is bounded by the
+multiplicity of that vertex, and cannot be spread over more positions than
+the vertex actually occupies. -/
+theorem card_departCharged_le_deg (σ : Fin G ≃ Fin G) (v : Fin (L - 1) → α) :
+    ((departSet hG L S σ).filter
+        (fun x : Fin G => vtx hG L S (nextPos hG x) = v)).card ≤ deg hG L S v := by
+  refine Finset.card_le_card ?_
+  intro x hx
+  exact (mem_fibre hG S (v := v) (r := x)).mpr (Finset.mem_filter.mp hx).2
+
+/-- **Total count: the whole freedom of an alternative Eulerian cycle is at
+most the number of branch occurrences**, the quantitative form of "alternate
+Eulerian choices occur only at condensed branch objects" --- now for an
+arbitrary `EulerianCycle`, not only for a pull-back of a `Matching`. -/
+theorem card_depart_le_branchStarts (σ : Fin G ≃ Fin G)
+    (hEul : EulerianCycle hG L S σ) :
+    (departSet hG L S σ).card ≤ (branchStarts hG L S).card := by
+  have hsub : (departSet hG L S σ).image (fun x : Fin G => nextPos hG x)
+      ⊆ branchStarts hG L S := by
+    intro y hy
+    obtain ⟨x, hx, rfl⟩ := Finset.mem_image.mp hy
+    exact mem_branchStarts_of_departure hG L S σ hEul
+      (Finset.mem_filter.mp hx).2
+  calc (departSet hG L S σ).card
+      = ((departSet hG L S σ).image (fun x : Fin G => nextPos hG x)).card :=
+        (Finset.card_image_of_injective _ (nextPos_inj hG)).symm
+    _ ≤ (branchStarts hG L S).card := Finset.card_le_card hsub
+
+/-- ... hence at most `G`, and, under the multiplicity cap, at most twice
+the number of condensed vertices. -/
+theorem card_depart_le_card (σ : Fin G ≃ Fin G) (hEul : EulerianCycle hG L S σ) :
+    (departSet hG L S σ).card ≤ G := by
+  calc (departSet hG L S σ).card ≤ (branchStarts hG L S).card :=
+        card_depart_le_branchStarts hG L S σ hEul
+    _ ≤ (Finset.univ : Finset (Fin G)).card := Finset.card_le_univ _
+    _ = G := by simp
+
+theorem card_depart_le_two_mul_branchVerts (σ : Fin G ≃ Fin G)
+    (hEul : EulerianCycle hG L S σ)
+    (hcap : ∀ v : Fin (L - 1) → α, deg hG L S v ≤ 2) :
+    (departSet hG L S σ).card ≤ 2 * (branchVerts hG L S).card :=
+  calc (departSet hG L S σ).card ≤ (branchStarts hG L S).card :=
+        card_depart_le_branchStarts hG L S σ hEul
+    _ ≤ 2 * (branchVerts hG L S).card :=
+        card_branchStarts_le_two_mul_branchVerts hG L S hcap
+
+/-! ### 5.1 Excluding mere relabelled presentations -/
+
+/-- **A relabelled presentation of the truth's own cycle has no
+departures.**  A rotation of the circle is the truth's own traversal read
+from a different start, and reads the vertices in the same cyclic order. -/
+theorem departSet_empty_of_isRotation (σ : Fin G ≃ Fin G) (hrot : IsRotation hG σ) :
+    (departSet hG L S σ) = ∅ := by
+  obtain ⟨s, hs⟩ := hrot
+  ext x
+  simp only [mem_departSet, Finset.mem_univ, true_and]
+  intro hne
+  have hstep : σ (nextPos hG (σ.symm x)) = nextPos hG x := by
+    have h1 : σ (nextPos hG (σ.symm x)) = nextPos hG (σ (σ.symm x)) := by
+      have h := hs (nextPos hG (σ.symm x))
+      rwa [Equiv.symm_apply_apply] at h
+    simpa using h1
+  exact hne hstep
+
+/-- **Conversely: an alternative Eulerian cycle with no departure at all is
+a rotation of the circle.**  No departure means the alternative cycle agrees
+with the truth *everywhere*, not merely up to a relabelling; and a
+step-by-step map of the circle is a rotation
+(`BBTSequenceGraph.isRotation_of_step`).  So "no departure" and "rotation"
+are the same condition, and the relabellings of the truth's own Eulerian
+cycle are exactly the presentations with an empty departure set. -/
+theorem isRotation_of_departSet_empty (σ : Fin G ≃ Fin G)
+    (hEul : EulerianCycle hG L S σ) (he : (departSet hG L S σ) = ∅) :
+    IsRotation hG σ := by
+  apply isRotation_of_step hG
+  intro i
+  have hmem : σ i ∉ departSet hG L S σ := by
+    rw [he]
+    simp
+  have hne : altSucc hG σ (σ i) ≠ nextPos hG (σ i) := by
+    exact fun h => hmem ((mem_departSet hG L S σ).mpr h)
+  have heq : altSucc hG σ (σ i) = nextPos hG (σ i) := by
+    apply Classical.byContradiction
+    exact hne
+  simpa only [altSucc, Equiv.apply_symm_apply] using heq
+
+theorem departSet_empty_iff_isRotation (σ : Fin G ≃ Fin G)
+    (hEul : EulerianCycle hG L S σ) :
+    (departSet hG L S σ) = ∅ ↔ IsRotation hG σ :=
+  ⟨isRotation_of_departSet_empty hG L S σ hEul,
+    departSet_empty_of_isRotation hG L S σ⟩
+
+/-- **A rotation of the circle has the truth's vertex cycle.**  This is the
+"merely relabelled" observation at the level of the *vertex cycle*, the
+object the uniqueness theorem is about. -/
+theorem vertexCycleEq_of_isRotation (σ : Fin G ≃ Fin G) (hrot : IsRotation hG σ) :
+    VertexCycleEq hG L S σ (Equiv.refl (α := Fin G)) := by
+  obtain ⟨s, hs⟩ := hrot
+  exact ⟨⟨s % G, Nat.mod_lt _ hG⟩, fun i => hs i⟩
+
+/-- Hence a presentation that is not the truth's vertex cycle is in
+particular not a rotation: the relabelled presentations are exactly the ones
+the uniqueness theorem has already accounted for. -/
+theorem not_isRotation_of_not_vertexCycleEq (σ : Fin G ≃ Fin G)
+    (hnot : ¬ VertexCycleEq hG L S σ (Equiv.refl (α := Fin G))) :
+    ¬ IsRotation hG σ := fun hrot => hnot (vertexCycleEq_of_isRotation hG L S σ hrot)
+
+/-- **The truth's own vertex cycle is a presentation of an Eulerian cycle
+with no departure at all**: `Equiv.refl` *is* the truth's traversal. -/
+theorem departSet_empty_of_refl : (departSet hG L S (Equiv.refl (α := Fin G))) = ∅ := by
+  ext x
+  simp only [mem_departSet, Finset.mem_univ, true_and]
+  rfl
+
+/-! ### 5.2 The bundled statement, and the one theorem the final step cites -/
+
+/-- **The condensation bookkeeping of an alternative Eulerian cycle**,
+bundled: the multiset of visited vertices is the truth's (multiplicity),
+the alternative cycle leaves every occurrence along an edge of the truth's
+own target vertex, it departs only at branch occurrences, the departures are
+charged against the multiplicity of the vertex concerned, and the
+presentations with no departure at all are exactly the rotations --- i.e.
+the mere relabellings of the truth's cycle.  No hypothesis is required. -/
+def CondensationBookkeeping (hG : 0 < G) (L : ℕ) (S : Fin G → α) (σ : Fin G ≃ Fin G) :
+    Prop :=
+  EulerianCycle hG L S σ →
+    (∀ v : Fin (L - 1) → α,
+        ((Finset.univ : Finset (Fin G)).filter
+          (fun i : Fin G => vtx hG L S (σ i) = v)).card = deg hG L S v) ∧
+    (∀ v : Fin (L - 1) → α,
+        ((Finset.univ : Finset (Fin G)).filter
+          (fun x : Fin G => vtx hG L S (altSucc hG σ x) = v)).card = deg hG L S v) ∧
+    (∀ x : Fin G, vtx hG L S (altSucc hG σ x) = vtx hG L S (nextPos hG x)) ∧
+    (∀ x : Fin G, altSucc hG σ x ≠ nextPos hG x →
+        Branch hG L S (vtx hG L S (nextPos hG x))) ∧
+    (∀ v : Fin (L - 1) → α,
+        ((departSet hG L S σ).filter
+          (fun x : Fin G => vtx hG L S (nextPos hG x) = v)).card ≤ deg hG L S v) ∧
+    (departSet hG L S σ).card ≤ (branchStarts hG L S).card ∧
+    ((departSet hG L S σ) = ∅ ↔ IsRotation hG σ)
+
+/-- ... and it holds, with no hypothesis beyond the Eulerian-cycle
+hypothesis itself. -/
+theorem condensationBookkeeping (σ : Fin G ≃ Fin G) :
+    CondensationBookkeeping hG L S σ := by
+  intro hEul
+  exact ⟨fun v => card_visits_eq_deg hG L S σ v,
+    fun v => card_succVisits_eq_deg hG L S σ v,
+    fun x => altSucc_same_vtx hG L S σ hEul x,
+    fun _ hd => departure_at_branch hG L S σ hEul hd,
+    fun v => card_departCharged_le_deg hG L S σ v,
+    card_depart_le_branchStarts hG L S σ hEul,
+    departSet_empty_iff_isRotation hG L S σ hEul⟩
+
+/-- **The branch occurrences an alternative Eulerian cycle yields in the
+truth's traversal.**  If an alternative Eulerian cycle of the condensed
+`(L-1)`-mer graph has a vertex cycle that is *not* the truth's, then in the
+truth's own traversal there is a position at which the alternative cycle
+continues elsewhere; the vertex the truth enters there is a branch object,
+hence a condensed vertex, and it carries a pair of distinct occurrences in
+the truth --- the two ends of the chord, i.e. the data the next step of the
+proof (maximal extension of a branch pair, then the triple/interleaved
+dichotomy) consumes.  Because `not_isRotation_of_not_vertexCycleEq` has
+already excluded the relabelled presentations, the position is a genuine
+rematching and not an artefact of the choice of starting point.
+
+No `Ukkonen`, no `P2`, no primitivity: this is a statement about the
+multigraph. -/
+theorem branchDeparture_of_nonVertexCycleEq (σ : Fin G ≃ Fin G)
+    (hEul : EulerianCycle hG L S σ)
+    (hnot : ¬ VertexCycleEq hG L S σ (Equiv.refl (α := Fin G))) :
+    ∃ x : Fin G, altSucc hG σ x ≠ nextPos hG x ∧
+      Branch hG L S (vtx hG L S (nextPos hG x)) ∧
+      ∃ a b : Fin G, a ≠ b ∧ vtx hG L S a = vtx hG L S b ∧
+        vtx hG L S a = vtx hG L S (nextPos hG x) := by
+  have hndep : (departSet hG L S σ).card ≥ 1 := by
+    have hne : (departSet hG L S σ) ≠ ∅ := by
+      intro he
+      exact not_isRotation_of_not_vertexCycleEq hG L S σ hnot
+        (isRotation_of_departSet_empty hG L S σ hEul he)
+    rw [Finset.card_ne_zero]
+    intro h
+    exact hne h
+  obtain ⟨x, hx⟩ := Finset.card_ne_zero.mp hndep
+  have hd : altSucc hG σ x ≠ nextPos hG x := (mem_departSet hG L S σ).mp hx
+  obtain ⟨a, b, hab, ha, hb⟩ :=
+    branch_has_two_occurrences hG L S _ (departure_at_branch hG L S σ hEul hd)
+  refine ⟨x, hd, departure_at_branch hG L S σ hEul hd, a, b, hab, ?_, ?_⟩
+  · exact ha.trans (altSucc_same_vtx hG L S σ hEul x).symm
+  · exact hb.trans (altSucc_same_vtx hG L S σ hEul x).symm
+
+/-- **... and a branch occurrence with a pair of distinct occurrences is
+already enough for the next step, i.e. the condensation bookkeeping is not
+vacuous**: the number of branch occurrences is positive exactly when the
+truth admits a rematching at all.  (Only the *existence* direction is
+claimed here; the dichotomy of `LongObstruction` is the next step and is not
+attempted.) -/
+theorem exists_branchStarts_of_departSet_ne_empty (σ : Fin G ≃ Fin G)
+    (hEul : EulerianCycle hG L S σ) (hne : (departSet hG L S σ) ≠ ∅) :
+    (branchStarts hG L S).card ≥ 1 := by
+  obtain ⟨x, hx⟩ := Finset.card_ne_zero.mp (by rw [Finset.card_pos]; exact hne)
+  have hx' := mem_branchStarts_of_departure hG L S σ hEul (Finset.mem_filter.mp hx).1
+  have hsub : ({x} : Finset (Fin G)) ⊆ branchStarts hG L S :=
+    Finset.singleton_subset_iff.mpr (by simpa using hx')
+  have := Finset.card_le_card hsub
+  simp only [Finset.card_singleton] at this
+  omega
+
+end Bookkeeping
+
+/-! ### 5.3 A kernel-checked instance: the bookkeeping output is the input
+of the dichotomy
+
+`S = 001011` at `G = 6`, `L = 3` (so `K = 2`) is the smallest binary
+circular word whose condensed `(L-1)`-mer multigraph admits two *vertex
+cycles*.  Its `(L-1)`-mers are `00, 01, 10, 01, 11, 10`, so the condensed
+vertices are `01` and `10`, each of degree `2`, with branch occurrences
+`{1, 3}` and `{2, 5}`: four branch occurrences, i.e. `2 + 2`.
+
+`tau6` is the alternative Eulerian cycle which visits the branch occurrences
+`1` and `3` one after the other, instead of the truth's `1, 2, 3, 5`.  The
+instance records
+
+* `eulerianCycle_S6`: it *is* an Eulerian cycle of the condensed graph;
+* `not_vertexCycleEq_S6`: its vertex cycle is not the truth's (hence, by
+  `not_isRotation_of_not_vertexCycleEq`, it is not a relabelling);
+* `card_departSet_S6` and `card_branchStarts_S6`: all four branch
+  occurrences are charged --- the departure set has the full `4` branch
+  occurrences, the tight case of `card_depart_le_branchStarts`;
+* `interleaved_obstruction_S6`: the two maximal extensions of the two
+  branches are the interleaved pair `(1, 3)`, `(2, 5)`, both of length `2 =
+  L - 1`, i.e. the *second* disjunct of `LongObstruction` holds here.  This is
+  a single instance of the dichotomy, kernel-checked; the dichotomy itself is
+  still not proved. -/
+
+section Instance
+
+/-- `S = 001011`, at `G = 6`, `L = 3` (so `K = 2`). -/
+def S6 : Fin 6 → Fin 2 := ![0, 0, 1, 0, 1, 1]
+
+theorem hG6 : 0 < 6 := by decide
+
+/-- The alternative Eulerian cycle of `S6`: the listing
+`0, 3, 4, 2, 1, 5` of the edges, i.e. the cyclic order
+`00 → 01 → 11 → 10 → 01 → 10 → 00`, in which the two occurrences of `01`
+(positions `1` and `3`) are used one after the other rather than being
+separated. -/
+def tau6 : Fin 6 ≃ Fin 6 :=
+  { toFun := fun i => ![0, 3, 4, 2, 1, 5] i.val
+    invFun := fun i => ![0, 1, 3, 4, 2, 5] i.val
+    left_inv := by decide
+    right_inv := by decide }
+
+/-- It *is* an alternative Eulerian cycle of the condensed `(L-1)`-mer
+multigraph of `S = 001011`. -/
+theorem eulerianCycle_S6 : EulerianCycle hG6 3 S6 tau6 := by
+  decide
+
+/-- **Its vertex cycle is not the truth's vertex cycle**, so it is not a
+relabelling of the truth's own cycle either.  This is the shape a proof of
+`EulerianCycleObstruction` has to rule out, and it is a real instance of it:
+the word does carry the long obstruction (`interleaved_obstruction_S6`). -/
+theorem not_vertexCycleEq_S6 :
+    ¬ VertexCycleEq hG6 3 S6 tau6 (Equiv.refl (α := Fin 6)) := by
+  decide
+
+/-- The condensation of `S = 001011` at `K = 2`: two condensed vertices,
+each of degree `2`, with four branch occurrences --- `2 + 2`, the tight case
+of `card_branchStarts_le_two_mul_branchVerts`. -/
+theorem condense_S6 :
+    ((branchVerts hG6 3 S6).card = 2 ∧ (branchStarts hG6 3 S6).card = 4 ∧
+      deg hG6 3 S6 ![0, 1] = 2 ∧ deg hG6 3 S6 ![1, 0] = 2 ∧
+      deg hG6 3 S6 ![0, 0] = 1 ∧ deg hG6 3 S6 ![1, 1] = 1) := by
+  decide
+
+/-- **All four branch occurrences are charged**: the alternative Eulerian
+cycle departs from the truth at every position whose successor is a branch
+occurrence, so `card_depart_le_branchStarts` is attained with equality. -/
+theorem card_departSet_S6 :
+    (departSet hG6 3 S6 tau6).card = 4 ∧ (branchStarts hG6 3 S6).card = 4 := by
+  decide
+
+/-- The two maximal extensions of the two branches are the interleaved pair
+`(1, 3)`, `(2, 5)`, both of length `2 = L - 1`: the *second* disjunct of
+`LongObstruction` holds on this instance.  Kernel-checked, one instance ---
+not the dichotomy. -/
+theorem interleaved_obstruction_S6 :
+    (∃ e₁ e₂ a b c d : Fin 6, (mkGenome hG6 S6).IsRepeat e₁ a b ∧
+      (mkGenome hG6 S6).IsRepeat e₂ c d ∧
+      Interleaved (mkGenome hG6 S6) a b c d ∧ 2 ≤ e₁.val ∧ 2 ≤ e₂.val) := by
+  decide
+
+end Instance
+
 end AssemblyP1.BBTEulerian
