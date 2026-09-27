@@ -232,6 +232,9 @@ are corrected by it.
 | `maximalRepeat_of_branch` | **step 2 for a branch pair**: two distinct starts carrying the same `(L-1)`-mer whose preceding symbols differ give a maximal repeat of length `≥ L-1`, with the `L-1 ≥ G` case discharged by `preceding_eq_of_agrees_ge` |
 | `maximalRepeat_of_branchVertex` | the same, read at a branch vertex, so the occurrences are the two realisations of one condensed vertex |
 | `interleaved_disjunct`, `triple_disjunct` | the two disjuncts of `LongObstruction` are *assembled* from repeats of length `≥ L-1` obtained as above |
+| `BackAgrees`, `backAgreeSet` | the backward analogue: the two occurrences agree at the `p` positions immediately *preceding* them |
+| `max_back_agrees` | the backward agreement lengths have a maximum `p ≤ G`, and if `p < G` the agreement stops at `p`; `p = G` is the periodic case |
+| `preceding_ne_of_max_back` | **stepping backwards, the preceding symbols eventually differ**: at a maximal backward step of size `p < G`, the backward-extended pair `prevPos^[p] a`, `prevPos^[p] b` has differing preceding symbols, so `maximalRepeat_of_branch` applies to it |
 
 Two corrections.
 
@@ -267,12 +270,15 @@ axiom.
 
 ### What is still missing, precisely
 
-1. **The backward extension.**  `maximalRepeat_of_branch` needs a pair
-   `a, b` of occurrences of one `(L-1)`-mer with different preceding
-   symbols; a branch pair need not have them (§3 above).  Extending
-   backwards until the preceding symbols differ is still open; the
-   obstruction is the periodic case, in which the extension never
-   terminates and no maximal repeat exists.
+1. **Composing the backward step with the forward agreement.**
+   `preceding_ne_of_max_back` produces a pair to which
+   `maximalRepeat_of_branch` applies, but the index arithmetic that a
+   backward step of size `p` together with the original forward agreement
+   of length `e₀` yields an agreement of length `e₀ + p` *at the extended
+   pair* is not carried out; that is the remaining arithmetic of step 2.
+   The periodic case (`p = G` in `max_back_agrees`) is also still to be
+   turned into either a long obstruction or a uniqueness statement: there
+   the extension never terminates and no maximal repeat exists at all.
 2. **Step 3, the dichotomy.**  Nothing here produces *two* maximal repeats
    with alternating starts, or a maximal triple repeat: one maximal repeat
    is a single constituent of the interleaved clause, and `interleaved_disjunct`

@@ -50,24 +50,34 @@ Two points in the existing write-up are settled by what is proved here.
   `agrees_mono`, `preceding_eq_of_agrees_ge` (the period alternative),
   `maximalRepeat_of_branch` (the branch-object corollary, i.e. step 2 for
   every branch pair whose preceding symbols differ), and §3's instances.
+* **Proved (kernel-checked).**  §3a: the backward half of step 2 ---
+  `BackAgrees`, `max_back_agrees` (how far one must step backwards) and
+  `preceding_ne_of_max_back` (at a maximal backward step of size `p < G`
+  the backward-extended pair has differing preceding symbols, so
+  `maximalRepeat_of_branch` applies to it).
 * **Proved (kernel-checked).**  `interleaved_disjunct` and `triple_disjunct`:
   the two disjuncts of `AssemblyP1.BBTEulerian.LongObstruction` are
   *assembled* from repeats of length `≥ L-1` obtained in this module, so
   the target of the `#89` dichotomy is reachable from these objects.
-* **Not proved.**  `EulerianCycleObstruction` itself, i.e. the dichotomy
-  (step 3) and the backward extension.  `EulerianCycleObstruction` remains
+* **Not proved.**  The index arithmetic that a backward step of size `p`
+  combined with a forward agreement of length `e₀` yields an agreement of
+  length `e₀ + p` at the extended pair; this is what is needed to compose
+  §3a with §2, and it is stated as such in §3a.  Nor is `EulerianCycleObstruction`
+  itself, i.e. the dichotomy (step 3).  `EulerianCycleObstruction` remains
   the single open input of the exported population theorem; no `sorry`, no
   `admit`, no new axiom.
 -/
 
 set_option maxHeartbeats 800000
 set_option linter.unusedSectionVars false
+set_option linter.unusedVariables false
 
 namespace AssemblyP1.BBTEulerian
 
 open SourceFaithfulIs
 open OrientedRigidity
 open AssemblyP1
+open AssemblyP1.BBTChords
 open AssemblyP1.BBTSequenceGraph
 
 variable {α : Type} [DecidableEq α] {G : ℕ} (hG : 0 < G) (S : Fin G → α)
@@ -311,6 +321,114 @@ theorem maximalRepeat_of_extendedBranchPair_0111 :
   exact ⟨e, he, preceding_ne_branchPairStep_0111⟩
 
 end Instances
+
+/-! ## 3a. Stepping backwards: the other half of step 2
+
+`maximalRepeat_of_branch` (step 2, forward) needs two occurrences of one
+`(L-1)`-mer whose *preceding* symbols differ, and §3 above shows a branch
+pair need not have that.  This section is the backward half of the step:
+how far one has to step backwards before the preceding symbols differ, and
+why the stepping cannot go on forever.
+
+`BackAgrees p a b` says the two occurrences `a`, `b` agree at the `p`
+positions immediately *preceding* them.  It is downward closed in `p` and
+contains `0`, so it has a maximum `p ≤ G` (`max_back_agrees`), and at a
+maximal `p < G` the preceding symbols differ
+(`preceding_ne_of_max_back`).  The excluded case `p = G` is exactly the
+periodic case: the two occurrences have been seen at *every* position of
+the circle, so the shift from one to the other is a period, which is
+`preceding_eq_of_agrees_ge`'s alternative for the forward direction.
+
+The arithmetic that combines a backward step of `p` with a forward
+agreement of length `e₀` into an agreement of length `e₀ + p` is **not**
+carried out here; see the docstring of the module. -/
+
+/-- **The two occurrences agree at the `p` positions immediately
+preceding them**: stepping backwards from `a` and from `b` by the same
+number of positions gives the same symbols.  This is the backward analogue
+of `Agrees`, at the level of positions; `p = 0` is the trivial agreement
+and `p = 1` says the two preceding symbols agree. -/
+def BackAgrees (hG : 0 < G) (S : Fin G → α) (a b : Fin G) (p : ℕ) : Prop :=
+  ∀ d : Fin p, cyc hG S (prevPos hG ((prevPos hG)^[d.val] a)).val
+    = cyc hG S (prevPos hG ((prevPos hG)^[d.val] b)).val
+
+instance (hG : 0 < G) (S : Fin G → α) (a b : Fin G) (p : ℕ) :
+    Decidable (BackAgrees hG S a b p) := by
+  unfold BackAgrees
+  infer_instance
+
+/-- **The backward agreement lengths of two occurrences**: a set
+containing `0`, whose maximum is the number of positions one has to step
+backwards before the preceding symbols differ. -/
+def backAgreeSet (hG : 0 < G) (S : Fin G → α) (a b : Fin G) : Finset ℕ :=
+  (Finset.range (G + 1)).filter (fun p => BackAgrees hG S a b p)
+
+/-- Cyclic access ignores a further turn of the circle. -/
+theorem cyc_mod (hG : 0 < G) (S : Fin G → α) (i : ℕ) : cyc hG S i = cyc hG S (i % G) := by
+  simp [cyc]
+
+/-- The preceding symbol of `x` is the symbol at the previous position. -/
+theorem preceding_eq_prevPos (hG : 0 < G) (S : Fin G → α) (x : Fin G) :
+    (mkGenome hG S).Preceding x = cyc hG S (prevPos hG x).val := by
+  simp only [SourceFaithfulIs.Genome.Preceding, len_mkGenome, cycl_mkGenome, prevPos]
+  exact cyc_mod hG S _
+
+/-- **The maximal backward agreement.**  The `p` at which two occurrences
+agree on the `p` positions before them contain `0`, so they have a maximum
+`p ≤ G`; and if `p < G` the agreement stops at `p`.  `p = G` is the
+periodic case: the two occurrences coincide with each other at every
+position of the circle, and `preceding_eq_of_agrees_ge` is the forward
+analogue of that exclusion. -/
+theorem max_back_agrees (a b : Fin G) :
+    ∃ p : ℕ, p ≤ G ∧ BackAgrees hG S a b p ∧
+      (p < G → ¬ BackAgrees hG S a b (p + 1)) := by
+  have hzero : 0 ∈ backAgreeSet hG S a b := by
+    refine Finset.mem_filter.mpr ⟨Finset.mem_range.mpr (Nat.succ_pos _), ?_⟩
+    intro d
+    exact Fin.elim0 d
+  have hne : (backAgreeSet hG S a b).Nonempty := ⟨0, hzero⟩
+  have hle : (backAgreeSet hG S a b).max' hne ≤ G := by
+    have hlt := Finset.mem_range.mp (Finset.mem_filter.mp (Finset.max'_mem _ hne)).1
+    omega
+  have hagp : BackAgrees hG S a b ((backAgreeSet hG S a b).max' hne) :=
+    (Finset.mem_filter.mp (Finset.max'_mem _ hne)).2
+  refine ⟨(backAgreeSet hG S a b).max' hne, hle, hagp, ?_⟩
+  intro hp h
+  have hmem' : (backAgreeSet hG S a b).max' hne + 1 ∈ backAgreeSet hG S a b :=
+    Finset.mem_filter.mpr ⟨Finset.mem_range.mpr (by omega), h⟩
+  have hle' := Finset.le_max' (backAgreeSet hG S a b) _ hmem'
+  rw [show (backAgreeSet hG S a b).max' ⟨_, hmem'⟩
+      = ((backAgreeSet hG S a b).max' hne) from rfl] at hle'
+  omega
+
+/-- **Stepping backwards, the preceding symbols eventually differ.**  If
+`p < G` is a maximal backward agreement of `a`, `b`, then the occurrences
+one step *before* the backward-extended pair `prevPos^[p] a`,
+`prevPos^[p] b` have different preceding symbols, i.e. that pair is a
+pair to which `maximalRepeat_of_branch` applies.  This is the
+backward-extension step of the `#89` route, isolated from the index
+arithmetic that would also have to show the extended pair still agrees
+forward. -/
+theorem preceding_ne_of_max_back (a b : Fin G) {p : ℕ} (hp : p < G)
+    (hagp : BackAgrees hG S a b p) (hnot : ¬ BackAgrees hG S a b (p + 1)) :
+    (mkGenome hG S).Preceding ((prevPos hG)^[p] a)
+      ≠ (mkGenome hG S).Preceding ((prevPos hG)^[p] b) := by
+  unfold BackAgrees at hnot
+  rw [not_forall] at hnot
+  obtain ⟨d, hd⟩ := hnot
+  have hdp : d.val = p := by
+    by_contra hc
+    have hlt : d.val < p := by omega
+    exact hd (hagp ⟨d.val, hlt⟩)
+  have hd' : ¬ (cyc hG S (prevPos hG ((prevPos hG)^[p] a)).val
+      = cyc hG S (prevPos hG ((prevPos hG)^[p] b)).val) := by
+    intro hz
+    have hdEq : d = ⟨p, by omega⟩ := Fin.ext hdp
+    rw [hdEq] at hd
+    exact hd hz
+  intro h
+  rw [preceding_eq_prevPos hG S, preceding_eq_prevPos hG S] at h
+  exact hd' h
 
 /-! ## 4. Assembling the two disjuncts of `LongObstruction` -/
 
