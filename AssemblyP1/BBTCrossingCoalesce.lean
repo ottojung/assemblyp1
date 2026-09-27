@@ -60,11 +60,9 @@ not itself proved.
   at a common start, then they are the *same* unordered pair.  Combined with §2
   this is the load-bearing half of the "collision" case of
   `docs/arratia-shift-left-invariant-89.md` §1.
-* **§4** (`maxPairStart_swap`) the two extension starts of a pair of distinct
-  starts are distinct, so "the two extensions coincide" is not vacuous.
 * **§4** (`vtx_maxPairStart`) the two extension starts of a repeated pair carry
-  a common `(L-1)`-mer, and `maxPairStart_swap` they are distinct --- so
-  "the two maximal extensions coincide" is a substantive, non-vacuous claim.
+  a common `(L-1)`-mer --- i.e. the head of a chord's backward list is again a
+  chord, which is what lets the coalescence proof slide down to it.
 * **§5** three `Prop`s with **no inhabitant**, and no others:
   - `CrossingPairsCoalesce` --- the target;
   - `SlidePreservesInterleaved` --- the one new cyclic-order fact, a statement
@@ -129,16 +127,21 @@ theorem three_starts_ne {a b c : Fin G} (hL : 2 ≤ L) (hLG : L ≤ G)
     (hne : a ≠ b) (hne' : a ≠ c) : b = c := by
   by_contra hcon
   have hbc : b ≠ c := by omega
-  have hmem : {a, b, c} ⊆ nodeStartsOf hG S (vtx hG L S a) := by
-    refine Finset.insert_subset_insert (mem_nodeStartsOf_vtx hG S hab) ?_
-    exact Finset.insert_subset_insert (mem_nodeStartsOf_vtx hG S hac) (by simp)
+  have hmem : ∀ x : Fin G, x ∈ ({a, b, c} : Finset (Fin G)) →
+      x ∈ nodeStartsOf hG S (vtx hG L S a) := by
+    intro x hx
+    simp only [Finset.mem_insert, Finset.mem_singleton, false_or] at hx
+    rcases hx with rfl | rfl | rfl
+    · exact mem_nodeStartsOf_vtx hG S hab
+    · exact hab ▸ mem_nodeStartsOf_vtx hG S hab
+    · exact mem_nodeStartsOf_vtx hG S hac
   have hcard : ({a, b, c} : Finset (Fin G)).card = 3 :=
     Finset.card_eq_three.mpr ⟨a, b, c, hne, hne', hbc, rfl⟩
-  have : 3 ≤ (nodeStartsOf hG S (vtx hG L S a)).card :=
+  have hthree : 3 ≤ (nodeStartsOf hG S (vtx hG L S a)).card :=
     le_trans hcard.ge (Finset.card_le_card hmem)
-  rw [card_nodeStartsOf] at this
   have hcap := P2.imp_nodeCount_le_two hG hL hLG S hprim hP2 (vtx hG L S a)
-  exact absurd this (by omega)
+  rw [card_nodeStartsOf] at hthree
+  exact absurd hthree (by omega)
 
 /-! ## 3. The collision step -/
 
@@ -152,47 +155,36 @@ This is the "collision" alternative of the shift-left lemma
 realisations of the repeated `(L-1)`-mer meet, and the multiplicity cap of §2
 leaves no room for a *third* realisation, so the collision identifies the pairs
 rather than producing a triple repeat.  Note what this does **not** need: it is
-purely a statement about the fibre of one `(L-1)`-mer. -/
+purely a statement about the fibre of one `(L-1)`-mer, and in particular it does
+not need the two pairs to lie in different components. -/
 theorem collision_forces_pair {a b c d : Fin G} (hL : 2 ≤ L) (hLG : L ≤ G)
     (hprim : RepeatAdapter.IsPrimitive hG S) (hP2 : P2 hG L S)
     (hab : a ≠ b) (hcd : c ≠ d)
     (hvab : vtx hG L S a = vtx hG L S b) (hvcd : vtx hG L S c = vtx hG L S d)
     (hcoll : c = a) : b = d := by
   have hcad : vtx hG L S a = vtx hG L S d := by rw [← hcoll]; exact hvcd
-  by_contra hcon
-  have hbd : b ≠ d := by omega
-  exact absurd (three_starts_ne hG hL hLG hprim hP2 hvab hcad hab hcon) hcon
+  have had : a ≠ d := by rw [hcoll]; exact hcd
+  by_cases hbd : b = d
+  · exact hbd
+  · exact (three_starts_ne (a := a) (b := b) (c := d) hG hL hLG hprim hP2
+      hvab hcad hab had) hbd
 
-/-! ## 4. The extension starts, and their distinctness -/
+/-! ## 4. The extension starts carry a common `(L-1)`-mer -/
 
 /-- **The two extension starts of a pair carry a common `(L-1)`-mer.**  The
 deterministic maximal extension of a pair of distinct starts that agree on
-`L - 1` positions is a maximal repeat of length `≥ L - 1` (`maxPair_isRepeat`),
-and two copies of a repeat of length `≥ L - 1` agree on their first `L - 1`
-positions --- which is the `(L-1)`-mer statement. -/
+`L - 1` positions is a maximal repeat of length `≥ L - 1`
+(`maxPair_isRepeat`, i.e. `R1` at `n = 2`), and two copies of a repeat of length
+`≥ L - 1` agree on their first `L - 1` positions --- which is exactly the
+`(L-1)`-mer statement.  So the head of a chord's backward list is again a
+chord, and the chord structure is what the coalescence proof slides along. -/
 theorem vtx_maxPairStart {a b : Fin G} (hL : 2 ≤ L) (hLG : L ≤ G)
     (hprim : RepeatAdapter.IsPrimitive hG S) (hab : a ≠ b)
     (hag : ∀ d : Fin (L - 1), cyc hG S (a.val + d.val) = cyc hG S (b.val + d.val)) :
-    vtx hG L S (maxPairStart hG S a b) = vtx hG L S (maxPairStart hG S b a) :=
-  (vtx_eq_iff hG S).mpr fun d =>
-    (maxPair_isRepeat hG S hprim hab (by omega) (by omega) hag).2.2.2.1
-      ⟨d.val, lt_of_lt_of_le d.isLt (by omega)⟩
-
-/-- **The two extension starts of a pair of distinct starts are distinct.**
-So `{maxPairStart a b, maxPairStart b a}` really is a two-element set, and
-"the two maximal extensions coincide" is a substantive statement rather than a
-tautology. -/
-theorem maxPairStart_swap {a b : Fin G} (hab : a ≠ b) :
-    maxPairStart hG S a b ≠ maxPairStart hG S b a := by
-  rw [maxPairStart_eq hG S, maxPairStart_eq hG S, pairBack_comm hG S b.val a.val]
-  intro hcon
-  apply hab
-  apply Fin.ext
-  have h1 := congrArg Fin.val hcon
-  simp only [Fin.mk, Fin.val_mk] at h1
-  rw [← pairBack_comm hG S b.val a.val] at h1
-  rw [Nat.add_right_cancel h1, Nat.mod_eq_of_lt a.isLt,
-    Nat.mod_eq_of_lt b.isLt]
+    vtx hG L S (maxPairStart hG S a b) = vtx hG L S (maxPairStart hG S b a) := by
+  obtain ⟨hR, hℓ'⟩ := maxPair_isRepeat hG S hprim hab (by omega) (by omega) hag
+  refine (vtx_eq_iff hG S).mpr fun d => ?_
+  exact hR.2.2.2.1 ⟨d.val, lt_of_lt_of_le d.isLt hℓ'⟩
 
 /-! ## 5. The target, and the one ingredient it is reduced to -/
 
