@@ -33,15 +33,18 @@ Two points in the existing write-up are settled by what is proved here.
   would exclude is the *unbounded* case, and that case is excluded here by
   a weaker and more local hypothesis: the two preceding symbols must differ
   (`preceding_eq_of_agrees_ge`).
-* **The remaining gap is one-sided and now explicit.**
-  `maximalRepeat_of_branch` needs `Preceding a ≠ Preceding b` at the two
-  *given* branch occurrences.  What is still missing is the
-  backward-extension step producing such a pair, and then the dichotomy of
-  step 3 (three occurrences of one branch object, or two interleaved pairs
-  of extended occurrences).  §3 below is a concrete, kernel-checked
-  instance of a branch pair that needs exactly one backward step; §4
-  assembles the two disjuncts of the target from the repeats obtained here;
-  §5 names the remaining gap as a `Prop`, unproved, for the record.
+* **The remaining gap is now one-sided and explicit.**  Step 2 --- turning a
+  branch pair into a maximal repeat of length `≥ L-1` --- is proved in full
+  for a **primitive** truth, at *arbitrary* starts
+  (`maximalRepeat_of_branch_backward`): the two occurrences are moved back
+  together by the *maximal backward step* `p`, at which the two preceding
+  symbols differ and the extended pair still spells the same `(L-1)`-mer.
+  What is still missing is the dichotomy of step 3 (three occurrences of one
+  branch object, or two interleaved pairs of extended occurrences).  §3
+  below is a concrete, kernel-checked instance of a branch pair that needs
+  a backward step; §4 assembles the two disjuncts of the target from the
+  repeats obtained here; §5 names the remaining gap as a `Prop`, unproved,
+  for the record.
 
 ## What is proved, and what is not
 
@@ -53,19 +56,43 @@ Two points in the existing write-up are settled by what is proved here.
 * **Proved (kernel-checked).**  §3a: the backward half of step 2 ---
   `BackAgrees`, `max_back_agrees` (how far one must step backwards) and
   `preceding_ne_of_max_back` (at a maximal backward step of size `p < G`
-  the backward-extended pair has differing preceding symbols, so
-  `maximalRepeat_of_branch` applies to it).
+  the pair `prevPos^[p] a`, `prevPos^[p] b` has differing preceding symbols,
+  so `maximalRepeat_of_branch` applies to it).
+* **Proved (kernel-checked).**  §4a: the whole index arithmetic of the
+  backward step.  `agrees_of_backAgrees` composes a forward agreement of
+  length `e₀` at `(a, b)` with a backward agreement of size `p` into an
+  agreement of length `e₀ + p` at `(prevPos^[p] a, prevPos^[p] b)`, at the
+  residue level (`BackAgreesE`, `backResidue`, `backResidue_step`) with no
+  off-by-one: `BackAgrees p` covers the positions `a-1, …, a-p`, so the
+  composition needs exactly `BackAgrees p` and the maximal step supplies it.
+* **Proved (kernel-checked).**  §4a.3: the **full-period case is excluded,
+  rigorously, and primitively**.  `not_primitive_of_backAgrees_G` turns a
+  backward agreement over a full turn at two distinct starts into
+  shift-invariance, i.e. non-primitivity
+  (`RepeatAdapter.not_primitive_of_ge_G_agree`); `exists_backStep_lt_G`
+  concludes `p < G` from primitivity.  This is the only place in the module
+  where primitivity is used, and it is used for no other purpose: the
+  maximal extension of §2 needs no primitivity, because the length it
+  produces is bounded by `|S|` by construction (§2).
+* **Proved (kernel-checked).**  `maximalRepeat_of_branch_backward`: for a
+  primitive truth, two distinct occurrences of one `(L-1)`-mer, at
+  *arbitrary* starts, extend to a maximal repeat of length `≥ L-1` whose two
+  starts are the two occurrences moved back together by the same maximal
+  backward amount.  The theorem the `#89` route consumes: minimal
+  hypotheses (`2 ≤ L`, `a ≠ b`, equal `(L-1)`-mers, primitivity), no
+  `Preceding a ≠ Preceding b`, and a length bound that follows from
+  primitivity rather than being assumed.
 * **Proved (kernel-checked).**  `interleaved_disjunct` and `triple_disjunct`:
   the two disjuncts of `AssemblyP1.BBTEulerian.LongObstruction` are
   *assembled* from repeats of length `≥ L-1` obtained in this module, so
   the target of the `#89` dichotomy is reachable from these objects.
-* **Not proved.**  The index arithmetic that a backward step of size `p`
-  combined with a forward agreement of length `e₀` yields an agreement of
-  length `e₀ + p` at the extended pair; this is what is needed to compose
-  §3a with §2, and it is stated as such in §3a.  Nor is `EulerianCycleObstruction`
-  itself, i.e. the dichotomy (step 3).  `EulerianCycleObstruction` remains
-  the single open input of the exported population theorem; no `sorry`, no
-  `admit`, no new axiom.
+* **Not proved.**  `EulerianCycleObstruction` itself, i.e. the dichotomy
+  (step 3): that a branch vertex of the condensed `(L-1)`-mer multigraph
+  carries either three occurrences spelling a maximal triple repeat, or two
+  pairs of occurrences of *different* branch objects whose extended maximal
+  repeats interleave.  Step 2, including the periodic case, is no longer
+  part of the gap.  `EulerianCycleObstruction` remains the single open input
+  of the exported population theorem; no `sorry`, no `admit`, no new axiom.
 -/
 
 set_option maxHeartbeats 800000
@@ -341,8 +368,9 @@ the circle, so the shift from one to the other is a period, which is
 `preceding_eq_of_agrees_ge`'s alternative for the forward direction.
 
 The arithmetic that combines a backward step of `p` with a forward
-agreement of length `e₀` into an agreement of length `e₀ + p` is **not**
-carried out here; see the docstring of the module. -/
+agreement of length `e₀` into an agreement of length `e₀ + p` is carried out
+in §4a below (`agrees_of_backAgrees`), together with the exclusion of the
+periodic case `p = G` (§4a.3). -/
 
 /-- **The two occurrences agree at the `p` positions immediately
 preceding them**: stepping backwards from `a` and from `b` by the same
@@ -404,12 +432,14 @@ theorem max_back_agrees (a b : Fin G) :
 
 /-- **Stepping backwards, the preceding symbols eventually differ.**  If
 `p < G` is a maximal backward agreement of `a`, `b`, then the occurrences
-one step *before* the backward-extended pair `prevPos^[p] a`,
-`prevPos^[p] b` have different preceding symbols, i.e. that pair is a
-pair to which `maximalRepeat_of_branch` applies.  This is the
-backward-extension step of the `#89` route, isolated from the index
-arithmetic that would also have to show the extended pair still agrees
-forward. -/
+`prevPos^[p] a`, `prevPos^[p] b` have different *preceding* symbols, so that
+pair is a pair to which `maximalRepeat_of_branch` applies.
+
+The indexing is worth spelling out.  `BackAgrees p` covers the indices
+`0, …, p-1`, i.e. the positions `a-1, a-2, …, a-p`; the failing index of
+`¬ BackAgrees (p+1)` is `p`, i.e. the position `a-p-1`.  The *preceding*
+symbol of `prevPos^[p] a` is the symbol at `a-p-1`, so the shift is `p` and
+the same `p` that §4a.2 shifts by. -/
 theorem preceding_ne_of_max_back (a b : Fin G) {p : ℕ} (hp : p < G)
     (hagp : BackAgrees hG S a b p) (hnot : ¬ BackAgrees hG S a b (p + 1)) :
     (mkGenome hG S).Preceding ((prevPos hG)^[p] a)
@@ -421,15 +451,11 @@ theorem preceding_ne_of_max_back (a b : Fin G) {p : ℕ} (hp : p < G)
     by_contra hc
     have hlt : d.val < p := by omega
     exact hd (hagp ⟨d.val, hlt⟩)
-  have hd' : ¬ (cyc hG S (prevPos hG ((prevPos hG)^[p] a)).val
-      = cyc hG S (prevPos hG ((prevPos hG)^[p] b)).val) := by
-    intro hz
-    have hdEq : d = ⟨p, by omega⟩ := Fin.ext hdp
-    rw [hdEq] at hd
-    exact hd hz
+  have hdEq : d = ⟨p, by omega⟩ := Fin.ext hdp
+  rw [hdEq] at hd
   intro h
   rw [preceding_eq_prevPos hG S, preceding_eq_prevPos hG S] at h
-  exact hd' h
+  exact hd h
 
 /-! ## 4. Assembling the two disjuncts of `LongObstruction` -/
 
@@ -458,28 +484,40 @@ theorem triple_disjunct {L : ℕ} {e a b c : Fin G}
 
 /-! ## 4a. The index arithmetic: composing a backward step with a forward agreement
 
-This section carries out the step the module docstring named as the missing
-one, and it is the whole of the index arithmetic of the `#89` route.
+This section carries out the index arithmetic of the `#89` route, and it is
+where the forward and backward halves of step 2 are joined.
 
 The point of the composition is this.  Write `δ` for the shift from the
 first occurrence to the second.  `Agrees e₀ a b` says the word is
-`δ`-invariant on the arc `[a, a + e₀)`, and `BackAgrees (p+1) a b` says it
-is `δ`-invariant on the arc `[a - p, a]`.  The two arcs share the endpoint
-`a` and together form the arc `[a - p, a + e₀)`, of length `e₀ + p`; that
-arc is read off the *backward-shifted* pair `prevPos^[p] a`,
-`prevPos^[p] b` (whose length-`e₀ + p` window is exactly `[a - p, a + e₀)`).
-So
+`δ`-invariant on the arc `[a, a + e₀)`, and `BackAgrees p a b` says it is
+`δ`-invariant on the arc `[a - p, a)`.  The two arcs share no position and
+together form the arc `[a - p, a + e₀)`, of length `e₀ + p`; that arc is
+exactly the length-`e₀ + p` window of the *backward-shifted* pair
+`prevPos^[p] a`, `prevPos^[p] b`.  So
 
-  `Agrees e₀ a b → BackAgrees (p+1) a b → Agrees (e₀ + p) (prevPos^[p] a) (prevPos^[p] b)`
+  `Agrees e₀ a b → BackAgrees p a b → Agrees (e₀ + p) (prevPos^[p] a) (prevPos^[p] b)`
 
-and, taking `e₀ = L - 1`, the backward-extended branch pair is a repeated
-`(L-1)`-mer *and* one that has been extended backwards by `p` symbols.
-This is the correct long maximal repeat of the pair: not the raw pair (which
-may carry no maximal repeat at all, §3) and not the pair at the given
-starts, but the pair read at the maximal backward step.
+which is `agrees_of_backAgrees` below.  Taking `e₀ = L - 1`, the
+backward-extended branch pair spells the same `(L-1)`-mer *and* has been
+extended backwards by `p` symbols: this is the correct long maximal repeat
+of the pair --- not the raw pair (which may carry no maximal repeat at all,
+§3) and not the pair at the given starts, but the pair read at the maximal
+backward step.
+
+The indexing is the delicate part, and it is worth being explicit about it.
+`BackAgrees p a b` covers the indices `0, …, p-1` of
+`prevPos ∘ (prevPos^[·])`, i.e. the positions `a-1, a-2, …, a-p`; so
+`p = 1` says the two *preceding* symbols agree, and the position `a - p` ---
+the first position of the composed arc --- is the *last* index covered.  The
+failing index of `¬ BackAgrees (p+1) a b` is `p`, i.e. the position
+`a - p - 1`, which is the preceding symbol of `prevPos^[p] a`.  Both facts
+are used verbatim: the composition consumes `BackAgrees p` and the
+preceding-symbol difference comes from the *same* `p`, so that the pair the
+maximal repeat is built at is exactly the pair whose window the composition
+produced.
 
 The excluded case is the periodic one, and it is handled by primitivity and
-by nothing else (§4a.4): a backward agreement of a *full turn* makes the
+by nothing else (§4a.3): a backward agreement of a *full turn* makes the
 shift `δ` a period of the word, so for a primitive word it forces
 `a = b`.  Hence at two distinct occurrences the maximal backward step is
 strictly below `G`, and `prevPos^[p] a` is a well-formed start distinct from
@@ -495,17 +533,64 @@ theorem cyc_congr' (hG : 0 < G) (S : Fin G → α) {x y : ℕ}
   unfold cyc
   exact congrArg S (Fin.ext h)
 
+/-- `cyc` at `n` equals `cyc` at `n % G`. -/
+theorem cyc_mod' (hG : 0 < G) (S : Fin G → α) (n : ℕ) : cyc hG S n = cyc hG S (n % G) :=
+  cyc_congr' hG S (Nat.mod_mod n G).symm
+
+/-- **Modulus cancellation below `G`**: two numbers in `[0, G)` with equal
+residues are equal. -/
+theorem mod_inj_of_lt (hG : 0 < G) {x y : ℕ} (hx : x < G) (hy : y < G)
+    (h : x % G = y % G) : x = y := by
+  rw [Nat.mod_eq_of_lt hx, Nat.mod_eq_of_lt hy] at h
+  exact h
+
+/-- **Modulus cancellation on `[1, G]`**: two numbers in `[1, G]` with equal
+residues are equal.  The `0 < ·` hypotheses are needed precisely to separate
+the pair `0, G`, which shares a residue. -/
+theorem mod_inj_of_le' (hG : 0 < G) {x y : ℕ} (hx : 0 < x) (hx' : x ≤ G)
+    (hy : 0 < y) (hy' : y ≤ G) (h : x % G = y % G) : x = y := by
+  by_cases hxG : x = G
+  · by_cases hyG : y = G
+    · omega
+    · have hy0 : y % G = y := Nat.mod_eq_of_lt (by omega)
+      rw [hxG, Nat.mod_self, hy0] at h
+      omega
+  · by_cases hyG : y = G
+    · have hx0 : x % G = x := Nat.mod_eq_of_lt (by omega)
+      rw [hx0, hyG, Nat.mod_self] at h
+      omega
+    · exact mod_inj_of_lt hG (by omega) (by omega) h
+
+/-- Adding `G` does not change the residue. -/
+theorem mod_add_self (hG : 0 < G) (n : ℕ) : (n + G) % G = n % G := by
+  simp
+
+/-- **A congruence of residues gives a congruence of `cyc`.** -/
+theorem cyc_congr_modEq (hG : 0 < G) (S : Fin G → α) {x y : ℕ} (h : Nat.ModEq G x y) :
+    cyc hG S (x % G) = cyc hG S (y % G) := congrArg (cyc hG S) h
+
+/-- Adding a positive number and subtracting `1` again is adding that number
+minus `1`; stated because the truncated-subtraction rearrangement it is used
+for is not something `omega` performs. -/
+theorem add_sub_one (a b : ℕ) (h : 0 < b) : a + (b - 1) = a + b - 1 := by
+  obtain ⟨c, rfl⟩ := Nat.exists_eq_add_of_le h
+  have e : 0 + 1 + c - 1 = c := by omega
+  rw [e]
+  have e2 : a + (0 + 1 + c) - 1 = a + c := by omega
+  rw [e2]
+
 /-- **One backward step, in residue form.**  Stepping backwards from `v` and
 taking the residue agrees with stepping backwards from `v % G`. -/
 theorem mod_prev_step (hG : 0 < G) (v : ℕ) :
     ((v % G) + G - 1) % G = (v + G - 1) % G := by
   have h : Nat.ModEq G (v % G) v := Nat.mod_mod v G
-  rw [Nat.ModEq] at h ⊢
-  have h1 : (v % G) + G - 1 = v % G + (G - 1) := by omega
-  have h2 : v + G - 1 = v + (G - 1) := by omega
-  rw [h1, h2]
-  have h3 := h.add_right (G - 1)
-  rwa [Nat.ModEq] at h3
+  calc ((v % G) + G - 1) % G = (v % G + (G - 1)) % G := by
+        have e := add_sub_one (v % G) G hG
+        rw [e]
+    _ = (v + (G - 1)) % G := h.add_right (G - 1)
+    _ = (v + G - 1) % G := by
+        have e := (add_sub_one v G hG).symm
+        rw [e]
 
 /-- **`d` backward steps from `x` land at residue `x.val + G - d`**, for
 `d ≤ G`.  This is the only place the `Fin` index arithmetic of the
@@ -514,119 +599,205 @@ composition enters; the nonneg form `x.val + G - d` is why the bound
 theorem backResidue (hG : 0 < G) (d : ℕ) (x : Fin G) (hd : d ≤ G) :
     (prevPos hG)^[d] x = ⟨(x.val + G - d) % G, Nat.mod_lt _ hG⟩ := by
   induction d with
-  | zero => simp
-  | succ d ih =>
-      rw [Function.iterate_succ_apply', ih (d := d) (by omega)]
+  | zero =>
+      have e1 : (prevPos hG)^[0] x = x := Function.iterate_zero_apply (f := prevPos hG) x
       apply Fin.ext
+      rw [e1]
+      have e : (x.val + G - 0) % G = x.val := by
+        rw [show x.val + G - 0 = x.val + G by omega, mod_add_self hG]
+        exact Nat.mod_eq_of_lt (a := x.val) (b := G) x.isLt
+      exact e.symm
+  | succ d ih =>
+      rw [Function.iterate_succ_apply', ih (by omega)]
+      apply Fin.ext
+      simp only [prevPos]
       have h1 := mod_prev_step hG (x.val + G - d)
-      have h2 : x.val + G - d + G - 1 = x.val + G - (d + 1) + G := by omega
+      have h2 : x.val + G - d + G - 1 = (x.val + G - (d + 1)) + G := by omega
       rw [h1, h2, Nat.add_mod_right]
-      omega
+
+/-- **One backward step is injective**: `prevPos` is a permutation of the
+circle, being the translation by `-1`. -/
+theorem prevPos_injective (hG : 0 < G) : Function.Injective (prevPos hG) := by
+  intro x y h
+  have h1 := congrArg Fin.val h
+  simp only [prevPos] at h1
+  -- a difference of two numbers of `[0, G)` that is a multiple of `G` vanishes
+  have key : ∀ u v : ℕ, u - v < G → G ∣ u - v → u - v = 0 := by
+    intro u v hlt hd
+    have hz : (u - v) % G = 0 := Nat.mod_eq_zero_of_dvd hd
+    rw [Nat.mod_eq_of_lt hlt] at hz
+    exact hz
+  have hdvd : G ∣ (y.val + G - 1) - (x.val + G - 1) := Nat.ModEq.dvd' h1
+  have h0 := key (y.val + G - 1) (x.val + G - 1) (by omega) hdvd
+  have hdvd' : G ∣ (x.val + G - 1) - (y.val + G - 1) := Nat.ModEq.dvd' h1.symm
+  have h0' := key (x.val + G - 1) (y.val + G - 1) (by omega) hdvd'
+  apply Fin.ext
+  have hle : x.val + G - 1 ≤ y.val + G - 1 := Nat.sub_eq_zero_iff_le.mp h0'
+  have hle' : y.val + G - 1 ≤ x.val + G - 1 := Nat.sub_eq_zero_iff_le.mp h0
+  omega
+
+/-- **Backwards iteration is injective**, being an iterate of an injective
+map. -/
+theorem prevIter_injective (hG : 0 < G) (p : ℕ) :
+    Function.Injective ((prevPos hG)^[p]) := by
+  induction p with
+  | zero => intro x y h; exact h
+  | succ p ih =>
+      intro x y h
+      have h' : (prevPos hG)^[p] (prevPos hG x) = (prevPos hG)^[p] (prevPos hG y) := by
+        simpa [Function.iterate_succ_apply, Function.comp_def] using h
+      exact prevPos_injective hG (ih h')
+
+/-- **Backwards iteration is injective**, so the two backward-shifted
+occurrences of a branch pair are two distinct starts. -/
+theorem prevIter_ne {a b : Fin G} {p : ℕ} (hp : p ≤ G) (hab : a ≠ b) :
+    (prevPos hG)^[p] a ≠ (prevPos hG)^[p] b := by
+  intro h
+  apply hab
+  exact prevIter_injective hG p h
+
+/-- **`cyc` ignores a full turn.** -/
+theorem cyc_add_G (hG : 0 < G) (S : Fin G → α) (n : ℕ) : cyc hG S (n + G) = cyc hG S n := by
+  have e : (n + G) % G = n % G := by simp
+  rw [cyc_mod' hG S, e, (cyc_mod' hG S _).symm]
+
+/-- **Reducing the index modulo `G` inside `cyc`**: for a start `x` and any
+offset, the two positions differ by a multiple of `G`. -/
+theorem cyc_add (hG : 0 < G) (S : Fin G → α) (x : Fin G) (j : ℕ) :
+    cyc hG S (x.val + j) = cyc hG S (x.val + j % G) := by
+  calc cyc hG S (x.val + j) = cyc hG S ((x.val + j) % G) := cyc_mod' hG S _
+    _ = cyc hG S (x.val + j % G) := by
+        have e : (x.val + j) % G = (x.val + j % G) % G := by
+          rw [Nat.add_mod, Nat.mod_eq_of_lt (a := x.val) (b := G) x.isLt]
+        rw [e]
+        exact (cyc_mod' hG S _).symm
+
+/-- The form of `cyc_add` that reads the residue of a *sum*; the composition
+below always knows the residue of a single start. -/
+theorem cyc_add_mod (hG : 0 < G) (S : Fin G → α) (x : Fin G) (j : ℕ) :
+    cyc hG S (x.val + j % G) = cyc hG S ((x.val + j) % G) :=
+  (cyc_add hG S x j).symm.trans (cyc_mod' hG S _)
 
 /-! ### 4a.2 The backward agreement in residue form, and the composition -/
 
 /-- **Backward agreement, reindexed as an arc.**  `BackAgreesE p a b` says
 the word is invariant under the shift `a ↦ b` at the `p` positions
-`a.val + G, a.val + G - 1, …, a.val + G - p + 1`, i.e. on the arc of `p`
-positions ending at `a`.  This is the form in which the backward agreement
-composes with a forward one. -/
+`a-1, a-2, …, a-p`, i.e. on the arc of `p` positions immediately *preceding*
+`a`.  This is the form in which the backward agreement composes with a
+forward one, and it is the form in which the `Fin` index arithmetic of §4a.1
+applies. -/
 def BackAgreesE (hG : 0 < G) (S : Fin G → α) (a b : Fin G) (p : ℕ) : Prop :=
-  ∀ j : ℕ, j < p → cyc hG S (a.val + G - j) = cyc hG S (b.val + G - j)
+  ∀ j : ℕ, j < p → cyc hG S (a.val + G - 1 - j) = cyc hG S (b.val + G - 1 - j)
 
-/-- **Backward agreement is the arc statement, for `p ≤ G + 1`.**  This is
-the identification of the `prevPos`-iteration definition of §3a with the
-residue form; it is the only hypothesis of §4a.3 besides the two agreements
-themselves. -/
+/-- **The residue form of one backward step**: stepping `j` times backwards
+and then once more lands at residue `x.val + G - 1 - j`.  This is
+`backResidue` at `j + 1`, and the bound `j + 1 ≤ G` is why the iff below
+needs `p ≤ G`. -/
+theorem backResidue_step (hG : 0 < G) (j : ℕ) (x : Fin G) (hj : j + 1 ≤ G) :
+    (prevPos hG ((prevPos hG)^[j] x)).val = (x.val + G - 1 - j) % G := by
+  have heq : (prevPos hG)^[j + 1] x = prevPos hG ((prevPos hG)^[j] x) := by
+    have h2 : (prevPos hG)^[1 + j] x = prevPos hG ((prevPos hG)^[j] x) :=
+      Function.iterate_add_apply _ _ _ _
+    rw [show 1 + j = j + 1 from by omega] at h2
+    exact h2
+  rw [← heq, backResidue hG (j + 1) x hj]
+  have hx : x.val + G - (j + 1) = x.val + G - 1 - j := by omega
+  simp only
+  exact congrArg (fun t : ℕ => t % G) hx
+
+/-- **The `cyc`-form of one backward step.** -/
+theorem cyc_back_step (hG : 0 < G) (S : Fin G → α) {x : Fin G} {j : ℕ} (hj : j + 1 ≤ G) :
+    cyc hG S (prevPos hG ((prevPos hG)^[j] x)).val
+      = cyc hG S (x.val + G - 1 - j) := by
+  rw [backResidue_step hG j x hj]
+  exact (cyc_mod' hG S _).symm
+
+/-- **Backward agreement is the arc statement, for `p ≤ G`.**  This is the
+identification of the `prevPos`-iteration definition of §3a with the
+residue form; it is the only hypothesis of the composition besides the two
+agreements themselves. -/
 theorem backAgrees_iff_backAgreesE (hG : 0 < G) (S : Fin G → α) (a b : Fin G) (p : ℕ)
-    (hp : p ≤ G + 1) : BackAgrees hG S a b p ↔ BackAgreesE hG S a b p := by
+    (hp : p ≤ G) : BackAgrees hG S a b p ↔ BackAgreesE hG S a b p := by
   constructor
   · intro h j hj
-    have hj' : j ≤ G := by omega
-    have hr : (prevPos hG)^[j] a = ⟨(a.val + G - j) % G, Nat.mod_lt _ hG⟩ :=
-      backResidue hG j a hj'
-    have hr' : (prevPos hG)^[j] b = ⟨(b.val + G - j) % G, Nat.mod_lt _ hG⟩ :=
-      backResidue hG j b hj'
+    have hj' : j + 1 ≤ G := by omega
     have he := h ⟨j, by omega⟩
-    have hv : cyc hG S ((prevPos hG)^[j] a).val = cyc hG S (a.val + G - j) := by
-      rw [hr]
-      exact (cyc_congr' hG S rfl).symm
-    have hv' : cyc hG S ((prevPos hG)^[j] b).val = cyc hG S (b.val + G - j) := by
-      rw [hr']
-      exact (cyc_congr' hG S rfl).symm
-    rw [hv, hv'] at he
+    rw [cyc_back_step hG S (x := a) (j := j) hj', cyc_back_step hG S (x := b) (j := j) hj'] at he
     exact he
-  · intro h d hd
-    have hd' : d.val ≤ G := by omega
-    have hr : (prevPos hG)^[d.val] a = ⟨(a.val + G - d.val) % G, Nat.mod_lt _ hG⟩ :=
-      backResidue hG d.val a hd'
-    have hr' : (prevPos hG)^[d.val] b = ⟨(b.val + G - d.val) % G, Nat.mod_lt _ hG⟩ :=
-      backResidue hG d.val b hd'
+  · intro h d
+    have hd := d.isLt
+    have hd' : d.val + 1 ≤ G := by omega
     have he := h d.val (by omega)
-    have hv : cyc hG S ((prevPos hG)^[d.val] a).val = cyc hG S (a.val + G - d.val) := by
-      rw [hr]
-      exact (cyc_congr' hG S rfl).symm
-    have hv' : cyc hG S ((prevPos hG)^[d.val] b).val = cyc hG S (b.val + G - d.val) := by
-      rw [hr']
-      exact (cyc_congr' hG S rfl).symm
-    rw [← hv, ← hv']
+    rw [cyc_back_step hG S (x := a) (j := d.val) hd',
+      cyc_back_step hG S (x := b) (j := d.val) hd']
     exact he
 
 /-- **The composition: a backward step of size `p` and a forward agreement
 of length `e₀` give an agreement of length `e₀ + p` at the
 backward-shifted pair.**
 
-The proof is the arc computation described in the section docstring: for a
+The proof is the arc computation described in the §4a docstring: for a
 position `k` of the new window, either `k < p`, in which case it is read
-from the backward agreement at `j = p - k`, or `p ≤ k`, in which case it is
-read from the forward agreement at `k - p`.  Both readings are of the two
-symbols shifted by the *same* amount from `a` and from `b`, which is what
-makes them comparable. -/
+from the backward agreement at `j = p - 1 - k` (the position `a-1-j` of the
+new window is `a-p+k`), or `p ≤ k`, in which case it is read from the
+forward agreement at `k - p`.  Both readings are of the two symbols shifted
+by the *same* amount from `a` and from `b`, which is what makes them
+comparable. -/
 theorem agrees_of_backAgrees {a b : Fin G} {e₀ p : ℕ} (hp : p ≤ G)
-    (hf : Agrees hG S e₀ a b) (hb : BackAgrees hG S a b (p + 1)) :
+    (hf : Agrees hG S e₀ a b) (hb : BackAgrees hG S a b p) :
     Agrees hG S (e₀ + p) ((prevPos hG)^[p] a) ((prevPos hG)^[p] b) := by
-  have hbe : BackAgreesE hG S a b (p + 1) :=
-    (backAgrees_iff_backAgreesE hG S a b (p + 1) (by omega)).mp hb
-  have hA : ((prevPos hG)^[p] a).val % G = (a.val + G - p) % G := by
+  have hbe : BackAgreesE hG S a b p :=
+    (backAgrees_iff_backAgreesE hG S a b p hp).mp hb
+  have hA : Nat.ModEq G ((prevPos hG)^[p] a).val (a.val + G - p) := by
     rw [backResidue hG p a hp]
-    exact rfl
-  have hB : ((prevPos hG)^[p] b).val % G = (b.val + G - p) % G := by
+    exact Nat.mod_eq_of_lt (Nat.mod_lt _ hG)
+  have hB : Nat.ModEq G ((prevPos hG)^[p] b).val (b.val + G - p) := by
     rw [backResidue hG p b hp]
-    exact rfl
+    exact Nat.mod_eq_of_lt (Nat.mod_lt _ hG)
   intro k
   by_cases hk : k.val < p
-  · -- the position is read from the backward agreement
-    have hj : p - k.val < p + 1 := by omega
-    have hjpos : 0 < p - k.val := by omega
-    have h := hbe (p - k.val) hj
-    have h1 : ((prevPos hG)^[p] a).val + k.val % G
-        = (a.val + G - p + k.val) % G := by
-      rw [← hA, Nat.add_mod_eq_add_mod_right k.val]
-    have h2 : ((prevPos hG)^[p] b).val + k.val % G
-        = (b.val + G - p + k.val) % G := by
-      rw [← hB, Nat.add_mod_eq_add_mod_right k.val]
-    have h3 : (a.val + G - p + k.val) % G = (a.val + G - (p - k.val)) % G := by
-      congr 1
-      omega
-    have h4 : (b.val + G - p + k.val) % G = (b.val + G - (p - k.val)) % G := by
-      congr 1
-      omega
-    rw [h1, h2, h3, h4] at h
-    exact h
-  · -- the position is read from the forward agreement
+  · -- the position is read from the backward agreement, at `j = p-1-k`
+    have h := hbe (p - 1 - k.val) (by omega)
+    have hja : Nat.ModEq G (((prevPos hG)^[p] a).val + k.val) (a.val + G - 1 - (p - 1 - k.val)) := by
+      have hme := hA.add_right k.val
+      rw [show a.val + G - p + k.val = a.val + G - 1 - (p - 1 - k.val) from by omega] at hme
+      exact hme
+    have hjb : Nat.ModEq G (((prevPos hG)^[p] b).val + k.val) (b.val + G - 1 - (p - 1 - k.val)) := by
+      have hme := hB.add_right k.val
+      rw [show b.val + G - p + k.val = b.val + G - 1 - (p - 1 - k.val) from by omega] at hme
+      exact hme
+    calc cyc hG S (((prevPos hG)^[p] a).val + k.val)
+        = cyc hG S (((prevPos hG)^[p] a).val + k.val % G) := cyc_add hG S _ _
+      _ = cyc hG S ((((prevPos hG)^[p] a).val + k.val) % G) := cyc_add_mod hG S _ _
+      _ = cyc hG S ((a.val + G - 1 - (p - 1 - k.val)) % G) := cyc_congr_modEq hG S hja
+      _ = cyc hG S (a.val + G - 1 - (p - 1 - k.val)) := (cyc_mod' hG S _).symm
+      _ = cyc hG S (b.val + G - 1 - (p - 1 - k.val)) := h
+      _ = cyc hG S ((b.val + G - 1 - (p - 1 - k.val)) % G) := cyc_mod' hG S _
+      _ = cyc hG S ((((prevPos hG)^[p] b).val + k.val) % G) := (cyc_congr_modEq hG S hjb).symm
+      _ = cyc hG S (((prevPos hG)^[p] b).val + k.val % G) := (cyc_add_mod hG S _ _).symm
+      _ = cyc hG S (((prevPos hG)^[p] b).val + k.val) := (cyc_add hG S _ _).symm
+  · -- the position is read from the forward agreement, at `k - p`
     have hke : k.val - p < e₀ := by omega
-    have h := hf ⟨k.val - p, hke⟩
-    have h1 : ((prevPos hG)^[p] a).val + k.val % G
-        = (a.val + k.val - p) % G := by
-      rw [← hA, Nat.add_mod_eq_add_mod_right k.val]
-      have : a.val + G - p + k.val = a.val + k.val - p + G := by omega
-      rw [this, Nat.add_mod_right]
-    have h2 : ((prevPos hG)^[p] b).val + k.val % G
-        = (b.val + k.val - p) % G := by
-      rw [← hB, Nat.add_mod_eq_add_mod_right k.val]
-      have : b.val + G - p + k.val = b.val + k.val - p + G := by omega
-      rw [this, Nat.add_mod_right]
-    rw [h1, h2] at h
-    exact h
+    have h : cyc hG S (a.val + (k.val - p)) = cyc hG S (b.val + (k.val - p)) := by
+      simpa using hf ⟨k.val - p, hke⟩
+    calc cyc hG S (((prevPos hG)^[p] a).val + k.val)
+        = cyc hG S (((prevPos hG)^[p] a).val + k.val % G) := cyc_add hG S _ _
+      _ = cyc hG S ((((prevPos hG)^[p] a).val + k.val) % G) := cyc_add_mod hG S _ _
+      _ = cyc hG S ((a.val + G - p + k.val) % G) :=
+        cyc_congr_modEq hG S (hA.add_right k.val)
+      _ = cyc hG S (a.val + G - p + k.val) := (cyc_mod' hG S _).symm
+      _ = cyc hG S (a.val + (k.val - p)) := by
+          rw [show a.val + G - p + k.val = (a.val + (k.val - p)) + G from by omega,
+            cyc_add_G hG S]
+      _ = cyc hG S (b.val + (k.val - p)) := h
+      _ = cyc hG S (b.val + (k.val - p) + G) := (cyc_add_G hG S _).symm
+      _ = cyc hG S ((b.val + G - p + k.val) % G) := by
+          rw [show b.val + (k.val - p) + G = b.val + G - p + k.val from by omega,
+            cyc_mod' hG S]
+      _ = cyc hG S ((((prevPos hG)^[p] b).val + k.val) % G) :=
+        (cyc_congr_modEq hG S (hB.add_right k.val)).symm
+      _ = cyc hG S (((prevPos hG)^[p] b).val + k.val % G) := (cyc_add_mod hG S _ _).symm
+      _ = cyc hG S (((prevPos hG)^[p] b).val + k.val) := (cyc_add hG S _ _).symm
 
 /-! ### 4a.3 The periodic case, and why primitivity is the only thing needed for it
 
@@ -644,39 +815,40 @@ where a primitivity hypothesis is used. -/
 /-- **A backward agreement of a full turn forces shift-invariance, hence
 non-primitivity.**  `BackAgrees G a b` at two distinct starts says the word
 is invariant under the shift from `a` to `b` at every position of the
-circle: reindexing by `j = G - 1 - k` turns the `G` backward positions into
-the `G` forward positions of the arc starting at `a + 1`.  This is
+circle: reindexing by `j = G - 1 - d` turns the `G` backward positions into
+the `G` forward positions of the arc starting at `a`.  This is
 `RepeatAdapter.not_primitive_of_ge_G_agree`, at the residue form. -/
 theorem not_primitive_of_backAgrees_G {a b : Fin G} (hab : a ≠ b)
-    (hb : BackAgrees hG S a b G) : ¬ IsPrimitive hG S := by
+    (hb : BackAgrees hG S a b G) : ¬ RepeatAdapter.IsPrimitive hG S := by
   have hbe : BackAgreesE hG S a b G :=
     (backAgrees_iff_backAgreesE hG S a b G (by omega)).mp hb
   have hag : ∀ d : ℕ, d < G →
-      cyc hG S (a.val + 1 + d) = cyc hG S (b.val + 1 + d) := by
+      cyc hG S (a.val + d) = cyc hG S (b.val + d) := by
     intro d hd
     have h := hbe (G - 1 - d) (by omega)
-    have e1 : a.val + G - (G - 1 - d) = a.val + 1 + d := by omega
-    have e2 : b.val + G - (G - 1 - d) = b.val + 1 + d := by omega
+    have e1 : a.val + G - 1 - (G - 1 - d) = a.val + d := by omega
+    have e2 : b.val + G - 1 - (G - 1 - d) = b.val + d := by omega
     rw [e1, e2] at h
     exact h
-  have hab' : (a.val + 1) % G ≠ (b.val + 1) % G := by
+  have hab' : a.val % G ≠ b.val % G := by
     intro h
     apply hab
     apply Fin.ext
-    have := congrArg (fun n : ℕ => n % G) h
-    simpa only [Nat.add_mod] using this
-  exact not_primitive_of_ge_G_agree hG S (a.val + 1) (b.val + 1) G hab' (le_refl G) hag
+    exact mod_inj_of_lt hG a.isLt b.isLt h
+  exact RepeatAdapter.not_primitive_of_ge_G_agree hG S a.val b.val G hab' (le_refl G) hag
 
 /-- **The periodic case is excluded, in the only form needed: at two
 distinct occurrences of a primitive word the maximal backward agreement is
 below `G`.**  This is the composition-hypothesis of §4a.2 discharged for the
 `p` of `max_back_agrees`. -/
-theorem exists_backStep_lt_G {a b : Fin G} (hab : a ≠ b) (hprim : IsPrimitive hG S) :
+theorem exists_backStep_lt_G {a b : Fin G} (hab : a ≠ b) (hprim : RepeatAdapter.IsPrimitive hG S) :
     ∃ p : ℕ, p < G ∧ BackAgrees hG S a b p ∧ ¬ BackAgrees hG S a b (p + 1) := by
   obtain ⟨p, hp, hbp, hnb⟩ := max_back_agrees hG S a b
   by_cases hlt : p < G
-  · exact ⟨p, hlt, hbp, hnb⟩
-  · exact absurd (not_primitive_of_backAgrees_G hG S hab hbp) hprim
+  · exact ⟨p, hlt, hbp, hnb hlt⟩
+  · have hpG : p = G := by omega
+    have hbpG : BackAgrees hG S a b G := by rw [hpG] at hbp; exact hbp
+    exact (not_primitive_of_backAgrees_G hG S hab hbpG hprim).elim
 
 /-! ### 4a.4 The backward maximal extension of a branch pair
 
@@ -687,16 +859,6 @@ The theorem the `#89` route consumes.  Two distinct occurrences of one
 Preceding b` hypothesis is required, which is exactly what §3 shows is not
 available; primitivity is required, and only to exclude the periodic case
 of §4a.3. -/
-
-/-- **Backwards iteration is injective**, so the two backward-shifted
-occurrences of a branch pair are two distinct starts. -/
-theorem prevIter_ne {a b : Fin G} {p : ℕ} (hp : p ≤ G) (hab : a ≠ b) :
-    (prevPos hG)^[p] a ≠ (prevPos hG)^[p] b := by
-  intro h
-  apply hab
-  apply Fin.ext
-  rw [← backResidue hG p a hp, ← backResidue hG p b hp] at h
-  exact Fin.mk.inj h
 
 /-- **An agreement of length `L - 1` is a shared vertex** of the
 `(L-1)`-mer multigraph, i.e. the branch-object hypothesis of §2 in
@@ -709,27 +871,35 @@ theorem vtx_eq_of_agrees {L : ℕ} {a b : Fin G} (hag : Agrees hG S (L - 1) a b)
 /-- **The backward maximal extension of a branch pair.**  See the section
 docstring.  The two starts of the resulting maximal repeat are
 `prevPos^[p] a` and `prevPos^[p] b`, so they are the branch occurrences
-moved back together by one and the same amount. -/
+moved back together by one and the same amount --- the maximal backward
+step, which is exactly the `p` whose failure gives the preceding-symbol
+difference of `preceding_ne_of_max_back`. -/
 theorem maximalRepeat_of_branch_backward {L : ℕ} (hL : 2 ≤ L) {a b : Fin G}
     (hab : a ≠ b) (hvt : vtx hG L S a = vtx hG L S b)
-    (hprim : IsPrimitive hG S) :
+    (hprim : RepeatAdapter.IsPrimitive hG S) :
     ∃ (p e : Fin G), (mkGenome hG S).IsRepeat e
         ((prevPos hG)^[p.val] a) ((prevPos hG)^[p.val] b) ∧ L - 1 ≤ e.val := by
   obtain ⟨p, hp, hbp, hnb⟩ := exists_backStep_lt_G hG S hab hprim
-  -- the two occurrences of the branch object spell the same `(L-1)`-mer
+  have hq : p ≤ G := Nat.le_of_lt hp
+  -- the two occurrences of the branch object spell the same `(L-1)`-mer ...
   have hag0 : Agrees hG S (L - 1) a b := fun d => congrFun hvt d
-  -- ... and so do the two occurrences moved back together: this is the
-  -- composition of §4a.2, `L - 1 ≤ (L - 1) + p`, read backwards.
-  have hag1 : Agrees hG S (L - 1) ((prevPos hG)^[p] a) ((prevPos hG)^[p] b) :=
-    agrees_mono hG S (by omega) (agrees_of_backAgrees hG S hp hag0 hbp)
+  -- ... and so do the occurrences moved back together by the maximal backward
+  -- step: the composition of §4a.2, which adds the `p` backward positions to
+  -- the forward window.
+  have hag1 : Agrees hG S ((L - 1) + p) ((prevPos hG)^[p] a) ((prevPos hG)^[p] b) :=
+    agrees_of_backAgrees hG S hq hag0 hbp
+  have hag2 : Agrees hG S (L - 1) ((prevPos hG)^[p] a) ((prevPos hG)^[p] b) :=
+    agrees_mono hG S (by omega) hag1
+  -- and their preceding symbols differ, by maximality of the backward step
   have hprec : (mkGenome hG S).Preceding ((prevPos hG)^[p] a)
       ≠ (mkGenome hG S).Preceding ((prevPos hG)^[p] b) :=
     preceding_ne_of_max_back hG S a b hp hbp hnb
-  obtain ⟨e, he, hlen⟩ := maximalRepeat_of_branch hG S hL (prevIter_ne hG hp hab)
-    (vtx_eq_of_agrees hG hag1) hprec
+  obtain ⟨e, he, hlen⟩ :=
+    maximalRepeat_of_branch (L := L) (α := α) hG S hL (prevIter_ne hG hq hab)
+      (vtx_eq_of_agrees hG S hag2) hprec
   exact ⟨⟨p, hp⟩, e, he, hlen⟩
 
-/--! ## 5. The remaining gap, stated and left open
+/- ## 5. The remaining gap, stated and left open
 
 Two occurrences of a branch object whose preceding symbols agree are the
 obstruction to step 2 as proved above, and step 3 --- the dichotomy itself
