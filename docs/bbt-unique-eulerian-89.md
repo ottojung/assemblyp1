@@ -97,13 +97,29 @@ period `p` of `S`, extend to a maximal triple repeat of length `≥ K`. Hence
 under `Ukkonen` every `(L-1)`-mer occurs **at most twice** in the primitive
 case, and starts congruent modulo `p` spell the same `(L-1)`-mer.
 
-The period-arithmetic input is in place and kernel-checked
+**Status update (2026-09-27): the primitive half of Lemma 1 is now proved in
+the kernel**, and it is not a re-derivation: the two-sided extension engine is
+`RepeatAdapter.extend_triple` (reached only through
+`¬ RepeatAdapter.HasLongTripleRepeat`), the conversion to the source-faithful
+predicate is `AssemblyP1.P2.noLongTripleRepeat` (`7794603`) and
+`BridgingBridge.isTripleRepeat_of_maximalTriple`, and the multiplicity
+conclusion is `RepeatAdapter.primitive_nodeCount_le_two`. The module
+`AssemblyP1/P2Multiplicity.lean` composes them and adds only the primitivity
+bridge `IsPrimitive.shiftPrimitive` (ported from `1c67a14`), so that the
+hypothesis is the paper's own:
+
+```text
+PopulationReduction.IsPrimitive S + P2 hG L S + 2 ≤ L ≤ G
+  ⟹  ∀ k : Fin (L-1) → α, nodeCount (L := L) hG S k ≤ 2
+```
+
+(`P2Multiplicity.P2.imp_nodeCount_le_two_of_powerPrimitive`, axiom-clean.)
+The **periodic** alternative of Lemma 1 --- the `p`-congruence clause --- is
+outside the population target and is not proved here. The period-arithmetic
+input for it is in place and kernel-checked
 (`period_of_agree_all`, `agree_all_of_period`, `least_period_dvd`,
 `leastPeriod_dvd_period`, `leastPeriod_dvd_G`, `sh_add`, `sh_dvd_trans`,
-`cyc_of_period`, `vtx_eq_of_sh`). What is missing is the **two-sided maximal
-extension** of three agreeing starts: the argument that a maximal element of
-`AgrSet3`, shifted to the left frontier, is a
-`SourceFaithfulIs.Genome.IsTripleRepeat`.
+`cyc_of_period`, `vtx_eq_of_sh`).
 
 The one-sided version is **false**, and the counterexample is worth recording
 because it dictates the shape of the correct statement: for
