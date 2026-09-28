@@ -7,6 +7,7 @@ import AssemblyP1.Issue94OrbitChecks
 import AssemblyP1.Issue94OrbitGeneral
 import AssemblyP1.Issue94Step4Prop
 import AssemblyP1.Issue94Step5Heads
+import AssemblyP1.Issue94Step5NoChord
 import AssemblyP1.P2Multiplicity
 import AssemblyP1.P2RepeatAdapter
 import AssemblyP1.BBTMaximalExtension
@@ -301,3 +302,18 @@ whose second disjunct is already `False`. -/
 #print axioms AssemblyP1.Issue94Step5Heads.head_cex_SameExtension
 #print axioms AssemblyP1.Issue94Step5Heads.heads_of_one_chord_ne
 #print axioms AssemblyP1.Issue94Step5Heads.head_dichotomy_second_is_false
+
+/-! `AssemblyP1.Issue94Step5NoChord` shows that at read length `L = K` a
+primitive circular word has **no chord at all**: two distinct starts agreeing
+on their `(K-1)`-mers would make the word invariant under the nonzero shift
+`(b - a) mod K`, which `IsPrimitive` forbids.  No `P2` hypothesis is used.
+This makes the `L = K` specialisation of the §5 reduction degenerate (it has
+no instance at genome size `= L`); it is *not* progress on `head_dichotomy` at
+`2 ≤ L < K`, which remains open. -/
+#print axioms AssemblyP1.Issue94Step5NoChord.fibre_card
+#print axioms AssemblyP1.Issue94Step5NoChord.one_exception_impossible
+#print axioms AssemblyP1.Issue94Step5NoChord.shift_bijective
+#print axioms AssemblyP1.Issue94Step5NoChord.chord_agreement_off_one
+#print axioms AssemblyP1.Issue94Step5NoChord.chord_at_L_eq_K_shiftInvariant
+#print axioms AssemblyP1.Issue94Step5NoChord.no_chord_at_L_eq_K
+#print axioms AssemblyP1.Issue94Step5NoChord.head_dichotomy_at_genome_eq_read
