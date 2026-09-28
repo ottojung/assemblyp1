@@ -2,6 +2,9 @@ import AssemblyP1.BBTLadder
 import AssemblyP1.BBTCrossingCoalesce
 import AssemblyP1.Issue89GapMap
 import AssemblyP1.Issue94IterSlide
+import AssemblyP1.Issue94OrbitSearch
+import AssemblyP1.Issue94OrbitChecks
+import AssemblyP1.Issue94OrbitGeneral
 import AssemblyP1.P2Multiplicity
 import AssemblyP1.P2RepeatAdapter
 import AssemblyP1.BBTMaximalExtension
@@ -240,3 +243,24 @@ necessary: with the guards only at the endpoint the statement is false at
 #print axioms AssemblyP1.Issue94IterSlide.not_EndpointIter_8_10
 #print axioms AssemblyP1.Issue94IterSlide.FullIter_6_8
 #print axioms AssemblyP1.Issue94IterSlide.NonVacuous_6_10
+
+/-!
+## Board 94, front 94a4: the §5 step-4 obligation, proved in general
+
+`AssemblyP1.Issue94OrbitGeneral` proves `Issue94OrbitSearch.IterStep4` for
+**every** circle size, with no finite search and no `decide`.  The
+observation is that `IterStep4` carries no primitivity hypothesis and that
+`pairBackC hK S a b ≤ K` holds unconditionally, because `pairBackC`
+maximises over a `filter` of `Finset.range (K + 1)`.  So its shift bound
+`ti.val ≤ pairBackC` supplies the `t ≤ K` that the already-proved
+`step4_slide_iterates_word` needs, and step 4's cyclic content is done.
+
+This replaces the `by decide` checks of `IterStep4 5 .. 8`, which reached
+`K = 4` and then exhausted a 30.0 GiB cgroup at `K = 5`.  The §5 step-2
+obligation `Step2_components_are_paths` is **not** settled by this and
+remains a `Prop` with no inhabitant. -/
+
+#print axioms AssemblyP1.Issue94OrbitGeneral.pairBackC_le_K
+#print axioms AssemblyP1.Issue94OrbitGeneral.slideGuards_of_fin
+#print axioms AssemblyP1.Issue94OrbitGeneral.IterStep4_all
+#print axioms AssemblyP1.Issue94OrbitChecks.iterStep4_5_8
