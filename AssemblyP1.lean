@@ -1,6 +1,7 @@
 import AssemblyP1.BBTLadder
 import AssemblyP1.BBTCrossingCoalesce
 import AssemblyP1.Issue89GapMap
+import AssemblyP1.Issue94IterSlide
 import AssemblyP1.P2Multiplicity
 import AssemblyP1.P2RepeatAdapter
 import AssemblyP1.BBTMaximalExtension
@@ -218,3 +219,24 @@ two central `Prop`s; it records exactly what stands between §5 and
 #print axioms AssemblyP1.Issue89GapMap.step1_proved
 #print axioms AssemblyP1.Issue89GapMap.step3_shared_endpoint_forces_pair
 #print axioms AssemblyP1.Issue89GapMap.step5_contradiction
+
+/-!
+## Board 94, second pass: the corrected **iterated** slide statement
+
+`AssemblyP1.Issue94IterSlide` states §5 step 4 in its corrected form --- the
+pair `c, d` slides, not `a, b` --- on the decidable `InterK` layer, with no
+word and no `vtx`, and **proves** it by induction on the number of steps, for
+every `K` and every slide count `n ≤ K`.  The intermediate guards are
+necessary: with the guards only at the endpoint the statement is false at
+`K = 6, 8, 10`. -/
+
+#print axioms AssemblyP1.Issue94IterSlide.inArc_prev_iff
+#print axioms AssemblyP1.Issue94IterSlide.slide_one
+#print axioms AssemblyP1.Issue94IterSlide.slide_iter
+#print axioms AssemblyP1.Issue94IterSlide.IterSlide_of_InterK
+#print axioms AssemblyP1.Issue94IterSlide.step4_slide_iterates_cyclic
+#print axioms AssemblyP1.Issue94IterSlide.step4_slide_iterates_word
+#print axioms AssemblyP1.Issue94IterSlide.not_EndpointIter_6
+#print axioms AssemblyP1.Issue94IterSlide.not_EndpointIter_8_10
+#print axioms AssemblyP1.Issue94IterSlide.FullIter_6_8
+#print axioms AssemblyP1.Issue94IterSlide.NonVacuous_6_10
