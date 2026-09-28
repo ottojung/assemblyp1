@@ -621,7 +621,7 @@ def CrossingChordsCoalesce (L : ℕ) : Prop :=
         AltF hK σ a = b → AltF hK σ b = a → AltF hK σ c = d → AltF hK σ d = c →
         a ≠ c → b ≠ c → a ≠ d → b ≠ d →
         Interleaved (mkGenome hK S) a b c d →
-        SameExtension hK S a b c d
+        SameExtension K hK S a b c d
 
 /-- **The global block lemma of `#89` (`LadderVertexCycle`):** if the support of
 the alternative traversal is a laminar family of blocks --- that is, if
@@ -654,7 +654,7 @@ def LadderVertexCycle (L : ℕ) : Prop :=
         AltF hK σ a = b → AltF hK σ b = a → AltF hK σ c = d → AltF hK σ d = c →
         a ≠ c → b ≠ c → a ≠ d → b ≠ d →
         Interleaved (mkGenome hK S) a b c d →
-        SameExtension hK S a b c d) →
+        SameExtension K hK S a b c d) →
       VertexCycleEq hK L S σ (Equiv.refl (α := Fin K))
 
 end AssemblyP1.BBTLadder

@@ -501,27 +501,30 @@ theorem chord_shift_left (hG : 0 < G) (S : Fin G → α) (a b : Fin G) (ℓ t : 
         = cyc hG S ((b.val + G - t) % G + d.val) := by
   intro d
   rw [cyc_of_start hG S (a.val + G - t) d.val, cyc_of_start hG S (b.val + G - t) d.val]
+  have hβG : pairBack hG S a.val b.val ≤ G := (pairBack_spec hG S a.val b.val).2
   by_cases hdt : d.val < t
   · -- the position lies in the backward agreement
-    have hu : d.val + (pairBack hG S a.val b.val - t) < pairBack hG S a.val b.val := by
-      have _ := (pairBack_spec hG S a.val b.val).2
-      omega
-    have h := (pairBack_spec hG S a.val b.val).1 _ hu
-    convert h using 1 <;> omega
+    have hu : d.val + (pairBack hG S a.val b.val - t) < pairBack hG S a.val b.val := by omega
+    have h := (pairBack_spec hG S a.val b.val).1 (d.val + (pairBack hG S a.val b.val - t)) hu
+    have hidxA : a.val + G - pairBack hG S a.val b.val
+          + (d.val + (pairBack hG S a.val b.val - t)) = a.val + G - t + d.val := by omega
+    have hidxB : b.val + G - pairBack hG S a.val b.val
+          + (d.val + (pairBack hG S a.val b.val - t)) = b.val + G - t + d.val := by omega
+    rw [← hidxA, ← hidxB]; exact h
   · -- the position lies in the original `ℓ`-mer
     have hule : t ≤ d.val := Nat.le_of_not_gt hdt
     have hed : d.val - t < ℓ := by
       have := d.isLt
       omega
     have h := hag ⟨d.val - t, hed⟩
+    have hidxA : a.val + G - t + d.val = a.val + (d.val - t) + G := by omega
+    have hidxB : b.val + G - t + d.val = b.val + (d.val - t) + G := by omega
     have h1 : cyc hG S (a.val + G - t + d.val) = cyc hG S (a.val + (d.val - t)) := by
-      have : d.val = t + (d.val - t) := by omega
-      rw [this, show a.val + G - t + t + (d.val - t) = a.val + G + (d.val - t) from by omega]
-      exact (cyc_plus_G hG S a.val (d.val - t)).symm
+      rw [hidxA]
+      simpa using (cyc_plus_G hG S (a.val + (d.val - t)) 0)
     have h2 : cyc hG S (b.val + G - t + d.val) = cyc hG S (b.val + (d.val - t)) := by
-      have : d.val = t + (d.val - t) := by omega
-      rw [this, show b.val + G - t + t + (d.val - t) = b.val + G + (d.val - t) from by omega]
-      exact (cyc_plus_G hG S b.val (d.val - t)).symm
+      rw [hidxB]
+      simpa using (cyc_plus_G hG S (b.val + (d.val - t)) 0)
     rw [h1, h2]
     exact h
 
@@ -534,47 +537,63 @@ chain is the head of the *orbit*, not of the entry point, so two chords that
 occur at two places of the same chain have the same head.  The upper bound is
 `pairBack_ge` at `β + 1`; the lower bound is the backward agreement at `β`
 restricted to the first `β - t` positions. -/
-theorem pairBack_shift (hG : 0 < G) (S : Fin G → α) (a b t : ℕ)
-    (ht : t ≤ pairBack hG S a.val b.val) :
-    pairBack hG S (a + G - t) (b + G - t) = pairBack hG S a b - t := by
-  have hβG : pairBack hG S a b ≤ G := (pairBack_spec hG S a b).2
+theorem pairBack_shift (hG : 0 < G) (S : Fin G → α) {a b : Fin G} (t : ℕ)
+    (ht : t ≤ pairBack hG S a.val b.val)
+    (hβlt : pairBack hG S a.val b.val < G) :
+    pairBack hG S (a.val + G - t) (b.val + G - t) = pairBack hG S a.val b.val - t := by
+  have hβG : pairBack hG S a.val b.val ≤ G := (pairBack_spec hG S a.val b.val).2
   have _ := hG
   -- lower bound
-  have hlow : backAgree hG S (a + G - t) (b + G - t) (pairBack hG S a b - t) := by
+  have hlow : backAgree hG S (a.val + G - t) (b.val + G - t) (pairBack hG S a.val b.val - t) := by
     intro u hu
-    have hu' : u + t < pairBack hG S a b := by omega
-    have h := (pairBack_spec hG S a b).1 _ hu'
-    convert h using 1 <;> omega
-  have hge1 : pairBack hG S a b - t ≤ pairBack hG S (a + G - t) (b + G - t) :=
-    pairBack_ge hG S (a + G - t) (b + G - t) _ (by omega) hlow
+    have hu' : u < pairBack hG S a.val b.val := by omega
+    have h := (pairBack_spec hG S a.val b.val).1 u hu'
+    have hidxA : a.val + G - t + G - (pairBack hG S a.val b.val - t) + u
+        = (a.val + G - pairBack hG S a.val b.val + u) + G := by omega
+    have hidxB : b.val + G - t + G - (pairBack hG S a.val b.val - t) + u
+        = (b.val + G - pairBack hG S a.val b.val + u) + G := by omega
+    have h1 : cyc hG S (a.val + G - t + G - (pairBack hG S a.val b.val - t) + u)
+        = cyc hG S (a.val + G - pairBack hG S a.val b.val + u) := by
+      rw [hidxA]
+      simpa using (cyc_plus_G hG S (a.val + G - pairBack hG S a.val b.val + u) 0)
+    have h2 : cyc hG S (b.val + G - t + G - (pairBack hG S a.val b.val - t) + u)
+        = cyc hG S (b.val + G - pairBack hG S a.val b.val + u) := by
+      rw [hidxB]
+      simpa using (cyc_plus_G hG S (b.val + G - pairBack hG S a.val b.val + u) 0)
+    rw [h1, h2]
+    exact h
+  have hge1 : pairBack hG S a.val b.val - t ≤ pairBack hG S (a.val + G - t) (b.val + G - t) :=
+    pairBack_ge hG S (a.val + G - t) (b.val + G - t) _ (by omega) hlow
   -- upper bound
   have hupp : ∀ s : ℕ, s ≤ G →
-      backAgree hG S (a + G - t) (b + G - t) s → s ≤ pairBack hG S a b - t := by
+      backAgree hG S (a.val + G - t) (b.val + G - t) s → s ≤ pairBack hG S a.val b.val - t := by
     intro s hs hag
+    have ht' : t ≤ pairBack hG S a.val b.val := ht
     by_contra hcon
-    have hst : pairBack hG S a b - t < s := Nat.lt_of_not_ge hcon
-    have hβ1 : pairBack hG S a b + 1 ≤ G := by omega
-    have hbad : ¬ backAgree hG S a b (pairBack hG S a b + 1) := by
-      intro hok
-      exact absurd (pairBack_ge hG S a b _ hβ1 hok) (by omega)
-    have h0 := hbad 0 (by omega)
-    have hhu : 0 < s + t - (pairBack hG S a b + 1) ∧
-        s + t - (pairBack hG S a b + 1) < s := ⟨by omega, by omega⟩
-    have h := hag (s + t - (pairBack hG S a b + 1)) hhu.2
-    have h1 : cyc hG S (a + G - t + G - s + (s + t - (pairBack hG S a b + 1)))
-        = cyc hG S (a + G - (pairBack hG S a b + 1)) := by omega
-    have h2 : cyc hG S (b + G - t + G - s + (s + t - (pairBack hG S a b + 1)))
-        = cyc hG S (b + G - (pairBack hG S a b + 1)) := by omega
-    have h3 : cyc hG S (a + G - (pairBack hG S a b + 1))
-        = cyc hG S (a + G - pairBack hG S a b - 1) := by omega
-    have h4 : cyc hG S (b + G - (pairBack hG S a b + 1))
-        = cyc hG S (b + G - pairBack hG S a b - 1) := by omega
-    rw [h1, h2, h3, h4] at h
-    exact h0 h
-  have hge2 : pairBack hG S (a + G - t) (b + G - t) ≤ pairBack hG S a b - t := by
-    refine le_trans (pairBack_ge hG S (a + G - t) (b + G - t) _ ?_
-      (pairBack_spec hG S (a + G - t) (b + G - t)).1) ?_
-    exact hupp _ (pairBack_spec hG S (a + G - t) (b + G - t)).2
+    have hst : pairBack hG S a.val b.val - t < s := Nat.lt_of_not_ge hcon
+    have hβ1 : pairBack hG S a.val b.val + 1 ≤ G := by omega
+    have hne : cyc hG S (a.val + G - pairBack hG S a.val b.val - 1)
+        ≠ cyc hG S (b.val + G - pairBack hG S a.val b.val - 1) :=
+      pairBack_succ hG S a.val b.val hβlt
+    have hhu : s + t - (pairBack hG S a.val b.val + 1) < s := by omega
+    have h := hag (s + t - (pairBack hG S a.val b.val + 1)) hhu
+    have hidxA : (a.val + G - t) + G - s + (s + t - (pairBack hG S a.val b.val + 1))
+        = (a.val + G - pairBack hG S a.val b.val - 1) + G := by omega
+    have hidxB : (b.val + G - t) + G - s + (s + t - (pairBack hG S a.val b.val + 1))
+        = (b.val + G - pairBack hG S a.val b.val - 1) + G := by omega
+    have h1 : cyc hG S ((a.val + G - t) + G - s + (s + t - (pairBack hG S a.val b.val + 1)))
+        = cyc hG S (a.val + G - pairBack hG S a.val b.val - 1) := by
+      rw [hidxA]
+      exact (cyc_plus_G hG S _ 0)
+    have h2 : cyc hG S ((b.val + G - t) + G - s + (s + t - (pairBack hG S a.val b.val + 1)))
+        = cyc hG S (b.val + G - pairBack hG S a.val b.val - 1) := by
+      rw [hidxB]
+      exact (cyc_plus_G hG S _ 0)
+    exact hne (h1.symm.trans (h.trans h2))
+  have hge2 : pairBack hG S (a.val + G - t) (b.val + G - t) ≤ pairBack hG S a.val b.val - t := by
+    exact hupp (pairBack hG S (a.val + G - t) (b.val + G - t))
+      (pairBack_spec hG S (a.val + G - t) (b.val + G - t)).2
+      (pairBack_spec hG S (a.val + G - t) (b.val + G - t)).1
   exact le_antisymm hge2 hge1
 
 /-- The two starts `a, b` agree on the `t` positions `[a, a + t)`. -/
@@ -1051,8 +1070,12 @@ theorem not_chord_beyond_pairBack (hG : 0 < G) (S : Fin G → α)
   have h2 : cyc hG S ((b.val + G - pairBack hG S a.val b.val - 1) % G + 0)
       = cyc hG S (b.val + G - pairBack hG S a.val b.val - 1) :=
     cyc_of_start hG S _ _
-  have hthis := congrFun (congrFun hcon ⟨0, by omega⟩) rfl
-  rw [h1, h2] at hthis
-  exact hne hthis
+  have hthis : cyc hG S ((a.val + G - pairBack hG S a.val b.val - 1) % G + 0)
+      = cyc hG S ((b.val + G - pairBack hG S a.val b.val - 1) % G + 0) := by
+    have := congrFun hcon ⟨0, by omega⟩
+    show cyc hG S (((a.val + G - pairBack hG S a.val b.val - 1) % G) + (0 : ℕ))
+        = cyc hG S (((b.val + G - pairBack hG S a.val b.val - 1) % G) + (0 : ℕ))
+    exact this
+  exact hne (h1.symm.trans (hthis.trans h2))
 
 end AssemblyP1.P2RepeatResidual
