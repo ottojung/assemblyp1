@@ -127,10 +127,49 @@ vertex cycle is nevertheless a rotation of the truth's (0 exceptions), so the
 > strictly decreases and `Φ` is bounded below.
 
 The normal form is small: on the whole check, every stuck normal form has
-**exactly two** active chords, crossing.  So the residual content of `#89` is a
-statement about *two crossing chords with `β, β' < K`* on a primitive `P2` word
-— and nothing else.  That is a much smaller target than the global ladder, and
-it is the one worth formalizing.
+**exactly two** active chords (29474 cases) or four (192 cases), and the two
+chords **cross**.  So the residual content of `#89` is a statement about
+*crossing active chords with `β, β' < K`* on a primitive `P2` word — and
+nothing else.  That is a much smaller target than the global ladder, and it is
+the one worth formalizing.
+
+### The stuck normal forms, in detail
+
+Collected over the same enumeration.  With `β_i` the backward extension of the
+`i`-th active chord and `ext_i` its maximal extension
+(`maxPairStart`, `maxPairStart`), a two-chord normal form has:
+
+| `β`-pair | count | extensions coalesce | extensions interleave |
+| --- | --- | --- | --- |
+| `(0, 1)` | 25874 | 21342 of 29474 in total | 0 |
+| `(0, 2)` | 1800 | | 0 |
+| `(1, 2)` | 1800 | | 0 |
+| `(0, 0)` | **0** | | |
+
+The last row is the sharpest fact here: **a minimal configuration never has
+`β = β' = 0`.**  In every two-chord normal form exactly one of the two chords
+is left-maximal at its own starts (`β = 0`, hence a maximal repeat of length
+`≥ K > L - 2` there), and the other has `β' ∈ {1, 2}`.  The extensions never
+interleave (as clause 2 of `P2` forces) and sometimes but not always coalesce.
+
+Consequences for the endgame:
+
+* the "`P2` excludes crossings" argument needs **both** constituents to be
+  maximal repeats at their own starts, which minimality never provides, so
+  clause 2 cannot be applied to a crossing pair of a minimal configuration;
+* but a minimal configuration always contains a chord which *is* a maximal
+  repeat at its own starts.  A descent that could move such a chord (i.e. a
+  move keyed on the `L`-mer agreement of the pair rather than on the `K`-mer
+  agreement of its predecessor pair — §5.2) would do it.  The 192 four-chord
+  normal forms, whose `β`-pattern is `(0, 0, 1, 1)`, show that two such
+  `β = 0` chords can coexist; they are then genuinely maximal repeats, so
+  clause 2 *is* available for any two of them that cross.
+* the minimal example is the repository's own `S = AABAB`, `G = 5`, `L = 3`
+  with chords `(1, 3)` (`β = 0`) and `(2, 4)` (`β = 1`) — the pair that
+  `P2RepeatResidual.cex_not_NodeCrossing` already exhibits.  Its two maximal
+  extensions coalesce (both are the pair `(1, 3)`), so this instance is
+  *not* a counterexample to `P2`, and it is exactly the configuration the
+  residual lemma has to say something about.
 
 ## 5. What is still missing (the one lemma)
 
@@ -172,6 +211,7 @@ iterated and every intermediate invariant was *re-verified at every step*:
 | descent stuck, chords non-crossing | 0 |
 | stuck, but vertex cycle is not a rotation of the truth's | 0 |
 | a second `E` with the same `L`-spectrum that is not a rotation of `S` | 0 |
+| minimal configuration with `β = β' = 0` (two chords) | 0 |
 
 The last row is the sanity check on the *target theorem itself* (it is the only
 row that says the thing we actually want); it is satisfied on this range.  A
