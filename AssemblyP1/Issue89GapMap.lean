@@ -14,7 +14,10 @@ here**, and which are **open** --- and, for the open ones, to state the exact
 remaining goal in Lean-shaped terms.
 
 It proves **nothing** about `CrossingChordsCoalesce`.  Both of the two
-`Prop`s the reduction is built on remain without inhabitants.
+`Prop`s the reduction is built on remain without inhabitants.  (Correction,
+board-94 front: the step-3 `Prop` `Step3_slides_meet_no_foreign_chord` *is*
+now inhabited --- see `step3_slides_meet_no_foreign_chord`, commit `PENDING1`.
+The step-1 and step-5 `Prop`s are still without inhabitants.)
 
 ## The headline result: both §5 `Prop`s are **false as stated**
 
@@ -353,9 +356,12 @@ actually was.
 **Step 3. Slides do not meet a chord of another component.**  *Proved*, by
 `collision_forces_pair` and `three_starts_ne`: if `C_j` shared an endpoint with
 `D` then by step 1 `C_j = D`, so `D` is in `C`'s component.  Restated for the
-record as `Step3_slides_meet_no_foreign_chord`; **not** given an inhabitant
-here, because writing that proof requires naming the component relation, which
-the library does not define --- see the note on that `Prop` below.
+record as `Step3_slides_meet_no_foreign_chord`; **now given an inhabitant**
+by `step3_slides_meet_no_foreign_chord` (commit `PENDING1`).  The earlier text
+here said no inhabitant was given "because writing that proof requires naming
+the component relation, which the library does not define"; that was false,
+since the `Prop` ranges over quadruples of starts, and it is corrected at the
+`Prop` itself.
 
 **Step 3 does not deliver the guard that step 5 actually needs.**  With the
 refutation of `Step5_heads_interleave` at commit `a033fe4` in hand, the
@@ -372,10 +378,12 @@ that need: it talks about chords and their *components* (`(a = c ∧ b = d) ∨
 `a b c d`, never the heads.  It therefore delivers **no head-level guard at
 all** --- which is why it does not block the counterexample, whose chords are
 already distinct at the input starts and whose failure happens downstream at
-`maxPairStart`.  The *pair*-level content of step 3 is proved, in the same
-file, by `step3_shared_endpoint_forces_pair`; what is missing is the head-level
-restatement, on which the refutation of `Step5_heads_interleave` and any
-replacement of it now turn.  This is recorded here, beside the step entries,
+`maxPairStart`.  The *pair*-level content of step 3 is now discharged outright,
+in the same file, by `step3_slides_meet_no_foreign_chord` (commit `PENDING1`);
+what is still missing is the head-level restatement, on which the refutation of
+`Step5_heads_interleave` and any replacement of it now turn.  So the diagnosis
+below survives the inhabitant: discharging the `Prop` as phrased does not move
+step 5.  This is recorded here, beside the step entries,
 because it is the diagnosis a later front needs, not a claim that the step-3
 `Prop` is wrong.
 
@@ -460,7 +468,18 @@ library defines no component relation for the chord graph.  Writing the
 inhabitant means introducing that relation --- i.e. new library
 infrastructure --- which this gap map deliberately does not do.  The honest
 classification is: **the mathematical content is proved, the formal statement
-is not yet written down.** -/
+is not yet written down.**
+
+**CORRECTION (front for board 94, `antonina/issue-89-final`): the
+"quantifies over components" justification above is false as written, and the
+`Prop` is now DISCHARGED.**  The `Prop` ranges over quadruples `a b c d :
+Fin K`, not over components of any relation, and its last disjunct is exactly
+"all four endpoints are distinct".  No component relation is needed.  The
+inhabitant is `Issue89GapMap.step3_slides_meet_no_foreign_chord` (commit
+`c8f2bd6`), proved for every `L` with no bounded search, via the read-length-`L`
+form `step3_shared_endpoint_forces_pair_readL` of the existing
+`BBTCrossingCoalesce.collision_forces_pair` / `three_starts_ne` argument.  The
+text above is left in place as the record of the false diagnosis. -/
 def Step3_slides_meet_no_foreign_chord (L : ℕ) : Prop :=
   ∀ (K : ℕ) (hK : 0 < K) (S : Fin K → Bin) (_hP2 : P2 hK L S)
     (_hprim : RepeatAdapter.IsPrimitive hK S) (a b c d : Fin K), 2 ≤ L → L ≤ K →
@@ -505,6 +524,79 @@ theorem step3_shared_endpoint_forces_pair {K : ℕ} (hK : 0 < K) (S : Fin K → 
       exact hcd hh.symm
     exact BBTCrossingCoalesce.three_starts_ne hK S hL hLG hprim hP2
       hvab.symm hvcd.symm hab.symm hne
+
+/-- **Step 3, restated, DISCHARGED.**  Two chords of the same `(L-1)`-mer
+graph, each pair of distinct starts, either coincide as unordered pairs or
+have all four endpoints distinct: they never share exactly one endpoint.
+
+**The docstring previously attached to `Step3_slides_meet_no_foreign_chord`
+justified the missing inhabitant by claiming that the statement "quantifies
+over *components*, and the library defines no component relation for the
+chord graph".  That justification was false as written:** the `Prop` ranges
+over quadruples `a b c d : Fin K`, not over components, and the last
+disjunct is exactly the four-endpoints-distinct alternative.  The correction
+is appended here rather than made by editing that line away; the inhabitant
+is this theorem.
+
+The proof is the one the previous docstring already described, run at read
+length `L` rather than at `K`: `BBTCrossingCoalesce.collision_forces_pair` and
+`BBTCrossingCoalesce.three_starts_ne` are stated for an arbitrary read length
+`L` with `2 ≤ L` and `L ≤ K`, which are exactly the hypotheses the `Prop`
+supplies.  No `P2` transfer between read lengths is needed, and no component
+relation is introduced. -/
+theorem step3_shared_endpoint_forces_pair_readL {K L : ℕ} (hK : 0 < K) (S : Fin K → Bin)
+    (h2L : 2 ≤ L) (hLK : L ≤ K) (hP2 : P2 hK L S) (hprim : RepeatAdapter.IsPrimitive hK S)
+    {a b c d : Fin K} (hab : a ≠ b) (hcd : c ≠ d)
+    (hvab : vtx hK L S a = vtx hK L S b) (hvcd : vtx hK L S c = vtx hK L S d)
+    (h : a = c ∨ a = d ∨ b = c ∨ b = d) :
+    (a = c ∧ b = d) ∨ (a = d ∧ b = c) := by
+  rcases h with h | h | h | h
+  · subst h
+    exact Or.inl ⟨rfl, BBTCrossingCoalesce.collision_forces_pair
+      hK S h2L hLK hprim hP2 hab hcd hvab hvcd rfl⟩
+  · subst h
+    refine Or.inr ⟨rfl, ?_⟩
+    have hne : a ≠ c := fun hh => hcd (hh ▸ rfl)
+    exact BBTCrossingCoalesce.three_starts_ne hK S h2L hLK hprim hP2
+      hvab hvcd.symm hab hne
+  · subst h
+    refine Or.inr ⟨?_, rfl⟩
+    have hne : b ≠ d := fun hh => hcd hh
+    exact BBTCrossingCoalesce.three_starts_ne hK S h2L hLK hprim hP2
+      hvab.symm hvcd hab.symm hne
+  · subst h
+    refine Or.inl ⟨?_, rfl⟩
+    have hne : b ≠ c := fun hh => hcd hh.symm
+    exact BBTCrossingCoalesce.three_starts_ne hK S h2L hLK hprim hP2
+      hvab.symm hvcd.symm hab.symm hne
+
+theorem step3_slides_meet_no_foreign_chord (L : ℕ) : Step3_slides_meet_no_foreign_chord L := by
+  intro K hK S hP2 hprim a b c d h2L hLK hab hcd hvab hvcd
+  by_cases hac : a = c
+  · have := step3_shared_endpoint_forces_pair_readL hK S h2L hLK hP2 hprim
+        hab hcd hvab hvcd (Or.inl hac)
+    rcases this with ⟨h1, h2⟩ | ⟨h1, h2⟩
+    · exact Or.inl ⟨h1, h2⟩
+    · exact Or.inr (Or.inl ⟨h1, h2⟩)
+  by_cases had : a = d
+  · have := step3_shared_endpoint_forces_pair_readL hK S h2L hLK hP2 hprim
+        hab hcd hvab hvcd (Or.inr (Or.inl had))
+    rcases this with ⟨h1, h2⟩ | ⟨h1, h2⟩
+    · exact Or.inl ⟨h1, h2⟩
+    · exact Or.inr (Or.inl ⟨h1, h2⟩)
+  by_cases hbc : b = c
+  · have := step3_shared_endpoint_forces_pair_readL hK S h2L hLK hP2 hprim
+        hab hcd hvab hvcd (Or.inr (Or.inr (Or.inl hbc)))
+    rcases this with ⟨h1, h2⟩ | ⟨h1, h2⟩
+    · exact Or.inl ⟨h1, h2⟩
+    · exact Or.inr (Or.inl ⟨h1, h2⟩)
+  by_cases hbd : b = d
+  · have := step3_shared_endpoint_forces_pair_readL hK S h2L hLK hP2 hprim
+        hab hcd hvab hvcd (Or.inr (Or.inr (Or.inr hbd)))
+    rcases this with ⟨h1, h2⟩ | ⟨h1, h2⟩
+    · exact Or.inl ⟨h1, h2⟩
+    · exact Or.inr (Or.inl ⟨h1, h2⟩)
+  exact Or.inr (Or.inr ⟨hac, had, hbc, hbd⟩)
 
 /-- **Step 4, one step, the shape the reduction needs (cyclic content PROVED;
 word-level `Prop` still without an inhabitant here).**  This is the `Slid`
@@ -775,9 +867,13 @@ which this summary was last corrected.
   `Step2_components_are_paths` in this file is unchanged and is now inhabited.
   Primitivity is necessary: the same statement without it is false at `K = 3`
   and `K = 4` (`Issue94OrbitSearch.t_np_3`, `t_np_4`).
-- Step 3 (slides meet no foreign chord): **proved**, by
-  `step3_shared_endpoint_forces_pair` in this file, from
-  `collision_forces_pair`.
+- Step 3 (slides meet no foreign chord): **proved and now discharged**, by
+  `step3_slides_meet_no_foreign_chord` in this file (commit `PENDING1`), from
+  `step3_shared_endpoint_forces_pair_readL` and hence
+  `collision_forces_pair`.  The `Prop` was not an unquantified statement: the
+  earlier "quantifies over components" justification for its missing
+  inhabitant was false and is corrected at the `Prop`.  The head-level
+  restatement that step 5 needs is a **different** statement and remains open.
 - Step 4, one step (a slide preserves interleaving): **proved** on the cyclic
   layer for every `K` at commit `0806303`
   (`Issue94IterSlide.slide_one`, four guards); the word-level
@@ -815,7 +911,8 @@ which this summary was last corrected.
   collisions impossible, so only `maxPairStart a b = maxPairStart c d` or
   `= maxPairStart d c` can break distinctness, and no theorem in the library
   excludes it.  `Step3_slides_meet_no_foreign_chord` is quantified over input
-  starts and components, so it does not exclude it either.
+  starts only, so it does not exclude it either --- and is now proved
+  (commit `PENDING1`) without making step 5 any closer.
 - Step 5 (heads interleave implies `False`): **proved**, by
   `step5_contradiction` in this file, from `P2.imp_ExtCrossing` --- but its
   hypothesis is now known false, so it is not a reduction of any live line.
@@ -830,7 +927,7 @@ No statement here is progress on `CrossingChordsCoalesce` or
 and so do `CrossingPairsCoalesce`, `LadderVertexCycle`,
 `ShiftLeftPersistence` and `SlidePreservesInterleaved`.  What has changed
 since this map was first written is not that any of those were settled, but
-that steps 2 and 4 --- the intermediate lemmas between the library and them ---
+that steps 2, 3 and 4 --- the intermediate lemmas between the library and them ---
 were, so the remaining gap is now a single sentence long: the heads of the two
 backward orbits interleave. -/
 
