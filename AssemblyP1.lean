@@ -39,6 +39,7 @@ import AssemblyP1.WraparoundTripleRepeat
 import AssemblyP1.MLEscape
 import AssemblyP1.PopulationUniqueness
 import AssemblyP1.AAABConverse
+import AssemblyP1.Issue94Step2Path
 
 /-!
 ## The exported #88 endpoints
@@ -279,3 +280,5 @@ written, whose guard clause is implication-shaped rather than a conjunction. -/
 #print axioms AssemblyP1.Issue94Step4Prop.step4LitK_of_step4
 #print axioms AssemblyP1.Issue94Step4Prop.not_Step4LitK_4
 #print axioms AssemblyP1.Issue94Step4Prop.not_Step4_slide_iterates_1
+
+#print axioms AssemblyP1.Issue94Step2Path.step2_components_are_paths_proved
