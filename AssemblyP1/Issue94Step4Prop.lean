@@ -152,7 +152,7 @@ the interleaving and the guards is `t ≤ K`, which comes from the shift bound
 the result is a statement purely about the circle. -/
 theorem step4_guarded (L : ℕ) : Step4_slide_iterates_guarded L :=
   fun K hK S a b c d _hab _hcd _hvab _hvcd hI t ht hg => by
-    haveI : NeZero K := ⟨hK.ne'⟩
+    have _hKne : NeZero K := ⟨hK.ne'⟩
     have htK : t ≤ K := le_trans ht (pairBack_le_K hK S c.val d.val)
     exact step4_slide_iterates_word hK a b c d hI t htK hg
 
@@ -184,7 +184,7 @@ theorem step4_guarded_pairBackC (L : ℕ) :
         (∀ j : ℕ, j ≤ t → SlideGuards hK a b c d j) →
         Interleaved (mkGenome hK S) a b (rotAdd hK (K - t) c) (rotAdd hK (K - t) d) :=
   fun K hK S a b c d hab hcd hvab hvcd hI t ht hg => by
-    haveI : NeZero K := ⟨hK.ne'⟩
+    have _hKne : NeZero K := ⟨hK.ne'⟩
     have ht' : t ≤ pairBack hK S c.val d.val := by
       simpa only [pairBackC_eq'] using ht
     exact step4_guarded L K hK S a b c d hab hcd hvab hvcd hI t ht' hg
