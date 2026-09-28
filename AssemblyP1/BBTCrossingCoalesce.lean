@@ -74,6 +74,15 @@ not itself proved.
   coalescence proof and shows these three `Prop`s are the *whole* of what is
   missing.  Nothing in §1--§4 is unproved.
 
+Two remarks on §5, added when this module was first compiled (it had been
+excluded from `AssemblyP1.lean`, so nothing checked it).  The prose block
+below introduces itself as the docstring of `InterleaveUntilCollision`; no
+such name exists in the library, and the block is deliberately kept as a plain
+comment rather than attached to a declaration.  The five-step reduction it
+records is a **plan in prose**: no Lean term discharges it, and the two
+`Prop`s it needs (`ShiftLeftPersistence`, `SlidePreservesInterleaved`) have no
+inhabitant.  See `docs/` for the open status.
+
 No `sorry`, no `admit`, no new `axiom`.
 -/
 
@@ -103,7 +112,7 @@ theorem vtx_eq_iff {a b : Fin G} :
       ∀ d : Fin (L - 1), cyc hG S (a.val + d.val) = cyc hG S (b.val + d.val) := by
   constructor
   · intro h d
-    exact congrFun (congrFun h d) rfl
+    exact congrFun h d
   · intro h
     funext d
     exact h d
@@ -127,14 +136,14 @@ theorem three_starts_ne {a b c : Fin G} (hL : 2 ≤ L) (hLG : L ≤ G)
     (hne : a ≠ b) (hne' : a ≠ c) : b = c := by
   by_contra hcon
   have hbc : b ≠ c := by omega
-  have hmem : ∀ x : Fin G, x ∈ ({a, b, c} : Finset (Fin G)) →
-      x ∈ nodeStartsOf hG S (vtx hG L S a) := by
+  have hmem : ({a, b, c} : Finset (Fin G)) ⊆
+      nodeStartsOf hG S (vtx hG L S a) := by
     intro x hx
-    simp only [Finset.mem_insert, Finset.mem_singleton, false_or] at hx
-    rcases hx with rfl | rfl | rfl
-    · exact mem_nodeStartsOf_vtx hG S hab
-    · exact hab ▸ mem_nodeStartsOf_vtx hG S hab
-    · exact mem_nodeStartsOf_vtx hG S hac
+    have hx3 : x = a ∨ x = b ∨ x = c := by simpa using hx
+    rcases hx3 with h1 | h1 | h1
+    · rw [h1]; exact mem_nodeStartsOf_vtx hG S rfl
+    · rw [h1, hab]; exact mem_nodeStartsOf_vtx hG S rfl
+    · rw [h1, hac]; exact mem_nodeStartsOf_vtx hG S rfl
   have hcard : ({a, b, c} : Finset (Fin G)).card = 3 :=
     Finset.card_eq_three.mpr ⟨a, b, c, hne, hne', hbc, rfl⟩
   have hthree : 3 ≤ (nodeStartsOf hG S (vtx hG L S a)).card :=
@@ -163,11 +172,11 @@ theorem collision_forces_pair {a b c d : Fin G} (hL : 2 ≤ L) (hLG : L ≤ G)
     (hvab : vtx hG L S a = vtx hG L S b) (hvcd : vtx hG L S c = vtx hG L S d)
     (hcoll : c = a) : b = d := by
   have hcad : vtx hG L S a = vtx hG L S d := by rw [← hcoll]; exact hvcd
-  have had : a ≠ d := by rw [hcoll]; exact hcd
+  have had : a ≠ d := by simpa [hcoll] using hcd
   by_cases hbd : b = d
   · exact hbd
-  · exact (three_starts_ne (a := a) (b := b) (c := d) hG hL hLG hprim hP2
-      hvab hcad hab had) hbd
+  · exact (three_starts_ne (a := a) (b := b) (c := d) hG S hL hLG hprim hP2
+      hvab hcad hab had)
 
 /-! ## 4. The extension starts carry a common `(L-1)`-mer -/
 
@@ -203,9 +212,9 @@ def CrossingPairsCoalesce (L : ℕ) : Prop :=
       a ≠ b → c ≠ d →
       vtx hK L S a = vtx hK L S b → vtx hK L S c = vtx hK L S d →
       Interleaved (mkGenome hK S) a b c d →
-      SameExtension hK S a b c d
+      SameExtension K hK S a b c d
 
-/-- **The combinatorial core of `CrossingPairsCoalesce`**
+/- **The combinatorial core of `CrossingPairsCoalesce`
 (`InterleaveUntilCollision`): shift the pair `c, d` left, keeping `a, b` fixed.
 As long as the shift causes no **collision** --- no endpoint of `c, d` meeting
 `a` or `b` --- the four starts keep interleaving.
@@ -270,6 +279,7 @@ call `{a, b}` with `a ≠ b` and `w a = w b` a **chord**.
 So the two `Prop`s below plus `SameExtension` are the whole of what is missing.
 `SlidePreservesInterleaved` is the one genuinely new cyclic-order fact, and it
 is a statement about the shift coordinate only.
+-/
 
 /-- **The word-level half of what is missing** (`ShiftLeftPersistence`):
 shifting a pair of starts left, as far as the two copies keep agreeing, keeps

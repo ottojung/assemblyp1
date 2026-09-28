@@ -1,4 +1,5 @@
 import AssemblyP1.BBTLadder
+import AssemblyP1.BBTCrossingCoalesce
 import AssemblyP1.P2Multiplicity
 import AssemblyP1.P2RepeatAdapter
 import AssemblyP1.BBTMaximalExtension
@@ -182,3 +183,20 @@ module adds. -/
 #print axioms AssemblyP1.BBTEulerian.leastPeriod_eq_G_of_primitive
 #print axioms AssemblyP1.BBTEulerian.backAgr3F_add
 #print axioms AssemblyP1.BBTEulerian.agr3F_G_of_shifted
+
+/-! ## Axiom audit for the word-level crossing/coalescence route of `#89`
+(`AssemblyP1.BBTCrossingCoalesce`).
+
+§1--§4 are proved and are audited below.  The §5 target and its two
+ingredients are `def`s of type `Prop` with **no inhabitant** anywhere in the
+library: `CrossingPairsCoalesce`, `SlidePreservesInterleaved`,
+`ShiftLeftPersistence`.  Nothing here discharges them. -/
+
+#print axioms AssemblyP1.BBTCrossingCoalesce.vtx_eq_iff
+#print axioms AssemblyP1.BBTCrossingCoalesce.mem_nodeStartsOf_vtx
+#print axioms AssemblyP1.BBTCrossingCoalesce.three_starts_ne
+#print axioms AssemblyP1.BBTCrossingCoalesce.collision_forces_pair
+#print axioms AssemblyP1.BBTCrossingCoalesce.vtx_maxPairStart
+#print axioms AssemblyP1.BBTCrossingCoalesce.CrossingPairsCoalesce
+#print axioms AssemblyP1.BBTCrossingCoalesce.ShiftLeftPersistence
+#print axioms AssemblyP1.BBTCrossingCoalesce.SlidePreservesInterleaved
