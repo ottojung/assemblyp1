@@ -85,12 +85,15 @@ rest of this file has been corrected to match:
   conjunction --- `Issue94Step4Prop.not_Step4_slide_iterates_1` (commit
   `7cd813e`).
 
-What is left is the `vtx_maxPairStart` question of §4, whose only remaining
-input is `Step5_heads_interleave` --- the claim that the heads of the two
-backward orbits interleave.  See the `Step*` `Prop`s below and the
-classification comments, each of which names the commit that settles it.
-Step 5 was being attacked in parallel at the time of writing, so treat the
-step-5 entries as the ones most likely to be the next thing to go stale.
+What was left was the `vtx_maxPairStart` question of §4, whose only remaining
+input was `Step5_heads_interleave` --- the claim that the heads of the two
+backward orbits interleave.  That claim is now **refuted**, at commit
+`a033fe4`, by `not_Step5_heads_interleave_3` in
+`AssemblyP1/Issue94Step5Heads.lean`.  What is left instead is
+`Issue94Step5Heads.head_dichotomy` at `L = K`, the same commit: the two
+interleaving chords either have `SameExtension` or their four heads interleave.
+It is **not proved**.  See the `Step*` `Prop`s below and the classification
+comments, each of which names the commit that settles it.
 
 ## Status of every declaration here
 
@@ -354,6 +357,28 @@ record as `Step3_slides_meet_no_foreign_chord`; **not** given an inhabitant
 here, because writing that proof requires naming the component relation, which
 the library does not define --- see the note on that `Prop` below.
 
+**Step 3 does not deliver the guard that step 5 actually needs.**  With the
+refutation of `Step5_heads_interleave` at commit `a033fe4` in hand, the
+diagnosis is sharp.  `heads_of_one_chord_ne` (commit `a033fe4`) proves that
+*within one chord* the two extension starts are distinct.  So the four heads of
+`Step5_heads_interleave` can fail to be pairwise distinct **only** by a
+**cross-chord** collision:
+`maxPairStart a b = maxPairStart c d` or `maxPairStart a b = maxPairStart d c`.
+The guard step 5 needed is a statement about *heads*, i.e. about
+`maxPairStart` applied to two different chords.
+`Step3_slides_meet_no_foreign_chord` is quantifier-mismatched against exactly
+that need: it talks about chords and their *components* (`(a = c ∧ b = d) ∨
+(a = d ∧ b = c) ∨ all-four-distinct`), and it constrains only the input starts
+`a b c d`, never the heads.  It therefore delivers **no head-level guard at
+all** --- which is why it does not block the counterexample, whose chords are
+already distinct at the input starts and whose failure happens downstream at
+`maxPairStart`.  The *pair*-level content of step 3 is proved, in the same
+file, by `step3_shared_endpoint_forces_pair`; what is missing is the head-level
+restatement, on which the refutation of `Step5_heads_interleave` and any
+replacement of it now turn.  This is recorded here, beside the step entries,
+because it is the diagnosis a later front needs, not a claim that the step-3
+`Prop` is wrong.
+
 **Step 4. A slide preserves interleaving.**  *The `§5` statement of it is
 false as written (§1 above) and the corrected one-step shape is proved.*
 `Step4_slide_preserves` below is the one-step `Slid` shape with the word
@@ -557,8 +582,9 @@ the backward list is known to be well defined and terminating, and the
 conjunction-shaped `Step4_slide_iterates` is proved outright (commit
 `7cd813e`), so the slide is known to preserve interleaving along the way.
 Both halves of what this section used to call step 4 are therefore discharged,
-and the *only* remaining input to step 5 is the interleaving of the two
-heads.  `vtx_maxPairStart` is a necessary and already proved ingredient of
+and the interleaving of the two heads was, until commit `a033fe4`, the *only*
+remaining input to step 5 --- and that input is now **refuted**, not merely
+open.  `vtx_maxPairStart` is a necessary and already proved ingredient of
 step 5; it was never the wrong lemma, and there is still no separate "heads
 cross" theorem to go and look for.
 
@@ -567,21 +593,55 @@ One caveat about the two prerequisites, since they are now load-bearing: step
 and step 4's is a statement about the *circle*; both are needed for the heads
 of `pairBack` to be well defined, and both are now in the library.
 
-What is *not* established anywhere, and is checkable neither by reading nor by
-the searches of §1, is the claim that the two heads interleave.  I state it
-explicitly as `Step5_heads_interleave` below, a `Prop` with **no inhabitant**,
-so that a later front cannot mistake it for something already covered.  (This
-was the open step at commit `be23300`; step 5 was under attack in a parallel
-worktree at that time, so re-check before relying on the word "open" here.) -/
+What was *not* established anywhere, and was checkable neither by reading nor
+by the searches of §1, was the claim that the two heads interleave.  I stated it
+explicitly as `Step5_heads_interleave` below, a `Prop` with no inhabitant.  **It
+has since been refuted**, at commit `a033fe4`, by
+`not_Step5_heads_interleave_3` in `AssemblyP1/Issue94Step5Heads.lean`: on the
+repository's own `cexWord = AABAB` at `L = 3` the chords `{1, 3}` and `{2, 4}`
+interleave while both of their head-pairs coincide at `{1, 3}`.  The "only
+remaining input" claim of this section is therefore false: there is no
+unconditional crossing to be had at step 5.  See the step-5 entry below for
+the replacement, `Issue94Step5Heads.head_dichotomy` at `L = K`, which asks for
+coinciding extensions instead. -/
 
-/-- **Step 5, the missing input (OPEN at commit `be23300`; re-check).**  The
-heads of the two backward
-components interleave.  This is what `vtx_maxPairStart` does **not** give, and
-what `P2.imp_ExtCrossing` needs in order to be applied and yield the
-contradiction.  A `Prop` with **no inhabitant** in this file.  Steps 2 and 4
-are both discharged (commits `ee61190` and `7cd813e`, see §6), so this is the
-remaining content of the reduction; it was nevertheless under attack in a
-parallel worktree at `be23300`, so this entry is the one to re-verify first. -/
+/-- **Step 5, as formerly stated: REFUTED-AS-WRITTEN.**  This `Prop` demands
+that the heads of the two backward components interleave.  That statement is
+**false**, and the refutation is kernel-checked:
+
+* commit `a033fe4`, module `AssemblyP1/Issue94Step5Heads.lean`, theorem
+  `not_Step5_heads_interleave_3 : ¬ (Step5_heads_interleave 3)`.
+* The counterexample is the repository's own `cexWord = AABAB` on five
+  positions at `L = 3`: the chords `{1, 3}` and `{2, 4}` interleave, but their
+  backward chains have lengths `0` and `1`, so both head-pairs coincide at
+  `{1, 3}` and the four heads are `1, 3, 1, 3` rather than distinct.  Four
+  heads that are not pairwise distinct cannot interleave.
+
+The defect is the shape of the demand, not a missing lemma: interleaving was
+asked for unconditionally, and the model makes the two chords' maximal
+extensions **coincide** rather than cross.  Consequently this `Prop` must not
+be cited as the remaining input to step 5, and `step5_contradiction` below ---
+which is stated *given* `hheads` --- is a proof from a false hypothesis, not a
+reduction of the last line.  It is retained unchanged so that no line of this
+file changes shape; only its status has changed.
+
+**The replacement an occupant of `BBTLadder.CrossingChordsCoalesce` needs** is
+`Issue94Step5Heads.head_dichotomy` at `L = K` (commit `a033fe4`): under `P2`
+and primitivity, two interleaving chords either have *coinciding* maximal
+extensions --- `SameExtension`, the conclusion of
+`BBTLadder.CrossingChordsCoalesce` --- or their four extension starts
+interleave.  The dichotomy stops demanding a crossing, which is precisely what
+made `Step5_heads_interleave` false, and its second disjunct is ruled out at
+`L = K` by `Issue94Step5Heads.head_dichotomy_second_is_false`, which calls
+`step5_contradiction` below.  So the dichotomy, once inhabited, gives the
+target outright.
+
+**`head_dichotomy` at `L = K` is NOT proved.**  It is a `Prop` with no
+inhabitant in `Issue94Step5Heads.lean` at commit `a033fe4`; the refutation of
+the old step 5 does not establish it, and no argument in either file does.
+An occupant of `BBTLadder.CrossingChordsCoalesce` is therefore still blocked,
+but it is blocked on a `Prop` nobody has refuted, which is the correct state
+for an obligation. -/
 def Step5_heads_interleave (L : ℕ) : Prop :=
   ∀ (K : ℕ) (hK : 0 < K) (S : Fin K → Bin) (_hP2 : P2 hK L S)
     (_hprim : RepeatAdapter.IsPrimitive hK S) (a b c d : Fin K), 2 ≤ L → L ≤ K →
@@ -737,14 +797,28 @@ which this summary was last corrected.
   stated**, `SlidePreservesInterleaved_refuted`.
 - `ShiftLeftPersistence`: **false as stated**, `ShiftLeftPersistence_refuted`;
   the corrected form is already proved.
-- Step 5 (heads interleave): **open** at commit `be23300`, this file's base.
-  `Step5_heads_interleave`.  It was under attack in a parallel worktree at
-  that commit, so verify before repeating the word "open".  Its only
-  remaining prerequisites --- step 2's orbit statement and step 4's
-  conjunction-guarded iteration --- are both proved, as listed above, so
-  step 5 really is the last line.
+- Step 5 (heads interleave): **refuted-as-written**, at commit `a033fe4`, by
+  `not_Step5_heads_interleave_3` in `AssemblyP1/Issue94Step5Heads.lean`
+  (`¬ Step5_heads_interleave 3`), on `cexWord = AABAB` at `L = 3` where the
+  chords `{1, 3}` and `{2, 4}` interleave and both head-pairs coincide at
+  `{1, 3}`.  The `Prop` is kept deliberately, as a record of what was asked.
+  Its prerequisites --- step 2's orbit statement and step 4's
+  conjunction-guarded iteration --- are both proved, as listed above; the
+  conjunction was not enough, because the demand itself was wrong.
+- Step 5, the replacement obligation: **open, not proved and not refuted**.
+  `Issue94Step5Heads.head_dichotomy` at `L = K`, commit `a033fe4`: the two
+  interleaving chords either have `SameExtension` or their four heads
+  interleave.  Its second disjunct is `False` at `L = K` by
+  `head_dichotomy_second_is_false`, so this is the single input an occupant of
+  `BBTLadder.CrossingChordsCoalesce` now needs.  The guard it requires is
+  **head-level**: `heads_of_one_chord_ne` (commit `a033fe4`) makes intra-chord
+  collisions impossible, so only `maxPairStart a b = maxPairStart c d` or
+  `= maxPairStart d c` can break distinctness, and no theorem in the library
+  excludes it.  `Step3_slides_meet_no_foreign_chord` is quantified over input
+  starts and components, so it does not exclude it either.
 - Step 5 (heads interleave implies `False`): **proved**, by
-  `step5_contradiction` in this file, from `P2.imp_ExtCrossing`.
+  `step5_contradiction` in this file, from `P2.imp_ExtCrossing` --- but its
+  hypothesis is now known false, so it is not a reduction of any live line.
 - The `Slid` shape of §1 (four guards, one step): **proved** for every `K` at
   commit `0806303`; the `decide` results `AllSlid_6`, `AllSlid_8_10` are
   therefore history.  The eight-guard shape `Slid8` (`AllSlid8_6`,
