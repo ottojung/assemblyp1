@@ -1,5 +1,6 @@
 import AssemblyP1.BBTLadder
 import AssemblyP1.BBTCrossingCoalesce
+import AssemblyP1.Issue89GapMap
 import AssemblyP1.P2Multiplicity
 import AssemblyP1.P2RepeatAdapter
 import AssemblyP1.BBTMaximalExtension
@@ -200,3 +201,20 @@ library: `CrossingPairsCoalesce`, `SlidePreservesInterleaved`,
 #print axioms AssemblyP1.BBTCrossingCoalesce.CrossingPairsCoalesce
 #print axioms AssemblyP1.BBTCrossingCoalesce.ShiftLeftPersistence
 #print axioms AssemblyP1.BBTCrossingCoalesce.SlidePreservesInterleaved
+
+/-!
+## Board 94: the `#89` gap map
+
+`AssemblyP1.Issue89GapMap` states each step of the §5 five-step reduction as a
+separate `Prop`, classifies it, and --- the load-bearing part --- **refutes
+`ShiftLeftPersistence` and `SlidePreservesInterleaved` as they are stated**.
+Both of those are `def`s with no inhabitant, so this changes nothing about the
+two central `Prop`s; it records exactly what stands between §5 and
+`CrossingPairsCoalesce`. -/
+
+#print axioms AssemblyP1.Issue89GapMap.SlidePreservesInterleaved_refuted
+#print axioms AssemblyP1.Issue89GapMap.ShiftLeftPersistence_refuted
+#print axioms AssemblyP1.Issue89GapMap.shift_left_persistence_corrected
+#print axioms AssemblyP1.Issue89GapMap.step1_proved
+#print axioms AssemblyP1.Issue89GapMap.step3_shared_endpoint_forces_pair
+#print axioms AssemblyP1.Issue89GapMap.step5_contradiction
