@@ -16,7 +16,7 @@ remaining goal in Lean-shaped terms.
 It proves **nothing** about `CrossingChordsCoalesce`.  Both of the two
 `Prop`s the reduction is built on remain without inhabitants.  (Correction,
 board-94 front: the step-3 `Prop` `Step3_slides_meet_no_foreign_chord` *is*
-now inhabited --- see `step3_slides_meet_no_foreign_chord`, commit `PENDING1`.
+now inhabited --- see `step3_slides_meet_no_foreign_chord`, commit `1fc4e81`.
 The step-1 and step-5 `Prop`s are still without inhabitants.)
 
 ## The headline result: both §5 `Prop`s are **false as stated**
@@ -357,7 +357,7 @@ actually was.
 `collision_forces_pair` and `three_starts_ne`: if `C_j` shared an endpoint with
 `D` then by step 1 `C_j = D`, so `D` is in `C`'s component.  Restated for the
 record as `Step3_slides_meet_no_foreign_chord`; **now given an inhabitant**
-by `step3_slides_meet_no_foreign_chord` (commit `PENDING1`).  The earlier text
+by `step3_slides_meet_no_foreign_chord` (commit `1fc4e81`).  The earlier text
 here said no inhabitant was given "because writing that proof requires naming
 the component relation, which the library does not define"; that was false,
 since the `Prop` ranges over quadruples of starts, and it is corrected at the
@@ -379,7 +379,7 @@ that need: it talks about chords and their *components* (`(a = c ∧ b = d) ∨
 all** --- which is why it does not block the counterexample, whose chords are
 already distinct at the input starts and whose failure happens downstream at
 `maxPairStart`.  The *pair*-level content of step 3 is now discharged outright,
-in the same file, by `step3_slides_meet_no_foreign_chord` (commit `PENDING1`);
+in the same file, by `step3_slides_meet_no_foreign_chord` (commit `1fc4e81`);
 what is still missing is the head-level restatement, on which the refutation of
 `Step5_heads_interleave` and any replacement of it now turn.  So the diagnosis
 below survives the inhabitant: discharging the `Prop` as phrased does not move
@@ -868,7 +868,7 @@ which this summary was last corrected.
   Primitivity is necessary: the same statement without it is false at `K = 3`
   and `K = 4` (`Issue94OrbitSearch.t_np_3`, `t_np_4`).
 - Step 3 (slides meet no foreign chord): **proved and now discharged**, by
-  `step3_slides_meet_no_foreign_chord` in this file (commit `PENDING1`), from
+  `step3_slides_meet_no_foreign_chord` in this file (commit `1fc4e81`), from
   `step3_shared_endpoint_forces_pair_readL` and hence
   `collision_forces_pair`.  The `Prop` was not an unquantified statement: the
   earlier "quantifies over components" justification for its missing
@@ -912,7 +912,7 @@ which this summary was last corrected.
   `= maxPairStart d c` can break distinctness, and no theorem in the library
   excludes it.  `Step3_slides_meet_no_foreign_chord` is quantified over input
   starts only, so it does not exclude it either --- and is now proved
-  (commit `PENDING1`) without making step 5 any closer.
+  (commit `1fc4e81`) without making step 5 any closer.
 - Step 5 (heads interleave implies `False`): **proved**, by
   `step5_contradiction` in this file, from `P2.imp_ExtCrossing` --- but its
   hypothesis is now known false, so it is not a reduction of any live line.
