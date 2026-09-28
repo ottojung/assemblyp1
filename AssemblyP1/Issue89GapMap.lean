@@ -38,7 +38,13 @@ kernel-checked, not asserted:
   `K = 6, 8, 10` (`AllSlid_6`, `AllSlid_8_10`); with **all eight** guards it
   also holds at `K = 6, 8, 10` (`AllSlid8_6`, `AllSlid8_8_10`).  This is
   bounded evidence: the completeness of the search is not proved, and no claim
-  is made about `K > 10`.
+  is made about `K > 10`.  The four-guard shape `Slid` was later **proved
+  outright** for every `K` and every quadruple, by `Issue94IterSlide.slide_one`
+  (commit `0806303`), so the searches below are now history rather than the
+  current state of the art.  The eight-guard shape `Slid8` is still, as far as
+  this file records, evidence only.  §6 below is written against named commits
+  rather than against a date, so that each entry can be re-checked
+  independently.
 
   So the §5 `Prop` is not merely unproved: it is a **mis-statement** whose
   correction is plausible.  This is a real, small, checkable piece of progress:
@@ -65,10 +71,26 @@ kernel-checked, not asserted:
 
 ## What is genuinely left
 
-After those two corrections, the reduction's remaining content is **one**
-new cyclic-order lemma, the *iteration* form of the slide lemma, and the
-`vtx_maxPairStart` question addressed in §4 below.  See the `Step*` `Prop`s
-and the classification comments.
+This paragraph was written when step 2's combinatorial half and step 4 were
+both open.  **As of the commits named below that is no longer true**, and the
+rest of this file has been corrected to match:
+
+* the combinatorial half of step 2 is **proved** ---
+  `Issue94Step2Path.step2_components_are_paths_proved` (commit `ee61190`);
+* step 4 in the shape §5 means --- the *conjunction*-shaped guard, which is
+  what `Issue94IterSlide.SlideGuards` means --- is **proved** ---
+  `Issue94Step4Prop.step4_guarded` (commit `7cd813e`);
+* `Step4_slide_iterates` **as written in this file** is not open but
+  **refuted**, because its guard clause is an implication chain and not a
+  conjunction --- `Issue94Step4Prop.not_Step4_slide_iterates_1` (commit
+  `7cd813e`).
+
+What is left is the `vtx_maxPairStart` question of §4, whose only remaining
+input is `Step5_heads_interleave` --- the claim that the heads of the two
+backward orbits interleave.  See the `Step*` `Prop`s below and the
+classification comments, each of which names the commit that settles it.
+Step 5 was being attacked in parallel at the time of writing, so treat the
+step-5 entries as the ones most likely to be the next thing to go stale.
 
 ## Status of every declaration here
 
@@ -310,9 +332,17 @@ two sub-steps.*  The word-level half is **proved** (by citation to
 `BBTLadder.maxPairStart_eq` `:151` / `maxPairStart_rotAdd` `:167`, which give
 that the head of the backward list is exactly the pair of extension starts).
 The combinatorial half --- that the truncated backward orbit of a chord is a
-**path** and does not revisit itself --- is **open**; it is
-`Step2_components_are_paths`.  See §5 below for why the "no cyclic component"
-sentence in §5 step 2 does not follow from primitivity as written.
+**path** and does not revisit itself --- was recorded here as **open**.  It is
+now **proved**: `Issue94Step2Path.step2_components_are_paths_proved`
+(commit `ee61190`) derives it from primitivity alone, for every `K`, every
+genome and every `L`.  The two ways the orbit could return to `{a, b}` are
+each excluded: `j ≡ 0 (mod K)` by `pairBack_lt_G`, and `2 * j ≡ 0 (mod K)`,
+i.e. `K = 2 * j`, by observing that the circle is then literally `T ++ T` with
+`|T| = K / 2 < K`, contradicting `IsPrimitive`.  The `Prop` itself is
+unchanged and still lives in this file; its inhabitant lives in
+`Issue94Step2Path`.  §5 below records why the naive reading of §5 step 2 (as a
+statement about the *word*) was not what step 4 needs, and what the gap
+actually was.
 
 **Step 3. Slides do not meet a chord of another component.**  *Proved*, by
 `collision_forces_pair` and `three_starts_ne`: if `C_j` shared an endpoint with
@@ -321,11 +351,28 @@ record as `Step3_slides_meet_no_foreign_chord`; **not** given an inhabitant
 here, because writing that proof requires naming the component relation, which
 the library does not define --- see the note on that `Prop` below.
 
-**Step 4. A slide preserves interleaving.**  *Open, and the §5 statement of it
-is false (§1 above).*  The corrected one-step shape is `Step4_slide_preserves`;
-the shape the reduction *iterates* is `Step4_slide_iterates`, an `n`-step
-version, which is what `§5` step 4 actually invokes ("applied repeatedly along
-the backward list").  Both are `Prop`s with **no inhabitant**.
+**Step 4. A slide preserves interleaving.**  *The `§5` statement of it is
+false as written (§1 above) and the corrected one-step shape is proved.*
+`Step4_slide_preserves` below is the one-step `Slid` shape with the word
+carried along; its cyclic content is `Issue94IterSlide.slide_one` (commit
+`0806303`), proved for every `K`, and it remains without an inhabitant here
+only because the word-level spelling has not been written up in that module.
+
+The shape the reduction *iterates* is `Step4_slide_iterates` ("applied
+repeatedly along the backward list").  That `Prop` is **not open and not
+proved: it is refuted** (`Issue94Step4Prop.not_Step4_slide_iterates_1`, commit
+`7cd813e`), because Lean reads its guard clause
+`∀ j ≤ t, A → B → C → D` as an implication *chain*, which is vacuously
+satisfied precisely at the `j` where the slid pair has collided with `a` or
+`b` --- the collisions the guard exists to exclude.  The guard §5 means is the
+*conjunction* `∀ j ≤ t, A ∧ B ∧ C ∧ D`, which is
+`Issue94IterSlide.SlideGuards` (`slide = rotAdd (K - j)` definitionally).
+In that shape step 4 is **proved outright**, for every `L` and every `K`, with
+no primitivity and no `P2` hypothesis: `Issue94Step4Prop.step4_guarded`
+(commit `7cd813e`), whose statement is
+`Issue94Step4Prop.Step4_slide_iterates_guarded`.  Both `Prop`s are kept here;
+the gap map's job is to say which proposition is true, not to delete the
+false one.
 
 **Step 5. Contradiction.**  *Proved* as far as it can be: the ingredients
 `P2.imp_ExtCrossing` (`P2RepeatResidual.lean`:903) and
@@ -346,15 +393,26 @@ theorem step1_proved (L : ℕ) : Step1_fibre_le_two L :=
   fun _K hK S hP2 hprim hL hLG k =>
     P2.imp_nodeCount_le_two hK hL hLG S hprim hP2 k
 
-/-- **Step 2, combinatorial half (OPEN).**  The truncated backward orbit of a
-chord `{a, b}`, namely `{{a - j, b - j} : j ≤ pairBack a b}`, visits no
-chord twice: there is no `0 < j ≤ pairBack a b` with
-`{a - j, b - j} = {a, b}` as unordered pairs.
+/-- **Step 2, combinatorial half (PROVED, in `Issue94Step2Path`).**  The
+truncated backward orbit of a chord `{a, b}`, namely
+`{{a - j, b - j} : j ≤ pairBack a b}`, visits no chord twice: there is no
+`0 < j ≤ pairBack a b` with `{a - j, b - j} = {a, b}` as unordered pairs.
 
 This is the assertion `§5` step 2 makes in one sentence ("`Primitive` rules out
 a cyclic component, since a cycle would propagate `S x = S (x + (b-a))`
-round the whole circle").  It is a `Prop` with **no inhabitant**.  See §5 for
-the reduction of the case to be excluded. -/
+round the whole circle").  It was recorded here as an open `Prop` with no
+inhabitant; that is no longer true.  The inhabitant is
+`Issue94Step2Path.step2_components_are_paths_proved` (commit `ee61190`),
+proved for every `K`, every genome and every `L`, with no bounded search.
+
+The proof does not need the `P2` or `2 ≤ L ≤ K` hypotheses --- the statement
+is about the circle alone --- but it does need `IsPrimitive`, in **both**
+branches: the first (both ends fixed) forces `j ≡ 0 (mod K)` and `j < K`
+comes from `pairBack_lt_G`; the second (ends swapped) forces
+`2 * j ≡ 0 (mod K)`, hence `K = 2 * j`, and then the backward agreement at
+`t = K / 2` makes the circular word literally `T ++ T` with `|T| = K / 2 < K`
+as seen from any start, i.e. shift-invariance by `K / 2`, contradicting
+`IsPrimitive`.  §5 records the reduction that led to that split. -/
 def Step2_components_are_paths (L : ℕ) : Prop :=
   ∀ (K : ℕ) (hK : 0 < K) (S : Fin K → Bin) (_hP2 : P2 hK L S)
     (_hprim : RepeatAdapter.IsPrimitive hK S) (a b : Fin K), a ≠ b → 2 ≤ L → L ≤ K →
@@ -420,9 +478,12 @@ theorem step3_shared_endpoint_forces_pair {K : ℕ} (hK : 0 < K) (S : Fin K → 
     exact BBTCrossingCoalesce.three_starts_ne hK S hL hLG hprim hP2
       hvab.symm hvcd.symm hab.symm hne
 
-/-- **Step 4, one step, the shape the reduction needs (OPEN).**  This is the
-`Slid` shape of §1 with the word carried along.  A `Prop` with **no
-inhabitant**. -/
+/-- **Step 4, one step, the shape the reduction needs (cyclic content PROVED;
+word-level `Prop` still without an inhabitant here).**  This is the `Slid`
+shape of §1 with the word carried along.  Its cyclic content is
+`Issue94IterSlide.slide_one` (commit `0806303`), proved for every `K` and
+every quadruple with only the four stated guards; the two `vtx` hypotheses do
+not occur in the conclusion, so the word layer adds nothing. -/
 def Step4_slide_preserves (L : ℕ) : Prop :=
   ∀ (K : ℕ) (hK : 0 < K) (S : Fin K → Bin) (a b c d : Fin K),
     a ≠ b → c ≠ d →
@@ -432,14 +493,34 @@ def Step4_slide_preserves (L : ℕ) : Prop :=
     rotAdd hK (K - 1) d ≠ a → rotAdd hK (K - 1) d ≠ b →
     Interleaved (mkGenome hK S) a b (rotAdd hK (K - 1) c) (rotAdd hK (K - 1) d)
 
-/-- **Step 4, iterated (OPEN) --- this, not `SlidePreservesInterleaved`, is
-what §5 step 4 invokes.**  "applied repeatedly along the backward list" means:
-for every `t ≤ pairBack c d`, sliding `c, d` left by `t` keeps them
+/-- **Step 4, iterated --- this, not `SlidePreservesInterleaved`, is
+what §5 step 4 invokes.  REFUTED as written; PROVED in the corrected,
+conjunction-shaped form.**  "applied repeatedly along the backward list"
+means: for every `t ≤ pairBack c d`, sliding `c, d` left by `t` keeps them
 interleaved with `a, b`, provided no intermediate position collides.
 
 This is a strictly stronger statement than `Step4_slide_preserves`: it needs
-the guards at *every* intermediate `j ≤ t`, not just at `t`.  A `Prop` with
-**no inhabitant**. -/
+the guards at *every* intermediate `j ≤ t`, not just at `t`, and the guards
+are genuinely needed (`Issue94IterSlide.not_EndpointIter_6`).
+
+**It has no inhabitant, and the reason is not that it is open.**  Lean parses
+the guard clause below as the implication chain `∀ j ≤ t, A → B → C → D`
+rather than the conjunction `∀ j ≤ t, A ∧ B ∧ C ∧ D`.  A chain is vacuously
+true at exactly those `j` where the slid `c` or `d` has landed on `a` or `b`,
+so it fails to exclude the very collisions it is there to exclude, and it is
+satisfied by the colliding configurations themselves.  The literal reading is
+refuted in the kernel at `L = 1` by
+`Issue94Step4Prop.not_Step4_slide_iterates_1` (commit `7cd813e`).
+
+The `Prop` is kept unchanged, and deliberately: a `Prop` with a known
+counterexample is more useful to the next front than a deleted one, since the
+counterexample *is* the record of the mis-statement.  The corrected
+conjunction-shaped statement is `Issue94Step4Prop.Step4_slide_iterates_guarded`
+--- whose guard is `Issue94IterSlide.SlideGuards`, definitionally
+`slide j c ≠ a ∧ ... ∧ slide j d ≠ b` with `slide hK n x = rotAdd hK (K - n) x`
+--- and it is proved outright by `Issue94Step4Prop.step4_guarded`
+(commit `7cd813e`), for every `L` and every `K`, with no primitivity and no
+`P2` hypothesis. -/
 def Step4_slide_iterates (L : ℕ) : Prop :=
   ∀ (K : ℕ) (hK : 0 < K) (S : Fin K → Bin) (a b c d : Fin K),
     a ≠ b → c ≠ d →
@@ -463,23 +544,41 @@ of a chord are again a chord.  It does **not** say the heads of two different
 components cross, and no theorem in the library says it.  The reduction wants,
 at step 5, the two heads to **interleave**; the crossing is supposed to come
 from step 4 (slide each chord down to the head of its component, preserving
-interleaving), and step 4 is exactly `Step4_slide_iterates`, which is open.
+interleaving).
 
-So the dependency is not a missing lemma *about* `vtx_maxPairStart`; it is
-**step 4**.  There is no separate "heads cross" theorem to go and look for, and
-`vtx_maxPairStart` is not the wrong lemma --- it is a necessary and already
-proved ingredient of step 5, whose only remaining input is interleaving of the
-heads.
+So the dependency is not a missing lemma *about* `vtx_maxPairStart`.  This
+section originally said the dependency **is** step 4, and that was true when
+it was written: step 4 was the open one.  It is now the opposite.
+`Step2_components_are_paths` is proved (commit `ee61190`), so the slide down
+the backward list is known to be well defined and terminating, and the
+conjunction-shaped `Step4_slide_iterates` is proved outright (commit
+`7cd813e`), so the slide is known to preserve interleaving along the way.
+Both halves of what this section used to call step 4 are therefore discharged,
+and the *only* remaining input to step 5 is the interleaving of the two
+heads.  `vtx_maxPairStart` is a necessary and already proved ingredient of
+step 5; it was never the wrong lemma, and there is still no separate "heads
+cross" theorem to go and look for.
+
+One caveat about the two prerequisites, since they are now load-bearing: step
+2's inhabitant is a statement about the *orbit* of the pair under rotation,
+and step 4's is a statement about the *circle*; both are needed for the heads
+of `pairBack` to be well defined, and both are now in the library.
 
 What is *not* established anywhere, and is checkable neither by reading nor by
 the searches of §1, is the claim that the two heads interleave.  I state it
 explicitly as `Step5_heads_interleave` below, a `Prop` with **no inhabitant**,
-so that a later front cannot mistake it for something already covered. -/
+so that a later front cannot mistake it for something already covered.  (This
+was the open step at commit `be23300`; step 5 was under attack in a parallel
+worktree at that time, so re-check before relying on the word "open" here.) -/
 
-/-- **Step 5, the missing input (OPEN).**  The heads of the two backward
+/-- **Step 5, the missing input (OPEN at commit `be23300`; re-check).**  The
+heads of the two backward
 components interleave.  This is what `vtx_maxPairStart` does **not** give, and
 what `P2.imp_ExtCrossing` needs in order to be applied and yield the
-contradiction.  A `Prop` with **no inhabitant**. -/
+contradiction.  A `Prop` with **no inhabitant** in this file.  Steps 2 and 4
+are both discharged (commits `ee61190` and `7cd813e`, see §6), so this is the
+remaining content of the reduction; it was nevertheless under attack in a
+parallel worktree at `be23300`, so this entry is the one to re-verify first. -/
 def Step5_heads_interleave (L : ℕ) : Prop :=
   ∀ (K : ℕ) (hK : 0 < K) (S : Fin K → Bin) (_hP2 : P2 hK L S)
     (_hprim : RepeatAdapter.IsPrimitive hK S) (a b c d : Fin K), 2 ≤ L → L ≤ K →
@@ -511,6 +610,11 @@ theorem step5_contradiction {K : ℕ} (hK : 0 < K) (S : Fin K → Bin) (hL : 2 �
 
 /-! ## 5. Why "components are paths" is not automatic from primitivity
 
+(Historical.  This section explains the quantifier mismatch that made step 2
+look open; the reduction it ends with was carried out, and both of its cases
+are closed --- see the update at the end.  Nothing in the file depends on the
+question still being open.)
+
 `§5` step 2 says: "`Primitive` rules out a cyclic component, since a cycle
 would propagate `S x = S (x + (b-a))` round the whole circle, a nontrivial
 period."
@@ -527,23 +631,72 @@ step 4 needs is that the slide down the backward list is *well defined and
 terminating*, i.e. that the list `{{a - j, b - j} : j ≤ pairBack a b}` visits
 no chord twice before the head.  That is `Step2_components_are_paths`, a
 statement about the **orbit of the pair** `{a, b}` under rotation, not about
-the word.  It is not the same statement, and no existing theorem gives it.
+the word.  It is not the same statement, and at the time of writing no
+existing theorem gave it.
 
-Concretely, `pairBack a b < G` (`P2RepeatResidual.pairBack_lt_G` `:654`)
-bounds the list length by `G`, and the rotation orbit of `{a, b}` has period
-dividing `G`, so the *only* case to exclude is `{a - j, b - j} = {a, b}` for
-some `0 < j ≤ pairBack a b`.  That is either `j ≡ 0 (mod G)` (excluded by
-`j < G`) or `a - j ≡ b` and `b - j ≡ a`, i.e. `2j ≡ b - a (mod G)`.  **I do
-not know** whether the `vtx` / `P2` hypotheses rule that out, and I have not
-checked it computationally.  **Not established.**
+**Update.**  The reduction at the end of this section was carried out, and
+both of its cases are now closed; the closing "I do not know" was a real
+unknown, and it was answered two commits later.  Here is the reduction, and
+here is how each case closes.
 
-The same caveat applies to `Step4_slide_iterates`: I have verified only the
-one-step `Slid` shape up to `K = 6` (§1) and the four- and eight-guard variants
-up to `K = 6`; the *iterated* form is a genuinely different proposition and I
-make no claim about it.
--/
+`pairBack a b < G` (`P2RepeatResidual.pairBack_lt_G` `:654`) bounds the list
+length by `G`, and the rotation orbit of `{a, b}` has period dividing `G`, so
+the *only* case to exclude is `{a - j, b - j} = {a, b}` for some
+`0 < j ≤ pairBack a b`.  That is either
+
+1. `a - j ≡ a` and `b - j ≡ b (mod G)`, i.e. `j ≡ 0 (mod G)`.  Excluded
+   by `j < G`, which is where primitivity is used: `pairBack_lt_G` is false
+   for a non-primitive circle.  (Concretely,
+   `Issue94Step2Path.sub_ne_self`.)
+
+2. `a - j ≡ b` and `b - j ≡ a (mod G)`, i.e. `2 * j ≡ b - a (mod G)`.
+   Substituting the first congruence into the second gives `2 * j ≡ 0 (mod
+   G)`, and with `0 < j < G` that forces `G = 2 * j`.  So `a ≡ b + j (mod
+   G)` with `j = G / 2`, i.e. `b` is the antipode of `a`, and the backward
+   agreement holds at `t = G / 2`; that makes the circular word satisfy
+   `cyc (a + u) = cyc (a + j + u)` for every `u < G`, i.e. it is literally
+   `T ++ T` with `|T| = G / 2 < G` as seen from any start, which is
+   shift-invariance by `G / 2` and contradicts `IsPrimitive`.  (Concretely,
+   `Issue94Step2Path.swap_forces_half` and `shiftInvB_of_half`.)
+
+So neither the `vtx`/`P2` hypotheses nor any search is needed: the statement
+is a theorem about the circle, and primitivity is the only hypothesis it
+uses, in both branches.  `Issue94Step2Path.step2_components_are_paths_proved`
+(commit `ee61190`) carries this out, and this file records it as
+`Step2_components_are_paths` being **proved**, not open.
+
+A useful cross-check on that: the same statement with primitivity dropped is
+**false** at `K = 3` and `K = 4` (`Issue94OrbitSearch.t_np_3`, `t_np_4`), so
+primality is genuinely load-bearing and the proof is not an artefact of the
+statement's shape.
+
+The `Step4_slide_iterates` caveat below is likewise superseded, and in the
+opposite direction from the one recorded here.  This section said only the
+one-step `Slid` shape had been checked and that the *iterated* form was "a
+genuinely different proposition" about which nothing was claimed --- which was
+true of the searches of §1 but understates what is now known:
+
+* the four-guard one-step shape `Slid` is **proved** for every `K`
+  (`Issue94IterSlide.slide_one`, commit `0806303`), and
+* the iterated shape **with the conjunction guard** --- `SlideGuards`, which is
+  definitionally the four non-equalities taken as hypotheses, the shape §5
+  actually means --- is **proved** for every `L` and every `K`, with no
+  primitivity and no `P2` (`Issue94Step4Prop.step4_guarded`, commit
+  `7cd813e`);
+* while `Step4_slide_iterates` **as spelled in this file** is **refuted**,
+  because its guard clause is the implication chain and not the conjunction
+  (`Issue94Step4Prop.not_Step4_slide_iterates_1`, commit `7cd813e`).
+
+The guards are not redundant even in the good shape: the iterated statement
+with the guards only at the endpoint fails at `K = 6`, `8` and `10`
+(`Issue94IterSlide.not_EndpointIter_6`, `not_EndpointIter_8_10`). -/
 
 /-! ## 6. Classification summary
+
+Each entry names the commit that makes it true, rather than a date, so that an
+entry can be re-checked --- and superseded --- one at a time.  Commits
+`ee61190` and `7cd813e` are ancestors of `be23300`, the base of the branch on
+which this summary was last corrected.
 
 - Step 1, fibres `≤ 2`: **proved**.  `P2.imp_nodeCount_le_two`
   `P2RepeatResidual.lean`:381; `three_starts_ne` `BBTCrossingCoalesce.lean`:133;
@@ -553,25 +706,55 @@ make no claim about it.
   `P2RepeatResidual.lean`:497 (the corrected form); `pairBack_shift` `:540`;
   `maxPairStart_eq` `BBTLadder.lean`:151.  Restated here as
   `shift_left_persistence_corrected`.
-- Step 2, combinatorial (components are paths): **open**.
-  `Step2_components_are_paths`.  Not established either way.
+- Step 2, combinatorial (components are paths): **proved**, at commit
+  `ee61190`, by `Issue94Step2Path.step2_components_are_paths_proved`, for
+  every `K`, genome and `L`, from `IsPrimitive` alone.  The `Prop`
+  `Step2_components_are_paths` in this file is unchanged and is now inhabited.
+  Primitivity is necessary: the same statement without it is false at `K = 3`
+  and `K = 4` (`Issue94OrbitSearch.t_np_3`, `t_np_4`).
 - Step 3 (slides meet no foreign chord): **proved**, by
   `step3_shared_endpoint_forces_pair` in this file, from
   `collision_forces_pair`.
-- Step 4 (a slide preserves interleaving): **open, and the §5 statement is
-  false.**  Refuted by `SlidePreservesInterleaved_refuted`.  Corrected shape
-  `Step4_slide_preserves`; iterated form `Step4_slide_iterates`.
-- Step 5 (heads interleave): **open**.  `Step5_heads_interleave`.
-- Step 5 (heads interleave implies `False`): **proved**, by
-  `step5_contradiction` in this file, from `P2.imp_ExtCrossing`.
+- Step 4, one step (a slide preserves interleaving): **proved** on the cyclic
+  layer for every `K` at commit `0806303`
+  (`Issue94IterSlide.slide_one`, four guards); the word-level
+  `Step4_slide_preserves` in this file is not itself inhabited, but differs
+  from `slide_one` only in hypotheses that do not occur in the conclusion.
+- Step 4, iterated, as spelled in this file: **refuted**, at commit
+  `7cd813e`, by `Issue94Step4Prop.not_Step4_slide_iterates_1` (`¬
+  Step4_slide_iterates 1`).  Its guard clause is the implication chain
+  `∀ j ≤ t, A → B → C → D`, not the conjunction `∀ j ≤ t, A ∧ B ∧ C ∧ D`,
+  so it is vacuous exactly where a collision occurs.  The `Prop` is kept
+  deliberately.
+- Step 4, iterated, in the shape §5 means (conjunction guard
+  `Issue94IterSlide.SlideGuards`): **proved**, at commit `7cd813e`, by
+  `Issue94Step4Prop.step4_guarded`, for every `L` and `K`, with no primitivity
+  and no `P2`.  This is the entry that discharges the §5 step-4 obligation.
+- The `§5` statement of step 4 (`SlidePreservesInterleaved`): **false as
+  stated**, `SlidePreservesInterleaved_refuted`.
 - `ShiftLeftPersistence`: **false as stated**, `ShiftLeftPersistence_refuted`;
   the corrected form is already proved.
-- `SlidePreservesInterleaved`: **false as stated**,
-  `SlidePreservesInterleaved_refuted`.
+- Step 5 (heads interleave): **open** at commit `be23300`, this file's base.
+  `Step5_heads_interleave`.  It was under attack in a parallel worktree at
+  that commit, so verify before repeating the word "open".  Its only
+  remaining prerequisites --- step 2's orbit statement and step 4's
+  conjunction-guarded iteration --- are both proved, as listed above, so
+  step 5 really is the last line.
+- Step 5 (heads interleave implies `False`): **proved**, by
+  `step5_contradiction` in this file, from `P2.imp_ExtCrossing`.
+- The `Slid` shape of §1 (four guards, one step): **proved** for every `K` at
+  commit `0806303`; the `decide` results `AllSlid_6`, `AllSlid_8_10` are
+  therefore history.  The eight-guard shape `Slid8` (`AllSlid8_6`,
+  `AllSlid8_8_10`) is, as far as this file records, still bounded evidence
+  only; this file makes no claim about it at any `K > 10`.
 
 No statement here is progress on `CrossingChordsCoalesce` or
 `BBTLadder.CrossingChordsCoalesce`.  Both remain `Prop`s with no inhabitant,
 and so do `CrossingPairsCoalesce`, `LadderVertexCycle`,
-`ShiftLeftPersistence` and `SlidePreservesInterleaved`. -/
+`ShiftLeftPersistence` and `SlidePreservesInterleaved`.  What has changed
+since this map was first written is not that any of those were settled, but
+that steps 2 and 4 --- the intermediate lemmas between the library and them ---
+were, so the remaining gap is now a single sentence long: the heads of the two
+backward orbits interleave. -/
 
 end AssemblyP1.Issue89GapMap
