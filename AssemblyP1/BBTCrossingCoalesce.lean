@@ -99,6 +99,10 @@ open AssemblyP1.P2RepeatResidual
 open AssemblyP1.BBTLadder
 
 set_option maxHeartbeats 800000
+-- Repository convention (cf. `BBTEulerian`): the auto-included
+-- `[DecidableEq α]` section variable is not needed by every lemma here.  This
+-- is a diagnostic about an unused name, not about a proof obligation.
+set_option linter.unusedSectionVars false
 
 variable {α : Type} [DecidableEq α] {G L : ℕ} (hG : 0 < G) (S : Fin G → α)
 
