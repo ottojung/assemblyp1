@@ -165,13 +165,16 @@ def Stated (K : ℕ) (hK : 0 < K) [NeZero K] (a b c d : Fin K) : Prop :=
     InterK K (rotAdd hK (K - 1) a) (rotAdd hK (K - 1) b) c d
 
 /-- **The shape the §5 plan needs**: the *second* pair slides, with the same
-four guards.  No counterexample found for `K ≤ 5` or at `K = 6, 8, 10`. -/
+four guards.  Bounded evidence at `K ≤ 5` and at `K = 6, 8, 10` when written;
+since proved outright for every `K` as `Issue94IterSlide.slide_one` (commit
+`0806303`), so this is now a proved theorem, not a conjecture. -/
 def Slid (K : ℕ) (hK : 0 < K) [NeZero K] (a b c d : Fin K) : Prop :=
   InterK K a b c d → Guards K hK a b c d →
     InterK K a b (rotAdd hK (K - 1) c) (rotAdd hK (K - 1) d)
 
 /-- **`Slid` with all eight guards.**  No counterexample found for `K ≤ 5` or
-at `K = 6, 8, 10`. -/
+at `K = 6, 8, 10`; as far as this file records, still bounded evidence only.
+`slide_one` is proved with four guards, so it does not settle this. -/
 def Slid8 (K : ℕ) (hK : 0 < K) [NeZero K] (a b c d : Fin K) : Prop :=
   InterK K a b c d → Guards K hK a b c d → GuardsR K hK a b c d →
     InterK K a b (rotAdd hK (K - 1) c) (rotAdd hK (K - 1) d)
