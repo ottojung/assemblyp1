@@ -6,6 +6,7 @@ import AssemblyP1.Issue94OrbitSearch
 import AssemblyP1.Issue94OrbitChecks
 import AssemblyP1.Issue94OrbitGeneral
 import AssemblyP1.Issue94Step4Prop
+import AssemblyP1.Issue94Step5Heads
 import AssemblyP1.P2Multiplicity
 import AssemblyP1.P2RepeatAdapter
 import AssemblyP1.BBTMaximalExtension
@@ -282,3 +283,21 @@ written, whose guard clause is implication-shaped rather than a conjunction. -/
 #print axioms AssemblyP1.Issue94Step4Prop.not_Step4_slide_iterates_1
 
 #print axioms AssemblyP1.Issue94Step2Path.step2_components_are_paths_proved
+
+/-! `AssemblyP1.Issue94Step5Heads` REFUTES
+`Issue89GapMap.Step5_heads_interleave` as written, with a kernel-checked
+witness: on the `P2` primitive word `S = AABAB` at `L = 3`, the chords
+`{1, 3}` and `{2, 4}` interleave, while their head-pairs *coincide* at
+`{1, 3}`, so the four heads `1, 3, 1, 3` do not interleave.  The corrected
+step 5 is the dichotomy `head_dichotomy` (`SameExtension ∨ heads interleave`),
+whose second disjunct is already `False`. -/
+#print axioms AssemblyP1.Issue94Step5Heads.maxPairStart_of_pairBackC
+#print axioms AssemblyP1.Issue94Step5Heads.headWord_primitive
+#print axioms AssemblyP1.Issue94Step5Heads.headWord_is_p2
+#print axioms AssemblyP1.Issue94Step5Heads.head_cex_interleaved
+#print axioms AssemblyP1.Issue94Step5Heads.head_cex_not_interleaved
+#print axioms AssemblyP1.Issue94Step5Heads.Step5_heads_interleave_cex
+#print axioms AssemblyP1.Issue94Step5Heads.not_Step5_heads_interleave_3
+#print axioms AssemblyP1.Issue94Step5Heads.head_cex_SameExtension
+#print axioms AssemblyP1.Issue94Step5Heads.heads_of_one_chord_ne
+#print axioms AssemblyP1.Issue94Step5Heads.head_dichotomy_second_is_false
