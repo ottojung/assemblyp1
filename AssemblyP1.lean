@@ -5,6 +5,7 @@ import AssemblyP1.Issue94IterSlide
 import AssemblyP1.Issue94OrbitSearch
 import AssemblyP1.Issue94OrbitChecks
 import AssemblyP1.Issue94OrbitGeneral
+import AssemblyP1.Issue94Step4Prop
 import AssemblyP1.P2Multiplicity
 import AssemblyP1.P2RepeatAdapter
 import AssemblyP1.BBTMaximalExtension
@@ -264,3 +265,17 @@ remains a `Prop` with no inhabitant. -/
 #print axioms AssemblyP1.Issue94OrbitGeneral.slideGuards_of_fin
 #print axioms AssemblyP1.Issue94OrbitGeneral.IterStep4_all
 #print axioms AssemblyP1.Issue94OrbitChecks.iterStep4_5_8
+
+/-! `AssemblyP1.Issue94Step4Prop` discharges
+the *guarded* form of §5 step 4, for every `L` and every `K`, with no
+primitivity hypothesis, and REFUTES `Step4_slide_iterates` as literally
+written, whose guard clause is implication-shaped rather than a conjunction. -/
+#print axioms AssemblyP1.Issue94Step4Prop.pairBack_le_K
+#print axioms AssemblyP1.Issue94Step4Prop.slideGuards_iff
+#print axioms AssemblyP1.Issue94Step4Prop.pairBackC_eq'
+#print axioms AssemblyP1.Issue94Step4Prop.step4_guarded
+#print axioms AssemblyP1.Issue94Step4Prop.step4_guarded_rotAdd
+#print axioms AssemblyP1.Issue94Step4Prop.step4_guarded_pairBackC
+#print axioms AssemblyP1.Issue94Step4Prop.step4LitK_of_step4
+#print axioms AssemblyP1.Issue94Step4Prop.not_Step4LitK_4
+#print axioms AssemblyP1.Issue94Step4Prop.not_Step4_slide_iterates_1
