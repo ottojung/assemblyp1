@@ -372,11 +372,12 @@ diagnosis is sharp.  `heads_of_one_chord_ne` (commit `a033fe4`) proves that
 `maxPairStart a b = maxPairStart c d` or `maxPairStart a b = maxPairStart d c`.
 The guard step 5 needed is a statement about *heads*, i.e. about
 `maxPairStart` applied to two different chords.
-`Step3_slides_meet_no_foreign_chord` is quantifier-mismatched against exactly
-that need: it talks about chords and their *components* (`(a = c ∧ b = d) ∨
-(a = d ∧ b = c) ∨ all-four-distinct`), and it constrains only the input starts
-`a b c d`, never the heads.  It therefore delivers **no head-level guard at
-all** --- which is why it does not block the counterexample, whose chords are
+`Step3_slides_meet_no_foreign_chord` is quantified over input starts only
+(its `Prop` is `(a = c ∧ b = d) ∨ (a = d ∧ b = c) ∨ all-four-distinct`; the
+"components" mentioned in the previous sentence are not in the `Prop`), and it
+constrains only the input starts `a b c d`, never the heads.  It therefore
+delivers **no head-level guard at all** --- which is why it does not block the
+counterexample, whose chords are
 already distinct at the input starts and whose failure happens downstream at
 `maxPairStart`.  The *pair*-level content of step 3 is now discharged outright,
 in the same file, by `step3_slides_meet_no_foreign_chord` (commit `1fc4e81`);
@@ -386,6 +387,16 @@ below survives the inhabitant: discharging the `Prop` as phrased does not move
 step 5.  This is recorded here, beside the step entries,
 because it is the diagnosis a later front needs, not a claim that the step-3
 `Prop` is wrong.
+
+**What *is* now available at the head level, and only at `L = K` (commit
+`644a6dd`).**  `Issue94Step5NoChord.no_chord_at_L_eq_K` proves that at genome
+size equal to the read length a primitive word has no chord at all, so on such
+a genome there is nothing for the head-level guard to guard --- the two-chord
+hypothesis is unsatisfiable.  That is a statement about a **degenerate corner**:
+the reduction's `Prop`s let the genome size exceed the read length, and there
+the same argument has no purchase, because the agreement of a chord covers
+`L - 1` of `K` residues and leaves `K - L + 1 ≥ 1` of them.  The head-level
+obligation at `2 ≤ L < K` is therefore **unchanged and open**.
 
 **Step 4. A slide preserves interleaving.**  *The `§5` statement of it is
 false as written (§1 above) and the corrected one-step shape is proved.*
@@ -901,18 +912,44 @@ which this summary was last corrected.
   Its prerequisites --- step 2's orbit statement and step 4's
   conjunction-guarded iteration --- are both proved, as listed above; the
   conjunction was not enough, because the demand itself was wrong.
-- Step 5, the replacement obligation: **open, not proved and not refuted**.
-  `Issue94Step5Heads.head_dichotomy` at `L = K`, commit `a033fe4`: the two
-  interleaving chords either have `SameExtension` or their four heads
-  interleave.  Its second disjunct is `False` at `L = K` by
-  `head_dichotomy_second_is_false`, so this is the single input an occupant of
-  `BBTLadder.CrossingChordsCoalesce` now needs.  The guard it requires is
-  **head-level**: `heads_of_one_chord_ne` (commit `a033fe4`) makes intra-chord
-  collisions impossible, so only `maxPairStart a b = maxPairStart c d` or
-  `= maxPairStart d c` can break distinctness, and no theorem in the library
-  excludes it.  `Step3_slides_meet_no_foreign_chord` is quantified over input
-  starts only, so it does not exclude it either --- and is now proved
-  (commit `1fc4e81`) without making step 5 any closer.
+- Step 5, the replacement obligation: **open, not proved and not refuted at
+  `2 ≤ L < K`; and degenerate at genome size `= L`**.  `Issue94Step5Heads.
+  head_dichotomy` at `L = K`, commit `a033fe4`: the two interleaving chords
+  either have `SameExtension` or their four heads interleave.  Its second
+  disjunct is `False` at `L = K` by `head_dichotomy_second_is_false`, so this
+  is the single input an occupant of `BBTLadder.CrossingChordsCoalesce` now
+  needs.  The guard it requires is **head-level**: `heads_of_one_chord_ne`
+  (commit `a033fe4`) makes intra-chord collisions impossible, so only
+  `maxPairStart a b = maxPairStart c d` or `= maxPairStart d c` can break
+  distinctness, and no theorem in the library excludes it.
+  `Step3_slides_meet_no_foreign_chord` is quantified over input starts only,
+  so it does not exclude it either --- and is now proved (commit `1fc4e81`)
+  without making step 5 any closer.
+
+  **Correction (front for board 94, commit `644a6dd`).**  The gap map's
+  diagnosis above --- "no theorem in the library excludes the cross-chord
+  collision" --- remains true for `2 ≤ L < K`, but the phrasing "at `L = K`"
+  obscures a degeneracy now proved in `Issue94Step5NoChord`
+  (`no_chord_at_L_eq_K`, commit `644a6dd`): **at genome size equal to the read
+  length a primitive word has no chord at all.**  Two distinct starts agreeing
+  on their `(K-1)`-mers agree on `K-1` of the `K` residues, i.e. the shift by
+  `s = (b - a) mod K` is a pointwise agreement off the single residue the window
+  omits; a bijection of a finite type cannot agree off exactly one point
+  (`one_exception_impossible`), so the whole word is shift-invariant by the
+  nonzero `s < K`, which `IsPrimitive` forbids.  No `P2` hypothesis is used.
+
+  This does **not** discharge the obligation.  The `Prop`s of the §5 reduction
+  quantify over `2 ≤ L ≤ K` with `K` ranging over all genome sizes, so
+  instantiating them at `L = K` leaves the cases `L < K'` --- genomes *longer*
+  than the read length --- untouched, and those are where the content is (the
+  refutation of `Step5_heads_interleave` is `K = 5`, `L = 3`).  What
+  `no_chord_at_L_eq_K` establishes is the correctly-scoped corollary
+  `head_dichotomy_at_genome_eq_read` (commit `644a6dd`): on a genome of size
+  `= L` the reduction has **no instance** at all.  So the `L = K` occupancy of
+  the reduction is free but carries no weight; `head_dichotomy` at
+  `2 ≤ L < K` is **still open**, and no bounded search refutes it: over all
+  binary words of length `≤ 11`, no primitive `P2` word carries two
+  interleaving chords whose heads fail to coincide.
 - Step 5 (heads interleave implies `False`): **proved**, by
   `step5_contradiction` in this file, from `P2.imp_ExtCrossing` --- but its
   hypothesis is now known false, so it is not a reduction of any live line.

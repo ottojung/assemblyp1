@@ -164,7 +164,6 @@ theorem shift_bijective (hK : 0 < K) (s : ℕ) (hs : s < K) :
       exact hh
     exact Nat.mod_eq_of_modEq (h9.trans h10) y.isLt
 
-set_option autoImplicit false
 theorem fibre_card {G : Type} [Fintype G] [DecidableEq G] {σ : G → G}
     (hbi : Function.Bijective σ) (P : G → Prop) [DecidablePred P] :
     ((Finset.univ : Finset G).filter (fun x : G => P x)).card
