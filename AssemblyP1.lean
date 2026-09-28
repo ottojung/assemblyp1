@@ -38,6 +38,7 @@ import AssemblyP1.WraparoundTripleRepeat
 import AssemblyP1.MLEscape
 import AssemblyP1.PopulationUniqueness
 import AssemblyP1.AAABConverse
+import AssemblyP1.Issue94Step2Path
 
 /-!
 ## The exported #88 endpoints
@@ -264,3 +265,4 @@ remains a `Prop` with no inhabitant. -/
 #print axioms AssemblyP1.Issue94OrbitGeneral.slideGuards_of_fin
 #print axioms AssemblyP1.Issue94OrbitGeneral.IterStep4_all
 #print axioms AssemblyP1.Issue94OrbitChecks.iterStep4_5_8
+#print axioms AssemblyP1.Issue94Step2Path.step2_components_are_paths_proved
