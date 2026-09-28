@@ -470,6 +470,113 @@ theorem pairBack_succ (hG : 0 < G) (S : Fin G → α) (a b : ℕ)
       exact hag
   exact absurd (pairBack_ge hG S a b _ hβ1 hnew) (by omega)
 
+/-! ### 5a. The backward chain of a chord: persistence *conditioned by
+`pairBack`*, maximality, and the head of the chain
+
+These three lemmas live here, and not in `AssemblyP1.BBTCrossingCoalesce`,
+because they are statements about `backAgree` / `pairBack`, and `backAgree` is
+`private` to this file: from outside it, `pairBack` can be applied but its
+defining condition cannot be named, so `pairBack_spec` is not usable there.
+
+**The shift must be bounded by `pairBack`.**  The predicate "the pair `a, b`,
+shifted back by `t`, still spells a common `ℓ`-mer" is *not* monotone in `t`:
+`S = 001`, `L = 2`, `a = 0`, `b = 1` carry the common `1`-mer `0`, but at
+`t = 1` they read `vtx 2 = 1` and `vtx 0 = 0`.  So an unconditional
+"shift-left persistence" statement is **false**, and the correct hypothesis is
+`t ≤ pairBack a b`.  See `docs/crossing-coalesce-89.md` §2.1. -/
+
+/-- **Backward chord persistence, conditioned by `pairBack`:** if the starts
+`a, b` agree on the `ℓ` positions from their starts and `t ≤ pairBack a b`,
+then the starts `a - t`, `b - t` (read as residues) agree on the `ℓ` positions
+from their starts.
+
+The proof is the union of two agreements: the backward agreement of length
+`pairBack a b ≥ t` covers the positions `[a - t, a)`, and the original `ℓ`-mer
+covers `[a, a + ℓ)`, which together cover the whole window `[a - t, a - t + ℓ)`
+because `ℓ ≥ 1` at the position actually used. -/
+theorem chord_shift_left (hG : 0 < G) (S : Fin G → α) (a b : Fin G) (ℓ t : ℕ)
+    (hag : ∀ d : Fin ℓ, cyc hG S (a.val + d.val) = cyc hG S (b.val + d.val))
+    (ht : t ≤ pairBack hG S a.val b.val) :
+    ∀ d : Fin ℓ, cyc hG S ((a.val + G - t) % G + d.val)
+        = cyc hG S ((b.val + G - t) % G + d.val) := by
+  intro d
+  rw [cyc_of_start hG S (a.val + G - t) d.val, cyc_of_start hG S (b.val + G - t) d.val]
+  by_cases hdt : d.val < t
+  · -- the position lies in the backward agreement
+    have hu : d.val + (pairBack hG S a.val b.val - t) < pairBack hG S a.val b.val := by
+      have _ := (pairBack_spec hG S a.val b.val).2
+      omega
+    have h := (pairBack_spec hG S a.val b.val).1 _ hu
+    convert h using 1 <;> omega
+  · -- the position lies in the original `ℓ`-mer
+    have hule : t ≤ d.val := Nat.le_of_not_gt hdt
+    have hed : d.val - t < ℓ := by
+      have := d.isLt
+      omega
+    have h := hag ⟨d.val - t, hed⟩
+    have h1 : cyc hG S (a.val + G - t + d.val) = cyc hG S (a.val + (d.val - t)) := by
+      have : d.val = t + (d.val - t) := by omega
+      rw [this, show a.val + G - t + t + (d.val - t) = a.val + G + (d.val - t) from by omega]
+      exact (cyc_plus_G hG S a.val (d.val - t)).symm
+    have h2 : cyc hG S (b.val + G - t + d.val) = cyc hG S (b.val + (d.val - t)) := by
+      have : d.val = t + (d.val - t) := by omega
+      rw [this, show b.val + G - t + t + (d.val - t) = b.val + G + (d.val - t) from by omega]
+      exact (cyc_plus_G hG S b.val (d.val - t)).symm
+    rw [h1, h2]
+    exact h
+
+/-- **The head of a backward chain is reached at the shift predicted by
+`pairBack`.**  If `t ≤ pairBack a b` then the maximal backward agreement of the
+*shifted* pair `(a - t, b - t)` is exactly `pairBack a b - t`.
+
+This is what makes a collision of two backward chains conclusive: the head of a
+chain is the head of the *orbit*, not of the entry point, so two chords that
+occur at two places of the same chain have the same head.  The upper bound is
+`pairBack_ge` at `β + 1`; the lower bound is the backward agreement at `β`
+restricted to the first `β - t` positions. -/
+theorem pairBack_shift (hG : 0 < G) (S : Fin G → α) (a b t : ℕ)
+    (ht : t ≤ pairBack hG S a.val b.val) :
+    pairBack hG S (a + G - t) (b + G - t) = pairBack hG S a b - t := by
+  have hβG : pairBack hG S a b ≤ G := (pairBack_spec hG S a b).2
+  have _ := hG
+  -- lower bound
+  have hlow : backAgree hG S (a + G - t) (b + G - t) (pairBack hG S a b - t) := by
+    intro u hu
+    have hu' : u + t < pairBack hG S a b := by omega
+    have h := (pairBack_spec hG S a b).1 _ hu'
+    convert h using 1 <;> omega
+  have hge1 : pairBack hG S a b - t ≤ pairBack hG S (a + G - t) (b + G - t) :=
+    pairBack_ge hG S (a + G - t) (b + G - t) _ (by omega) hlow
+  -- upper bound
+  have hupp : ∀ s : ℕ, s ≤ G →
+      backAgree hG S (a + G - t) (b + G - t) s → s ≤ pairBack hG S a b - t := by
+    intro s hs hag
+    by_contra hcon
+    have hst : pairBack hG S a b - t < s := Nat.lt_of_not_ge hcon
+    have hβ1 : pairBack hG S a b + 1 ≤ G := by omega
+    have hbad : ¬ backAgree hG S a b (pairBack hG S a b + 1) := by
+      intro hok
+      exact absurd (pairBack_ge hG S a b _ hβ1 hok) (by omega)
+    have h0 := hbad 0 (by omega)
+    have hhu : 0 < s + t - (pairBack hG S a b + 1) ∧
+        s + t - (pairBack hG S a b + 1) < s := ⟨by omega, by omega⟩
+    have h := hag (s + t - (pairBack hG S a b + 1)) hhu.2
+    have h1 : cyc hG S (a + G - t + G - s + (s + t - (pairBack hG S a b + 1)))
+        = cyc hG S (a + G - (pairBack hG S a b + 1)) := by omega
+    have h2 : cyc hG S (b + G - t + G - s + (s + t - (pairBack hG S a b + 1)))
+        = cyc hG S (b + G - (pairBack hG S a b + 1)) := by omega
+    have h3 : cyc hG S (a + G - (pairBack hG S a b + 1))
+        = cyc hG S (a + G - pairBack hG S a b - 1) := by omega
+    have h4 : cyc hG S (b + G - (pairBack hG S a b + 1))
+        = cyc hG S (b + G - pairBack hG S a b - 1) := by omega
+    rw [h1, h2, h3, h4] at h
+    exact h0 h
+  have hge2 : pairBack hG S (a + G - t) (b + G - t) ≤ pairBack hG S a b - t := by
+    refine le_trans (pairBack_ge hG S (a + G - t) (b + G - t) _ ?_
+      (pairBack_spec hG S (a + G - t) (b + G - t)).1) ?_
+    exact hupp _ (pairBack_spec hG S (a + G - t) (b + G - t)).2
+  exact le_antisymm hge2 hge1
+
 /-- The two starts `a, b` agree on the `t` positions `[a, a + t)`. -/
 private def fwdAgree (hG : 0 < G) (S : Fin G → α) (a b t : ℕ) : Prop :=
   ∀ u : ℕ, u < t → cyc hG S (a + u) = cyc hG S (b + u)
@@ -918,5 +1025,34 @@ theorem cex_not_maximalRepeat_at_same_starts :
     fin_cases k <;> decide
   unfold mkGenome
   exact h4
+
+/-- **The backward chain of a chord stops one step past `pairBack`.**  If
+`a ≠ b` and `S` is primitive, the pair `a, b` shifted back by
+`pairBack a b + 1` does *not* carry a common `ℓ`-mer with `ℓ ≥ 1`: the two
+copies are preceded by different symbols (`pairBack_succ`), and the preceding
+symbol is read at the first position of the window.
+
+Together with `chord_shift_left` this says the backward chain of the chord
+`{a, b}` is *exactly* `{{a - j, b - j} : 0 ≤ j ≤ pairBack a b}`, and its head
+is the deterministic maximal extension `{maxPairStart a b, maxPairStart b a}`. -/
+theorem not_chord_beyond_pairBack (hG : 0 < G) (S : Fin G → α)
+    (hprim : RepeatAdapter.IsPrimitive hG S) {a b : Fin G} (hab : a ≠ b) {L : ℕ}
+    (hL : 2 ≤ L) :
+    nodeWindow (L := L) hG S
+        ⟨(a.val + G - pairBack hG S a.val b.val - 1) % G, Nat.mod_lt _ hG⟩ ≠
+      nodeWindow (L := L) hG S
+        ⟨(b.val + G - pairBack hG S a.val b.val - 1) % G, Nat.mod_lt _ hG⟩ := by
+  intro hcon
+  have hβlt : pairBack hG S a.val b.val < G := pairBack_lt_G hG S hprim hab
+  have hne := pairBack_succ hG S a.val b.val hβlt
+  have h1 : cyc hG S ((a.val + G - pairBack hG S a.val b.val - 1) % G + 0)
+      = cyc hG S (a.val + G - pairBack hG S a.val b.val - 1) :=
+    cyc_of_start hG S _ _
+  have h2 : cyc hG S ((b.val + G - pairBack hG S a.val b.val - 1) % G + 0)
+      = cyc hG S (b.val + G - pairBack hG S a.val b.val - 1) :=
+    cyc_of_start hG S _ _
+  have hthis := congrFun (congrFun hcon ⟨0, by omega⟩) rfl
+  rw [h1, h2] at hthis
+  exact hne hthis
 
 end AssemblyP1.P2RepeatResidual
