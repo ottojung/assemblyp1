@@ -118,7 +118,7 @@ private theorem card_ge_three {s : Finset (Fin G)} {a b c : Fin G}
     3 ≤ s.card := by
   have hsub : ({a, b, c} : Finset (Fin G)) ⊆ s := by
     intro x hx
-    simp only [Finset.mem_insert, Finset.mem_singleton, false_or] at hx
+    simp only [Finset.mem_insert, Finset.mem_singleton] at hx
     rcases hx with h | h | h
     · exact h ▸ ha
     · exact h ▸ hb
@@ -210,6 +210,7 @@ def Support (f : Fin G → Fin G) : Finset (Fin G) :=
 theorem mem_Support {f : Fin G → Fin G} {x : Fin G} :
     x ∈ Support f ↔ f x ≠ x := by simp [Support]
 
+omit [DecidableEq α] in
 /-- **`AltF` preserves the `(L-1)`-mer at every start**: the `traverses` clause
 of `EulerianCycle`, read on the alternative traversal. -/
 theorem AltF_vtx' {σ : Fin G ≃ Fin G} (hEul : EulerianCycle hG L S σ) (q : Fin G) :
@@ -376,7 +377,7 @@ theorem ladder_chord_identities {a b c d p q : Fin G} {ℓ ℓ' : ℕ}
 /-- **The common extension length of a ladder.**  If the two pairs of a ladder
 have the same deterministic maximal extension, then their `maxPairLen` values
 agree, and each is the length of a maximal repeat at `(p, q)`. -/
-theorem ladder_len {a b c d p q : Fin G} (hprim : RepeatAdapter.IsPrimitive hG S)
+theorem ladder_len {a b c d : Fin G} (hprim : RepeatAdapter.IsPrimitive hG S)
     (h1 : maxPairStart hG S a b = maxPairStart hG S c d)
     (h2 : maxPairStart hG S b a = maxPairStart hG S d c)
     (hL : 2 ≤ L) (hLG : L ≤ G) (hab : a ≠ b) (hcd : c ≠ d)
@@ -395,17 +396,19 @@ theorem ladder_len {a b c d p q : Fin G} (hprim : RepeatAdapter.IsPrimitive hG S
 
 /-! ## 5. Why a ladder is benign: the two copies spell the same vertices -/
 
+omit [DecidableEq α] in
 /-- **Inside one maximal repeat, the two occurrences spell the same
 `(L-1)`-mers.**  If `(e, p, q)` is a maximal repeat of the truth, i.e. the two
 occurrences agree over its whole length, and `L - 1 ≤ e`, then the vertices at
 `p` and `q` coincide: they carry the same `(L-1)`-mer. -/
-theorem repeat_copies_vtx {e : ℕ} {p q : Fin G} (hL : 2 ≤ L)
+theorem repeat_copies_vtx {e : ℕ} {p q : Fin G} (_hL : 2 ≤ L)
     (hag : ∀ d : Fin e, cyc hG S (p.val + d.val) = cyc hG S (q.val + d.val))
     (he : L - 1 ≤ e) : vtx hG L S p = vtx hG L S q := by
   funext d
   change cyc hG S (p.val + d.val) = cyc hG S (q.val + d.val)
   exact hag ⟨d.val, by omega⟩
 
+omit [DecidableEq α] in
 /-- **Congruent positions read the same symbol.** -/
 theorem cyc_congr (x y : ℕ) (h : x % G = y % G) : cyc hG S x = cyc hG S y := by
   unfold cyc
@@ -413,6 +416,7 @@ theorem cyc_congr (x y : ℕ) (h : x % G = y % G) : cyc hG S x = cyc hG S y := b
   apply Fin.ext
   exact h
 
+omit [DecidableEq α] in
 /-- **Inside one maximal repeat, the two *shifted* copies spell the same
 `(L-1)`-mers**: `vtx (p + i) = vtx (q + i)` whenever `i + (L-1)` still fits in
 the repeat.  The two occurrences of the repeat agree over its whole length, and
@@ -424,9 +428,9 @@ alternative traversal's two chords move both ends by the same amount
 (`ladder_of_coalescing`), and the vertices read at the two ends of a chord are
 equal (`AltF_vtx'`).  It is the ingredient any completion of `LadderRotationGap`
 needs. -/
-theorem ladder_arc_eq {e : ℕ} {p q : Fin G} (hL : 2 ≤ L)
+theorem ladder_arc_eq {e : ℕ} {p q : Fin G} (_hL : 2 ≤ L)
     (hag : ∀ d : Fin e, cyc hG S (p.val + d.val) = cyc hG S (q.val + d.val))
-    (he : L - 1 ≤ e) {i : ℕ} (hi : i + (L - 1) ≤ e) :
+    (_he : L - 1 ≤ e) {i : ℕ} (hi : i + (L - 1) ≤ e) :
     vtx hG L S (rotAdd hG i p) = vtx hG L S (rotAdd hG i q) := by
   funext d
   change cyc hG S ((rotAdd hG i p).val + d.val) = cyc hG S ((rotAdd hG i q).val + d.val)
@@ -475,7 +479,7 @@ Both are consequences of `P2` alone; neither mentions the traversal beyond the
 the *shifted* starts `maxPairStart hG S a b` and `maxPairStart hG S b a`. -/
 theorem orbit_maxPair_isRepeat {σ : Fin G ≃ Fin G} (hEul : EulerianCycle hG L S σ)
     (hL : 2 ≤ L) (hLG : L ≤ G) (hprim : RepeatAdapter.IsPrimitive hG S)
-    (hP2 : P2 hG L S) {a b : Fin G} (hab : a ≠ b) (hfx : AltF hG σ a = b) :
+    (_hP2 : P2 hG L S) {a b : Fin G} (hab : a ≠ b) (hfx : AltF hG σ a = b) :
     (mkGenome hG S).IsRepeat (maxPairLen hG S a b)
         (maxPairStart hG S a b) (maxPairStart hG S b a) ∧
       L - 1 ≤ maxPairLen hG S a b :=
@@ -614,9 +618,9 @@ It is word-level in essence: `AltF_vtx'` gives `vtx a = vtx b` and
 `BBTCrossingCoalesce.CrossingPairsCoalesce` --- which mentions no `EulerianCycle`
 and no `AltF` at all --- implies this one outright. -/
 def CrossingChordsCoalesce (L : ℕ) : Prop :=
-  ∀ (K : ℕ) (hK : 0 < K) (S : Fin K → α) (hP2 : P2 hK L S)
-    (hprim : RepeatAdapter.IsPrimitive hK S), Ukkonen hK L S →
-    ∀ (σ : Fin K ≃ Fin K) (hEul : EulerianCycle hK L S σ),
+  ∀ (K : ℕ) (hK : 0 < K) (S : Fin K → α) (_hP2 : P2 hK L S)
+    (_hprim : RepeatAdapter.IsPrimitive hK S), Ukkonen hK L S →
+    ∀ (σ : Fin K ≃ Fin K) (_hEul : EulerianCycle hK L S σ),
       ∀ (a b c d : Fin K),
         AltF hK σ a = b → AltF hK σ b = a → AltF hK σ c = d → AltF hK σ d = c →
         a ≠ c → b ≠ c → a ≠ d → b ≠ d →

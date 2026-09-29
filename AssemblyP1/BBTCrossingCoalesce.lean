@@ -104,6 +104,7 @@ variable {α : Type} [DecidableEq α] {G L : ℕ} (hG : 0 < G) (S : Fin G → α
 
 /-! ## 1. A `(L-1)`-mer equality is an agreement statement -/
 
+omit [DecidableEq α] in
 /-- **Two starts carry the same `(L-1)`-mer exactly when they agree on the
 `L - 1` positions from their starts.**  This is `vtx` read off
 `OrientedRigidity.nodeWindow`, and it is the form every step below uses. -/
