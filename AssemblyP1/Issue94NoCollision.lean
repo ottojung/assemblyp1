@@ -355,8 +355,8 @@ The distinctness of the slid pair is **not** obtained from
 anywhere in this file.  It comes from this file's own `slide_pair_ne` (`:186`),
 via `rotAdd_inj_any` (`:59`).
 
-`Issue94Step4Prop.step4_guarded` *is* on the route taken (used at `:380` and
-`:397`), but it is `Bin`-typed (`Issue94Step4Prop.lean:130`) and is reached only
+`Issue94Step4Prop.step4_guarded` *is* on the route taken (used at `:384` and
+`:401`), but it is `Bin`-typed (`Issue94Step4Prop.lean:136`) and is reached only
 through the `Bin` form of `step3_shared_endpoint_forces_pair_readL`
 (`Issue89GapMap.lean:558`).  That is why this half of the case split is stated
 for `S : Fin K → Bin` and not for an arbitrary `[DecidableEq α]`.  Front 94g4

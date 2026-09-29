@@ -35,7 +35,7 @@ arbitrary `[DecidableEq α]`:
 
 The three genuinely `Bin`-typed items on the old path were all *wrappers*:
 
-* `Issue94Step4Prop.step4_guarded` (`:146`), whose **proof body is a call to the
+* `Issue94Step4Prop.step4_guarded` (`:153`), whose **proof body is a call to the
   α-general `step4_slide_iterates_word` at read length `t ≤ K`**, and whose
   `t ≤ K` comes from `pairBack_le_K` = `pairBack_spec hK S a b).2`, itself
   α-general. The wrapper is re-proved here as `step4_guarded_alpha` and is
@@ -46,7 +46,7 @@ The three genuinely `Bin`-typed items on the old path were all *wrappers*:
   case, from the same two lemmas.
 * `Issue94Step5Heads.heads_of_one_chord_ne` (`:251`), which is a two-line call to
   `maxPair_isRepeat`. **Replaced, not re-derived**, by the already-existing
-  α-general `Issue94HeadCollision.heads_ne_of_chord` (`Issue94HeadCollision.lean:82`),
+  α-general `Issue94HeadCollision.heads_ne_of_chord` (`Issue94HeadCollision.lean:80`),
   as 94d4's E11 anticipated. The two have identical statements up to the alphabet
   binder.
 
@@ -258,7 +258,7 @@ theorem step3_shared_endpoint_alpha (hK : 0 < K) (S : Fin K → α)
     exact three_starts_ne hK S h2L hLK hprim hP2 hvab.symm hvcd.symm hab.symm hne
 
 /-- **§5 step 4, guarded, at an arbitrary alphabet.**  This is
-`Issue94Step4Prop.step4_guarded` (`:146`) with its `Bin` binder removed. It is
+`Issue94Step4Prop.step4_guarded` (`:153`) with its `Bin` binder removed. It is
 *the same argument*: the proof body is the α-general
 `Issue94IterSlide.step4_slide_iterates_word` at `t ≤ K`, and the `t ≤ K` bound
 comes from the α-general `pairBack_spec hK S a b).2` (which is what
