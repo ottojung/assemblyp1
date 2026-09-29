@@ -1,6 +1,7 @@
 import AssemblyP1.BBTCrossingCoalesce
 import AssemblyP1.Issue94HeadCollision
 import AssemblyP1.Issue94NoCollision
+import AssemblyP1.Issue94NoCollisionAlpha
 
 /-!
 # `Issue94CaseSplit`: `CrossingPairsCoalesce` by case split on a cross-head equality
@@ -60,8 +61,10 @@ The two halves do **not** have the same scope in `α`:
 * `Issue94NoCollision.no_collision_contradiction` is proved for
   **`S : Fin K → PopulationReduction.Bin` only**.
 
-Consequently the case split closes for `α = PopulationReduction.Bin` and, on the
-above evidence, for no larger `α`.  This module therefore proves
+Consequently the case split closes for `α = PopulationReduction.Bin`, which is
+what the two `*_bin` declarations below record.  `Issue94NoCollisionAlpha.lean`
+additionally removes that restriction, and `crossingPairsCoalesce_general` below
+is the α-general inhabitant.  This module therefore proves
 
 * `crossingPairsCoalesce_of_noCollision` — the case split for **arbitrary**
   `{α : Type} [DecidableEq α]`, in the form
@@ -77,8 +80,31 @@ above evidence, for no larger `α`.  This module therefore proves
 
 `crossingPairsCoalesce_bin` is the "exact existing `CrossingPairsCoalesce` Prop
 inhabitant" of the pointer, at the alphabet the library's slide machinery is
-actually stated over.  The α-general inhabitant is **not** claimed; see the
-NOT ESTABLISHED section of `/workspace/BOARD94-CASESPLIT.md`.
+actually stated over.
+
+## The α-general inhabitant (added by front 94g4)
+
+`Issue94NoCollisionAlpha.lean` removes the `Bin` restriction, and this module
+then proves the pointer's target outright:
+
+* `crossingPairsCoalesce_alpha` — the unconditional case split at arbitrary
+  `{α : Type} [DecidableEq α]`;
+* `crossingPairsCoalesce_general` — an inhabitant of the **existing** `Prop`
+  `BBTCrossingCoalesce.CrossingPairsCoalesce (α := α) L` for **every**
+  `[DecidableEq α]`, with its hypotheses verbatim that `def`'s.
+
+So the residual-assumption item on definition-of-done item 2 is now closed:
+`crossingPairsCoalesce_general` retains no assumption on the alphabet. The
+earlier `crossingPairsCoalesce_bin` is kept as the `α := Bin` specialisation.
+
+The `Bin` restriction turned out to be inherited plumbing, not mathematics. Every
+dependency the no-collision argument uses is already stated for arbitrary
+`[DecidableEq α]`; the three `Bin`-typed items on the old path were wrappers
+(`Issue94Step4Prop.step4_guarded`, whose proof body is a call to the α-general
+`step4_slide_iterates_word`; `Issue89GapMap.step3_shared_endpoint_forces_pair_readL`,
+a four-case composition of α-general lemmas; and `Issue94Step5Heads.heads_of_one_chord_ne`,
+replaced here by the existing α-general `Issue94HeadCollision.heads_ne_of_chord`).
+See the table in `Issue94NoCollisionAlpha.lean`.
 
 ## The one bridging lemma the composition needed
 
@@ -129,6 +155,7 @@ open AssemblyP1.SourceFaithfulIs AssemblyP1.OrientedRigidity AssemblyP1.BBTSeque
 open AssemblyP1.BBTChords AssemblyP1.BBTUniqueEulerian AssemblyP1.P2RepeatResidual
 open AssemblyP1.BBTLadder AssemblyP1.BBTCrossingCoalesce
 open AssemblyP1.Issue94HeadCollision AssemblyP1.Issue94NoCollision
+open AssemblyP1.Issue94NoCollisionAlpha
 
 set_option maxHeartbeats 800000
 
@@ -205,5 +232,39 @@ theorem crossingPairsCoalesce (L : ℕ) :
     BBTCrossingCoalesce.CrossingPairsCoalesce (α := Bin) L := by
   intro K hK S h2L hLK hP2 hprim a b c d hab hcd hvab hvcd hI
   exact crossingPairsCoalesce_bin hK S h2L hLK hP2 hprim hab hcd hvab hvcd hI
+
+/-- **The case split, unconditional, at an arbitrary `[DecidableEq α]`.**
+
+The α-general analogue of `crossingPairsCoalesce_bin`, discharging the
+no-collision branch with `Issue94NoCollisionAlpha.no_collision_contradiction_alpha`
+rather than with the `Bin`-only `Issue94NoCollision.no_collision_contradiction`.
+Same two bullets, same `vtx_eq_iff` bridge, nothing weakened. -/
+theorem crossingPairsCoalesce_alpha {α : Type} [DecidableEq α]
+    (hK : 0 < K) (S : Fin K → α) (h2L : 2 ≤ L) (hLK : L ≤ K) (hP2 : P2 hK L S)
+    (hprim : RepeatAdapter.IsPrimitive hK S) {a b c d : Fin K}
+    (hab : a ≠ b) (hcd : c ≠ d)
+    (hvab : vtx hK L S a = vtx hK L S b) (hvcd : vtx hK L S c = vtx hK L S d)
+    (hI : Interleaved (mkGenome hK S) a b c d) :
+    SameExtension K hK S a b c d :=
+  crossingPairsCoalesce_of_noCollision hK S h2L hLK hP2 hprim hab hcd hvab hvcd hI
+    (fun hab hcd hvab hvcd hI hAC hAD hBC hBD =>
+      no_collision_contradiction_alpha hK S h2L hLK hP2 hprim hab hcd hvab hvcd hI
+        hAC hAD hBC hBD)
+
+/-- **The `def` itself, inhabited at an arbitrary `[DecidableEq α]`.**
+
+This is the pointer's target: an inhabitant of the **existing** `Prop`
+`BBTCrossingCoalesce.CrossingPairsCoalesce` with **no residual assumption on
+the alphabet**.  The hypotheses are copied verbatim from that `def`
+(`AssemblyP1/BBTCrossingCoalesce.lean:212`) and the conclusion is its own; this
+is a restatement of the target, not a weakening or a redefinition of it.
+
+The α-generality rests on `Issue94NoCollisionAlpha`, which shows the `Bin`
+restriction of `Issue94NoCollision.lean` was inherited plumbing over an
+α-general core rather than a property of the argument. -/
+theorem crossingPairsCoalesce_general {α : Type} [DecidableEq α] (L : ℕ) :
+    BBTCrossingCoalesce.CrossingPairsCoalesce (α := α) L := by
+  intro K hK S h2L hLK hP2 hprim a b c d hab hcd hvab hvcd hI
+  exact crossingPairsCoalesce_alpha hK S h2L hLK hP2 hprim hab hcd hvab hvcd hI
 
 end AssemblyP1.Issue94CaseSplit

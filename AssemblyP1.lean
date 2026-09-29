@@ -378,12 +378,31 @@ does, all four cross-head inequalities are available and front `a23872a`'s
 
 `crossingPairsCoalesce` below is an inhabitant of the existing
 `BBTCrossingCoalesce.CrossingPairsCoalesce (α := Bin)`, with that `def`'s
-hypotheses verbatim.  The α-**general** inhabitant is **not** claimed: the
-no-collision half is stated over `S : Fin K → PopulationReduction.Bin` only,
-while the collision half is over arbitrary `{α : Type} [DecidableEq α]`.
-`crossingPairsCoalesce_of_noCollision` isolates precisely that obstruction by
-giving the case split for arbitrary `α` with the no-collision branch as a
-hypothesis.  See `/workspace/BOARD94-CASESPLIT.md`. -/
+hypotheses verbatim.
+
+`Issue94NoCollisionAlpha` removes the `Bin` restriction, and
+`crossingPairsCoalesce_general` below is the **α-general** inhabitant of that
+same existing `Prop`, for every `[DecidableEq α]`, with its hypotheses verbatim
+and no residual assumption on the alphabet.  The `Bin` restriction turned out to
+be inherited plumbing over an α-general core, not a property of the argument.
+`crossingPairsCoalesce_of_noCollision` remains as the conditional form.  See
+`/workspace/BOARD94-ALPHAGEN.md`. -/
+#print axioms AssemblyP1.Issue94NoCollisionAlpha.pairBack_mod_alpha
+#print axioms AssemblyP1.Issue94NoCollisionAlpha.pairBack_slide_alpha
+#print axioms AssemblyP1.Issue94NoCollisionAlpha.head_of_slide_alpha
+#print axioms AssemblyP1.Issue94NoCollisionAlpha.pairBack_of_head_alpha
+#print axioms AssemblyP1.Issue94NoCollisionAlpha.head_of_head_alpha
+#print axioms AssemblyP1.Issue94NoCollisionAlpha.chord_of_slide_alpha
+#print axioms AssemblyP1.Issue94NoCollisionAlpha.slide_pair_ne_alpha
+#print axioms AssemblyP1.Issue94NoCollisionAlpha.step3_shared_endpoint_alpha
+#print axioms AssemblyP1.Issue94NoCollisionAlpha.step4_guarded_alpha
+#print axioms AssemblyP1.Issue94NoCollisionAlpha.slide_meets_head_alpha
+#print axioms AssemblyP1.Issue94NoCollisionAlpha.slide_guards_down_alpha
+#print axioms AssemblyP1.Issue94NoCollisionAlpha.slide_guards_down_heads_alpha
+#print axioms AssemblyP1.Issue94NoCollisionAlpha.no_collision_heads_interleave_alpha
+#print axioms AssemblyP1.Issue94NoCollisionAlpha.no_collision_contradiction_alpha
 #print axioms AssemblyP1.Issue94CaseSplit.crossingPairsCoalesce_of_noCollision
 #print axioms AssemblyP1.Issue94CaseSplit.crossingPairsCoalesce_bin
 #print axioms AssemblyP1.Issue94CaseSplit.crossingPairsCoalesce
+#print axioms AssemblyP1.Issue94CaseSplit.crossingPairsCoalesce_alpha
+#print axioms AssemblyP1.Issue94CaseSplit.crossingPairsCoalesce_general
