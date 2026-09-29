@@ -63,7 +63,16 @@ matching is an alternative Eulerian cycle of the condensed graph
 (`BBTSequenceGraph.match_next_vtx`), a rotational vertex cycle makes the
 candidate a rotation of the truth --- is proved in
 `AssemblyP1/BBTEulerian.lean`.  `EulerianCycleObstruction` itself is not
-proved here; it is the Pevzner 1995 Lemma 9 input, named and isolated.
+proved here; it is the board's own open obligation, named and isolated.
+**ATTRIBUTION (board 94, front 94e7; see `docs/best-tw1-attribution-94.md`):**
+this text formerly read "it is the Pevzner 1995 Lemma 9 input".  That
+attribution is withdrawn --- a two-sided retrieval established that Pevzner
+1995 (Algorithmica 13:77-105) contains no counting statement of any kind and
+none of the `BEST` / `arboresc` / `spanning` / `matrix-tree` / `determinant` /
+out-degree vocabulary, and that BBT (Algorithmica 13:1-19, 2006) contains no
+arborescence and no proof of its own Theorem 3, its Theorem 3 importing the step
+from Pevzner 1995, so the citation chain is **broken**.  The binder is still
+named `hPevzner` for historical reasons; the name does not record a source.
 No `axiom`, `sorry` or `admit` appears anywhere in the chain.
 
 ## What is reused

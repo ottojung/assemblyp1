@@ -35,8 +35,12 @@ of truth boundary occurrences, uniqueness of the Eulerian cycle at `K = L-1`):
   (`AssemblyP1/BBTCondense.lean`), including a closed complete-spectrum
   uniqueness theorem in the `P1` stratum;
 * §5: the exact remaining implication, now stated in the *known-multiplicity*
-  (Pevzner) form, together with the two interface facts still missing and the
+  form, together with the two interface facts still missing and the
   discipline the sibling audit imposed on the argument.
+
+**ATTRIBUTION (board 94, front 94e7; see `docs/best-tw1-attribution-94.md`).**
+§5 and the "Pevzner" attributions in it are **relabelled as the board's own
+construction**.  Nothing in §5 is imported from Pevzner 1995 or from BBT.
 
 ## 1. Proved: the abstract cyclic transposition / chord lemma
 
@@ -172,15 +176,39 @@ types*:
 No theorem in this module is stated for a non-injective start map, and none
 would be sound.
 
-## 5. The exact remaining gap: the Pevzner known-multiplicity step
+## 5. The exact remaining gap: the board's own known-multiplicity step
+
+**ATTRIBUTION (board 94, front 94e7).**  The heading of this section formerly
+read "The exact remaining gap: the Pevzner known-multiplicity step", and the
+body formerly read "the input that closes it is **not** the unknown-multiplicity
+condensation theorem but Pevzner 1995, Lemma 9, in its *known-multiplicity*
+form".  **Both attributions are withdrawn.**  A two-sided retrieval on this
+board established that Pevzner 1995 (Algorithmica 13:77--105) contains no
+counting statement of any kind and no `BEST` / `arboresc` / `spanning` /
+`matrix-tree` / `determinant` / out-degree / `repeat` / `spectrum` / `K-mer` /
+`condens` vocabulary, and that BBT (Algorithmica 13:1--19, 2006) contains no
+arborescence, no spanning-tree count, and **no proof of its own Theorem 3** ---
+its Theorem 3 imports this step from Pevzner 1995, so **the citation chain is
+broken and terminates in nothing**.  The step below is a **board construction**.
+What may still be cited to Pevzner 1995 is Theorem 2, p. 81 (proof pp. 82--86),
+the exchange/reflection orbit-connectivity argument on bicolored graphs, which
+Pevzner himself attributes to Abrham & Kotzig 1980; and Theorem 1 /
+Corollary 1, p. 80, the Kotzig--Nash-Williams balancedness criterion, from Kotzig
+1968 / Nash-Williams.  Neither may be cited for a count, a bound, an
+out-degree estimate, or a uniqueness result.  The BEST theorem is cited directly
+from van Aardenne-Ehrenfest and de Bruijn, *Indag. Math.* (1951), or Tutte,
+LMS Lect. Notes 83 (1975).  The two later uses of the word "Pevzner" in this
+section (below, in "Why the chord lemma of §1 does not supply it") are relabelled
+the same way: they refer to *this board's setting*, not to a source.
 
 `spectrum_unique_of_P1` closes `thm:BBT` for words with **no** branch object. For
 a word that *has* branch objects, §4 confines every alternative traversal to the
 branch occurrences and bounds how many choice points there are, but the
 uniqueness of the Eulerian cycle is not proved. Reading Bresler's dissertation
 (Appendix B), the input that closes it is **not** the unknown-multiplicity
-condensation theorem but Pevzner 1995, Lemma 9, in its *known-multiplicity* form
-— which is exactly our setting, since the complete spectrum supplies every edge
+condensation theorem but the **known-multiplicity form** --- the board's own
+reduction, which is exactly the setting here, since the complete spectrum
+supplies every edge
 multiplicity. The single remaining statement is:
 
 ```text
@@ -204,13 +232,15 @@ remaining `G ≤ 2` cases are finite and can be discharged separately, and
 `L = 1` is not in the range of the project (`def:population` fixes `L ≥ 2`).
 
 **Why the chord lemma of §1 does not supply it.** `chord_lemma` produces two
-crossing orbits of a nontrivial rotational involution. In the Pevzner setting
+crossing orbits of a nontrivial rotational involution. In the board's setting
 the induced permutation is not known to be an involution, so `chord_lemma` cannot
 be applied; and the alternative Eulerian cycle of the *truth* is a rotation, so
 one must first prove that the pull-back is a rotation. Concretely, the missing
 link is: *the choice points of §4 are non-empty and force the two long
 interleaved repeats* — i.e. the count bound of §4 must be upgraded from
-quantitative to the Pevzner dichotomy. Nothing in this packet establishes that.
+quantitative to **the board's own dichotomy** (the `t_w = 1` reduction of
+§5, above; see `docs/best-tw1-attribution-94.md`). Nothing in this packet
+establishes that.
 
 **Interface facts still not bridged** (as in the previous revision of this note):
 
