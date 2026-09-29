@@ -114,13 +114,14 @@ hypothesis of `LadderVertexCycle`'s block condition is available from it inside
 
 ## What is NOT established here
 
-1. **`LadderVertexCycle` is NOT proved.**  §5.3 discharges the *block* half of
-   its hypothesis --- the only half that was missing --- and §6.2 records the
-   reduction (`ladderVertexCycle_of_blockless`) to the residual
-   `BlocklessLadderVertexCycle`.  But the global traversal-order step, that a
+1. **`LadderVertexCycle` is NOT proved.**  Note carefully that §7
+   **overturns** this front's own earlier reading of that: §5.3 does *not*
+   "discharge the block half" in any sense that makes the rest smaller.
+   `ladderVertexCycle_iff_blockless` proves the two statements are the **same
+   `Prop`**, so there is no residual and nothing was reduced.  What remains is
+   the whole of `LadderVertexCycle` --- the global traversal-order step, that a
    laminar family of vertex-invisible ladder blocks forces the vertex listing to
-   be a rotation, has no inhabitant here.  Neither does it have one anywhere in
-   the tree.
+   be a rotation.  It has no inhabitant here, and none anywhere in the tree.
 2. **`hPevzner` / `EulerianCycleObstruction` is untouched.**
    `AssemblyP1.PopulationUniqueness.population_unique_ML_up_to_rotation` and its
    same-length wrapper still RETAIN the `hPevzner` / `EulerianCycleObstruction`
@@ -493,6 +494,94 @@ theorem ladderVertexCycle_of_blockless {L : ℕ}
   intro K hK S hP2 hprim h2L hLK hUkk σ hEul _hblocks
   exact h K hK S hP2 hprim h2L hLK hUkk σ hEul
 
-/-! ## 7. What is NOT established -/
+/-! ## 7. `LadderVertexCycle` and `BlocklessLadderVertexCycle` are the SAME
+statement: there is no residual
+
+Front 94a10 read §6.2 as a *reduction*: "the block half is discharged, so what
+remains is the strictly weaker `BlocklessLadderVertexCycle`, one line away".
+**That reading is wrong**, and this section is the kernel-checked correction.
+
+`ladderVertexCycle_iff_blockless` below proves
+
+```text
+  BBTLadder.LadderVertexCycle L  ↔  BlocklessLadderVertexCycle L
+```
+
+so the two `Prop`s are interderivable and §5.3 isolated **no residue at all**.
+The reason is structural and is visible in the statement of `LadderVertexCycle`:
+
+```text
+  ∀ (σ), EulerianCycle σ → (∀ a b c d, … → SameExtension …) → VertexCycleEq σ
+```
+
+the laminar-block hypothesis occurs as the premise of an implication whose
+*conclusion is the entire `VertexCycleEq` and never mentions it*.  A block
+hypothesis of that shape is not a *restriction* on the statement; it is a
+**derived** fact, and §5.3 (`support_blocks_coalesce`) is exactly the derivation
+of it from the surrounding `P2` / primitivity / range / `Ukkonen` context.
+Front 94a10's `support_blocks_coalesce` is therefore a **real and correct
+result**, but it is not progress *towards* `LadderVertexCycle`: it discharges a
+hypothesis that was already going to be supplied.
+
+Consequently, and this is the part a later pass must not get wrong:
+
+* **The "residual global step" is the whole of `LadderVertexCycle`.**  There is
+  no smaller statement left over from a bigger one.  "One line away" is
+  accurate about the *length* of the implication and misleading about its
+  *content*.
+* `blockless_of_uniqueEulerianCycle` and
+  `ladderVertexCycle_of_uniqueEulerianCycle` show the ladder/coalescence line
+  is a **sufficient condition** for `BBTEulerian.UniqueEulerianCycle`, i.e. for
+  `thm:BBT` --- **not a route towards it**.  The converse is *not* available and
+  is not claimed: `BlocklessLadderVertexCycle` additionally assumes `P2`, and
+  `P2` is *strictly* stronger than `Ukkonen` (`P2.imp_Ukkonen` runs one way
+  only), so `Ukkonen` does not supply the `P2` hypothesis.
+
+The honest summary of the ladder route after this pass: it contains no
+independent mathematical content beyond what `UniqueEulerianCycle` already
+gives, and the traversal-order question it poses is `thm:BBT` itself. -/
+
+/-- **The two statements are interderivable.**  This is the kernel-checked
+refutation of the reading of §6.2 as a reduction: the `LadderVertexCycle` /
+`BlocklessLadderVertexCycle` pair is an *equivalence*, not a step.
+
+The backward direction is `ladderVertexCycle_of_blockless` and is free.  The
+forward direction is exactly §5.3: the laminar-block hypothesis of
+`LadderVertexCycle` is a consequence of the surrounding `P2` / primitivity /
+range / `Ukkonen` context, so it can be *supplied* and the conclusion --- which
+does not mention it --- then follows. -/
+theorem ladderVertexCycle_iff_blockless {L : ℕ} :
+    BBTLadder.LadderVertexCycle (α := α) L ↔
+      BlocklessLadderVertexCycle (α := α) L := by
+  constructor
+  · intro h K hK S hP2 hprim h2L hLK hUkk σ hEul
+    refine h K hK S hP2 hprim h2L hLK hUkk σ hEul ?_
+    intro a b c d hfa hba hfc hdc hac hbc had hbd hI
+    exact support_blocks_coalesce hK S hP2 hprim h2L hLK hEul a b c d
+      hfa hba hfc hdc hac hbc had hbd hI
+  · exact ladderVertexCycle_of_blockless
+
+/-- **`UniqueEulerianCycle` proves the "residual"** --- and this is the
+direction that matters.  The block hypothesis was never load-bearing, so the
+`LadderVertexCycle` line is not an independent route to `thm:BBT`: it is a
+*consequence* of it.  Note the converse is **not** available and is not claimed:
+`BlocklessLadderVertexCycle` additionally assumes `P2`, and `P2` is *strictly*
+stronger than `Ukkonen` (`P2.imp_Ukkonen` goes one way only), so
+`Ukkonen` alone does not supply the `P2` hypothesis. -/
+theorem blockless_of_uniqueEulerianCycle {L : ℕ}
+    (h : BBTEulerian.UniqueEulerianCycle (α := α) L) :
+    BlocklessLadderVertexCycle (α := α) L := by
+  intro K hK S _hP2 _hprim _h2L _hLK hUkk σ hEul
+  exact h K hK S hUkk σ hEul
+
+/-- ... and hence `LadderVertexCycle` itself.  The whole ladder/coalescence
+route is therefore a **sufficient** condition for `thm:BBT` and an
+**unnecessary** one. -/
+theorem ladderVertexCycle_of_uniqueEulerianCycle {L : ℕ}
+    (h : BBTEulerian.UniqueEulerianCycle (α := α) L) :
+    BBTLadder.LadderVertexCycle (α := α) L :=
+  ladderVertexCycle_of_blockless (blockless_of_uniqueEulerianCycle h)
+
+/-! ## 8. What is NOT established -/
 
 end AssemblyP1.Issue94TW1EdgeType

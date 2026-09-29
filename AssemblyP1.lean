@@ -452,3 +452,6 @@ discharged. -/
 #print axioms AssemblyP1.PopulationUniqueness.population_unique_ML_up_to_rotation
 #print axioms AssemblyP1.PopulationUniqueness.population_unique_ML_up_to_rotation_same_length
 #print axioms AssemblyP1.Issue94TW1EdgeType.ladderVertexCycle_of_blockless
+#print axioms AssemblyP1.Issue94TW1EdgeType.ladderVertexCycle_iff_blockless
+#print axioms AssemblyP1.Issue94TW1EdgeType.blockless_of_uniqueEulerianCycle
+#print axioms AssemblyP1.Issue94TW1EdgeType.ladderVertexCycle_of_uniqueEulerianCycle
