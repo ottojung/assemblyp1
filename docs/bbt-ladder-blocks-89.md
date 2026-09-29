@@ -285,3 +285,24 @@ another module.  That lemma belongs next to `pairBack`, in that file.
 Everything else in `BBTLadder.lean` §1--§6 and in `BBTCrossingCoalesce.lean`
 §1--§4 is **proved** (subject to the build status recorded in the commit
 messages).  No `sorry`, no `admit`, no new `axiom`, no linter suppression.
+
+## Update: the second Lean front is wired into the build
+
+`AssemblyP1/BBTVertexCycleReduction.lean` (board 94, second front) is now
+imported from `AssemblyP1.lean` and its five audited names appear in the
+`#print axioms` audit.  `lake build --wfail` passes; the three
+`unusedSectionVars` warnings inherited from `BBTLadder.lean` are silenced with
+the same `set_option linter.unusedSectionVars false` that
+`BBTEulerian.lean:101` already uses, and the other ten are plain
+`unusedVariables` renames (`_hL`, `_hP2`, `_hprim`, `_hEul`, `_p`, `_q`, `_he`)
+and one dropped unused `simp` argument.
+
+The two board-94 obligations, `BBTCrossingCoalesce.CrossingChordsCoalesce` and
+`BBTLadder.LadderVertexCycle`, are **still uninhabited**.  What
+`BBTVertexCycleReduction` certifies is only that they are *composable* and that
+the second one is invariant under the rotation-conjugate alternative traversal
+(`vertexCycleEq_conj`), so that its obstruction is carried entirely by the chord
+geometry of `AltF` and not by the choice of origin.  The residual `P2` +
+primitivity qualifier of `vertexCycleEq_of_both` is real and is **not**
+discharged: `Ukkonen` does not imply `P2`, so the composition is `thm:BBT`
+restricted to the `P2` class, not `BBTEulerian.UniqueEulerianCycle`.

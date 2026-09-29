@@ -1,4 +1,5 @@
 import AssemblyP1.BBTLadder
+import AssemblyP1.BBTVertexCycleReduction
 import AssemblyP1.P2Multiplicity
 import AssemblyP1.P2RepeatAdapter
 import AssemblyP1.BBTMaximalExtension
@@ -182,3 +183,21 @@ module adds. -/
 #print axioms AssemblyP1.BBTEulerian.leastPeriod_eq_G_of_primitive
 #print axioms AssemblyP1.BBTEulerian.backAgr3F_add
 #print axioms AssemblyP1.BBTEulerian.agr3F_G_of_shifted
+
+/-! ## Axiom audit for the `#89` ladder-route reductions
+
+`AssemblyP1.BBTVertexCycleReduction` does **not** inhabit either
+`BBTLadder.CrossingChordsCoalesce` or `BBTLadder.LadderVertexCycle`; both remain
+`Prop`s with no inhabitant.  What it adds are the kernel-checked reductions of
+the `LadderVertexCycle` obligation: the listing of a genuine `EulerianCycle` is
+unchanged up to the rotation-conjugate alternative traversal, the target
+`VertexCycleEq` is invariant under that conjugation, `AltF` is the conjugate of
+the one-step rotation, and the two board-94 obligations are composable
+(`vertexCycleEq_of_both`).  The residual `P2` + primitivity qualifier of that
+composition is *not* discharged, so it is not `BBTEulerian.UniqueEulerianCycle`. -/
+
+#print axioms AssemblyP1.BBTVertexCycle.listing_conjugate
+#print axioms AssemblyP1.BBTVertexCycle.vertexCycleEq_conj
+#print axioms AssemblyP1.BBTVertexCycle.altF_eq
+#print axioms AssemblyP1.BBTVertexCycle.altF_unfold
+#print axioms AssemblyP1.BBTVertexCycle.vertexCycleEq_of_both
