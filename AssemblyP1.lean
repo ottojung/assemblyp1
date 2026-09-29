@@ -351,7 +351,8 @@ every regime an exhaustive binary sweep reaches (`K ≤ 9`): all 7704 admissible
 interleaving chord quadruples have a cross-head collision and 0 satisfy all four
 inequalities.  It is therefore the **refuted case** of the split, and the
 composite rests on the collision half alone.  The `Bin` restriction on `S` is
-inherited from `step4_guarded` and is not removable by signature edit. -/
+inherited from `step4_guarded` and was removed at arbitrary `[DecidableEq α]` in
+`AssemblyP1/Issue94NoCollisionAlpha.lean`. -/
 #print axioms AssemblyP1.Issue94NoCollision.pairBack_mod
 #print axioms AssemblyP1.Issue94NoCollision.head_of_slide
 #print axioms AssemblyP1.Issue94NoCollision.head_of_head

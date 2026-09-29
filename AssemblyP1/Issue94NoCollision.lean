@@ -353,11 +353,15 @@ make a falsified guard force a cross-head equality) and
 The distinctness of the slid pair is **not** obtained from
 `Issue94Step2Path.step2_components_are_paths_proved`; that lemma is not invoked
 anywhere in this file.  It comes from this file's own `slide_pair_ne` (`:186`),
-via `rotAdd_inj_any` (`:59`).  The composition with `step4_guarded` is likewise
-**not** the route taken: `step4_guarded` is `Bin`-typed
-(`Issue94Step4Prop.lean:130`) and is reached here only through the `Bin` form of
-`step3_shared_endpoint_forces_pair_readL` (`Issue89GapMap.lean:558`), which is why
-this half of the case split is stated for `S : Fin K → Bin` and not for an
+via `rotAdd_inj_any` (`:59`).
+
+`Issue94Step4Prop.step4_guarded` *is* on the route taken (used at `:380` and
+`:397`), but it is `Bin`-typed (`Issue94Step4Prop.lean:130`) and is reached only
+through the `Bin` form of `step3_shared_endpoint_forces_pair_readL`
+(`Issue89GapMap.lean:558`).  That is why this half of the case split is stated
+for `S : Fin K → Bin` and not for an arbitrary `[DecidableEq α]`.  Front 94g4
+found that this restriction was removable: see
+`AssemblyP1/Issue94NoCollisionAlpha.lean`, which discharges the whole argument at
 arbitrary `[DecidableEq α]`. -/
 theorem no_collision_heads_interleave (hK : 0 < K) (S : Fin K → Bin)
     (h2L : 2 ≤ L) (hLK : L ≤ K) (hP2 : P2 hK L S)
