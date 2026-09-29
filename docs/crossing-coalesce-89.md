@@ -144,9 +144,13 @@ primitive binary words of length `≤ 8` and primitive ternary words of length
 `≤ 5`, all `2 ≤ L ≤ K`, all crossing doubled pairs) is that the replay of this
 induction **always** terminates in step 2 or 3, i.e. never reaches step 4, and
 that the collision step always yields `SameExtension`
-(`scripts/verify_collision_head_89.py`: 3584 collisions, 0 non-coalescing).
-`(C1)`, `(C2)`, `(S1)` and the target itself are checked by
-`scripts/verify_crossing_coalesce_89.py`.
+(`scripts/verify_collision_head_89.py`: 3584 collisions, 0 non-coalescing, over
+primitive binary words of length `≤ 8`; 11072 collisions, 0 non-coalescing at
+the script's default bound `--bin 9`).  `(C1)`, `(C2)`, `(S1)` and the target
+itself are checked by `scripts/verify_crossing_coalesce_89.py` over primitive
+binary words of length `≤ 10` and primitive ternary words of length `≤ 6`
+(18248, 12844 and 5081528 instances of `(C1)`, `(C2)`, `(S1)`, no failure of
+the target).
 
 **This is evidence, not a proof: the completeness of the search is not itself
 established in the kernel.**  The kernel content is the list in §4.
