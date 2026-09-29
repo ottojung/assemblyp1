@@ -43,6 +43,8 @@ import AssemblyP1.SameLength62Maximizer
 import AssemblyP1.WraparoundTripleRepeat
 import AssemblyP1.MLEscape
 import AssemblyP1.PopulationUniqueness
+import AssemblyP1.Issue94TW1
+import AssemblyP1.Issue94TW1EdgeType
 import AssemblyP1.AAABConverse
 import AssemblyP1.Issue94Step2Path
 
@@ -411,3 +413,41 @@ be inherited plumbing over an α-general core, not a property of the argument.
 #print axioms AssemblyP1.Issue94CaseSplit.crossingPairsCoalesce
 #print axioms AssemblyP1.Issue94CaseSplit.crossingPairsCoalesce_alpha
 #print axioms AssemblyP1.Issue94CaseSplit.crossingPairsCoalesce_general
+
+/-! ## Board 94, front 94a10: the edge-type obligation
+
+`AssemblyP1.Issue94TW1` (front 94e7) **refutes** the board's `t_w = 1` step
+at `not_UniqueInArb_3`.  `AssemblyP1.Issue94TW1EdgeType` (this front) carries
+out the three steps the board directed on top of it:
+
+* the "208 instances with a simple `D`" claim is an **evaluator bug** in
+  `scripts/verify_tw1_94.js` (`hasParallelEdges` is identically `false`); with
+  a correct predicate there are **zero** simple-`D`, `t_w > 1` instances at
+  `K ≤ 12`, so the parallel-edge division is the whole repair;
+* the corrected edge-type obligation is **equivalent to
+  `BBTEulerian.UniqueEulerianCycle`**, i.e. it is the endpoint the tree already
+  has rather than a new `Prop` (`edgeTypeUnique_iff_uniqueEulerianCycle`);
+* the interface audit of §3 was resolved by option **(b)**: the exact bounded
+  bridge `crossingChordsCoalesce_bounded`, and `support_blocks_coalesce` in
+  the shape `LadderVertexCycle` consumes.
+
+**Not established:** `BBTLadder.LadderVertexCycle` still has no inhabitant, the
+unbounded `CrossingChordsCoalesce` is neither proved nor refuted, and
+`PopulationUniqueness.population_unique_ML_up_to_rotation` still **retains**
+its `hPevzner : EulerianCycleObstruction` premise.  The public endpoint is not
+discharged. -/
+#print axioms AssemblyP1.Issue94TW1.not_UniqueInArb_3
+#print axioms AssemblyP1.Issue94TW1.S10100_two_arbs
+#print axioms AssemblyP1.Issue94TW1EdgeType.sameType_equiv
+#print axioms AssemblyP1.Issue94TW1EdgeType.vtx_eq_of_sameType
+#print axioms AssemblyP1.Issue94TW1EdgeType.edgeTypeOf_eq_iff
+#print axioms AssemblyP1.Issue94TW1EdgeType.EType_eq
+#print axioms AssemblyP1.Issue94TW1EdgeType.VertexCycleEq_of_EType_cycle
+#print axioms AssemblyP1.Issue94TW1EdgeType.EType_cycle_of_VertexCycleEq
+#print axioms AssemblyP1.Issue94TW1EdgeType.VertexCycleEq_iff_EType_cycle
+#print axioms AssemblyP1.Issue94TW1EdgeType.T1_T2_same_edgeTypes
+#print axioms AssemblyP1.Issue94TW1EdgeType.edgeTypeUnique_iff_uniqueEulerianCycle
+#print axioms AssemblyP1.Issue94TW1EdgeType.crossingChordsCoalesce_bounded
+#print axioms AssemblyP1.Issue94TW1EdgeType.support_blocks_coalesce
+#print axioms AssemblyP1.PopulationUniqueness.population_unique_ML_up_to_rotation
+#print axioms AssemblyP1.PopulationUniqueness.population_unique_ML_up_to_rotation_same_length
