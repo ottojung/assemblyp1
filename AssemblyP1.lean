@@ -309,9 +309,11 @@ step-5 failure: a cross-chord **head collision** is not to be excluded, it
 immediately forces the target conclusion.  If the head-pairs of two chords
 share a point, `collision_forces_pair` forces the two unordered extension
 pairs to coincide, giving `SameExtension`.  So the collision case of
-`head_dichotomy` is free. -/
+`head_dichotomy` is free.  `heads_ne_of_chord` is the general-`α` form of
+`Issue94Step5Heads.heads_of_one_chord_ne`, re-derived here so that the helper
+does not depend on the `Bin` specialisation. -/
+#print axioms AssemblyP1.Issue94HeadCollision.heads_ne_of_chord
 #print axioms AssemblyP1.Issue94HeadCollision.head_collision_implies_sameExtension
-#print axioms AssemblyP1.Issue94HeadCollision.head_collision_implies_sameExtension_Bin
 
 /-! `AssemblyP1.Issue94Step5NoChord` shows that at read length `L = K` a
 primitive circular word has **no chord at all**: two distinct starts agreeing

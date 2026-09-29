@@ -4,107 +4,134 @@ import AssemblyP1.Issue94Step5Heads
 /-!
 # `Issue94HeadCollision`: a **cross-chord head collision forces `SameExtension`**
 
-Board issue 94, front G1.
+Board issue 94, front G1.  Work order: the human pointer at 21:33:57Z on
+board issue 94.
 
-## The pointer being tested
+## The pointer being implemented
 
-`Issue94Step5Heads.Step5_heads_interleave` (and the related §5 step-5 line) is
-false because the four **heads** of two interleaving chords need not be pairwise
-distinct: the two chords can share a head (`maxPairStart a b = maxPairStart c d`).
-`Issue94Step5Heads` already records that the only way this happens is by a
-cross-chord collision between the two head-pairs, and that the *unguarded*
-formulation is refuted by a kernel-checked witness.
+The pointer reads:
 
-This module tests the **positive** form of that observation: a cross-head
-collision is not something to be excluded --- it should *immediately deliver*
-the target conclusion `SameExtension`.  Namely:
+> I think the current B2 formulation is aiming at the wrong conclusion.  A
+> cross-head collision does not need to be ruled out; it looks like it should
+> immediately prove `SameExtension`.  Write
+>
+> - `A = maxPairStart hK S a b`
+> - `B = maxPairStart hK S b a`
+> - `C = maxPairStart hK S c d`
+> - `D = maxPairStart hK S d c`.
+>
+> Existing machinery appears to give exactly what is needed:
+>
+> 1. `vtx_maxPairStart` gives `vtx A = vtx B` and `vtx C = vtx D`.
+> 2. `heads_of_one_chord_ne` gives `A ≠ B` and `C ≠ D`.
+> 3. `collision_forces_pair` says that two distinct `vtx`-equal pairs sharing
+>    one endpoint have the same other endpoint, using primitive P2 /
+>    fibre ≤ 2.
+>
+> Therefore, for example, if `A = C`, apply `collision_forces_pair` to head
+> pairs `(A,B)` and `(C,D)` to get `B = D`, yielding the first disjunct of
+> `SameExtension`. ...
+>
+> This suggests a helper of the shape
+> `head_collision_implies_sameExtension : (A=C ∨ A=D ∨ B=C ∨ B=D) → SameExtension ...`
+> rather than a lemma excluding head collisions.
 
-> If the head-pair `{A, B}` of the first chord and the head-pair `{C, D}` of the
-> second chord share a point, then the two chords have the same deterministic
-> maximal extension as unordered pairs.
-
-The proof is the collision step `BBTCrossingCoalesce.collision_forces_pair`
-(§3) applied at the head level: two distinct starts that carry a common
-`(L-1)`-mer and share an endpoint have the same other endpoint, because the
-fibre of that `(L-1)`-mer has size at most two (`P2`).  Each of the four
-cross-head equalities gives one of the two disjuncts of `SameExtension` directly.
+This module proves exactly that helper, in the shape the pointer gives, for
+an arbitrary alphabet `α` with `[DecidableEq α]`, and derives the head
+distinctness (`A ≠ B`, `C ≠ D`) internally rather than taking it as a
+hypothesis.
 
 ## What this does and does not give
 
-This is a **helper**, not the step-5 theorem.  It says nothing about the case
-where the four heads are pairwise distinct; that case is exactly the remaining
-second disjunct of `Issue94Step5Heads.head_dichotomy`.  The point of this module
-is that the collision case of that dichotomy is *free*, and in particular that a
-cross-head collision is a proof device rather than a counterexample.
+This is a **helper**, not `CrossingPairsCoalesce` itself.  It settles the
+*collision* case of the intended case split, and it settles it in the strong
+sense the pointer asks for: a single cross-head equality, with no further
+guard, delivers the full unordered `SameExtension`.  It says nothing about the
+case of four pairwise-distinct heads, which is the other half of the split.
+
+No hypothesis here is stronger than the pointer's.  In particular the two
+`(L-1)`-mer agreements `hagab`/`hagcd` are exactly the chord hypotheses that
+`BBTCrossingCoalesce.CrossingPairsCoalesce` already demands of its `a b c d`,
+and the head distinctness the pointer obtains from `heads_of_one_chord_ne` is
+re-derived here by the same argument for general `α`, since
+`Issue94Step5Heads.heads_of_one_chord_ne` is stated only over
+`PopulationReduction.Bin`.
 -/
 
 namespace AssemblyP1.Issue94HeadCollision
 
-open BBTLadder BBTCrossingCoalesce
+open AssemblyP1
+open AssemblyP1.PopulationReduction
+open AssemblyP1.SourceFaithfulIs
+open AssemblyP1.OrientedRigidity
+open AssemblyP1.BBTSequenceGraph
+open AssemblyP1.P2RepeatResidual
+open AssemblyP1.BBTLadder
+open AssemblyP1.BBTCrossingCoalesce
 
-/-- **A cross-head collision forces `SameExtension`.**  If the head-pair
-`{A, B}` of the chord `a b` and the head-pair `{C, D}` of the chord `c d`
-share a point, then the two chords carry the **same** deterministic maximal
-extension, as unordered pairs of starts.
+set_option maxHeartbeats 800000
+set_option linter.unusedSectionVars false
 
-Hypotheses: the two chords are genuine (`a ≠ b`, `c ≠ d`) and each carries a
-common `(L-1)`-mer; `hA`, `hB`, `hC`, `hD` are the four head-distinctness
-facts, i.e. the two heads *of each individual chord* are distinct.  This is the
-hypothesis set that `Issue94Step5Heads.heads_of_one_chord_ne` supplies from
-`a ≠ b` and the `(L-1)`-mer equality, so at the intended call site none of them
-is extra; the corollary below discharges them.
+/-- **The two extension starts of one chord are distinct** (`heads_of_one_chord_ne`
+of the pointer, step 2, for general `α`).  This is the argument of
+`Issue94Step5Heads.heads_of_one_chord_ne`, which is stated only over
+`PopulationReduction.Bin`; it is repeated here so that this helper is
+self-contained and does not depend on the `Bin` specialisation. -/
+theorem heads_ne_of_chord {G L : ℕ} {α : Type} [DecidableEq α] (hG : 0 < G)
+    (S : Fin G → α) (hL : 2 ≤ L) (hLG : L ≤ G)
+    (hprim : RepeatAdapter.IsPrimitive hG S) {a b : Fin G}
+    (hab : a ≠ b) (hag : ∀ d : Fin (L - 1), cyc hG S (a.val + d.val) = cyc hG S (b.val + d.val)) :
+    maxPairStart hG S a b ≠ maxPairStart hG S b a := by
+  obtain ⟨hR, _hℓ⟩ := maxPair_isRepeat hG S hprim hab (by omega) (by omega) hag
+  exact hR.2.2.1
 
-The conclusion `SameExtension` carries **no hypotheses of its own** beyond `hK`
-and `S` (`BBTLadder.lean`:604): it is the unordered-pair equality of
-`maxPairStart`.  So nothing is smuggled in on the conclusion side.
--/
-theorem head_collision_implies_sameExtension {K L : ℕ} (hK : 0 < K) (S : Fin K → α)
-    (hL : 2 ≤ L) (hLG : L ≤ K) (hP2 : P2 hK L S)
+/-- **A cross-head collision forces `SameExtension`** --- the helper of the
+21:33:57Z pointer.
+
+With `A = maxPairStart hK S a b`, `B = maxPairStart hK S b a`,
+`C = maxPairStart hK S c d`, `D = maxPairStart hK S d c`, the conclusion is
+`SameExtension K hK S a b c d`, i.e. the unordered pair `{A, B}` of extension
+starts equals the unordered pair `{C, D}`.
+
+The only extra assumption beyond `P2` and primitivity is the **collision**
+`hcoll`: at least one of the four cross-head equalities `A = C`, `A = D`,
+`B = C`, `B = D` holds.  There is no guard against the collision, and the
+`Bin` restriction of `heads_of_one_chord_ne` is avoided --- the head
+distinctness is `heads_ne_of_chord` above.
+
+The proof is exactly the pointer's four cases, each one application of
+`BBTCrossingCoalesce.collision_forces_pair` to the two *head* pairs (which are
+themselves chords, by `BBTCrossingCoalesce.vtx_maxPairStart`). -/
+theorem head_collision_implies_sameExtension {K L : ℕ} {α : Type} [DecidableEq α]
+    (hK : 0 < K) (S : Fin K → α) (hL : 2 ≤ L) (hLG : L ≤ K) (hP2 : P2 hK L S)
     (hprim : RepeatAdapter.IsPrimitive hK S) {a b c d : Fin K}
     (hab : a ≠ b) (hcd : c ≠ d)
-    (hvab : vtx hK L S a = vtx hK L S b) (hvcd : vtx hK L S c = vtx hK L S d)
-    (hA : maxPairStart hK S a b ≠ maxPairStart hK S b a)
-    (hC : maxPairStart hK S c d ≠ maxPairStart hK S d c)
+    (hagab : ∀ d : Fin (L - 1), cyc hK S (a.val + d.val) = cyc hK S (b.val + d.val))
+    (hagcd : ∀ e : Fin (L - 1), cyc hK S (c.val + e.val) = cyc hK S (d.val + e.val))
     (hcoll : maxPairStart hK S a b = maxPairStart hK S c d ∨
       maxPairStart hK S a b = maxPairStart hK S d c ∨
       maxPairStart hK S b a = maxPairStart hK S c d ∨
       maxPairStart hK S b a = maxPairStart hK S d c) :
     SameExtension K hK S a b c d := by
-  -- The two heads of the first chord are a chord in their own right
-  -- (`vtx_maxPairStart`, §4), and likewise for the second.
+  -- Pointer step 1: the heads of each chord are themselves a chord.
   have hA' : vtx hK L S (maxPairStart hK S a b) = vtx hK L S (maxPairStart hK S b a) :=
-    vtx_maxPairStart hL hLG hprim hab hvab
+    vtx_maxPairStart hK S hL hLG hprim hab hagab
   have hC' : vtx hK L S (maxPairStart hK S c d) = vtx hK L S (maxPairStart hK S d c) :=
-    vtx_maxPairStart hL hLG hprim hcd hvcd
+    vtx_maxPairStart hK S hL hLG hprim hcd hagcd
+  -- Pointer step 2: the two heads of each chord are distinct.
+  have hA : maxPairStart hK S a b ≠ maxPairStart hK S b a :=
+    heads_ne_of_chord hK S hL hLG hprim hab hagab
+  have hC : maxPairStart hK S c d ≠ maxPairStart hK S d c :=
+    heads_ne_of_chord hK S hL hLG hprim hcd hagcd
+  -- Pointer step 3, one case per disjunct of `hcoll`.
   rcases hcoll with h | h | h | h
   · refine Or.inl ⟨h, ?_⟩
-    exact collision_forces_pair hL hLG hprim hP2 hA hC hA' hC' h.symm
+    exact collision_forces_pair hK S hL hLG hprim hP2 hA hC hA' hC' h.symm
   · refine Or.inr ⟨h, ?_⟩
-    refine collision_forces_pair hL hLG hprim hP2 hA hC.symm hA' hC'.symm h.symm
-  · refine Or.inr ⟨?_, h.symm⟩
-    refine collision_forces_pair hL hLG hprim hP2 hA.symm hC hA'.symm hC' h
+    exact collision_forces_pair hK S hL hLG hprim hP2 hA hC.symm hA' hC'.symm h.symm
+  · refine Or.inr ⟨?_, h⟩
+    exact collision_forces_pair hK S hL hLG hprim hP2 hA.symm hC hA'.symm hC' h.symm
   · refine Or.inl ⟨?_, h⟩
-    refine collision_forces_pair hL hLG hprim hP2 hA.symm hC.symm hA'.symm hC'.symm h.symm
-
-/-- **The same statement with the head-distinctness discharged**, in the
-`Bin` setting that the step-5 reduction actually lives in.  The four hypotheses
-`hagA`/`hagC` are exactly the chord hypotheses of
-`Issue94Step5Heads.heads_of_one_chord_ne`, so this is the form to use at the
-`head_dichotomy` call site. -/
-theorem head_collision_implies_sameExtension_Bin {K L : ℕ} (hK : 0 < K)
-    (S : Fin K → PopulationReduction.Bin) (hL : 2 ≤ L) (hLG : L ≤ K)
-    (hP2 : P2 hK L S) (hprim : RepeatAdapter.IsPrimitive hK S) {a b c d : Fin K}
-    (hab : a ≠ b) (hcd : c ≠ d)
-    (hvab : vtx hK L S a = vtx hK L S b) (hvcd : vtx hK L S c = vtx hK L S d)
-    (hagA : ∀ d : Fin (L - 1), cyc hK S (a.val + d.val) = cyc hK S (b.val + d.val))
-    (hagC : ∀ d : Fin (L - 1), cyc hK S (c.val + d.val) = cyc hK S (d.val + d.val))
-    (hcoll : maxPairStart hK S a b = maxPairStart hK S c d ∨
-      maxPairStart hK S a b = maxPairStart hK S d c ∨
-      maxPairStart hK S b a = maxPairStart hK S c d ∨
-      maxPairStart hK S b a = maxPairStart hK S d c) :
-    SameExtension K hK S a b c d :=
-  head_collision_implies_sameExtension hK S hL hLG hP2 hprim hab hcd hvab hvcd
-    (Issue94Step5Heads.heads_of_one_chord_ne hK S hL hLG hprim hab hagA)
-    (Issue94Step5Heads.heads_of_one_chord_ne hK S hL hLG hprim hcd hagC) hcoll
+    exact collision_forces_pair hK S hL hLG hprim hP2 hA.symm hC.symm hA'.symm hC'.symm h.symm
 
 end AssemblyP1.Issue94HeadCollision
