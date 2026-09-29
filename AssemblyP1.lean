@@ -46,6 +46,7 @@ import AssemblyP1.PopulationUniqueness
 import AssemblyP1.Issue94TW1
 import AssemblyP1.Issue94TW1EdgeType
 import AssemblyP1.Issue94TW4Coalesce
+import AssemblyP1.Issue94TW5Single
 import AssemblyP1.AAABConverse
 import AssemblyP1.Issue94Step2Path
 
@@ -474,3 +475,15 @@ discharged. -/
 #print axioms AssemblyP1.Issue94TW4Coalesce.crossingChordsCoalesce_iff_two_le
 #print axioms AssemblyP1.Issue94TW4Coalesce.crossingChordsCoalesce_of_two_le
 #print axioms AssemblyP1.P2RepeatResidual.pairBack_eq_zero_of_back_ne
+#print axioms AssemblyP1.Issue94TW5Single.succ_visitsAll
+#print axioms AssemblyP1.Issue94TW5Single.eulerianCycle_iff_traverses
+#print axioms AssemblyP1.Issue94TW5Single.altF_no_innermost_chord
+#print axioms AssemblyP1.Issue94TW5Single.altF_nextPos_visitsAll
+#print axioms AssemblyP1.Issue94TW5Single.labelPreserving_iff_traverses
+#print axioms AssemblyP1.Issue94TW5Single.uniqueEulerianCycle_iff_labelPreserving
+#print axioms AssemblyP1.Issue94TW5Single.obstruction_iff_labelPreserving
+#print axioms AssemblyP1.Issue94TW5Single.labelPreserving_implies_eulerianCycle
+#print axioms AssemblyP1.Issue94TW5Single.not_labelPreserving_S3
+#print axioms AssemblyP1.Issue94TW5Single.labelPreserving_S4
+#print axioms AssemblyP1.Issue94TW5Single.single_clauses_S4
+#print axioms AssemblyP1.Issue94TW5Single.altF_S4_ne
