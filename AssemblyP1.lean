@@ -45,6 +45,7 @@ import AssemblyP1.MLEscape
 import AssemblyP1.PopulationUniqueness
 import AssemblyP1.Issue94TW1
 import AssemblyP1.Issue94TW1EdgeType
+import AssemblyP1.Issue94TW4Coalesce
 import AssemblyP1.AAABConverse
 import AssemblyP1.Issue94Step2Path
 
@@ -455,3 +456,20 @@ discharged. -/
 #print axioms AssemblyP1.Issue94TW1EdgeType.ladderVertexCycle_iff_blockless
 #print axioms AssemblyP1.Issue94TW1EdgeType.blockless_of_uniqueEulerianCycle
 #print axioms AssemblyP1.Issue94TW1EdgeType.ladderVertexCycle_of_uniqueEulerianCycle
+#print axioms AssemblyP1.Issue94TW4Coalesce.vtx_injective_of_prim
+#print axioms AssemblyP1.Issue94TW4Coalesce.altF_eq_id_of_prim_window
+#print axioms AssemblyP1.Issue94TW4Coalesce.crossingChordsCoalesce_above
+#print axioms AssemblyP1.Issue94TW4Coalesce.agree_S4_ne
+#print axioms AssemblyP1.Issue94TW4Coalesce.no_repeat_S4
+#print axioms AssemblyP1.Issue94TW4Coalesce.no_triple_S4
+#print axioms AssemblyP1.Issue94TW4Coalesce.p2_S4_L1
+#print axioms AssemblyP1.Issue94TW4Coalesce.ukkonen_S4_L1
+#print axioms AssemblyP1.Issue94TW4Coalesce.primitive_S4
+#print axioms AssemblyP1.Issue94TW4Coalesce.vtx_trivial_L1
+#print axioms AssemblyP1.Issue94TW4Coalesce.eulerianCycle_S4
+#print axioms AssemblyP1.Issue94TW4Coalesce.maxPairStart_S4
+#print axioms AssemblyP1.Issue94TW4Coalesce.not_sameExtension_S4
+#print axioms AssemblyP1.Issue94TW4Coalesce.altF_chords_S4
+#print axioms AssemblyP1.Issue94TW4Coalesce.not_crossingChordsCoalesce_one
+#print axioms AssemblyP1.Issue94TW4Coalesce.crossingChordsCoalesce_iff_two_le
+#print axioms AssemblyP1.P2RepeatResidual.pairBack_eq_zero_of_back_ne
