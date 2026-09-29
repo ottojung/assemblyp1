@@ -42,6 +42,7 @@ import AssemblyP1.MLEscape
 import AssemblyP1.PopulationUniqueness
 import AssemblyP1.AAABConverse
 import AssemblyP1.Issue94Step2Path
+import AssemblyP1.Issue94TW1
 
 /-!
 ## The exported #88 endpoints
@@ -317,3 +318,23 @@ no instance at genome size `= L`); it is *not* progress on `head_dichotomy` at
 #print axioms AssemblyP1.Issue94Step5NoChord.chord_at_L_eq_K_shiftInvariant
 #print axioms AssemblyP1.Issue94Step5NoChord.no_chord_at_L_eq_K
 #print axioms AssemblyP1.Issue94Step5NoChord.head_dichotomy_at_genome_eq_read
+
+/-! `AssemblyP1.Issue94TW1` **refutes** the board's own `t_w = 1` step.  On the
+primitive binary word `S = 10100` of length `5`, read at `L = 3`,
+`Ukkonen h5 3 S10100` holds, yet the `(L-1)`-mer multigraph `D` of `S` has
+**two distinct spanning in-arborescences** rooted at the start-`0` vertex, so
+`t_w ≥ 2` there.  The two differ only in which of the two parallel `01 -> 10`
+edges they use, so this is *not* a refutation of `Ukkonen` uniqueness: the
+count that must be `1` is the number of *edge-type* circuit orbits, and the
+`prod_e c_h(e)!` denominators of
+`docs/exact-same-length-spectrum-fibre-count.md` are what remove the
+parallel-edge over-count that `t_w = 1` was being asked to remove.  The
+attribution of the split itself is the board's own; see
+`docs/best-tw1-attribution-94.md`. -/
+#print axioms AssemblyP1.Issue94TW1.S10100_primitive
+#print axioms AssemblyP1.Issue94TW1.S10100_ukkonen
+#print axioms AssemblyP1.Issue94TW1.S10100_arb1
+#print axioms AssemblyP1.Issue94TW1.S10100_arb2
+#print axioms AssemblyP1.Issue94TW1.S10100_two_arbs
+#print axioms AssemblyP1.Issue94TW1.not_UniqueInArb_3
+#print axioms AssemblyP1.Issue94TW1.T1_T2_differ_only_in_parallel_edge
