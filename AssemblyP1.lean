@@ -10,6 +10,7 @@ import AssemblyP1.Issue94Step5Heads
 import AssemblyP1.Issue94HeadCollision
 import AssemblyP1.Issue94Step5NoChord
 import AssemblyP1.Issue94NoCollision
+import AssemblyP1.Issue94CaseSplit
 import AssemblyP1.P2Multiplicity
 import AssemblyP1.P2RepeatAdapter
 import AssemblyP1.BBTMaximalExtension
@@ -353,3 +354,28 @@ imports nor assumes. -/
 #print axioms AssemblyP1.Issue94NoCollision.slide_guards_down_heads
 #print axioms AssemblyP1.Issue94NoCollision.no_collision_heads_interleave
 #print axioms AssemblyP1.Issue94NoCollision.no_collision_contradiction
+
+/-! ## `Issue94CaseSplit`: `CrossingPairsCoalesce` by the case split on a cross-head equality
+
+This is the **direct assembly** the external orchestration pointer of
+2026-09-28 21:34:57Z asked for (item 3): "attempt `CrossingPairsCoalesce`
+directly as a case split between (1) and (2) ... The target is the exact
+existing `CrossingPairsCoalesce` Prop inhabitant."  No `head_dichotomy` is
+introduced, as the pointer required.
+
+The split is on whether a **cross-head EQUALITY** holds.  If one does, front
+`2463a1f`'s `head_collision_implies_sameExtension` closes the goal.  If none
+does, all four cross-head inequalities are available and front `a23872a`'s
+`no_collision_contradiction` refutes the configuration outright.
+
+`crossingPairsCoalesce` below is an inhabitant of the existing
+`BBTCrossingCoalesce.CrossingPairsCoalesce (α := Bin)`, with that `def`'s
+hypotheses verbatim.  The α-**general** inhabitant is **not** claimed: the
+no-collision half is stated over `S : Fin K → PopulationReduction.Bin` only,
+while the collision half is over arbitrary `{α : Type} [DecidableEq α]`.
+`crossingPairsCoalesce_of_noCollision` isolates precisely that obstruction by
+giving the case split for arbitrary `α` with the no-collision branch as a
+hypothesis.  See `/workspace/BOARD94-CASESPLIT.md`. -/
+#print axioms AssemblyP1.Issue94CaseSplit.crossingPairsCoalesce_of_noCollision
+#print axioms AssemblyP1.Issue94CaseSplit.crossingPairsCoalesce_bin
+#print axioms AssemblyP1.Issue94CaseSplit.crossingPairsCoalesce
