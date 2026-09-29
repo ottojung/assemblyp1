@@ -69,7 +69,7 @@ theorem rotAdd_inj_any (hK : 0 < K) (t : ℕ) {x y : Fin K}
   unfold rotAdd
   apply Fin.ext
   simpa only [Fin.val_mk] using hval
-theorem rotAdd_mod (hK : 0 < K) (t : ℕ) (x : Fin K) :
+theorem rotAdd_addK (hK : 0 < K) (t : ℕ) (x : Fin K) :
     rotAdd hK (t + K) x = rotAdd hK t x := by
   apply Fin.ext
   rw [rotAdd_val, rotAdd_val]
@@ -104,7 +104,7 @@ theorem head_of_slide (hK : 0 < K) (S : Fin K → Bin) (hprim : RepeatAdapter.Is
     have h1 : K - (pairBack hK S a.val b.val - j) = K - pairBack hK S a.val b.val + j := by
       omega
     omega
-  rw [key, rotAdd_mod]
+  rw [key, rotAdd_addK]
 theorem pairBack_of_head (hK : 0 < K) (S : Fin K → Bin) (hprim : RepeatAdapter.IsPrimitive hK S)
     {a b : Fin K} (hab : a ≠ b) :
     pairBack hK S (maxPairStart hK S a b).val (maxPairStart hK S b a).val = 0 := by
@@ -334,15 +334,31 @@ theorem slide_guards_down_heads (hK : 0 < K) (S : Fin K → Bin) (h2L : 2 ≤ L)
 
 /-- **The four cross-head INEQUALITIES force the heads to interleave.**
 
-This is the no-collision half of the case split of
+This is the **refuted case** of the case split of
 `BBTCrossingCoalesce.CrossingPairsCoalesce` prescribed by the human pointer of
-2026-09-28 21:34:57Z on board issue 94.  It is proved from the already-proved path
+2026-09-28 21:34:57Z on board issue 94: the four cross-head inequalities are
+never simultaneously satisfiable, so this half is empty of instances and the
+composite rests on the collision half alone.  An exhaustive binary sweep over all
+primitive `P2` words at `K ≤ 9`, `2 ≤ L ≤ K`, finds 7704 admissible interleaving
+chord quadruples, all 7704 with a collision and **0** satisfying all four
+inequalities.  That sweep is finite evidence, not a kernel proof of
+unreachability, and it is `Bin`-only; nothing here shows the case is empty for
+larger alphabets.  The lemma is proved from the already-proved path
 and slide machinery --- `Issue94Step4Prop.step4_guarded`, together with
 `P2RepeatResidual.chord_shift_left` and `P2RepeatResidual.pairBack_shift` (which
-make a falsified guard force a cross-head equality),
-`Issue94Step2Path.step2_components_are_paths_proved` (which keeps the slid pair a
-pair of distinct ends) and `BBTCrossingCoalesce.vtx_maxPairStart` --- and from
-**no** cross-head-equality lemma whatsoever. -/
+make a falsified guard force a cross-head equality) and
+`BBTCrossingCoalesce.vtx_maxPairStart` --- and from
+**no** cross-head-equality lemma whatsoever.
+
+The distinctness of the slid pair is **not** obtained from
+`Issue94Step2Path.step2_components_are_paths_proved`; that lemma is not invoked
+anywhere in this file.  It comes from this file's own `slide_pair_ne` (`:186`),
+via `rotAdd_inj_any` (`:59`).  The composition with `step4_guarded` is likewise
+**not** the route taken: `step4_guarded` is `Bin`-typed
+(`Issue94Step4Prop.lean:130`) and is reached here only through the `Bin` form of
+`step3_shared_endpoint_forces_pair_readL` (`Issue89GapMap.lean:558`), which is why
+this half of the case split is stated for `S : Fin K → Bin` and not for an
+arbitrary `[DecidableEq α]`. -/
 theorem no_collision_heads_interleave (hK : 0 < K) (S : Fin K → Bin)
     (h2L : 2 ≤ L) (hLK : L ≤ K) (hP2 : P2 hK L S)
     (hprim : RepeatAdapter.IsPrimitive hK S) {a b c d : Fin K}
@@ -442,13 +458,15 @@ theorem no_collision_contradiction (hK : 0 < K) (S : Fin K → Bin)
 end AssemblyP1.Issue94NoCollision
 
 /-!
-# `Issue94NoCollision`: the no-collision half of the `CrossingPairsCoalesce` case split
+# `Issue94NoCollision`: the refuted case of the `CrossingPairsCoalesce` case split
 
 The human pointer of 2026-09-28 21:33:33Z / 21:34:57Z on board issue 94 splits
 `BBTCrossingCoalesce.CrossingPairsCoalesce` on whether a **cross-head equality**
 holds.  This file is the other half: assuming all four cross-head **inequalities**,
 it proves the heads interleave (`no_collision_heads_interleave`) and closes by
-`P2.imp_ExtCrossing` (`no_collision_contradiction`).
+`P2.imp_ExtCrossing` (`no_collision_contradiction`).  Its hypothesis set is empty
+on every regime a finite sweep reaches, so it is the refuted case rather than a
+co-equal half; the composite therefore rests on the collision half alone.
 
 It is proved **independently** of any cross-head-equality helper: the only imports
 are `AssemblyP1.Issue94Step2Path` and `AssemblyP1.Issue94Step5Heads`.

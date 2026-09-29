@@ -340,10 +340,18 @@ The human pointer of 2026-09-28 21:33:33Z / 21:34:57Z on board issue 94 splits
 holds.  `AssemblyP1/Issue94NoCollision.lean` is the other half: assuming all four
 cross-head **inequalities**, it proves the heads interleave (composing
 `Issue94Step4Prop.step4_guarded` with `P2RepeatResidual.chord_shift_left`,
-`P2RepeatResidual.pairBack_shift`, `Issue94Step2Path.step2_components_are_paths_proved`
-and `BBTCrossingCoalesce.vtx_maxPairStart`) and closes by `P2.imp_ExtCrossing`.
-It is proved **independently** of the cross-head-equality helper, which it neither
-imports nor assumes. -/
+`P2RepeatResidual.pairBack_shift` and
+`BBTCrossingCoalesce.vtx_maxPairStart`) and closes by `P2.imp_ExtCrossing`.
+Distinctness of the slid pair comes from `Issue94NoCollision.slide_pair_ne`
+(via `rotAdd_inj_any`), **not** from
+`Issue94Step2Path.step2_components_are_paths_proved`, which this file does not
+invoke.  It is proved **independently** of the cross-head-equality helper, which
+it neither imports nor assumes.  Note also that its hypothesis set is empty on
+every regime an exhaustive binary sweep reaches (`K ≤ 9`): all 7704 admissible
+interleaving chord quadruples have a cross-head collision and 0 satisfy all four
+inequalities.  It is therefore the **refuted case** of the split, and the
+composite rests on the collision half alone.  The `Bin` restriction on `S` is
+inherited from `step4_guarded` and is not removable by signature edit. -/
 #print axioms AssemblyP1.Issue94NoCollision.pairBack_mod
 #print axioms AssemblyP1.Issue94NoCollision.head_of_slide
 #print axioms AssemblyP1.Issue94NoCollision.head_of_head
