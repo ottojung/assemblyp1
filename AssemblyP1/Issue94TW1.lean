@@ -51,11 +51,17 @@ and is not proved here; §5 records it.
 The `t_w = 1` split, the conditional BEST-theorem reduction behind it, and the
 identification of out-degree as the critical parameter are **the board's own
 constructions**.  They are **not** results imported from Pevzner 1995
-(Algorithmica 13:77--105) or from Bresler--Bresler--Tse (Algorithmica
-13:1--19, 2006): the first contains no counting statement of any kind, and the
-second contains no arborescence and no proof of its own Theorem 3, its
-Theorem 3 importing the step from the first, so the citation chain is broken
-and terminates in nothing.  The BEST theorem is cited from van
+(Algorithmica 13:77--105) or from Bresler--Bresler--Tse (BMC Bioinformatics
+14(Suppl 5):S18, 2013; arXiv:1301.0068): the first contains no counting statement of any kind, and the
+second contains no arborescence; its Theorem 3 is proved in its own arXiv
+appendix (`appendix_short.tex:157-169`) by an out-degree-and-contraction
+argument with no count, no determinant and no spanning tree, importing exactly
+one step, `Lemma [Pevzner \cite{Pev95}] l:Pev95`, which BBT cites **correctly**
+but which is a statement that is **stated but proved nowhere in the chain** ---
+not a chain that terminates in nothing.  **Whether `l:Pev95` is true is NOT
+ESTABLISHED.**  (Corrected by board 94 doc front 94d1; the same text formerly
+cited BBT as "Algorithmica 13:1--19, 2006" and said the chain "is broken and
+terminates in nothing".)  The BEST theorem is cited from van
 Aardenne-Ehrenfest and de Bruijn, *Indag. Math.* (1951), or Tutte, LMS Lect.
 Notes 83 (1975).  This module uses **no counting input at all**: it exhibits
 two spanning in-arborescences by hand, so no BEST theorem, no Matrix-Tree

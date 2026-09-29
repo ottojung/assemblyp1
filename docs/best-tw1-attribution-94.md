@@ -20,9 +20,11 @@ and I relay it without re-doing it:
 
 * **BBT side.** Front 94ff2 (report `/workspace/BOARD94-BBT-SOURCE.md`, branch
   `94-bbt-source`) read BBT --- Bresler, Bresler & Tse, *Optimal assembly for
-  high throughput shotgun sequencing*, Algorithmica **13**(1--2):1--19, 2006 ---
-  in full, and found **no** arborescence, **no** spanning-tree count, **no**
-  out-degree bound, and **no proof of BBT's own Theorem 3**. BBT's Theorem 3
+  high throughput shotgun sequencing*, BMC Bioinformatics **14**(Suppl
+  5):S18, 2013, doi 10.1186/1471-2105-14-S5-S18; preprint **arXiv:1301.0068**
+  --- in full, and found **no** arborescence, **no** spanning-tree count and
+  **no** out-degree bound.  It also reported **no proof of BBT's own Theorem
+  3**; *that part is now known to be false, see §1.1.* BBT's Theorem 3
   states uniqueness of the Eulerian cycle of a *condensed sequence graph* of a
   genome with no triple or interleaved repeats of length at least `K`; that is
   a different and more specific statement than a general conditional BEST
@@ -41,14 +43,63 @@ and I relay it without re-doing it:
 **Therefore:** the `t_w = 1` decomposition is attributable to **neither** Pevzner
 1995 nor BBT. It is a board construction.
 
-### 1.1 The BBT citation chain is a **broken link**
+### 1.1 The BBT citation chain is a **stated-but-unproved import**, not a broken chain
 
-BBT attributes the step to Pevzner 1995, and Pevzner 1995 does not contain it
-either. **BBT's Theorem 3 is asserted by import-by-citation into a chain that
-terminates in nothing.** This is recorded here deliberately, in the spirit of
-`AGENTS.md`'s rule about preserving approaches that rule out tempting
-directions: a later front must not treat BBT Theorem 3 as a black box. The
-board has to supply the argument itself.
+> **CORRECTED by board 94 doc front 94d1.** This subsection previously read
+> "### 1.1 The BBT citation chain is a **broken link**" and asserted that "BBT's
+> Theorem 3 is asserted by import-by-citation into a chain that terminates in
+> nothing." **That was false, and it is struck.** The bibliographic record was
+> also wrong here: it gave BBT as *Algorithmica* 13(1--2):1--19, 2006. There is
+> no such version. See `/workspace/BOARD94-PROVENANCE.md` and
+> `/workspace/BOARD94-DOCFIX.md`.
+
+**The bibliographic record, established from primary sources.** BBT is Guy
+Bresler, Ma'ayan Bresler and **David Tse**, *Optimal assembly for high
+throughput shotgun sequencing*, **BMC Bioinformatics 14(Suppl 5):S18, 2013**,
+doi 10.1186/1471-2105-14-S5-S18. This matches the repository's own
+`paper/references.bib` entry `bresler2013`. The preprint is **arXiv:1301.0068**
+(v3, 2013-01-01), and it is the preprint that carries the appendix.
+
+**The chain is not broken.** Front 94ff2 read the published 13-page BMC
+rendering, which genuinely has no appendix and (in the extracted text) no
+"Proof" section. But that rendering is not the whole paper: its own closing
+paragraph states "All proofs can be found in the appendix." The authors' own
+LaTeX source for **arXiv:1301.0068v3** (26 pages) does contain
+`appendix_short.tex`, and `appendix_short.tex:157-169` carries a **complete
+proof of Theorem 3** (`t:SBH_no_multiplicities`). So the earlier front read a
+genuinely appendix-less rendering of a paper whose appendix exists.
+
+**That proof contains no counting argument, no determinant and no spanning
+tree.** The proof is short: it argues that a node traversed three times in the
+`K`-mer graph would force a triple repeat of length `K`; hence at a
+twice-traversed edge the tail has out-degree `1` and the head in-degree `1`;
+hence that edge is contracted by Defn. `d:condensed`; hence the truth's cycle
+traverses each condensed edge at most once as well as at least once, i.e. it is
+Eulerian. Occurrence counts in `appendix_short.tex`: `arboresc` 0, `spanning` 0,
+`matrix-tree` 0, `determinant` 0, `Cayley` 0. The only case-insensitive `best`
+matches are the English word "best" in unrelated prose. (The prior claim that
+BBT had no out-degree vocabulary is also wrong: `d⁺`/`d⁻` degrees are exactly
+what its proof uses.)
+
+**What the real defect is.** BBT's proof imports exactly one step,
+`Lemma [Pevzner \cite{Pev95}] l:Pev95` (`appendix_short.tex:111-113`), used
+only in the "only-if" direction: *if there are multiple Eulerian cycles then
+Ukkonen's condition is violated*. BBT cites Pevzner 1995 **correctly** --- the
+right paper, in the right neighbourhood (Eulerian cycles, `q`-grams, word
+reconstruction from `q`-gram composition). But `l:Pev95` is a **statement that
+is stated but proved nowhere in the chain**. That is a real, narrower, and
+still-load-bearing defect; it is *not* a broken chain terminating in nothing.
+
+**What this section does *not* establish.** Whether `l:Pev95` is mathematically
+**true** is **NOT ESTABLISHED**. It is established only that BBT *asserts* it
+and that one extraction of Pevzner 1995 does not *state* it. It has not been
+shown false and it has not been shown true. The endpoint `hPevzner` is
+therefore still formally out of reach, and this correction does not make it
+reachable.
+
+The prior spirit of this subsection is retained: a later front must not treat
+BBT Theorem 3 as a black box, and the board still has to supply its own
+argument. That is now for a different and better-documented reason.
 
 ### 1.2 What that result does *not* establish
 
@@ -69,6 +120,13 @@ Relayed limits, stated so nothing here is over-read:
   vocabulary for counts, degrees, repeats, spectra and condensation means it
   cannot be the known-multiplicity condensation statement the repository
   claimed. I did not read Pevzner 1995 and am not asserting what Lemma 9 is.
+  *Update (front 94d1):* front 94c8 subsequently read Pevzner 1995 and reports
+  Lemma 9 to be about order exchange/reflection on the **double-digest fork
+  graph**, i.e. a cassette-transformation statement with nothing to do with
+  `hPevzner`. I did not independently re-read Pevzner 1995 on this front and
+  mark that as **reported, not independently verified here**. It is consistent
+  with, and reinforces, the withdrawal of the Lemma 9 attribution; the
+  withdrawal stands either way.
 
 ## 2. What may be cited, and how
 
@@ -85,6 +143,17 @@ Only two things may be cited to Pevzner 1995, with these exact locators:
 
 **Do not** cite Pevzner 1995 or BBT for a count, a bound, an out-degree
 estimate, or a uniqueness result. Those citations would be false.
+
+*Update (front 94d1):* the "count / bound" half of that prohibition is
+reinforced --- BBT's proof of Theorem 3 contains no count, no determinant and
+no spanning tree (§1.1). The "uniqueness result" half needs one clarification:
+BBT's arXiv appendix *does* prove a uniqueness result (Theorem 3 itself, by an
+out-degree-and-contraction argument). That is a statement in the arXiv
+preprint's appendix, not a result the published BMC article states with a
+proof, and the repository still does not import it --- `EulerianCycleObstruction`
+remains an explicit, unproved hypothesis. So the operative rule is unchanged:
+the board must still supply its own argument, and no front may close
+`hPevzner` by citation.
 
 Note also a title collision that a reader should not fall into: Pevzner 1995's
 *own* Theorem 3 is Ukkonen's conjecture on `q`-gram words, and has nothing to do

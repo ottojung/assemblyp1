@@ -42,9 +42,22 @@ retrieved in full on this board and contains no counting statement of any kind
 and none of the `BEST` / `arboresc` / `spanning` / `matrix-tree` /
 `determinant` / out-degree / `repeat` / `spectrum` / `K-mer` / `condens`
 vocabulary, so it cannot supply a transposition argument of this shape; and BBT
-(Algorithmica 13:1--19, 2006) contains no proof of its own Theorem 3, its
-Theorem 3 importing the step from Pevzner 1995, so the citation chain is
-**broken**.  The reduction named here is the board's own.  What may still be
+(BMC Bioinformatics 14(Suppl 5):S18, 2013) has no arborescence.
+
+**CORRECTION (board 94, doc front 94d1).**  The same text formerly cited BBT as
+"Algorithmica 13:1--19, 2006", said it "contains no proof of its own Theorem 3,
+its Theorem 3 importing the step from Pevzner 1995, so the citation chain is
+**broken**".  All of that is struck: BBT is Bresler, Bresler & Tse, *Optimal
+assembly for high throughput shotgun sequencing*, BMC Bioinformatics
+**14**(Suppl 5):S18, 2013, and the arXiv:1301.0068 v3 source does carry a
+**complete proof of Theorem 3** (`appendix_short.tex:157-169`), an
+out-degree-and-contraction argument with no count, no determinant and no
+spanning tree.  BBT cites Pevzner 1995 correctly; the narrower and real defect
+is that its one imported step, `Lemma [Pevzner \cite{Pev95}] l:Pev95`, is
+**stated but proved nowhere in the chain**.  **Whether `l:Pev95` is true is NOT
+ESTABLISHED.**  The Lemma 9 withdrawal above stands.
+
+The reduction named here is the board's own.  What may still be
 cited to Pevzner 1995 is Theorem 2, p. 81 (exchange/reflection orbit
 connectivity on bicolored graphs, from Abrham & Kotzig 1980) and Theorem 1 /
 Corollary 1, p. 80 (Kotzig–Nash-Williams balancedness) --- neither for a count,

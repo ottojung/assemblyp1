@@ -69,9 +69,23 @@ this text formerly read "it is the Pevzner 1995 Lemma 9 input".  That
 attribution is withdrawn --- a two-sided retrieval established that Pevzner
 1995 (Algorithmica 13:77-105) contains no counting statement of any kind and
 none of the `BEST` / `arboresc` / `spanning` / `matrix-tree` / `determinant` /
-out-degree vocabulary, and that BBT (Algorithmica 13:1-19, 2006) contains no
-arborescence and no proof of its own Theorem 3, its Theorem 3 importing the step
-from Pevzner 1995, so the citation chain is **broken**.  The binder is still
+out-degree vocabulary, and that BBT (BMC Bioinformatics 14(Suppl 5):S18, 2013)
+contains no arborescence.
+
+**CORRECTION (board 94, doc front 94d1).**  The same text formerly cited BBT as
+"Algorithmica 13:1-19, 2006", said BBT "contains no proof of its own Theorem
+3", and concluded that "the citation chain is **broken**".  All three are
+struck: BBT is Bresler, Bresler & Tse, *Optimal assembly for high throughput
+shotgun sequencing*, BMC Bioinformatics **14**(Suppl 5):S18, 2013
+(`paper/references.bib`, `bresler2013`); the arXiv:1301.0068 v3 source carries
+an appendix containing a **complete proof of Theorem 3**
+(`appendix_short.tex:157-169`), which is an out-degree-and-contraction argument
+with no count, no determinant and no spanning tree.  BBT's citation of Pevzner
+1995 is correct; the real and narrower defect is that the one imported step,
+`Lemma [Pevzner \cite{Pev95}] l:Pev95`, is a **correct citation to a statement
+that is stated but proved nowhere in the chain**.  **Whether `l:Pev95` is true
+is NOT ESTABLISHED.**  The Lemma 9 withdrawal above stands.  `EulerianCycleObstruction`
+remains the board's own unproved obligation.  The binder is still
 named `hPevzner` for historical reasons; the name does not record a source.
 No `axiom`, `sorry` or `admit` appears anywhere in the chain.
 

@@ -98,10 +98,46 @@ this module.
   attribution is withdrawn, because a two-sided retrieval established that
   Pevzner 1995 (Algorithmica 13:77-105) has no counting statement of any kind
   and no `BEST` / `arboresc` / `spanning` / `matrix-tree` / `determinant` /
-  out-degree vocabulary at all, and BBT (Algorithmica 13:1-19, 2006) has no
-  arborescence, no spanning-tree count, and no proof of its own Theorem 3 ---
-  its Theorem 3 imports the step from Pevzner 1995, so **the chain is broken
-  and terminates in nothing**.  What may be cited to Pevzner 1995 is Theorem 2,
+  out-degree vocabulary at all, and because Pevzner 1995 Lemma 9 is about
+  order exchanges on double-digest **fork graphs** and has nothing to do with
+  `hPevzner`.
+
+  **CORRECTION (board 94, doc front 94d1; see
+  `docs/best-tw1-attribution-94.md` and `/workspace/BOARD94-PROVENANCE.md`).
+  An earlier front on this issue recorded that BBT (cited there as
+  "Algorithmica 13:1-19, 2006") "has no proof of its own Theorem 3" and that
+  therefore "the chain is broken and terminates in nothing".  Both halves of
+  that are now known to be wrong, and the sentence is struck.**
+
+  1. **Bibliographic record corrected.**  BBT is Bresler, Bresler & Tse,
+     *Optimal assembly for high throughput shotgun sequencing*, BMC
+     Bioinformatics **14**(Suppl 5):S18, 2013, doi
+     10.1186/1471-2105-14-S5-S18, matching `paper/references.bib`
+     (`bresler2013`).  There is no Algorithmica 2006 version.  The
+     **arXiv:1301.0068** preprint (v3, the authors' own LaTeX source) is the
+     version that carries the appendix.
+  2. **The chain is not broken.**  The 13-page published BMC rendering has no
+     appendix, but it is not the whole paper: its own closing paragraph says
+     "All proofs can be found in the appendix."  The arXiv source's
+     `appendix_short.tex:157-169` does contain a **complete proof of
+     Theorem 3** (`t:SBH_no_multiplicities`).  The earlier front read a
+     genuinely appendix-less rendering of a paper whose appendix exists.
+  3. **The real defect is narrower and different.**  BBT cites Pevzner 1995
+     *correctly*, and its proof of Theorem 3 is not vacuous: it is a short
+     out-degree-and-contraction argument, **not** a counting argument.  The
+     proof imports exactly one step, `Lemma [Pevzner \cite{Pev95}] l:Pev95`
+     (`appendix_short.tex:111-113`), used only in the "only-if" direction,
+     *if there are multiple Eulerian cycles then Ukkonen's condition is
+     violated*.  So the accurate statement is: **a correct citation to a
+     statement that is stated but proved nowhere in the chain** --- not a
+     broken chain terminating in nothing.
+  4. **NOT ESTABLISHED.**  Whether `l:Pev95` is *true* is not settled here.
+     It is established only that BBT **asserts** it and that one extraction
+     of Pevzner 1995 does not **state** it.  It has not been shown false,
+     and it has not been shown true.  The endpoint is therefore still
+     formally out of reach, and this correction does not make it reachable.
+
+  What may be cited to Pevzner 1995 is Theorem 2,
   p. 81 (Abrham & Kotzig 1980, orbit connectivity on bicolored graphs) and
   Theorem 1 / Corollary 1, p. 80 (Kotzig-Nash-Williams balancedness); neither
   for a count, a bound, an out-degree estimate, or a uniqueness result.  The
