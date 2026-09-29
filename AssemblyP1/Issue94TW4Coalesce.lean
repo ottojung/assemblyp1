@@ -40,10 +40,21 @@ directions**:
   is `maxPairStart_S4` plus a distinctness argument, also in the kernel.
 
 * **§5 — the characterisation.**  For `2 ≤ L` the unbounded statement is
-  **equivalent** to its in-range half, which the tree already inhabits at
-  `d0aa0aa` (`crossingChordsCoalesce_bounded`).  This is a `def`-level
-  characterisation of `BBTLadder.CrossingChordsCoalesce` itself, kernel-checked,
-  not a restatement of it.
+  **equivalent** to its in-range half (`crossingChordsCoalesce_iff_two_le`),
+  which the tree already inhabits at `d0aa0aa` via
+  `Issue94TW1EdgeType.crossingChordsCoalesce_bounded`.  Combined with §3, this
+  yields **`2 ≤ L → CrossingChordsCoalesce L`**
+  (`crossingChordsCoalesce_of_two_le`, §6): the unbounded `def` is *proved*
+  for every `L ≥ 2`, and *refuted* at `L = 1` by §4.  Both are `def`-level
+  statements about `BBTLadder.CrossingChordsCoalesce` itself, kernel-checked,
+  not restatements of it.
+
+**What that is and is not.**  It is a kernel-checked fact about a *sufficient
+condition* for `thm:BBT`.  Per §8 of `/workspace/BOARD94-TW3-RESIDUAL.md` the
+ladder/coalescence line is derived **from** `UniqueEulerianCycle`, not a route
+**into** it, so **none of this moves `hPevzner`** and it is not presented as
+such.  See §6 of the module and §6 of
+`/workspace/BOARD94-TW4-EULERIAN.md`.
 
 ## Why the `L < 2` refutation is a real result and not an artefact
 
@@ -452,5 +463,41 @@ theorem crossingChordsCoalesce_iff_two_le {L : ℕ} (hL : 2 ≤ L) :
         hac hbc had hbd hI
     · exact crossingChordsCoalesce_above (α := α) K hK S hP2 hprim hUkk (by omega)
         σ hEul a b c d hfa hba hfc hdc hac hbc had hbd hI
+
+/-! ## 6. The consequence: `2 ≤ L → CrossingChordsCoalesce L`
+
+The two halves together give the following, and it is worth stating exactly what
+it is and is not.
+
+The in-range half `CrossingChordsCoalesceBelow L` is **inhabited** for `2 ≤ L`
+already, by `Issue94TW1EdgeType.crossingChordsCoalesce_bounded`: that theorem
+takes `P2`, primitivity, `2 ≤ L` and `L ≤ K` as hypotheses and concludes the
+`SameExtension` clause, and it does not need `Ukkonen`, which the `def` also
+carries.  So the only thing §2.6 adds is that the `K < L` part of the `def` is
+now *also* discharged, and §2.4 discharges it.
+
+**It follows that the unbounded `BBTLadder.CrossingChordsCoalesce L` is proved
+for every `L ≥ 2` and refuted at `L = 1` (§2.5).**  The `L = 1` refutation is
+therefore *sharp*: the `2 ≤ L` bound in `crossingChordsCoalesce_bounded` is
+not a convenience, it is necessary, and the tree now contains a
+kernel-checked proof that it is.
+
+**What this is NOT.**  It is not progress on `hPevzner`, and this is the point
+§8 of `/workspace/BOARD94-TW3-RESIDUAL.md` insists on: the ladder/coalescence
+line is a *sufficient* condition for `thm:BBT` that the tree derives **from**
+`UniqueEulerianCycle`
+(`Issue94TW1EdgeType.ladderVertexCycle_of_uniqueEulerianCycle`), not a route
+**into** it.  So `2 ≤ L → CrossingChordsCoalesce L` is a kernel-checked fact
+about a *sufficient* condition, and the public endpoint is exactly as far away
+as it was before this module.  A green build here is not progress on
+`hPevzner` and I am not presenting it as such. -/
+theorem crossingChordsCoalesce_of_two_le {L : ℕ} (hL : 2 ≤ L) :
+    BBTLadder.CrossingChordsCoalesce (α := α) L := by
+  intro K hK S hP2 hprim hUkk σ hEul a b c d hfa hba hfc hdc hac hbc had hbd hI
+  by_cases hKL : L ≤ K
+  · exact Issue94TW1EdgeType.crossingChordsCoalesce_bounded hK S hP2 hprim hL hKL
+      σ hEul a b c d hfa hba hfc hdc hac hbc had hbd hI
+  · exact crossingChordsCoalesce_above (α := α) K hK S hP2 hprim hUkk (by omega)
+      σ hEul a b c d hfa hba hfc hdc hac hbc had hbd hI
 
 end AssemblyP1.Issue94TW4Coalesce
