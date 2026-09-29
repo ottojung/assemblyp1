@@ -115,10 +115,12 @@ hypothesis of `LadderVertexCycle`'s block condition is available from it inside
 ## What is NOT established here
 
 1. **`LadderVertexCycle` is NOT proved.**  §5.3 discharges the *block* half of
-   its hypothesis --- the only half that was missing --- but the global
-   traversal-order step, that a laminar family of vertex-invisible ladder blocks
-   forces the vertex listing to be a rotation, has no inhabitant here.  Neither
-   does it have one anywhere in the tree.
+   its hypothesis --- the only half that was missing --- and §6.2 records the
+   reduction (`ladderVertexCycle_of_blockless`) to the residual
+   `BlocklessLadderVertexCycle`.  But the global traversal-order step, that a
+   laminar family of vertex-invisible ladder blocks forces the vertex listing to
+   be a rotation, has no inhabitant here.  Neither does it have one anywhere in
+   the tree.
 2. **`hPevzner` / `EulerianCycleObstruction` is untouched.**
    `AssemblyP1.PopulationUniqueness.population_unique_ML_up_to_rotation` and its
    same-length wrapper still RETAIN the `hPevzner` / `EulerianCycleObstruction`
@@ -434,5 +436,63 @@ theorem support_blocks_coalesce {L : ℕ} (hP2 : P2 hK L S)
     hfa hba hfc hdc hac hbc had hbd hI
 
 end Bounded
+
+/-! ## 6. `LadderVertexCycle` itself
+
+### 6.1. The block hypothesis is no longer an assumption
+
+`BBTLadder.LadderVertexCycle` takes, as its hypothesis, that **every** crossing
+pair of support chords of `AltF hK σ` coalesces.  §5.3 (`support_blocks_coalesce`)
+now *derives* exactly that from the hypothesis set `LadderVertexCycle` already
+carries.  So the whole block half of `LadderVertexCycle` is discharged, and
+what remains of `LadderVertexCycle` is precisely:
+
+> a support of `AltF` that is a laminar family of vertex-invisible ladder
+> blocks, with the block property now derived, has the vertex listing of a
+> rotation of the truth's.
+
+That is the global traversal-order step, and §6.2 records exactly what is
+still missing for it.
+
+### 6.2. What the global step would need, stated as a `Prop` and NOT proved
+
+`ladder_vertexCycle_of_blocks` below is the residual obligation with the block
+hypothesis *already discharged*, so it is not a proxy: it is
+`LadderVertexCycle` with its hypothesis replaced by something §5.3 proves.  It
+is stated for the record and it has **no inhabitant** here.  Note the
+conclusion is the exact `VertexCycleEq`, not a weakened listing invariant.
+
+A proof would have to show that the traversal `i ↦ σ i` walks the laminar block
+structure in geometric order, using `ladder_of_coalescing` (each block is two
+rotations of one pair), `ladder_arc_eq` (a block is vertex-invisible) and
+`support_blocks_nonCrossing` (blocks are laminar).  The obstruction recorded in
+`BBTLadder`'s module docstring is that the tempting intermediate
+`nextSupport (f x) = f (nextSupport x)` is **false** (refuted at `G = 10`), so
+the assembly has to be genuinely global; a one-chord-at-a-time induction is not
+available. -/
+
+/-- **The residual obligation of `LadderVertexCycle`, with the block property
+already derived.**  Identical to `BBTLadder.LadderVertexCycle` except that the
+laminar-block hypothesis is *not* assumed --- it is used, and §5.3 supplies it.
+
+**Not proved.  No inhabitant anywhere in the tree.** -/
+def BlocklessLadderVertexCycle (L : ℕ) : Prop :=
+  ∀ (K : ℕ) (hK : 0 < K) (S : Fin K → α), P2 hK L S →
+    RepeatAdapter.IsPrimitive hK S → 2 ≤ L → L ≤ K → Ukkonen hK L S →
+    ∀ (σ : Fin K ≃ Fin K), EulerianCycle hK L S σ →
+      VertexCycleEq hK L S σ (Equiv.refl (α := Fin K))
+
+/-- **`LadderVertexCycle L` follows from `BlocklessLadderVertexCycle L`.**
+§5.3 discharges the block hypothesis; this records the reduction in one place,
+so that a proof of `BlocklessLadderVertexCycle` closes `LadderVertexCycle`
+without further work.  The left-hand side has no inhabitant and none is
+supplied. -/
+theorem ladderVertexCycle_of_blockless {L : ℕ}
+    (h : BlocklessLadderVertexCycle (α := α) L) :
+    BBTLadder.LadderVertexCycle (α := α) L := by
+  intro K hK S hP2 hprim h2L hLK hUkk σ hEul _hblocks
+  exact h K hK S hP2 hprim h2L hLK hUkk σ hEul
+
+/-! ## 7. What is NOT established -/
 
 end AssemblyP1.Issue94TW1EdgeType

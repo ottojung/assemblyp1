@@ -108,13 +108,49 @@ enumeration of Eulerian circuits that uses neither BEST nor any determinant.
 
 The count that must be `1` is the number of *edge-type* circuit orbits. A
 correct reduction must divide out the parallel-edge labellings rather than
-demand `t_w = 1`. That corrected obligation is **not stated and not proved**
-here.
+demand `t_w = 1`. **That corrected obligation is now stated and identified
+with the public endpoint**: `AssemblyP1/Issue94TW1EdgeType.lean`,
+`edgeTypeUnique_iff_uniqueEulerianCycle` proves
+`EdgeTypeUnique L ↔ BBTEulerian.UniqueEulerianCycle L`. It is still **not
+proved** — but it is not a new obligation either.
 
-One tempting sufficient condition is **also false**, and the search says so:
-"simple `D` (no parallel edges) implies `t_w = 1`". At `K ≤ 9` there are **208**
-instances with a simple `D` and `t_w > 1`. So the corrected obligation cannot be
-discharged by a parallel-edge argument alone.
+## CORRECTION (board 94, front 94a10): the "208 simple-`D`" claim was an evaluator bug
+
+The text formerly here read:
+
+> One tempting sufficient condition is **also false**, and the search says so:
+> "simple `D` (no parallel edges) implies `t_w = 1`". At `K ≤ 9` there are
+> **208** instances with a simple `D` and `t_w > 1`. So the corrected
+> obligation cannot be discharged by a parallel-edge argument alone.
+
+**This is withdrawn.** `hasParallelEdges` in `scripts/verify_tw1_94.js`
+iterated its outer loop over `edges` (an array of `[tail, head]` pairs) and its
+inner loop over `edges[u].length` — it treated the edge array as an adjacency
+structure. For every input the inner loop then ran exactly twice, over
+`[tail, head]` and `[tail, head]` in the order of the two entries, so the `seen`
+set was rebuilt from scratch each time and the predicate was **identically
+`false`**. Every instance was classified "simple", which is exactly why
+548 + 208 = 756 appeared (756 is the true count of `K ≤ 9` instances).
+
+With the predicate corrected (group by tail, then by head, look for a repeated
+head) and a self-check added that the old version fails on hand-built graphs:
+
+| range | instances with `t_w > 1` | of those with a **simple** `D` |
+| --- | --- | --- |
+| `K ≤ 9`  | 562  | **0** |
+| `K ≤ 10` | 630  | **0** |
+| `K ≤ 11` | 2214 | **0** |
+| `K ≤ 12` | 5142 | **0** |
+
+So "simple `D` implies `t_w = 1`` is **not refuted** by the search; it is
+merely *unexamined* by it. The corrected obligation therefore needs **no new
+idea** beyond the parallel-edge division. This remains **evidence, not proof**:
+the completeness of the sweep over those ranges is not proved, and nothing is
+claimed for `K > 12` or for a larger alphabet. It is used here only to *kill* a
+false claim and to motivate a design decision, never as a premise of a theorem.
+
+Full details, the condensed-vs-un-condensed decision, and the interface audit:
+`docs/edge-type-obligation-94.md`.
 
 ## Attribution
 
@@ -130,10 +166,16 @@ invoked.
 
 1. `Ukkonen` uniqueness (BBT's Theorem 3) is **neither proved nor refuted**
    here. The search found no refutation candidate; absence of one is not proof.
-2. "Simple `D` implies `t_w = 1`" is refuted **computationally only** (208
-   instances at `K ≤ 9`); no kernel-checked witness is recorded.
+2. "Simple `D` implies `t_w = 1`" is **neither proved nor refuted** here. The
+   original "208 instances" figure for it was an evaluator bug and is withdrawn
+   (see the CORRECTION section above); with the predicate fixed the search finds
+   **zero** counterexamples at `K ≤ 12`. Evidence, not proof.
 3. Nothing is claimed for `K > 12`, or for alphabets larger than binary.
-4. The corrected edge-type obligation is not stated and not proved.
+4. The corrected edge-type obligation is **stated** and **identified** with
+   `BBTEulerian.UniqueEulerianCycle`
+   (`Issue94TW1EdgeType.edgeTypeUnique_iff_uniqueEulerianCycle`) but is **not
+   proved**. Neither is `BBTLadder.LadderVertexCycle`, nor
+   `BBTEulerian.EulerianCycleObstruction`.
 5. `BBTEulerian.EulerianCycleObstruction` (the `hPevzner` hypothesis of
    `PopulationUniqueness`) is **untouched and still without an inhabitant**. No
    proxy assumption of that shape was introduced or relied on.

@@ -110,10 +110,19 @@ prove, and does not claim:
 
 1. that `Ukkonen` uniqueness (BBT's Theorem 3) is true --- it is neither proved
    nor refuted here, and the search found no refutation candidate;
-2. that `t_w > 1` *always* arises from parallel edges --- the search found 208
-   instances at `K <= 9` with a **simple** `D` and `t_w > 1`, so that
-   sufficient condition is false, and the corrected obligation of §5 must
-   handle those;
+2. that `t_w > 1` *always* arises from parallel edges.  **CORRECTION (board
+   94, front 94a10; see `docs/edge-type-obligation-94.md`):** this module's
+   original item 2 said the search found 208 instances at `K <= 9` with a
+   **simple** `D` and `t_w > 1`, so that sufficient condition is false.  **That
+   count was wrong.**  `scripts/verify_tw1_94.js`'s `hasParallelEdges` iterated
+   its outer loop over the edge *array* and its inner loop over
+   `edges[u].length`, so it was **identically `false`** and every instance was
+   classified simple (548 + 208 = 756 = all of them).  With the predicate
+   corrected there are **zero** simple-`D`, `t_w > 1` instances at `K <= 12`
+   (5142 instances have `t_w > 1`, all with a parallel edge).  So this module
+   neither proves that sufficient condition nor refutes it; the corrected
+   obligation of §5 needs no new idea beyond the parallel-edge division.  That
+   is **evidence**, not proof;
 3. anything about `K > 12`, or about alphabets larger than binary;
 4. the corrected edge-type obligation of §5.
 
