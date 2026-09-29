@@ -837,6 +837,53 @@ theorem maxPair_isRepeat (hG : 0 < G) (S : Fin G → α)
   · show ℓ ≤ γ
     exact hγge
 
+/-! ## 5b. The trivial case of the maximal extension: `pairBack = 0` -/
+
+/-- **Two starts whose preceding symbols differ have no backward extension at
+all**, i.e. `pairBack = 0`, hence (by `BBTLadder.maxPairStart_eq`)
+`maxPairStart hG S a b = a`.
+
+This is the trivial case of the maximal-extension engine, and it is stated
+here, next to `backAgree`, because `backAgree` is `private` to this file: the
+predicate behind `pairBack` cannot be named from another module, so a consumer
+that needs this fact cannot prove it downstream.  The proof is one line of
+arithmetic: `backAgree a b t` at `u = t - 1` reads exactly the symbols one
+position before `a` and one position before `b`, so for `1 ≤ t` it is
+incompatible with the hypothesis, and `0` is then the only member of `backSet`.
+
+This is what discharges the `L < 2` regime of the unbounded
+`BBTLadder.CrossingChordsCoalesce`.  At `L = 1` the `(L - 1)`-mer is the empty
+function, so *every* pair of starts trivially carries a common `(L - 1)`-mer,
+while the maximal extension of a pair of starts whose preceding symbols differ
+is the pair itself.  See `AssemblyP1.Issue94TW4Coalesce`, whose
+`not_crossingChordsCoalesce_one` refutes `CrossingChordsCoalesce 1` on this
+lemma. -/
+theorem pairBack_eq_zero_of_back_ne (hG : 0 < G) (S : Fin G → α) (a b : ℕ)
+    (hne : cyc hG S (a + G - 1) ≠ cyc hG S (b + G - 1)) :
+    pairBack hG S a b = 0 := by
+  classical
+  have hmem0 : (0 : ℕ) ∈ backSet hG S a b :=
+    Finset.mem_filter.mpr
+      ⟨Finset.mem_Icc.mpr ⟨Nat.zero_le _, hG.le⟩, fun _ hu => absurd hu (by omega)⟩
+  have hall : ∀ t ∈ backSet hG S a b, t = 0 := by
+    intro t ht
+    rcases Finset.mem_filter.mp ht with ⟨htIcc, hag⟩
+    by_contra hne'
+    have ht1 : 1 ≤ t := by omega
+    have htG : t ≤ G := (Finset.mem_Icc.mp htIcc).2
+    -- `backAgree` at `u = t - 1` reads the symbol one position before each start
+    have hsub : t - 1 < t := by omega
+    have h := hag (t - 1) hsub
+    have hkey : a + G - t + (t - 1) = a + G - 1 := by omega
+    have hbkey : b + G - t + (t - 1) = b + G - 1 := by omega
+    rw [hkey, hbkey] at h
+    exact hne h
+  have hself : (backSet hG S a b).max' ⟨0, hmem0⟩ ∈ backSet hG S a b :=
+    Finset.max'_mem _ _
+  have hz : (backSet hG S a b).max' ⟨0, hmem0⟩ = 0 := hall _ hself
+  show (backSet hG S a b).max' _ = 0
+  rw [hz]
+
 /-! ## 6. (R2b): the corrected non-crossing consequence of `P2`
 
 `NodeCrossing` of `P2SpectrumUniqueness` (the occurrence pairs of double
