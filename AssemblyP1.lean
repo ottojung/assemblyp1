@@ -200,9 +200,13 @@ module adds. -/
 (`AssemblyP1.BBTCrossingCoalesce`).
 
 §1--§4 are proved and are audited below.  The §5 target and its two
-ingredients are `def`s of type `Prop` with **no inhabitant** anywhere in the
+ingredients were `def`s of type `Prop` with **no inhabitant** anywhere in the
 library: `CrossingPairsCoalesce`, `SlidePreservesInterleaved`,
-`ShiftLeftPersistence`.  Nothing here discharges them. -/
+`ShiftLeftPersistence`.  Nothing *in this section* discharges them, and the two
+ingredients still have no inhabitant; `CrossingPairsCoalesce` was discharged
+afterwards, by `AssemblyP1.Issue94CaseSplit.crossingPairsCoalesce_general`
+(`d0aa0aa`).  See the audit of that theorem in
+`AssemblyP1/Issue94CaseSplit.lean`. -/
 
 #print axioms AssemblyP1.BBTCrossingCoalesce.vtx_eq_iff
 #print axioms AssemblyP1.BBTCrossingCoalesce.mem_nodeStartsOf_vtx

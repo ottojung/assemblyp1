@@ -23,7 +23,9 @@ showing that the primitivity hypothesis in `Step2_components_are_paths` is not
 decorative.
 
 Nothing here is a claim about `CrossingChordsCoalesce` or
-`CrossingPairsCoalesce`; both remain `Prop`s with no inhabitant.  In particular
+`CrossingPairsCoalesce`; that `Prop` was given an inhabitant after this module
+(`Issue94CaseSplit.crossingPairsCoalesce_general`, `d0aa0aa`) and
+`CrossingChordsCoalesce` still has none.  In particular
 this module does **not** settle `Issue89GapMap.Step5_heads_interleave`, which
 is a different and strictly stronger question; see §6.
 -/

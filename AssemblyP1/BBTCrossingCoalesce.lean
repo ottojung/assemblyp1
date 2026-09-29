@@ -19,7 +19,13 @@ starts.
 > `{maxPairStart a b, maxPairStart b a}` and
 > `{maxPairStart c d, maxPairStart d c}` are equal.
 
-This is `CrossingPairsCoalesce` below.  It is a `Prop` with **no inhabitant**;
+This is `CrossingPairsCoalesce` below.  It **had** no inhabitant when this
+packet was written; as of `d0aa0aa` it has one, and it is not a proxy:
+`AssemblyP1.Issue94CaseSplit.crossingPairsCoalesce_general` proves this very
+`def`, at an arbitrary `[DecidableEq α]`, with no residual alphabet restriction
+(`AssemblyP1/Issue94CaseSplit.lean:265`).  Read that before treating the §5
+target as open work.
+
 §5 states the two ingredients it is reduced to --- beyond `SameExtension`,
 which `AssemblyP1.BBTLadder` provides --- and keeps them clearly separate from
 the theorems of §1--§4, which *are* proved.
@@ -63,8 +69,9 @@ not itself proved.
 * **§4** (`vtx_maxPairStart`) the two extension starts of a repeated pair carry
   a common `(L-1)`-mer --- i.e. the head of a chord's backward list is again a
   chord, which is what lets the coalescence proof slide down to it.
-* **§5** three `Prop`s with **no inhabitant**, and no others:
-  - `CrossingPairsCoalesce` --- the target;
+* **§5** three `Prop`s, and no others:
+  - `CrossingPairsCoalesce` --- the target.  **Inhabited** as of `d0aa0aa`; see
+    the header note above.  The two below are still not:
   - `SlidePreservesInterleaved` --- the one new cyclic-order fact, a statement
     about the shift coordinate alone (2490 instances checked, no failure);
   - `ShiftLeftPersistence` --- word-level; see its docstring for why it is not

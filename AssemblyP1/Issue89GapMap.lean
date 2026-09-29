@@ -961,8 +961,11 @@ which this summary was last corrected.
 
 No statement here is progress on `CrossingChordsCoalesce` or
 `BBTLadder.CrossingChordsCoalesce`.  Both remain `Prop`s with no inhabitant,
-and so do `CrossingPairsCoalesce`, `LadderVertexCycle`,
-`ShiftLeftPersistence` and `SlidePreservesInterleaved`.  What has changed
+and so do `LadderVertexCycle`, `ShiftLeftPersistence` and
+`SlidePreservesInterleaved`.  `CrossingPairsCoalesce` is no longer among them:
+it was given an inhabitant after this map was written
+(`Issue94CaseSplit.crossingPairsCoalesce_general`, `d0aa0aa`), so the sentence
+below understates the remaining gap.  What has changed
 since this map was first written is not that any of those were settled, but
 that steps 2, 3 and 4 --- the intermediate lemmas between the library and them ---
 were, so the remaining gap is now a single sentence long: the heads of the two
