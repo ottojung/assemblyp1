@@ -86,10 +86,31 @@ equal-spectrum matching adapter (`exists_matching`,
 all (the `P1` stratum).  For a word that *has* branch objects, §3 confines
 the alternative traversals to the branch occurrences and bounds how many
 there are, but the uniqueness of the Eulerian cycle of the condensed graph
-is *not* proved.  Following Bresler's dissertation (Appendix B), the
-remaining input is Pevzner 1995, Lemma 9 --- the **known-multiplicity**
-direction, which is exactly the setting here, since the complete spectrum
-supplies all edge multiplicities:
+is *not* proved.
+
+**ATTRIBUTION (board 94, front 94e7; see `docs/best-tw1-attribution-94.md`).
+The remaining input is a BOARD CONSTRUCTION, not a result imported from any
+cited paper.**  This text formerly read "the remaining input is Pevzner 1995,
+Lemma 9 --- the **known-multiplicity** direction".  That attribution is
+withdrawn.  A two-sided retrieval on this board established that neither paper
+supplies it: Pevzner 1995 (Algorithmica 13:77-105) was retrieved in full and
+contains **no** counting statement, **no** out-degree, and zero occurrences of
+`BEST` / `arboresc` / `spanning` / `matrix-tree` / `determinant` / `repeat` /
+`spectrum` / `K-mer` / `condens`; and BBT (Algorithmica 13:1-19, 2006) contains
+no arborescence, no spanning-tree count, and no proof of its own Theorem 3.
+**BBT's Theorem 3 is a broken citation link**: it imports the step from Pevzner
+1995, which does not contain it.  What may still be cited to Pevzner 1995 is
+Theorem 2, p. 81 (proof pp. 82-86), the exchange/reflection orbit-connectivity
+argument on bicolored graphs, attributed to Abrham & Kotzig 1980 as Pevzner
+himself does; and Theorem 1 / Corollary 1, p. 80, the Kotzig-Nash-Williams
+balancedness criterion, for which see Kotzig 1968 / Nash-Williams.  Neither may
+be cited for a count, a bound, an out-degree estimate, or a uniqueness result.
+The BEST theorem itself is cited directly, from van Aardenne-Ehrenfest and de
+Bruijn, *Indag. Math.* (1951), or Tutte, LMS Lect. Notes 83 (1975).
+
+The board's own reduction is the **known-multiplicity direction**, which is
+exactly the setting here, since the complete spectrum supplies all edge
+multiplicities:
 
 ```text
 remaining: a non-rotational, read-type-preserving permutation of the

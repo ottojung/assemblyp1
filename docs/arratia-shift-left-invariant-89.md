@@ -34,7 +34,22 @@ It is, however, exactly the input for the part that is still open.  See §3.
 Source: the transposition-based uniqueness argument for repeated
 `t`-tuples (Arratia, Bartholdi, Brbélia, Martin, Penny 1996, *Approximation
 of the longest common subsequence*; Bresler–Bresler–Tse 2013 §3, and
-Pevzner's 1995 Lemma 9 as used by `thm:BBT`).  State: let the circular
+the board's own **known-multiplicity reduction** of `thm:BBT`).
+**ATTRIBUTION (board 94, front 94e7; see `docs/best-tw1-attribution-94.md`):**
+this line formerly ended "and Pevzner's 1995 Lemma 9 as used by `thm:BBT`".
+That attribution is **withdrawn**.  Pevzner 1995 (Algorithmica 13:77--105) was
+retrieved in full on this board and contains no counting statement of any kind
+and none of the `BEST` / `arboresc` / `spanning` / `matrix-tree` /
+`determinant` / out-degree / `repeat` / `spectrum` / `K-mer` / `condens`
+vocabulary, so it cannot supply a transposition argument of this shape; and BBT
+(Algorithmica 13:1--19, 2006) contains no proof of its own Theorem 3, its
+Theorem 3 importing the step from Pevzner 1995, so the citation chain is
+**broken**.  The reduction named here is the board's own.  What may still be
+cited to Pevzner 1995 is Theorem 2, p. 81 (exchange/reflection orbit
+connectivity on bicolored graphs, from Abrham & Kotzig 1980) and Theorem 1 /
+Corollary 1, p. 80 (Kotzig–Nash-Williams balancedness) --- neither for a count,
+a bound, an out-degree estimate, or a uniqueness result.
+  State: let the circular
 genome carry **two pairs** of identical `t`-tuples, the pairs interlaced,
 `i < i' < j < j'`, and suppose the transposition `τ` of the two copies is
 **nontrivial** (it changes the spectrum).  Then

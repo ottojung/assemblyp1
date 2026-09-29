@@ -91,9 +91,24 @@ this module.
   isolation, §4 the kernel-checked refutation of the wrong object and the
   anti-vacuity instance.
 * **Not proved.**  `EulerianCycleObstruction` itself, i.e. uniqueness of
-  the Eulerian cycle of the condensed graph.  This is the Pevzner 1995
-  Lemma 9 / `thm:BBT` input; it is still open here and is the single
-  remaining mathematical input of the exported theorem.  No `sorry`, no
+  the Eulerian cycle of the condensed graph.  **ATTRIBUTION (board 94, front
+  94e7; see `docs/best-tw1-attribution-94.md`):** this is a **board
+  construction**, not a result imported from Pevzner 1995 or from BBT.  This
+  text formerly read "This is the Pevzner 1995 Lemma 9 / `thm:BBT` input"; the
+  attribution is withdrawn, because a two-sided retrieval established that
+  Pevzner 1995 (Algorithmica 13:77-105) has no counting statement of any kind
+  and no `BEST` / `arboresc` / `spanning` / `matrix-tree` / `determinant` /
+  out-degree vocabulary at all, and BBT (Algorithmica 13:1-19, 2006) has no
+  arborescence, no spanning-tree count, and no proof of its own Theorem 3 ---
+  its Theorem 3 imports the step from Pevzner 1995, so **the chain is broken
+  and terminates in nothing**.  What may be cited to Pevzner 1995 is Theorem 2,
+  p. 81 (Abrham & Kotzig 1980, orbit connectivity on bicolored graphs) and
+  Theorem 1 / Corollary 1, p. 80 (Kotzig-Nash-Williams balancedness); neither
+  for a count, a bound, an out-degree estimate, or a uniqueness result.  The
+  BEST theorem is cited from van Aardenne-Ehrenfest and de Bruijn, *Indag.
+  Math.* (1951), or Tutte, LMS Lect. Notes 83 (1975).  The statement remains
+  open here and is the single remaining mathematical input of the exported
+  theorem.  No `sorry`, no
   `admit`, no new axiom: the exported theorem states it as an explicit
   hypothesis, and everything else in the chain is derived from it.
 -/
