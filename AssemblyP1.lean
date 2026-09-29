@@ -9,6 +9,7 @@ import AssemblyP1.Issue94Step4Prop
 import AssemblyP1.Issue94Step5Heads
 import AssemblyP1.Issue94HeadCollision
 import AssemblyP1.Issue94Step5NoChord
+import AssemblyP1.Issue94NoCollision
 import AssemblyP1.P2Multiplicity
 import AssemblyP1.P2RepeatAdapter
 import AssemblyP1.BBTMaximalExtension
@@ -329,3 +330,26 @@ no instance at genome size `= L`); it is *not* progress on `head_dichotomy` at
 #print axioms AssemblyP1.Issue94Step5NoChord.chord_at_L_eq_K_shiftInvariant
 #print axioms AssemblyP1.Issue94Step5NoChord.no_chord_at_L_eq_K
 #print axioms AssemblyP1.Issue94Step5NoChord.head_dichotomy_at_genome_eq_read
+
+/-! ## `Issue94NoCollision`: the no-collision half of the `CrossingPairsCoalesce`
+case split
+
+The human pointer of 2026-09-28 21:33:33Z / 21:34:57Z on board issue 94 splits
+`BBTCrossingCoalesce.CrossingPairsCoalesce` on whether a **cross-head equality**
+holds.  `AssemblyP1/Issue94NoCollision.lean` is the other half: assuming all four
+cross-head **inequalities**, it proves the heads interleave (composing
+`Issue94Step4Prop.step4_guarded` with `P2RepeatResidual.chord_shift_left`,
+`P2RepeatResidual.pairBack_shift`, `Issue94Step2Path.step2_components_are_paths_proved`
+and `BBTCrossingCoalesce.vtx_maxPairStart`) and closes by `P2.imp_ExtCrossing`.
+It is proved **independently** of the cross-head-equality helper, which it neither
+imports nor assumes. -/
+#print axioms AssemblyP1.Issue94NoCollision.pairBack_mod
+#print axioms AssemblyP1.Issue94NoCollision.head_of_slide
+#print axioms AssemblyP1.Issue94NoCollision.head_of_head
+#print axioms AssemblyP1.Issue94NoCollision.chord_of_slide
+#print axioms AssemblyP1.Issue94NoCollision.slide_meets_head
+#print axioms AssemblyP1.Issue94NoCollision.interleavedStarts_pair_swap
+#print axioms AssemblyP1.Issue94NoCollision.slide_guards_down
+#print axioms AssemblyP1.Issue94NoCollision.slide_guards_down_heads
+#print axioms AssemblyP1.Issue94NoCollision.no_collision_heads_interleave
+#print axioms AssemblyP1.Issue94NoCollision.no_collision_contradiction
