@@ -48,6 +48,7 @@ import AssemblyP1.Issue94TW1EdgeType
 import AssemblyP1.Issue94TW4Coalesce
 import AssemblyP1.Issue94TW5Single
 import AssemblyP1.Issue94TW6Lemma1
+import AssemblyP1.Issue94TW8Contraction
 import AssemblyP1.AAABConverse
 import AssemblyP1.Issue94Step2Path
 
@@ -513,3 +514,39 @@ discharged. -/
 #print axioms AssemblyP1.Issue94TW6Lemma1.leastPeriod9
 #print axioms AssemblyP1.Issue94TW6Lemma1.period3_9
 #print axioms AssemblyP1.Issue94TW6Lemma1.not_IsPrimitive9
+
+/-! ## #94 front tw8: the contraction rule of `Defn. d:condensed` -/
+#print axioms AssemblyP1.Issue94TW8Contraction.length_drop_le'
+#print axioms AssemblyP1.Issue94TW8Contraction.Merge
+#print axioms AssemblyP1.Issue94TW8Contraction.Contractible
+#print axioms AssemblyP1.Issue94TW8Contraction.contractNodes
+#print axioms AssemblyP1.Issue94TW8Contraction.contractEdges
+#print axioms AssemblyP1.Issue94TW8Contraction.Contract
+#print axioms AssemblyP1.Issue94TW8Contraction.mem_contractNodes_merge
+#print axioms AssemblyP1.Issue94TW8Contraction.mem_contractNodes_of_mem
+#print axioms AssemblyP1.Issue94TW8Contraction.merge_not_mem_erase
+#print axioms AssemblyP1.Issue94TW8Contraction.edges_contract_subset
+#print axioms AssemblyP1.Issue94TW8Contraction.mem_contractEdges_of_ne
+#print axioms AssemblyP1.Issue94TW8Contraction.card_contractNodes_lt
+#print axioms AssemblyP1.Issue94TW8Contraction.card_contractNodes_le
+#print axioms AssemblyP1.Issue94TW8Contraction.nodeMult_ge_of_mem
+#print axioms AssemblyP1.Issue94TW8Contraction.inMult_ge_of_mem
+#print axioms AssemblyP1.Issue94TW8Contraction.nodeMult_ge_add
+#print axioms AssemblyP1.Issue94TW8Contraction.inMult_ge_add
+#print axioms AssemblyP1.Issue94TW8Contraction.twiceTraversed_outDeg_eq_one
+#print axioms AssemblyP1.Issue94TW8Contraction.twiceTraversed_inDeg_eq_one
+#print axioms AssemblyP1.Issue94TW8Contraction.twiceTraversed_contractible
+#print axioms AssemblyP1.Issue94TW8Contraction.not_twiceTraversed_of_not_contractible
+#print axioms AssemblyP1.Issue94TW8Contraction.wellFormed_GA
+#print axioms AssemblyP1.Issue94TW8Contraction.balanced_GA
+#print axioms AssemblyP1.Issue94TW8Contraction.edgeSurj_GA
+#print axioms AssemblyP1.Issue94TW8Contraction.noTriple_GA
+#print axioms AssemblyP1.Issue94TW8Contraction.mA_ab
+#print axioms AssemblyP1.Issue94TW8Contraction.outDeg_GA_a
+#print axioms AssemblyP1.Issue94TW8Contraction.inDeg_GA_b
+#print axioms AssemblyP1.Issue94TW8Contraction.GA_ab_contractible
+#print axioms AssemblyP1.Issue94TW8Contraction.outDeg_GB_a
+#print axioms AssemblyP1.Issue94TW8Contraction.mB_ab
+#print axioms AssemblyP1.Issue94TW8Contraction.nodeMult_GB_a
+#print axioms AssemblyP1.Issue94TW8Contraction.not_outDeg_GB_a
+#print axioms AssemblyP1.Issue94TW8Contraction.not_noTriple_GB
