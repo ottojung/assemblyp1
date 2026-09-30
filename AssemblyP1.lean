@@ -458,7 +458,7 @@ refutes it at `S = 0101`, `G = 4`, `L = 3`.  The correct target is
 `VertexCycleEq`, and `Issue94TW7AltF.node_prefix` gives the unconditional
 combinatorial content of that route together with the exact point at which it
 stops.  **`hPevzner` is still a hypothesis at `PopulationUniqueness.lean`
-lines 164, 217, 247 and is not discharged by any of these fronts.** -/
+lines 178, 231, 261 and is not discharged by any of these fronts.** -/
 #print axioms AssemblyP1.Issue94TW1.not_UniqueInArb_3
 #print axioms AssemblyP1.Issue94TW1.S10100_two_arbs
 #print axioms AssemblyP1.Issue94TW1EdgeType.sameType_equiv
