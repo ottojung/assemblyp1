@@ -96,10 +96,33 @@ withdrawn.  A two-sided retrieval on this board established that neither paper
 supplies it: Pevzner 1995 (Algorithmica 13:77-105) was retrieved in full and
 contains **no** counting statement, **no** out-degree, and zero occurrences of
 `BEST` / `arboresc` / `spanning` / `matrix-tree` / `determinant` / `repeat` /
-`spectrum` / `K-mer` / `condens`; and BBT (Algorithmica 13:1-19, 2006) contains
-no arborescence, no spanning-tree count, and no proof of its own Theorem 3.
-**BBT's Theorem 3 is a broken citation link**: it imports the step from Pevzner
-1995, which does not contain it.  What may still be cited to Pevzner 1995 is
+`spectrum` / `K-mer` / `condens`; and BBT (BMC Bioinformatics 14(Suppl
+5):S18, 2013) contains no arborescence and no spanning-tree count.
+
+**CORRECTION (board 94, doc front 94d1; see `docs/best-tw1-attribution-94.md`
+and `/workspace/BOARD94-PROVENANCE.md`).**  The same text formerly went on to
+cite BBT as "Algorithmica 13:1-19, 2006", to say BBT "contains no proof of its
+own Theorem 3", and to conclude that "**BBT's Theorem 3 is a broken citation
+link**: it imports the step from Pevzner 1995, which does not contain it."  All
+three are struck.  BBT is Bresler, Bresler & Tse, *Optimal assembly for high
+throughput shotgun sequencing*, BMC Bioinformatics **14**(Suppl 5):S18, 2013,
+doi 10.1186/1471-2105-14-S5-S18 (matching `paper/references.bib`); there is no
+Algorithmica 2006 version.  The 13-page published rendering has no appendix,
+but its own closing paragraph says "All proofs can be found in the appendix",
+and the arXiv:1301.0068 v3 source does carry one:
+`appendix_short.tex:157-169` contains a **complete proof of Theorem 3**
+(`t:SBH_no_multiplicities`), which is an out-degree-and-contraction argument
+and contains no count, no determinant and no spanning tree.  BBT's citation of
+Pevzner 1995 is **correct**; the narrower and real defect is that the one step
+BBT imports, `Lemma [Pevzner \cite{Pev95}] l:Pev95`
+(`appendix_short.tex:111-113`), is a **correct citation to a statement that is
+stated but proved nowhere in the chain** --- a stated-but-unproved import, not
+a chain terminating in nothing.  **Whether `l:Pev95` is true is NOT
+ESTABLISHED:** only that BBT asserts it and that one extraction of Pevzner 1995
+does not state it.  The Lemma 9 withdrawal recorded above remains in force and
+is unaffected by this correction.
+
+What may still be cited to Pevzner 1995 is
 Theorem 2, p. 81 (proof pp. 82-86), the exchange/reflection orbit-connectivity
 argument on bicolored graphs, attributed to Abrham & Kotzig 1980 as Pevzner
 himself does; and Theorem 1 / Corollary 1, p. 80, the Kotzig-Nash-Williams

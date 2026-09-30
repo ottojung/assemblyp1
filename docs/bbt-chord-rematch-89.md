@@ -186,10 +186,26 @@ form".  **Both attributions are withdrawn.**  A two-sided retrieval on this
 board established that Pevzner 1995 (Algorithmica 13:77--105) contains no
 counting statement of any kind and no `BEST` / `arboresc` / `spanning` /
 `matrix-tree` / `determinant` / out-degree / `repeat` / `spectrum` / `K-mer` /
-`condens` vocabulary, and that BBT (Algorithmica 13:1--19, 2006) contains no
-arborescence, no spanning-tree count, and **no proof of its own Theorem 3** ---
-its Theorem 3 imports this step from Pevzner 1995, so **the citation chain is
-broken and terminates in nothing**.  The step below is a **board construction**.
+`condens` vocabulary, and that BBT (BMC Bioinformatics 14(Suppl 5):S18, 2013)
+contains no arborescence and no spanning-tree count.
+
+**CORRECTION (board 94, doc front 94d1).**  The same text formerly cited BBT as
+"Algorithmica 13:1--19, 2006", said BBT contains "**no proof of its own Theorem
+3**", and concluded that "**the citation chain is broken and terminates in
+nothing**".  All three are struck.  BBT is Bresler, Bresler & Tse, *Optimal
+assembly for high throughput shotgun sequencing*, BMC Bioinformatics
+**14**(Suppl 5):S18, 2013; the arXiv:1301.0068 v3 source carries an appendix
+containing a **complete proof of Theorem 3** (`appendix_short.tex:157-169`),
+which is an out-degree-and-contraction argument with no count, no determinant
+and no spanning tree.  BBT cites Pevzner 1995 correctly; the narrower and real
+defect is that the one step it imports, `Lemma [Pevzner \cite{Pev95}] l:Pev95`,
+is **stated but proved nowhere in the chain**.  **Whether `l:Pev95` is true is
+NOT ESTABLISHED** --- only that BBT asserts it and that one extraction of
+Pevzner 1995 does not state it.  The two withdrawn attributions recorded above
+(the "Pevzner known-multiplicity step" heading and the Lemma 9 claim) stand
+unaffected.
+
+The step below is a **board construction**.
 What may still be cited to Pevzner 1995 is Theorem 2, p. 81 (proof pp. 82--86),
 the exchange/reflection orbit-connectivity argument on bicolored graphs, which
 Pevzner himself attributes to Abrham & Kotzig 1980; and Theorem 1 /

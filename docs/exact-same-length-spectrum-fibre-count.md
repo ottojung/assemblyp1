@@ -12,11 +12,25 @@ conditional BEST-theorem count --- is a **board construction**.  It is
 retrieval on this board established that Pevzner 1995 (Algorithmica
 13:77--105) has no counting statement of any kind and no `BEST` / `arboresc` /
 `spanning` / `matrix-tree` / `determinant` / out-degree / `repeat` / `spectrum`
-/ `K-mer` / `condens` vocabulary, and that BBT (Algorithmica 13:1--19, 2006) has
-no arborescence, no spanning-tree count, and no proof of its own Theorem 3 ---
-its Theorem 3 importing the step from Pevzner 1995, so **the citation chain is
-broken**.  The BEST theorem itself is cited in the next paragraph from its own
-sources, which is where the count below comes from.
+/ `K-mer` / `condens` vocabulary, and that BBT (BMC Bioinformatics
+14(Suppl 5):S18, 2013) has no arborescence and no spanning-tree count.
+
+**CORRECTION (board 94, doc front 94d1).**  The same text formerly cited BBT as
+"Algorithmica 13:1--19, 2006", said BBT "has no proof of its own Theorem 3",
+and concluded that "**the citation chain is broken**".  All three are struck.
+BBT is Bresler, Bresler & Tse, *Optimal assembly for high throughput shotgun
+sequencing*, BMC Bioinformatics **14**(Suppl 5):S18, 2013.  The 13-page
+published rendering has no appendix, but says so itself ("All proofs can be
+found in the appendix"), and the arXiv:1301.0068 v3 source carries one:
+`appendix_short.tex:157-169` contains a **complete proof of Theorem 3**, and
+that proof contains no count, no determinant and no spanning tree.  BBT cites
+Pevzner 1995 correctly; the narrower real defect is that the single step it
+imports, `Lemma [Pevzner \cite{Pev95}] l:Pev95`, is **stated but proved nowhere
+in the chain**.  **Whether `l:Pev95` is true is NOT ESTABLISHED.**  This does not
+weaken the point of this section, which is unaffected: the `t_w = 1` count used
+below is still the board's own construction and is still not imported from
+either paper.  The BEST theorem itself is cited in the next paragraph from its
+own sources, which is where the count below comes from.
 
 Let c : E → ℕ be a nonzero balanced edge-type capacity vector whose positive support is strongly connected. Edge types are directed edges; copies of the same edge type are indistinguishable. A spelling is a cyclic Eulerian edge-type word using type e exactly c(e) times, and spellings are identified by cyclic rotation.
 
