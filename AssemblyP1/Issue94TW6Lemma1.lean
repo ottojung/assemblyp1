@@ -21,12 +21,16 @@ The exact statement below is the one this module proves and characterises,
 
 ## 0. What is proved, in one paragraph
 
-The **unrestricted** form of the source's degree fact — *any vertex of
-out-degree at least three forces a maximal triple repeat of length `≥ K`* — is
-**FALSE**, and §7 is a kernel-checked counterexample at `S = 012012012`,
-`G = 9`, `K = 3`: the node `012` is spelled by the three distinct starts
-`0, 3, 6` (so it is traversed three times) and the word has **no** maximal
-triple repeat at all.  What is true, and proved here, is the sharp dichotomy
+The form of the source's degree fact that needs no condition on the word —
+*any vertex of out-degree at least three forces a maximal triple repeat of
+length `K`* — is **FALSE**, and §7 is a kernel-checked counterexample at
+`S = 012012012`, `G = 9`, `K = 3`: the node `012` is spelled by the three
+distinct starts `0, 3, 6` (so it is traversed three times) and that triple of
+starts is not a maximal triple repeat of length `K = 3`, nor of lengths `4` or
+`8`.  §7 proves `¬ IsTripleRepeat e 0 3 6` for exactly those three `e`: the
+lengths `5, 6, 7` and all other triples of starts are *not* checked, so the
+`≥ K` reading of the degree fact is not refuted here either.  What is
+true, and proved here, is the sharp dichotomy
 `deg_fact`: for `3 ≤ G` and `1 ≤ K < G`, either
 
 * there is a `SourceFaithfulIs.Genome.IsTripleRepeat` of length `≥ K` (the
@@ -652,14 +656,23 @@ theorem deg_fact_escape_only {K : ℕ} (h3 : 3 ≤ G) (hK1 : 1 ≤ K) (hKG : K <
   · obtain ⟨p, hp1, hp2, hper⟩ := h
     exact ⟨p, hp1, by omega, hper⟩
 
-/-! ## 7. The unrestricted form is false: a kernel-checked counterexample
+/-! ## 7. The degree fact without primitivity is false: a counterexample
 
 `S = 012012012`, `G = 9`, `K = 3`.  The three starts `0, 3, 6` all spell the
 length-`3` word `012`, so the node `012` of the `4`-mer multigraph is traversed
-three times; and the word has **no** maximal triple repeat at any length, so it
-satisfies the `Ukkonen` triple clause and the `P2` triple clause.  The
-unrestricted degree fact is therefore false, and `escape_iff_leastPeriod`
-explains the instance: the least period is `3 < 9`. -/
+three times; and that triple of starts is **not** a `Genome.IsTripleRepeat` of
+length `3`, i.e. of length `K = 3` — so a node traversed three times does *not*
+force a maximal triple repeat of length `K`, and the degree fact without the
+primitivity condition is refuted.  The failure is also checked at lengths `4`
+and `8` (`no_tripleRepeat4_012012012`, `no_tripleRepeat8_012012012`), so it is
+not an artefact of `e = 3`.  **Scope, stated exactly:** what is proved is
+`¬ IsTripleRepeat e 0 3 6` for `e = 3, 4, 8` — one triple of starts, three
+lengths.  The lengths `5, 6, 7` and all other triples of starts are not
+checked, so this section does *not* establish that the word has no maximal
+triple repeat at any length, nor that it satisfies the `Ukkonen` / `P2` triple
+clauses, which range over all triples and all lengths `≥ K`; the `≥ K` form of
+the degree fact is left open here.  What `escape_iff_leastPeriod` explains is
+the instance: the least period is `3 < 9`. -/
 
 /-- `S = 012012012` on the circle of length `9`. -/
 def S9 : Fin 9 → Bool :=
