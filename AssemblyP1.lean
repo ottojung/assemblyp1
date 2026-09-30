@@ -52,6 +52,7 @@ import AssemblyP1.Issue94TW7AltF
 import AssemblyP1.Issue94TW8Contraction
 import AssemblyP1.Issue94KShort
 import AssemblyP1.Issue94P2Iff
+import AssemblyP1.Issue94TruthTraversal
 import AssemblyP1.AAABConverse
 import AssemblyP1.Issue94Step2Path
 
@@ -585,3 +586,30 @@ lines 164, 217, 247 and is not discharged by any of these fronts.** -/
 #print axioms AssemblyP1.Issue94TW7AltF.S4_consistent
 #print axioms AssemblyP1.Issue94TW7AltF.not_labelPreserving_altF_id
 #print axioms AssemblyP1.Issue94TW7AltF.traverses_is_restrictive
+
+/-! ## `Issue94TruthTraversal`: the word-to-multigraph bridge, and the
+kernel-checked refutation of `BOARD94-HPEV-MAP.md` §5b.
+
+`not_edgeSurj_S2` REFUTES the map's statement of Obligation B: the hypothesis
+`G ≤ nodeCount v` forces `nodeCount v = G` (because `deg ≤ G`), so every start
+spells `v` and the conclusion can only hold for `w = v`.  `not_nodeMult_eq_deg`
+refutes the draft's own `nodeMult_eq_deg`.  `edgeCount_le_specCount` is the
+true form of the bridge, an inequality.  All kernel-checked. -/
+#print axioms AssemblyP1.Issue94TruthTraversal.not_edgeSurj_S2
+#print axioms AssemblyP1.Issue94TruthTraversal.nodeCount_eq_G_imp
+#print axioms AssemblyP1.Issue94TruthTraversal.vtx_S2
+#print axioms AssemblyP1.Issue94TruthTraversal.nodeCount_S2_zero
+#print axioms AssemblyP1.Issue94TruthTraversal.truth_traversal_edgeSurj
+#print axioms AssemblyP1.Issue94TruthTraversal.truth_edgeSurj
+#print axioms AssemblyP1.Issue94TruthTraversal.mem_edgeStarts_iff
+#print axioms AssemblyP1.Issue94TruthTraversal.winPrefix_window'
+#print axioms AssemblyP1.Issue94TruthTraversal.winSuffix_window'
+#print axioms AssemblyP1.Issue94TruthTraversal.glue_winPrefix
+#print axioms AssemblyP1.Issue94TruthTraversal.glue_last
+#print axioms AssemblyP1.Issue94TruthTraversal.window_eq_glue
+#print axioms AssemblyP1.Issue94TruthTraversal.window_eq_glue_of_pair
+#print axioms AssemblyP1.Issue94TruthTraversal.winPrefix_window_eq
+#print axioms AssemblyP1.Issue94TruthTraversal.winSuffix_window_eq
+#print axioms AssemblyP1.Issue94TruthTraversal.edgeCount_le_specCount
+#print axioms AssemblyP1.Issue94TruthTraversal.nodeMult_eq_deg
+#print axioms AssemblyP1.Issue94TruthTraversal.not_nodeMult_eq_deg
