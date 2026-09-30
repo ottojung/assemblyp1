@@ -479,11 +479,22 @@ following, `appendix_short.tex:167`, quoted unabridged:
   would have rewritten are missing from it.
   An earlier version of this docstring called `Contract` a transcription of
   `Defn. d:condensed`; that claim was wrong and has been withdrawn.
-* `card_contractNodes_lt`: the **induction measure**.  Every reduction strictly
-  decreases the number of nodes, so "repeated until no candidate edges remain"
-  is well founded.  Two side conditions (`u ≠ v` and freshness of the merged
-  node; the second is *not* a source hypothesis --- there `w` is new by fiat)
-  are stated explicitly, not hidden.
+* `card_contractNodes_lt`: the **induction measure**, and nothing more.  For a
+  *single* step satisfying its four stated side conditions (`u ∈ G.nodes`,
+  `v ∈ G.nodes`, `u ≠ v`, and `Merge u v ∉ G.nodes`), the node count strictly
+  decreases.  This does **not** establish the well-foundedness of "repeated
+  until no candidate edges remain": nothing here shows that those side
+  conditions persist along a *sequence* of contractions.  In particular
+  `hw : Merge u v ∉ G.nodes` is not implied by `Contractible` (which is only
+  `(u,v) ∈ G.edges ∧ outDeg G u = 1 ∧ inDeg G v = 1`), and in a genuine
+  condensation the merged node `w` may already be a node of `G`, in which case
+  the count does not strictly drop and this measure is not available as a
+  decreasing measure along the iteration.  The measure-persistence gap is
+  separate from item 3 below (which concerns order-independence) and is
+  **not** discharged here.  Whether `Merge`-freshness is expected to be
+  satisfiable along a genuine condensation, or whether `card` is the wrong
+  measure, is a question about the source's condensation that this module does
+  not answer.
 * `twiceTraversed_contractible`: **the contraction rule**, i.e. the two
   sentences "the node `u` cannot have two outgoing edges ... thus
   `d⁺(u) = d⁻(v) = 1` and the edge `(u,v)` has been contracted", as a
@@ -519,7 +530,7 @@ uses them as follows.
 | hypothesis | source | what it does in the proof |
 | --- | --- | --- |
 | `hSurj : EdgeSurj m` --- every edge is traversed at least once | `l:condensed` (3), "As noted in Lemma~\ref{l:condensed}, `C` traverses each edge at least once" | supplies `1 ≤ m e₂` for the *second* out-edge `e₂` of the tail.  Without it the count `m (u,v) + m e₂ ≥ 2 + 1 = 3` collapses to `≥ 2`. |
-| `hCap : NoTriple m` --- no node is traversed three times | "Note that the cycle `C_0` does not traverse any node three times in `G_0`, for this would imply the existence of a triple repeat of length `K`" | **This is the only place where the word would enter.**  It is the degree fact.  **Nothing from `Issue94TW6Lemma1` is used at the Lean level**: this module does not import it, and no identifier from it occurs here.  The relationship is a *provenance* one: `hCap` is the hypothesis that the bridge of item 2 below would discharge from `Issue94TW6Lemma1.prim_deg_le_two` (or `deg_fact_of_primitive`, or `no_three_of_P2`) once that bridge exists.  It is **not** "tw6's theorem, relayed": `NoTriple` bounds `nodeMult` on an abstract `SeqGraph`, `prim_deg_le_two` bounds `BBTSequenceGraph.deg` on a `(L-1)`-mer multigraph of a circular word, and no theorem in this repository identifies the two predicates --- that identification *is* the missing lemma (items 2 and 9 of the board report).  A `P2` word satisfies the word-level form, `P2` includes primitivity, and the unrestricted word-level form is FALSE (tw6's kernel-checked counterexample at `S = 012012012`, `G = 9`, `K = 3`). |
+| `hCap : NoTriple m` --- no node is traversed three times | "Note that the cycle `C_0` does not traverse any node three times in `G_0`, for this would imply the existence of a triple repeat of length `K`" | **This is the only place where the word would enter.**  It is the degree fact.  **Nothing from `Issue94TW6Lemma1` is used at the Lean level**: this module does not import it, and no identifier from it occurs here.  The relationship is a *provenance* one: `hCap` is the hypothesis that the bridge of item 2 below would discharge from `Issue94TW6Lemma1.prim_deg_le_two` (or `deg_fact_of_primitive`, or `no_three_of_P2`) once that bridge exists.  It is **not** "tw6's theorem, relayed": `NoTriple` bounds `nodeMult` on an abstract `SeqGraph`, `prim_deg_le_two` bounds `BBTSequenceGraph.deg` on a `(L-1)`-mer multigraph of a circular word, and no theorem in this repository identifies the two predicates --- that identification *is* the missing lemma (items 2 and 9 of the board report).  A `P2` word satisfies the word-level form and `P2` includes primitivity.  The form of the degree fact needing no condition on the word, **at length `K`**, is FALSE: tw6's kernel-checked counterexample at `S = 012012012`, `G = 9`, `K = 3` gives `¬ (mkGenome hG9 S9).IsTripleRepeat e 0 3 6` for `e = 3`, `4` and `8`.  That is **one** triple of starts at **three** lengths; the lengths `5, 6, 7` and all other triples of starts are not checked, so the `≥ K` reading of the degree fact is **left open** by that counterexample and is not refuted here either. |
 | `hBal : Balanced G m` --- the walk is closed | a closed walk | transfers the cap from the out-count to the in-count, which is what makes the in-degree half (`d⁻(v) = 1`) follow. |
 | `hwf : WellFormed G` | --- | only to know that `u` and `v` are nodes, so that the cap applies to them. |
 
