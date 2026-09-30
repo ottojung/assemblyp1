@@ -613,3 +613,24 @@ true form of the bridge, an inequality.  All kernel-checked. -/
 #print axioms AssemblyP1.Issue94TruthTraversal.edgeCount_le_specCount
 #print axioms AssemblyP1.Issue94TruthTraversal.nodeMult_eq_deg
 #print axioms AssemblyP1.Issue94TruthTraversal.not_nodeMult_eq_deg
+
+/-! ## #94 front `94c20`: residual R2 of `hPevzner` discharged
+
+The `K ≤ L - 1` half of `BBTEulerian.EulerianCycleObstruction` is proved for
+an **arbitrary** circular word: `AssemblyP1.Issue94KShort.obstruction_short_window`
+now carries **no** `RepeatAdapter.IsPrimitive` hypothesis.  The range
+`L ≤ K` (R1) is untouched and remains open. -/
+#print axioms AssemblyP1.Issue94KShort.R2_cyc_congr
+#print axioms AssemblyP1.Issue94KShort.R2_cyc_period
+#print axioms AssemblyP1.Issue94KShort.R2_cyc_add_mod
+#print axioms AssemblyP1.Issue94KShort.R2_vtx_eq_shiftEq
+#print axioms AssemblyP1.Issue94KShort.R2_period_mk_shiftEq
+#print axioms AssemblyP1.Issue94KShort.R2_shiftEq_mk_period
+#print axioms AssemblyP1.Issue94KShort.R2_window_to_period
+#print axioms AssemblyP1.Issue94KShort.R2_period_is_invisible
+#print axioms AssemblyP1.Issue94KShort.vtx_sigma_eq_vtx_rotAdd_general
+#print axioms AssemblyP1.Issue94KShort.vertexCycleEq_short_window_general
+#print axioms AssemblyP1.Issue94KShort.obstruction_short_window_general
+#print axioms AssemblyP1.Issue94KShort.obstruction_short_window_general'
+#print axioms AssemblyP1.Issue94KShort.obstruction_short_window
+#print axioms AssemblyP1.Issue94KShort.obstruction_short_window'
