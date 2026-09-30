@@ -47,6 +47,7 @@ import AssemblyP1.Issue94TW1
 import AssemblyP1.Issue94TW1EdgeType
 import AssemblyP1.Issue94TW4Coalesce
 import AssemblyP1.Issue94TW5Single
+import AssemblyP1.Issue94TW6Lemma1
 import AssemblyP1.AAABConverse
 import AssemblyP1.Issue94Step2Path
 
@@ -487,3 +488,28 @@ discharged. -/
 #print axioms AssemblyP1.Issue94TW5Single.labelPreserving_S4
 #print axioms AssemblyP1.Issue94TW5Single.single_clauses_S4
 #print axioms AssemblyP1.Issue94TW5Single.altF_S4_ne
+#print axioms AssemblyP1.Issue94TW6Lemma1.agr3_iff_agree3
+#print axioms AssemblyP1.Issue94TW6Lemma1.mem_span
+#print axioms AssemblyP1.Issue94TW6Lemma1.max_span_tripleRepeat
+#print axioms AssemblyP1.Issue94TW6Lemma1.max_span_escape
+#print axioms AssemblyP1.Issue94TW6Lemma1.max_span_escape_congruent
+#print axioms AssemblyP1.Issue94TW6Lemma1.deg_fact
+#print axioms AssemblyP1.Issue94TW6Lemma1.deg_fact_of_primitive
+#print axioms AssemblyP1.Issue94TW6Lemma1.no_three_of_primitive
+#print axioms AssemblyP1.Issue94TW6Lemma1.deg_fact_node
+#print axioms AssemblyP1.Issue94TW6Lemma1.no_three_of_Ukkonen_K
+#print axioms AssemblyP1.Issue94TW6Lemma1.no_three_of_Ukkonen_L
+#print axioms AssemblyP1.Issue94TW6Lemma1.no_three_of_P2
+#print axioms AssemblyP1.Issue94TW6Lemma1.prim_deg_le_two
+#print axioms AssemblyP1.Issue94TW6Lemma1.escape_iff_leastPeriod
+#print axioms AssemblyP1.Issue94TW6Lemma1.escape_iff_not_IsPrimitive
+#print axioms AssemblyP1.Issue94TW6Lemma1.period_iff_shiftInvariant
+#print axioms AssemblyP1.Issue94TW6Lemma1.deg_fact_escape_only
+#print axioms AssemblyP1.Issue94TW6Lemma1.vtx9_three
+#print axioms AssemblyP1.Issue94TW6Lemma1.deg9_012
+#print axioms AssemblyP1.Issue94TW6Lemma1.no_tripleRepeat_012012012
+#print axioms AssemblyP1.Issue94TW6Lemma1.no_tripleRepeat4_012012012
+#print axioms AssemblyP1.Issue94TW6Lemma1.no_tripleRepeat8_012012012
+#print axioms AssemblyP1.Issue94TW6Lemma1.leastPeriod9
+#print axioms AssemblyP1.Issue94TW6Lemma1.period3_9
+#print axioms AssemblyP1.Issue94TW6Lemma1.not_IsPrimitive9
