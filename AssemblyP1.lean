@@ -48,6 +48,7 @@ import AssemblyP1.Issue94TW1EdgeType
 import AssemblyP1.Issue94TW4Coalesce
 import AssemblyP1.Issue94TW5Single
 import AssemblyP1.Issue94TW6Lemma1
+import AssemblyP1.Issue94TW7AltF
 import AssemblyP1.Issue94TW8Contraction
 import AssemblyP1.AAABConverse
 import AssemblyP1.Issue94Step2Path
@@ -439,7 +440,22 @@ out the three steps the board directed on top of it:
 unbounded `CrossingChordsCoalesce` is neither proved nor refuted, and
 `PopulationUniqueness.population_unique_ML_up_to_rotation` still **retains**
 its `hPevzner : EulerianCycleObstruction` premise.  The public endpoint is not
-discharged. -/
+discharged.
+
+**Board 94, fronts tw5-tw7 — status of `thm:BBT` on this object.**  The
+`single` clause of `EulerianCycle` is a tautology (`Issue94TW5Single`), the
+innermost-chord obstruction is free and unconditional
+(`Issue94TW5Single.altF_no_innermost_chord`), the degree fact of Lemma 1 is
+proved in `Finset`-maximum form with its exact condition
+(`Issue94TW6Lemma1`), and the statement the board had been treating as the last
+purely combinatorial step, "`Ukkonen` + label-preserving ⟹ `AltF = id`", is
+**FALSE**: `Issue94TW7AltF.altF_eq_id_iff_rotation` proves it equivalent to
+`σ` being a rotation of the circle, and `Issue94TW7AltF.not_ukk_then_not_altF`
+refutes it at `S = 0101`, `G = 4`, `L = 3`.  The correct target is
+`VertexCycleEq`, and `Issue94TW7AltF.node_prefix` gives the unconditional
+combinatorial content of that route together with the exact point at which it
+stops.  **`hPevzner` is still a hypothesis at `PopulationUniqueness.lean`
+lines 164, 217, 247 and is not discharged by any of these fronts.** -/
 #print axioms AssemblyP1.Issue94TW1.not_UniqueInArb_3
 #print axioms AssemblyP1.Issue94TW1.S10100_two_arbs
 #print axioms AssemblyP1.Issue94TW1EdgeType.sameType_equiv
@@ -550,3 +566,20 @@ discharged. -/
 #print axioms AssemblyP1.Issue94TW8Contraction.nodeMult_GB_a
 #print axioms AssemblyP1.Issue94TW8Contraction.not_outDeg_GB_a
 #print axioms AssemblyP1.Issue94TW8Contraction.not_noTriple_GB
+#print axioms AssemblyP1.Issue94TW7AltF.comm_nextPos_isRotation
+#print axioms AssemblyP1.Issue94TW7AltF.altF_eq_id_iff_rotation
+#print axioms AssemblyP1.Issue94TW7AltF.ukk_S4
+#print axioms AssemblyP1.Issue94TW7AltF.labelPreserving_S4
+#print axioms AssemblyP1.Issue94TW7AltF.altF_S4_ne
+#print axioms AssemblyP1.Issue94TW7AltF.not_ukk_then_not_altF
+#print axioms AssemblyP1.Issue94TW7AltF.not_ukk_then_not_rotation
+#print axioms AssemblyP1.Issue94TW7AltF.refutation_is_nonvacuous
+#print axioms AssemblyP1.Issue94TW7AltF.vtx_nextPos_shift
+#print axioms AssemblyP1.Issue94TW7AltF.node_prefix
+#print axioms AssemblyP1.Issue94TW7AltF.S4_length
+#print axioms AssemblyP1.Issue94TW7AltF.S4_vtx_02
+#print axioms AssemblyP1.Issue94TW7AltF.S4_vtx_13
+#print axioms AssemblyP1.Issue94TW7AltF.S4_vtx_01
+#print axioms AssemblyP1.Issue94TW7AltF.S4_consistent
+#print axioms AssemblyP1.Issue94TW7AltF.not_labelPreserving_altF_id
+#print axioms AssemblyP1.Issue94TW7AltF.traverses_is_restrictive

@@ -70,6 +70,21 @@ whole of `thm:BBT` on this object is:
 
 ## What is still missing (the two repeat-theoretic lemmas)
 
+**Status of Lemma 1 below (board 94, fronts tw6 and tw7; see
+`AssemblyP1/Issue94TW6Lemma1.lean` and `AssemblyP1/Issue94TW7AltF.lean`).**  The
+`Finset`-maximum form of the two-sided maximal extension, and the primitive
+branch of the multiplicity cap, are **now available**: `span` / `spanMax` /
+`max_span_tripleRepeat` / `max_span_escape` / `max_span_escape_congruent`,
+`deg_fact`, `deg_fact_of_primitive`, `deg_fact_node`, `no_three_of_Ukkonen_K`,
+`no_three_of_Ukkonen_L`, `no_three_of_P2` and `prim_deg_le_two` are all
+kernel-checked.  What is **still missing** is the *fixed-triple* form: a
+*given* triple of distinct starts, not congruent modulo the least period,
+extending to a maximal triple repeat **at those starts**.  The module above
+takes the maximum over *all* triples, which is what makes the preceding-
+maximality clause free but is the existential form, not the fixed-triple form.
+`BBTTripleBridge.lean` does not contain the fixed-triple form either.  **This
+paragraph is not a claim that Lemma 1 is proved.**
+
 **Lemma 1 (multiplicity / the triple-repeat clause).**  Three distinct starts
 spelling the same `(L-1)`-mer, and not congruent modulo the least period `p`
 of `S`, extend to a maximal triple repeat of length `≥ K`; hence under
@@ -98,6 +113,24 @@ Lemma 1 makes `f` a product of disjoint transpositions, Lemma 2 makes their
 support chords pairwise non-interleaved, and a non-crossing configuration has
 an innermost chord, which §4 rules out.  So the remaining content of
 `thm:BBT` is these two repeat-theory lemmas and nothing else.
+
+**Correction to the plan above (board 94, front tw7;
+`AssemblyP1/Issue94TW7AltF.lean`).**  Two of the plan's steps have moved, and
+one of them was wrong.
+
+1. **`AltF = id` is not the target, and it is not implied by `Ukkonen`.**
+   `Issue94TW7AltF.altF_eq_id_iff_rotation` proves, unconditionally, that
+   `AltF hG σ = id` **iff** `σ` is a rotation of the circle, and
+   `Issue94TW7AltF.not_ukk_then_not_altF` is a kernel-checked refutation of
+   `Ukkonen + LabelPreserving ⟹ AltF = id` at `S = 0101`, `G = 4`, `L = 3`.
+   The object `EulerianCycleObstruction` quantifies over is `VertexCycleEq`,
+   not `AltF = id`; `BBTEulerian`'s own §4.2 (`S = 0101`, `tau4`) is a
+   non-rotational Eulerian cycle with a *correct* `VertexCycleEq`, which is
+   exactly why the two must not be conflated.
+2. **The innermost-chord step is free and unconditional**, so Lemma 2 is *not*
+   needed on this route: `Issue94TW5Single.altF_no_innermost_chord` is
+   `EulerianCycle_no_innermost_chord` below with its `EulerianCycle`
+   hypothesis deleted.
 -/
 
 namespace AssemblyP1.BBTUniqueEulerian
