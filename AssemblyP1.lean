@@ -1,6 +1,7 @@
 import AssemblyP1.BBTEulerianSearch
 import AssemblyP1.BBTMaximalExtension
 import AssemblyP1.BBTSupportInvariant
+import AssemblyP1.BBTReplacementInvariant
 import AssemblyP1.P2RepeatResidual
 import AssemblyP1.BBTUniqueEulerian
 import AssemblyP1.InterleavingNeededCounterexample
