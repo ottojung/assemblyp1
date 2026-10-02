@@ -307,4 +307,22 @@ theorem harmless_selected_crossing_00101 :
         OrbitVertexEq (hG := BBTChords.hG5) (L := 3) BBTChords.S5 θ := by
   decide
 
+/-- **Consequence, kernel-checked: `SelectedInterleaved_obstruction` above is
+FALSE at the very instance `harmless_selected_crossing_00101` exhibits.**
+The witness `θ` there is selected-interleaved, so the obstruction would force a
+`LongObstruction` on `S = 00101` at `L = 3`; but `BBTChords.p2_hG5_S5_L3`
+gives `P2`, hence `Ukkonen`, hence `¬ LongObstruction`.  So the `#89` endgame
+cannot be closed by demanding `SelectedInterleaved_obstruction` for every `θ`:
+the two crossing doubled `(L-1)`-mers at `{1,3}` and `{2,4}` are harmless.  The
+residual content is therefore the remaining clause of `SupportDichotomy`, not
+the selected-interleaving obstruction. -/
+theorem selectedInterleaved_obstruction_false_00101 :
+    ¬ (∀ θ : Fin 5 → Fin 5,
+        SelectedInterleaved_obstruction BBTChords.hG5 3 BBTChords.S5 θ) := by
+  intro hobs
+  obtain ⟨θ, _, _, _, hθsi, _⟩ := harmless_selected_crossing_00101
+  have hnot : ¬ LongObstruction BBTChords.hG5 3 BBTChords.S5 :=
+    not_longObstruction_of_Ukkonen (P2.imp_Ukkonen (by decide) BBTChords.p2_hG5_S5_L3)
+  exact hnot (hobs θ hθsi)
+
 end AssemblyP1.BBTSupport

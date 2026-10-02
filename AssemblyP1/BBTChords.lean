@@ -533,6 +533,19 @@ def S5 : Fin 5 → Fin 2 := ![0, 0, 1, 0, 1]
 /-- `0 < 5`, named so that the numerals of the instance fix the length. -/
 theorem hG5 : 0 < 5 := by decide
 
+/-- **The `P2` half of the refutation instance, kernel-checked.**
+`S = 00101` at `G = 5` does satisfy `AssemblyP1.P2.P2` at read length `L = 3`,
+and hence, by `AssemblyP1.P2.P2.imp_Ukkonen`, Ukkonen's condition at
+`K = L - 1 = 2`.  This is the statement that was previously only asserted in
+prose in the section docstring above, so `BBTSupportInvariant.harmless_selected_crossing_00101`
+(a `SelectedInterleaved` witness on this very word) is a witness *inside* a
+`P2` genome.  The proof is `decide` on the concrete `Fin 5` word; `unfold mkGenome`
+is needed because `Genome.len` is a structure field, so `Fin Genome.len` has no
+`Fintype`/`DecidableEq` instance until the structure is unfolded. -/
+theorem p2_hG5_S5_L3 : P2 hG5 3 S5 := by
+  unfold P2 mkGenome
+  decide
+
 /-- **The refutation, kernel-checked.**  The two crossing pairs of
 `S = 00101` are pairs of *equal* length-`2` mers, they interleave, and each pair
 fails one of the two maximality conditions of `SourceFaithfulIs.Genome.IsRepeat`
