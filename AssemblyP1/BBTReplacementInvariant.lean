@@ -1425,4 +1425,121 @@ theorem half_no_bad_0101_4 :
 
 end HalfPeriod
 
+/-! ## 9. Case 1 of §5: the census filter of front `94a04` is buggy, and the
+sharp statement of the case-1 residual
+
+§5 of `/workspace/BOARD94-BADNESS-0153.md` leaves three cases; §9 of
+`/workspace/BOARD94-CASE3-0300.md` (front `94a05`) disposed of case 3 (§8
+above) and named **case 1** --- *exactly one constituent preceding-blocked, the
+other unblocked* --- as the next target, with the suggestion that the blocked
+pair's maximal backward step `p` should land its maximal repeat *onto* the
+unblocked pair's, or at least interleave with it after one further backward step.
+
+**A warning about the census of §4 of `94a04`.**  `scratch/backstep_census.py`
+computes `p2(S, L)` with a triple-repeat clause of the form
+
+```text
+while e < G-1 and |{S[t₀+i] : i < e+1}| = 1 and ... do e := e+1
+```
+
+which takes the set of symbols *inside one window* rather than comparing the
+three windows position by position.  That clause therefore almost never fires,
+so the "`¬ LongObstruction` genomes" columns of that table admit obstructed
+genomes.  The census in this section uses the predicate transcribed from
+`LongObstruction` itself (`scratch/case1_fixed.py`).
+
+**What the corrected census shows** (all binary circular words, `G ≤ 10`, all
+`2 ≤ L ≤ G+1`, all case-1 quadruples, `vtx a ≠ vtx c`, both with and without a
+long obstruction): whenever the genome has *no* long obstruction, the maximal
+backward step of the blocked pair lands it **exactly onto** the unblocked pair:
+`{c−p, d−p} = {a,b}` in all 2680 such configurations in range, and never on a
+pair that interleaves with `(a,b)`.  Without the `¬ LongObstruction`
+hypothesis the landing fails — 188 232 interleaving outcomes in range — which is
+the obstruction itself, so the statement is not vacuous.  This is **evidence,
+not proof**: a Python enumeration whose correspondence to the Lean definitions
+is not machine-checked, with range ending at `G = 10`.
+
+**The kernel-checked correction.**  The apparent counterexample that the buggy
+filter produces is `G = 7`, `L = 3`, `S = 0100101`, `(a,b,c,d) = (0,3,6,1)`,
+`p = 3`, where the blocked pair's maximal repeat sits at `(3,5)`, which neither
+coincides with `(0,3)` nor interleaves with it (it *shares* the start `3`).  That
+genome is **not** a case-1 configuration: it carries a maximal triple repeat of
+length `3 ≥ L−1 = 2` (`triple_0100101`), hence `LongObstruction`
+(`longObstruction_0100101`).  So the case-1 statement of §9 of the case-3
+report is **not** refuted by it.
+
+**The residual, stated as a `Prop`.**  `case1_landing` below is the sharp
+version of §9's case-1 claim: the third disjunct (interleaving) is not needed at
+all.  It is stated here and **not proved**: no `axiom`, no `sorry`, no `admit`.
+Its genome-side `Preceding` clauses are *hypotheses of the configuration*, not
+assumed conclusions, and the only genome-side hypothesis used in the census that
+supports it is `¬ LongObstruction`, which is a hypothesis of the front's regime,
+not the conclusion of `interleaved_maximal_pair`. -/
+
+section Case1
+
+open SourceFaithfulIs
+open AssemblyP1
+open AssemblyP1.BBTEulerian
+open AssemblyP1.BBTEulerianSearch
+open AssemblyP1.BBTChords
+open AssemblyP1.BBTSequenceGraph
+open OrientedRigidity
+
+variable {G : ℕ} (hG : 0 < G) (L : ℕ)
+
+theorem hG7c : 0 < 7 := by decide
+
+/-- `S = 0100101`, the genome behind the apparent case-1 counterexample. -/
+def S7c : Fin 7 → Fin 2 := ![0, 1, 0, 0, 1, 0, 1]
+
+/-- **`0100101` has a maximal triple repeat of length `3` at starts `0, 3, 5`**:
+the three windows are `010`, the preceding symbols are `1, 0, 1` (not all
+equal) and the following symbols are `0, 1, 1` (not all equal).  This is the
+kernel-checked reason that the `¬ LongObstruction` filter of front `94a04`'s
+census is wrong on this genome: it admits `0100101` as `P2`. -/
+theorem triple_0100101 :
+    (mkGenome hG7c S7c).IsTripleRepeat 3 (0 : Fin 7) (3 : Fin 7) (5 : Fin 7) := by
+  unfold mkGenome Genome.IsTripleRepeat Genome.Agree Genome.window
+    Genome.Preceding Genome.Following Genome.cycl
+  decide
+
+/-- ... so `0100101` has a long obstruction at `L = 3`, and hence no bad `θ`. -/
+theorem longObstruction_0100101 : LongObstruction hG7c 3 S7c :=
+  Or.inl ⟨3, (0 : Fin 7), (3 : Fin 7), (5 : Fin 7), triple_0100101, by decide⟩
+
+/-- **THE CASE-1 LANDING STATEMENT, verbatim.**  Case 1 of §5: two interleaved
+pairs carrying the same `(L−1)`-mers, two *distinct* vertices, the first pair
+**unblocked** (`Preceding a ≠ Preceding b`, so its maximal backward step is `0`
+and it is a maximal repeat at its own starts), the second pair **blocked** with
+maximal backward step `p` (`BackAgrees … p ∧ ¬ BackAgrees … (p+1)`, so `p ≥ 1`).
+If the genome has **no long obstruction**, then stepping the blocked pair `p`
+places backwards lands it **exactly onto** the unblocked pair.
+
+The third disjunct of §9's claim (the two pairs *interleave*) is not needed, and
+the two crossed orientations are written out explicitly because the statement is
+order-free in `(a,b)` and `(c,d)`.
+
+**Not proved.**  This is a `Prop`: no `axiom`, no `sorry`, no `admit`.  What is
+known is the census of the section docstring (evidence, not proof) and the
+`G = 5`/`G = 6` instances of the same shape, which `decide` can only reach at the
+cost of a full genome enumeration that does not fit this host's 300 s
+elaboration bound. -/
+def case1_landing : Prop :=
+  ∀ (K : ℕ) (M : ℕ) (S : Fin K → Fin 2) (hK : 0 < K) (a b c d : Fin K) (p : ℕ),
+    2 ≤ M →
+      Interleaved (mkGenome hK S) a b c d →
+      vtx hK M S a = vtx hK M S b →
+      vtx hK M S c = vtx hK M S d →
+      vtx hK M S a ≠ vtx hK M S c →
+      (mkGenome hK S).Preceding a ≠ (mkGenome hK S).Preceding b →
+      (mkGenome hK S).Preceding c = (mkGenome hK S).Preceding d →
+      BackAgrees hK S c d p →
+      ¬ BackAgrees hK S c d (p + 1) →
+      ¬ LongObstruction hK M S →
+      (prevPos hK)^[p] c = a ∧ (prevPos hK)^[p] d = b ∨
+      (prevPos hK)^[p] c = b ∧ (prevPos hK)^[p] d = a
+
+end Case1
+
 end AssemblyP1.BBTReplacement
