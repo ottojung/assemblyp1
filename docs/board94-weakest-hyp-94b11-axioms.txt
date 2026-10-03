@@ -1,0 +1,17 @@
+'AssemblyP1.BBTInterleavedWeak.shiftInvariant_of_agrees_G' depends on axioms: [propext, Quot.sound]
+'AssemblyP1.BBTInterleavedWeak.not_agrees_G_of_notPeriodShift' depends on axioms: [propext, Quot.sound]
+'AssemblyP1.BBTInterleavedWeak.isPrimitive_notPeriodShift' depends on axioms: [propext, Quot.sound]
+'AssemblyP1.BBTInterleavedWeak.rightMax_of_doubled_weak' depends on axioms: [propext, Classical.choice, Quot.sound]
+'AssemblyP1.BBTInterleavedWeak.selectedInterleaved_admissible_weak' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'AssemblyP1.BBTInterleavedWeak.selectedInterleaved_admissible_weak_of_primitive' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'AssemblyP1.BBTInterleavedWeak.blocked_00101' depends on axioms: [propext]
+'AssemblyP1.BBTInterleavedWeak.notPeriodShift_2_4_00101' depends on axioms: [propext, Quot.sound]
+'AssemblyP1.BBTInterleavedWeak.weak_hypotheses_inhabited_00101' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'AssemblyP1.BBTInterleavedWeak.shift_residue' depends on axioms: [propext, Quot.sound]
+'AssemblyP1.BBTInterleavedWeak.no_rightRepeat_of_periodShift' depends on axioms: [propext, Quot.sound]
