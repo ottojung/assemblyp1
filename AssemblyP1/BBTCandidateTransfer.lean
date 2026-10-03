@@ -145,7 +145,7 @@ Three laws relating a *candidate* `E` to the *truth*-side objects the residual
    available at the presentation level
    (`BBTEulerianSearch.succOf_bijective` `:204`,
    `fibrePreserving_succOf` `:208`, `oneCycle_succOf` `:214`) for
-   `θ = BBTEulerianSearch.succOf hK (pullback hK L W E σ.1)`; what is open is
+   `θ = BBTEulerianSearch.succOf hK (pullback hK L W E hσ.1)`; what is open is
    the `¬ OrbitVertexEq` conjunct, i.e. conjunction of conjunct 2 with
    `BBTEulerianSearch.vertexCycleEq_iff_orbit` (`:263`).
 
@@ -158,9 +158,9 @@ def CandidateTransfer (L : ℕ) : Prop :=
       Ukkonen hK L W →
       specCount (L := L) hK W = specCount (L := L) hK E →
       RotEquiv hK E W) ∧
-  (∀ (K : ℕ) (hK : 0 < K) (W E : Fin K → α) (σ : Fin K → Fin K),
-      Matching (L := L) hK W E σ →
-      (VertexCycleEq hK L W (pullback hK L W E σ.1) (Equiv.refl (α := Fin K))
+  (∀ (K : ℕ) (hK : 0 < K) (W E : Fin K → α) (σ : Fin K → Fin K)
+      (hσ : Matching (L := L) hK W E σ),
+      (VertexCycleEq hK L W (pullback hK L W E hσ.1) (Equiv.refl (α := Fin K))
           ↔ RotEquiv hK E W)) ∧
   (∀ (K : ℕ) (hK : 0 < K) (W E : Fin K → α),
       Ukkonen hK L W →
