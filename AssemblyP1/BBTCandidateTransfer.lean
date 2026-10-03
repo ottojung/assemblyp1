@@ -290,4 +290,45 @@ theorem rotEquiv_pullback_vertexCycleEq {K : ℕ} (hK : 0 < K) (L : ℕ)
   exact congrArg W (Fin.ext (mod_add_neg' hK i.val k (Nat.le_of_lt hk0_lt) ▸
     mod_neg_shift_add hK i.val d.val k (Nat.le_of_lt hk0_lt)).symm)
 
+/-- **Clause 2 as stated in `CandidateTransfer`, both directions, at `2 ≤ L`.**
+The `→` direction is `BBTEulerian.rotEquiv_of_vertexCycleEq` fed by
+`pullback_window`; the `←` direction is `rotEquiv_pullback_vertexCycleEq`
+above.  No `Ukkonen` hypothesis is used on either side. -/
+theorem candidateTransfer_cl2 {K : ℕ} (hK : 0 < K) {L : ℕ} (hL : 2 ≤ L)
+    (W E : Fin K → α) {σ : Fin K → Fin K} (hσ : Matching (L := L) hK W E σ) :
+    (VertexCycleEq hK L W (pullback hK L W E hσ.1) (Equiv.refl (α := Fin K))
+      ↔ RotEquiv hK E W) := by
+  constructor
+  · intro hk
+    exact rotEquiv_of_vertexCycleEq hK L W (pullback hK L W E hσ.1) hL hk
+        (fun s => (pullback_window hK L W E hσ s).symm)
+  · intro hrot
+    exact rotEquiv_pullback_vertexCycleEq hK L W E hσ hrot
+
+/-- **Clause 3 of `CandidateTransfer`, proved.**  A non-rotational
+equal-spectrum candidate yields, on the truth side, a bijective
+fibre-preserving one-cycle `θ` that does not spell the truth's vertex cycle.
+The three positive side conditions are `succOf_bijective`,
+`fibrePreserving_succOf` and `oneCycle_succOf` at the pull-back, which is an
+`EulerianCycle` of the truth's condensed graph (`pullback_isEulerianCycle`);
+the `¬ OrbitVertexEq` conjunct is clause 2 read contrapositively and composed
+with `vertexCycleEq_iff_orbit`. -/
+theorem candidateTransfer_cl3 {K : ℕ} (hK : 0 < K) {L : ℕ} (hL : 2 ≤ L)
+    (W E : Fin K → α) (_hU : Ukkonen hK L W)
+    (hspec : specCount (L := L) hK W = specCount (L := L) hK E)
+    (hnrot : ¬ RotEquiv hK E W) :
+    ∃ θ : Fin K → Fin K, Function.Bijective θ ∧ FibrePreserving hK L W θ ∧
+      OneCycle hK θ ∧ ¬ OrbitVertexEq hK L W θ := by
+  obtain ⟨σ, hσ⟩ := exists_matching hK W E hspec
+  set μ := pullback hK L W E hσ.1 with hμdef
+  have hec : EulerianCycle hK L W μ := pullback_isEulerianCycle hK L W hσ
+  have hnv : ¬ VertexCycleEq hK L W μ (Equiv.refl (α := Fin K)) := by
+    rintro ⟨k, hk⟩
+    exact hnrot (rotEquiv_of_vertexCycleEq hK L W μ hL ⟨k, hk⟩
+      (fun s => (pullback_window hK L W E hσ s).symm))
+  refine ⟨succOf hK μ, succOf_bijective hK μ, fibrePreserving_succOf hK L W μ hec,
+    oneCycle_succOf hK L W μ hec, ?_⟩
+  intro horbit
+  exact hnv ((vertexCycleEq_iff_orbit hK L W μ).mpr horbit)
+
 end AssemblyP1.BBTEulerian
