@@ -1,6 +1,8 @@
 import AssemblyP1.PopulationUniqueness
 import AssemblyP1.BBTAdmissibleObstruction
 import AssemblyP1.BBTInterleavedAdmissible
+import AssemblyP1.BBTSupportInvariant
+import AssemblyP1.BBTEulerianSearch
 
 /-!
 # Board 94, front `94b15` (ENDPOINT): the SINGLE final theorem for #89
@@ -101,8 +103,8 @@ open AssemblyP1.PopulationReduction
 open AssemblyP1.OrientedRigidity
 open AssemblyP1.BBTAdmissible
 open AssemblyP1.BBTReplacement
-
-set_option linter.unusedVariables false
+open AssemblyP1.BBTSupport
+open AssemblyP1.BBTEulerianSearch
 
 variable {α : Type} [DecidableEq α] [Fintype α] {G : ℕ}
 
@@ -115,7 +117,7 @@ truth.  Quantified here as a `Prop` so that the single hypothesis it needs is
 visible; `endpoint_of_obstruction` shows it is already a theorem of the library
 under `Residual`. -/
 def Endpoint (L : ℕ) : Prop :=
-  ∀ (hG : 0 < G) (hL : 1 < L) (S : Fin G → α),
+  ∀ (hG : 0 < G) (_hL : 1 < L) (S : Fin G → α),
     PopulationReduction.IsPrimitive S → P2 hG L S →
       ( (∀ (K : ℕ) (hK : 0 < K) (W : Fin K → α), AdmClass L hK W →
             PopLogLik (popSpectrum L hG S) (popSpectrum L hK W)
@@ -137,9 +139,10 @@ def Residual (L : ℕ) : Prop := BBTEulerian.EulerianCycleObstruction (α := α)
 
 /-- **The endpoint follows from the single residual obligation.**  Kernel-checked;
 this is the whole of the gap. -/
-theorem endpoint_of_obstruction (L : ℕ) (h : Residual (L := L)) : Endpoint (L := L) := by
-  intro hG hL S hPrimS hP2S
-  exact population_unique_ML_up_to_rotation L hG hL S hPrimS hP2S h
+theorem endpoint_of_obstruction (L : ℕ) (h : Residual (α := α) L) :
+    Endpoint (α := α) (G := G) L := by
+  intro hG _hL S hPrimS hP2S
+  exact population_unique_ML_up_to_rotation L hG _hL S hPrimS hP2S h
 
 /-! ## 3. The descent obligations, in the only admissible shapes
 
