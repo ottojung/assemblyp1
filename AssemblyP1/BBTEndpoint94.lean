@@ -353,4 +353,140 @@ theorem uniqueEulerianCycle_injective (L : ℕ) (hL : 2 ≤ L) :
   exact vertexCycleEq_of_inj hK T hT hL σ
     (fun i => vtx_inj_of_inj hK T hT hL (hEul.1 i))
 
+/-! ## 6. Carrying the slice: the hypothesis that is actually used, and `L = 2` -/
+
+/-- **The exact sufficient hypothesis for the left disjunct: the vertex map is
+injective.**  This is the *only* place §5 used `Function.Injective T`, and it is
+strictly weaker in two directions:
+
+* it makes no reference to the truth `T` at all, only to its `(L-1)`-mer
+  multigraph, and
+* it does not require injectivity of the genome — injectivity of `T` is just one
+  sufficient way of separating vertices, since the first symbol of the
+  `(L-1)`-mer at `r` is `cyc hG T r`. -/
+def VtxSeparating (hG : 0 < G) (L : ℕ) (T : Fin G → α) : Prop :=
+  Function.Injective (vtx hG L T)
+
+/-- **The left disjunct, from the `traverses` clause alone.**  Any `σ` commuting
+with `nextPos` is a rotation (`sigma_rot_of_comm`), and rotations carry the vertex
+word to itself, so `VtxSeparating` is *not* needed here and the binder is `_hV`:
+separating vertices is used exactly once in §5, to turn `traverses`' equality of
+*identified* vertices into an equality of points.  Isolating that step is the
+point of this lemma. -/
+theorem vertexCycleEq_of_vtx_inj {α : Type} [DecidableEq α] {G L : ℕ} (hG : 0 < G)
+    (S : Fin G → α) (_hL : 2 ≤ L) (σ : Fin G ≃ Fin G) (_hV : VtxSeparating hG L S)
+    (h : ∀ i : Fin G, σ (nextPos hG i) = nextPos hG (σ i)) :
+    VertexCycleEq hG L S σ (Equiv.refl (α := Fin G)) := by
+  refine ⟨σ (origin hG), fun i => ?_⟩
+  have hi : σ i = rotAdd hG (σ (origin hG)).val i := sigma_rot_of_comm hG σ h i
+  funext d
+  rw [hi, Equiv.refl_apply]
+
+omit [Fintype α] in
+/-- **`Residual L` restricted to genomes whose `(L-1)`-mers separate positions.**
+This is §5's `ResidualInjective` with the genome-level hypothesis replaced by the
+vertex-level one it actually used, so it also covers non-injective genomes whose
+repeats are shorter than the read length. -/
+def ResidualVtxSep (L : ℕ) : Prop :=
+  ∀ (K : ℕ) (hK : 0 < K) (T : Fin K → α), VtxSeparating hK L T →
+    Ukkonen hK L T → ∀ (σ : Fin K ≃ Fin K), EulerianCycle hK L T σ →
+      VertexCycleEq hK L T σ (Equiv.refl (α := Fin K)) ∨ LongObstruction hK L T
+
+omit [Fintype α] in
+/-- **Vertex-separating genomes satisfy the residual obligation**, proved.  This
+subsumes `residualInjective`, which is re-derived below from it. -/
+theorem residualVtxSep (L : ℕ) (hL : 2 ≤ L) : ResidualVtxSep (α := α) L := by
+  intro K hK T hV hUkk σ hEul
+  exact Or.inl (vertexCycleEq_of_vtx_inj hK T hL σ hV (fun i => hV (hEul.1 i)))
+
+omit [Fintype α] in
+/-- **§5's theorem, re-derived: injectivity of the genome separates vertices.** -/
+theorem residualInjective' (L : ℕ) (hL : 2 ≤ L) : ResidualInjective (α := α) L := by
+  intro K hK T hT hUkk σ hEul
+  exact Or.inl (vertexCycleEq_of_vtx_inj hK T hL σ
+    (fun r t h => vtx_inj_of_inj hK T hT hL h)
+    (fun i => vtx_inj_of_inj hK T hT hL (hEul.1 i)))
+
+/-- **A constant vertex map already presents the truth's own vertex cycle.**
+This is the degenerate case of the same conclusion, needing no injectivity at
+all: if every `(L-1)`-mer of `T` is the same window, then `VertexCycleEq σ (refl)`
+holds for *every* `σ`, for the trivial reason. -/
+theorem vertexCycleEq_of_vtx_const {α : Type} {G L : ℕ} (hG : 0 < G) (S : Fin G → α)
+    (hK : 0 < G) (σ : Fin G ≃ Fin G)
+    (hc : ∀ (r t : Fin G) (d : Fin (L - 1)), vtx hG L S r d = vtx hG L S t d) :
+    VertexCycleEq hG L S σ (Equiv.refl (α := Fin G)) := by
+  refine ⟨origin hK, fun i => ?_⟩
+  have hi : rotAdd hG (origin hK).val ((Equiv.refl (α := Fin G)) i) = i := by
+    apply Fin.ext
+    simp only [rotAdd, origin_val, Equiv.refl_apply]
+    exact Nat.mod_eq_of_lt i.isLt
+  rw [hi]
+  funext _
+  exact hc (σ i) ((Equiv.refl (α := Fin G)) i) _
+
+omit [Fintype α] in
+/-- **A second proved slice of `Residual`, with no injectivity hypothesis: a
+constant genome.**  For `T` constant the `(L-1)`-mers coincide, so the truth's
+own vertex cycle is the only one and the left disjunct holds for every `σ`,
+independent of the `traverses` clause.  This case is genuine (non-vacuous) but
+it does not extend §5's slice: it is a different, much smaller class of genomes,
+and it does not survive adding one symbol. -/
+theorem residual_constant (L : ℕ) :
+    ∀ (K : ℕ) (hK : 0 < K) (c : α) (T : Fin K → α), (∀ i, T i = c) →
+      Ukkonen hK L T → ∀ (σ : Fin K ≃ Fin K), EulerianCycle hK L T σ →
+        VertexCycleEq hK L T σ (Equiv.refl (α := Fin K)) ∨ LongObstruction hK L T := by
+  intro K hK c T hT hUkk σ hEul
+  refine Or.inl (vertexCycleEq_of_vtx_const hK T hK σ ?_)
+  intro r t d
+  have e1 : cyc hK T r.val = c := hT ⟨r.val % K, Nat.mod_lt _ hK⟩
+  have e2 : cyc hK T t.val = c := hT ⟨t.val % K, Nat.mod_lt _ hK⟩
+  unfold vtx nodeWindow
+  have e1' : cyc hK T (r.val + d.val) = c := by
+    unfold cyc
+    exact hT _
+  have e2' : cyc hK T (t.val + d.val) = c := by
+    unfold cyc
+    exact hT _
+  rw [e1', e2']
+
+/-! ### What still blocks `Residual L` at general `α`
+
+§5 used the genome hypothesis `Function.Injective T` in exactly one place: to
+turn the `traverses` clause of `EulerianCycle`, an equality of `(L-1)`-mers
+`vtx (σ (nextPos i)) = vtx (nextPos (σ i))`, into an equality of *points*
+`σ (nextPos i) = nextPos (σ i)` (`vtx_inj_of_inj`).  Everything after that point
+is unconditional: `vertexCycleEq_of_vtx_inj` needs only the commutation, and the
+commutation pins `σ` to be a rotation.
+
+So the exact remaining step for general `α` is the single statement
+
+> `VtxSeparating hK L T` — or, more precisely, the weaker "the `(L-1)`-mers that
+> `T` identifies are the ones the truth's own cycle identifies" — for every
+> `Ukkonen`-satisfying `T`.
+
+It is **not** available and I am not claiming it.  It is false as stated for
+`VtxSeparating`: a genome with a repeated symbol at distance `< L` is not
+`Ukkonen`-refuted, and then `vtx` identifies two distinct starts, so `traverses`
+yields `σ (nextPos i) = nextPos (σ i)` only up to the identification induced by
+`vtx`.  Recovering a shift of the vertex word from that quotient is exactly
+Pevzner 1995 Lemma 9 / `thm:BBT`, i.e. the content of `Residual L` itself; the
+combinatorics of that quotient is not in `BBTEulerian`, and no amount of
+Eulerian-cycle bookkeeping substitutes for it.  Two further honest negatives:
+
+* `ResidualInjective'` is not a new theorem — `residualVtxSep` subsumes it, and
+  it is kept only to show §5's result re-derives from the weaker hypothesis.
+* **`Residual 2` is *not* a trivial case.**  At `L = 2` the window index ranges
+  over `Fin 1`, so `vtx r` is constant in the window index but still separates
+  `r` from `t` whenever `S r ≠ S t`; the left disjunct is then the genuine
+  statement `S (σ i) = S (rotAdd k i)` for all `i`.  I drafted a proof of
+  `Residual 2` on the mistaken reading that the vertex map is constant there,
+  found it reduces to `S r = S t` for arbitrary `r, t`, and discarded it.  A
+  front that "proves" `Residual 2` by that route is wrong.
+
+The only genuinely new proved content of this pass is therefore: `VtxSeparating`
+is the hypothesis actually used, `ResidualVtxSep` is `Residual` proved under it
+(it also covers non-injective genomes whose repeats are shorter than `L`), and
+`residual_constant` proves the left disjunct for constant genomes with no
+hypothesis at all.  Neither reaches general `α`. -/
+
 end AssemblyP1.BBTEndpoint94
