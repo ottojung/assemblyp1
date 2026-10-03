@@ -19,14 +19,18 @@ is exactly its second and third conjuncts.
 `2 ≤ L`, not for arbitrary `L`.  This is not cosmetic: at `L = 1` the index type
 `Fin (L - 1) = Fin 0` makes the `∀ i` inside `VertexCycleEq` vacuous, so the
 `VertexCycleEq` side of clause 2 holds for *every* pull-back, while `Matching` at
-`L = 1` only says `E = W ∘ σ⁻¹` for a bijective `σ`, which need not be a
-rotation.  Clause 2 is therefore *expected* to be refutable at `L = 1`.
-**No such counterexample is kernel-checked in this file**; an earlier revision of
-this header asserted one, with a concrete witness, and that assertion had no
-proof term behind it and has been removed rather than repeated.  What the header
-previously claimed about clauses 2 and 3 (that they were "kernel-checked" by
-`candidateTransfer_cl2`/`cl3`) was likewise **false** at the start of this front:
-no such declarations existed anywhere in the repository.  They exist now.
+`L = 1` only says the single-symbol windows agree, i.e. `W` and `E` are
+permutations of each other with the same multiset of symbols, which need not
+be a rotation.  Clause 2 is therefore refutable at `L = 1` --- and this is now
+**proved, with an exhibited witness**
+(`candidateTransfer_cl2_false_at_L1`, hence `candidateTransfer_1_false`;
+witness `W = T T F F`, `E = T F T F`, `σ = (0, 2, 1, 3)` at `K = 4`).  An
+earlier revision of this header asserted that counterexample without a proof
+term behind it; the proof is supplied below.  What the header previously
+claimed about clauses 2 and 3 (that they were "kernel-checked" by
+`candidateTransfer_cl2`/`cl3`) was likewise **false** at the start of the
+previous front: no such declarations existed anywhere in the repository.  They
+exist now.
 
 No `axiom`/`sorry`/`admit` appears, and nothing outside this file is modified.
 
@@ -138,7 +142,19 @@ Checked with `lake build AssemblyP1.BBTCandidateTransfer` (exit 0) and
   `BBTChords.exists_matching` at the spectrum equality.
 * **Clause 1 is the open problem and is untouched.**  Nothing weaker is claimed
   and no lemma relating clause 1 to `thm:BBT` is proved here.
-* **The `L = 1` degeneracy is stated above and is not settled here.**
+* **Clause 2 is `False` at `L = 1`, and this is now proved, with a witness**
+  (`candidateTransfer_cl2_false_at_L1`, hence `candidateTransfer_1_false`).
+  Witness: `K = 4`, `α = Bool`, `W = T T F F`, `E = T F T F`, `σ = (0, 2, 1, 3)`.
+  `L1_matching` proves the matching hypothesis really does hold at `L = 1`
+  (the `L = 1` windows are single symbols, and the two words carry the same
+  multiset); `L1_notRotEquiv` proves `E` is not a rotation of `W`, by
+  exhausting the four values of `k % 4`; `vertexCycleEq_any_at_L1` proves the
+  other side holds vacuously because `Fin (1 - 1) = Fin 0`.  So the `L = 1`
+  degeneracy is a **refutation, not a gap**.  The earlier `W = [T,T,F,F]`,
+  `E = [T,F,T,F]`, `σ = (0,2,1,3)` guess recorded in an earlier revision of this
+  header was in fact the right data; what was missing was the proof.  It is
+  supplied here, and this front also fixed an *unterminated module docstring*
+  that made the module fail to compile at all.
 -/
 
 set_option maxHeartbeats 400000
@@ -339,6 +355,128 @@ theorem candidateTransfer_cl3 {K : ℕ} (hK : 0 < K) {L : ℕ} (hL : 2 ≤ L)
     oneCycle_succOf hK L W μ hec, ?_⟩
   intro horbit
   exact hnv ((vertexCycleEq_iff_orbit hK L W μ).mpr horbit)
+
+/-! ## Clause 2 is `False` at `L = 1` --- kernel-checked counterexample
+
+The hypothesis recorded in the header above, now **settled by a witness**.
+
+At `L = 1` the index type inside `VertexCycleEq` is `Fin (L - 1) = Fin 0`, so
+the `∀ i : Fin K` step is vacuous and `VertexCycleEq` holds for *every* pair of
+presentations (`vertexCycleEq_any_at_L1` below).  Clause 2 at `L = 1` is
+therefore the assertion `RotEquiv E W` for every equal-read-type matching.
+`Matching` at `L = 1` says only that the `L = 1` windows agree, i.e. `W` and
+`E` are permutations of each other as circular words with the same multiset of
+symbols --- it does not say the permutation is a rotation.  The witness below
+is exactly that gap: `W = T T F F`, `E = T F T F`, `σ = (0, 2, 1, 3)`.
+
+Consequences, all kernel-checked below:
+
+* `candidateTransfer_cl2_false_at_L1` : the second conjunct of
+  `CandidateTransfer 1`, as literally quantified, is `False`.
+* `vertexCycleEq_any_at_L1` : the vacuity, proved once and for all. -/
+
+/-- **`L = 1`: `VertexCycleEq` holds for arbitrary presentations.**  The
+`∀ i` ranges over `Fin (L - 1) = Fin 0`. -/
+theorem vertexCycleEq_any_at_L1 {K : ℕ} (hK : 0 < K) (W : Fin K → α)
+    (σ τ : Fin K ≃ Fin K) :
+    VertexCycleEq hK 1 W σ τ :=
+  ⟨⟨0, hK⟩, fun _ => funext fun d => Fin.elim0 d⟩
+
+section L1Counterexample
+
+/-- `W = T T F F` (the truth), at `K = 4`. -/
+def L1W : Fin 4 → Bool := ![true, true, false, false]
+
+/-- `E = T F T F` (the candidate), at `K = 4`. -/
+def L1E : Fin 4 → Bool := ![true, false, true, false]
+
+/-- `σ = (0, 2, 1, 3)`: the matching sending each `T` of `W` to a `T` of `E`
+and each `F` of `W` to an `F` of `E`.  A bijection, but not a rotation. -/
+def L1s : Fin 4 → Fin 4 := ![0, 2, 1, 3]
+
+theorem L1s_eq_swap : L1s = (Equiv.swap 1 2 : Fin 4 ≃ Fin 4).toFun := by
+  funext i
+  fin_cases i <;> rfl
+
+theorem L1s_bij : Function.Bijective L1s := by
+  rw [L1s_eq_swap]
+  exact (Equiv.swap 1 2).bijective
+
+theorem L1W_val (i : Fin 4) : L1W i = decide (i.val < 2) := by
+  fin_cases i <;> simp [L1W]
+
+/-- `E` read at position `i` is `true` exactly when `i` is even. -/
+theorem L1E_val (i : Fin 4) : L1E i = decide (i.val % 2 = 0) := by
+  fin_cases i <;> simp [L1E]
+
+/-- **The matching hypothesis of clause 2 does hold at `L = 1`.**  The `L = 1`
+window at `r` is the single symbol `S r`, and `L1W r = L1E (L1s r)` for all `r`:
+`T T F F` and `T F T F` carry the same multiset. -/
+theorem L1_matching : Matching (L := 1) (by norm_num : (0 : ℕ) < 4) L1W L1E L1s := by
+  refine ⟨L1s_bij, ?_⟩
+  intro r
+  funext d
+  fin_cases d
+  simp [window, cyc, L1W, L1E, L1s]
+  fin_cases r <;> norm_num
+
+/-- **`E` is not a rotation of `W`.**  By cases on `k % 4` (all four are
+refuted by the single position where the two words disagree). -/
+theorem L1_notRotEquiv : ¬ RotEquiv (by norm_num : (0 : ℕ) < 4) L1E L1W := by
+  rintro ⟨k, hk⟩
+  have hNat : ∀ i : ℕ, i < 4 →
+      decide (((i + k) % 4) % 2 = 0) = decide (i < 2) := by
+    intro i hi
+    have h := hk ⟨i, hi⟩
+    simp only [L1E_val, L1W_val, Fin.mk_val] at h
+    exact h
+  have hkey : ∀ i : ℕ, i < 4 → (i + k) % 4 = (i + k % 4) % 4 := by
+    intro i _
+    omega
+  obtain ⟨j, hj⟩ : ∃ j : Fin 4, j.val = k % 4 :=
+    ⟨⟨k % 4, Nat.mod_lt k (by norm_num)⟩, rfl⟩
+  have hNat' : ∀ i : ℕ, i < 4 →
+      decide (((i + j.val) % 4) % 2 = 0) = decide (i < 2) := by
+    intro i hi
+    have h := hNat i hi
+    rw [hkey i hi, ← hj] at h
+    exact h
+  have h0 := hNat' 0 (by norm_num)
+  have h1 := hNat' 1 (by norm_num)
+  have h2 := hNat' 2 (by norm_num)
+  have h3 := hNat' 3 (by norm_num)
+  fin_cases j <;> simp at h0 h1 h2 h3
+
+/-- **The two sides of clause 2 disagree at `L = 1`:** the `VertexCycleEq`
+side holds vacuously, the `RotEquiv` side fails. -/
+theorem L1_sides_disagree :
+    VertexCycleEq (by norm_num : (0 : ℕ) < 4) 1 L1W
+        (pullback (by norm_num : (0 : ℕ) < 4) 1 L1W L1E L1s_bij)
+        (Equiv.refl (α := Fin 4))
+      ∧ ¬ RotEquiv (by norm_num : (0 : ℕ) < 4) L1E L1W :=
+  ⟨vertexCycleEq_any_at_L1 _ _ _ _, L1_notRotEquiv⟩
+
+/-- **Clause 2 of `CandidateTransfer 1`, as literally quantified, is
+`False`.**  A kernel-checked counterexample to the second conjunct at `L = 1`,
+with the witness `W = T T F F`, `E = T F T F`, `σ = (0, 2, 1, 3)` exhibited in
+`L1W`, `L1E`, `L1s`.  Consequence for the orchestrator: `CandidateTransfer`
+must be stated at `2 ≤ L` (which is what the model needs anyway), or the
+statement is false as written. -/
+theorem candidateTransfer_cl2_false_at_L1 :
+    ¬ (∀ (K : ℕ) (hK : 0 < K) (W E : Fin K → Bool) (σ : Fin K → Fin K)
+        (hσ : Matching (L := 1) hK W E σ),
+        (VertexCycleEq hK 1 W (pullback hK 1 W E hσ.1) (Equiv.refl (α := Fin K))
+          ↔ RotEquiv hK E W)) := by
+  rintro h
+  have h3 := h 4 (by norm_num) L1W L1E L1s L1_matching
+  exact L1_notRotEquiv (h3.mp (vertexCycleEq_any_at_L1 _ L1W _ _))
+
+/-- **Therefore `CandidateTransfer 1` is `False`** (conjunct 2 alone refutes
+it; conjunct 1 is not needed and conjunct 3 is not claimed). -/
+theorem candidateTransfer_1_false : ¬ CandidateTransfer (α := Bool) 1 :=
+  fun h => candidateTransfer_cl2_false_at_L1 h.2.1
+
+end L1Counterexample
 
 /-- **Clauses 2 and 3 of `CandidateTransfer`, at `2 ≤ L`, as the conjuncts
 are literally written.**  This is the part of `CandidateTransfer` that is
