@@ -139,6 +139,7 @@ Checked with `lake build AssemblyP1.BBTCandidateTransfer` (exit 0) and
 * **Clause 1 is the open problem and is untouched.**  Nothing weaker is claimed
   and no lemma relating clause 1 to `thm:BBT` is proved here.
 * **The `L = 1` degeneracy is stated above and is not settled here.**
+-/
 
 set_option maxHeartbeats 400000
 
