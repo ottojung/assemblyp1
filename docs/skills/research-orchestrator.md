@@ -40,9 +40,9 @@ Each delegated packet must specify an objective, permitted assumptions, non-goal
 
 Prefer sharply different packets, targeted independent replications, or cheap evaluators over several workers all asked to "solve" the same thing.
 
-### Keep the shared Lubko pool near useful saturation
+### Maintain the dedicated five-agent AssemblyP1 pool
 
-When Lubko is available, the orchestrator should normally **delegate broad substantive exploration rather than perform it all itself**. Across all concurrent AssemblyP1 orchestrators, aim to keep the shared pool close to **5 useful active agents** whenever the live frontier supports that many independent packets.
+When Lubko is available, the orchestrator should normally **delegate broad substantive exploration rather than perform it all itself**. Across all concurrent AssemblyP1 orchestrators, maintain a dedicated steady-state target of **5 live AssemblyP1 agents** whenever AssemblyP1 research is open and actionable. This is an AssemblyP1-only pool, independent of workers assigned to other projects. Count it near the start of every pass and replenish completed or failed fronts in the same pass. Falling below five after harvesting results is a scheduling defect, not an acceptable idle state. If the main proof frontier does not expose five obvious write-heavy tasks, fill the pool with distinct high-value roles such as proof exploration, falsification/census, source/model audit, formal verification, or reconciliation. Heavy Lean/build processes may still be serialized for host safety while the remaining agents do non-Lean work.
 
 Use the scheduled skill's lightweight live pool snapshot when practical. New AssemblyP1 agents must use an `AssemblyP1:` title prefix. Launch only into clearly free shared capacity; do not turn per-agent recounting into the research task. Do not interpret the target as "five per orchestrator."
 
