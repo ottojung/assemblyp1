@@ -632,5 +632,260 @@ theorem not_remaining_of_interleavingObstruction (hI : InterleavingObstructionNe
 
 end Rematching
 
+/-! ## 6. The two-transposition step: the criterion is *crossing*, and
+`TwoTranspositionsBlock` is **false**
+
+Front `94a02` (§7 of `BOARD94-REMAINING-2600.md`) named
+`TwoTranspositionsBlock` as the single missing statement, and its §8 asked
+first for the map-walking cycle criterion: that `nextPos ∘ ρ` being a single
+cycle forces the transpositions of `ρ`, read in the cyclic order
+`0, 1, …, K - 1`, to form a single descending run (`Arratia`--`Buchberger`--
+`Reid` / `Haar`--`Vahidi`--`Wolf`).
+
+**That criterion is the wrong one, and in the `ρ` language of §5 it is false.**
+Here `nextPos` is the successor of the circle itself, so `nextPos ∘ ρ` is a
+`K`-cycle exactly when the chords of `ρ` **cross** — and the crux
+configuration of §5.3 already *assumes* the crossing, because the two
+constituents interleave.  §6.1 records the correct criterion, kernel-checked
+at `K = 5`, the size at which it bites, and §6.2 derives what it implies for
+the crux configuration.
+
+**Worse, `TwoTranspositionsBlock` itself is false, and it is refuted by the very
+`00101` crossing that §5 was built around** (§6.4): at `S = 00101`, `L = 3`,
+the honest crossing `θ5 = ![3, 4, 1, 2, 0]` has
+`ρ5 = ![2, 3, 0, 1, 4] = (0 2)(1 3) = (prevPos 1 prevPos 3)(prevPos 2
+prevPos 4)`, its four starts `1 < 2 < 3 < 4` interleave,
+`Preceding 2 = Preceding 4` — so the `Preceding`-clause of
+`TwoTranspositionsBlock` **is satisfied** — and yet
+`¬ LongObstruction BBTChords.hG5 3 S5b`, because `00101` is `P2`.  The single
+clause that fails to exclude this instance is exactly the clause the previous
+front identified as the intended exclusion, and it is **not repairable** in
+that form: at a crossing, one of the two constituents is *expected* to be
+preceding-blocked, since an unblocked constituent would already give the
+second disjunct of `LongObstruction` (`interleaved_maximal_pair`).  What
+excludes `00101` is **badness** (`θ5` is `OrbitVertexEq`, i.e. good), which
+`TwoTranspositionsBlock` as stated does not mention.  §6.5 records the
+strengthened, not-yet-refuted form. -/
+
+section TwoTranspositions
+
+open AssemblyP1.BBTChords
+open AssemblyP1.BBTSequenceGraph
+
+variable {α : Type} [DecidableEq α] [Fintype α] {G : ℕ} (hG : 0 < G) (L : ℕ) (S : Fin G → α)
+
+/-- **`00101` as a local `def`.**  `BBTChords.S5` is opaque to the kernel from
+here — `(mkGenome BBTChords.hG5 BBTChords.S5).len` does not reduce, so no
+`Fintype (Fin _)` and hence no `Decidable` instance for `LongObstruction`
+materialises.  The local copy is definitionally equal (`S5b_eq`) and does
+reduce, which is what makes the finite verifications below possible. -/
+def S5b : Fin 5 → Fin 2 := ![0, 0, 1, 0, 1]
+
+instance : NeZero (mkGenome BBTChords.hG5 S5b).len := ⟨by norm_num [mkGenome]⟩
+
+theorem S5b_eq : S5b = BBTChords.S5 := rfl
+
+/-! ### 6.1 The correct cycle criterion: crossing, not a descending run -/
+
+set_option maxRecDepth 200000 in
+set_option maxHeartbeats 2000000 in
+/-- **At `K = 5`, the cycle criterion is exactly crossing.**  If `ρ` is an
+involution, moves something, and `nextPos ∘ ρ` is a single cycle, then `ρ` is
+*two* disjoint transpositions whose chords cross on the circle
+(`InterleavedStarts`).
+
+This is the kernel-checked `K = 5` case of the criterion the previous front
+asked for.  Note what comes out: the **crossing** condition — which is what
+the crux configuration of §5.3 already assumes — and never a nested
+("descending") pair.  `one_transposition_not_oneCycle_5` below shows the other
+half: a lone transposition never gives a `K`-cycle, so the interesting
+transposition count is `2`, not `1`. -/
+theorem crossing_criterion_5 :
+    ∀ ρ : Fin 5 → Fin 5,
+      (∀ x, ρ (ρ x) = x) → ¬ (∀ x, ρ x = x) →
+      OneCycle BBTChords.hG5 (fun x => nextPos BBTChords.hG5 (ρ x)) →
+      ∃ a b c d : Fin 5,
+        ρ a = b ∧ ρ b = a ∧ ρ c = d ∧ ρ d = c ∧ InterleavedStarts BBTChords.hG5 a b c d := by
+  decide
+
+/-- **A single transposition never works.**  On `Fin 5`, `nextPos ∘ (a b)` is
+never a single cycle, for any `a ≠ b`.  Kernel-checked; this is the `K = 5`
+instance of the obstruction that makes the *crossing pair*, and not a lone
+transposition, the configuration of interest. -/
+theorem one_transposition_not_oneCycle_5 :
+    ∀ (a b : Fin 5), a ≠ b →
+      ¬ OneCycle BBTChords.hG5
+        (fun x => nextPos BBTChords.hG5 (if x = a then b else if x = b then a else x)) := by
+  decide
+
+/-- **The general form of the correct criterion, stated and NOT proved here**:
+for an involution `ρ` of `Fin K` with nonempty support, `nextPos ∘ ρ` is a
+single cycle only if the number of transpositions is positive and even, and
+the chords pairwise cross.  Recorded as a `Prop`: no `axiom`, no `sorry`,
+no `admit`. -/
+def CrossingCriterion : Prop :=
+  ∀ (K : ℕ) (hK : 0 < K) (ρ : Fin K → Fin K),
+    (∀ x, ρ (ρ x) = x) → ¬ (∀ x, ρ x = x) →
+    OneCycle hK (fun x => nextPos hK (ρ x)) →
+    ∃ t : ℕ, 0 < t ∧ t + 1 ≤ 2 * t ∧
+      (∀ i : Fin t, ∃ a b : Fin K, ρ a = b ∧ ρ b = a ∧
+        ∀ j : Fin t, j ≠ i → ∃ c d : Fin K, ρ c = d ∧ ρ d = c ∧
+          ((c - a) % K < (d - b) % K ∧ (d - a) % K < (c - b) % K ∨
+           (c - b) % K < (d - a) % K ∧ (d - b) % K < (c - a) % K))
+
+/-! ### 6.2 What the criterion gives at the crux configuration -/
+
+/-- **The `00101` crossing successor, `θ5 = ![3, 4, 1, 2, 0]`, is exactly
+`nextPos ∘ ρ5`.**  Its orbit from the origin is `0, 3, 2, 1, 4`, a single
+five-cycle. -/
+def θ5 : Fin 5 → Fin 5 := ![3, 4, 1, 2, 0]
+
+/-- **Its rematching permutation `ρ5 = nextPos⁻¹ ∘ θ5 = ![2, 3, 0, 1, 4]`, i.e.
+the involution `(0 2)(1 3)`. -/
+def ρ5 : Fin 5 → Fin 5 := fun x => prevPos BBTChords.hG5 (θ5 x)
+
+theorem θ5_is_nextPos_ρ5 : ∀ x : Fin 5, θ5 x = nextPos BBTChords.hG5 (ρ5 x) := by decide
+
+theorem ρ5_values :
+    ρ5 0 = 2 ∧ ρ5 1 = 3 ∧ ρ5 2 = 0 ∧ ρ5 3 = 1 ∧ ρ5 4 = 4 := by decide
+
+theorem ρ5_is_rematch (x : Fin 5) :
+    rematch BBTChords.hG5 θ5 x = ρ5 x := rfl
+
+/-- `ρ5` is a permutation. -/
+theorem ρ5_bij : Function.Bijective ρ5 := by decide
+
+/-- `θ5` is one cycle. -/
+theorem θ5_oneCycle : OneCycle BBTChords.hG5 θ5 := by decide
+
+/-- `θ5` preserves the fibres. -/
+theorem θ5_fibrePreserving : FibrePreserving (hG := BBTChords.hG5) (L := 3) S5b θ5 := by decide
+
+/-- `ρ5` preserves every shift class of `S5b` at `L = 3`, kernel-checked. -/
+theorem ρ5_shiftClass :
+    ∀ v : Fin 2 → Fin 2, ∀ x : Fin 5,
+      x ∈ shiftClass (hG := BBTChords.hG5) (L := 3) S5b v →
+      ρ5 x ∈ shiftClass (hG := BBTChords.hG5) (L := 3) S5b v := by
+  decide
+
+/-- **The four starts `1 < 2 < 3 < 4` interleave**: the two doubled `2`-mers
+`01` at `{1, 3}` and `10` at `{2, 4}`.  This is the crossing itself. -/
+theorem starts_interleave_00101 :
+    InterleavedStarts BBTChords.hG5 (1 : Fin 5) (3 : Fin 5) (2 : Fin 5) (4 : Fin 5) := by
+  decide
+
+/-- **`θ5` selects that interleaving**: `SelectedInterleaved θ5` at `00101`,
+`L = 3`, kernel-checked at the explicit `θ5`. -/
+theorem θ5_selectedInterleaved : SelectedInterleaved (hG := BBTChords.hG5) (L := 3) S5b θ5 := by
+  decide
+
+/-- **The `Preceding`-clause of `TwoTranspositionsBlock` is *satisfied* at the
+harmless crossing**: `Preceding 2 = Preceding 4 = 0`.  This is the fact that
+kills the statement: at a crossing the blocked constituent is normally *part*
+of the configuration. -/
+theorem preceding_blocked_00101 :
+    (mkGenome BBTChords.hG5 S5b).Preceding 2 = (mkGenome BBTChords.hG5 S5b).Preceding 4 := by
+  decide
+
+/-- **The two transpositions of `ρ5` are the shift-class versions of the two
+interleaved pairs**: `(prevPos 1 prevPos 3) = (0 2)` and
+`(prevPos 2 prevPos 4) = (1 3)`.  This is exactly the shape
+`TwoTranspositionsBlock` demands, with `(a, b, c, d) = (1, 3, 2, 4)`. -/
+theorem ρ5_transpositions :
+    ρ5 (prevPos BBTChords.hG5 (1 : Fin 5)) = prevPos BBTChords.hG5 (3 : Fin 5) ∧
+    ρ5 (prevPos BBTChords.hG5 (3 : Fin 5)) = prevPos BBTChords.hG5 (1 : Fin 5) ∧
+    ρ5 (prevPos BBTChords.hG5 (2 : Fin 5)) = prevPos BBTChords.hG5 (4 : Fin 5) ∧
+    ρ5 (prevPos BBTChords.hG5 (4 : Fin 5)) = prevPos BBTChords.hG5 (2 : Fin 5) := by
+  decide
+
+/-- **`00101` has no long obstruction at `L = 3`**: `P2`, hence `Ukkonen`. -/
+theorem not_longObstruction_00101 : ¬ LongObstruction BBTChords.hG5 3 S5b :=
+  not_longObstruction_of_Ukkonen (P2.imp_Ukkonen (by decide) p2_hG5_S5_L3)
+
+/-! ### 6.3 `TwoTranspositionsBlock`, verbatim -/
+
+/-- **The statement the previous front named `TwoTranspositionsBlock`**, in the
+`ρ` language: `S` is a `P2` word, `ρ` is a permutation preserving every shift
+class, `θ = nextPos ∘ ρ` is one cycle, and `ρ` carries the two disjoint
+transpositions `(prevPos a  prevPos b)` and `(prevPos c  prevPos d)` with
+`a, b` and `c, d` interleaved and one constituent preceding-blocked.  Then
+`LongObstruction`.
+
+The quadruple `(a, b, c, d)` is universally quantified rather than existentially
+as the prose statement has it; the two forms are equivalent, and the
+universal one is the one a counterexample can be fed to.  `InterleavedStarts`
+(from `BBTChords`) is used rather than `Interleaved` (whose head is a `Genome`
+structure) purely so that the finite verification below is possible;
+`interleaved_iff` identifies the two.
+
+This `Prop` is **false**: `not_TwoTranspositionsBlock`. -/
+def TwoTranspositionsBlock : Prop :=
+  ∀ (K M : ℕ) (S : Fin K → Fin 2) (hK : 0 < K) (_hM : 2 ≤ M) (ρ : Fin K → Fin K)
+    (a b c d : Fin K),
+    Function.Bijective ρ →
+    P2 hK M S →
+    (∀ v : Fin (M - 1) → Fin 2, ∀ x : Fin K,
+      x ∈ shiftClass (hG := hK) (L := M) S v → ρ x ∈ shiftClass (hG := hK) (L := M) S v) →
+    (InterleavedStarts hK a b c d ∧
+      ρ (prevPos hK a) = prevPos hK b ∧ ρ (prevPos hK b) = prevPos hK a ∧
+      ρ (prevPos hK c) = prevPos hK d ∧ ρ (prevPos hK d) = prevPos hK c ∧
+      ((mkGenome hK S).Preceding a = (mkGenome hK S).Preceding b ∨
+        (mkGenome hK S).Preceding c = (mkGenome hK S).Preceding d)) →
+    LongObstruction hK M S
+
+/-! ### 6.4 The refutation -/
+
+/-- **`TwoTranspositionsBlock` is false**, witnessed by the honest `00101`
+crossing.  Every antecedent is realised at `K = 5`, `M = 3`, `ρ = ρ5`,
+`(a, b, c, d) = (1, 3, 2, 4)`: `00101` is `P2` (`p2_hG5_S5_L3`), `ρ5` is a
+permutation preserving every shift class, `θ5 = nextPos ∘ ρ5` is one cycle,
+the two transpositions are `(prevPos 1 prevPos 3)` and
+`(prevPos 2 prevPos 4)`, the starts interleave, and
+`Preceding 2 = Preceding 4` — while `LongObstruction` is refuted by
+`not_longObstruction_00101`. -/
+theorem not_TwoTranspositionsBlock : ¬ TwoTranspositionsBlock := by
+  intro h
+  exact not_longObstruction_00101
+    (h 5 3 S5b BBTChords.hG5 (by decide) ρ5 1 3 2 4 ρ5_bij
+      (S5b_eq ▸ p2_hG5_S5_L3) ρ5_shiftClass
+      ⟨starts_interleave_00101, ρ5_transpositions.1, ρ5_transpositions.2.1,
+        ρ5_transpositions.2.2.1, ρ5_transpositions.2.2.2,
+        Or.inr preceding_blocked_00101⟩)
+
+/-! ### 6.5 The strengthened form that survives, and it is not new -/
+
+/-- **`θ5` is GOOD**: it spells the truth's own vertex cycle up to rotation.
+This is the same fact as `BBTSupportInvariant.harmless_selected_crossing_00101`,
+at the explicit `θ5`.  It is *what* excludes the counterexample of §6.4, and
+it is the one hypothesis `TwoTranspositionsBlock` did not mention. -/
+theorem θ5_orbitVertexEq : OrbitVertexEq (hG := BBTChords.hG5) (L := 3) S5b θ5 := by
+  decide
+
+/-- **`TwoTranspositionsBlock` with the badness clause added.**  This is the
+form that survives §6.4: `θ5_orbitVertexEq` is exactly the missing
+hypothesis.  It is stated as a `Prop` and **not proved**: no `axiom`, no
+`sorry`, no `admit`.
+
+It is also *not a new obligation*: it is `InterleavingObstructionNeeded`
+(§5.4) restricted to the two-transposition case, so a front that discharges
+this has not gained anything over the one that discharges §5.4 directly. -/
+def TwoTranspositionsBlockBad : Prop :=
+  ∀ (K M : ℕ) (S : Fin K → Fin 2) (hK : 0 < K) (hM : 2 ≤ M) (ρ : Fin K → Fin K)
+    (a b c d : Fin K),
+    Function.Bijective ρ → P2 hK M S →
+    OneCycle hK (fun x => nextPos hK (ρ x)) →
+    (∀ v : Fin (M - 1) → Fin 2, ∀ x : Fin K,
+      x ∈ shiftClass (hG := hK) (L := M) S v → ρ x ∈ shiftClass (hG := hK) (L := M) S v) →
+    ¬ OrbitVertexEq (hG := hK) (L := M) S (fun x => nextPos hK (ρ x)) →
+    (InterleavedStarts hK a b c d ∧
+      ρ (prevPos hK a) = prevPos hK b ∧ ρ (prevPos hK b) = prevPos hK a ∧
+      ρ (prevPos hK c) = prevPos hK d ∧ ρ (prevPos hK d) = prevPos hK c ∧
+      ((mkGenome hK S).Preceding a = (mkGenome hK S).Preceding b ∨
+        (mkGenome hK S).Preceding c = (mkGenome hK S).Preceding d)) →
+    LongObstruction hK M S
+
+end TwoTranspositions
+
 end AssemblyP1.BBTReplacement
+
 
