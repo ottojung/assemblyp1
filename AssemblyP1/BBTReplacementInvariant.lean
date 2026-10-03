@@ -1255,6 +1255,174 @@ theorem crux_commonBackStep_obstruction {L : ℕ} (hL : 2 ≤ L) {θ : Fin G →
 
 end BackwardExtension
 
+
+/-! ## 8. Case 3 of §5 of `/workspace/BOARD94-BADNESS-0153.md`: a genome of
+minimal period `G / 2` has no bad `θ` at all
+
+§5 of that report leaves three cases; case 3 is the one where the two
+constituents' backward agreements both run the whole way round, i.e. the
+genome is periodic.  §7 names it as *"a two-periodic genome has no bad `θ`"*,
+with `ρ = nextPos⁻¹ ∘ θ` permuting two 2-element shift classes and `θ`
+one-cycling only at a crossing — but that description over-complicates it.
+
+**The exact fact.**  Let `n < G` be a period of the word and suppose every
+`(L-1)`-mer occurs exactly twice.  Then *every* fibre-preserving map `θ`
+satisfies `OrbitVertexEq` (`half_no_bad_theta`), and in particular there is no
+bijective, fibre-preserving, one-cycle `θ` that is not
+`OrbitVertexEq` (`half_no_bad_theta_twoPeriod`).  Neither bijectivity nor
+one-cycleness is used, and neither is the preceding-blocked clause.
+
+**Why it is easy, in one line.**  If `vtx` has period `n` and every fibre has
+size two, then the fibre of `vtx x` is `{x, rotAdd n x}`, so `θ x ∈
+{nextPos x, rotAdd n (nextPos x)}`: *`θ` advances one step around the circle,
+modulo `n`*.  Iterating, `θ^[j]` is `rotAdd j` modulo `n`, and since `vtx` has
+period `n` the two give the same vertex.  Hence the orbit of `θ` reads off
+the truth's own vertex cycle with shift `k = 0` — `θ` is good.  The two
+transpositions of `ρ` are indeed forced (each is `(x  x + n - 1)` or an
+identity), which is why `ρ` permutes two-element shift classes, but the
+crossing question never arises: `θ` cannot be bad in the first place.
+
+The whole `α`-polymorphic statement is proved by hand at general `G` and `n`;
+nothing here is a finite check. -/
+
+section HalfPeriod
+
+open SourceFaithfulIs
+open AssemblyP1
+open AssemblyP1.BBTEulerian
+open AssemblyP1.BBTEulerianSearch
+open AssemblyP1.BBTChords
+open AssemblyP1.BBTSequenceGraph
+open OrientedRigidity
+
+variable {G : ℕ} (hG : 0 < G) (L : ℕ)
+
+/-- Reading a circular position only depends on its residue. -/
+lemma half_cyc_mod {α : Type} [DecidableEq α] {S : Fin G → α} (u v : ℕ) (h : u % G = v % G) :
+    cyc hG S u = cyc hG S v := by
+  calc cyc hG S u = cyc hG S (u % G) := cyc_mod hG S u
+    _ = cyc hG S (v % G) := by rw [h]
+    _ = cyc hG S v := (cyc_mod hG S v).symm
+
+/-- **A period of the word is a period of the vertex function.**
+`vtx hG L S (rotAdd hG n x) = vtx hG L S x`. -/
+lemma half_vtx_period {α : Type} [DecidableEq α] {S : Fin G → α} {n : ℕ}
+    (hper : ∀ i : ℕ, cyc hG S i = cyc hG S (i + n)) (x : Fin G) :
+    vtx hG L S (rotAdd hG n x) = vtx hG L S x := by
+  unfold vtx
+  funext d
+  change cyc hG S ((rotAdd hG n x).val + d.val) = cyc hG S (x.val + d.val)
+  rw [show (rotAdd hG n x).val = (x.val + n) % G from rfl]
+  have h1 := half_cyc_mod (hG := hG) (S := S) ((x.val + n) % G + d.val)
+    (x.val + d.val + n) ((Nat.mod_add_mod (x.val + n) G d.val).trans (by congr 1; omega))
+  rw [h1]
+  exact (hper (x.val + d.val)).symm
+
+
+/-- **A fibre-preserving map lands on one of the two occurrences.** -/
+lemma half_theta_land {α : Type} [DecidableEq α] [Fintype α] {S : Fin G → α} {n : ℕ}
+    {hper : ∀ i : ℕ, cyc hG S i = cyc hG S (i + n)} {hn : 0 < n} {hnG : n < G}
+    (hfib : ∀ x : Fin G, (fibre hG L S (vtx hG L S x)).card = 2)
+    (θ : Fin G → Fin G) (hfp : FibrePreserving (hG := hG) (L := L) S θ) (x : Fin G) :
+    θ x = nextPos hG x ∨ θ x = rotAdd hG n (nextPos hG x) := by
+  have hmem (z w : Fin G) (h : vtx hG L S z = vtx hG L S w) :
+      z ∈ fibre hG L S (vtx hG L S w) :=
+    (mem_fibre (hG := hG) (L := L) (S := S)).mpr h
+  have hcard : (fibre hG L S (vtx hG L S (nextPos hG x))).card = 2 := hfib _
+  have hsh : vtx hG L S (rotAdd hG n (nextPos hG x)) = vtx hG L S (nextPos hG x) :=
+    half_vtx_period hG L hper _
+  have hne : nextPos hG x ≠ rotAdd hG n (nextPos hG x) := by
+    intro h
+    have h1 := congrArg Fin.val h
+    simp only [nextPos, rotAdd, Fin.val_mk] at h1
+    have hq := Nat.mod_add_div ((x.val + 1) % G + n) G
+    have h4 : ((x.val + 1) % G + n) / G = 0 := by
+      rcases Nat.eq_zero_or_pos (((x.val + 1) % G + n) / G) with hz | hz
+      · exact hz
+      · have h5 : G ≤ G * (((x.val + 1) % G + n) / G) := by
+          have := Nat.mul_le_mul_right G hz
+          simpa [Nat.mul_comm] using this
+        omega
+    rw [h4, Nat.mul_zero] at hq
+    have h6 : (x.val + 1) % G + n = (x.val + 1) % G + n := by omega
+    omega
+  exact card_two_two_mem hcard hne
+    (hmem _ _ rfl) (hmem _ _ hsh) (hmem _ _ (hfp x))
+
+/-- **CASE 3.  A genome with a period `n < G` in which every `(L-1)`-mer
+occurs exactly twice has no bad `θ` at all**: every fibre-preserving map
+satisfies `OrbitVertexEq`.  In particular this disposes of case 3 of §5 of
+`/workspace/BOARD94-BADNESS-0153.md`, i.e. a genome of minimal period
+`G = 2 * n` (there `n < G`, every `(L-1)`-mer occurs exactly twice, and every
+occurrence pair is preceding-blocked).  No bijectivity and no one-cycle
+hypothesis is needed. -/
+theorem half_no_bad_theta {α : Type} [DecidableEq α] [Fintype α]
+    {S : Fin G → α} {n : ℕ} (hnG : n < G) (hn : 0 < n)
+    (hper : ∀ i : ℕ, cyc hG S i = cyc hG S (i + n))
+    (hfib : ∀ x : Fin G, (fibre hG L S (vtx hG L S x)).card = 2)
+    (θ : Fin G → Fin G) (hfp : FibrePreserving (hG := hG) (L := L) S θ) :
+    OrbitVertexEq (hG := hG) (L := L) S θ := by
+  have hvtx (z : Fin G) : vtx hG L S (rotAdd hG n z) = vtx hG L S z :=
+    half_vtx_period (hG := hG) (L := L) (hper := hper) z
+  have key : ∀ (j : ℕ) (x : Fin G),
+      vtx hG L S (θ^[j] x) = vtx hG L S (rotAdd hG j x) := by
+    intro j
+    induction j with
+    | zero => intro x; simp
+    | succ j ih =>
+      intro x
+      rw [Function.iterate_succ_apply]
+      rcases half_theta_land (α := α) (hG := hG) (L := L) (hn := hn) (hnG := hnG)
+        (hper := hper) hfib θ hfp x with h | h
+      · rw [h, ih, nextPos, rotAdd_rotAdd]
+      · rw [h, ih, nextPos, rotAdd_rotAdd]
+        have e : rotAdd hG (j + n) (rotAdd hG 1 x) = rotAdd hG n (rotAdd hG (j + 1) x) := by
+          rw [rotAdd_rotAdd, rotAdd_rotAdd]
+          congr 1
+          omega
+        rw [e, hvtx]
+  refine ⟨⟨0, hG⟩, fun j => ?_⟩
+  simpa using (key j.val (origin hG))
+
+/-- **CASE 3 of §5 of `/workspace/BOARD94-BADNESS-0153.md`, verbatim: there is
+no bad `θ` at a genome of minimal period `G = 2 * n`.**  `hG2` says the
+minimal period is exactly `G / 2`, `hper` that `n` is a period of the word (so
+every `(L-1)`-mer occurring at `x` also occurs at `x + n`), and `hfib` that
+every `(L-1)`-mer occurs **exactly twice**.  `hprec` records the remaining
+clause of case 3 --- every occurrence pair is preceding-blocked --- and is
+**not used**: the conclusion does not need it.  In this regime a
+preceding-blocked pair is automatic, since `Preceding` has period `n`.
+
+Note that no bijectivity and no one-cycle hypothesis is needed:
+`half_no_bad_theta` gives `OrbitVertexEq` for *every* fibre-preserving `θ`. -/
+theorem half_no_bad_theta_twoPeriod {α : Type} [DecidableEq α] [Fintype α]
+    {S : Fin G → α} {n : ℕ} (hG2 : G = 2 * n) (hn : 0 < n)
+    (hper : ∀ i : ℕ, cyc hG S i = cyc hG S (i + n))
+    (hfib : ∀ x : Fin G, (fibre hG L S (vtx hG L S x)).card = 2)
+    (_hprec : ∀ (x : Fin G),
+      (mkGenome hG S).Preceding x = (mkGenome hG S).Preceding (rotAdd hG n x))
+    (θ : Fin G → Fin G) :
+    ¬ (Function.Bijective θ ∧ FibrePreserving (hG := hG) (L := L) S θ ∧
+        OneCycle hG θ ∧ ¬ OrbitVertexEq (hG := hG) (L := L) S θ) := by
+  have hnG : n < G := by omega
+  rintro ⟨_, hfp, _, hb⟩
+  exact hb (half_no_bad_theta (α := α) hG L hnG hn hper hfib θ hfp)
+
+/-- The anti-vacuity anchor at `K = 4`: for `S = 0101` (minimal period `2 = G/2`)
+at `L = 2`, `decide` confirms there is **no** bijective, fibre-preserving,
+one-cycle `θ` that fails `OrbitVertexEq`. -/
+def S4b : Fin 4 → Fin 2 := ![0, 1, 0, 1]
+
+set_option maxRecDepth 200000 in
+set_option maxHeartbeats 2000000 in
+theorem half_no_bad_0101_4 :
+    ¬ ∃ θ : Fin 4 → Fin 4,
+        Function.Bijective θ ∧
+          FibrePreserving (hG := (by decide : (0 : ℕ) < 4)) (L := 2) S4b θ ∧
+          OneCycle (hG := (by decide : (0 : ℕ) < 4)) θ ∧
+          ¬ OrbitVertexEq (hG := (by decide : (0 : ℕ) < 4)) (L := 2) S4b θ := by
+  decide
+
+end HalfPeriod
+
 end AssemblyP1.BBTReplacement
-
-
