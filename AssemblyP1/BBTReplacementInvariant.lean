@@ -190,4 +190,182 @@ def BadSelectedInterleavingWitness : Prop :=
       OneCycle hG θ ∧ ¬ OrbitVertexEq (hG := hG) (L := L) S θ ∧
       SelectedInterleaved (hG := hG) (L := L) S θ
 
+/-! ## 4. The reduction of the candidate invariant (front B94-INV-2600)
+
+Everything above is an audit of one instance.  This section is the *general*
+content: what the candidate replacement invariant reduces to, proved in the
+kernel, plus the exact remaining obligation.
+
+### 4.1 The statement, in the form that is true
+
+The **raw** form, with no `θ` and no selection at all,
+
+```text
+SelectedInterleaved θ  ⟹  LongObstruction          -- `SelectedInterleaved_obstruction`
+```
+
+is **false**, kernel-checked: `BBTSupport.selectedInterleaved_obstruction_false_00101`
+exhibits `θ = nextPos` on `S = 00101` at `L = 3`, where `SelectedInterleaved`
+holds and `LongObstruction` fails; `00101` is `P2`, hence `Ukkonen`.  (Front
+`BOARD94-BOUNDED-ELAB-2315` additionally reports the raw extension failing in
+768 of 1024 generated instances; that is a Python count, evidence only.)
+
+The form this front proves progress on is the **selected, blocked-pair**
+statement.  Two halves of it are proved below, in the kernel:
+
+* `interleaved_maximal_pair`: two interleaved doubled `(L-1)`-mers whose
+  *preceding* symbols both differ already extend to two interleaved maximal
+  repeats of length `≥ L-1`, i.e. to the second disjunct of `LongObstruction`.
+  No `θ`, no selection: this is `BBTMaximalExtension.maximalRepeat_of_branch`
+  applied twice.
+* `selectedInterleaved_crux`: consequently a selected interleaving at a genome
+  with **no** long obstruction has a *preceding-blocked* constituent --- one of
+  the two pairs of selected starts carries the same preceding symbol, so the
+  maximal extension is unavailable at that pair.
+* `selectedInterleaved_coincides_selectedTriple`: if the two constituents of a
+  selected interleaving are the *same* condensed vertex, then all four starts
+  lie in one fibre, that vertex has multiplicity `≥ 4 ≥ 3` and is rematched,
+  so `SelectedTriple` holds.
+
+So the `(I)` clause of `SupportDichotomy` is load-bearing in exactly one
+configuration: **two distinct interleaved fibres, both rematched, at least one
+of them preceding-blocked at its two selected starts.**  Everything else is
+discharged by the `(T)` clause or is a `LongObstruction` outright.
+
+### 4.2 The remaining obligation, named
+
+`BadSelectedInterleavingRemaining` below is the residual content: a bad,
+bijective, fibre-preserving, one-cycle `θ` that selects two *distinct*
+interleaved fibres, at least one of them preceding-blocked, must still force a
+`LongObstruction` (through its first disjunct, a maximal triple repeat of length
+`≥ L-1`).  It is stated as a `Prop` and **not proved**: no `axiom`, no `sorry`,
+no `admit`. -/
+section Reduction
+
+open AssemblyP1.BBTChords
+open AssemblyP1.BBTSequenceGraph
+
+variable {α : Type} [DecidableEq α] [Fintype α] {G : ℕ} (hG : 0 < G) (L : ℕ) (S : Fin G → α)
+
+/-- **Rung 1, proved.**  Two interleaved doubled `(L-1)`-mers whose preceding
+symbols both differ extend to two interleaved maximal repeats of length
+`≥ L-1`: the second disjunct of `LongObstruction`.  Only
+`BBTMaximalExtension.maximalRepeat_of_branch` and `BBTSupport.interleaved_iff`
+are used. -/
+theorem interleaved_maximal_pair {a b c d : Fin G}
+    (hL : 2 ≤ L) (hab : a ≠ b) (hcd : c ≠ d)
+    (hva : vtx hG L S a = vtx hG L S b) (hvc : vtx hG L S c = vtx hG L S d)
+    (hpa : (mkGenome hG S).Preceding a ≠ (mkGenome hG S).Preceding b)
+    (hpc : (mkGenome hG S).Preceding c ≠ (mkGenome hG S).Preceding d)
+    (hIA : Interleaved (mkGenome hG S) a b c d) :
+    LongObstruction hG L S := by
+  obtain ⟨e₁, he₁, hl₁⟩ := maximalRepeat_of_branch (α := α) hG S hL hab hva hpa
+  obtain ⟨e₂, he₂, hl₂⟩ := maximalRepeat_of_branch (α := α) hG S hL hcd hvc hpc
+  exact Or.inr ⟨e₁, e₂, a, b, c, d, he₁, he₂, hIA, hl₁, hl₂⟩
+
+/-- **Rung 2, proved.**  Hence a selected interleaving at a genome with no long
+obstruction has a preceding-blocked constituent.  This is the reduction that
+replaces the false raw "selected interleaving extends to interleaved maximal
+repeats": the extension is available unless one constituent is blocked, and
+the block is located. -/
+theorem selectedInterleaved_crux {θ : Fin G → Fin G} (hL : 2 ≤ L)
+    (hS : SelectedInterleaved (hG := hG) (L := L) S θ)
+    (hno : ¬ LongObstruction hG L S) :
+    ∃ a b c d : Fin G,
+      Interleaved (mkGenome hG S) a b c d ∧
+        vtx hG L S a = vtx hG L S b ∧ vtx hG L S c = vtx hG L S d ∧
+        ((mkGenome hG S).Preceding a = (mkGenome hG S).Preceding b ∨
+          (mkGenome hG S).Preceding c = (mkGenome hG S).Preceding d) := by
+  obtain ⟨a, b, c, d, hFDh, hva, hvc, _, _⟩ := hS
+  have hIA : Interleaved (mkGenome hG S) a b c d := (interleaved_iff hG S a b c d).2 hFDh
+  by_cases hpa : (mkGenome hG S).Preceding a = (mkGenome hG S).Preceding b
+  · exact ⟨a, b, c, d, hIA, hva, hvc, Or.inl hpa⟩
+  · by_cases hpc : (mkGenome hG S).Preceding c = (mkGenome hG S).Preceding d
+    · exact ⟨a, b, c, d, hIA, hva, hvc, Or.inr hpc⟩
+    · exact absurd (interleaved_maximal_pair (hL := hL) (hab := hFDh.1.1)
+        (hcd := hFDh.1.2.2.2.2.2) (hva := hva) (hvc := hvc) (hpa := hpa)
+        (hpc := hpc) (hIA := hIA)) hno
+
+/-- Four distinct elements of a finite type witness a cardinality bound. -/
+theorem four_distinct_card {X : Type} [Fintype X] (f : Fin 4 → X)
+    (h : Function.Injective f) : 4 ≤ Fintype.card X :=
+  Fintype.card_le_of_injective f h
+
+/-- **Rung 3, proved.**  If the two constituents of a selected interleaving are
+the *same* condensed vertex, then the four selected starts lie in one fibre of
+multiplicity `≥ 4 ≥ 3`, and that vertex is rematched, so `SelectedTriple`
+holds.  This retires the degenerate configuration of the `(I)` clause. -/
+theorem selectedInterleaved_coincides_selectedTriple {θ : Fin G → Fin G}
+    {a b c d : Fin G}
+    (hab : a ≠ b) (hac : a ≠ c) (had : a ≠ d) (hbc : b ≠ c) (hbd : b ≠ d) (hcd : c ≠ d)
+    (hva : vtx hG L S a = vtx hG L S b) (hvc : vtx hG L S c = vtx hG L S d)
+    (hs1 : Selects hG L S θ (vtx hG L S a))
+    (hvceq : vtx hG L S a = vtx hG L S c) :
+    SelectedTriple (hG := hG) (L := L) S θ := by
+  refine ⟨vtx hG L S a, ?_, hs1⟩
+  let f : Fin 4 → fibre hG L S (vtx hG L S a) :=
+    fun i => if i.val = 0 then ⟨a, (mem_fibre hG L S).mpr rfl⟩ else
+      if i.val = 1 then ⟨b, (mem_fibre hG L S).mpr hva.symm⟩ else
+      if i.val = 2 then ⟨c, (mem_fibre hG L S).mpr hvceq.symm⟩ else
+      ⟨d, (mem_fibre hG L S).mpr (hvc.symm.trans hvceq.symm)⟩
+  have hf : Function.Injective f := by
+    intro x y hxy
+    have hval := congrArg Subtype.val hxy
+    fin_cases x <;> fin_cases y <;>
+      simp_all [f, hva, hvceq, hvc, hab, hac, had, hbc, hbd, hcd]
+  have h4 : 4 ≤ (fibre hG L S (vtx hG L S a)).card := by
+    simpa using (four_distinct_card f hf)
+  omega
+
+/-- **The consolidated crux, proved.**  At a genome with no long obstruction a
+selected interleaving is of exactly two kinds: either its two constituents are
+the same condensed vertex, in which case `SelectedTriple` holds, or they are
+*distinct* vertices and one of them is preceding-blocked at its two selected
+starts.  These two configurations are the whole remaining content of the `(I)`
+clause; nothing else is left for it. -/
+theorem selectedInterleaved_crux_or_triple {θ : Fin G → Fin G} (hL : 2 ≤ L)
+    (hS : SelectedInterleaved (hG := hG) (L := L) S θ)
+    (hno : ¬ LongObstruction hG L S) :
+    SelectedTriple (hG := hG) (L := L) S θ ∨
+      ∃ a b c d : Fin G,
+        Interleaved (mkGenome hG S) a b c d ∧
+          vtx hG L S a = vtx hG L S b ∧ vtx hG L S c = vtx hG L S d ∧
+          vtx hG L S a ≠ vtx hG L S c ∧
+          ((mkGenome hG S).Preceding a = (mkGenome hG S).Preceding b ∨
+            (mkGenome hG S).Preceding c = (mkGenome hG S).Preceding d) := by
+  obtain ⟨a, b, c, d, hFDh, hva, hvc, hs1, _⟩ := hS
+  have hIA : Interleaved (mkGenome hG S) a b c d := (interleaved_iff hG S a b c d).2 hFDh
+  by_cases hceq : vtx hG L S a = vtx hG L S c
+  · exact Or.inl (selectedInterleaved_coincides_selectedTriple (θ := θ) (a := a) (b := b) (c := c) (d := d)
+      (hab := hFDh.1.1) (hac := hFDh.1.2.1) (had := hFDh.1.2.2.1) (hbc := hFDh.1.2.2.2.1)
+      (hbd := hFDh.1.2.2.2.2.1) (hcd := hFDh.1.2.2.2.2.2) (hva := hva) (hvc := hvc)
+      (hs1 := hs1) (hvceq := hceq))
+  · by_cases hpa : (mkGenome hG S).Preceding a = (mkGenome hG S).Preceding b
+    · exact Or.inr ⟨a, b, c, d, hIA, hva, hvc, hceq, Or.inl hpa⟩
+    · by_cases hpc : (mkGenome hG S).Preceding c = (mkGenome hG S).Preceding d
+      · exact Or.inr ⟨a, b, c, d, hIA, hva, hvc, hceq, Or.inr hpc⟩
+      · exact absurd (interleaved_maximal_pair (hL := hL) (hab := hFDh.1.1)
+          (hcd := hFDh.1.2.2.2.2.2) (hva := hva) (hvc := hvc) (hpa := hpa)
+          (hpc := hpc) (hIA := hIA)) hno
+
+/-- **The remaining obligation, stated and not proved.**  Rungs 1–3 leave
+exactly one configuration for the `(I)` clause of `SupportDichotomy`: a bad
+`θ` selecting two **distinct** interleaved fibres, at least one of them
+preceding-blocked at its two selected starts.  Closing
+`SelectedInterleaved_obstruction` for that configuration --- i.e. forcing a
+`LongObstruction`, necessarily through its first disjunct, a maximal triple
+repeat of length `≥ L-1` --- is what this front did not prove.
+
+No `axiom`, `sorry` or `admit` occurs below; this is a `Prop`, not a proof. -/
+def BadSelectedInterleavingRemaining : Prop :=
+  ∃ (G : ℕ) (L : ℕ) (S : Fin G → Fin 2) (hG : 0 < G) (θ : Fin G → Fin G),
+    2 ≤ L ∧ P2 hG L S ∧
+      Function.Bijective θ ∧ FibrePreserving (hG := hG) (L := L) S θ ∧
+      OneCycle hG θ ∧ ¬ OrbitVertexEq (hG := hG) (L := L) S θ ∧
+      ¬ SelectedTriple (hG := hG) (L := L) S θ ∧
+      SelectedInterleaved (hG := hG) (L := L) S θ ∧
+      ¬ LongObstruction hG L S
+
+end Reduction
+
 end AssemblyP1.BBTReplacement
