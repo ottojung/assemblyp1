@@ -1,0 +1,23 @@
+'AssemblyP1.BBTInterleaved.rightMax_of_doubled' depends on axioms: [propext, Classical.choice, Quot.sound]
+'AssemblyP1.BBTInterleaved.interleaved_iff_interleavedStarts' does not depend on any axioms
+'AssemblyP1.BBTInterleaved.selectedInterleaved_admissible' depends on axioms: [propext, Classical.choice, Quot.sound]
+'AssemblyP1.BBTInterleaved.selectedInterleaved_admissible_of_P2' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'AssemblyP1.BBTInterleaved.selectedInterleaved_admissible_unconditional_false' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'AssemblyP1.BBTInterleaved.not_admissible_0101' depends on axioms: [propext, Classical.choice, Quot.sound]
+'AssemblyP1.BBTInterleaved.selectedInterleaved_0101' depends on axioms: [propext, Classical.choice, Quot.sound]
+'AssemblyP1.BBTInterleaved.p2_0101_L3' depends on axioms: [propext, Classical.choice, Quot.sound]
+'AssemblyP1.BBTInterleaved.not_longObstruction_0101' depends on axioms: [propext, Classical.choice, Quot.sound]
+'AssemblyP1.BBTInterleaved.not_primitive_0101' depends on axioms: [propext, Classical.choice, Quot.sound]
+'AssemblyP1.BBTInterleaved.no_rightRepeat_0101' depends on axioms: [propext, Classical.choice, Quot.sound]
+'AssemblyP1.BBTInterleaved.no_IsRepeat_0101' depends on axioms: [propext, Classical.choice, Quot.sound]
+'AssemblyP1.BBTInterleaved.agree_0101_preceding' depends on axioms: [propext, Classical.choice, Quot.sound]
+'AssemblyP1.BBTInterleaved.cyc_0101' depends on axioms: [propext, Classical.choice, Quot.sound]
+'AssemblyP1.BBTInterleaved.prec_0101' depends on axioms: [propext, Classical.choice, Quot.sound]
+'AssemblyP1.BBTInterleaved.mod2_shift' depends on axioms: [propext]
+'AssemblyP1.BBTInterleaved.primitive_00101' depends on axioms: [propext]
+'AssemblyP1.BBTInterleaved.selectedInterleaved_00101' depends on axioms: [propext, Classical.choice, Quot.sound]
+'AssemblyP1.BBTInterleaved.hypotheses_inhabited_00101' depends on axioms: [propext, Classical.choice, Quot.sound]
