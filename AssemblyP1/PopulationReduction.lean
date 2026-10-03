@@ -1827,6 +1827,23 @@ theorem gcd_one_of_primitive_P2_words {G : ℕ}
     have hNonPrim := power_nonprim hm W g hlenW hlt
     exact absurd hPrimW hNonPrim
 
+/-- **The arithmetic of the population reduction, with no genome-side
+hypothesis at all.**  Normalized equality of two complete spectra, together
+with gcd one on each side, forces equal lengths and equal spectra.  This is the
+proportional-cancellation step (`lem:scaling`) on its own: the only inputs are
+positivity of the two lengths, the normalized equality, and the two gcd-one
+facts, so it is reusable by any route that discharges gcd one — in particular
+`AssemblyP1.P2GcdOne.gcd_one_of_primitive_P2`, which needs no external
+complete-spectrum uniqueness. -/
+theorem population_uniqueness_of_spectra {G H : ℕ}
+    (hG : 0 < G) (hH : 0 < H) (S : Fin G → α) (D : Fin H → α)
+    (hNormEq : NormalizedEqual (W := Fin L → α) (specCount (L := L) hG S) (specCount (L := L) hH D) G H)
+    (hGcdS : IsGcdOne (W := Fin L → α) (specCount (L := L) hG S))
+    (hGcdD : IsGcdOne (W := Fin L → α) (specCount (L := L) hH D)) :
+    G = H ∧ specCount (L := L) hG S = specCount (L := L) hH D :=
+  normalized_to_ordinary hG hH (spec_sum_total hG S) (spec_sum_total hH D)
+    hNormEq hGcdS hGcdD
+
 /-- End-to-end project-level reduction for primitive P2 genomes:
 normalized equality forces equal lengths and equal ordinary spectra.
 Rotation then follows by substituting the length identity into BBT
@@ -1843,36 +1860,11 @@ theorem population_uniqueness_primitive_P2_words {G H : ℕ}
     (hBBTD : ∀ E : Fin H → α, AdmP2 D →
       specCount (L := L) hH D = specCount (L := L) hH E → RotEquiv hH E D) :
     G = H ∧ specCount (L := L) hG S = specCount (L := L) hH D := by
-  have hSumS : ∑ w : Fin L → α, specCount (L := L) hG S w = G := by
-    have htot := truth_total (L := L) hG S
-    have hsub : (∑ w ∈ support (L := L) hG S, specCount hG S w)
-        = ∑ w : Fin L → α, specCount (L := L) hG S w := by
-      apply Finset.sum_subset (Finset.subset_univ _)
-      intro w _ hwN
-      have h0 : specCount (L := L) hG S w = 0 := by
-        have h : ¬ 0 < specCount (L := L) hG S w :=
-          fun hpos => hwN ((mem_support_iff hG S w).mpr hpos)
-        omega
-      exact h0
-    omega
-  have hSumD : ∑ w : Fin L → α, specCount (L := L) hH D w = H := by
-    have htot := truth_total (L := L) hH D
-    have hsub : (∑ w ∈ support (L := L) hH D, specCount hH D w)
-        = ∑ w : Fin L → α, specCount (L := L) hH D w := by
-      apply Finset.sum_subset (Finset.subset_univ _)
-      intro w _ hwN
-      have h0 : specCount (L := L) hH D w = 0 := by
-        have h : ¬ 0 < specCount (L := L) hH D w :=
-          fun hpos => hwN ((mem_support_iff hH D w).mpr hpos)
-        omega
-      exact h0
-    omega
   have hGcdS : IsGcdOne (W := Fin L → α) (specCount (L := L) hG S) :=
     gcd_one_of_primitive_P2_words AdmP2 hG S hL hPrimS hP2S hBBTS
   have hGcdD : IsGcdOne (W := Fin L → α) (specCount (L := L) hH D) :=
     gcd_one_of_primitive_P2_words AdmP2 hH D hL hPrimD hP2D hBBTD
-  have hOrd := normalized_to_ordinary hG hH hSumS hSumD hNormEq hGcdS hGcdD
-  exact hOrd
+  exact population_uniqueness_of_spectra hG hH S D hNormEq hGcdS hGcdD
 
 end ConcreteGcd
 
