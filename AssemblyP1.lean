@@ -33,6 +33,7 @@ import AssemblyP1.WraparoundTripleRepeat
 import AssemblyP1.MLEscape
 import AssemblyP1.PopulationUniqueness
 import AssemblyP1.AAABConverse
+import AssemblyP1.BBTEndpoint94
 
 /-!
 ## The exported #88 endpoints
@@ -166,3 +167,6 @@ than assumed. -/
 #print axioms AssemblyP1.SameLengthExactMLCounterexample.truth_information_feasible
 #print axioms AssemblyP1.SameLengthSection62Counterexample.truth_information_feasible
 #print axioms AssemblyP1.Section62BridgingCounterexample.truth_information_feasible
+#print axioms AssemblyP1.BBTEndpoint94.endpoint_of_obstruction
+#print axioms AssemblyP1.BBTEndpoint94.residualInjective
+#print axioms AssemblyP1.BBTEndpoint94.uniqueEulerianCycle_injective
