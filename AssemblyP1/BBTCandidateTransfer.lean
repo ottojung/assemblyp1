@@ -206,4 +206,88 @@ def CandidateTransfer (L : ℕ) : Prop :=
       ∃ θ : Fin K → Fin K, Function.Bijective θ ∧ FibrePreserving hK L W θ ∧
         OneCycle hK θ ∧ ¬ OrbitVertexEq hK L W θ)
 
+/-! ## Clause 2, `←` direction (kernel-checked by this front)
+
+The direction that the module header previously recorded as **open** and that
+is proved here: a rotationally matched candidate makes the pull-back
+presentation carry the truth's own vertex cycle, up to the rotation that
+cancels the matching's shift.  Read contrapositively this is
+`¬ RotEquiv E W → ¬ VertexCycleEq hK L W (pullback …) (Equiv.refl)`, the
+implication any attack on the residual needs and which was stated nowhere in
+the repository.
+
+Only three elementary modular facts are proved locally.  No hypothesis on `σ`
+beyond `Matching`, and no `Ukkonen`, is used. -/
+
+/-- Undoing the rotation by `k₀` and redoing it is the identity modulo `K`. -/
+private theorem mod_neg_shift {K : ℕ} (_hK : 0 < K) (a k0 : ℕ) (hk0 : k0 ≤ K) :
+    ((a + K - k0) % K + k0) % K = a % K := by
+  show Nat.ModEq K ((a + K - k0) % K + k0) a
+  have h1 : Nat.ModEq K ((a + K - k0) % K + k0) (a + K - k0 + k0) :=
+    Nat.mod_modEq _ K |>.add_right k0
+  have h2 : Nat.ModEq K (a + K - k0 + k0) (a + K) := by
+    have h : a + K - k0 + k0 = a + K := by omega
+    rw [h]
+  have h3 : Nat.ModEq K (a + K) a := by simp
+  exact h1.trans (h2.trans h3)
+
+/-- The shift undoing `k₀` may be written `(K - k₀) % K`. -/
+private theorem mod_add_neg' {K : ℕ} (_hK : 0 < K) (a k0 : ℕ) (hk0 : k0 ≤ K) :
+    (a + (K - k0) % K) % K = (a + K - k0) % K := by
+  show Nat.ModEq K (a + (K - k0) % K) (a + K - k0)
+  have h1 : Nat.ModEq K (a + (K - k0) % K) (a + (K - k0)) :=
+    Nat.ModEq.add_left a (Nat.mod_modEq (K - k0) K)
+  have h2 : Nat.ModEq K (a + (K - k0)) (a + K - k0) := by
+    have h : a + (K - k0) = a + K - k0 := by omega
+    rw [h]
+  exact h1.trans h2
+
+/-- Reading forward by `b` from the undoing shift agrees, modulo `K`, with
+reading forward by `b` from `a - k₀`. -/
+private theorem mod_neg_shift_add {K : ℕ} (_hK : 0 < K) (a b k0 : ℕ) (hk0 : k0 ≤ K) :
+    ((a + K - k0) % K + b) % K = (a + b + K - k0) % K := by
+  show Nat.ModEq K ((a + K - k0) % K + b) (a + b + K - k0)
+  have h1 : Nat.ModEq K ((a + K - k0) % K + b) (a + K - k0 + b) :=
+    Nat.mod_modEq _ K |>.add_right b
+  have h2 : Nat.ModEq K (a + K - k0 + b) (a + b + K - k0) := by
+    have h : a + K - k0 + b = a + b + K - k0 := by omega
+    rw [h]
+  exact h1.trans h2
+
+/-- **Clause 2, `←` direction: a rotational candidate gives a rotational
+pull-back vertex cycle.**  Kernel-checked.  No `Ukkonen` hypothesis is used,
+and none is needed. -/
+theorem rotEquiv_pullback_vertexCycleEq {K : ℕ} (hK : 0 < K) (L : ℕ)
+    (W E : Fin K → α) {σ : Fin K → Fin K} (hσ : Matching (L := L) hK W E σ)
+    (hrot : RotEquiv hK E W) :
+    VertexCycleEq hK L W (pullback hK L W E hσ.1) (Equiv.refl (α := Fin K)) := by
+  obtain ⟨k0, hk0⟩ := hrot
+  have hk0' : ∀ j : Fin K, E ⟨(j.val + k0 % K) % K, Nat.mod_lt _ hK⟩ = W j := by
+    intro j
+    have hmod : (j.val + k0) % K = (j.val + k0 % K) % K := by
+      rw [Nat.add_mod, Nat.mod_eq_of_lt j.isLt]
+    exact congrArg (fun x : Fin K => E x) (Fin.mk_eq_mk.mpr hmod) ▸ hk0 j
+  have hk0_lt : k0 % K < K := Nat.mod_lt _ hK
+  set k := k0 % K with hkdef
+  refine ⟨⟨(K - k) % K, Nat.mod_lt _ hK⟩, ?_⟩
+  intro i
+  funext d
+  show cyc hK W ((pullback hK L W E hσ.1 i).val + d.val)
+      = cyc hK W (((rotAdd hK ((K - k) % K) i).val) + d.val)
+  -- the truth at `i + d` reads what the candidate reads there
+  have hwin := congrFun (pullback_window hK L W E hσ i) ⟨d.val, by omega⟩
+  have hLHS : cyc hK W ((pullback hK L W E hσ.1 i).val + d.val)
+      = E ⟨(i.val + d.val) % K, Nat.mod_lt _ hK⟩ := by
+    simpa only [window, cyc, Fin.mk_val] using hwin
+  -- a rotational candidate reads at `i + d` what the truth reads at `i + d - k`
+  have hj : E ⟨(i.val + d.val) % K, Nat.mod_lt _ hK⟩
+      = W ⟨(i.val + d.val + K - k) % K, Nat.mod_lt _ hK⟩ := by
+    have hk := hk0' ⟨(i.val + d.val + K - k) % K, Nat.mod_lt _ hK⟩
+    have hidx : ((i.val + d.val + K - k) % K + k) % K = (i.val + d.val) % K :=
+      mod_neg_shift hK (i.val + d.val) k (Nat.le_of_lt hk0_lt)
+    exact congrArg (fun x : Fin K => E x) (Fin.mk_eq_mk.mpr hidx) ▸ hk
+  rw [hLHS, hj]
+  exact congrArg W (Fin.ext (mod_add_neg' hK i.val k (Nat.le_of_lt hk0_lt) ▸
+    mod_neg_shift_add hK i.val d.val k (Nat.le_of_lt hk0_lt)).symm)
+
 end AssemblyP1.BBTEulerian
