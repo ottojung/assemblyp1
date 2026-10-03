@@ -23,10 +23,15 @@ single descending run"* (`Arratia`--`Buchberger`--`Reid` /
 
 > `nextPos ∘ ρ` is a `K`-cycle **iff the chords of `ρ` cross**.
 
-Concretely (`crossing_criterion_5`, `one_transposition_not_oneCycle_5`, both
-`decide`, `K = 5`): an involution `ρ` with `nextPos ∘ ρ` one cycle is a
-**crossing pair** of transpositions; a lone transposition never gives a
-`K`-cycle; a nested ("descending") pair never gives one either.
+Concretely, and these two are **kernel-checked by `decide` at `K = 5`**:
+an involution `ρ` with `nextPos ∘ ρ` one cycle is a **crossing pair** of
+transpositions (`crossing_criterion_5`), and a lone transposition never gives
+a `K`-cycle (`one_transposition_not_oneCycle_5`).  A *nested* ("descending")
+pair never gives one either — that direction is **not** kernel-checked in this
+module; it is covered by the Python census below (`K = 4, 5, 6`: the only
+involutions with one cycle are the crossing pairs, plus the identity), which
+is evidence, not a proof.  The general form is recorded, unproved, as
+`CrossingCriterion`.
 
 This is fatal to the plan, and worth stating plainly: the crux configuration
 `crux_rematchShape` (front `94a02` §5.3) **already assumes** the crossing,
