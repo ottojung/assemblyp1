@@ -885,6 +885,375 @@ def TwoTranspositionsBlockBad : Prop :=
     LongObstruction hK M S
 
 end TwoTranspositions
+/-! ## 7. The backward-extension step, and the common-back-step obstruction
+
+Front `94a03` (§2 of `/workspace/BOARD94-TWOTRANS-0101.md`) settled that the
+cycle criterion is *crossing* and that `TwoTranspositionsBlock` is false, and
+§8 of the same report names the honest next step: the genome side.  This
+section supplies it.
+
+`AssemblyP1.BBTMaximalExtension` (§3a of that module) carries the *definitions*
+for stepping backwards --- `BackAgrees`, `backAgreeSet`, `max_back_agrees`,
+`preceding_ne_of_max_back` --- and says, in its own module docstring, exactly
+what is missing:
+
+> **Not proved.**  The index arithmetic that combines a backward step of size
+> `p` with a forward agreement of length `e₀` yields an agreement of length
+> `e₀ + p` at the extended pair; this is what is needed to compose §3a with §2.
+
+That index arithmetic is `agrees_back` below, and it is kernel-checked (§7.1).
+With it, and with the fact that a common rotation preserves the alternation
+clause (`interleaved_iter`, §7.2), the two halves compose and give
+`commonBackStep_obstruction` (§7.3): **two interleaved pairs carrying the same
+`(L-1)`-mers, which agree backwards for the same number of places and stop
+there, are two interleaved maximal repeats of length `≥ L - 1`**, i.e. a
+`LongObstruction`.  §7.4 turns it into a new necessary condition on the crux
+configuration of §5.3, `crux_commonBackStep_obstruction`.
+
+Note what is *not* assumed anywhere: the genome-side `Preceding`-clause of
+front `94a02` §7 is **not** a hypothesis of any statement here.  It is a
+consequence of `¬ LongObstruction` (`interleaved_maximal_pair`), so assuming it
+would be circular; every theorem below is proved from `¬ LongObstruction` or
+from the truth, and the `Preceding` facts that are used are *derived* from the
+maximality of the backward agreement (`preceding_ne_of_maxBack`), never assumed. -/
+
+section BackwardExtension
+
+open OrientedRigidity
+open AssemblyP1.BBTChords
+open AssemblyP1.BBTSequenceGraph
+
+variable {α : Type} [DecidableEq α] {G : ℕ} (hG : 0 < G) (S : Fin G → α)
+
+/-! ## A. reading symbols at shifted occurrences -/
+
+lemma cyc_turn (i : ℕ) : cyc hG S (i + G) = cyc hG S i := by
+  simp [cyc]
+
+lemma cyc_prev_step (x : Fin G) (i : ℕ) :
+    cyc hG S ((prevPos hG x).val + i) = cyc hG S (x.val + G - 1 + i) := by
+  have h1 : ((prevPos hG x).val + i) % G = (x.val + G - 1 + i) % G := by
+    simp only [prevPos]
+    rw [Nat.add_mod, Nat.mod_mod, ← Nat.add_mod]
+  simp only [cyc]
+  congr 1
+  exact Fin.ext h1
+
+lemma cyc_prev_fwd (x : Fin G) (j : ℕ) :
+    cyc hG S ((prevPos hG x).val + (j + 1)) = cyc hG S (x.val + j) := by
+  rw [cyc_prev_step hG S x (j + 1)]
+  have key : (x.val + G - 1 + (j + 1)) = (x.val + j) + G := by omega
+  rw [key]
+  exact cyc_turn hG S (x.val + j)
+
+/-- Agreement implies agreement of the `(L-1)`-mers, as soon as the
+agreement is at least `L-1` long. -/
+lemma prevPos_inj {x y : Fin G} : prevPos hG x = prevPos hG y → x = y := by
+  intro hxy
+  calc x = nextPos hG (prevPos hG x) := (nextPrev _ _).symm
+    _ = nextPos hG (prevPos hG y) := by rw [hxy]
+    _ = y := nextPrev _ _
+
+lemma prevPos_iter_inj : ∀ (q : ℕ) {x y : Fin G},
+    (prevPos hG)^[q] x = (prevPos hG)^[q] y → x = y := by
+  intro q
+  induction q with
+  | zero => intro x y h; exact h
+  | succ q ih =>
+    intro x y h
+    have h' : prevPos hG x = prevPos hG y := ih (by
+      simpa only [Function.iterate_succ_apply] using h)
+    exact prevPos_inj hG h'
+
+lemma agrees_imp_vtx {L e : ℕ} {x y : Fin G} (hag : Agrees hG S e x y) (he : L - 1 ≤ e) :
+    vtx hG L S x = vtx hG L S y := by
+  funext d
+  have hd : d.val < e := lt_of_lt_of_le d.isLt he
+  exact hag ⟨d.val, hd⟩
+
+/-! ## B. combining a backward step with a forward agreement -/
+
+lemma BackAgrees_mono {a b : Fin G} {p p' : ℕ} (hp : p' ≤ p)
+    (hag : BackAgrees hG S a b p) : BackAgrees hG S a b p' := by
+  intro d
+  have hlt : d.val < p' := by omega
+  exact hag ⟨d.val, by omega⟩
+
+/-- **Backward agreement shifts.** -/
+lemma BackAgrees_shift {a b : Fin G} {p q : ℕ}
+    (hag : BackAgrees hG S a b (p + q)) :
+    BackAgrees hG S ((prevPos hG)^[q] a) ((prevPos hG)^[q] b) p := by
+  intro e
+  simp only [BackAgrees] at hag ⊢
+  have hlt : e.val + q < p + q := by omega
+  have h := hag ⟨e.val + q, hlt⟩
+  have keyA : (prevPos hG)^[e.val + q] a = (prevPos hG)^[e.val] ((prevPos hG)^[q] a) :=
+    Function.iterate_add_apply _ _ _ _
+  have keyB : (prevPos hG)^[e.val + q] b = (prevPos hG)^[e.val] ((prevPos hG)^[q] b) :=
+    Function.iterate_add_apply _ _ _ _
+  rw [← keyA, ← keyB]
+  exact hag ⟨e.val + q, hlt⟩
+
+lemma agrees_back_step {a b : Fin G} {e₀ : ℕ}
+    (hag : Agrees hG S e₀ a b) (h1 : BackAgrees hG S a b 1) :
+    Agrees hG S (e₀ + 1) (prevPos hG a) (prevPos hG b) := by
+  intro d
+  refine Fin.cases ?case0 (fun j => ?_) d
+  · simpa using h1 (0 : Fin 1)
+  · simp only [BackAgrees] at h1
+    simp only [Fin.val_succ]
+    rw [cyc_prev_fwd hG S a j.val, cyc_prev_fwd hG S b j.val]
+    exact hag ⟨j.val, by omega⟩
+
+/-- **THE MISSING INDEX ARITHMETIC.**  A backward agreement of `q + 1`
+positions, combined with a forward agreement of `e₀` positions, is a forward
+agreement of `e₀ + q` positions at the backward-shifted occurrences. -/
+lemma agrees_back : ∀ (p e₀ : ℕ) (a b : Fin G),
+    BackAgrees hG S a b p → Agrees hG S e₀ a b →
+    Agrees hG S (e₀ + p) ((prevPos hG)^[p] a) ((prevPos hG)^[p] b) := by
+  intro p
+  induction p with
+  | zero =>
+    intro e₀ a b _ hag
+    simpa only [Function.iterate_zero, id_eq, Nat.add_zero] using hag
+  | succ p ih =>
+    intro e₀ a b hagp hag
+    have h1 : BackAgrees hG S a b 1 :=
+      BackAgrees_mono (hG := hG) (S := S) (a := a) (b := b) (p' := 1) (p := p + 1)
+        (by omega) hagp
+    have h2 : BackAgrees hG S (prevPos hG a) (prevPos hG b) p :=
+      BackAgrees_shift (hG := hG) (S := S) (a := a) (b := b) (p := p) (q := 1) hagp
+    rw [Function.iterate_succ_apply (prevPos hG) p a, Function.iterate_succ_apply (prevPos hG) p b]
+    simpa [Nat.add_assoc, Nat.add_left_comm, Nat.add_comm] using
+      (ih (e₀ := e₀ + 1) (a := prevPos hG a) (b := prevPos hG b) h2
+        (agrees_back_step (hG := hG) (S := S) hag h1))
+
+/-! ## C. the alternation clause is rotation invariant -/
+
+def distVal (x y : Fin G) : ℕ := (y.val + G - x.val) % G
+
+lemma mod_turn {a b : ℕ} (h : b + G = a) : a % G = b % G := by
+  rw [← h, Nat.add_mod_right]
+
+lemma dec1 (v : ℕ) (hv : v < G) (h1 : v ≠ 0) : (v + G - 1) % G = v - 1 := by
+  rw [show v + G - 1 = (v - 1) + G by omega, Nat.add_mod_right, Nat.mod_eq_of_lt (by omega)]
+
+lemma stepA (u v : ℕ) (hu : u < G) (hv : v < G) (h1 : u = 0) (h2 : v = 0) :
+    ((u + G - 1) % G + G - (v + G - 1) % G) % G = (u + G - v) % G := by
+  rcases h1 with rfl
+  rcases h2 with rfl
+  rw [Nat.zero_add, Nat.mod_eq_of_lt (by omega : G - 1 < G)]
+  have e : (G - 1) + G - (G - 1) = G := by omega
+  rw [e, Nat.mod_self, Nat.sub_zero, Nat.mod_self]
+
+lemma stepB (u v : ℕ) (hv : v < G) (h1 : u = 0) (h2 : v ≠ 0) :
+    ((u + G - 1) % G + G - (v + G - 1) % G) % G = (u + G - v) % G := by
+  have k1 : (u + G - 1) % G = G - 1 := by
+    rw [h1, Nat.zero_add, Nat.mod_eq_of_lt (by omega : G - 1 < G)]
+  have k2 : (v + G - 1) % G = v - 1 := dec1 v hv h2
+  rw [k1, k2]
+  have hz : (((G - 1) + G - (v - 1) : ℕ) : ℤ) = (((u + G - v + G : ℕ) : ℤ)) := by
+    have c2 : (((v - 1 : ℕ) : ℤ)) = (v : ℤ) - 1 := by omega
+    have c4 : ((u + G - v + G : ℕ) : ℤ) = (u : ℤ) + (G : ℤ) - v + (G : ℤ) := by omega
+    have c5 : ((G - 1 + G : ℕ) : ℤ) = (G : ℤ) - 1 + (G : ℤ) := by omega
+    rw [Nat.cast_sub (by omega : v - 1 ≤ (G - 1) + G), c5, c2, c4]
+    omega
+  have e : (G - 1) + G - (v - 1) = u + G - v + G := by exact_mod_cast hz
+  rw [e]
+  exact mod_turn (G := G) (a := u + G - v + G) (b := u + G - v) (by omega)
+
+lemma stepC (u v : ℕ) (hu : u < G) (h1 : u ≠ 0) (h2 : v = 0) :
+    ((u + G - 1) % G + G - (v + G - 1) % G) % G = (u + G - v) % G := by
+  have k1 : (u + G - 1) % G = u - 1 := dec1 u hu h1
+  have k2 : (v + G - 1) % G = G - 1 := by
+    rw [h2, Nat.zero_add, Nat.mod_eq_of_lt (by omega : G - 1 < G)]
+  rw [k1, k2]
+  have e : (u - 1) + G - (G - 1) = u := by omega
+  rw [e, h2, Nat.sub_zero]
+  exact (mod_turn (G := G) (a := u + G) (b := u) (by omega)).symm
+
+lemma stepD (u v : ℕ) (hu : u < G) (hv : v < G) (h1 : u ≠ 0) (h2 : v ≠ 0) :
+    ((u + G - 1) % G + G - (v + G - 1) % G) % G = (u + G - v) % G := by
+  have k1 : (u + G - 1) % G = u - 1 := dec1 u hu h1
+  have k2 : (v + G - 1) % G = v - 1 := dec1 v hv h2
+  rw [k1, k2]
+  have hz : (((u - 1) + G - (v - 1) : ℕ) : ℤ) = (((u + G - v : ℕ) : ℤ)) := by
+    have c2 : (((v - 1 : ℕ) : ℤ)) = (v : ℤ) - 1 := by omega
+    have c3 : ((u + G - v : ℕ) : ℤ) = (u : ℤ) + (G : ℤ) - v := by omega
+    have c5 : ((u - 1 + G : ℕ) : ℤ) = (u : ℤ) - 1 + (G : ℤ) := by omega
+    rw [Nat.cast_sub (by omega : v - 1 ≤ (u - 1) + G), c5, c2, c3]
+    omega
+  have e : (u - 1) + G - (v - 1) = u + G - v := by exact_mod_cast hz
+  rw [e]
+
+lemma distVal_step1 (u v : ℕ) (hu : u < G) (hv : v < G) :
+    ((u + G - 1) % G + G - (v + G - 1) % G) % G = (u + G - v) % G := by
+  by_cases h1 : u = 0
+  · by_cases h2 : v = 0
+    · exact stepA u v hu hv h1 h2
+    · exact stepB u v hv h1 h2
+  · by_cases h2 : v = 0
+    · exact stepC u v hu h1 h2
+    · exact stepD u v hu hv h1 h2
+
+lemma distVal_step (x y : Fin G) :
+    distVal (prevPos hG x) (prevPos hG y) = distVal x y := by
+  simp only [distVal, prevPos]
+  exact distVal_step1 (G := G) y.val x.val y.isLt x.isLt
+
+lemma distVal_iter : ∀ (q : ℕ) (x y : Fin G),
+    distVal ((prevPos hG)^[q] x) ((prevPos hG)^[q] y) = distVal x y := by
+  intro q
+  induction q with
+  | zero => intro x y; rfl
+  | succ q ih =>
+    intro x y
+    have h : distVal ((prevPos hG)^[q] (prevPos hG x))
+        ((prevPos hG)^[q] (prevPos hG y)) = distVal (prevPos hG x) (prevPos hG y) :=
+      ih (prevPos hG x) (prevPos hG y)
+    rw [show (prevPos hG)^[q + 1] x = (prevPos hG)^[q] (prevPos hG x)
+        from Function.iterate_succ_apply (prevPos hG) q x,
+        show (prevPos hG)^[q + 1] y = (prevPos hG)^[q] (prevPos hG y)
+        from Function.iterate_succ_apply (prevPos hG) q y,
+      h, distVal_step hG x y]
+
+lemma inOpenArc_iff {x y z : Fin G} :
+    InOpenArc (mkGenome hG S) x y z ↔ (0 < distVal x z ∧ distVal x z < distVal x y) := by
+  have hlen : (mkGenome hG S).len = G := len_mkGenome (α := α) hG S
+  simp only [InOpenArc, hlen]
+  rfl
+
+lemma inOpenArc_iter {x y z : Fin G} (q : ℕ) :
+    (InOpenArc (mkGenome hG S) ((prevPos hG)^[q] x) ((prevPos hG)^[q] y)
+        ((prevPos hG)^[q] z)) ↔ InOpenArc (mkGenome hG S) x y z := by
+  rw [inOpenArc_iff, inOpenArc_iff]
+  rw [distVal_iter hG q x z, distVal_iter hG q x y]
+
+
+lemma interleaved_iter : ∀ (q : ℕ) {a b c d : Fin G},
+    Interleaved (mkGenome hG S) a b c d →
+    Interleaved (mkGenome hG S) ((prevPos hG)^[q] a) ((prevPos hG)^[q] b)
+      ((prevPos hG)^[q] c) ((prevPos hG)^[q] d) := by
+  intro q a b c d hIA
+  have h1 : (prevPos hG)^[q] a ≠ (prevPos hG)^[q] b := fun h => hIA.1.1 (prevPos_iter_inj (hG := hG) (q := q) h)
+  have h2 : (prevPos hG)^[q] a ≠ (prevPos hG)^[q] c := fun h => hIA.1.2.1 (prevPos_iter_inj (hG := hG) (q := q) h)
+  have h3 : (prevPos hG)^[q] a ≠ (prevPos hG)^[q] d := fun h => hIA.1.2.2.1 (prevPos_iter_inj (hG := hG) (q := q) h)
+  have h4 : (prevPos hG)^[q] b ≠ (prevPos hG)^[q] c := fun h => hIA.1.2.2.2.1 (prevPos_iter_inj (hG := hG) (q := q) h)
+  have h5 : (prevPos hG)^[q] b ≠ (prevPos hG)^[q] d := fun h => hIA.1.2.2.2.2.1 (prevPos_iter_inj (hG := hG) (q := q) h)
+  have h6 : (prevPos hG)^[q] c ≠ (prevPos hG)^[q] d := fun h => hIA.1.2.2.2.2.2 (prevPos_iter_inj (hG := hG) (q := q) h)
+  refine ⟨⟨h1, h2, h3, h4, h5, h6⟩, ?_⟩
+  rw [inOpenArc_iter (hG := hG) (S := S) (q := q) (x := a) (y := b) (z := c),
+    inOpenArc_iter (hG := hG) (S := S) (q := q) (x := a) (y := b) (z := d)]
+  exact hIA.2
+
+/-! ## D. the common-back-step obstruction -/
+
+/-- **`BackAgrees` at `p + 1` is `BackAgrees` at `p` plus one more place.** -/
+lemma backAgrees_succ {p : ℕ} {a b : Fin G} (hag : BackAgrees hG S a b p)
+    (hcon : cyc hG S (prevPos hG ((prevPos hG)^[p] a)).val
+      = cyc hG S (prevPos hG ((prevPos hG)^[p] b)).val) :
+    BackAgrees hG S a b (p + 1) := by
+  simp only [BackAgrees]
+  intro d
+  by_cases h : d.val < p
+  · exact hag ⟨d.val, h⟩
+  · have h1 : d.val = p := by omega
+    rw [h1]
+    exact hcon
+
+/-- **Maximality of the backward agreement gives differing preceding symbols.** -/
+lemma preceding_ne_of_maxBack {p : ℕ} {a b : Fin G}
+    (hag : BackAgrees hG S a b p) (hnot : ¬ BackAgrees hG S a b (p + 1)) :
+    (mkGenome hG S).Preceding ((prevPos hG)^[p] a)
+      ≠ (mkGenome hG S).Preceding ((prevPos hG)^[p] b) := by
+  rw [preceding_eq_prevPos hG S, preceding_eq_prevPos hG S]
+  intro hcon
+  apply hnot
+  exact backAgrees_succ (hG := hG) (S := S) (p := p) (a := a) (b := b) hag hcon
+
+/-- **THE COMMON-BACK-STEP OBSTRUCTION.**  Two interleaved pairs carrying the
+same `(L-1)`-mers, both of which agree backwards for `r + 1` places and stop
+there, are two interleaved maximal repeats of length `≥ L - 1`. -/
+theorem commonBackStep_obstruction {L : ℕ} (hL : 2 ≤ L) {a b c d : Fin G} (r : ℕ)
+    (hIA : Interleaved (mkGenome hG S) a b c d)
+    (hva : vtx hG L S a = vtx hG L S b) (hvc : vtx hG L S c = vtx hG L S d)
+    (hba : BackAgrees hG S a b (r + 1)) (hba' : ¬ BackAgrees hG S a b (r + 2))
+    (hbc : BackAgrees hG S c d (r + 1)) (hbc' : ¬ BackAgrees hG S c d (r + 2)) :
+    LongObstruction hG L S := by
+  have hagab : Agrees hG S (L - 1) a b := fun d => congrFun hva d
+  have hagcd : Agrees hG S (L - 1) c d := fun d => congrFun hvc d
+  have hA1 : Agrees hG S (L - 1 + (r + 1)) ((prevPos hG)^[r + 1] a) ((prevPos hG)^[r + 1] b) :=
+    agrees_back (α := α) (hG := hG) (S := S) (p := r + 1) (e₀ := L - 1) a b hba hagab
+  have hA2 : Agrees hG S (L - 1 + (r + 1)) ((prevPos hG)^[r + 1] c) ((prevPos hG)^[r + 1] d) :=
+    agrees_back (α := α) (hG := hG) (S := S) (p := r + 1) (e₀ := L - 1) c d hbc hagcd
+  have hvt1 : vtx hG L S ((prevPos hG)^[r + 1] a) = vtx hG L S ((prevPos hG)^[r + 1] b) :=
+    agrees_imp_vtx (hG := hG) (S := S) hA1 (by omega)
+  have hvt2 : vtx hG L S ((prevPos hG)^[r + 1] c) = vtx hG L S ((prevPos hG)^[r + 1] d) :=
+    agrees_imp_vtx (hG := hG) (S := S) hA2 (by omega)
+  have hpr1 : (mkGenome hG S).Preceding ((prevPos hG)^[r + 1] a)
+      ≠ (mkGenome hG S).Preceding ((prevPos hG)^[r + 1] b) :=
+    preceding_ne_of_maxBack (hG := hG) (S := S) (p := r + 1) hba hba'
+  have hpr2 : (mkGenome hG S).Preceding ((prevPos hG)^[r + 1] c)
+      ≠ (mkGenome hG S).Preceding ((prevPos hG)^[r + 1] d) :=
+    preceding_ne_of_maxBack (hG := hG) (S := S) (p := r + 1) hbc hbc'
+  have hne1 : (prevPos hG)^[r + 1] a ≠ (prevPos hG)^[r + 1] b :=
+    fun h => hIA.1.1 (prevPos_iter_inj (hG := hG) (q := r + 1) h)
+  have hne2 : (prevPos hG)^[r + 1] c ≠ (prevPos hG)^[r + 1] d :=
+    fun h => hIA.1.2.2.2.2.2 (prevPos_iter_inj (hG := hG) (q := r + 1) h)
+  obtain ⟨e₁, he₁, hlen₁⟩ :=
+    maximalRepeat_of_branch (α := α) (hG := hG) (S := S) (L := L) hL hne1 hvt1 hpr1
+  obtain ⟨e₂, he₂, hlen₂⟩ :=
+    maximalRepeat_of_branch (α := α) (hG := hG) (S := S) (L := L) hL hne2 hvt2 hpr2
+  exact interleaved_disjunct (hG := hG) (S := S) he₁ he₂
+    (interleaved_iter (hG := hG) (S := S) (q := r + 1) hIA) hlen₁ hlen₂
+
+/-! ## E. a new necessary condition on the crux configuration -/
+
+/-- **No common backward step.**  At a configuration that contradicts
+`LongObstruction`, the two interleaved constituents cannot share their maximal
+backward agreement: the two pairs' backward agreements stop at different
+places. -/
+theorem crux_no_commonBackStep {L : ℕ} (hL : 2 ≤ L)
+    (hno : ¬ LongObstruction hG L S) :
+    ¬ ∃ (a b c d : Fin G) (r : ℕ),
+        Interleaved (mkGenome hG S) a b c d ∧
+        vtx hG L S a = vtx hG L S b ∧ vtx hG L S c = vtx hG L S d ∧
+        BackAgrees hG S a b (r + 1) ∧ ¬ BackAgrees hG S a b (r + 2) ∧
+        BackAgrees hG S c d (r + 1) ∧ ¬ BackAgrees hG S c d (r + 2) := by
+  rintro ⟨a, b, c, d, r, hIA, hva, hvc, hba, hba', hbc, hbc'⟩
+  exact hno (commonBackStep_obstruction (α := α) hG S (L := L) (a := a) (b := b) (c := c)
+    (d := d) (r := r) hL hIA hva hvc hba hba' hbc hbc')
+
+/-- **The new condition, in the shape of §5.3.**  At the crux configuration of
+`crux_rematchShape` --- two *distinct* interleaved fibres of multiplicity
+exactly two, one of them preceding-blocked, with the rematching `ρ` nontrivial on
+a start of each --- the two constituents' maximal backward agreements stop at
+**different** places.  So the surviving configuration is *not* two constituents
+that both stop after the same number of backward steps; one of them is
+unblocked, or the two backward steps differ.
+
+The `Preceding` and `rematch` clauses are carried for fidelity with
+`crux_rematchShape`; they are hypotheses of that shape and are **not** used in
+the proof, precisely because they cannot be. -/
+theorem crux_commonBackStep_obstruction {L : ℕ} (hL : 2 ≤ L) {θ : Fin G → Fin G}
+    (hno : ¬ LongObstruction hG L S) (hnT : ¬ SelectedTriple (hG := hG) (L := L) S θ)
+    {a b c d : Fin G}
+    (hIA : Interleaved (mkGenome hG S) a b c d)
+    (hva : vtx hG L S a = vtx hG L S b) (hvc : vtx hG L S c = vtx hG L S d)
+    (hne : vtx hG L S a ≠ vtx hG L S c)
+    (hca : (fibre hG L S (vtx hG L S a)).card = 2)
+    (hcc : (fibre hG L S (vtx hG L S c)).card = 2)
+    (hprec : (mkGenome hG S).Preceding a = (mkGenome hG S).Preceding b ∨
+      (mkGenome hG S).Preceding c = (mkGenome hG S).Preceding d)
+    (hρ : rematch hG θ a ≠ a ∨ rematch hG θ b ≠ b ∨
+      rematch hG θ c ≠ c ∨ rematch hG θ d ≠ d) :
+    ¬ ∃ (r : ℕ), BackAgrees hG S a b (r + 1) ∧ ¬ BackAgrees hG S a b (r + 2) ∧
+        BackAgrees hG S c d (r + 1) ∧ ¬ BackAgrees hG S c d (r + 2) := by
+  rintro ⟨r, hba, hba', hbc, hbc'⟩
+  exact hno (commonBackStep_obstruction (α := α) hG S (L := L) (a := a) (b := b) (c := c)
+    (d := d) (r := r) hL hIA hva hvc hba hba' hbc hbc')
+
+end BackwardExtension
 
 end AssemblyP1.BBTReplacement
 
