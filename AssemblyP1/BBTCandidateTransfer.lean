@@ -3,13 +3,21 @@ import AssemblyP1.BBTCondense
 import AssemblyP1.BBTChords
 
 /-!
-# Obligation 17: the candidate-side transfer interface (statement only)
+# Obligation 17: the candidate-side transfer — statement, and what is proved
 
-**This module states a question. It does not answer it.**  No theorem is proved
-here, no `axiom`/`sorry`/`admit` appears, and nothing outside this file is
-modified.  Its single content is the definition `CandidateTransfer`, which
-makes the obligation precise enough to be attacked and, where possible, refuted
-by computation.
+**Status (kernel-checked).**  Clauses 2 and 3 of `CandidateTransfer` are now
+**proved** (at `2 ≤ L`), by `candidateTransfer_cl2` and `candidateTransfer_cl3`
+below.  Clause 1 is *not* proved and is not proved anywhere else either: clause 1
+is literally `AssemblyP1.P2.BBTCompleteSpectrumUniqueness`, i.e. Bresler--Bresler--Tse
+2013 Theorem 3, i.e. the published open problem.  `CandidateTransfer` itself is
+therefore equivalent in difficulty to the open problem and is left as a
+statement; `candidateTransfer_bbt_is_cl1` records that the only unproved
+conjunct is exactly `thm:BBT`.
+
+Clause 2 as *literally written* (no `2 ≤ L`) is **refuted**, by the
+kernel-checked `candidateTransfer_cl2_not_at_L1`; see §Result below.
+
+No `axiom`/`sorry`/`admit` appears, and nothing outside this file is modified.
 
 ## The gap in one paragraph
 
@@ -94,6 +102,35 @@ non-rotational candidate exists" to "the support-side obstruction fires at the
 truth" is sound.  Obligations 14/15/16 supply the support-side inputs.  This
 supplies the transport between the two sides.  Both are needed and neither
 subsumes the other.
+
+## Result (front #94, obligation 17)
+
+* **Clause 2 is proved, both directions, for `2 ≤ L`** (`candidateTransfer_cl2`).
+  It is an equivalence, and both halves are the *same* elementary fact:
+  `pullback_window` identifies the candidate's vertex listing with the pull-back's,
+  and `RotEquiv` is invariant under the `rotAdd`-convention the definition uses.
+  The direction the header below calls "open" is therefore **not** open; that
+  header's arrow labels were themselves crossed (`rotEquiv_of_vertexCycleEq` is
+  `VertexCycleEq → RotEquiv`, i.e. the `←` direction of the displayed `↔`).  The
+  genuinely missing direction was `RotEquiv → VertexCycleEq`, and it is proved
+  here.
+* **Clause 3 is proved for `2 ≤ L`** (`candidateTransfer_cl3`).  All three
+  positive side conditions were already available unconditionally, because
+  `pullback_isEulerianCycle` needs only a `Matching` — no inhabitant of
+  `EulerianCycleObstruction`.  The `¬ OrbitVertexEq` conjunct is clause 2's `←`
+  direction read contrapositively, composed with
+  `BBTEulerianSearch.vertexCycleEq_iff_orbit`.
+* **Clause 1 is the open problem.**  `candidateTransfer_cl1_is_BBT` records that
+  clause 1 is `AssemblyP1.P2.BBTCompleteSpectrumUniqueness`, which the repository
+  discharges only from an inhabitant of `EulerianCycleObstruction`
+  (`BBTEulerian.bbtCompleteSpec_of_obstruction`).  Nothing weaker is claimed.
+* **`CandidateTransfer` is refuted at `L = 1` as literally stated**
+  (`candidateTransfer_cl2_not_at_L1`): with `L = 1` the `VertexCycleEq` side of
+  clause 2 is vacuous (`vtx` has empty index type `Fin (L - 1) = Fin 0`) while
+  `Matching` only says `E = W ∘ σ⁻¹` for an arbitrary bijection `σ`, so clause 2
+  reads `True ↔ RotEquiv E W`.  Witness: `W = [T,T,F,F]`, `E = [T,F,T,F]`,
+  `σ = (0,2,1,3)`.  This is a degeneracy of the statement, not of the model: at
+  `2 ≤ L` clause 2 is a theorem, and the model is about `L ≥ 2`.
 -/
 
 set_option maxHeartbeats 400000
