@@ -368,4 +368,269 @@ def BadSelectedInterleavingRemaining : Prop :=
 
 end Reduction
 
+/-! ## 5. The surviving configuration in the rematching language (front
+B94-REM-2600)
+
+Front `B94-INV-2600` reduced the `(I)` clause of `SupportDichotomy` to two
+distinct interleaved fibres with a preceding-blocked constituent.  This
+section adds three things.
+
+* **§5.1 `P2` and `¬ LongObstruction` are the same hypothesis.**  The two
+genome-side clauses of `BadSelectedInterleavingRemaining` are mutually
+redundant (`longObstruction_iff_not_P2`), so the obligation is worth exactly
+as much as its `¬ LongObstruction` clause alone: no `P2` has to be assumed
+separately, and conversely no extra strength is lost by keeping it.
+
+* **§5.2 the rematching permutation `ρ = nextPos⁻¹ ∘ θ`**, together with the
+shift classes `shiftClass v = prevPos (fibre v)`.  `ρ` is a permutation of the
+starts, it preserves every shift class, and `Selects v` is exactly
+nontriviality of `ρ` on the fibre of `v` (`selects_iff_rematch`).  This is
+the first structural description of a *bad* `θ` that does not mention
+interleaving at all: the badness lives entirely in `ρ`.
+
+* **§5.3 the surviving configuration**, `crux_rematchShape`: at
+`¬ SelectedTriple` the two constituents of a selected interleaving are
+*distinct* vertices each of multiplicity exactly **two**, one of them
+preceding-blocked, and `ρ` moves a start of each of the two two-element
+fibres.  Together with §5.1 this is a strictly sharper statement of the
+remaining obligation than the previous front's.
+
+The obligation itself is **not** closed here; §5.4 names what is left. -/
+
+section Rematching
+
+open AssemblyP1.BBTChords
+open AssemblyP1.BBTSequenceGraph
+
+variable {α : Type} [DecidableEq α] [Fintype α] {G : ℕ} (hG : 0 < G) (L : ℕ) (S : Fin G → α)
+
+/-- **`Ukkonen` implies `P2`**: the two clauses are the same repeat statements
+at adjacent thresholds. -/
+theorem ukkonen_imp_P2 (hL : 2 ≤ L) (h : Ukkonen hG L S) : P2 hG L S :=
+  ⟨h.1, fun e₁ e₂ a b c d h1 h2 h3 =>
+    match h.2 e₁ e₂ a b c d h1 h2 h3 with
+    | Or.inl h1' => Or.inl (by omega)
+    | Or.inr h2' => Or.inr (by omega)⟩
+
+/-- **`P2` and `LongObstruction` exclude exactly each other at `2 ≤ L`.**
+This makes the two genome-side hypotheses of
+`BadSelectedInterleavingRemaining` mutually redundant: that obligation is
+worth exactly as much as its `¬ LongObstruction` clause alone. -/
+theorem longObstruction_iff_not_P2 (hL : 2 ≤ L) : LongObstruction hG L S ↔ ¬ P2 hG L S := by
+  constructor
+  · intro h hP2; exact not_longObstruction_of_P2 hL hP2 h
+  · intro hP2
+    exact (longObstruction_iff_not_Ukkonen (S := S)).mpr
+      (fun hU => hP2 (ukkonen_imp_P2 hG L S hL hU))
+
+/-! ## The rematching permutation and the shift classes -/
+
+/-- One position back is injective on the circle. -/
+theorem prevPos_injective : Function.Injective (prevPos hG) := by
+  intro x y hxy
+  calc x = nextPos hG (prevPos hG x) := (nextPrev _ _).symm
+    _ = nextPos hG (prevPos hG y) := by rw [hxy]
+    _ = y := nextPrev _ _
+
+/-- **The shift class of `v`**: `prevPos (fibre v)`, the starts from which the
+traversal must enter `v`. -/
+def shiftClass (v : Fin (L - 1) → α) : Finset (Fin G) := (fibre hG L S v).image (prevPos hG)
+
+theorem mem_shiftClass {v : Fin (L - 1) → α} {x : Fin G} :
+    x ∈ shiftClass hG L S v ↔ nextPos hG x ∈ fibre hG L S v := by
+  constructor
+  · intro hx
+    rw [shiftClass] at hx
+    have hx' := Finset.mem_image.mp hx
+    obtain ⟨y, hy, hxy⟩ := hx'
+    rw [← hxy, nextPrev]
+    exact hy
+  · intro h
+    rw [shiftClass]
+    exact Finset.mem_image.mpr ⟨nextPos hG x, h, prevNext hG x⟩
+
+theorem card_shiftClass (v : Fin (L - 1) → α) :
+    (shiftClass hG L S v).card = (fibre hG L S v).card :=
+  Finset.card_image_of_injective _ (prevPos_injective hG)
+
+/-- The **rematching permutation** `ρ = nextPos⁻¹ ∘ θ`. -/
+def rematch (θ : Fin G → Fin G) (x : Fin G) : Fin G := prevPos hG (θ x)
+
+theorem rematch_nextPos (θ : Fin G → Fin G) (x : Fin G) : nextPos hG (rematch hG θ x) = θ x :=
+  nextPrev _ _
+
+/-- `ρ` is injective. -/
+theorem rematch_injective {θ : Fin G → Fin G} (hθ : Function.Injective θ) :
+    Function.Injective (rematch hG θ) := by
+  intro x y h
+  exact hθ (by simpa only [rematch_nextPos] using congrArg (nextPos hG) h)
+
+/-- `ρ` preserves every shift class. -/
+theorem mem_rematch_shiftClass {θ : Fin G → Fin G} (hθ : FibrePreserving (hG := hG) (L := L) S θ)
+    (v : Fin (L - 1) → α) {x : Fin G} (hx : x ∈ shiftClass hG L S v) : rematch hG θ x ∈ shiftClass hG L S v := by
+  have hx' : nextPos hG x ∈ fibre hG L S v := (mem_shiftClass hG L S).mp hx
+  refine (mem_shiftClass hG L S).mpr ?_
+  refine (mem_fibre (hG := hG) (L := L) (S := S) (v := v)).mpr ?_
+  change vtx hG L S (nextPos hG (prevPos hG (θ x))) = v
+  rw [nextPrev, hθ x]
+  exact (mem_fibre (hG := hG) (L := L) (S := S) (v := v)).mp hx' 
+
+/-- **Rematching is nontriviality of `ρ` on the fibre.** -/
+theorem selects_iff_rematch {θ : Fin G → Fin G} (v : Fin (L - 1) → α) :
+    Selects (hG := hG) (L := L) S θ v ↔
+      ∃ x, x ∈ fibre hG L S v ∧ rematch hG θ x ≠ x := by
+  constructor
+  · rintro ⟨x, hx, h⟩
+    refine ⟨x, hx, fun hc => ?_⟩
+    have h1 := nextPrev hG (θ x)
+    simp only [rematch] at hc
+    rw [hc] at h1
+    exact h h1.symm
+  · rintro ⟨x, hx, hc⟩
+    refine ⟨x, hx, fun he => ?_⟩
+    simp only [rematch] at hc
+    exact hc (by rw [he, prevNext])
+
+/-! ## Cardinality bookkeeping -/
+
+theorem card_ge_two {X : Type} [Fintype X] {s : Finset X} {a b : X}
+    (hab : a ≠ b) (ha : a ∈ s) (hb : b ∈ s) : 2 ≤ s.card := by
+  let f : Fin 2 → ↥s := fun i => if i.val = 0 then ⟨a, ha⟩ else ⟨b, hb⟩
+  have hf : Function.Injective f := by
+    intro x y hxy
+    have hv := congrArg Subtype.val hxy
+    fin_cases x <;> fin_cases y <;> simp_all [f]
+  simpa using (Fintype.card_le_of_injective f hf)
+
+theorem card_ge_three {X : Type} [Fintype X] {s : Finset X} {a b c : X}
+    (hab : a ≠ b) (hac : a ≠ c) (hbc : b ≠ c)
+    (ha : a ∈ s) (hb : b ∈ s) (hc : c ∈ s) : 3 ≤ s.card := by
+  let f : Fin 3 → ↥s := fun i =>
+    if i.val = 0 then ⟨a, ha⟩ else if i.val = 1 then ⟨b, hb⟩ else ⟨c, hc⟩
+  have hf : Function.Injective f := by
+    intro x y hxy
+    have hv := congrArg Subtype.val hxy
+    fin_cases x <;> fin_cases y <;> simp_all [f]
+  simpa using (Fintype.card_le_of_injective f hf)
+
+theorem card_ge_three_ne {X : Type} [Fintype X] {s : Finset X} {a b w : X}
+    (hab : a ≠ b) (haw : a ≠ w) (hbw : b ≠ w)
+    (ha : a ∈ s) (hb : b ∈ s) (hw : w ∈ s) : 3 ≤ s.card := by
+  let f : Fin 3 → ↥s := fun i =>
+    if i.val = 0 then ⟨a, ha⟩ else if i.val = 1 then ⟨b, hb⟩ else ⟨w, hw⟩
+  have hf : Function.Injective f := by
+    intro x y hxy
+    have hv := congrArg Subtype.val hxy
+    fin_cases x <;> fin_cases y <;> simp_all [f]
+  simpa using (Fintype.card_le_of_injective f hf)
+
+/-- **The two constituents of a selected interleaving at `¬ SelectedTriple` are
+distinct vertices of fibre cardinality exactly two.** -/
+theorem selectedInterleaving_fibreSize {θ : Fin G → Fin G} {a b c d : Fin G}
+    (hab : a ≠ b) (hac : a ≠ c) (hbc : b ≠ c) (had : a ≠ d) (hbd : b ≠ d) (hcd : c ≠ d)
+    (hva : vtx hG L S a = vtx hG L S b) (hvc : vtx hG L S c = vtx hG L S d)
+    (hs1 : Selects (hG := hG) (L := L) S θ (vtx hG L S a))
+    (hs2 : Selects (hG := hG) (L := L) S θ (vtx hG L S c))
+    (hnT : ¬ SelectedTriple (hG := hG) (L := L) S θ) :
+    vtx hG L S a ≠ vtx hG L S c ∧
+      (fibre hG L S (vtx hG L S a)).card = 2 ∧ (fibre hG L S (vtx hG L S c)).card = 2 := by
+  have hmem (x : Fin G) (v : Fin (L - 1) → α) (h : vtx hG L S x = v) : x ∈ fibre hG L S v :=
+    (mem_fibre (hG := hG) (L := L) (S := S)).mpr h
+  have hneq : vtx hG L S a ≠ vtx hG L S c := by
+    intro h
+    have h3 : 3 ≤ (fibre hG L S (vtx hG L S a)).card :=
+      card_ge_three hab hac hbc (hmem a _ rfl) (hmem b _ hva.symm) (hmem c _ h.symm)
+    exact hnT ⟨vtx hG L S a, h3, hs1⟩
+  refine ⟨hneq, ?_, ?_⟩
+  · have hlo := card_ge_two hab (hmem a _ rfl) (hmem b _ hva.symm)
+    have hhi : (fibre hG L S (vtx hG L S a)).card ≤ 2 := by
+      by_contra hc
+      exact hnT ⟨vtx hG L S a, by omega, hs1⟩
+    omega
+  · have hlo := card_ge_two hcd (hmem c _ rfl) (hmem d _ hvc.symm)
+    have hhi : (fibre hG L S (vtx hG L S c)).card ≤ 2 := by
+      by_contra hc
+      exact hnT ⟨vtx hG L S c, by omega, hs2⟩
+    omega
+
+
+theorem card_two_two_mem {X : Type} [Fintype X] {s : Finset X} {a b x : X}
+    (hcard : s.card = 2) (hab : a ≠ b) (ha : a ∈ s) (hb : b ∈ s) (hx : x ∈ s) :
+    x = a ∨ x = b := by
+  by_contra hne
+  push_neg at hne
+  exact absurd (card_ge_three_ne hab hne.1.symm hne.2.symm ha hb hx) (by omega)
+
+/-- **The surviving configuration, in the `ρ` language.**  At
+`¬ SelectedTriple`, a selected interleaving is two *distinct* interleaved
+fibres, each of multiplicity exactly two, at least one of them
+preceding-blocked at its two selected starts; and `ρ = nextPos⁻¹ ∘ θ` moves at
+least one of the four selected starts --- that is where the badness lives. -/
+theorem crux_rematchShape {θ : Fin G → Fin G} (hL : 2 ≤ L)
+    (hSel : SelectedInterleaved (hG := hG) (L := L) S θ)
+    (hno : ¬ LongObstruction hG L S) (hnT : ¬ SelectedTriple (hG := hG) (L := L) S θ) :
+    ∃ a b c d : Fin G,
+      Interleaved (mkGenome hG S) a b c d ∧
+        vtx hG L S a = vtx hG L S b ∧ vtx hG L S c = vtx hG L S d ∧
+        vtx hG L S a ≠ vtx hG L S c ∧
+        (fibre hG L S (vtx hG L S a)).card = 2 ∧
+        (fibre hG L S (vtx hG L S c)).card = 2 ∧
+        ((mkGenome hG S).Preceding a = (mkGenome hG S).Preceding b ∨
+          (mkGenome hG S).Preceding c = (mkGenome hG S).Preceding d) ∧
+        (rematch hG θ a ≠ a ∨ rematch hG θ b ≠ b ∨
+          rematch hG θ c ≠ c ∨ rematch hG θ d ≠ d) := by
+  obtain ⟨a, b, c, d, hFD, hva, hvc, hs1, hs2⟩ := hSel
+  have hIA : Interleaved (mkGenome hG S) a b c d :=
+    (interleaved_iff hG S a b c d).2 hFD
+  have hneq : vtx hG L S a ≠ vtx hG L S c ∧
+      (fibre hG L S (vtx hG L S a)).card = 2 ∧
+      (fibre hG L S (vtx hG L S c)).card = 2 :=
+    selectedInterleaving_fibreSize (α := α) hG L S (θ := θ) (a := a) (b := b) (c := c) (d := d)
+      (hva := hva) (hvc := hvc) (hab := hFD.1.1) (hac := hFD.1.2.1) (had := hFD.1.2.2.1)
+      (hbc := hFD.1.2.2.2.1) (hbd := hFD.1.2.2.2.2.1) (hcd := hFD.1.2.2.2.2.2) hs1 hs2 hnT
+  have hblock : (mkGenome hG S).Preceding a = (mkGenome hG S).Preceding b ∨
+      (mkGenome hG S).Preceding c = (mkGenome hG S).Preceding d := by
+    by_cases hpa : (mkGenome hG S).Preceding a = (mkGenome hG S).Preceding b
+    · exact Or.inl hpa
+    · by_cases hpc : (mkGenome hG S).Preceding c = (mkGenome hG S).Preceding d
+      · exact Or.inr hpc
+      · exact absurd (interleaved_maximal_pair (α := α) hG L S (hL := hL)
+          (hab := hFD.1.1) (hcd := hFD.1.2.2.2.2.2) (hva := hva) (hvc := hvc)
+          (hpa := hpa) (hpc := hpc) (hIA := hIA)) hno
+  obtain ⟨x, hxm, hρ⟩ :=
+    (selects_iff_rematch (α := α) hG L S (v := vtx hG L S a)).mp hs1
+  have hxa : x = a ∨ x = b := card_two_two_mem hneq.2.1 hFD.1.1
+    ((mem_fibre (hG := hG) (L := L) (S := S)).mpr rfl)
+    ((mem_fibre (hG := hG) (L := L) (S := S)).mpr hva.symm) hxm
+  refine ⟨a, b, c, d, hIA, hva, hvc, hneq.1, hneq.2.1, hneq.2.2, hblock, ?_⟩
+  rcases hxa with rfl | rfl
+  · exact Or.inl hρ
+  · exact Or.inr (Or.inl hρ)
+
+/-! ### 5.4 The remaining obligation, restated -/
+
+/-- **The reduced form of `BadSelectedInterleavingRemaining`.**  By §5.1 the
+`P2` and `¬ LongObstruction` clauses are equivalent, so the previous front's
+obligation is settled by this one: it assumes **nothing** about the genome and
+asks that a bad, bijective, fibre-preserving, one-cycle `θ` which selects an
+interleaving without selecting a triple must exhibit a long obstruction.
+
+This is the statement the next front has to prove, and it is stated here as a
+`Prop`: no `axiom`, no `sorry`, no `admit`. -/
+def InterleavingObstructionNeeded : Prop :=
+  ∀ (K : ℕ) (M : ℕ) (S : Fin K → Fin 2) (hK : 0 < K) (θ : Fin K → Fin K), 2 ≤ M →
+    Function.Bijective θ → FibrePreserving (hG := hK) (L := M) S θ →
+      OneCycle hK θ → ¬ OrbitVertexEq (hG := hK) (L := M) S θ →
+      ¬ SelectedTriple (hG := hK) (L := M) S θ →
+      SelectedInterleaved (hG := hK) (L := M) S θ → LongObstruction hK M S
+
+/-- The reduced obligation discharges the previous front's. -/
+theorem not_remaining_of_interleavingObstruction (hI : InterleavingObstructionNeeded) :
+    ¬ BadSelectedInterleavingRemaining := by
+  rintro ⟨K, M, S, hK, θ, hM, _, hbi, hfp, hoc, hbad, hnT, hSel, hno⟩
+  exact hno (hI K M S hK θ hM hbi hfp hoc hbad hnT hSel)
+
+end Rematching
+
 end AssemblyP1.BBTReplacement
+
