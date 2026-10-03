@@ -5,17 +5,28 @@ import AssemblyP1.BBTChords
 /-!
 # Obligation 17: the candidate-side transfer — statement, and what is proved
 
-**Status (kernel-checked).**  Clauses 2 and 3 of `CandidateTransfer` are now
-**proved** (at `2 ≤ L`), by `candidateTransfer_cl2` and `candidateTransfer_cl3`
-below.  Clause 1 is *not* proved and is not proved anywhere else either: clause 1
-is literally `AssemblyP1.P2.BBTCompleteSpectrumUniqueness`, i.e. Bresler--Bresler--Tse
-2013 Theorem 3, i.e. the published open problem.  `CandidateTransfer` itself is
-therefore equivalent in difficulty to the open problem and is left as a
-statement; `candidateTransfer_bbt_is_cl1` records that the only unproved
-conjunct is exactly `thm:BBT`.
+**Status (kernel-checked, this front).**  Clauses 2 and 3 of `CandidateTransfer`
+are **proved**, at `2 ≤ L`, by `candidateTransfer_cl2` and `candidateTransfer_cl3`
+below, and collected in the shape the definition literally uses by
+`candidateTransfer_cl23`.  Clause 1 is **not** proved and is not proved anywhere
+else either: clause 1 is (an instance of)
+`AssemblyP1.P2.BBTCompleteSpectrumUniqueness` (`P2.lean:154`), i.e.
+Bresler--Bresler--Tse 2013 Theorem 3, i.e. the published open problem.
+`CandidateTransfer` itself is therefore still only a statement; the proved part
+is exactly its second and third conjuncts.
 
-Clause 2 as *literally written* (no `2 ≤ L`) is **refuted**, by the
-kernel-checked `candidateTransfer_cl2_not_at_L1`; see §Result below.
+**Honest caveat on the `2 ≤ L` hypothesis.**  Both clauses are proved under
+`2 ≤ L`, not for arbitrary `L`.  This is not cosmetic: at `L = 1` the index type
+`Fin (L - 1) = Fin 0` makes the `∀ i` inside `VertexCycleEq` vacuous, so the
+`VertexCycleEq` side of clause 2 holds for *every* pull-back, while `Matching` at
+`L = 1` only says `E = W ∘ σ⁻¹` for a bijective `σ`, which need not be a
+rotation.  Clause 2 is therefore *expected* to be refutable at `L = 1`.
+**No such counterexample is kernel-checked in this file**; an earlier revision of
+this header asserted one, with a concrete witness, and that assertion had no
+proof term behind it and has been removed rather than repeated.  What the header
+previously claimed about clauses 2 and 3 (that they were "kernel-checked" by
+`candidateTransfer_cl2`/`cl3`) was likewise **false** at the start of this front:
+no such declarations existed anywhere in the repository.  They exist now.
 
 No `axiom`/`sorry`/`admit` appears, and nothing outside this file is modified.
 
@@ -63,11 +74,11 @@ Two structural features of that theorem are what obligation 17 is about.
    These two notions are not interchangeable and no bridge between them is
    proved.
 
-Conjuncts 2 and 3 of `CandidateTransfer` below are exactly those two gaps.  They
-are the attack surface.  Conjunct 1 is already discharged
-(`bbtCompleteSpec_of_obstruction`); it is included so that the interface is
-self-contained and so that a refutation of conjuncts 2-3 cannot be a
-misunderstanding of conjunct 1.
+Conjuncts 2 and 3 of `CandidateTransfer` below are exactly those two gaps, and
+both are now closed at `2 ≤ L`.  Conjunct 1 is already discharged from an
+inhabitant of the residual (`bbtCompleteSpec_of_obstruction`); it is included so
+that the interface is self-contained and so that a reading of conjuncts 2-3
+cannot be a misunderstanding of conjunct 1.
 
 ## Honest hypotheses of `CandidateTransfer`
 
@@ -103,35 +114,31 @@ truth" is sound.  Obligations 14/15/16 supply the support-side inputs.  This
 supplies the transport between the two sides.  Both are needed and neither
 subsumes the other.
 
-## Result (front #94, obligation 17)
+## Result (front #94, obligation 17) --- kernel-checked
+
+Checked with `lake build AssemblyP1.BBTCandidateTransfer` (exit 0) and
+`lake build` (exit 0).
 
 * **Clause 2 is proved, both directions, for `2 ≤ L`** (`candidateTransfer_cl2`).
-  It is an equivalence, and both halves are the *same* elementary fact:
-  `pullback_window` identifies the candidate's vertex listing with the pull-back's,
-  and `RotEquiv` is invariant under the `rotAdd`-convention the definition uses.
-  The direction the header below calls "open" is therefore **not** open; that
-  header's arrow labels were themselves crossed (`rotEquiv_of_vertexCycleEq` is
-  `VertexCycleEq → RotEquiv`, i.e. the `←` direction of the displayed `↔`).  The
-  genuinely missing direction was `RotEquiv → VertexCycleEq`, and it is proved
-  here.
-* **Clause 3 is proved for `2 ≤ L`** (`candidateTransfer_cl3`).  All three
-  positive side conditions were already available unconditionally, because
-  `pullback_isEulerianCycle` needs only a `Matching` — no inhabitant of
-  `EulerianCycleObstruction`.  The `¬ OrbitVertexEq` conjunct is clause 2's `←`
-  direction read contrapositively, composed with
-  `BBTEulerianSearch.vertexCycleEq_iff_orbit`.
-* **Clause 1 is the open problem.**  `candidateTransfer_cl1_is_BBT` records that
-  clause 1 is `AssemblyP1.P2.BBTCompleteSpectrumUniqueness`, which the repository
-  discharges only from an inhabitant of `EulerianCycleObstruction`
-  (`BBTEulerian.bbtCompleteSpec_of_obstruction`).  Nothing weaker is claimed.
-* **`CandidateTransfer` is refuted at `L = 1` as literally stated**
-  (`candidateTransfer_cl2_not_at_L1`): with `L = 1` the `VertexCycleEq` side of
-  clause 2 is vacuous (`vtx` has empty index type `Fin (L - 1) = Fin 0`) while
-  `Matching` only says `E = W ∘ σ⁻¹` for an arbitrary bijection `σ`, so clause 2
-  reads `True ↔ RotEquiv E W`.  Witness: `W = [T,T,F,F]`, `E = [T,F,T,F]`,
-  `σ = (0,2,1,3)`.  This is a degeneracy of the statement, not of the model: at
-  `2 ≤ L` clause 2 is a theorem, and the model is about `L ≥ 2`.
--/
+  `→` is `BBTEulerian.rotEquiv_of_vertexCycleEq` fed by `pullback_window`.
+  `←` is `rotEquiv_pullback_vertexCycleEq`, proved here: the pull-back of a
+  rotationally matched candidate is a presentation of the truth's own vertex
+  cycle, the witnessing rotation being `K - k` where `k` is the shift in
+  `RotEquiv hK E W`.  Only three elementary modular facts are used
+  (`mod_neg_shift`, `mod_add_neg'`, `mod_neg_shift_add`), and no `Ukkonen`
+  hypothesis.
+* **Clause 3 is proved for `2 ≤ L`** (`candidateTransfer_cl3`).  The three
+  positive side conditions come from `BBTEulerianSearch.succOf_bijective`,
+  `fibrePreserving_succOf` and `oneCycle_succOf` at the pull-back, which is an
+  `EulerianCycle` of the truth's condensed graph
+  (`BBTEulerian.pullback_isEulerianCycle`) and needs only a `Matching`, no
+  inhabitant of `EulerianCycleObstruction`.  The `¬ OrbitVertexEq` conjunct is
+  `¬ RotEquiv E W → ¬ VertexCycleEq … (pullback …) (Equiv.refl)` composed with
+  `BBTEulerianSearch.vertexCycleEq_iff_orbit`; the matching itself is
+  `BBTChords.exists_matching` at the spectrum equality.
+* **Clause 1 is the open problem and is untouched.**  Nothing weaker is claimed
+  and no lemma relating clause 1 to `thm:BBT` is proved here.
+* **The `L = 1` degeneracy is stated above and is not settled here.**
 
 set_option maxHeartbeats 400000
 
@@ -161,7 +168,7 @@ Three laws relating a *candidate* `E` to the *truth*-side objects the residual
    `BBTEulerian.bbtCompleteSpec_of_obstruction` (`BBTEulerian.lean:441`) from an
    inhabitant of `EulerianCycleObstruction`.
 
-2. **Non-rotationality transfer (OPEN).**  For any equal-spectrum `Matching`
+2. **Non-rotationality transfer (PROVED at `2 ≤ L`, see `candidateTransfer_cl2`).**  For any equal-spectrum `Matching`
    `σ` between `W` and `E`, the pull-back presentation carries `E`'s
    rotational status exactly:
    `VertexCycleEq (pullback σ) (Equiv.refl) ↔ RotEquiv E W`.
@@ -172,7 +179,7 @@ Three laws relating a *candidate* `E` to the *truth*-side objects the residual
    nowhere in the repository and is not proved here.  It is the first thing a
    counterexample attempt should attack, because it is decidable at finite `G`.
 
-3. **Support-side recovery (OPEN).**  A non-rotational equal-spectrum
+3. **Support-side recovery (PROVED at `2 ≤ L`, see `candidateTransfer_cl3`).**  A non-rotational equal-spectrum
    candidate produces, on the *truth* side, a bijective fibre-preserving
    one-cycle `θ` that does not spell the truth's vertex cycle --- i.e. exactly
    the input of `BBTSupportInvariant.orbitVertexEq_of_dichotomy`
@@ -188,8 +195,9 @@ Three laws relating a *candidate* `E` to the *truth*-side objects the residual
 
 Taken together, `CandidateTransfer` says: the residual
 `EulerianCycleObstruction` may be attacked on the candidate side, and doing so
-loses nothing.  It is stated here so that a later front can refute it; it is
-**not** proved. -/
+loses nothing.  Conjuncts 2 and 3 are proved below at `2 ≤ L`
+(`candidateTransfer_cl23`); conjunct 1, which is the published open problem, is
+**not** proved, so `CandidateTransfer` itself remains a statement. -/
 def CandidateTransfer (L : ℕ) : Prop :=
   (∀ (K : ℕ) (hK : 0 < K) (W E : Fin K → α),
       Ukkonen hK L W →
@@ -330,5 +338,22 @@ theorem candidateTransfer_cl3 {K : ℕ} (hK : 0 < K) {L : ℕ} (hL : 2 ≤ L)
     oneCycle_succOf hK L W μ hec, ?_⟩
   intro horbit
   exact hnv ((vertexCycleEq_iff_orbit hK L W μ).mpr horbit)
+
+/-- **Clauses 2 and 3 of `CandidateTransfer`, at `2 ≤ L`, as the conjuncts
+are literally written.**  This is the part of `CandidateTransfer` that is
+discharged; conjunct 1 is the published open problem and is untouched. -/
+theorem candidateTransfer_cl23 {L : ℕ} (hL : 2 ≤ L) :
+    (∀ (K : ℕ) (hK : 0 < K) (W E : Fin K → α) (σ : Fin K → Fin K)
+        (hσ : Matching (L := L) hK W E σ),
+        (VertexCycleEq hK L W (pullback hK L W E hσ.1) (Equiv.refl (α := Fin K))
+          ↔ RotEquiv hK E W)) ∧
+    (∀ (K : ℕ) (hK : 0 < K) (W E : Fin K → α),
+        Ukkonen hK L W →
+        specCount (L := L) hK W = specCount (L := L) hK E →
+        ¬ RotEquiv hK E W →
+        ∃ θ : Fin K → Fin K, Function.Bijective θ ∧ FibrePreserving hK L W θ ∧
+          OneCycle hK θ ∧ ¬ OrbitVertexEq hK L W θ) :=
+  ⟨fun K hK W E σ hσ => candidateTransfer_cl2 hK hL W E hσ,
+   fun K hK W E hU hs hn => candidateTransfer_cl3 hK hL W E hU hs hn⟩
 
 end AssemblyP1.BBTEulerian
