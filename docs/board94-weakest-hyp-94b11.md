@@ -191,4 +191,16 @@ alone). No `sorry`, `admit`, `axiom`, `native_decide`, `unsafe`,
 * The census script `scratch/94b11_census.py` is left in the worktree as
   evidence; its output is not a proof.
 
+## 10. Inherited dead-front work (94a0a)
+
+`AssemblyP1/P2RepeatResidual.lean` (modified, uncommitted) and
+`AssemblyP1/P2TripleMaximalExtension.lean` (untracked) from dead front 94a0a
+belong to the **case-1 / `P2TripleMaximalExtension`** packet, not to this
+weakest-hypothesis question, and nothing in them is a prerequisite here. They
+were read only far enough to confirm independence: left **unmodified and
+uncommitted**, deliberately not carried into this commit, since adopting
+another front's half-elaborated work without checking it against its own
+packet would be unsound. Its `scratch/Axioms94.lean` etc. are likewise left
+alone.
+
 B94-WH-PROVED
