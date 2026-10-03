@@ -194,14 +194,26 @@ gives a unique Eulerian cycle and therefore $D\sim S$. The truth is a maximizer
 by Lemma~\ref{lem:gibbs}.
 \end{proof}
 
-\statusline{The project-side reduction (division/Eulerian gcd-one, issue
-\#70) and the thin final tie-to-rotation wiring (issue \#73) are
-\kernelcheck{} in \texttt{PopulationReduction} and
-\texttt{PopulationUniqueness}, reusing the \#70 reduction with no
-duplicated infrastructure. The Gibbs/KL tie characterization and the BBT
-uniqueness step remain explicit external premises (\srcfact{}
-\cite{cover2006}, \cite{bresler2013}). The gcd-one/division writeup is the
-project's.}
+\statusline{The whole project-side chain is \kernelcheck{}: the
+Gibbs/KL layer of Lemma~\ref{lem:gibbs} (issue \#89, in
+\texttt{PopulationGibbs}), the definitions P1/P2 of
+Definition~\ref{def:P1P2} and their alignment with Ukkonen's condition at
+$K=L-1$ (issue \#89, in \texttt{P2}), the division/Eulerian gcd-one
+argument of Lemma~\ref{lem:scaling} (issue \#70, in
+\texttt{PopulationReduction}), and the end-to-end wiring of
+Theorem~\ref{thm:population} (issues \#73 and \#89, in
+\texttt{PopulationUniqueness}), which reuses the \#70 reduction with no
+duplicated infrastructure and states the objective of
+Definition~\ref{def:population} and the P2 condition of
+Definition~\ref{def:P1P2} directly. The Gibbs/KL analysis is therefore the
+project's own formalization of \cite{cover2006}, not an assumed premise.
+The one remaining external mathematical input is the complete-spectrum
+uniqueness step of Theorem~\ref{thm:BBT} (\srcfact{} \cite{bresler2013}),
+which is carried as the single explicitly named statement
+\texttt{BBTUniqueAt}: Ukkonen's condition at $K=L-1$ together with equality
+of the complete $(L)$-spectra forces rotation equivalence, phrased on the
+project's own spectrum and rotation objects. The gcd-one/division writeup is
+the project's.}
 
 \subsection{Scope and one failed proof route}
 

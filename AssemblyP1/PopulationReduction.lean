@@ -1763,6 +1763,28 @@ variable {L : ℕ}
 
 open OrientedRigidity
 
+/-- The full `L`-spectrum of a circular word totals to the number of
+positions, not merely its support-restricted part: every read type with
+count `0` lies outside the support (`mem_support_iff`), so summing over
+`Fin L → α` adds nothing. This is the fact the population read
+distribution `p_D(w) = spec_L(D)(w)/|D|` needs in order to be a
+distribution at all, and it is exported here so the population layer
+does not re-derive it. -/
+theorem spec_sum_total {α : Type} [DecidableEq α] [Fintype α] {G L : ℕ} (hG : 0 < G)
+    (S : Fin G → α) :
+    (∑ w : Fin L → α, specCount (L := L) hG S w) = G := by
+  have htot := truth_total (L := L) hG S
+  have hsub : (∑ w ∈ support (L := L) hG S, specCount hG S w)
+      = ∑ w : Fin L → α, specCount (L := L) hG S w := by
+    apply Finset.sum_subset (Finset.subset_univ _)
+    intro w _ hwN
+    have h0 : specCount (L := L) hG S w = 0 := by
+      have h : ¬ 0 < specCount (L := L) hG S w :=
+        fun hpos => hwN ((mem_support_iff hG S w).mpr hpos)
+      omega
+    exact h0
+  omega
+
 /-- Primitive-P2 spectra have gcd one: the project-side
 division–Eulerian argument with both obligations discharged.
 `spell_exists_divided` supplies the Eulerian spelling `W` of the

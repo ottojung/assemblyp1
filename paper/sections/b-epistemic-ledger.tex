@@ -73,27 +73,35 @@ Uniqueness up to cyclic rotation on the truth-admissible same-length row
   Corollary~\ref{cor:same-length-rotation}, \cite{bresler2013} \\
 Beatability criterion; non-rigidity is the same-length obstruction
   & mathematical fact & Prop.~\ref{prop:beatability} \\
-Gibbs/KL: truth is a population maximizer over any class
-  & mathematical fact & Lemma~\ref{lem:gibbs} \\
+Gibbs/KL: truth is a population maximizer over any class, with equality iff
+the read distributions agree
+  & kernel-checked project formalization of \cite{cover2006} &
+  Lemma~\ref{lem:gibbs}, \texttt{PopulationGibbs}, issue \#89 \\
 Primitivity plus P2 gives gcd-one spectra (division + Eulerian + BBT),
   reducing normalized to ordinary spectra
   & kernel-checked project reduction &
   \texttt{PopulationReduction}, issue \#70 \\
+P1/P2 implies Ukkonen's condition at $K=L-1$
+  & kernel-checked project fact &
+  Def.~\ref{def:P1P2}, \texttt{P2}, issue \#89 \\
 Population uniqueness, oriented primitive P2
-  & source-supported mathematical theorem; project-side reduction and
-  final tie-to-rotation wiring kernel-checked &
-  Thm.~\ref{thm:population}, \texttt{PopulationUniqueness} (issue \#73),
-  \cite{bresler2013} \\
+  & source-supported mathematical theorem; objective, P2 condition and the
+  whole project-side chain kernel-checked, with complete-spectrum uniqueness
+  the one named external premise &
+  Thm.~\ref{thm:population}, \texttt{PopulationUniqueness} (issues \#73,
+  \#89), \cite{bresler2013} \\
 P1/P2 intrinsic admissibility; population objective
   & project modeling choice & this paper, Defs.~\ref{def:P1P2},
   \ref{def:population} \\
 \bottomrule
 \end{tabular}
-\caption{Mathematical and project-level results. The same-length rigidity core,
-its primitive/periodic repeat reduction, its conditional final wiring, and the
-population division/Eulerian reduction plus thin tie-to-rotation wiring are
-kernel-checked. External source-boundary and complete-spectrum uniqueness
-premises are not claimed as kernel-checked.}
+\caption{Mathematical and project-level results. The same-length rigidity core, its primitive/periodic repeat reduction, its
+conditional final wiring, the population Gibbs/KL layer, the P1/P2
+definitions and their Ukkonen alignment, and the population
+division/Eulerian reduction plus tie-to-rotation wiring are kernel-checked.
+External source-boundary and complete-spectrum uniqueness premises are not
+claimed as kernel-checked; the latter is carried as the single named
+statement \texttt{BBTUniqueAt}.}
 \end{table}
 
 \subsection{Finite certificates and computations}
