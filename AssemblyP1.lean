@@ -47,7 +47,11 @@ import AssemblyP1.Issue94GcdOneP2
 import AssemblyP1.P2GcdOne
 import AssemblyP1.Issue94R1LongWindow
 import AssemblyP1.BBTVertexCycleReduction
-import AssemblyP1.Issue94EulerianTheta
+-- QUARANTINED (board 94 green restore): AssemblyP1/Issue94EulerianTheta.lean does not
+-- elaborate (11 source errors); its §3 proof rests on a false intermediate claim
+-- (`hwin`, kernel-refuted in scratch94/Probe2.lean) and §4's `BadThetaObstruction`
+-- is ill-typed.  The file is kept verbatim and unregistered, so the build is green
+-- and no mathematics is lost.  See /workspace/BOARD94-GREEN-RESTORE-0810.md.
 import AssemblyP1.Issue94TW1
 import AssemblyP1.Issue94TW1EdgeType
 import AssemblyP1.Issue94TW4Coalesce
