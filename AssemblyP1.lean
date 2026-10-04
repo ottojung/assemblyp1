@@ -43,6 +43,8 @@ import AssemblyP1.SameLength62Maximizer
 import AssemblyP1.WraparoundTripleRepeat
 import AssemblyP1.MLEscape
 import AssemblyP1.PopulationUniqueness
+import AssemblyP1.Issue94GcdOneP2
+import AssemblyP1.P2GcdOne
 import AssemblyP1.Issue94TW1
 import AssemblyP1.Issue94TW1EdgeType
 import AssemblyP1.Issue94TW4Coalesce
@@ -634,3 +636,37 @@ now carries **no** `RepeatAdapter.IsPrimitive` hypothesis.  The range
 #print axioms AssemblyP1.Issue94KShort.obstruction_short_window_general'
 #print axioms AssemblyP1.Issue94KShort.obstruction_short_window
 #print axioms AssemblyP1.Issue94KShort.obstruction_short_window'
+
+/-!
+## `P2GcdOne`: gcd one for a primitive `P2` truth, with **no** BBT premise
+
+`AssemblyP1.P2GcdOne` proves that the complete `(L-1)`-read spectrum of a
+primitive truth satisfying the actual `def:P1P2` predicate `P2` at
+`2 ≤ L ≤ G` has gcd one (`gcd_one_of_primitive_P2`), and hence that normalized
+equality of two such spectra forces equal genome lengths and equal complete
+spectra (`population_uniqueness_of_primitive_P2`).  The argument uses only two
+project-side ingredients: the multiplicity cap
+`P2Multiplicity.P2.imp_nodeCount_le_two_of_powerPrimitive` (from the
+triple-repeat clause of `P2`) and the nonbranching-gcd-one classification
+`ScalarPrimitive.gcdOne_of_nonbranching_primitive`.  No `hBBT`, no
+`BBTUniqueAt`, no `BBTCompleteSpectrumUniqueness` and no `AdmP2` is mentioned.
+
+`AssemblyP1.Issue94GcdOneP2` proves the same gcd-one fact by the same two
+ingredients, reached through the spectrum-support graph directly
+(`nonbranching_of_common_divisor`, `gcdOne_of_primitive_P2`); it is an
+independent kernel-checked duplicate route.
+
+**This does not settle `thm:population`.**  `hPevzner` is still bound at
+`PopulationUniqueness.lean` lines 178, 231 and 261, because those three sites
+need a *second* thing that gcd one does not give: from equal complete spectra
+at equal length, `RotEquiv` (`BBTUniqueAt`).  Gcd one discharges the
+proportional-cancellation half of the reduction only.
+-/
+#print axioms AssemblyP1.P2GcdOne.winPrefix_window
+#print axioms AssemblyP1.P2GcdOne.nodeCount_ge_two_specs
+#print axioms AssemblyP1.P2GcdOne.nonbranching_of_primitive_P2_of_divisible
+#print axioms AssemblyP1.P2GcdOne.gcd_one_of_primitive_P2
+#print axioms AssemblyP1.P2GcdOne.population_uniqueness_of_primitive_P2
+#print axioms AssemblyP1.Issue94GcdOneP2.nonbranching_of_common_divisor
+#print axioms AssemblyP1.Issue94GcdOneP2.gcdOne_of_primitive_P2
+#print axioms AssemblyP1.PopulationReduction.population_uniqueness_of_spectra

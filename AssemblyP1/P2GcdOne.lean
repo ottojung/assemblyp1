@@ -29,7 +29,7 @@ support, `0 < specCount hG S e` and `g ∣ specCount hG S e`, hence
 `g ≤ specCount hG S e`, so **every support count is at least `g ≥ 2`**.
 
 The `P2` triple-repeat clause gives the multiplicity cap
-`nodeCount (L-1)-mer ≤ 2` (`P2Multiplicity.P2.imp_nodeCount_le_two_of_powerPrimitive`,
+`nodeCount (L-1)-mer ≤ 2` (`P2Multiplicity.AssemblyP1.P2Multiplicity.P2.imp_nodeCount_le_two_of_powerPrimitive`,
 which uses only that clause, through `P2.noLongTripleRepeat`).
 
 Now suppose the spectrum-support graph branches: two distinct support edges
@@ -55,7 +55,7 @@ support edges share a node.
 ## Scope
 
 * The cap needs `2 ≤ L` (read length) and `L ≤ G`, the range in which
-  `P2Multiplicity.P2.imp_nodeCount_le_two_of_powerPrimitive` and the
+  `P2Multiplicity.AssemblyP1.P2Multiplicity.P2.imp_nodeCount_le_two_of_powerPrimitive` and the
   admissible-candidate reading of P2 are stated.  `PopulationReduction.gcd_one_of_primitive_P2_words`,
   which replaces this file's theorem by the stronger external route, carries only
   `1 < L`; the new theorem is therefore the honest statement, and
@@ -72,22 +72,23 @@ support edges share a node.
 
 namespace AssemblyP1.P2GcdOne
 
-open SourceFaithfulIs
-open OrientedRigidity
+open AssemblyP1.SourceFaithfulIs
+open AssemblyP1.OrientedRigidity
 open AssemblyP1
 open AssemblyP1.PopulationReduction
 open AssemblyP1.RepeatAdapter
 open AssemblyP1.ScalarPrimitive
 
 set_option maxHeartbeats 800000
+-- the private occurrence-set helpers genuinely do not need every section instance
+set_option linter.unusedSectionVars false
 
 variable {α : Type} [DecidableEq α] [Fintype α] {G L : ℕ}
 
 /-! ## Window bookkeeping -/
 
 /-- The length-`(L-1)` prefix of the window read at `r` is the node window at
-`r`.  (This is `OrientedRigidity`'s private `winPrefix_window`, restated here
-because the private version is not exported.) -/
+`r`. -/
 theorem winPrefix_window (hG : 0 < G) (S : Fin G → α) (r : Fin G) :
     winPrefix (window (L := L) hG S r : Fin L → α) = nodeWindow (L := L) hG S r := by
   funext d
@@ -111,15 +112,19 @@ private theorem card_occN (hG : 0 < G) (S : Fin G → α) (k : Fin (L - 1) → �
 private theorem occL_subset_occN (hG : 0 < G) (S : Fin G → α) (w : Fin L → α) :
     occL hG S w ⊆ occN hG S (winPrefix w) := by
   intro r hr
-  simp only [occL, occN, Finset.mem_filter, Finset.mem_univ, true_and] at hr ⊢
-  obtain ⟨hwr⟩ := hr
-  rw [hwr, winPrefix_window]
+  have hr' := Finset.mem_filter.mp hr
+  refine Finset.mem_filter.mpr ⟨Finset.mem_univ _, ?_⟩
+  show nodeWindow (L := L) hG S r = winPrefix w
+  rw [← hr'.2, winPrefix_window]
 
 /-- A start spells at most one window, so two distinct windows have disjoint
 occurrence sets. -/
 private theorem occL_disjoint (hG : 0 < G) (S : Fin G → α) {w₁ w₂ : Fin L → α}
     (hne : w₁ ≠ w₂) : Disjoint (occL hG S w₁) (occL hG S w₂) :=
-  Finset.disjoint_left.2 (fun r hr₁ hr₂ => hne (hr₁.symm.trans hr₂))
+  Finset.disjoint_left.2 (fun r hr₁ hr₂ => by
+    have h₁ : window (L := L) hG S r = w₁ := (Finset.mem_filter.mp hr₁).2
+    have h₂ : window (L := L) hG S r = w₂ := (Finset.mem_filter.mp hr₂).2
+    exact hne (h₁.symm.trans h₂))
 
 /-- **Two windows out of one node cost two fibers' worth of starts.**  The
 multiplicity of a node dominates the sum of the multiplicities of any two
@@ -129,11 +134,14 @@ theorem nodeCount_ge_two_specs (hG : 0 < G) (S : Fin G → α) (e₁ e₂ : Fin 
     (hne : e₁ ≠ e₂) (hpre : winPrefix (L := L) e₁ = winPrefix (L := L) e₂) :
     specCount (L := L) hG S e₁ + specCount (L := L) hG S e₂
       ≤ nodeCount (L := L) hG S (winPrefix (L := L) e₁) := by
-  have hunion : occL hG S e₁ ∪ occL hG S e₂ ⊆ occN hG S (winPrefix (L := L) e₁) :=
-    (occL_subset_occN hG S e₁).union (by rw [hpre]; exact occL_subset_occN hG S e₂)
+  have hunion : occL hG S e₁ ∪ occL hG S e₂ ⊆ occN hG S (winPrefix (L := L) e₁) := by
+    intro x hx
+    rcases Finset.mem_union.mp hx with h | h
+    · exact occL_subset_occN hG S e₁ h
+    · rw [hpre]; exact occL_subset_occN hG S e₂ h
   have hcard : (occL hG S e₁ ∪ occL hG S e₂).card
       = (occL hG S e₁).card + (occL hG S e₂).card :=
-    Finset.card_union_of_disjoint _ (occL_disjoint hG S hne)
+    Finset.card_union_of_disjoint (occL_disjoint hG S hne)
   have hle := Finset.card_le_card hunion
   rw [hcard] at hle
   simpa only [card_occL, card_occN] using hle
@@ -145,27 +153,29 @@ has a nonbranching support.**  Every support count is then at least `g ≥ 2`,
 and two support edges out of one node would spend at least `4` starts in a
 fiber that `P2` caps at `2` (`nodeCount_ge_two_specs`). -/
 theorem nonbranching_of_primitive_P2_of_divisible (hG : 0 < G) (hL : 2 ≤ L)
-    (hLG : L ≤ G) (S : Fin G → α) (hPrim : IsPrimitive S) (hP2 : P2 hG L S)
+    (hLG : L ≤ G) (S : Fin G → α) (hPrim : PopulationReduction.IsPrimitive S) (hP2 : P2 hG L S)
     {g : ℕ} (hg1 : g ≠ 1)
     (hg : ∀ w : Fin L → α, g ∣ specCount (L := L) hG S w) :
     NonBranching (genomeNodes (L := L) hG S) (support (L := L) hG S)
       (winPrefix (L := L)) (winSuffix (L := L)) := by
   have hcap : ∀ k : Fin (L - 1) → α, nodeCount (L := L) hG S k ≤ 2 :=
-    P2.imp_nodeCount_le_two_of_powerPrimitive hG hL hLG S hPrim hP2
+    AssemblyP1.P2Multiplicity.P2.imp_nodeCount_le_two_of_powerPrimitive hG hL hLG S hPrim hP2
   -- the common divisor is positive, because a support count is positive
   have hsup := support_ne_nil_of_truth (L := L) (hG := hG) S
   obtain ⟨e₀, he₀⟩ := hsup
   have hpos0 : 0 < specCount (L := L) hG S e₀ := truth_pos_on_support (L := L) hG S e₀ he₀
   have hgpos : 0 < g := by
-    by_contra hg0
-    have : specCount (L := L) hG S e₀ = 0 :=
-      Nat.eq_zero_of_zero_dvd (hg e₀)
-    omega
-  have hlt : 1 < g := by omega
+    rcases Nat.eq_zero_or_pos g with rfl | hp
+    · exfalso
+      have : specCount (L := L) hG S e₀ = 0 :=
+        Nat.eq_zero_of_zero_dvd (hg e₀)
+      omega
+    · exact hp
+  have hlt : 1 < g := Nat.lt_of_le_of_ne (Nat.succ_le_of_lt hgpos) (Ne.symm hg1)
   -- every support count is at least `g`
   have hge : ∀ e ∈ support (L := L) hG S, g ≤ specCount (L := L) hG S e := by
     intro e he
-    exact Nat.le_of_dvd (by omega) (hg e)
+    exact Nat.le_of_dvd (truth_pos_on_support (L := L) hG S e he) (hg e)
   intro v e₁ h₁ e₂ h₂ htail htail₂
   by_contra hne
   have hpre : winPrefix (L := L) e₁ = winPrefix (L := L) e₂ :=
@@ -186,7 +196,7 @@ population reduction's `hGcdS`/`hGcdD` obligations hold with no
 complete-spectrum uniqueness premise (`hBBT`), no `BBTUniqueAt` inhabitant and
 no opaque `AdmP2`. -/
 theorem gcd_one_of_primitive_P2 (hG : 0 < G) (hL : 2 ≤ L) (hLG : L ≤ G)
-    (S : Fin G → α) (hPrim : IsPrimitive S) (hP2 : P2 hG L S) :
+    (S : Fin G → α) (hPrim : PopulationReduction.IsPrimitive S) (hP2 : P2 hG L S) :
     IsGcdOne (W := Fin L → α) (specCount (L := L) hG S) := by
   intro g hg
   by_cases hg1 : g = 1
@@ -209,7 +219,7 @@ carries both clauses, while the cap uses only the triple-repeat clause). -/
 theorem population_uniqueness_of_primitive_P2 {G H : ℕ}
     (hG : 0 < G) (hH : 0 < H) (S : Fin G → α) (D : Fin H → α)
     (hL : 2 ≤ L) (hLG : L ≤ G) (hLH : L ≤ H)
-    (hPrimS : IsPrimitive S) (hPrimD : IsPrimitive D)
+    (hPrimS : PopulationReduction.IsPrimitive S) (hPrimD : PopulationReduction.IsPrimitive D)
     (hP2S : P2 hG L S) (hP2D : P2 hH L D)
     (hNormEq : NormalizedEqual (W := Fin L → α) (specCount (L := L) hG S)
       (specCount (L := L) hH D) G H) :
