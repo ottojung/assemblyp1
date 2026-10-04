@@ -75,6 +75,34 @@ import AssemblyP1.Issue94WitnessPair
 import AssemblyP1.Issue94TW1
 import AssemblyP1.Issue94TW1EdgeType
 import AssemblyP1.Issue94TW4Coalesce
+-- BOARD 94, front 94cross: `BBTLadder.CrossingChordsCoalesce` as written ---
+-- which carries neither `2 <= L` nor `L <= K` --- is REFUTED, and it is
+-- refuted already over the SMALLEST possible alphabet, `Fin 2`, at the
+-- smallest possible circle size `K = 4`: `S = 0011`, `L = 1`,
+-- `sigma = (1 3)`, quadruple `0 2 1 3`.  The word satisfies `P2`
+-- (`cex_P2`), primitivity (`cex_is_primitive`) and `Ukkonen` (`cex_Ukkonen`),
+-- `sigma` is a genuine alternative Eulerian cycle (`cex_EulerianCycle`) whose
+-- `AltF` is the double transposition `(0 2)(1 3)` (`cex_AltF0`..`cex_AltF3`),
+-- the two chords cross (`cex_interleaved`), and the conclusion fails
+-- (`cex_not_SameExtension`).  `crossingChordsCoalesce_refuted` is the
+-- refutation `~(forall L, CrossingChordsCoalesce (Fin 2) L)`.  It STRENGTHENS
+-- `Issue94TW4Coalesce.not_crossingChordsCoalesce_one`, which refutes the same
+-- statement over `Fin 4` with `S = (0,1,2,3)`: the binary instance cannot use
+-- the "all symbols distinct" device, so the refuted regime does not depend on a
+-- large alphabet.  This also makes the "Not established" note further down
+-- (`CrossingChordsCoalesce` "neither proved nor refuted") stale --- it is
+-- settled in both directions by `Issue94TW4Coalesce` and sharpened here.  The
+-- missing hypothesis is named: `2 <= L`, i.e. `L - 1 >= 1`, so that the
+-- `(L-1)`-mer is a non-degenerate window; `L <= K` is NOT independently
+-- necessary (at `L > K` the `def` is vacuous).  The repair is proved at
+-- arbitrary `[DecidableEq alpha]` as `CrossingChordsCoalesce_ge2`, and over
+-- `Fin 2` the `def` is exactly characterised by
+-- `crossingChordsCoalesce_sharp_bin` (true for every `L >= 2`, false at
+-- `L = 1`).  Minimality: `no_interleaved_on_K3` (four pairwise distinct starts
+-- are impossible on `Fin 3`) and `no_primitive_on_Fin1` (a one-letter circle is
+-- never primitive).  `BBTLadder.LadderVertexCycle` still has NO inhabitant.
+-- See /workspace/BOARD94-CROSSCHORDS-*.md.
+import AssemblyP1.Issue94CrossingChords
 import AssemblyP1.Issue94TW5Single
 import AssemblyP1.Issue94TW6Lemma1
 import AssemblyP1.Issue94TW7AltF
