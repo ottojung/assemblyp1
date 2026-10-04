@@ -1,4 +1,5 @@
 import AssemblyP1.BBTEulerian
+import AssemblyP1.BBTFibrePeriod
 
 /-!
 # Board 94, front `94th` --- the Eulerian one-cycle rematching `theta` and the residual
@@ -66,37 +67,38 @@ theorem theta_of_same_spectrum_is_one_cycle {E : Fin G → α}
   obtain ⟨σ, hm⟩ := exists_matching hG S E hspec
   refine ⟨pullback hG L S E hm.1, pullback_isEulerianCycle hG L S hm, fun s => ?_⟩
   exact pullback_window hG L S E hm s
+/-! ## 2. A rotation of the circle has the truth's vertex cycle -/
 
-/-! ## 2. `vtx` and `window` are shift-invariant; a rotation is vertex-cycle-trivial -/
+/-- `S = 0101` at `G = 4`, `L = 3`, as in `BBTEulerian` §4.2. -/
+def S4t : Fin 4 → Fin 2 := BBTEulerian.S4
 
-/-- **Circular windows do not depend on the presentation of the start.** -/
-theorem window_rotAdd (hG : 0 < G) {L : ℕ} (W : Fin G → α) (s : ℕ) (x : Fin G) :
-    window (L := L) hG W (rotAdd hG s x) = window (L := L) hG W x := by
-  funext d
-  simp only [window]
-  refine cyc_congr (Nat.ModEq.add_left ?_)
-  rw [rotAdd_mod hG s x]
-  exact Nat.mod_add_mod _ _ _
+/-- **`window` is NOT shift-invariant, and this is `decide`-closed.**  A draft
+of this module asserted `window W (rotAdd s x) = window W x`, i.e. that a
+window read at a shifted start spells the same read.  That is false: it drops
+the shift in the *window*, exactly as the quarantined §3 dropped the shift in
+the pull-back.  The instance is `G = 4`, `L = 3`, `S = 0101`, `s = 1`,
+`x = 0`. -/
+theorem window_rotAdd_refuted :
+    window (L := 3) BBTEulerian.hG4 S4t (rotAdd BBTEulerian.hG4 1 0)
+      ≠ window (L := 3) BBTEulerian.hG4 S4t 0 := by decide
 
-/-- Same for the `(L-1)`-mers, i.e. for `vtx`. -/
-theorem vtx_rotAdd (hG : 0 < G) (L : ℕ) (S : Fin G → α) (s : ℕ) (x : Fin G) :
-    vtx hG L S (rotAdd hG s x) = vtx hG L S x := by
-  funext d
-  simp only [vtx, nodeWindow]
-  refine cyc_congr (Nat.ModEq.add_left ?_)
-  rw [rotAdd_mod hG s x]
-  exact Nat.mod_add_mod _ _ _
+/-- ... and so is the `(L-1)`-mer version `vtx`, on the same instance. -/
+theorem vtx_rotAdd_refuted :
+    vtx BBTEulerian.hG4 3 S4t (rotAdd BBTEulerian.hG4 1 0)
+      ≠ vtx BBTEulerian.hG4 3 S4t 0 := by decide
 
-/-- **A rotation of the circle has the truth's vertex cycle.**  This is the
-missing half of "`θ` is a rotation ⟹ `θ` is vertex-cycle-trivial", and it is
-the only genuinely new ingredient this front contributes.  It uses no `Ukkonen`,
+/-- **A rotation of the circle has the truth's vertex cycle.**  Note this needs
+*no* shift-invariance of `vtx`: `VertexCycleEq` asks for the *witness* `k`, and
+the rotation amount itself is a legal witness.  This is the missing half of
+"`θ` is a rotation ⟹ `θ` is vertex-cycle-trivial", and it uses no `Ukkonen`,
 no `P2` and no `BBT`. -/
 theorem vertexCycleEq_of_isRotation (σ : Fin G ≃ Fin G)
     (hrot : IsRotation hG (σ : Fin G → Fin G)) :
     VertexCycleEq hG L S σ (Equiv.refl (α := Fin G)) := by
   obtain ⟨k, hk⟩ := hrot
   refine ⟨⟨k % G, Nat.mod_lt _ hG⟩, fun i => ?_⟩
-  rw [vtx_rotAdd hG L S k (σ i), ← hk i, rotAdd_mod]
+  show vtx hG L S (σ i) = vtx hG L S (rotAdd hG (k % G) i)
+  rw [← rotAdd_mod hG k i, ← hk i]
 
 /-- **A rotational pull-back is vertex-cycle-trivial.**  This is the
 `BBTCondense`-free half of the "bad `theta`" analysis: a rematching which is a
@@ -121,40 +123,103 @@ theorem badTheta_of_not_RotEquiv {E : Fin G → α} {σ : Fin G → Fin G} (hL :
   exact hne (rotEquiv_of_vertexCycleEq hG L S (pullback hG L S E hm.1) hL hv
     (fun s => (pullback_window hG L S E hm s).symm))
 
+/-- Congruence for `ModEq`-related positions: two accesses of the same circular
+word at congruent positions agree.  This is `BBTFibrePeriod.cyc_congr` in the
+form that compares two `Fin G` positions directly. -/
+private theorem fin_congr_of_modEq {W : Fin G → α} {x y : ℕ} (h : Nat.ModEq G x y) :
+    W ⟨x % G, Nat.mod_lt _ hG⟩ = W ⟨y % G, Nat.mod_lt _ hG⟩ := by
+  have hb : y % G < G := Nat.mod_lt _ hG
+  have h' : Nat.ModEq G x (y % G) := h.trans (Nat.mod_modEq y G).symm
+  have he : x % G = y % G := Nat.mod_eq_of_modEq h' hb
+  exact congrArg W (Fin.ext he)
+
+/-- Adding a whole turn changes nothing on the circle. -/
+private theorem modEq_add_G (a : ℕ) : Nat.ModEq G (a + G) a := by
+  refine (Nat.mod_modEq (a + G) G).symm.trans ?_
+  have h2 : (a + G) % G = a % G := by
+    rw [Nat.add_mod]
+    simp
+  rw [h2]
+  exact Nat.mod_modEq a G
+
+/-- Reading `b` symbols past a start given as `a % G` reads the same symbols as
+reading `b` past a start given as `a`. -/
+private theorem modEq_add_right' (a b : ℕ) : Nat.ModEq G (a % G + b) (a + b) :=
+  ((Nat.mod_modEq a G).symm.add_right b).symm
+
+/-- **THE WINDOW RELATION A ROTATION ACTUALLY CARRIES.**  If `E` is `S` shifted
+*forward* by `k`, i.e. `RotEquiv hG E S` read with `k : Fin G`, then the window
+of `E` at `s` is the window of `S` at the position `k` steps *back*:
+
+  `window (L := L) hG E s = window (L := L) hG S (rotAdd hG (G - k.val) s)`.
+
+The shift is `G - k`, **not** `k` and **not** `0`.  The quarantined draft
+asserted the shiftless relation `window E i = window S i`, which is
+`decide`-refutable at `G = 4`, `L = 3`, `S = 0101` (`scratch94/Probe3.lean`,
+namespace `Probe94c`: `RotEquiv hG4 E4 S4` holds with `k = 1`, while
+`window E4 0 ≠ window S4 0`).  The same `G - k` shift is what
+`BBTEulerian.rotEquiv_of_vertexCycleEq` produces on the other side. -/
+theorem window_rotEquiv {E : Fin G → α} (k : Fin G)
+    (hk : ∀ i : Fin G, E ⟨(i.val + k.val) % G, Nat.mod_lt _ hG⟩ = S i) (s : Fin G) :
+    window (L := L) hG E s = window (L := L) hG S (rotAdd hG (G - k.val) s) := by
+  funext d
+  show E ⟨(s.val + d.val) % G, Nat.mod_lt _ hG⟩
+      = S ⟨(((s.val + (G - k.val)) % G) + d.val) % G, Nat.mod_lt _ hG⟩
+  -- `B` is the `S`-position of the symbol: `k` steps *back* from `s`, then `d` on.
+  -- `A ≡ B + k (mod G)`, because `B + k = s + d + G`.
+  have hturn : s.val + d.val + G = (s.val + (G - k.val) + d.val) + k.val := by omega
+  have hback : Nat.ModEq G (s.val + d.val)
+      ((s.val + (G - k.val) + d.val) + k.val) :=
+    (modEq_add_G (s.val + d.val)).symm.trans (by rw [hturn])
+  have hdist : Nat.ModEq G ((s.val + (G - k.val) + d.val) + k.val)
+      (((s.val + (G - k.val) + d.val) % G) + k.val) :=
+    (Nat.mod_modEq (s.val + (G - k.val) + d.val) G).symm.add_right k.val
+  calc E ⟨(s.val + d.val) % G, Nat.mod_lt _ hG⟩
+      = E ⟨(((s.val + (G - k.val) + d.val) + k.val) % G), Nat.mod_lt _ hG⟩ :=
+        fin_congr_of_modEq hG hback
+    _ = E ⟨(((s.val + (G - k.val) + d.val) % G + k.val) % G), Nat.mod_lt _ hG⟩ :=
+        fin_congr_of_modEq hG hdist
+    _ = S ⟨((s.val + (G - k.val) + d.val) % G), Nat.mod_lt _ hG⟩ :=
+        hk ⟨(s.val + (G - k.val) + d.val) % G, Nat.mod_lt _ hG⟩
+    _ = S ⟨(((s.val + (G - k.val)) % G + d.val) % G), Nat.mod_lt _ hG⟩ :=
+        fin_congr_of_modEq hG (modEq_add_right' (s.val + (G - k.val)) d.val).symm
+
 /-- **And the converse of step 2, also free**: a *rotational* competitor forces
-a *non-bad* rematching, by §2 and the shift-invariance of windows.  So for the
-rematching `theta` the two conditions "`theta` is a rotation" and
-"`theta` is vertex-cycle-trivial" are **independent**: neither implies the other.
-This is the exact logical content of `BBTEulerian` §4.2, and it is why the
-factorization's step 2 can only be had in the pull-back-restricted form. -/
+a *non-bad* rematching, by the corrected window relation of the previous
+lemma (`G - k`, not `0`).  So for the rematching `theta` the two conditions
+"`theta` is a rotation" and "`theta` is vertex-cycle-trivial" are
+**independent**: neither implies the other.  This is the exact logical content
+of `BBTEulerian` §4.2, and it is why the factorization's step 2 can only be had
+in the pull-back-restricted form. -/
 theorem vertexCycleEq_of_RotEquiv_pullback {E : Fin G → α} {σ : Fin G → Fin G}
     (hm : Matching (L := L) hG S E σ) (hrot : RotEquiv hG E S) (hL : 1 ≤ L) :
     VertexCycleEq hG L S (pullback hG L S E hm.1) (Equiv.refl (α := Fin G)) := by
   obtain ⟨k, hk⟩ := hrot
-  refine ⟨⟨k % G, Nat.mod_lt _ hG⟩, fun i => ?_⟩
-  -- `E` is a shift of `S`, so the two have the *same* windows at every start
-  have hwin : ∀ i : Fin G, window (L := L) hG E i = window (L := L) hG S i := by
-    intro i
-    funext d
-    simp only [window, cyc]
-    refine congrArg S (Fin.ext ?_)
-    have h1 := hk ⟨((i.val + d.val + G) - k) % G, Nat.mod_lt _ hG⟩
-    have h2 : (((i.val + d.val + G) - k) % G + k) % G = i.val + d.val := by
-      have : ((i.val + d.val + G) - k) % G + k = i.val + d.val + G := by
-        omega
-      rw [this, Nat.add_mod_right, Nat.mod_eq_of_lt (by
-        have := i.isLt
-        omega)]
-    simpa only [Fin.mk.injEq] using h2 ▸ h1
-  have h1 := pullback_window hG L S E hm i
-  have h2 := congrFun (hwin i) (⟨0, by omega⟩ : Fin (L - 1))
-  rw [h1] at h2
-  exact congrFun (by rw [h2]; exact (vtx_rotAdd hG L S _ _ _).symm) ⟨0, by omega⟩
+  -- The shift carried by the pull-back is `G - k`, exactly as in
+  -- `BBTEulerian.rotEquiv_of_vertexCycleEq`; the quarantined draft used `k`.
+  refine ⟨⟨(G - k % G) % G, Nat.mod_lt _ hG⟩, fun i => ?_⟩
+  have hk' : ∀ j : Fin G, E ⟨(j.val + k % G) % G, Nat.mod_lt _ hG⟩ = S j := by
+    intro j
+    have hval : (j.val + k % G) % G = (j.val + k) % G := by
+      have h1 : (j.val + k % G) % G = (j.val % G + (k % G) % G) % G := Nat.add_mod _ _ _
+      have h2 : (j.val + k) % G = (j.val % G + k % G) % G := Nat.add_mod _ _ _
+      rw [h1, h2, Nat.mod_eq_of_lt (Nat.mod_lt _ hG), Nat.mod_eq_of_lt j.isLt]
+    exact congrArg E (Fin.ext hval) |>.trans (hk j)
+  have hW : window (L := L) hG E i = window (L := L) hG S (rotAdd hG (G - k % G) i) :=
+    window_rotEquiv (E := E) (hG := hG) (L := L) (S := S)
+      (k := ⟨k % G, Nat.mod_lt _ hG⟩) (hk := fun j => hk' j) i
+  show vtx hG L S (pullback hG L S E hm.1 i)
+      = vtx hG L S (rotAdd hG ((G - k % G) % G) i)
+  rw [← rotAdd_mod hG (G - k % G) i]
+  have hW' : window (L := L) hG S (pullback hG L S E hm.1 i)
+      = window (L := L) hG S (rotAdd hG (G - k % G) i) :=
+    (pullback_window hG L S E hm i).trans hW
+  funext d
+  show cyc hG S ((pullback hG L S E hm.1 i).val + d.val)
+      = cyc hG S ((rotAdd hG (G - k % G) i).val + d.val)
+  exact congrFun hW' ⟨d.val, by omega⟩
 
 /-! ### 3.1 The unrestricted form of step 2 is false -/
-
-/-- `S = 0101` at `G = 4`, `L = 3`, as in `BBTEulerian` §4.2. -/
-def S4t : Fin 4 → Fin 2 := BBTEulerian.S4
 
 /-- **REFUTED (kernel-checked, `decide`): the unrestricted step 2.**
 
@@ -179,15 +244,35 @@ theorem step2_unrestricted_refuted :
 
 /-! ## 4. The residual obligation of the factorization *is* `thm:BBT` -/
 
+/-- **A `Matching` determines the complete `L`-spectrum of the candidate.**
+The window clause of `Matching` transports `window S r = w` to
+`window E (σ r) = w` along the bijection `σ`, so the two spectra agree. -/
+theorem specCount_eq_of_Matching {E : Fin G → α} {σ : Fin G → Fin G}
+    (hm : Matching (L := L) hG S E σ) (w : Fin L → α) :
+    specCount (L := L) hG S w = specCount (L := L) hG E w := by
+  refine Finset.card_equiv
+    (s := Finset.univ.filter (fun r : Fin G => window (L := L) hG S r = w))
+    (t := Finset.univ.filter (fun r : Fin G => window (L := L) hG E r = w))
+    (Equiv.ofBijective σ hm.1) ?_
+  intro r
+  simp only [Finset.mem_filter, Finset.mem_univ, true_and]
+  constructor
+  · intro h; exact (hm.2 r).symm.trans h
+  · intro h; exact (hm.2 r).trans h
+
 /-- **The residual obligation left by the factorization**: a same-`L`-spectrum
 competitor together with a bad (vertex-cycle-nontrivial) rematching forces the
 long obstruction.  This is the packet's "bad `theta` implies
 `LongObstruction`", stated with the `theta` supplied by the construction
-lemmas of §1, i.e. as the pull-back of a `Matching`. -/
+lemmas of §1, i.e. as the pull-back of a `Matching`.  `σ` is the bijection
+carried by the matching, i.e. `Fin K ≃ Fin K`: `pullback` takes a bare
+`Function.Bijective`, whereas the earlier draft wrote `σ.1` on a plain
+`Fin K → Fin K`, where `σ.1` is not a projection at all, so that `Prop` did not
+elaborate. -/
 def BadThetaObstruction (L : ℕ) : Prop :=
-  ∀ (K : ℕ) (hK : 0 < K) (S E : Fin K → α) (σ : Fin K → Fin K),
+  ∀ (K : ℕ) (hK : 0 < K) (S E : Fin K → α) (σ : Fin K ≃ Fin K),
     Matching (L := L) hK S E σ →
-    ¬ VertexCycleEq hK L S (pullback hK L S E σ.1) (Equiv.refl (α := Fin K)) →
+    ¬ VertexCycleEq hK L S (pullback hK L S E σ.bijective) (Equiv.refl (α := Fin K)) →
     LongObstruction hK L S
 
 /-- **The residual obligation of the factorization implies `thm:BBT` in the
@@ -203,7 +288,8 @@ theorem bbt_of_badThetaObstruction {L : ℕ} (hL : 2 ≤ L)
   by_contra hn
   obtain ⟨σ, hm⟩ := exists_matching hK S E hspec
   exact absurd
-    (hB K hK S E σ hm (badTheta_of_not_RotEquiv hK L S hm hn))
+    (hB K hK S E (Equiv.ofBijective σ hm.1) hm
+      (badTheta_of_not_RotEquiv (E := E) (σ := σ) hK L S hL hm hn))
     (not_longObstruction_of_Ukkonen hUkk)
 
 /-- **... and conversely, `thm:BBT` implies the residual obligation of the
@@ -218,10 +304,11 @@ theorem badThetaObstruction_of_bbt {L : ℕ} (hL : 2 ≤ L)
     (hObs : EulerianCycleObstruction (α := α) L) : BadThetaObstruction (α := α) L := by
   intro K hK S E σ hm hbad
   by_contra hLO
-  have hUkk : Ukkonen hK L S := (longObstruction_iff_not_Ukkonen (S := S)).mpr hLO
+  have hUkk : Ukkonen hK L S := Classical.byContradiction fun hUk =>
+    hLO ((longObstruction_iff_not_Ukkonen (hG := hK) (L := L) (S := S)).mpr hUk)
   have hspec : specCount (L := L) hK S = specCount (L := L) hK E :=
-    (BBTChords.matching_imp hK L S E (pullback hK L S E hm.1) (by omega) hm).1
-  exact hbad (vertexCycleEq_of_RotEquiv_pullback hK L S hm
-    (bbtCompleteSpec_of_obstruction hK hL hObs K hK S E hUkk hspec) (by omega))
+    funext (specCount_eq_of_Matching hK L S (E := E) (σ := (σ : Fin K → Fin K)) hm)
+  exact hbad (vertexCycleEq_of_RotEquiv_pullback (E := E) (σ := σ) hK L S hm
+    (bbtCompleteSpec_of_obstruction hL hObs K hK S E hUkk hspec) (by omega))
 
 end AssemblyP1.Issue94EulerianTheta

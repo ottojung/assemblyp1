@@ -47,11 +47,16 @@ import AssemblyP1.Issue94GcdOneP2
 import AssemblyP1.P2GcdOne
 import AssemblyP1.Issue94R1LongWindow
 import AssemblyP1.BBTVertexCycleReduction
--- QUARANTINED (board 94 green restore): AssemblyP1/Issue94EulerianTheta.lean does not
--- elaborate (11 source errors); its §3 proof rests on a false intermediate claim
--- (`hwin`, kernel-refuted in scratch94/Probe3.lean) and §4's `BadThetaObstruction`
--- is ill-typed.  The file is kept verbatim and unregistered, so the build is green
--- and no mathematics is lost.  See /workspace/BOARD94-GREEN-RESTORE-0810.md.
+-- REPAIRED (board 94, front 94th): Issue94EulerianTheta now elaborates.  The
+-- quarantined draft proved a false intermediate (`hwin : window E i = window S i`,
+-- kernel-refuted in scratch94/Probe3.lean, namespace `Probe94c`: `RotEquiv hG4 E4 S4`
+-- with k = 1 but `window E4 0 != window S4 0`), and its §2 shift-invariance lemmas
+-- were false as well (`window_rotAdd_refuted`, `vtx_rotAdd_refuted`, both `decide`).
+-- The relation a rotation actually carries is the shifted one, `window E s =
+-- window S (rotAdd hG (G - k) s)` (`window_rotEquiv`), which is what
+-- `vertexCycleEq_of_RotEquiv_pullback` now uses.  §4's `BadThetaObstruction` is now
+-- well typed (`σ : Fin K ≃ Fin K`).  See /workspace/BOARD94-THETA-1420Z.md.
+import AssemblyP1.Issue94EulerianTheta
 import AssemblyP1.Issue94TW1
 import AssemblyP1.Issue94TW1EdgeType
 import AssemblyP1.Issue94TW4Coalesce
