@@ -57,6 +57,21 @@ import AssemblyP1.BBTVertexCycleReduction
 -- `vertexCycleEq_of_RotEquiv_pullback` now uses.  §4's `BadThetaObstruction` is now
 -- well typed (`σ : Fin K ≃ Fin K`).  See /workspace/BOARD94-THETA-1420Z.md.
 import AssemblyP1.Issue94EulerianTheta
+-- REFUTED (board 94, front 94wit): the extraction theorem
+-- `Issue94WitnessPair.InterlacedBranchPair` --- "an alternative Eulerian cycle
+-- with a foreign vertex cycle forces two interlacing chords of the pairing
+-- `AltF σ`" --- is FALSE.  Smallest counterexample: K = 5, L = 2, S = 00102
+-- over Fin 3, listing σ = (1 3)(2 4): an Eulerian cycle
+-- (`cex_EulerianCycle`), a foreign vertex cycle (`cex_not_vertexCycleEq`), and
+-- NO chord at all in `AltF σ` (`cex_no_chord`), so no interlaced pair
+-- (`cex_no_interlaced_pair`).  The word IS primitive (`cex_is_primitive`); it
+-- fails `P2` because of the maximal triple repeat at length L-1 = 1
+-- (`cex_triple_repeat`).  The missing hypothesis is `Interleaved` on two
+-- distinct chords, i.e. exactly what `BBTLadder.LadderVertexCycle` assumes and
+-- `BBTLadder.CrossingChordsCoalesce` is about.  Minimality is decide-closed
+-- (`no_foreign_eulerianCycle_Fin{a}_K{k}`).  See
+-- /workspace/BOARD94-WITNESS-2010Z.md.
+import AssemblyP1.Issue94WitnessPair
 import AssemblyP1.Issue94TW1
 import AssemblyP1.Issue94TW1EdgeType
 import AssemblyP1.Issue94TW4Coalesce
