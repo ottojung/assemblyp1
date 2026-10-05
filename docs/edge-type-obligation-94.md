@@ -192,10 +192,10 @@ assembly must be genuinely global.
 **Not discharged.** `AssemblyP1/PopulationUniqueness.lean` still **retains**
 `hPevzner : EulerianCycleObstruction` in
 
-* `population_unique_ML_up_to_rotation` (line 155), and
-* `population_unique_ML_up_to_rotation_same_length` (line 208),
+* `population_unique_ML_up_to_rotation` (line 178), and
+* `population_unique_ML_up_to_rotation_same_length` (line 231),
 
-and likewise in `population_tie_implies_rotation` (line 238). `BBTEulerian.
+and likewise in `population_tie_implies_rotation` (line 261). `BBTEulerian.
 EulerianCycleObstruction` still has no inhabitant. Nothing in this front uses or
 introduces such a premise.
 

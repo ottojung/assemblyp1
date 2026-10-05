@@ -89,7 +89,7 @@ natural.  Nothing is weakened; the affected goals are the trivial
 ## What is NOT established here
 
 1. **`hPevzner` is untouched and is NOT discharged.**  It is still a hypothesis
-   at `AssemblyP1/PopulationUniqueness.lean` lines 164, 217, 247.  Nothing in
+   at `AssemblyP1/PopulationUniqueness.lean` lines 178, 231, 261.  Nothing in
    this module uses or introduces `EulerianCycleObstruction` or
    `UniqueEulerianCycle`.
 2. **`BBTLadder.LadderVertexCycle` is NOT proved**, and neither is

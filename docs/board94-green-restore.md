@@ -1,5 +1,25 @@
 # Board 94 green restore: `Issue94EulerianTheta` is QUARANTINED, not repaired
 
+> **SUPERSEDED (board 94 recovery front, `/workspace/BOARD94-AXIOMAUDIT-*.md`).**
+> The quarantine described below was lifted at commit `a91a01e`, which rewrote
+> the module (the shiftless `hwin` is withdrawn, `window_rotEquiv` with the
+> `G - k` shift replaces it, and `BadThetaObstruction` is retyped to
+> `σ : Fin K ≃ Fin K`) and re-added the import at `AssemblyP1.lean:59`.  The
+> 11 errors catalogued below are therefore no longer the state of the tree.
+>
+> **What lifting the quarantine did and did not do.**  It did *not* make the
+> module a load-bearing input of the endpoint: no theorem outside
+> `AssemblyP1/Issue94EulerianTheta.lean` uses any of its declarations, and
+> `#print axioms` for each of its twelve public declarations reports only
+> `[propext, Classical.choice, Quot.sound]` — no user axiom.  §4 of the module
+> still shows `BadThetaObstruction ↔ thm:BBT`, i.e. the module establishes
+> that its own "new structural theorem" is the target, not a step towards it.
+> The endpoint `population_unique_ML_up_to_rotation` remains conditional on the
+> hypothesis `hPevzner : EulerianCycleObstruction`, which has no inhabitant
+> anywhere in the library.  See `docs/edge-type-obligation-94.md` §5 for the
+> current line numbers (`AssemblyP1/PopulationUniqueness.lean` lines 178, 231,
+> 261; the 155/208/238 cited in an earlier revision of that file were stale).
+
 **Disposition: QUARANTINE.**  `AssemblyP1/Issue94EulerianTheta.lean` is left
 byte-identical on disk and is no longer imported by `AssemblyP1.lean`, so
 `lake build --wfail` is green (exit 0) on the head of `integration/94-green-audit`
