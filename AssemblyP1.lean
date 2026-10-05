@@ -112,6 +112,26 @@ import AssemblyP1.Issue94P2Iff
 import AssemblyP1.Issue94TruthTraversal
 import AssemblyP1.AAABConverse
 import AssemblyP1.Issue94Step2Path
+import AssemblyP1.Issue94Transposition
+
+/-! ## `Issue94Transposition`: the Kotzig/Ukkonen/Pevzner descent, and an obstruction
+
+The classical transposition step deletes one transposition factor of the
+transition-difference set, lowering `|W|` by `2`.  Re-expressed in this
+repository's `Succ` / `AltF` / `Support` language that step is impossible: the
+reachable `AltF`s are even permutations, so `|W| = 2t` has `t` even and `|W|` is
+always a multiple of four (`involution_support_mod_four_5/6`, `altF_even_5`);
+hence the `|W| = 2` base case cannot occur
+(`involution_support_two_impossible_5`) and no two reachable `AltF`s differ by a
+single factor (`no_single_factor_step_5/6`).
+
+This is a statement about the translation, not a refutation of the classical
+theorem: `Support (AltF hG σ)` counts positions, so `t = |W| / 2` counts each
+differing transition twice, and the reaching map lands in the even-sign half.  The
+descent step compatible with this language deletes a *pair* of factors; it is
+stated as the unproved `Prop` `Issue94Transposition.PairDeletionDescent`, and its
+`t = 2` base case is the already-refuted `TwoTranspositionsBlock` shape, which is
+not re-attacked.  See `docs/transposition-descent-94.md`. -/
 
 /-!
 ## The exported #88 endpoints
@@ -725,3 +745,11 @@ proportional-cancellation half of the reduction only.
 #print axioms AssemblyP1.Issue94GcdOneP2.nonbranching_of_common_divisor
 #print axioms AssemblyP1.Issue94GcdOneP2.gcdOne_of_primitive_P2
 #print axioms AssemblyP1.PopulationReduction.population_uniqueness_of_spectra
+#print axioms AssemblyP1.Issue94Transposition.succ_eq_altF_nextPos
+#print axioms AssemblyP1.Issue94Transposition.succ_eq_conj_nextPos
+#print axioms AssemblyP1.Issue94Transposition.involution_support_mod_four_5
+#print axioms AssemblyP1.Issue94Transposition.involution_support_mod_four_6
+#print axioms AssemblyP1.Issue94Transposition.involution_support_two_impossible_5
+#print axioms AssemblyP1.Issue94Transposition.altF_even_5
+#print axioms AssemblyP1.Issue94Transposition.no_single_factor_step_5
+#print axioms AssemblyP1.Issue94Transposition.no_single_factor_step_6
