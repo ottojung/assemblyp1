@@ -12,8 +12,9 @@ namespace AssemblyP1.Issue94EulerianRealize
 
 open AssemblyP1
 open AssemblyP1.OrientedRigidity
+open AssemblyP1.PopulationReduction
 open AssemblyP1.BBTChords
-open AssemblyP1.BBTCondense
+open AssemblyP1.BBTSequenceGraph
 open AssemblyP1.BBTEulerian
 
 variable {α : Type} [DecidableEq α] {G L : ℕ}
