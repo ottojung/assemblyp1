@@ -103,6 +103,29 @@ import AssemblyP1.Issue94TW4Coalesce
 -- never primitive).  `BBTLadder.LadderVertexCycle` still has NO inhabitant.
 -- See /workspace/BOARD94-CROSSCHORDS-*.md.
 import AssemblyP1.Issue94CrossingChords
+-- BOARD 94, front 94transpose: the ONE-STEP transposition lemma for
+-- `VertexCycleEq`.  `BBTTranspose.vertexCycleEq_transposition`: a transposition
+-- of two starts spelling the same `(L-1)`-mer (i.e. of the two listing
+-- positions of the two occurrences of one branch object) is vertex-INVISIBLE,
+-- so it preserves `VertexCycleEq` with the SAME rotation witness.  This is why
+-- no transport of the four chord occurrences through the rotation witness, and
+-- no re-application of `CrossingPairsCoalesce_general` in truth coordinates, is
+-- needed: `VertexCycleEq` at witness `k` is the pointwise statement
+-- `vtx (σ i) = vtx (rotAdd k i)`.  Corollaries discharge the hypothesis from
+-- `AltF_vtx'` (the two ends of any chord of `AltF`) and from `DoubledPair`.
+-- NO hypothesis of interlacement, `SameExtension`, `EulerianCycle`, `P2`,
+-- `Ukkonen`, primitivity or `AltF = id` is used.
+--
+-- The sharp boundary is also here: `BBTTranspose.interlaceAlone_insufficient`
+-- REFUTES the formulation in which the two transposition points are only
+-- required to be DISTINCT (which is all an interlacement-only / raw
+-- final-support reading supplies, since on a circle of <= 3 positions every
+-- pair of distinct points alternates): smallest instance `K = 3`, `L = 3`,
+-- `S = 001`, `sigma = refl`, transposition `{0, 1}`.
+-- `BBTLadder.LadderVertexCycle` still has NO inhabitant and its real
+-- obstruction (that the traversal walks the laminar blocks in geometric
+-- order) is untouched.  See /workspace/BOARD94-TRANSPOSE-*.md.
+import AssemblyP1.Issue94TransposePreserve
 import AssemblyP1.Issue94TW5Single
 import AssemblyP1.Issue94TW6Lemma1
 import AssemblyP1.Issue94TW7AltF
