@@ -530,8 +530,9 @@ two unordered extension pairs are both `{1, 3}`.
 `SameExtension` below is that unordered statement, written as the disjunction of
 the two orientations; it is the only form used from here on.  It is a *shared
 abbreviation*, not a third gap: it is what both remaining `Prop`s take as a
-hypothesis, and the word-level statement that would prove it for the support is
-`BBTCrossingCoalesce.CrossingPairsCoalesce`.
+hypothesis, and the word-level statement that proves it for the support, **at
+`2 ≤ L`**, is `BBTCrossingCoalesce.CrossingPairsCoalesce` (see §7 below for why
+the bound cannot be dropped).
 
 §6 reduces `#89` to **two** statements, and it is worth being precise about
 which is which, because the earlier formulation (`LadderRotationGap`, and the
@@ -614,14 +615,48 @@ pairs (`SameExtension`).
 
 `§6.1` makes every support chord extensible to a maximal repeat of length
 `≥ L - 1`, and `§6.2` (`support_blocks_nonCrossing`) makes the blocks laminar.
-What is missing is the remaining direction: that *crossing forces coalescence*,
-so that the support is a single laminar family of ladder blocks rather than
-several.  This is a `Prop`; it is **not** an inhabitant.
+What §6 does **not** do is the remaining direction: that *crossing forces
+coalescence*, so that the support is a single laminar family of ladder blocks
+rather than several.
 
-It is word-level in essence: `AltF_vtx'` gives `vtx a = vtx b` and
-`vtx c = vtx d` for the two chords, so the word-level statement
-`BBTCrossingCoalesce.CrossingPairsCoalesce` --- which mentions no `EulerianCycle`
-and no `AltF` at all --- implies this one outright. -/
+**The direction is at the vertex level, and the word-level theorem does
+*not* settle it.**  An earlier version of this comment claimed that the
+word-level statement `BBTCrossingCoalesce.CrossingPairsCoalesce` --- which
+mentions no `EulerianCycle` and no `AltF` at all --- "implies this one
+outright".  **That claim was false and is withdrawn.**  The two statements are
+not interderivable as spelled:
+
+* `CrossingPairsCoalesce` carries the hypothesis **`2 ≤ L`** (and `L ≤ K`),
+  because it is stated for two pairs of starts that merely carry a common
+  `(L-1)`-mer.  This `def` carries **no bound on `L`**.
+* At `L = 1` the word-level statement is **true and vacuous** --- its `2 ≤ L`
+  hypothesis is unsatisfiable, so it is a `Prop` with no content --- while this
+  `def` at `L = 1` is **refuted**: `Issue94CrossingChords.
+  crossingChordsCoalesce_refuted` exhibits `K = 4`, `S = 0011`, `σ = (1 3)` over
+  the two-letter alphabet `α := Fin 2`, at which the two crossing chords
+  `0 2` and `1 3` of `AltF` carry different maximal extensions.  The
+  regression is `Issue94CrossingChords.wordLevel_vacuous_at_one_ladder_refuted`
+  below; it is a kernel-checked refutation of this implication, and it is
+  deliberately kept in the build.
+
+So the missing ingredient is not a word-level implication but the
+**imposition direction at the vertex level**: from `AltF hK σ a = b` and
+`AltF hK σ b = a` on *both* chords, `AltF_vtx'` yields `vtx a = vtx b` and
+`vtx c = vtx d`, and those are exactly the word-level hypotheses.  Two things
+are needed for that hand-off and neither is available from the word level
+alone: an **`EulerianCycle`** hypothesis, which is what `AltF_vtx'` consumes and
+what `CrossingPairsCoalesce` never mentions, and a **non-degenerate window**,
+`2 ≤ L`, which is what makes `vtx` (the `(L-1)`-mer labelling) injective enough
+for a chord to be a genuine repeated window rather than an arbitrary pair of
+starts.  At `L = 1` the labelling is the constant `Fin 0 → α` and the four
+`AltF_vtx'` equalities say nothing about the word.
+
+**The surviving sharp statement** is therefore not this unbounded `def` but
+its bounded form: `Issue94CrossingChords.CrossingChordsCoalesce_ge2`
+(`2 ≤ L`, at arbitrary `[DecidableEq α]`, an inhabitant) and
+`Issue94CrossingChords.crossingChordsCoalesce_sharp_bin`, which over `α := Fin 2`
+characterises this `def` exactly --- true for every `L ≥ 2`, false at `L = 1`.
+This `def` is left exactly as written; the bound is not retrofitted into it. -/
 def CrossingChordsCoalesce (L : ℕ) : Prop :=
   ∀ (K : ℕ) (hK : 0 < K) (S : Fin K → α) (_hP2 : P2 hK L S)
     (_hprim : RepeatAdapter.IsPrimitive hK S), Ukkonen hK L S →

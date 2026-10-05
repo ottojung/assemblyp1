@@ -34,8 +34,17 @@ It is the right target because it is *word-level* and *sufficient*:
 
 * it applies to the support of any alternative traversal, since
   `AltF_vtx'` says the two ends of every support chord carry a common
-  `(L-1)`-mer --- so `BBTLadder.CrossingChordsCoalesce` is an immediate
-  corollary;
+  `(L-1)`-mer --- so `BBTLadder.CrossingChordsCoalesce` is a corollary of this
+  statement **at `2 ≤ L`**, where the `(L-1)`-mer is a non-degenerate window.
+  This front has already produced that corollary as
+  `Issue94CrossingChords.CrossingChordsCoalesce_ge2`.  Note the bound: the
+  unbounded `BBTLadder.CrossingChordsCoalesce`, which carries no `2 ≤ L`, does
+  **not** follow from this statement, and is refuted at `L = 1` over
+  `α := Fin 2` --- see `Issue94CrossingChords.crossingChordsCoalesce_refuted`
+  and `Issue94CrossingChords.wordLevel_vacuous_at_one_ladder_refuted`, the
+  kernel-checked refutation of the implication.  That claim was false and is withdrawn:
+  an earlier version of this bullet called it "an immediate corollary" without
+  the bound;
 * the conclusion is about the **support block structure only**, and
   `BBTLadder.LadderVertexCycle` then turns blocks into `VertexCycleEq`.
 

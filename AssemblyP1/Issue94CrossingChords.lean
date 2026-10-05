@@ -35,7 +35,7 @@ what this front verified about that.
 
 ## 1. The statement, verbatim
 
-`AssemblyP1/BBTLadder.lean:625`:
+`AssemblyP1/BBTLadder.lean:660`:
 
 ```lean
 def CrossingChordsCoalesce (L : ℕ) : Prop :=
@@ -50,7 +50,7 @@ def CrossingChordsCoalesce (L : ℕ) : Prop :=
 ```
 
 Note what it does **not** quantify over: there is no `2 ≤ L` and no `L ≤ K`.
-Its sibling `BBTLadder.LadderVertexCycle` (`AssemblyP1/BBTLadder.lean:658`)
+Its sibling `BBTLadder.LadderVertexCycle` (`AssemblyP1/BBTLadder.lean:693`)
 **does** carry both.  §3 shows the first omission is load-bearing.
 
 ## 2. Verdict: refuted as stated, at the smallest possible alphabet
@@ -438,7 +438,7 @@ arbitrary `[DecidableEq α]`, with every hypothesis of the library statement
 reproduced verbatim.
 
 This is the block hypothesis `BBTLadder.LadderVertexCycle` assumes
-(`AssemblyP1/BBTLadder.lean:658`), so it is the object the `#89` ladder route
+(`AssemblyP1/BBTLadder.lean:693`), so it is the object the `#89` ladder route
 was waiting for.  It is derived here by an **independent route**: a corollary of
 the α-general word-level theorem `Issue94CaseSplit.crossingPairsCoalesce_general`
 (an inhabitant of `BBTCrossingCoalesce.CrossingPairsCoalesce`).  The only step
@@ -486,5 +486,175 @@ theorem crossingChordsCoalesce_sharp_bin (L : ℕ) (hL : 2 ≤ L) :
       σ hEul a b c d hab hba hcd hdc hac hbc had hbd hI
 
 end Repaired
+
+/-! ## 5. The regression lock on the withdrawn claim
+
+Three comments in the tree asserted, or came close to asserting, that the
+word-level statement `BBTCrossingCoalesce.CrossingPairsCoalesce` implies the
+**unbounded** `BBTLadder.CrossingChordsCoalesce` outright:
+
+* `AssemblyP1/BBTLadder.lean`, in the docstring of `CrossingChordsCoalesce`
+  ("It is word-level in essence ... implies this one outright");
+* `AssemblyP1/BBTCrossingCoalesce.lean` §"It is the right target"
+  ("so `BBTLadder.CrossingChordsCoalesce` is an immediate corollary");
+* `docs/crossing-coalesce-89.md` §1 ("It is an immediate corollary of the
+  word-level statement").
+
+All three are **false as written**, and all three have been corrected to carry
+the bound `2 ≤ L` and to name the missing vertex-level ingredient.  This
+section makes the correction *locked*: `wordLevel_vacuous_at_one_ladder_refuted`
+is the kernel-checked refutation of the implication, it is deliberately part of
+the built library rather than audit scratch, and the `run_cmd` check at the end
+of the file fails the build if the withdrawn wording is put back. -/
+
+section WordLevelDoesNotImplyUnbounded
+
+variable {α : Type}
+
+/-- **THE REFUTATION, kept in the library: the word-level statement does *not*
+imply `BBTLadder.CrossingChordsCoalesce` at read length `1`, over the
+two-letter alphabet.**
+
+Left conjunct: `BBTCrossingCoalesce.CrossingPairsCoalesce (α := Fin 2) 1`
+**holds**.  It is an inhabitant of the real word-level theorem, not a trivial
+`True`: the only content of the `def` at `L = 1` is its `2 ≤ L` hypothesis,
+which is unsatisfiable, so the whole `∀` is vacuous.
+
+Right conjunct: `BBTLadder.CrossingChordsCoalesce (α := Fin 2) 1` is
+**refuted**, by §2's counterexample (`K = 4`, `S = 0011`, `σ = (1 3)`,
+chords `0 2` and `1 3`).
+
+So the two statements disagree at `L = 1` while the word-level one is
+*satisfied*: the implication is refuted, not merely unproved.  This is the
+kernel-checked content of the correction to `AssemblyP1/BBTLadder.lean`'s
+docstring, and it is what `audit94/Audit.lean`'s
+`audit_wordLevel_does_not_imply_unbounded` re-derives. -/
+theorem wordLevel_vacuous_at_one_ladder_refuted :
+    BBTCrossingCoalesce.CrossingPairsCoalesce (α := Fin 2) 1 ∧
+      ¬ BBTLadder.CrossingChordsCoalesce (α := Fin 2) 1 :=
+  ⟨crossingPairsCoalesce_general (α := Fin 2) 1, by
+    intro h
+    exact cex_not_SameExtension
+      (h 4 hK4 Sc4 cex_P2 cex_is_primitive cex_Ukkonen sig4 cex_EulerianCycle
+        0 2 1 3 cex_AltF0 cex_AltF2 cex_AltF1 cex_AltF3
+        cex_ne_ac cex_ne_bc cex_ne_ad cex_ne_bd cex_interleaved)⟩
+
+/-- **The same refutation over the four-distinct-symbol alphabet** used by the
+tree's older `Issue94TW4Coalesce.not_crossingChordsCoalesce_one`, so the
+correction does not rest on the binary minimisation alone. -/
+theorem wordLevel_vacuous_at_one_ladder_refuted_fin4 :
+    BBTCrossingCoalesce.CrossingPairsCoalesce (α := Fin 4) 1 ∧
+      ¬ BBTLadder.CrossingChordsCoalesce (α := Fin 4) 1 :=
+  ⟨crossingPairsCoalesce_general (α := Fin 4) 1,
+   Issue94TW4Coalesce.not_crossingChordsCoalesce_one⟩
+
+section NonVacuity
+
+open AssemblyP1.Issue94Step5Heads
+open AssemblyP1.BBTSequenceGraph
+
+/-- **The regression is not vacuous, and the word-level theorem is not itself
+empty: at `L = 3` it has a concrete instance whose hypothesis set is inhabited
+and whose conclusion is the real `SameExtension`.**
+
+The repository's own primitive `P2` witness `AABAB` on `five = 5` positions
+(`Issue94Step5Heads.headWord`, `headWord_is_p2`, `headWord_primitive`), with
+the chords `{1,3}` and `{2,4}`, which really do carry a common `2`-mer and do
+interleave (`vtx_five_13`, `vtx_five_24`, `head_interleaved`, all `decide`).
+
+So the left conjunct of `wordLevel_vacuous_at_one_ladder_refuted` is not
+"the word-level theorem is trivially true everywhere": the theorem is a real
+theorem, and the disagreement with the ladder `def` is located exactly at the
+missing bound `2 ≤ L`.  Without this witness the refutation could not
+distinguish "the word level says nothing" from "the word level disagrees". -/
+
+theorem witness_P2 : P2 five 3 headWord := headWord_is_p2
+
+theorem witness_primitive : RepeatAdapter.IsPrimitive five headWord :=
+  headWord_primitive
+
+theorem vtx_five_13 :
+    vtx five 3 headWord (1 : Fin 5) = vtx five 3 headWord (3 : Fin 5) := by decide
+
+theorem vtx_five_24 :
+    vtx five 3 headWord (2 : Fin 5) = vtx five 3 headWord (4 : Fin 5) := by decide
+
+theorem head_interleaved :
+    Interleaved (mkGenome five headWord) (1 : Fin 5) (3 : Fin 5) (2 : Fin 5) (4 : Fin 5) :=
+  by decide
+
+/-- ... and on that instance the word-level theorem delivers the **real**
+conclusion, `SameExtension`, not a vacuous one. -/
+theorem witness_conclusion :
+    SameExtension 5 five headWord (1 : Fin 5) (3 : Fin 5) (2 : Fin 5) (4 : Fin 5) :=
+  crossingPairsCoalesce_alpha five headWord
+    (by norm_num) (by norm_num) witness_P2 witness_primitive
+    (by decide) (by decide) vtx_five_13 vtx_five_24 head_interleaved
+
+end NonVacuity
+
+end WordLevelDoesNotImplyUnbounded
+
+/-! ### 5a. The claim lock: the build fails if the withdrawn wording returns.
+
+A comment cannot be kernel-checked, so the wording itself is locked by a
+`run_cmd` check run as part of building this module.  It requires the corrected
+wording (and the pointer to the refutation above) at all three sites, and
+rejects the withdrawn sentences verbatim.  `docs/claims-registry` style prose
+checks are the same idea in another medium; here the failure mode is a build
+error rather than a report. -/
+
+open Lean in
+/-- Locate the package root by walking up from the working directory, so the
+check does not depend on `lake` being invoked from the package directory. -/
+def claimLockRoot : IO (Option System.FilePath) := do
+  let cwd ← IO.currentDir
+  let mut dir : System.FilePath := cwd
+  for _ in [0:8] do
+    if (← System.FilePath.pathExists (dir / "lakefile.lean")) then
+      return some dir
+    match dir.parent with
+    | none => break
+    | some up => dir := up
+  return none
+
+/-- Site: `AssemblyP1/BBTLadder.lean`. -/
+def ladderSite : System.FilePath := "AssemblyP1" / "BBTLadder.lean"
+
+/-- Site: `AssemblyP1/BBTCrossingCoalesce.lean`. -/
+def crossingSite : System.FilePath := "AssemblyP1" / "BBTCrossingCoalesce.lean"
+
+/-- Site: `docs/crossing-coalesce-89.md`. -/
+def docSite : System.FilePath := "docs" / "crossing-coalesce-89.md"
+
+/-- The three sentences that must **not** come back.  These are the withdrawn
+wording verbatim; each is a *distinct* string so a partial revert is caught. -/
+def forbiddenClaims : List String :=
+  [ "It is word-level in essence: `AltF_vtx'` gives",
+    "so `BBTLadder.CrossingChordsCoalesce` is an immediate",
+    "It is an immediate corollary of the\nword-level statement" ]
+
+/-- The wording that must be present at every one of the three sites: the
+withdrawal, and the pointer to the kernel-checked refutation. -/
+def requiredClaims : List String :=
+  [ "That claim was false and is withdrawn",
+    "wordLevel_vacuous_at_one_ladder_refuted" ]
+
+run_cmd do
+  let some root ← claimLockRoot
+    | throwError "Issue94CrossingChords claim lock: package root not found"
+  for site in [ladderSite, crossingSite, docSite] do
+    let path := root / site
+    let text ← IO.FS.readFile path
+    for bad in forbiddenClaims do
+      if (text.splitOn bad).length > 1 then
+        throwError
+          "Issue94CrossingChords claim lock: the withdrawn claim has been \
+           reintroduced in {site}:\n  {bad}"
+    for good in requiredClaims do
+      if (text.splitOn good).length ≤ 1 then
+        throwError
+          "Issue94CrossingChords claim lock: {site} does not carry the \
+           required correction marker:\n  {good}"
 
 end AssemblyP1.Issue94CrossingChords

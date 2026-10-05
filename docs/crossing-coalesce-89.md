@@ -52,9 +52,15 @@ by both gaps, not a third gap.
 
 `BBTLadder.CrossingChordsCoalesce` is the Eulerian-level restatement: in the
 genuine `EulerianCycle` setting, two **crossing support chords** of
-`f = AltF` carry the same extension.  It is an immediate corollary of the
-word-level statement, because `BBTLadder.AltF_vtx'` gives `vtx a = vtx b` and
-`vtx c = vtx d` for the two chords.
+`f = AltF` carry the same extension.  It follows from the word-level statement
+**at `2 ≤ L`**, because `BBTLadder.AltF_vtx'` gives `vtx a = vtx b` and
+`vtx c = vtx d` for the two chords; that bounded corollary is
+`Issue94CrossingChords.CrossingChordsCoalesce_ge2`.  The *unbounded* `def`
+carries no `2 ≤ L` and does **not** follow: the word-level statement is then
+vacuously true at `L = 1` while `BBTLadder.CrossingChordsCoalesce (α := Fin 2) 1`
+is refuted, kernel-checked as
+`Issue94CrossingChords.wordLevel_vacuous_at_one_ladder_refuted`.  An earlier
+version of this sentence said "an immediate corollary" with no bound.  That claim was false and is withdrawn.
 
 ## 2. The two interfaces, in their corrected form
 
