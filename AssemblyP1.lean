@@ -790,3 +790,16 @@ proportional-cancellation half of the reduction only.
 #print axioms AssemblyP1.Issue94Transposition.altF_even_5
 #print axioms AssemblyP1.Issue94Transposition.no_single_factor_step_5
 #print axioms AssemblyP1.Issue94Transposition.no_single_factor_step_6
+
+import AssemblyP1.Issue94ObstructionEquiv
+
+/-!
+## `Issue94ObstructionEquiv`: an audit of the residual hypothesis of the #89 endpoint
+
+`AssemblyP1/Issue94ObstructionEquiv.lean` does **not** prove
+`EulerianCycleObstruction L ↔ BBTUniqueAt L`. It records the surviving library
+direction, the per-length decomposition, and a kernel-checked refutation of the
+false claim that every start permutation is the pull-back of a `Matching`.
+The converse is named as the open `Prop` `BBT94.ObstructionFromBBT` and left unproved.
+See `docs/issue-94-obstruction-equiv.md`.
+-/
