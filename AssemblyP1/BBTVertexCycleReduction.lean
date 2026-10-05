@@ -4,7 +4,7 @@ import AssemblyP1.BBTLadder
 # Reductions for `BBTLadder.LadderVertexCycle` (board 94, second Lean front)
 
 This module does **not** prove `BBTLadder.LadderVertexCycle`
-(`AssemblyP1/BBTLadder.lean:649-658`).  That `Prop` is untouched; see
+(`AssemblyP1/BBTLadder.lean:684-693`).  That `Prop` is untouched; see
 "Status" below.  What this module establishes is (i) a set of
 kernel-checked reductions of the obligation, and (ii) an explicit,
 kernel-checked statement of the residual obstruction.  No `sorry`, no `admit`,
@@ -241,8 +241,8 @@ theorem altF_unfold {σ : Fin G ≃ Fin G} (x : Fin G) :
 
 /-! ## 5. The bridge between the two obligations of `#89`
 
-Note on the two `Prop`s: `CrossingChordsCoalesce` (`BBTLadder.lean:616`) and
-`LadderVertexCycle` (`BBTLadder.lean:649`) are *not* interchangeable as `Prop`s.
+Note on the two `Prop`s: `CrossingChordsCoalesce` (`BBTLadder.lean:660`) and
+`LadderVertexCycle` (`BBTLadder.lean:693`) are *not* interchangeable as `Prop`s.
 The former carries no `2 ≤ L` and no `L ≤ K`; the latter carries both.  This is
 why the bridge below is stated with both side conditions made explicit, and why
 **no** implication between the two `Prop`s is claimed anywhere in this file:
