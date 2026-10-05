@@ -3,6 +3,14 @@
 Branch `proof/94-eulerian-obstruction`. Module:
 `AssemblyP1/Issue94ObstructionEquiv.lean`. Namespace `AssemblyP1.BBT94`.
 
+> **PARTIALLY SUPERSEDED** (board 94, front `94real`, see
+> `docs/issue-94-eulerian-realize.md`). The converse of §2/§3 below **is now
+> proved**, in `AssemblyP1/Issue94EulerianRealize.lean`: every `EulerianCycle`
+> is the pull-back of a `Matching`, so `EulerianCycleObstruction L ↔
+> BBTUniqueAt L` at `2 ≤ L`, and `ObstructionFromBBT` is inhabited there. The
+> refutations of §3 stand unchanged; the missing hypothesis in the read-off
+> construction is exactly the `traverses` clause.
+
 This note records what the front examined, what it kept, what it rejected and
 what it could **not** establish. Nothing here is a solution of issue #89, and
 nothing here is progress toward an inhabitant of the residual.
@@ -95,7 +103,9 @@ effort: the structural premise is false.
 needs and the only one available.
 
 Whether *every* `EulerianCycle σ` is the pull-back of some `Matching` is a
-narrower question than the residue's claim and is **not settled here**. A
+narrower question than the residue's claim. **It is settled by front `94real`
+(`docs/issue-94-eulerian-realize.md`): the answer is yes, and the hypothesis
+that repairs the construction is `traverses` alone.** A
 `decide`-equivalent scan at `G = 4`, `L = 3`, binary alphabet (all `2⁴` words ×
 all `4!` permutations, checking `EulerianCycle` against the existence of a
 candidate word `E` with `window S r = window E (σ r)` for all `r`) found **no**

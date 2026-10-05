@@ -792,6 +792,7 @@ proportional-cancellation half of the reduction only.
 #print axioms AssemblyP1.Issue94Transposition.no_single_factor_step_6
 
 import AssemblyP1.Issue94ObstructionEquiv
+import AssemblyP1.Issue94EulerianRealize
 
 /-!
 ## `Issue94ObstructionEquiv`: an audit of the residual hypothesis of the #89 endpoint
@@ -802,4 +803,11 @@ direction, the per-length decomposition, and a kernel-checked refutation of the
 false claim that every start permutation is the pull-back of a `Matching`.
 The converse is named as the open `Prop` `BBT94.ObstructionFromBBT` and left unproved.
 See `docs/issue-94-obstruction-equiv.md`.
+
+**SUPERSEDED IN PART** (board 94, front `94real`, see
+`docs/issue-94-eulerian-realize.md`). The converse is now proved, in
+`AssemblyP1/Issue94EulerianRealize.lean`: every `EulerianCycle` *is* the
+pull-back of a `Matching`, so `EulerianCycleObstruction L ↔ BBTUniqueAt L` at
+`2 ≤ L`. The refutation of "every start permutation" above stands and is not
+contradicted --- its instance `σ = (2 3)` is not an `EulerianCycle`.
 -/
