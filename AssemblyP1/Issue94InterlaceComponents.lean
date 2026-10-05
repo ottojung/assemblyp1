@@ -173,7 +173,7 @@ noncomputable def ExtPair (hK : 0 < K) (S : Fin K → α) (a b : Fin K) :
   {maxPairStart hK S a b, maxPairStart hK S b a}
 
 /-- **Two two-element sets are equal only by matching or by swapping.** -/
-theorem pair_two_eq (hK : 0 < K) {p q r s : Fin K}
+theorem pair_two_eq (_hK : 0 < K) {p q r s : Fin K}
     (h : ({p, q} : Finset (Fin K)) = ({r, s} : Finset (Fin K))) :
     (p = r ∧ q = s) ∨ (p = s ∧ q = r) := by
   have hp : p ∈ ({r, s} : Finset (Fin K)) :=
@@ -184,7 +184,7 @@ theorem pair_two_eq (hK : 0 < K) {p q r s : Fin K}
     h ▸ (show r ∈ ({r, s} : Finset _) from by simp)
   have hs : s ∈ ({p, q} : Finset (Fin K)) :=
     h ▸ (show s ∈ ({r, s} : Finset _) from by simp)
-  simp only [Finset.mem_insert, Finset.mem_singleton, or_false] at hp hq hr hs
+  simp only [Finset.mem_insert, Finset.mem_singleton] at hp hq hr hs
   rcases hp with hp | hp <;> rcases hq with hq | hq
   · exact Or.inl ⟨hp, hs.elim (fun e => hq.trans (hp.symm.trans e.symm)) (fun e => e.symm)⟩
   · exact Or.inl ⟨hp, hq⟩
@@ -204,7 +204,7 @@ theorem SameExtension_iff_pairEq (hK : 0 < K) (S : Fin K → α)
   constructor
   · rintro (⟨h1, h2⟩ | ⟨h1, h2⟩)
     · refine Finset.ext fun x => ?_
-      simp only [ExtPair, Finset.mem_insert, Finset.mem_singleton, or_false]
+      simp only [ExtPair, Finset.mem_insert, Finset.mem_singleton]
       constructor
       · rintro (h | h)
         · exact Or.inl (h.trans h1)
@@ -213,7 +213,7 @@ theorem SameExtension_iff_pairEq (hK : 0 < K) (S : Fin K → α)
         · exact Or.inl (h.trans h1.symm)
         · exact Or.inr (h.trans h2.symm)
     · refine Finset.ext fun x => ?_
-      simp only [ExtPair, Finset.mem_insert, Finset.mem_singleton, or_false]
+      simp only [ExtPair, Finset.mem_insert, Finset.mem_singleton]
       constructor
       · rintro (h | h)
         · exact Or.inr (h.trans h1)
@@ -234,7 +234,7 @@ invariant for the interlace graph, whose vertices are unordered chords. -/
 theorem ExtPair_comm (hK : 0 < K) (S : Fin K → α) (a b : Fin K) :
     ExtPair hK S a b = ExtPair hK S b a := by
   ext x
-  simp only [ExtPair, Finset.mem_insert, Finset.mem_singleton, or_false]
+  simp only [ExtPair, Finset.mem_insert, Finset.mem_singleton]
   exact or_comm
 
 theorem SE_refl (hK : 0 < K) (S : Fin K → α) (a b : Fin K) : SE hK S a b a b :=
@@ -327,7 +327,7 @@ theorem connected_block (hK : 0 < K) (hL : 2 ≤ L) (hLG : L ≤ K)
 theorem finset_two_comm {K : ℕ} (r s : Fin K) :
     ({r, s} : Finset (Fin K)) = {s, r} := by
   ext x
-  simp only [Finset.mem_insert, Finset.mem_singleton, or_false]
+  simp only [Finset.mem_insert, Finset.mem_singleton]
   exact or_comm
 
 /-- **Matching members give matching two-element `Finset`s.** -/
