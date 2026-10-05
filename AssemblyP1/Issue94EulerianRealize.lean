@@ -1,4 +1,4 @@
-import AssemblyP1.BBTEulerian
+import AssemblyP1.Issue94EulerianTheta
 
 /-!
 # Realizing an Eulerian listing as a circular word
@@ -81,5 +81,40 @@ theorem matching_spelledWord (hG : 0 < G) (hL : 0 < L) (S : Fin G → α)
   · exact σ.symm.bijective
   · intro r
     rw [spelledWord_window (L := L) hG hL S σ hEul (σ.symm r), σ.apply_symm_apply]
+
+
+
+/-- Complete-spectrum uniqueness implies Eulerian-cycle uniqueness. -/
+theorem obstruction_of_bbtUniqueAt (hL : 2 ≤ L)
+    (hBBT : BBTUniqueAt (α := α) L) :
+    EulerianCycleObstruction (α := α) L := by
+  intro K hK S hUkk σ hEul
+  left
+  let E : Fin K → α := spelledWord S σ
+  have hm : Matching (L := L) hK S E (σ.symm : Fin K → Fin K) :=
+    matching_spelledWord (L := L) hK (by omega) S σ hEul
+  have hspec : specCount (L := L) hK S = specCount (L := L) hK E :=
+    funext (AssemblyP1.Issue94EulerianTheta.specCount_eq_of_Matching
+      hK L S (E := E) (σ := (σ.symm : Fin K → Fin K)) hm)
+  have hrot : RotEquiv hK E S := hBBT K hK S E hUkk hspec
+  have hv :=
+    AssemblyP1.Issue94EulerianTheta.vertexCycleEq_of_RotEquiv_pullback
+      (E := E) (σ := (σ.symm : Fin K → Fin K)) hK L S hm hrot (by omega)
+  have hpull :
+      pullback hK L S E hm.1 = σ := by
+    apply Equiv.ext
+    intro x
+    apply σ.symm.injective
+    rw [σ.symm_apply_apply]
+    exact Equiv.apply_symm_apply
+      (Equiv.ofBijective (σ.symm : Fin K → Fin K) hm.1) x
+  rwa [hpull] at hv
+
+/-- The graph and complete-spectrum formulations are equivalent for L ≥ 2. -/
+theorem obstruction_iff_bbtUniqueAt (hL : 2 ≤ L) :
+    EulerianCycleObstruction (α := α) L ↔ BBTUniqueAt (α := α) L := by
+  constructor
+  · exact BBTEulerian.bbtUniqueAt_of_obstruction hL
+  · exact obstruction_of_bbtUniqueAt hL
 
 end AssemblyP1.Issue94EulerianRealize
