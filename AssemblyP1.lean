@@ -103,6 +103,20 @@ import AssemblyP1.Issue94TW4Coalesce
 -- never primitive).  `BBTLadder.LadderVertexCycle` still has NO inhabitant.
 -- See /workspace/BOARD94-CROSSCHORDS-*.md.
 import AssemblyP1.Issue94CrossingChords
+
+
+-- Board 94, front `94comp` (the interlace graph on chords, in the
+-- Arratia--Bollobas--Coppersmith--Sorkin style): `SameExtension` is packaged as
+-- an equivalence (`SameExtension_iff_pairEq`, `SE_refl`/`SE_symm`/`SE_trans`,
+-- `BlockClass`), and coalescing along an interlace edge plus that transitivity
+-- forces every connected component of the interlace graph into ONE
+-- maximal-extension ladder (`connected_block`, `InterlaceComponent_block`,
+-- `InterlaceComponents_ladder` --- all inhabitants).  The reverse direction
+-- (block => connected) is isolated as `ShiftPairInterlace` and NOT proved; the
+-- component-independence / component-repair route is REFUTED at `G = 5` by
+-- `scripts/verify_interlace_components_94.py` (predicates T6 and T7).
+-- `BBTLadder.LadderVertexCycle` still has NO inhabitant.
+import AssemblyP1.Issue94InterlaceComponents
 -- BOARD 94, front 94transpose: the ONE-STEP transposition lemma for
 -- `VertexCycleEq`.  `BBTTranspose.vertexCycleEq_transposition`: a transposition
 -- of two starts spelling the same `(L-1)`-mer (i.e. of the two listing
