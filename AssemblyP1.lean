@@ -112,6 +112,21 @@ import AssemblyP1.Issue94P2Iff
 import AssemblyP1.Issue94TruthTraversal
 import AssemblyP1.AAABConverse
 import AssemblyP1.Issue94Step2Path
+import AssemblyP1.Issue94ObstructionEquiv
+
+/-!
+## `Issue94ObstructionEquiv`: an audit of the residual hypothesis of the #89
+## endpoint
+
+`AssemblyP1/Issue94ObstructionEquiv.lean` does **not** prove
+`EulerianCycleObstruction L ↔ BBTUniqueAt L`.  It records what survives of that
+attempt: the library direction (`BBTEulerian.bbtUniqueAt_of_obstruction`), the
+per-genome-length decomposition of the residual, and a kernel-checked
+**refutation** of the argument the killed front `94d4` left as residue --- the
+claim that every permutation of the starts is the pull-back of a `Matching`,
+which is false at `S = 0001`, `G = 4`, `L = 3`, `σ = (2 3)`.  The converse is
+named as the open `Prop` `BBT94.ObstructionFromBBT` and left unproved.  Record:
+`docs/issue-94-obstruction-equiv.md`. -/
 
 /-!
 ## The exported #88 endpoints
