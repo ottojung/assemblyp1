@@ -67,9 +67,12 @@ theorem swap_commutes_of_vtx_eq (hL : LE.le 2 L) (hLK : L ≤ K)
     (hv : vtx hK L S a = vtx hK L S b)
     (g : Fin K ≃ Fin K)
     (hg : ∀ x : Fin K, vtx hK L S (g x) = vtx hK L S x) :
-    g.trans (Equiv.swap a b) = (Equiv.swap a b).trans g :=
-  Issue94FibreCommute.swap_commutes_vtxPreserving hK S hab g
-    (doubledPair_of_vtx_eq hK S hL hLK hprim hP2 hab hv) hg
+    g.trans (Equiv.swap a b) = (Equiv.swap a b).trans g := by
+  apply Equiv.ext
+  intro x
+  exact congrFun
+    (Issue94FibreCommute.swap_comm_of_vtxPreserving_equiv
+      hK S hL hLK hprim hP2 hab hv g hg) x
 
 #print axioms AssemblyP1.Issue94P2DoubledPair.doubledPair_of_vtx_eq
 #print axioms AssemblyP1.Issue94P2DoubledPair.swap_commutes_of_vtx_eq
