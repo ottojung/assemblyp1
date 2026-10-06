@@ -862,3 +862,25 @@ container's 8 GiB cgroup --- pre-existing, see
 #print axioms AssemblyP1.Issue94Interface.bbTP2Prim_of_bbtUniqueAt
 #print axioms AssemblyP1.Issue94Interface.bbTP2Prim_of_obstruction
 #print axioms AssemblyP1.Issue94Interface.population_unique_ML_of_BBTUniqueAt
+
+/-!
+## `Issue94SameAltF`: same `AltF` ⟹ same vertex cycle
+
+`AssemblyP1/Issue94SameAltF.lean` proves the purely combinatorial step that
+front tw7 (`Issue94TW7AltF`) identified as the right replacement for its own
+refuted obligation: if two presentations agree on `AltF` and one of them is
+label-preserving, then the other one's listing **is** the truth's vertex
+listing up to rotation, i.e. `VertexCycleEq hG L S σ (Equiv.refl _)`, the object
+`EulerianCycleObstruction` quantifies over.
+
+The proof uses only `BBTVertexCycleReduction.listing_step`, the hypothesis, and
+`Issue94TW7AltF.comm_nextPos_isRotation`; **no `EulerianCycle` hypothesis** and
+no repeat theory is needed. It does not discharge `hPevzner`/`BBT`: what it
+proves is the bridge *conditional* on two presentations having the same `AltF`.
+See `AssemblyP1/Issue94SameAltF.lean` and
+`AssemblyP1/Issue94TW7AltF.lean` §4 (the point where the point-level chain stops).
+-/
+import AssemblyP1.Issue94SameAltF
+#print axioms AssemblyP1.Issue94SameAltF.sameAltF_comm_nextPos
+#print axioms AssemblyP1.Issue94SameAltF.sameAltF_vertexCycleEq
+#print axioms AssemblyP1.Issue94SameAltF.sameAltF_listing_is_rotation
