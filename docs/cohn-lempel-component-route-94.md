@@ -121,9 +121,10 @@ Do **not** use any of the following:
   components, because the matrix is block diagonal.
 - “`AltF = id` is the target.” False. The target is `VertexCycleEq`; benign
   nontrivial ladders such as `S=00101` must be quotiented out.
-- Broad `lake build` on Phoebe. The 8 GiB cgroup OOMs on the
-  `Issue94OrbitSearch` dependency. Keep new theorem modules small and compile
-  only targeted files.
+- Do not treat Lean validation as a serialized resource. Independent
+  `lean` checks and `lake build` commands may run concurrently. The only
+  build-resource guardrail is to avoid redundant expensive Mathlib/dependency
+  rebuilds and to reuse compatible caches when available.
 
 ## Recommended division of labor
 

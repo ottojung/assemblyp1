@@ -206,9 +206,11 @@ mathematical statement in this route, not three, and it is stated.
 
 ## 6. Validation
 
-`export PATH=/home/lubko/.elan/bin:$PATH`; one build at a time, never
-concurrent; no `lake build mathlib`, no `lake update`, no `cache get`; the
-`.lake/packages` symlink was read through only.
+`export PATH=/home/lubko/.elan/bin:$PATH`; Lean validation may run
+concurrently across independent fronts. Avoid redundant expensive dependency
+work: do not rebuild Mathlib unnecessarily, and reuse compatible shared
+Lake/Mathlib caches when available. The `.lake/packages` symlink was read
+through only for the validation recorded below.
 
 ```
 $ lake build AssemblyP1.Issue94TW1EdgeType
