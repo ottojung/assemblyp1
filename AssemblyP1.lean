@@ -811,3 +811,54 @@ pull-back of a `Matching`, so `EulerianCycleObstruction L ↔ BBTUniqueAt L` at
 `2 ≤ L`. The refutation of "every start permutation" above stands and is not
 contradicted --- its instance `σ = (2 3)` is not an `EulerianCycle`.
 -/
+
+import AssemblyP1.Issue94P2PrimInterface
+
+/-!
+## `Issue94P2PrimInterface`: the interface a route has to hit
+
+`AssemblyP1/Issue94P2PrimInterface.lean` isolates the residual of #89 in the
+weakest form the endpoint actually consumes. Reading the proof of
+`PopulationUniqueness.population_unique_ML_up_to_rotation`, its single hypothesis
+`hPevzner : EulerianCycleObstruction L` is used at exactly two sites
+(`PopulationUniqueness.lean:212` and `:214`), and at both the word it applies to
+satisfies `P2` **and** primitivity, the competitor ranges over all words, and the
+genome length is unrestricted. So the residual is not `BBTUniqueAt L` and not
+`EulerianCycleObstruction L`; it is
+
+  `BBTP2Prim L` --- complete-`L`-spectrum uniqueness at `P2`-and-primitive truths.
+
+`BBTP2Prim L` is then split into the two genome-length ranges. The `K ≤ L - 1`
+half is **already a theorem** for arbitrary words
+(`Issue94KShort.vertexCycleEq_short_window_general`), so the residual is the
+long half `P2LongUnique L` alone, and `population_unique_ML_of_long_unique`
+turns that, plus assumptions the endpoint already carries, into `thm:population`.
+A route --- including a Cohn--Lempel block-deletion argument --- has one named
+target and one line to apply afterwards. The interface is stated on the
+project's own objects with no graph vocabulary, so it can be proved in isolation.
+
+`P2LongUnique L` is a `Prop` and is **not** an inhabitant; issue #89 is not
+settled. `bbTP2Prim_of_obstruction` and `population_unique_ML_of_BBTUniqueAt`
+show nothing is lost: the interface is implied by the already-postulated
+obstruction, and after the `Issue94EulerianRealize` bridge the endpoint follows
+from `thm:BBT` in its source form with no Eulerian-cycle object named.
+
+See `docs/issue-94-long-window-interface-94.md`. The companion
+`AssemblyP1/Issue94LongWindowSplit.lean` instantiates the short half from
+`Issue94KShort`; it is **not** registered here because its import chain reaches
+`AssemblyP1.Issue94OrbitSearch`, which is OOM-killed (exit 137) under this
+container's 8 GiB cgroup --- pre-existing, see
+`docs/issue-94-eulerian-realize.md` §7.
+-/
+#print axioms AssemblyP1.Issue94Interface.bbTP2Prim_iff_bbTP2Prim'
+#print axioms AssemblyP1.Issue94Interface.bbtCompleteSpec_of_P2Prim'
+#print axioms AssemblyP1.Issue94Interface.bbtCompleteSpec_of_P2Prim
+#print axioms AssemblyP1.Issue94Interface.long_short_of_long
+#print axioms AssemblyP1.Issue94Interface.population_unique_ML_of_P2Prim
+#print axioms AssemblyP1.Issue94Interface.population_unique_ML_of_long_unique
+#print axioms AssemblyP1.Issue94Interface.population_unique_ML_same_length_of_P2Prim
+#print axioms AssemblyP1.Issue94Interface.population_tie_implies_rotation_of_P2Prim
+#print axioms AssemblyP1.Issue94Interface.p2LongUnique_of_bbtUniqueAt
+#print axioms AssemblyP1.Issue94Interface.bbTP2Prim_of_bbtUniqueAt
+#print axioms AssemblyP1.Issue94Interface.bbTP2Prim_of_obstruction
+#print axioms AssemblyP1.Issue94Interface.population_unique_ML_of_BBTUniqueAt
