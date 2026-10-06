@@ -862,3 +862,5 @@ container's 8 GiB cgroup --- pre-existing, see
 #print axioms AssemblyP1.Issue94Interface.bbTP2Prim_of_bbtUniqueAt
 #print axioms AssemblyP1.Issue94Interface.bbTP2Prim_of_obstruction
 #print axioms AssemblyP1.Issue94Interface.population_unique_ML_of_BBTUniqueAt
+
+import AssemblyP1.Issue94DoubledFibres
