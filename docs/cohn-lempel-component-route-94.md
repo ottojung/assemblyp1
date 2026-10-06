@@ -141,3 +141,66 @@ Do **not** use any of the following:
 
 The integration endpoint for all of these is `P2LongUnique L`, not the older
 global `LadderVertexCycle` interface.
+
+## Status after the deletion-adapter front (`AssemblyP1/Issue94DeleteAdapter.lean`)
+
+Two of the five items in "Recommended division of labor" above are now
+kernel-checked, and the fourth is **weaker than specified**.
+
+### Done: the deletion adapter
+
+`AssemblyP1/Issue94DeleteAdapter.lean`, importing only
+`AssemblyP1/Issue94Reconstruct`:
+
+| name | content |
+| --- | --- |
+| `delOn f D q` | the deletion: `q` on `D`, `f q` off `D` |
+| `IsOrbitClosed f D` | `∀ q, q ∈ D ↔ f q ∈ D`: `D` is a union of `f`-orbits |
+| `delOn_bijective` | the deletion is a permutation of the starts |
+| `delOn_vtx` | the deletion preserves the `(L-1)`-mer labelling |
+| `exists_eulerianCycle_of_deleted` | **the adapter**: deleted tour single ⟹ `∃ σ, EulerianCycle hK L S σ`, by `Issue94Reconstruct.exists_eulerianCycle_of_labelPreserving_single` |
+
+The one-cycle hypothesis is *not* discharged; it is the Cohn--Lempel input.
+
+### Done, and weaker than the note asked for: vertex-cycle invisibility
+
+The note asks for "the explicit maximal-repeat arc-swap conjugator". The
+adapter front proves a strictly weaker and more useful statement instead:
+
+> **`vertexCycleEq_of_conjJump`.**  If the deleted tour `jump hK f'` is
+> conjugate to the old tour `jump hK f` by *any* equivalence `c` of the starts
+> preserving the `(L-1)`-mer labelling, and `jump hK f = Succ hK σ`, then the
+> listing reconstructed from the deleted tour is vertex-cycle equal to `σ`.
+
+`vertexCycleEq_deletedConj_of_old` combines it with the old listing's own
+`VertexCycleEq`, so the route now reads
+
+```
+  (old σ vertex-cycle equal to the truth)     ← residual R1, open
+  + (deleted tour Cohn--Lempel conjugate)     ← external input, open
+  ⟹  new σ' vertex-cycle equal to the truth
+```
+
+Both remaining inputs are isolated and neither is inhabited by this module; the
+conjugacy condition is recorded as the `Prop` `DeletedConjProp`.
+
+Consequences worth recording for the other fronts:
+
+* The **maximal-repeat arc swap is not needed** by this criterion. `c` only has
+  to be a `vtx`-preserving equivalence; it is not required to be the swap of two
+  equal ladder arcs, and no `SameExtension`/`ladder_arc_eq` geometry enters.
+  Consequently `ShiftPairInterlace` (§ "Block connectivity") is **not** on the
+  critical path for this route, unlike what the note assumed.
+* Neither the bijectivity of `f`, `f'` nor the `single` clause on the *old* tour
+  is used by the criterion. So the criterion is not blocked by anything about
+  the old traversal; the only combinatorics left is the deleted tour being one
+  circuit, i.e. the Cohn--Lempel/GF(2) corollary.
+
+### Still open on this route
+
+- **Pure Cohn--Lempel** and the **GF(2) corollary** (nonsingularity of a
+  component block). Both external; neither formalized.
+- **`DeletedConjProp`**: that component deletion conjugates the tour by a
+  `vtx`-preserving equivalence of the starts.
+- **Residual R1** for the old listing (`Issue94R1LongWindow.lean`,
+  `R1_shift_step`), as before.
