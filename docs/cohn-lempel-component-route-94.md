@@ -409,3 +409,98 @@ target only:
 
 No determinant, rank-nullity cycle formula, or circuit-count infrastructure is
 needed.
+
+## Exact repository composition convention (checked against `BBTUniqueEulerian`)
+
+The antiderivative/conjugation route has now been checked against the actual
+definitions, so there is no remaining left-vs-right composition ambiguity.
+
+The repository defines
+
+```
+Succ sigma = sigma * rho * sigma^{-1}
+AltF sigma = Succ sigma * rho^{-1}
+```
+
+(where multiplication here means function composition, left factor applied
+last in the usual mathematical notation). Consequently
+
+```
+Succ sigma = AltF sigma * rho.
+```
+
+Let `f = AltF sigma`, and modify the listing by postcomposing its values with
+a permutation `g`:
+
+```
+sigma' = g * sigma.
+```
+
+Then
+
+```
+Succ sigma' = g * Succ sigma * g^{-1}
+AltF sigma' = g * f * rho * g^{-1} * rho^{-1}.             (1)
+```
+
+Now split the old switch involution as
+
+```
+f = c * h
+```
+
+where `c` is the product of the transpositions in the interlace component to
+be deleted and `h` is the product of all remaining support transpositions.
+(All AltF transpositions are disjoint, so `c` and `h` commute.)
+
+Suppose the ladder antiderivative `g` satisfies
+
+```
+c = g^{-1} * rho * g * rho^{-1}.                           (2)
+```
+
+and `g` commutes with `h`.  Substituting (2) in (1) gives
+
+```
+AltF sigma'
+  = g * c * h * rho * g^{-1} * rho^{-1}
+  = g * (g^{-1} * rho * g * rho^{-1}) * h * rho * g^{-1} * rho^{-1}
+  = h
+```
+
+(the last cancellation uses `g h = h g`; `h` is a product of disjoint
+transpositions away from the arc moved by `g`).
+
+So **postcomposing the listing by the vertex-preserving arc swap `g` deletes
+exactly the component `c` from `AltF`**.
+
+For the intended `g`, which is itself a product of disjoint aligned swaps,
+`g^{-1}=g`.  Conjugation by `rho` shifts an aligned ladder swap by one
+coordinate, so if `g = product_{t in A} s_t`, equation (2) becomes the GF(2)
+boundary identity
+
+```
+B = A triangle (A+1),
+```
+
+where `B` is the set of component-switch coordinates.  This is precisely the
+discrete-antiderivative construction above.
+
+### Consequence for the remaining Lean proof
+
+The project-specific proof can now be factored into four small lemmas rather
+than a global traversal induction:
+
+1. **boundary:** the switch-coordinate set `B` of the chosen component is the
+   boundary of a union of ladder intervals `A`;
+2. **labels:** the resulting aligned arc-swap `g_A` preserves `vtx`, using
+   `BBTLadder.ladder_arc_eq`;
+3. **separation:** for a suitably innermost chosen block/component, `g_A`
+   commutes with the remaining AltF support `h`;
+4. **algebra:** equation (1)+(2) gives
+   `AltF (g_A * sigma) = h`, while label preservation gives
+   `VertexCycleEq (g_A * sigma) sigma`.
+
+Items 1--3 are now the only genuinely genome/cyclic-order content of this
+route. Item 4 is pure permutation algebra and should be formalized first in a
+small module with no heavy issue-94 imports.
