@@ -112,6 +112,11 @@ Do not promote stable definitions or lemmas to Lean by default. Substantial form
 
 On `marceline-dev`, configure Lean according to [`lean-on-marceline-dev.md`](lean-on-marceline-dev.md) before running Lean/Lake commands.
 
+Lean verification may run in parallel across independent fronts. Do not serialize
+Lean validation or reserve a unique validation lane merely to limit host load.
+Coordinate only genuinely expensive shared dependency work: reuse compatible
+Lake/Mathlib caches and avoid redundant Mathlib rebuilds/downloads.
+
 Independently check primary-source claims, rerun important searches, inspect Lean assumptions, run `lake build`, check CI, and review PR diffs. The agent that produced a result is not its independent reviewer.
 
 The orchestrator itself owns final PR review and integration judgment; do not delegate those responsibilities to `lubko-agent`.
