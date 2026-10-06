@@ -141,3 +141,30 @@ Do **not** use any of the following:
 
 The integration endpoint for all of these is `P2LongUnique L`, not the older
 global `LadderVertexCycle` interface.
+
+## Status update: the deletion corollary is now formal, with the classical
+## identity isolated
+
+`AssemblyP1/Issue94CLEDeletion.lean` (front `94cle`, see
+`docs/cohn-lempel-deletion-corollary-94.md`) states the "Immediate corollary"
+section above as Lean, and separates the classical identity from its
+consequences:
+
+* the classical identity is an explicit `Prop` interface with **no** proved
+  field, `CohnLempelLaw`: "one cycle ⟺ trivial GF(2) kernel of the interlacement
+  matrix", one direction for the original switch system and one for the deleted
+  one;
+* block-diagonal form w.r.t. a union of interlace components, nonsingular
+  component blocks, complement-of-a-union-is-a-union, and the corollary
+  `deleteInterlaceComponents_oneCycle` ("deleting whole interlace components
+  preserves one cycle") are **proved**, with the classical law used in exactly
+  two places;
+* even component size is a proved reduction to the isolated `Prop`
+  `NonsingularHollowBlockEven`, because the pinned Mathlib has neither
+  `Module.Alt` nor `Module.Alt.finrank_even`. Its induction is written out in the
+  new note, together with a **counterexample** (§3.1 there) to the shortcut one
+  would otherwise use: "the principal minor of a nonsingular alternating matrix
+  is nonsingular" is false, and the reduction needs the correction term
+  `G[k][m] = r_k u_m + u_k r_m`.
+
+Add to the guardrail list: do **not** use that principal-minor shortcut.
