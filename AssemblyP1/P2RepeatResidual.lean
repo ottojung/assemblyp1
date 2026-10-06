@@ -733,6 +733,56 @@ noncomputable def maxPairLen (hG : 0 < G) (S : Fin G → α) (a b : Fin G) : ℕ
   pairFwd hG S (a.val + G - pairBack hG S a.val b.val)
     (b.val + G - pairBack hG S a.val b.val)
 
+/-- **The whole known window survives after shifting to the maximal-repeat head.**
+If distinct starts a,b of a primitive circle agree on ℓ consecutive symbols,
+then the maximal forward extension from their canonical head contains both the
+maximal backward extension and that complete ℓ-window. -/
+theorem pairBack_add_window_le_maxPairLen (hG : 0 < G) (S : Fin G → α)
+    (hprim : RepeatAdapter.IsPrimitive hG S) {a b : Fin G} (hab : a ≠ b)
+    {ℓ : ℕ} (hℓG : ℓ ≤ G)
+    (hag : ∀ d : Fin ℓ, cyc hG S (a.val + d.val) = cyc hG S (b.val + d.val)) :
+    pairBack hG S a.val b.val + ℓ ≤ maxPairLen hG S a b := by
+  classical
+  set β := pairBack hG S a.val b.val
+  set ap := a.val + G - β
+  set bp := b.val + G - β
+  have hβle : β ≤ G := (pairBack_spec hG S a.val b.val).2
+  have hne : ap % G ≠ bp % G := by
+    have hab' : a.val % G ≠ b.val % G := by
+      intro hcon
+      have hval : a.val = b.val := by
+        rw [Nat.mod_eq_of_lt a.isLt, Nat.mod_eq_of_lt b.isLt] at hcon
+        exact hcon
+      exact hab (Fin.ext hval)
+    exact sub_ne_mod hG a.val b.val β hβle hab'
+  have hagfwd : ∀ u : ℕ, u < β + ℓ →
+      cyc hG S (ap + u) = cyc hG S (bp + u) := by
+    intro u hu
+    by_cases huβ : u < β
+    · have h := (pairBack_spec hG S a.val b.val).1 u huβ
+      rwa [show a.val + G - β + u = ap + u from by omega,
+        show b.val + G - β + u = bp + u from by omega] at h
+    · have hule : β ≤ u := Nat.le_of_not_gt huβ
+      obtain ⟨v, hv⟩ := Nat.exists_eq_add_of_le hule
+      have hvg : v < ℓ := by omega
+      have hagv := hag ⟨v, hvg⟩
+      have hAp : ap + u = a.val + G + v := by omega
+      have hBp : bp + u = b.val + G + v := by omega
+      calc
+        cyc hG S (ap + u) = cyc hG S (a.val + G + v) := by rw [hAp]
+        _ = cyc hG S (a.val + v) := cyc_plus_G hG S a.val v
+        _ = cyc hG S (b.val + v) := hagv
+        _ = cyc hG S (b.val + G + v) := (cyc_plus_G hG S b.val v).symm
+        _ = cyc hG S (bp + u) := by rw [hBp]
+  have htotal : β + ℓ ≤ G := by
+    by_contra hnot
+    have hGle : G ≤ β + ℓ := by omega
+    exact
+      (RepeatAdapter.not_primitive_of_ge_G_agree hG S ap bp (β + ℓ)
+        hne hGle hagfwd) hprim
+  show β + ℓ ≤ pairFwd hG S ap bp
+  exact pairFwd_ge hG S ap bp (β + ℓ) htotal hagfwd
+
 /-- **(R1, `n = 2`), the corrected form.**  Two distinct starts of a *primitive*
 circular word that carry a common `ℓ`-window extend to a **maximal repeat** —
 `SourceFaithfulIs.Genome.IsRepeat` — of some length `e` with `ℓ ≤ e < G`.  The
