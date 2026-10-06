@@ -312,3 +312,100 @@ has nonsingular interlacement matrix; connected components are diagonal blocks;
 each block is a nonsingular alternating matrix over GF(2), hence has even
 dimension. The latter even-dimension fact has an elementary symplectic-basis
 proof valid in characteristic two.
+
+## We only need one direction of Cohn--Lempel: a direct GF(2) coloring proof
+
+The full equality
+`#cycles(f*rho) = nullity(interlaceMatrix(f)) + 1` is stronger than this
+project needs.  The consumed implication is only
+
+```
+VisitsAll (f * rho)  ->  ker(interlaceMatrix(f)) = {0}.
+```
+
+There is a short direct proof that stays close to the permutation model and
+should be substantially easier to formalize than the complete
+Cohn--Lempel equality.
+
+Orient every chord `c=(a,b)` according to a fixed linearization of the truth
+cycle.  Let `I_c(x)` be the GF(2)-indicator of the half-open circular arc
+`(a,b]`.  For a GF(2) coefficient vector `z` on the chords define
+
+```
+color_z(x) = sum_c z_c * I_c(x).
+```
+
+Two elementary identities drive the proof.
+
+### 1. Moving one truth step detects selected chord endpoints
+
+For `rho` the truth successor,
+
+```
+color_z(rho^{-1} y) + color_z(y)
+```
+
+is `z_c` when `y` is an endpoint of chord `c`, and is zero away from
+all chord endpoints.  This is just the fact that the boundary of the interval
+indicator `I_c` is the two endpoints of `c`.
+
+### 2. Jumping across a chord detects its interlacements
+
+If `y` is an endpoint of chord `c` and `f y` is its other endpoint, then
+
+```
+color_z(f y) + color_z(y)
+  = z_c + sum_d interlaces(c,d) * z_d.
+```
+
+The own-chord term is `z_c`; another chord `d` contributes exactly when
+the two endpoints of `c` lie on opposite sides of `d`, i.e. exactly when
+`c` and `d` interlace.
+
+Hence if `M z = 0`, with `M` the hollow symmetric interlacement matrix,
+
+```
+color_z(f y) + color_z(y) = z_c
+```
+
+at an endpoint of `c`. Combining this with identity (1), for
+`J = f * rho`,
+
+```
+color_z(J x) = color_z(x)
+```
+
+for every `x`.
+
+If `z != 0`, choose a selected chord.  The boundary identity (1) shows
+`color_z` changes at one of its endpoints, so it is nonconstant.  But a
+`VisitsAll J origin` permutation has only one orbit, hence every
+`J`-invariant function is constant. Contradiction.
+
+Therefore a one-cycle switch system has interlacement matrix with trivial
+kernel.
+
+This is precisely the direction needed for component parity/deletion.  It
+matches the Cohn--Lempel theorem (and Moran's rank formulation), but it can be
+proved without any circuit-count theorem.
+
+### Component corollary
+
+If `C` is a connected component of the interlace graph, a kernel vector of
+the principal block `M_C` extends by zero to a kernel vector of `M`, because
+there are no interlace edges from `C` to its complement.  So every component
+block also has trivial kernel.
+
+The block is a hollow symmetric matrix over GF(2), i.e. the matrix of a
+nondegenerate alternating bilinear form. Such a form has even dimension
+(symplectic Gram--Schmidt works in characteristic two). Thus every interlace
+component has even cardinality.
+
+For Lean, the pure-Cohn--Lempel front should now target this **kernel
+injectivity lemma**, not the stronger nullity equality. The GF2 front should
+target only:
+- extension-by-zero of a component kernel vector; and
+- nondegenerate alternating finite-dimensional spaces have even dimension.
+
+No determinant, rank-nullity cycle formula, or circuit-count infrastructure is
+needed.
