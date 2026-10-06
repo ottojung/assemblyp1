@@ -862,3 +862,82 @@ container's 8 GiB cgroup --- pre-existing, see
 #print axioms AssemblyP1.Issue94Interface.bbTP2Prim_of_bbtUniqueAt
 #print axioms AssemblyP1.Issue94Interface.bbTP2Prim_of_obstruction
 #print axioms AssemblyP1.Issue94Interface.population_unique_ML_of_BBTUniqueAt
+
+import AssemblyP1.Issue94ConjugacyAdapter
+
+/-!
+## `Issue94ConjugacyAdapter`: the generic `#94` conjugacy adapter, and the exact
+alignment condition it needs
+
+`AssemblyP1/Issue94ConjugacyAdapter.lean` answers the question "given a
+`vtx`-preserving conjugacy `h` between the jumps `J = f ∘ nextPos` and
+`Jprime = fprime ∘ nextPos` of two label-preserving reconstructions, both single
+cycles, what does that buy for `BBTEulerian.VertexCycleEq`?".
+
+**Less than one might hope, and precisely characterisable.**  The repository
+definition quantifies `k` over `rotAdd hK k.val (τ i)` --- a rotation of
+**genomic coordinates** --- whereas a conjugacy transports **listing indices**.
+The whole front is the difference between those two readings.
+
+* **Free** (`listingIndex_conj`): a `vtx`-preserving conjugacy gives
+  `∃ k₀, ∀ i, vtx (σ i) = vtx (σ' (rotAdd k₀ i))`, where `k₀` is the
+  `Jprime`-orbit index of `h (origin)`.  `single` on the prime side is used here
+  (`iterate_G_eq`, `iterate_mod`).
+* **Exact** (`vertexCycleEq_iff_orbit_conj`): that genomic rotation is precisely
+  the residual left by the conjugacy.
+* **The adapter** (`vertexCycleEq_of_conjugacy`): the additional condition
+  `RotAligned` --- (1) `h (origin) = rotAdd k (origin)` and (2) `rotAdd k`
+  centralises `Jprime` --- turns the conjugacy into `VertexCycleEq σ σ'` with
+  witness `k`.  Clause 2 is a condition on `fprime`
+  (`jump_commute_iff`), so `vertexCycleEq_of_conj_comm` has no `jump` in it.
+  Two cases where it is automatic: an origin-fixing conjugacy (the listings then
+  agree **pointwise**), and `Jprime = nextPos` (identity re-pairing).
+* **Refuted as a free inference** (`not_vertexCycleEq_00001`, `K = 5`, `L = 3`,
+  `S = 00001`, `f = id`, `fprime = (0 1 2)`, `h = (0 1)`): both jumps single,
+  `h` a `vtx`-preserving conjugacy, `ListingIndexEq` holds at `k₀ = 4`, yet
+  **no** genomic rotation works and `RotAligned` fails exactly at the forced
+  `k = 1`.  This is an *instance* of `thm:BBT`, not a counterexample to it:
+  `longObstruction_00001` exhibits the predicted maximal triple repeat of length
+  `3 ≥ L - 1` at the starts `0, 1, 2`.  `scripts/verify_conjugacy_adapter_94.py`
+  finds no such counterexample at `K ≤ 4`.
+* It composes with `BBTTranspose.vertexCycleEq_transposition` without
+  bookkeeping (`vertexCycleEq_transpose_conj`): both rest on `VertexCycleEq`
+  being a *pointwise* statement, so neither transports anything through the
+  witness.
+
+Nothing here produces a `vtx`-preserving conjugacy --- that is the hard
+direction --- and nothing here touches `UniqueEulerianCycle`,
+`EulerianCycleObstruction`, `hPevzner` or `ObstructionFromBBT`, all of which are
+unchanged and still open.  See `docs/conjugacy-adapter-94.md`.
+-/
+#print axioms AssemblyP1.Issue94ConjugacyAdapter.rotAdd_origin
+#print axioms AssemblyP1.Issue94ConjugacyAdapter.nextPos_rotAdd_one
+#print axioms AssemblyP1.Issue94ConjugacyAdapter.rotAdd_origin_comm
+#print axioms AssemblyP1.Issue94ConjugacyAdapter.jump_commute_iff
+#print axioms AssemblyP1.Issue94ConjugacyAdapter.iterate_conj_aux
+#print axioms AssemblyP1.Issue94ConjugacyAdapter.iterate_conj
+#print axioms AssemblyP1.Issue94ConjugacyAdapter.iterate_comm_rotAdd
+#print axioms AssemblyP1.Issue94ConjugacyAdapter.vertexCycleEq_of_conjugacy
+#print axioms AssemblyP1.Issue94ConjugacyAdapter.vertexCycleEq_iff_orbit_conj
+#print axioms AssemblyP1.Issue94ConjugacyAdapter.eulerianCycles_vertexCycleEq_of_conjugacy
+#print axioms AssemblyP1.Issue94ConjugacyAdapter.listingIndex_conj
+#print axioms AssemblyP1.Issue94ConjugacyAdapter.conj_listingIndexEq
+#print axioms AssemblyP1.Issue94ConjugacyAdapter.rotAligned_of_comm
+#print axioms AssemblyP1.Issue94ConjugacyAdapter.vertexCycleEq_of_conj_comm
+#print axioms AssemblyP1.Issue94ConjugacyAdapter.vertexCycleEq_of_conj_origin
+#print axioms AssemblyP1.Issue94ConjugacyAdapter.conj_listingVertexEq_of_conj_origin
+#print axioms AssemblyP1.Issue94ConjugacyAdapter.vertexCycleEq_of_conj_nextPos
+#print axioms AssemblyP1.Issue94ConjugacyAdapter.vertexCycleEq_transpose_conj
+#print axioms AssemblyP1.Issue94ConjugacyAdapter.vertexCycleEq_iff_listing
+#print axioms AssemblyP1.Issue94ConjugacyAdapter.listingVertexEq_0101
+#print axioms AssemblyP1.Issue94ConjugacyAdapter.listingVertexEq_0101_witness
+#print axioms AssemblyP1.Issue94ConjugacyAdapter.conj_listingIndexEq_00001
+#print axioms AssemblyP1.Issue94ConjugacyAdapter.not_listingVertexEq_00001
+#print axioms AssemblyP1.Issue94ConjugacyAdapter.not_vertexCycleEq_00001
+#print axioms AssemblyP1.Issue94ConjugacyAdapter.not_rotAligned_00001
+#print axioms AssemblyP1.Issue94ConjugacyAdapter.sigFun_fRefl5
+#print axioms AssemblyP1.Issue94ConjugacyAdapter.sigFun_fThree5_0
+#print axioms AssemblyP1.Issue94ConjugacyAdapter.sigFun_fThree5_1
+#print axioms AssemblyP1.Issue94ConjugacyAdapter.sigFun_fThree5_4
+#print axioms AssemblyP1.Issue94ConjugacyAdapter.vertexCycleEq_refl_00001
+#print axioms AssemblyP1.Issue94ConjugacyAdapter.longObstruction_00001
