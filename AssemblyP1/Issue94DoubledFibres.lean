@@ -256,19 +256,17 @@ theorem doubledPair_ne {a b : Fin K} (hL : 2 ≤ L) (hLG : L ≤ K)
     (hprim : RepeatAdapter.IsPrimitive hK S) (hP2 : P2 hK L S)
     (hd : DoubledPair (L := L) hK S a b) : a ≠ b := by
   intro hab
-  have hsub : ({a} : Finset (Fin K)) ⊆ nodeStartsOf hK S (vtx hK L S a) := by
+  have hsub : nodeStartsOf hK S (vtx hK L S a) ⊆ ({a} : Finset (Fin K)) := by
     intro z hz
-    have hza : z = a := by simpa using hz
-    rw [hza]
-    exact mem_own_fibre hK S a
-  have hle : (nodeStartsOf hK S (vtx hK L S a)).card ≤ 1 :=
-    le_trans (Finset.card_le_card hsub) (by
-      rw [Finset.card_singleton]
-      exact Nat.le_refl 1)
+    simp only [Finset.mem_singleton]
+    rcases hd.2.1 z hz with hza | hzb
+    · exact hza
+    · exact hzb.trans hab.symm
+  have hle : (nodeStartsOf hK S (vtx hK L S a)).card ≤ 1 := by
+    simpa using Finset.card_le_card hsub
   have hcard : (nodeStartsOf hK S (vtx hK L S a)).card = 2 := by
     rw [card_nodeStartsOf, hd.1]
-  have hne : ¬ ((nodeStartsOf hK S (vtx hK L S a)).card = 2) := by omega
-  exact absurd hcard hne
+  omega
 
 /-- **`DoubledPair` is symmetric in its two members.** -/
 theorem doubledPair_comm {a b : Fin K} (hd : DoubledPair (L := L) hK S a b) :
@@ -520,14 +518,22 @@ theorem swap_trans_comm_of_disjoint {a b c d : Fin K}
     calc (Equiv.swap a b : Fin K ≃ Fin K) ((Equiv.swap c d : Fin K ≃ Fin K) x)
         = (Equiv.swap a b : Fin K ≃ Fin K) x := congrArg _ hfix1
       _ = (Equiv.swap c d : Fin K ≃ Fin K) ((Equiv.swap a b : Fin K ≃ Fin K) x) := hfix2.symm
-  · have hx2 : x ∉ ({c, d} : Finset (Fin K)) := fun hh => h hh hx
-    have e1 : (Equiv.swap a b : Fin K ≃ Fin K) x = x := swap_fixes_notin hx
-    have e2 : (Equiv.swap c d : Fin K ≃ Fin K) x = x := swap_fixes_notin hx2
-    calc (Equiv.swap a b : Fin K ≃ Fin K) ((Equiv.swap c d : Fin K ≃ Fin K) x)
-        = (Equiv.swap a b : Fin K ≃ Fin K) x := congrArg _ e2
-      _ = x := e1
-      _ = (Equiv.swap a b : Fin K ≃ Fin K) x := e1.symm
-      _ = (Equiv.swap c d : Fin K ≃ Fin K) ((Equiv.swap a b : Fin K ≃ Fin K) x) := e2
+  · by_cases hx2 : x ∈ ({c, d} : Finset (Fin K))
+    · have e1 : (Equiv.swap a b : Fin K ≃ Fin K) x = x := swap_fixes_notin hx
+      have hmap : (Equiv.swap c d : Fin K ≃ Fin K) x ∈ ({c, d} : Finset (Fin K)) :=
+        swap_maps_pair hx2
+      have e2 : (Equiv.swap a b : Fin K ≃ Fin K) ((Equiv.swap c d : Fin K ≃ Fin K) x)
+          = (Equiv.swap c d : Fin K ≃ Fin K) x :=
+        swap_fixes_notin (fun hh => h hh hmap)
+      calc (Equiv.swap a b : Fin K ≃ Fin K) ((Equiv.swap c d : Fin K ≃ Fin K) x)
+          = (Equiv.swap c d : Fin K ≃ Fin K) x := e2
+        _ = (Equiv.swap c d : Fin K ≃ Fin K) ((Equiv.swap a b : Fin K ≃ Fin K) x) := by rw [e1]
+    · have e1 : (Equiv.swap a b : Fin K ≃ Fin K) x = x := swap_fixes_notin hx
+      have e2 : (Equiv.swap c d : Fin K ≃ Fin K) x = x := swap_fixes_notin hx2
+      calc (Equiv.swap a b : Fin K ≃ Fin K) ((Equiv.swap c d : Fin K ≃ Fin K) x)
+          = (Equiv.swap a b : Fin K ≃ Fin K) x := congrArg _ e2
+        _ = x := e1
+        _ = (Equiv.swap c d : Fin K ≃ Fin K) ((Equiv.swap a b : Fin K ≃ Fin K) x) := by rw [e1, e2]
 
 /-! ### 3.3 The product composed into a listing, and the reconstruction adapter -/
 
