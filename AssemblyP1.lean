@@ -117,6 +117,24 @@ import AssemblyP1.Issue94CrossingChords
 -- `scripts/verify_interlace_components_94.py` (predicates T6 and T7).
 -- `BBTLadder.LadderVertexCycle` still has NO inhabitant.
 import AssemblyP1.Issue94InterlaceComponents
+-- BOARD 94, front 94cle: the exact whole-interlace-component DELETION corollary,
+-- as pure GF(2)/graph theory.  The classical Cohn--Lempel identity is isolated
+-- as an interface (`CohnLempelLaw`: "one cycle <=> trivial GF(2) kernel of the
+-- interlacement matrix"); nothing else in the file is classical.  Proved here:
+-- hollowness/symmetry of `interlaceMatrix`, block-diagonality with respect to a
+-- union of interlace components (`interlaceMatrix_blockDiag`,
+-- `adj_or_mem_iff`, plus the Mathlib bridge `component_connectedComponentMk`),
+-- nonsingular component blocks (`kerZeroOn_of_kerZero`), survival of
+-- `kerZeroOn` under deleting a whole union of components
+-- (`deleteInterlaceComponents_kerZero`, with
+-- `isUnionOfComponents_compl`), and the corollary itself
+-- (`deleteInterlaceComponents_oneCycle`).  Even component size
+-- (`interlaceComponent_even_card`) is a REDUCTION to the isolated GF(2) parity
+-- input `NonsingularHollowBlockEven`; see
+-- `docs/cohn-lempel-deletion-corollary-94.md` for that induction, including
+-- the counterexample to the tempting "principal minors stay nonsingular"
+-- shortcut.  No genome objects are mentioned in the module.
+import AssemblyP1.Issue94CLEDeletion
 -- BOARD 94, front 94transpose: the ONE-STEP transposition lemma for
 -- `VertexCycleEq`.  `BBTTranspose.vertexCycleEq_transposition`: a transposition
 -- of two starts spelling the same `(L-1)`-mer (i.e. of the two listing
@@ -862,3 +880,9 @@ container's 8 GiB cgroup --- pre-existing, see
 #print axioms AssemblyP1.Issue94Interface.bbTP2Prim_of_bbtUniqueAt
 #print axioms AssemblyP1.Issue94Interface.bbTP2Prim_of_obstruction
 #print axioms AssemblyP1.Issue94Interface.population_unique_ML_of_BBTUniqueAt
+#print axioms AssemblyP1.Issue94CLEDeletion.interlaceComponent_kerZero
+#print axioms AssemblyP1.Issue94CLEDeletion.isUnionOfComponents_compl
+#print axioms AssemblyP1.Issue94CLEDeletion.interlaceMatrix_blockDiag
+#print axioms AssemblyP1.Issue94CLEDeletion.component_connectedComponentMk
+#print axioms AssemblyP1.Issue94CLEDeletion.deleteInterlaceComponents_kerZero
+#print axioms AssemblyP1.Issue94CLEDeletion.deleteInterlaceComponents_oneCycle
