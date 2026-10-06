@@ -515,7 +515,7 @@ theorem listingIndex_conj {K : ℕ} (hK : 0 < K) (L : ℕ) (S : Fin K → α)
   have hkey : ∀ i : Fin K, jump hK f'^[i.val] (h (origin hK))
       = jump hK f'^[i.val + k.val] (origin hK) :=
     (congrArg (jump hK f'^[i.val]) hk.symm).trans
-      (congrFun (Function.iterate_add (jump hK f') i.val k.val) (origin hK))
+      (congrFun (Function.iterate_add (jump hK f') i.val k.val) (origin hK)).symm
   have hstep : ∀ i : Fin K, sigFun hK f' (rotAdd hK k.val i)
       = jump hK f'^[i.val + k.val] (origin hK) := by
     intro i
