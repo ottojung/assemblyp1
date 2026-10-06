@@ -862,3 +862,39 @@ container's 8 GiB cgroup --- pre-existing, see
 #print axioms AssemblyP1.Issue94Interface.bbTP2Prim_of_bbtUniqueAt
 #print axioms AssemblyP1.Issue94Interface.bbTP2Prim_of_obstruction
 #print axioms AssemblyP1.Issue94Interface.population_unique_ML_of_BBTUniqueAt
+
+import AssemblyP1.Issue94SameAltF
+
+/-!
+## `Issue94SameAltF`: the same-`AltF` centralizer lemma
+
+`AssemblyP1/Issue94SameAltF.lean` proves that two listings with the same `AltF`
+differ by a rotation of the circle, and that such a pair forces the truth's own
+vertex cycle.  Concretely, with `ρ = nextPos hG`, `Succ hG σ = σ ρ σ⁻¹` and
+`AltF hG σ = Succ hG σ ∘ prevPos`:
+
+* `succ_eq_of_altF_eq` --- `AltF hG τ = AltF hG σ` pointwise gives
+  `τ ρ τ⁻¹ = σ ρ σ⁻¹`;
+* `qfun_isRotation` --- the quotient `q = σ⁻¹ ∘ τ` commutes with `ρ`, hence is
+  a rotation of the circle by `Issue94TW7AltF.comm_nextPos_isRotation`, so `τ`
+  and `σ` are rotations of each other (`tau_eq_sigma_rot`, `sigma_eq_tau_rot`);
+* `same_altF_vertexCycleEq` / `same_altF_centralizer` --- if additionally `τ`
+  preserves `vtx` pointwise, then `VertexCycleEq hG L S σ (Equiv.refl _)`: the
+  object `EulerianCycleObstruction` quantifies over.  The last step uses the
+  inverse rotation `rotAdd_comp_inv`, **not** shift-invariance of `vtx`, which
+  is refuted in `Issue94EulerianTheta.vtx_rotAdd_refuted`.
+
+This is a structural lemma about `AltF`, `Succ`, `rotAdd` and `vtx`; it inhabits
+no endpoint `Prop`.  `EulerianCycleObstruction` / `hPevzner`,
+`BBTEulerian.UniqueEulerianCycle`, `BBTLadder.LadderVertexCycle` and
+`BBTLadder.CrossingChordsCoalesce` are untouched and remain open.  See
+`docs/issue-94-same-altf-centralizer.md`.
+-/
+#print axioms AssemblyP1.Issue94SameAltF.rotAdd_comp_inv
+#print axioms AssemblyP1.Issue94SameAltF.succ_eq_of_altF_eq
+#print axioms AssemblyP1.Issue94SameAltF.qfun_comm_nextPos
+#print axioms AssemblyP1.Issue94SameAltF.qfun_isRotation
+#print axioms AssemblyP1.Issue94SameAltF.tau_eq_sigma_rot
+#print axioms AssemblyP1.Issue94SameAltF.sigma_eq_tau_rot
+#print axioms AssemblyP1.Issue94SameAltF.same_altF_vertexCycleEq
+#print axioms AssemblyP1.Issue94SameAltF.same_altF_centralizer
