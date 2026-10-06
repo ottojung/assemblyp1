@@ -88,20 +88,23 @@ variable {C : Type*} [Fintype C] [DecidableEq C]
 /-- The **interlacement matrix** of a graph on a chord set: entry `c d` is `1`
 over `GF(2)` iff the chords `c` and `d` interlace (i.e. are adjacent in the
 interlace graph). -/
-def interlaceMatrix (X : SimpleGraph C) : Matrix C C (ZMod 2) :=
-  fun c d => if X.Adj c d then 1 else 0
+noncomputable def interlaceMatrix (X : SimpleGraph C) : Matrix C C (ZMod 2) := by
+  classical
+  exact fun c d => if X.Adj c d then 1 else 0
 
 /-- **Hollowness.**  A chord never interlaces itself, so the interlacement
 matrix has zero diagonal. This is the `alternating` part of "the block is the
 matrix of a nondegenerate alternating form". -/
 @[simp] theorem interlaceMatrix_hollow (X : SimpleGraph C) (c : C) :
     interlaceMatrix X c c = 0 := by
+  classical
   simp [interlaceMatrix, X.irrefl]
 
 /-- **Symmetry.**  Interlacement is symmetric, so the interlacement matrix is
 symmetric. This is the other half of "alternating". -/
 theorem interlaceMatrix_symm (X : SimpleGraph C) (c d : C) :
     interlaceMatrix X c d = interlaceMatrix X d c := by
+  classical
   simp [interlaceMatrix, X.adj_comm]
 
 /-! ## 2. The two trivial-kernel conditions -/
@@ -152,22 +155,28 @@ theorem isUnionOfComponents_compl {X : SimpleGraph C} {S : Finset C}
   intro c hc d hadj
   rw [Finset.mem_sdiff] at hc
   rw [Finset.mem_sdiff]
-  exact ⟨by simp, fun hd => hc.2 (hS hd hadj)⟩
+  exact ⟨by simp, fun hd => hc.2 (hS hd hadj.symm)⟩
 
-/-- A genuine `SimpleGraph.ConnectedComponent` is a union of components, so this
-front and the Mathlib notion of "component" agree. -/
+/-- The finite vertex set of the connected component containing c. -/
+noncomputable def componentFinset (X : SimpleGraph C) (c : C) : Finset C := by
+  classical
+  exact Finset.univ.filter fun d =>
+    X.connectedComponentMk d = X.connectedComponentMk c
+
+/-- A genuine SimpleGraph connected component is a union of components. -/
 theorem component_connectedComponentMk (X : SimpleGraph C) (c : C) :
-    IsUnionOfComponents X
-      (Finset.univ.filter fun d => X.connectedComponentMk d = X.connectedComponentMk c) := by
+    IsUnionOfComponents X (componentFinset X c) := by
+  classical
   intro d hd e he
   have hd' : X.connectedComponentMk d = X.connectedComponentMk c :=
     (Finset.mem_filter.mp hd).2
   refine Finset.mem_filter.mpr ⟨by simp, ?_⟩
-  exact (SimpleGraph.ConnectedComponent.connectedComponentMk_eq_of_adj X he).trans hd'
+  exact (SimpleGraph.ConnectedComponent.connectedComponentMk_eq_of_adj he).symm.trans hd'
 
 /-- A non-interlacing pair has a zero entry. -/
 theorem interlaceMatrix_eq_zero_of_not_adj {X : SimpleGraph C} {c d : C}
     (h : ¬ X.Adj c d) : interlaceMatrix X c d = 0 := by
+  classical
   simp [interlaceMatrix, h]
 
 /-- **Block-diagonal form.**  No interlacement edge leaves a union of
@@ -193,11 +202,11 @@ theorem adj_or_mem_iff {X : SimpleGraph C} {S : Finset C} (hS : IsUnionOfCompone
     {c d : C} : (c ∈ S ↔ d ∈ S) ∨ ¬ X.Adj c d := by
   by_cases hc : c ∈ S
   · by_cases hd : d ∈ S
-    · exact Or.inl ⟨hc, hd⟩
+    · exact Or.inl ⟨fun _ => hd, fun _ => hc⟩
     · exact Or.inr fun hadj => hd (hS hc hadj)
   · by_cases hd : d ∈ S
     · exact Or.inr fun hadj => hc (hS hd hadj.symm)
-    · exact Or.inl ⟨hc, hd⟩
+    · exact Or.inl ⟨fun hc' => False.elim (hc hc'), fun hd' => False.elim (hd hd')⟩
 
 /-! ## 4. Nonsingular component blocks, and deletion -/
 
@@ -244,11 +253,12 @@ This is exactly the parity input that the discrete-antiderivative route in
 `docs/cohn-lempel-component-route-94.md` needs: a component's switch
 coordinates can be integrated only if the component has even size. -/
 theorem interlaceComponent_even_card
-    (hEven : ∀ (D : Type) [Fintype D] [DecidableEq D] (M : Matrix D D (ZMod 2))
-      (S : Finset D), NonsingularHollowBlockEven M S)
-    {X : SimpleGraph C} {S : Finset C} (hone : kerZero (interlaceMatrix X)) :
-    Even (Finset.card S) :=
-  hEven (M := interlaceMatrix X) (S := S) (fun i => interlaceMatrix_hollow X i)
+    {X : SimpleGraph C} {S : Finset C}
+    (hEven : NonsingularHollowBlockEven (interlaceMatrix X) S)
+    (hone : kerZero (interlaceMatrix X)) :
+    Even (Finset.card S) := by
+  unfold NonsingularHollowBlockEven at hEven
+  exact hEven (fun i => interlaceMatrix_hollow X i)
     (fun c d => interlaceMatrix_symm X c d) (interlaceComponent_kerZero hone)
 
 /-! ## 6. The classical law, and the exact deletion corollary -/
