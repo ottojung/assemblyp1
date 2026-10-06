@@ -141,3 +141,87 @@ Do **not** use any of the following:
 
 The integration endpoint for all of these is `P2LongUnique L`, not the older
 global `LadderVertexCycle` interface.
+
+## Stronger local algebra: a discrete antiderivative of the ladder switches
+
+There is a sharper way to attack the remaining vertex-cycle lemma.
+
+Fix one maximal-repeat ladder with extension starts `p,q`.  For every valid
+shift `t`, write
+
+```
+s_t = swap (rotAdd t p) (rotAdd t q).
+```
+
+Conjugating by the truth successor shifts the ladder:
+
+```
+rho * s_t * rho^{-1} = s_{t+1}
+```
+
+as long as both shifted pairs are still in the ladder coordinate range.
+
+Now suppose the deleted component contains the ladder swaps indexed by a finite
+set `B`.  If `B` has even cardinality, choose its discrete antiderivative
+`A`: after sorting the indices
+`b1 < b2 < ... < b_{2m}`, take
+
+```
+A = [b1,b2) union [b3,b4) union ... union [b_{2m-1},b_{2m}).
+```
+
+Equivalently, over GF(2), `1_B(t) = 1_A(t) + 1_A(t-1)`.  Let
+
+```
+g = product_{t in A} s_t.
+```
+
+The aligned swaps commute, so the interior factors cancel and
+
+```
+componentSwitch = g * rho * g^{-1} * rho^{-1}.
+```
+
+This is the exact algebra visible in the minimal benign example
+`S=00101, L=3`: the component has two AltF chords
+`(1 3)(2 4)`, while the listing itself differs from the truth by the single
+arc swap `g=(1 3)`.
+
+This suggests an **innermost-block deletion** proof with a much more explicit
+invariant:
+
+1. Cohn--Lempel implies that every interlace component of a full-cycle switch
+   system has even size (indeed its diagonal block is a nonsingular hollow
+   symmetric GF(2) matrix, hence even-dimensional).
+2. Pick an innermost laminar maximal-repeat block/component.
+3. Integrate its even boundary-switch set to the arc swap `g` above.
+4. Use `ladder_arc_eq` (or the stronger length-`L` window equality on the
+   interior) to prove `g` preserves `vtx`.
+5. Innermostness should imply that the points moved by `g` contain no support
+   endpoint of any other block. Therefore `g` commutes with the remaining
+   AltF transpositions.
+6. The commutator identity then shows that conjugating the old listing by
+   `g^{-1}` deletes exactly this component from `AltF`.
+7. Because `g` preserves `vtx`, the old and new listings are pointwise
+   vertex-equivalent (up to only the harmless choice of cyclic origin).
+8. Induct on the number of interlace components.
+
+This route may avoid reconstructing an arbitrary listing after deletion:
+define the new listing explicitly by composing the old listing with `g^{-1}`.
+`Issue94Reconstruct` remains a useful independent fallback/check.
+
+### What must be checked before formalizing this route
+
+- The exact orientation of the commutator with the repository's convention
+  `AltF = Succ * prevPos`.
+- The valid shift interval: `g` should swap starts whose complete length-`L`
+  windows lie inside the maximal repeat.  In the `00101` example this is why
+  `g` has one swap although the AltF component has two boundary swaps.
+- Whether an innermost block is enough to ensure that no other AltF support
+  point lies in the interior moved by `g`.  If this is not already implied by
+  the laminar/block geometry, isolate the exact cyclic-order lemma rather than
+  assuming component independence.
+- If a single maximal-repeat block can contain several interlace components,
+  do **not** assume block=component. Either prove the isolated
+  `ShiftPairInterlace` statement or perform the antiderivative component by
+  component.
