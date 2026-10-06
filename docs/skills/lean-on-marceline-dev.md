@@ -37,8 +37,15 @@ Before claiming any AssemblyP1 theorem or build is verified on Marceline:
 3. ensure the **exact** pinned Lean toolchain is available (currently Lean 4.34.0);
 4. prefer one shared Elan installation under `/home/lubko/.elan` once provisioned, rather than installing a private toolchain per worktree;
 5. verify the version from inside the checkout;
-6. reuse shared Lake/Mathlib dependencies when possible rather than allowing several worktrees to clone multi-gigabyte copies;
-7. only then run focused `lean` checks and `lake build`.
+6. reuse shared Lake/Mathlib dependencies when possible rather than allowing several worktrees to clone or rebuild multi-gigabyte dependencies independently;
+7. only then run `lean` checks and `lake build`.
+
+**Lean validation is not serialized.** Independent `lean` checks and `lake build`
+commands may run concurrently when that helps research or review. Do not impose a
+"one build at a time", "single validation lane", or host-load serialization rule
+on AssemblyP1 proof work. The resource rule is narrower: avoid redundant expensive
+dependency/bootstrap work, especially rebuilding or redownloading Mathlib when an
+existing compatible Lake/Mathlib cache can be shared or reused.
 
 Until the exact toolchain is provisioned, report project-level Lean verification as **blocked by toolchain provisioning**, not as passed using Guix Lean 4.28.0.
 
