@@ -85,6 +85,11 @@ A scheduled invocation may prepare several independent PRs over time. It should 
 
 Before running Lean on `marceline-dev`, follow [`lean-on-marceline-dev.md`](lean-on-marceline-dev.md). In particular, verify the exact repository-pinned Lean version; Guix Lean may be used for a host smoke test, but project verification waits for the exact shared toolchain to be provisioned.
 
+Parallel Lean/Lake validation is allowed and should not be serialized for
+resource-management reasons. Reuse the shared toolchain and compatible
+Lake/Mathlib caches; avoid redundant expensive Mathlib rebuilds rather than
+artificially limiting concurrent proof checks.
+
 ## Verification and review
 
 Verification must match the epistemic claim being made.
