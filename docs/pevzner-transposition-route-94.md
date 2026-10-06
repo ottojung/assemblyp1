@@ -68,3 +68,40 @@ Keep the Cohn-Lempel component-deletion route as an independent cross-check, but
 - P. A. Pevzner, *DNA Physical Mapping and Alternating Eulerian Cycles in Colored Graphs*, Algorithmica 13 (1995), 77-105, Section 5, Theorem 3.
 - P. A. Pevzner, *Computational Molecular Biology: An Algorithmic Approach*, section 5.7.
 - L. Traldi, *Circuit partitions and signed interlacement in 4-regular graphs*, for the modern directed-Euler-system transposition statement.
+
+## Stronger invariant: a benign transposition is a word-level no-op
+
+Ukkonen's original formula makes the local step even simpler than the
+Euler-listing formulation suggests. A transposition has the factorization
+
+    y1 z1 y2 z2 y3 z1 y4 z2 y5
+
+and replaces it by the same factorization with y2 and y4 exchanged.
+
+If the two crossing repeated (L-1)-gram pairs z1,z1 and z2,z2 coalesce to one
+maximal repeat, the two occurrences of z2 have the same offset from the two
+occurrences of z1. Therefore the substrings between the first z1,z2 and the
+second z1,z2 are corresponding portions of the two copies of that maximal
+repeat. They are equal. In Ukkonen's notation, **y2 = y4**.
+
+Consequently the transposition does not merely preserve VertexCycleEq: it
+leaves the spelled word itself unchanged. The analogous three-occurrence
+transposition is ruled out by the P2/triple-repeat side (modulo the existing
+primitive-period handling).
+
+This suggests using the stronger induction invariant:
+
+> every intermediate word in Pevzner's transposition/rotation sequence is a
+> rotation of the truth.
+
+At a rotation step this is immediate. At a transposition step, rotate the
+current word to the truth coordinates; the two repeated anchors are raw
+interleaved (L-1)-mer pairs. The switched word is another genuine Euler tour,
+so relative to the current tour the two anchor pairs are exactly the two
+transition switches. The existing bounded crossing-coalescence theorem should
+then identify one maximal-repeat ladder, and ladder equality gives y2=y4.
+Thus the transposition is a no-op on the word and the invariant is preserved.
+
+This is preferable to transporting arbitrary interlacement through a merely
+VertexCycleEq intermediate tour: if the local lemma is stated at word level,
+the induction never leaves the truth's rotation class.
