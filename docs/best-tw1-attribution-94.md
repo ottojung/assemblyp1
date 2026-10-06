@@ -206,3 +206,49 @@ Before/after wording for each site is in `/workspace/BOARD94-TW1.md` §1.
   the brief forbids *introducing* an assumption of that shape, not renaming an
   existing one. Their meaning is unchanged and is now labelled the board's own
   open obligation, not an imported lemma.
+
+## 6. 2026-10-06 correction: Section 5 of Pevzner 1995 was missed
+
+The provenance conclusions above must be narrowed again.
+
+A direct retrieval of Pevzner 1995 Section 5 ("Ukkonen's Conjecture") found
+the paper's own **Theorem 3**:
+
+> Every two words with the same q-gram composition can be transformed into
+> each other by transpositions and rotations.
+
+Its proof explicitly identifies fixed q-gram composition with Eulerian paths in
+the directed de Bruijn graph and identifies Ukkonen transpositions with order
+exchanges in the associated bicolored graph. A later Pevzner textbook states
+the graph version directly: every two Eulerian cycles in a directed graph can
+be transformed into each other by a sequence of Euler switches.
+
+Therefore the earlier claims in this note that Pevzner 1995 has "zero
+occurrences of repeat/spectrum", that its Theorem 3 "has nothing to do with
+BBT's Theorem 3", and that only Theorems 1/2 may be cited are **withdrawn**.
+They arose from an incomplete/failed text extraction. The statement inventory
+itself was not the problem; the interpretation/search of the extracted text
+was.
+
+What remains correct:
+
+- Pevzner 1995 does not use the BEST theorem, arborescence counting, or the
+  board's t_w=1 counting reduction.
+- "Pevzner 1995, Lemma 9" is still the wrong locator for the desired result.
+- BBT's short appendix proof still imports a Pevzner/Ukkonen uniqueness step
+  rather than formalizing it.
+- The Lean repository still needs a proof, not a citation.
+
+What changes:
+
+- Pevzner 1995 supplies a highly relevant **global connectivity theorem**:
+  equal q-gram words / Euler tours are connected by transpositions and
+  rotations.
+- This can replace the board's attempted global ladder traversal induction.
+  The remaining project-specific work can be localized to proving that, under
+  P2/Ukkonen, each Euler switch in such a sequence is vertex-cycle-invisible
+  (crossing raw branch pairs either give a forbidden long interleaving or,
+  by the already-proved coalescence theorem, lie in one benign maximal-repeat
+  ladder).
+
+See docs/pevzner-transposition-route-94.md for the resulting proof plan.
