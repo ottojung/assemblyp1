@@ -13,6 +13,7 @@ namespace AssemblyP1.Issue94Antiderivative
 
 open AssemblyP1
 open AssemblyP1.BBTChords
+open AssemblyP1.BBTSequenceGraph
 open AssemblyP1.BBTUniqueEulerian
 
 variable {G : ℕ}
