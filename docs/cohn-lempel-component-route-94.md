@@ -225,3 +225,90 @@ define the new listing explicitly by composing the old listing with `g^{-1}`.
   do **not** assume block=component. Either prove the isolated
   `ShiftPairInterlace` statement or perform the antiderivative component by
   component.
+
+## Disjointness of the antiderivative swaps comes for free from P2
+
+A potential problem with the antiderivative construction is overlap: even if the
+actual `AltF` chords are disjoint, two *interior* aligned swaps
+`s_t = (p+t,q+t)` and `s_u = (p+u,q+u)` might a priori share an endpoint.
+
+In the relevant long-window range this cannot happen, and no new repeat theorem
+is needed.
+
+For every valid shift (at least `t + (L-1) <= e`), `ladder_arc_eq` gives
+
+```
+vtx (p+t) = vtx (q+t).
+```
+
+Suppose two distinct aligned swaps share exactly one endpoint. Combining their
+two `vtx` equalities gives three distinct starts carrying the same
+`(L-1)`-mer. But under P2 + primitivity + `2 <= L <= K`,
+`P2RepeatResidual.P2.imp_nodeCount_le_two` says every such fibre has
+multiplicity at most two. Contradiction.
+
+If they shared both endpoints then, after quotienting the swap as an unordered
+pair, they are the same aligned swap; the shift-coordinate uniqueness lemma
+should package this separately.
+
+Therefore the valid aligned swaps used in `g` are pairwise disjoint and hence
+commute.
+
+This was also checked exhaustively on primitive P2 words: binary through
+`K <= 10` and ternary through `K <= 7` had no overlapping valid
+full-window ladder swaps.
+
+### Exact small lemmas to formalize
+
+The block-vertex front should isolate these before attempting the whole
+conjugation:
+
+1. `ladderAligned_vtx`: valid shift `t` implies
+   `vtx (rotAdd t p) = vtx (rotAdd t q)` (wrapper around
+   `ladder_arc_eq`).
+2. `ladderAligned_shared_endpoint`: if two valid aligned unordered pairs
+   share an endpoint, they are the same unordered pair. Prove by
+   `P2.imp_nodeCount_le_two`.
+3. `ladderShift_unique`: within the valid shift interval, equal aligned
+   unordered pairs have equal shift coordinate. This should follow from (2)
+   plus the ordered/cyclic interval bounds; do not use raw `Fin` injectivity
+   without those bounds.
+4. `alignedSwap_comm`: distinct valid aligned swaps commute, now immediate
+   from endpoint-disjointness.
+
+With these lemmas, the algebra
+`g * rho * g^{-1} * rho^{-1}` can be normalized by commuting/cancelling
+transpositions rather than by a global permutation calculation.
+
+## Empirical check of the complete conjugation proof shape
+
+A direct executable model was run on every nontrivial genuine alternative
+reachable in the following bounded regime:
+
+- primitive binary P2 words,
+- `2 <= L <= K <= 9`,
+- every involution preserving the `(L-1)`-mer fibres,
+- retaining only cases where `f * rho` is one cycle.
+
+There were **1110** such nontrivial cases. For every interlace component, all of
+the following held with zero failures:
+
+- all its chords had one maximal-extension block;
+- each chord had a unique valid ladder-shift coordinate;
+- the component had even cardinality;
+- the antiderivative aligned swaps were pairwise disjoint;
+- every antiderivative swap preserved `vtx`;
+- the resulting `g` commuted with all remaining `AltF` chords;
+- the commutator identity produced exactly the deleted component; and
+- `f * rho = g * (f_without_component * rho) * g^{-1}`.
+
+This is evidence, not a theorem, but it tests the *exact algebraic proof plan*
+rather than only the final uniqueness statement.
+
+The only item in that list that still appears to require a genuinely external
+or new combinatorial ingredient is **even cardinality of each interlace
+component**. Cohn--Lempel supplies it immediately: a one-cycle switch system
+has nonsingular interlacement matrix; connected components are diagonal blocks;
+each block is a nonsingular alternating matrix over GF(2), hence has even
+dimension. The latter even-dimension fact has an elementary symplectic-basis
+proof valid in characteristic two.
