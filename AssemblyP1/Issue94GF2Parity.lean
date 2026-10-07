@@ -9,6 +9,9 @@ import Mathlib.LinearAlgebra.LinearIndependent.Lemmas
 import Mathlib.LinearAlgebra.Matrix.BilinearForm
 import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
 
+set_option linter.unusedSimpArgs false
+set_option linter.style.haveILetI false
+
 /-!
 # Board 94: GF(2) parity for closed interlace blocks
 

@@ -2,6 +2,8 @@ import AssemblyP1.Issue94SameAltF
 import AssemblyP1.Issue94TW5Single
 import AssemblyP1.BBTLadder
 
+set_option linter.unusedSectionVars false
+
 namespace AssemblyP1.Issue94SupportDescent
 
 open AssemblyP1

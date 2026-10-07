@@ -3,6 +3,13 @@ import AssemblyP1.Issue94SwapBridge
 import AssemblyP1.Issue94EvenPairing
 import Mathlib.GroupTheory.Perm.Support
 
+set_option linter.unusedSimpArgs false
+set_option linter.unusedSectionVars false
+set_option linter.unnecessarySimpa false
+set_option linter.style.haveILetI false
+set_option linter.unnecessarySeqFocus false
+set_option linter.unusedVariables false
+
 set_option maxHeartbeats 800000
 set_option linter.unusedSectionVars false
 

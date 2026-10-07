@@ -1,6 +1,8 @@
 import AssemblyP1.Issue94PhysicalChord
 import AssemblyP1.Issue94InterlaceComponents
 
+set_option linter.unusedSectionVars false
+
 namespace AssemblyP1.Issue94PhysicalComponent
 
 open SourceFaithfulIs

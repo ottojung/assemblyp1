@@ -1,5 +1,7 @@
 import AssemblyP1.Issue94P2DoubledPair
 
+set_option linter.unnecessarySimpa false
+
 /-!
 # Board 94: equal-vtx pairs cannot overlap partially under primitive P2
 

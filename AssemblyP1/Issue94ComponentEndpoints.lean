@@ -1,6 +1,9 @@
 import AssemblyP1.Issue94ComponentCoordinates
 import AssemblyP1.Issue94InvolutionSplit
 
+set_option linter.unusedSimpArgs false
+set_option linter.unusedSectionVars false
+
 namespace AssemblyP1.Issue94ComponentEndpoints
 
 open AssemblyP1

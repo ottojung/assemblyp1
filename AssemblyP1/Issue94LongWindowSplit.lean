@@ -1,6 +1,13 @@
 import AssemblyP1.Issue94P2PrimInterface
 import AssemblyP1.Issue94KShort
 
+set_option linter.unusedSimpArgs false
+set_option linter.unusedSectionVars false
+set_option linter.unnecessarySimpa false
+set_option linter.style.haveILetI false
+set_option linter.unnecessarySeqFocus false
+set_option linter.unusedVariables false
+
 /-!
 # Board 94 / issue #89, front `94split`: the short half of the interface is a
   theorem, so the residual is the long half alone

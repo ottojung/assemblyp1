@@ -8,6 +8,10 @@ import Mathlib.LinearAlgebra.Basis.Bilinear
 import Mathlib.Data.ZMod.Basic
 import Mathlib.Algebra.Field.ZMod
 
+set_option linter.unusedSimpArgs false
+set_option linter.unnecessarySimpa false
+set_option linter.style.haveILetI false
+
 open LinearMap
 
 namespace AssemblyP1.Issue94Parity

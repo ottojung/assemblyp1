@@ -2,6 +2,8 @@ import AssemblyP1.Issue94NoCollision
 import AssemblyP1.Issue94InterlaceParity
 import AssemblyP1.BBTLadder
 
+set_option linter.unusedSectionVars false
+
 namespace AssemblyP1.Issue94PhysicalChord
 
 open SourceFaithfulIs

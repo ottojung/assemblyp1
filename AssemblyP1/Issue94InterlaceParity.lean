@@ -1,6 +1,8 @@
 import AssemblyP1.Issue94CLEDeletion
 import AssemblyP1.Issue94Parity
 
+set_option linter.unusedSectionVars false
+
 set_option autoImplicit false
 
 namespace AssemblyP1.Issue94InterlaceParity

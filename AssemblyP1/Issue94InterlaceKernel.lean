@@ -3,6 +3,9 @@ import AssemblyP1.Issue94IterSlide
 import AssemblyP1.Issue94CLEDeletion
 import Mathlib.Data.ZMod.Basic
 
+set_option linter.unusedSimpArgs false
+set_option linter.unnecessarySeqFocus false
+
 namespace AssemblyP1.Issue94InterlaceKernel
 
 open AssemblyP1
@@ -132,7 +135,7 @@ theorem arcBit_eq_inArcBit
     have hcond : c.1.val ≤ x.val ∧
         x.val < (AltF hK sigma c.1).val :=
       ⟨Nat.le_of_lt hv.1, hv.2⟩
-    rw [if_pos hcond, if_pos hIn]
+    rw [ite_eq_left hcond, ite_eq_left hIn]
   · have hval : x.val ≠ c.1.val := by
       intro h
       apply hx
@@ -144,7 +147,7 @@ theorem arcBit_eq_inArcBit
       apply hIn
       apply (inArc_physical_iff hK sigma c x).mpr
       exact ⟨lt_of_le_of_ne h.1 (Ne.symm hval), h.2⟩
-    rw [if_neg hnot, if_neg hIn]
+    rw [ite_eq_right hnot, ite_eq_right hIn]
 
 theorem physical_four_distinct
     {L : ℕ}
@@ -335,7 +338,7 @@ theorem color_boundary_of_endpoint
             · left; exact congrArg Fin.val h
             · right; exact congrArg Fin.val h
           rw [arcBit_boundary_val hK sigma c y]
-          rw [if_pos hby]
+          rw [ite_eq_left hby]
           simp
         · have hfour := physical_four_distinct hK S sigma hEul hL hLK hprim hP2
             (Ne.symm hdc)
@@ -358,7 +361,7 @@ theorem color_boundary_of_endpoint
             intro h
             exact hyup (Fin.ext h)
           rw [arcBit_boundary_val hK sigma d y]
-          rw [if_neg (by exact fun h => h.elim hvlo hvup)]
+          rw [ite_eq_right (by exact fun h => h.elim hvlo hvup)]
           simp [hdc]
     _ = z c := by simp
 
@@ -409,7 +412,7 @@ theorem color_boundary_of_fixed
           intro h
           exact hyup (Fin.ext h)
         rw [arcBit_boundary_val hK sigma d y]
-        rw [if_neg (by exact fun h => h.elim hvlo hvup)]
+        rw [ite_eq_right (by exact fun h => h.elim hvlo hvup)]
         simp
     _ = 0 := by simp
 

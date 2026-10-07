@@ -1,5 +1,8 @@
 import Mathlib
 
+set_option linter.unusedSimpArgs false
+set_option linter.unusedSectionVars false
+
 /-!
 # Board 94, front `94cle`: the exact whole-interlace-component deletion corollary
 

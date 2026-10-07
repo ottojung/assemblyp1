@@ -1,6 +1,7 @@
 import AssemblyP1.Issue94ComponentEndpoints
 import AssemblyP1.Issue94InvolutionSplit
 
+
 namespace AssemblyP1.Issue94ComponentResidual
 
 open AssemblyP1
@@ -135,7 +136,7 @@ theorem switch_nontrivial
     refine ⟨c, ?_, Or.inl rfl⟩
     exact Finset.mem_filter.mpr ⟨Finset.mem_univ _, rfl⟩
   change onSet (AltF hK sigma) (componentEndpoints hK S sigma c) c.1 ≠ c.1
-  simp only [onSet, hcmem, if_true]
+  simp only [onSet, hcmem, ite_true]
   exact (chord_ne_image hK sigma c).symm
 
 end AssemblyP1.Issue94ComponentResidual
