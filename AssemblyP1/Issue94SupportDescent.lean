@@ -35,6 +35,26 @@ theorem PointwiseVtxEq.trans (hG : 0 < G) (L : ℕ) (S : Fin G → α)
 def supportMeasure (hG : 0 < G) (σ : Fin G ≃ Fin G) : ℕ :=
   (Support (AltF hG σ)).card
 
+theorem supportMeasure_lt_of_support_ssubset
+    (hG : 0 < G) {σ τ : Fin G ≃ Fin G}
+    (hssub : Support (AltF hG τ) ⊂ Support (AltF hG σ)) :
+    supportMeasure hG τ < supportMeasure hG σ := by
+  exact Finset.card_lt_card hssub
+
+theorem supportMeasure_lt_of_subset_of_removed
+    (hG : 0 < G) {σ τ : Fin G ≃ Fin G}
+    (hsub : Support (AltF hG τ) ⊆ Support (AltF hG σ))
+    {q : Fin G}
+    (hqOld : q ∈ Support (AltF hG σ))
+    (hqNew : q ∉ Support (AltF hG τ)) :
+    supportMeasure hG τ < supportMeasure hG σ := by
+  apply supportMeasure_lt_of_support_ssubset hG
+  refine Finset.ssubset_iff_subset_ne.mpr ⟨hsub, ?_⟩
+  intro heq
+  apply hqNew
+  rw [heq]
+  exact hqOld
+
 theorem supportMeasure_zero_iff (hG : 0 < G) (σ : Fin G ≃ Fin G) :
     supportMeasure hG σ = 0 ↔ ∀ q : Fin G, AltF hG σ q = q := by
   constructor
