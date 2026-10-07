@@ -628,6 +628,18 @@ theorem pairFwd_ge (hG : 0 < G) (S : Fin G → α) (a b t : ℕ) (ht : t ≤ G)
     exact Finset.mem_filter.mpr ⟨Finset.mem_Icc.mpr ⟨Nat.zero_le _, ht⟩, h⟩
   exact Finset.le_max' _ _ hmem
 
+/-- The forward extension does not depend on the order of the two starts. -/
+theorem pairFwd_comm (hG : 0 < G) (S : Fin G → α) (a b : ℕ) :
+    pairFwd hG S b a = pairFwd hG S a b := by
+  classical
+  refine le_antisymm
+    (pairFwd_ge hG S a b (pairFwd hG S b a) (pairFwd_spec hG S b a).2 ?_)
+    (pairFwd_ge hG S b a (pairFwd hG S a b) (pairFwd_spec hG S a b).2 ?_)
+  · intro u hu
+    exact ((pairFwd_spec hG S b a).1 u hu).symm
+  · intro u hu
+    exact ((pairFwd_spec hG S a b).1 u hu).symm
+
 theorem pairFwd_succ (hG : 0 < G) (S : Fin G → α) (a b : ℕ)
     (hγ : pairFwd hG S a b < G) :
     cyc hG S (a + pairFwd hG S a b) ≠ cyc hG S (b + pairFwd hG S a b) := by
@@ -740,6 +752,15 @@ maximal repeat sits at the *shifted* starts `maxPairStart hG S a b`,
 `maxPairStart hG S b a`; it is not in general at `a, b` themselves, and
 `counterexample_R1_same_stats` (§7) exhibits the smallest failure of the
 "same starts" version. -/
+/-- The maximal extension length is symmetric in its two starts. -/
+theorem maxPairLen_comm (hG : 0 < G) (S : Fin G → α) (a b : Fin G) :
+    maxPairLen hG S b a = maxPairLen hG S a b := by
+  unfold maxPairLen
+  rw [pairBack_comm hG S b.val a.val]
+  exact pairFwd_comm hG S
+    (a.val + G - pairBack hG S a.val b.val)
+    (b.val + G - pairBack hG S a.val b.val)
+
 theorem maxPair_isRepeat (hG : 0 < G) (S : Fin G → α)
     (hprim : RepeatAdapter.IsPrimitive hG S) {a b : Fin G} (hab : a ≠ b) {ℓ : ℕ}
     (h1 : 1 ≤ ℓ) (hℓG : ℓ ≤ G)
