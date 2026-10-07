@@ -4,6 +4,34 @@
 
 This note records a human-readable combinatorial theorem for the oriented complete-spectrum model used in the same-length part of issue #83. It is a **mathematical proof**, not a source claim and not yet a Lean theorem.
 
+**ATTRIBUTION (board 94, front 94e7; see `docs/best-tw1-attribution-94.md`).**
+The decomposition used here --- split on the width parameter `t_w`, identify
+out-degree as the critical parameter, and attack the `t_w = 1` case by a
+conditional BEST-theorem count --- is a **board construction**.  It is
+**not** imported from Pevzner 1995 or from Bresler--Bresler--Tse.  A two-sided
+retrieval on this board established that Pevzner 1995 (Algorithmica
+13:77--105) has no counting statement of any kind and no `BEST` / `arboresc` /
+`spanning` / `matrix-tree` / `determinant` / out-degree / `repeat` / `spectrum`
+/ `K-mer` / `condens` vocabulary, and that BBT (BMC Bioinformatics
+14(Suppl 5):S18, 2013) has no arborescence and no spanning-tree count.
+
+**CORRECTION (board 94, doc front 94d1).**  The same text formerly cited BBT as
+"Algorithmica 13:1--19, 2006", said BBT "has no proof of its own Theorem 3",
+and concluded that "**the citation chain is broken**".  All three are struck.
+BBT is Bresler, Bresler & Tse, *Optimal assembly for high throughput shotgun
+sequencing*, BMC Bioinformatics **14**(Suppl 5):S18, 2013.  The 13-page
+published rendering has no appendix, but says so itself ("All proofs can be
+found in the appendix"), and the arXiv:1301.0068 v3 source carries one:
+`appendix_short.tex:157-169` contains a **complete proof of Theorem 3**, and
+that proof contains no count, no determinant and no spanning tree.  BBT cites
+Pevzner 1995 correctly; the narrower real defect is that the single step it
+imports, `Lemma [Pevzner \cite{Pev95}] l:Pev95`, is **stated but proved nowhere
+in the chain**.  **Whether `l:Pev95` is true is NOT ESTABLISHED.**  This does not
+weaken the point of this section, which is unaffected: the `t_w = 1` count used
+below is still the board's own construction and is still not imported from
+either paper.  The BEST theorem itself is cited in the next paragraph from its
+own sources, which is where the count below comes from.
+
 Let c : E → ℕ be a nonzero balanced edge-type capacity vector whose positive support is strongly connected. Edge types are directed edges; copies of the same edge type are indistinguishable. A spelling is a cyclic Eulerian edge-type word using type e exactly c(e) times, and spellings are identified by cyclic rotation.
 
 Write
@@ -15,6 +43,14 @@ so c₀ is gcd-one. For h ≥ 1, put c_h = h c₀.
 The result below gives the exact number of cyclic spelling orbits at c, including the periodic case g > 1. For a realizable complete L-mer spectrum, these are exactly the same-length circular genomes realizing that spectrum, modulo rotation.
 
 ## Weighted BEST quantity
+
+**Sources for the theorem used here.**  The count of Eulerian orderings by
+in-degree-multiplied-out-degree times a spanning-arborescence number is the
+**BEST theorem**: van Aardenne-Ehrenfest and de Bruijn, *Indag. Math.* (1951)
+for the in-degree-multiplied-out-degree form, or Tutte, *A spanning tree
+expansion of the determinant*, LMS Lect. Notes **83** (1975), for the
+matrix-tree form used below.  Neither Pevzner 1995 nor BBT states it, and
+neither should be cited for it.
 
 For a support vertex r, let
 
@@ -79,7 +115,7 @@ The factor conventions have been checked against small examples that distinguish
 
 As independent computational evidence, exact enumeration over every binary circular word of length 1 through 9, for complete spectra with L = 2 and L = 3, agreed with the formula for every capacity vector encountered. The evaluator used exact arithmetic and a directed Matrix-Tree determinant; self-loops were excluded from the arborescence Laplacian contribution.
 
-The finite enumeration is evidence rather than proof. The proof is the BEST double-counting identity plus unique primitive-root decomposition and ordinary divisor Möbius inversion above.
+The finite enumeration is evidence rather than proof. The proof is the BEST double-counting identity (van Aardenne-Ehrenfest--de Bruijn 1951, or Tutte 1975) plus unique primitive-root decomposition and ordinary divisor Möbius inversion above. The **reduction** from that identity to a fibre count is the board's own, per `docs/best-tw1-attribution-94.md`.
 
 ## Boundary of the result
 

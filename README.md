@@ -11,6 +11,7 @@ See:
 - [`docs/research-orchestration.md`](docs/research-orchestration.md) — multi-agent research/proof loop;
 - [`docs/skills/README.md`](docs/skills/README.md) — operational AI research skills;
 - [`AssemblyP1/OpenProblem.lean`](AssemblyP1/OpenProblem.lean) — current formal theorem schema;
+- [`docs/bbt-eulerian-cycle-89.md`](docs/bbt-eulerian-cycle-89.md) — the external `thm:BBT` input (issue #89) in its source shape: uniqueness of the Eulerian cycle of the condensed `K`-mer graph;
 - [`docs/intent-records/`](docs/intent-records/) — durable project intent.
 
 ## Research workflow
