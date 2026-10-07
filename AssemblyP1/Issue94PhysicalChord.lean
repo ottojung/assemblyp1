@@ -8,6 +8,7 @@ open SourceFaithfulIs
 open AssemblyP1
 open AssemblyP1.BBTUniqueEulerian
 open AssemblyP1.BBTLadder
+open AssemblyP1.BBTEulerian
 open AssemblyP1.Issue94NoCollision
 
 variable {α : Type} [DecidableEq α] {K : ℕ}
@@ -64,5 +65,37 @@ def altFInterlaceGraph
 
 #print axioms AssemblyP1.Issue94PhysicalChord.chord_ne_image
 #print axioms AssemblyP1.Issue94PhysicalChord.altFInterlaceGraph_adj
+
+theorem exists_physical_chord_of_support
+    (hK : 0 < K) (S : Fin K → α) (sigma : Fin K ≃ Fin K)
+    (hEul : EulerianCycle hK L S sigma)
+    (hL : 2 ≤ L) (hLK : L ≤ K)
+    (hprim : RepeatAdapter.IsPrimitive hK S) (hP2 : P2 hK L S)
+    {a : Fin K} (hne : AltF hK sigma a ≠ a) :
+    ∃ c : AltFChord hK sigma,
+      ({c.1, AltF hK sigma c.1} : Finset (Fin K)) =
+        {a, AltF hK sigma a} := by
+  have hsq : AltF hK sigma (AltF hK sigma a) = a :=
+    AltF_sq hK S hEul hL hLK hprim hP2 a
+  by_cases hlt : a.val < (AltF hK sigma a).val
+  · let c : AltFChord hK sigma :=
+      ⟨a, (mem_altFChordSet hK sigma a).2 hlt⟩
+    exact ⟨c, rfl⟩
+  · have hvals : a.val ≠ (AltF hK sigma a).val := by
+      intro hv
+      apply hne
+      apply Fin.ext
+      exact hv.symm
+    have hgt : (AltF hK sigma a).val < a.val := by omega
+    have hmem : AltF hK sigma a ∈ altFChordSet hK sigma := by
+      apply (mem_altFChordSet hK sigma _).2
+      simpa [hsq] using hgt
+    let c : AltFChord hK sigma := ⟨AltF hK sigma a, hmem⟩
+    refine ⟨c, ?_⟩
+    apply Finset.ext
+    intro x
+    simp [c, hsq, or_comm]
+
+#print axioms AssemblyP1.Issue94PhysicalChord.exists_physical_chord_of_support
 
 end AssemblyP1.Issue94PhysicalChord
