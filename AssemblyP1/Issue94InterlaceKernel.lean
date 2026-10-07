@@ -567,6 +567,21 @@ theorem physicalInterlace_kerZero
 #print axioms AssemblyP1.Issue94InterlaceKernel.physicalInterlace_kerZero
 
 
+theorem physicalInterlace_component_even_card
+    (hK : 0 < K) (S : Fin K → α) (sigma : Fin K ≃ Fin K)
+    (hEul : AssemblyP1.BBTEulerian.EulerianCycle hK L S sigma)
+    (hL : 2 ≤ L) (hLK : L ≤ K)
+    (hprim : RepeatAdapter.IsPrimitive hK S) (hP2 : P2 hK L S)
+    (c : AltFChord hK sigma) :
+    Even
+      (componentFinset (altFInterlaceGraph hK S sigma) c).card := by
+  exact AssemblyP1.Issue94InterlaceParity.interlaceComponent_even_card
+    (altFInterlaceGraph hK S sigma) c
+    (physicalInterlace_kerZero hK S sigma hEul hL hLK hprim hP2)
+
+#print axioms AssemblyP1.Issue94InterlaceKernel.physicalInterlace_component_even_card
+
+
 #print axioms AssemblyP1.Issue94InterlaceKernel.physical_four_distinct
 #print axioms AssemblyP1.Issue94InterlaceKernel.arcBit_pair_eq_interlace
 
