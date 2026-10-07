@@ -5,24 +5,7 @@ import AssemblyP1.Issue94KShort
 # Board 94 / issue #89, front `94split`: the short half of the interface is a
   theorem, so the residual is the long half alone
 
-> **STATUS: NOT COMPILED ON THIS HOST.**  This file imports
-> `AssemblyP1.Issue94KShort`, whose transitive imports reach
-> `AssemblyP1.Issue94OrbitSearch`. On the Phoebe dev container that module is
-> killed with exit 137 (OOM) under the 8 GiB cgroup; `docs/issue-94-eulerian-realize.md`
-> §7 records the same blocker on the already-merged tree, and
-> `docs/board94-green-restore.md` records it again. It is **not** registered in
-> `AssemblyP1.lean` for that reason, and nothing in
-> `AssemblyP1/Issue94P2PrimInterface.lean` depends on this file.
->
-> **What *was* verified, and how.** Every statement below was elaborated in a
-> throwaway probe (`scratch94/SplitProbe.lean`, since deleted) against the real
-> `Issue94P2PrimInterface`, with the two applications of `Issue94KShort` replaced
-> by `axiom`-typed hypotheses of exactly their stated signature. All
-> elaborated, and the only axioms in the resulting `#print axioms` output were
-> those two stand-ins. So the content here is checked; what is **not** checked is
-> that the two stand-ins are supplied by the named `Issue94KShort` declarations.
-> Both are one-line applications of already-merged theorems at their stated
-> signatures (`Issue94KShort.lean:536` and `:553`), quoted below.
+> **STATUS: KERNEL-CHECKED.** This module now compiles on the Marceline validation host and is registered transitively through AssemblyP1.Issue94Complete.
 
 This module instantiates `ShortRangeUnique` from
 `AssemblyP1/Issue94P2PrimInterface` using the already-proved short-window
@@ -94,6 +77,8 @@ open AssemblyP1.BBTEulerian
 open AssemblyP1.Issue94Realize
 open AssemblyP1.Issue94Interface
 open AssemblyP1.P2
+open AssemblyP1.PopulationGibbs
+open AssemblyP1.PopulationUniqueness
 
 variable {α : Type} [DecidableEq α] [Fintype α] {G H L : ℕ}
 

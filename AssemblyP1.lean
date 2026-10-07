@@ -165,6 +165,7 @@ import AssemblyP1.Issue94InterlaceParity
 import AssemblyP1.Issue94SameAltF
 import AssemblyP1.Issue94Antiderivative
 import AssemblyP1.Issue94IntervalCore
+import AssemblyP1.Issue94Complete
 
 /-! ## `Issue94Transposition`: the Kotzig/Ukkonen/Pevzner descent, and an obstruction
 
