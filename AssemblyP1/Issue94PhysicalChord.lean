@@ -67,6 +67,7 @@ def altFInterlaceGraph
 #print axioms AssemblyP1.Issue94PhysicalChord.altFInterlaceGraph_adj
 
 theorem exists_physical_chord_of_support
+    {L : ℕ}
     (hK : 0 < K) (S : Fin K → α) (sigma : Fin K ≃ Fin K)
     (hEul : EulerianCycle hK L S sigma)
     (hL : 2 ≤ L) (hLK : L ≤ K)
