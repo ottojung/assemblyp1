@@ -55,6 +55,39 @@ theorem supportMeasure_lt_of_subset_of_removed
   rw [heq]
   exact hqOld
 
+theorem support_eq_sdiff_of_delete
+    {f h : Fin G → Fin G} {D : Finset (Fin G)}
+    (hfix : ∀ x : Fin G, x ∈ D → h x = x)
+    (hagrees : ∀ x : Fin G, x ∉ D → h x = f x)
+    (hmoved : ∀ x : Fin G, x ∈ D → f x ≠ x) :
+    Support h = Support f \ D := by
+  ext x
+  rw [mem_Support, Finset.mem_sdiff, mem_Support]
+  by_cases hx : x ∈ D
+  · have hh := hfix x hx
+    have hf := hmoved x hx
+    simp [hx, hh, hf]
+  · have ha := hagrees x hx
+    simp [hx, ha]
+
+theorem support_card_lt_of_delete
+    {f h : Fin G → Fin G} {D : Finset (Fin G)}
+    (hne : D.Nonempty)
+    (hfix : ∀ x : Fin G, x ∈ D → h x = x)
+    (hagrees : ∀ x : Fin G, x ∉ D → h x = f x)
+    (hmoved : ∀ x : Fin G, x ∈ D → f x ≠ x) :
+    (Support h).card < (Support f).card := by
+  rw [support_eq_sdiff_of_delete hfix hagrees hmoved]
+  apply Finset.card_lt_card
+  refine Finset.ssubset_iff_subset_ne.mpr ⟨Finset.sdiff_subset, ?_⟩
+  intro heq
+  obtain ⟨q, hqD⟩ := hne
+  have hqf : q ∈ Support f := (mem_Support).2 (hmoved q hqD)
+  have hqnot : q ∉ Support f \ D := by simp [hqD]
+  apply hqnot
+  rw [heq]
+  exact hqf
+
 theorem supportMeasure_zero_iff (hG : 0 < G) (σ : Fin G ≃ Fin G) :
     supportMeasure hG σ = 0 ↔ ∀ q : Fin G, AltF hG σ q = q := by
   constructor
