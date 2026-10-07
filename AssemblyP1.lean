@@ -150,6 +150,21 @@ import AssemblyP1.Issue94TruthTraversal
 import AssemblyP1.AAABConverse
 import AssemblyP1.Issue94Step2Path
 import AssemblyP1.Issue94Transposition
+import AssemblyP1.Issue94ObstructionEquiv
+import AssemblyP1.Issue94EulerianRealize
+import AssemblyP1.Issue94P2PrimInterface
+import AssemblyP1.Issue94LadderAligned
+import AssemblyP1.Issue94DeleteAdapter
+import AssemblyP1.Issue94P2DoubledPair
+import AssemblyP1.Issue94FibreCommute
+import AssemblyP1.Issue94ComponentAlgebra
+import AssemblyP1.Issue94AlignedPairs
+import AssemblyP1.Issue94GF2Parity
+import AssemblyP1.Issue94Parity
+import AssemblyP1.Issue94InterlaceParity
+import AssemblyP1.Issue94SameAltF
+import AssemblyP1.Issue94Antiderivative
+import AssemblyP1.Issue94IntervalCore
 
 /-! ## `Issue94Transposition`: the Kotzig/Ukkonen/Pevzner descent, and an obstruction
 
@@ -791,8 +806,6 @@ proportional-cancellation half of the reduction only.
 #print axioms AssemblyP1.Issue94Transposition.no_single_factor_step_5
 #print axioms AssemblyP1.Issue94Transposition.no_single_factor_step_6
 
-import AssemblyP1.Issue94ObstructionEquiv
-import AssemblyP1.Issue94EulerianRealize
 
 /-!
 ## `Issue94ObstructionEquiv`: an audit of the residual hypothesis of the #89 endpoint
@@ -812,7 +825,6 @@ pull-back of a `Matching`, so `EulerianCycleObstruction L ↔ BBTUniqueAt L` at
 contradicted --- its instance `σ = (2 3)` is not an `EulerianCycle`.
 -/
 
-import AssemblyP1.Issue94P2PrimInterface
 
 /-!
 ## `Issue94P2PrimInterface`: the interface a route has to hit
@@ -862,5 +874,3 @@ container's 8 GiB cgroup --- pre-existing, see
 #print axioms AssemblyP1.Issue94Interface.bbTP2Prim_of_bbtUniqueAt
 #print axioms AssemblyP1.Issue94Interface.bbTP2Prim_of_obstruction
 #print axioms AssemblyP1.Issue94Interface.population_unique_ML_of_BBTUniqueAt
-
-import AssemblyP1.Issue94LadderAligned
