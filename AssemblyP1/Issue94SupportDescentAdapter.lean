@@ -28,6 +28,19 @@ the truth are discharged by the caller, not used here.
 `SupportDescentStep L` is a `Prop` and is **not** an inhabitant, here or
 anywhere in the tree.
 
+## 1b. The corrected `P2`/primitive-specific descent interface
+
+`SupportDescentStep L` is stronger than needed: it demands the descent step of
+*every* circular word `W` in the long window, while the endpoint consumes it
+only through `P2LongUnique L`, whose own hypotheses already supply
+`P2 hK L W` and `IsPrimitive W` at the truth.  The route therefore does not
+need the step at non-`P2` or non-primitive truths.
+
+`P2PrimSupportDescentStep L` is the descent step restricted to exactly those
+truths: same statement as `SupportDescentStep L`, with the `P2` and
+`IsPrimitive` premises on `W` that `P2LongUnique L` already carries.  It is a
+`Prop` and is **not** an inhabitant, here or anywhere in the tree.
+
 ## 2. The adapter, kernel-checked
 
 The conversion is the standard four-step route of
@@ -127,6 +140,37 @@ def SupportDescentStep (L : ℕ) : Prop :=
         supportMeasure hK τ < supportMeasure hK σ ∧
         PointwiseVtxEq hK L W σ τ
 
+/-- **The corrected `P2`/primitive-specific descent interface**
+(`P2PrimSupportDescentStep`): the descent step demanded only of the truths the
+endpoint actually quantifies over.
+
+Same statement as `SupportDescentStep L`, with the `P2 hK L W` and
+`IsPrimitive W` premises on `W` that `P2LongUnique L` already supplies at the
+truth.  The route does not need the step at non-`P2` or non-primitive truths,
+so this is the weakest form of the step that still closes the endpoint; the
+target `P2LongUnique L` is not weakened.
+
+This is a `Prop` and is **not** an inhabitant. -/
+def P2PrimSupportDescentStep (L : ℕ) : Prop :=
+  ∀ (K : ℕ) (hK : 0 < K) (W : Fin K → α), L ≤ K → P2 hK L W → IsPrimitive W →
+    ∀ σ : Fin K ≃ Fin K,
+      EulerianCycle hK L W σ →
+      0 < supportMeasure hK σ →
+      ∃ τ : Fin K ≃ Fin K,
+        EulerianCycle hK L W τ ∧
+        supportMeasure hK τ < supportMeasure hK σ ∧
+        PointwiseVtxEq hK L W σ τ
+
+/-- **The corrected interface is weaker than `SupportDescentStep L`**: it adds
+premises on `W`, so any inhabitant of the old interface gives one of the new.
+Recorded so the correction is visible as a theorem, not just a definition
+change. -/
+theorem p2PrimSupportDescentStep_of_supportDescentStep
+    (hstep : SupportDescentStep (α := α) L) :
+    P2PrimSupportDescentStep (α := α) L := by
+  intro K hK W hLK _hP2 _hprim σ hEul hpos
+  exact hstep K hK W hLK σ hEul hpos
+
 /-! ## 2. The adapter, kernel-checked -/
 
 /-- **The single-instance bridge.**  At `2 ≤ L`, a truth `W` of length `K ≥ L`
@@ -175,6 +219,14 @@ theorem p2LongUnique_of_supportDescentStep (hL : 2 ≤ L)
     (hstep : SupportDescentStep (α := α) L) : P2LongUnique (α := α) L := by
   intro K hK W hLK _hP2 _hprim E hspec
   exact bbtCompleteSpec_of_supportDescent hL hK hLK W E hspec (hstep K hK W hLK)
+
+/-- The corrected adapter: it is enough to have support descent only at the
+P2-and-primitive truths quantified by P2LongUnique. -/
+theorem p2LongUnique_of_p2PrimSupportDescentStep (hL : 2 ≤ L)
+    (hstep : P2PrimSupportDescentStep (α := α) L) : P2LongUnique (α := α) L := by
+  intro K hK W hLK hP2 hprim E hspec
+  exact bbtCompleteSpec_of_supportDescent hL hK hLK W E hspec
+    (hstep K hK W hLK hP2 hprim)
 
 /-! ## 3. The endpoint, with the short case parameterized -/
 
