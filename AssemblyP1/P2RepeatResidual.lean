@@ -745,6 +745,15 @@ noncomputable def maxPairLen (hG : 0 < G) (S : Fin G → α) (a b : Fin G) : ℕ
   pairFwd hG S (a.val + G - pairBack hG S a.val b.val)
     (b.val + G - pairBack hG S a.val b.val)
 
+/-- The maximal extension length is symmetric in its two starts. -/
+theorem maxPairLen_comm (hG : 0 < G) (S : Fin G → α) (a b : Fin G) :
+    maxPairLen hG S b a = maxPairLen hG S a b := by
+  unfold maxPairLen
+  rw [pairBack_comm hG S a.val b.val]
+  exact pairFwd_comm hG S
+    (a.val + G - pairBack hG S a.val b.val)
+    (b.val + G - pairBack hG S a.val b.val)
+
 /-- **(R1, `n = 2`), the corrected form.**  Two distinct starts of a *primitive*
 circular word that carry a common `ℓ`-window extend to a **maximal repeat** —
 `SourceFaithfulIs.Genome.IsRepeat` — of some length `e` with `ℓ ≤ e < G`.  The
@@ -752,15 +761,6 @@ maximal repeat sits at the *shifted* starts `maxPairStart hG S a b`,
 `maxPairStart hG S b a`; it is not in general at `a, b` themselves, and
 `counterexample_R1_same_stats` (§7) exhibits the smallest failure of the
 "same starts" version. -/
-/-- The maximal extension length is symmetric in its two starts. -/
-theorem maxPairLen_comm (hG : 0 < G) (S : Fin G → α) (a b : Fin G) :
-    maxPairLen hG S b a = maxPairLen hG S a b := by
-  unfold maxPairLen
-  rw [pairBack_comm hG S b.val a.val]
-  exact pairFwd_comm hG S
-    (a.val + G - pairBack hG S a.val b.val)
-    (b.val + G - pairBack hG S a.val b.val)
-
 theorem maxPair_isRepeat (hG : 0 < G) (S : Fin G → α)
     (hprim : RepeatAdapter.IsPrimitive hG S) {a b : Fin G} (hab : a ≠ b) {ℓ : ℕ}
     (h1 : 1 ≤ ℓ) (hℓG : ℓ ≤ G)
