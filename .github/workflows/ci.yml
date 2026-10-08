@@ -85,27 +85,34 @@ jobs:
           sudo swapon /mnt/lean-ci.swap
           free -h
 
-      - name: Monitor memory during Lean build
-        run: |
-          (
-            while true; do
-              date -u
-              free -m
-              ps -eo pid,rss,pcpu,comm --sort=-rss | head -7
-              sleep 30
-            done
-          ) > "$RUNNER_TEMP/lean-memory.log" 2>&1 &
-          echo $! > "$RUNNER_TEMP/lean-memory.pid"
-
-      - name: Build complete theorem with warnings as errors
+      - name: Install Lean and restore Mathlib binary cache
         uses: leanprover/lean-action@v1
         with:
           auto-config: false
-          build: true
+          build: false
           test: false
           lint: false
           use-github-cache: false
-          build-args: "+AssemblyP1.Issue94Complete --wfail"
+
+      # Keep heartbeat and memory diagnostics in the SAME step as the compiler.
+      # A separate background step loses its log if GitHub terminates the job.
+      - name: Build complete theorem with live memory diagnostics
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "=== Lean build starting ==="
+          (
+            while true; do
+              echo "=== Build heartbeat $(date -u +%FT%TZ) ==="
+              free -m
+              ps -eo pid,ppid,rss,vsz,pcpu,stat,comm --sort=-rss | head -9
+              cat /proc/pressure/memory || true
+              sleep 30
+            done
+          ) &
+          monitor_pid=$!
+          trap 'kill "$monitor_pid" 2>/dev/null || true; wait "$monitor_pid" 2>/dev/null || true' EXIT
+          timeout --signal=TERM --kill-after=15s 900s lake build +AssemblyP1.Issue94Complete --wfail
 
       - name: Save full compiled Lean cache
         uses: actions/cache/save@v4
@@ -125,12 +132,3 @@ jobs:
           axiom-audit: true
           axiom-audit-root: AssemblyP1.Issue94Complete
 
-      - name: Report peak build memory
-        if: always()
-        run: |
-          if [ -f "$RUNNER_TEMP/lean-memory.pid" ]; then
-            kill "$(cat "$RUNNER_TEMP/lean-memory.pid")" 2>/dev/null || true
-          fi
-          if [ -f "$RUNNER_TEMP/lean-memory.log" ]; then
-            tail -140 "$RUNNER_TEMP/lean-memory.log"
-          fi
