@@ -45,6 +45,7 @@ import AssemblyP1.MLEscape
 import AssemblyP1.PopulationUniqueness
 import AssemblyP1.Issue94GcdOneP2
 import AssemblyP1.P2GcdOne
+import AssemblyP1.P2PopulationEndpoint
 import AssemblyP1.Issue94R1LongWindow
 import AssemblyP1.BBTVertexCycleReduction
 -- REPAIRED (board 94, front 94th): Issue94EulerianTheta now elaborates.  The
@@ -725,3 +726,29 @@ proportional-cancellation half of the reduction only.
 #print axioms AssemblyP1.Issue94GcdOneP2.nonbranching_of_common_divisor
 #print axioms AssemblyP1.Issue94GcdOneP2.gcdOne_of_primitive_P2
 #print axioms AssemblyP1.PopulationReduction.population_uniqueness_of_spectra
+
+/-!
+## `P2PopulationEndpoint`: the primitive-`P2` endpoint driven by the integrated gcd one
+
+`AssemblyP1.P2PopulationEndpoint` drives the population reduction through the
+integrated `AssemblyP1.P2GcdOne.gcd_one_of_primitive_P2` (discharged from `P2`'s
+triple clause + primitivity alone, with **no** BBT premise), reaching in the
+admissible range `2 ≤ L ≤ G`:
+
+* `popTie_primitiveP2_equal_spectra` — a population tie forces equal lengths and
+  equal complete `L`-spectra, with **no** `BBTUniqueAt`/`EulerianCycleObstruction`
+  /Ukkonen hypothesis (both gcd-one obligations project-side);
+* `population_tie_primitiveP2_rotation_of_bbtUniqueAt` — the full tie-to-rotation
+  endpoint composing (1) with the single `BBTUniqueAt` postcondition, used once,
+  only for the final rotate step;
+* `population_unique_ML_up_to_rotation_of_obstruction_range` — `thm:population`
+  (both halves) carrying `EulerianCycleObstruction` as the postcondition that
+  `bbtUniqueAt_of_obstruction` feeds to (2).
+
+This is the exact route by which the complementary BBT/replacement front's proof
+of `EulerianCycleObstruction` closes issue #89 in this range; the deep input is
+isolated, not proved here.
+-/
+#print axioms AssemblyP1.P2PopulationEndpoint.popTie_primitiveP2_equal_spectra
+#print axioms AssemblyP1.P2PopulationEndpoint.population_tie_primitiveP2_rotation_of_bbtUniqueAt
+#print axioms AssemblyP1.P2PopulationEndpoint.population_unique_ML_up_to_rotation_of_obstruction_range
