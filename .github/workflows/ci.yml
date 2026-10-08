@@ -132,7 +132,7 @@ jobs:
           include-hidden-files: true
           retention-days: 1
 
-  build-concrete:
+  build-coboundary:
     needs: build-color
     runs-on: ubuntu-latest
     env:
@@ -142,6 +142,75 @@ jobs:
       - uses: actions/download-artifact@v4
         with:
           name: color-build
+          path: .lake/build
+      - uses: leanprover/lean-action@v1
+        with:
+          build: true
+          build-args: "+AssemblyP1.Issue94ComponentCoboundary --wfail"
+          use-github-cache: false
+      - uses: actions/upload-artifact@v4
+        with:
+          name: coboundary-build
+          path: .lake/build
+          include-hidden-files: true
+          retention-days: 1
+
+  build-p2-descent:
+    needs: build-coboundary
+    runs-on: ubuntu-latest
+    env:
+      LEAN_NUM_THREADS: 1
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: coboundary-build
+          path: .lake/build
+      - uses: leanprover/lean-action@v1
+        with:
+          build: true
+          build-args: "+AssemblyP1.Issue94P2SupportDescent --wfail"
+          use-github-cache: false
+      - uses: actions/upload-artifact@v4
+        with:
+          name: p2-descent-build
+          path: .lake/build
+          include-hidden-files: true
+          retention-days: 1
+
+  build-component-switch:
+    needs: build-p2-descent
+    runs-on: ubuntu-latest
+    env:
+      LEAN_NUM_THREADS: 1
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: p2-descent-build
+          path: .lake/build
+      - uses: leanprover/lean-action@v1
+        with:
+          build: true
+          build-args: "+AssemblyP1.Issue94ComponentSwitchProduct --wfail"
+          use-github-cache: false
+      - uses: actions/upload-artifact@v4
+        with:
+          name: component-switch-build
+          path: .lake/build
+          include-hidden-files: true
+          retention-days: 1
+
+  build-concrete:
+    needs: build-component-switch
+    runs-on: ubuntu-latest
+    env:
+      LEAN_NUM_THREADS: 1
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: component-switch-build
           path: .lake/build
       - uses: leanprover/lean-action@v1
         with:
