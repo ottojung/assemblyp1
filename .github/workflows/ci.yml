@@ -22,28 +22,62 @@ jobs:
       - name: Check research documentation integrity
         run: python3 scripts/check-research-docs.py
 
-  build:
+  build-prereq:
     runs-on: ubuntu-latest
     env:
       LEAN_NUM_THREADS: 1
     steps:
       - uses: actions/checkout@v4
-      - name: Runner resources
-        run: |
-          free -h
-          swapon --show || true
-          df -h /
-      - name: Add swap headroom
-        run: |
-          sudo fallocate -l 4G /swapfile-extra
-          sudo chmod 600 /swapfile-extra
-          sudo mkswap /swapfile-extra
-          sudo swapon /swapfile-extra
-          free -h
-          swapon --show
+      - uses: leanprover/lean-action@v1
+        with:
+          build: true
+          build-args: "+AssemblyP1.Issue94IterSlide --wfail"
+          use-github-cache: false
+      - uses: actions/upload-artifact@v4
+        with:
+          name: prereq-build
+          path: .lake/build
+          include-hidden-files: true
+          retention-days: 1
+
+  build-interlace:
+    needs: build-prereq
+    runs-on: ubuntu-latest
+    env:
+      LEAN_NUM_THREADS: 1
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: prereq-build
+          path: .lake/build
+      - uses: leanprover/lean-action@v1
+        with:
+          build: true
+          build-args: "+AssemblyP1.Issue94InterlaceKernelBase --wfail"
+          use-github-cache: false
+      - uses: actions/upload-artifact@v4
+        with:
+          name: interlace-build
+          path: .lake/build
+          include-hidden-files: true
+          retention-days: 1
+
+  build:
+    needs: build-interlace
+    runs-on: ubuntu-latest
+    env:
+      LEAN_NUM_THREADS: 1
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: interlace-build
+          path: .lake/build
       - uses: leanprover/lean-action@v1
         with:
           build: true
           build-args: "+AssemblyP1.Issue94Complete --wfail"
+          use-github-cache: false
           axiom-audit: true
           axiom-audit-root: AssemblyP1.Issue94Complete
