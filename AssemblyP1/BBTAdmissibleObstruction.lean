@@ -111,6 +111,7 @@ def InterleavedClause (hG : 0 < G) (L : ℕ) (S : Fin G → α) : Prop :=
     (mkGenome hG S).IsRepeat e₂ c d ∧ Interleaved (mkGenome hG S) a b c d ∧
     L - 1 ≤ e₁.val ∧ L - 1 ≤ e₂.val
 
+omit [Fintype α] in
 /-- The two clauses really are the two clauses of `LongObstruction`: this is
 `Iff.rfl`, so nothing is restated by paraphrase. -/
 theorem longObstruction_iff_clauses (hG : 0 < G) (L : ℕ) (S : Fin G → α) :
@@ -123,6 +124,7 @@ The two theorems below are the reason the residual statement has to change.
 They hold at general `G` and general `L`, and they are proved from the library's
 own `P2` clause lemmas. -/
 
+omit [Fintype α] in
 /-- **`P2` refutes the triple clause outright.**  So `P2 → TripleClause` is
 false, and `TripleClause` cannot be the conclusion of an obligation to be
 discharged against `P2`. -/
@@ -131,6 +133,7 @@ theorem P2_not_tripleClause (hG : 0 < G) (L : ℕ) (S : Fin G → α) (hL : 2 �
   rintro ⟨e, a, b, c, ht, hlen⟩
   exact absurd (P2.triple hG hP2 ht) (by omega)
 
+omit [Fintype α] in
 /-- **`P2` refutes the interleaved clause outright.**  So `P2 → InterleavedClause`
 is false, and neither can that be the conclusion. -/
 theorem P2_not_interleavedClause (hG : 0 < G) (L : ℕ) (S : Fin G → α) (hL : 2 ≤ L)
@@ -138,11 +141,13 @@ theorem P2_not_interleavedClause (hG : 0 < G) (L : ℕ) (S : Fin G → α) (hL :
   rintro ⟨e₁, e₂, a, b, c, d, h1, h2, hI, hlen1, hlen2⟩
   rcases P2.interleaved hG hP2 h1 h2 hI with hle | hle <;> omega
 
+omit [Fintype α] in
 /-- **`P2` refutes `LongObstruction`, i.e. the disjunction.** -/
 theorem P2_not_LongObstruction (hG : 0 < G) (L : ℕ) (S : Fin G → α) (hL : 2 ≤ L)
     (hP2 : P2 hG L S) : ¬ LongObstruction hG L S :=
   not_longObstruction_of_P2 hL hP2
 
+omit [Fintype α] in
 /-- **No conclusion taken inside `LongObstruction` survives `P2`**: neither
 disjunct, nor their disjunction, is satisfiable together with `P2`.  This is
 the kernel-checked form of "the residual obligation `P2 → LongObstruction` is
@@ -184,6 +189,7 @@ def AdmissibleObstruction (hG : 0 < G) (L : ℕ) (S : Fin G → α) : Prop :=
       IsRightRepeat hG S e₁ a b ∧ IsRightRepeat hG S e₂ c d ∧
       (PrecedingBlocked hG S a b ∨ PrecedingBlocked hG S c d)
 
+omit [Fintype α] in
 /-- **The two constituents are doubled `(L-1)`-mers**, as a consequence of the
 statement: agreement of length `≥ L - 1` is agreement of length `L - 1`.  So
 `AdmissibleObstruction` is, verbatim, "two selected-or-not interleaved doubled
@@ -198,6 +204,7 @@ theorem admissible_fibres (hG : 0 < G) (L : ℕ) (S : Fin G → α)
   · exact agrees_imp_vtx (hG := hG) (S := S) hab.2.1 hlen1
   · exact agrees_imp_vtx (hG := hG) (S := S) hcd.2.1 hlen2
 
+omit [Fintype α] in
 /-- **The replacement is genuine: the two statements are disjoint.**  A pair of
 interleaved *maximal* repeats has different preceding symbols at both
 constituents, so it is never preceding-blocked.  Hence `InterleavedClause` and
@@ -208,6 +215,7 @@ theorem isRepeat_not_precedingBlocked {e₁ e₂ a b c d : Fin G}
     ¬ PrecedingBlocked hG S a b ∧ ¬ PrecedingBlocked hG S c d :=
   ⟨fun hab => h1.2.2.2.2.1 hab, fun hcd => h2.2.2.2.2.1 hcd⟩
 
+omit [Fintype α] in
 /-- The same fact at the level of the clause, at general `G`. -/
 theorem interleavedClause_not_admissible (hG : 0 < G) (L : ℕ) (S : Fin G → α)
     (h : InterleavedClause hG L S) :
@@ -216,6 +224,7 @@ theorem interleavedClause_not_admissible (hG : 0 < G) (L : ℕ) (S : Fin G → �
         ¬ PrecedingBlocked hG S a b ∧ ¬ PrecedingBlocked hG S c d :=
   fun _ _ _ _ _ _ h1 h2 => isRepeat_not_precedingBlocked hG S h1 h2
 
+omit [Fintype α] in
 /-- **The `Preceding`-block survives `P2`.**  The one clause of
 `AdmissibleObstruction` that `P2` does not exclude, isolated. -/
 theorem admissible_block_survives_P2 (hG : 0 < G) (L : ℕ) (S : Fin G → α)

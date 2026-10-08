@@ -312,7 +312,7 @@ theorem selectedInterleaved_coincides_selectedTriple {θ : Fin G → Fin G}
     intro x y hxy
     have hval := congrArg Subtype.val hxy
     fin_cases x <;> fin_cases y <;>
-      simp_all [f, hva, hvceq, hvc, hab, hac, had, hbc, hbd, hcd]
+      simp_all [f]
   have h4 : 4 ≤ (fibre hG L S (vtx hG L S a)).card := by
     simpa using (four_distinct_card f hf)
   omega
@@ -527,7 +527,7 @@ theorem card_ge_three_ne {X : Type} [Fintype X] {s : Finset X} {a b w : X}
 /-- **The two constituents of a selected interleaving at `¬ SelectedTriple` are
 distinct vertices of fibre cardinality exactly two.** -/
 theorem selectedInterleaving_fibreSize {θ : Fin G → Fin G} {a b c d : Fin G}
-    (hab : a ≠ b) (hac : a ≠ c) (hbc : b ≠ c) (had : a ≠ d) (hbd : b ≠ d) (hcd : c ≠ d)
+    (hab : a ≠ b) (hac : a ≠ c) (hbc : b ≠ c) (_had : a ≠ d) (_hbd : b ≠ d) (hcd : c ≠ d)
     (hva : vtx hG L S a = vtx hG L S b) (hvc : vtx hG L S c = vtx hG L S d)
     (hs1 : Selects (hG := hG) (L := L) S θ (vtx hG L S a))
     (hs2 : Selects (hG := hG) (L := L) S θ (vtx hG L S c))
@@ -558,7 +558,7 @@ theorem card_two_two_mem {X : Type} [Fintype X] {s : Finset X} {a b x : X}
     (hcard : s.card = 2) (hab : a ≠ b) (ha : a ∈ s) (hb : b ∈ s) (hx : x ∈ s) :
     x = a ∨ x = b := by
   by_contra hne
-  push_neg at hne
+  push Not at hne
   exact absurd (card_ge_three_ne hab hne.1.symm hne.2.symm ha hb hx) (by omega)
 
 /-- **The surviving configuration, in the `ρ` language.**  At
@@ -586,8 +586,8 @@ theorem crux_rematchShape {θ : Fin G → Fin G} (hL : 2 ≤ L)
       (fibre hG L S (vtx hG L S a)).card = 2 ∧
       (fibre hG L S (vtx hG L S c)).card = 2 :=
     selectedInterleaving_fibreSize (α := α) hG L S (θ := θ) (a := a) (b := b) (c := c) (d := d)
-      (hva := hva) (hvc := hvc) (hab := hFD.1.1) (hac := hFD.1.2.1) (had := hFD.1.2.2.1)
-      (hbc := hFD.1.2.2.2.1) (hbd := hFD.1.2.2.2.2.1) (hcd := hFD.1.2.2.2.2.2) hs1 hs2 hnT
+      (hva := hva) (hvc := hvc) (hab := hFD.1.1) (hac := hFD.1.2.1) (_had := hFD.1.2.2.1)
+      (hbc := hFD.1.2.2.2.1) (_hbd := hFD.1.2.2.2.2.1) (hcd := hFD.1.2.2.2.2.2) hs1 hs2 hnT
   have hblock : (mkGenome hG S).Preceding a = (mkGenome hG S).Preceding b ∨
       (mkGenome hG S).Preceding c = (mkGenome hG S).Preceding d := by
     by_cases hpa : (mkGenome hG S).Preceding a = (mkGenome hG S).Preceding b
@@ -870,7 +870,7 @@ It is also *not a new obligation*: it is `InterleavingObstructionNeeded`
 (§5.4) restricted to the two-transposition case, so a front that discharges
 this has not gained anything over the one that discharges §5.4 directly. -/
 def TwoTranspositionsBlockBad : Prop :=
-  ∀ (K M : ℕ) (S : Fin K → Fin 2) (hK : 0 < K) (hM : 2 ≤ M) (ρ : Fin K → Fin K)
+  ∀ (K M : ℕ) (S : Fin K → Fin 2) (hK : 0 < K) (_hM : 2 ≤ M) (ρ : Fin K → Fin K)
     (a b c d : Fin K),
     Function.Bijective ρ → P2 hK M S →
     OneCycle hK (fun x => nextPos hK (ρ x)) →
@@ -1236,16 +1236,16 @@ The `Preceding` and `rematch` clauses are carried for fidelity with
 `crux_rematchShape`; they are hypotheses of that shape and are **not** used in
 the proof, precisely because they cannot be. -/
 theorem crux_commonBackStep_obstruction {L : ℕ} (hL : 2 ≤ L) {θ : Fin G → Fin G}
-    (hno : ¬ LongObstruction hG L S) (hnT : ¬ SelectedTriple (hG := hG) (L := L) S θ)
+    (hno : ¬ LongObstruction hG L S) (_hnT : ¬ SelectedTriple (hG := hG) (L := L) S θ)
     {a b c d : Fin G}
     (hIA : Interleaved (mkGenome hG S) a b c d)
     (hva : vtx hG L S a = vtx hG L S b) (hvc : vtx hG L S c = vtx hG L S d)
-    (hne : vtx hG L S a ≠ vtx hG L S c)
-    (hca : (fibre hG L S (vtx hG L S a)).card = 2)
-    (hcc : (fibre hG L S (vtx hG L S c)).card = 2)
-    (hprec : (mkGenome hG S).Preceding a = (mkGenome hG S).Preceding b ∨
+    (_hne : vtx hG L S a ≠ vtx hG L S c)
+    (_hca : (fibre hG L S (vtx hG L S a)).card = 2)
+    (_hcc : (fibre hG L S (vtx hG L S c)).card = 2)
+    (_hprec : (mkGenome hG S).Preceding a = (mkGenome hG S).Preceding b ∨
       (mkGenome hG S).Preceding c = (mkGenome hG S).Preceding d)
-    (hρ : rematch hG θ a ≠ a ∨ rematch hG θ b ≠ b ∨
+    (_hρ : rematch hG θ a ≠ a ∨ rematch hG θ b ≠ b ∨
       rematch hG θ c ≠ c ∨ rematch hG θ d ≠ d) :
     ¬ ∃ (r : ℕ), BackAgrees hG S a b (r + 1) ∧ ¬ BackAgrees hG S a b (r + 2) ∧
         BackAgrees hG S c d (r + 1) ∧ ¬ BackAgrees hG S c d (r + 2) := by

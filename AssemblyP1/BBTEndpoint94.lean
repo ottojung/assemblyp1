@@ -206,6 +206,7 @@ def DischargerObligation : Prop :=
 
 /-! ## 4. The refuted shapes, recorded so no future front re-proposes them -/
 
+omit [Fintype α] in
 /-- **`P2 → LongObstruction` is refuted by construction** (`BBTAdmissible`,
 commit `b0de723`): under `2 ≤ L`, `P2` is the conjunction of the negations of
 exactly the two clauses of `LongObstruction`.  No discharger obligation may have
