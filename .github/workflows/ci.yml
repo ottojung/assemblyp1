@@ -40,7 +40,7 @@ jobs:
           include-hidden-files: true
           retention-days: 1
 
-  build-boundary:
+  build-nat-boundary:
     needs: build-prereq
     runs-on: ubuntu-latest
     env:
@@ -50,6 +50,29 @@ jobs:
       - uses: actions/download-artifact@v4
         with:
           name: prereq-build
+          path: .lake/build
+      - uses: leanprover/lean-action@v1
+        with:
+          build: true
+          build-args: "+AssemblyP1.Issue94InterlaceKernelNatBoundary --wfail"
+          use-github-cache: false
+      - uses: actions/upload-artifact@v4
+        with:
+          name: nat-boundary-build
+          path: .lake/build
+          include-hidden-files: true
+          retention-days: 1
+
+  build-boundary:
+    needs: build-nat-boundary
+    runs-on: ubuntu-latest
+    env:
+      LEAN_NUM_THREADS: 1
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: nat-boundary-build
           path: .lake/build
       - uses: leanprover/lean-action@v1
         with:
