@@ -25,6 +25,7 @@ import AssemblyP1.FiniteSamplingCounterexample
 import AssemblyP1.PopulationReduction
 import AssemblyP1.OrientedRigidity
 import AssemblyP1.RepeatAdapter
+import AssemblyP1.PrimitivityBridge
 import AssemblyP1.OrientedFinalRigidity
 import AssemblyP1.BridgingBridge
 import AssemblyP1.OrientedSameLengthML
@@ -182,3 +183,16 @@ in `docs/admissible-obstruction-94.md` section 5, step 3. -/
 #print axioms AssemblyP1.P2TripleResidual.mer_multiplicity_le_two_of_P2_primitive
 #print axioms AssemblyP1.P2TripleResidual.not_SelectedTriple_of_P2_primitive
 #print axioms AssemblyP1.P2TripleResidual.no_long_triple_repeat_of_P2
+
+/-! ## Axiom audit for the two primitivity predicates (issue #89)
+
+`AssemblyP1/PrimitivityBridge.lean` identifies
+`AssemblyP1.RepeatAdapter.IsPrimitive` (no nonzero shift below `G` preserves the
+word) with `AssemblyP1.PopulationReduction.IsPrimitive` (not a nontrivial
+whole-genome power).  The population endpoint takes the second one and every
+BBT/rematch lemma takes the first one, so the two must be identified rather
+than conflated for the reduction chain to compose. -/
+
+#print axioms AssemblyP1.PrimitivityBridge.cyc_eq_cyc_mod_of_period
+#print axioms AssemblyP1.PrimitivityBridge.isPrimitive_population_of_repeatAdapter
+#print axioms AssemblyP1.PrimitivityBridge.isPrimitive_repeatAdapter_of_population
