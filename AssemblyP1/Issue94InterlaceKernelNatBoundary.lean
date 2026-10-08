@@ -5,14 +5,6 @@ set_option linter.unnecessarySeqFocus false
 
 namespace AssemblyP1.Issue94InterlaceKernel
 
-open AssemblyP1
-open AssemblyP1.BBTChords
-open AssemblyP1.BBTUniqueEulerian
-open AssemblyP1.Issue94PhysicalChord
-open AssemblyP1.Issue94CLEDeletion
-
-variable {α : Type} [DecidableEq α] {K L : ℕ}
-
 /-- Pure arithmetic form of the boundary of a half-open interval [a,b) on
 the linearly represented circle. -/
 theorem intervalBit_boundary_nat
