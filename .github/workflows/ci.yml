@@ -132,7 +132,7 @@ jobs:
           include-hidden-files: true
           retention-days: 1
 
-  build:
+  build-concrete:
     needs: build-color
     runs-on: ubuntu-latest
     env:
@@ -142,6 +142,52 @@ jobs:
       - uses: actions/download-artifact@v4
         with:
           name: color-build
+          path: .lake/build
+      - uses: leanprover/lean-action@v1
+        with:
+          build: true
+          build-args: "+AssemblyP1.Issue94ConcreteAntiderivative --wfail"
+          use-github-cache: false
+      - uses: actions/upload-artifact@v4
+        with:
+          name: concrete-build
+          path: .lake/build
+          include-hidden-files: true
+          retention-days: 1
+
+  build-long-window:
+    needs: build-concrete
+    runs-on: ubuntu-latest
+    env:
+      LEAN_NUM_THREADS: 1
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: concrete-build
+          path: .lake/build
+      - uses: leanprover/lean-action@v1
+        with:
+          build: true
+          build-args: "+AssemblyP1.Issue94LongWindowSplit --wfail"
+          use-github-cache: false
+      - uses: actions/upload-artifact@v4
+        with:
+          name: endpoint-branches-build
+          path: .lake/build
+          include-hidden-files: true
+          retention-days: 1
+
+  build:
+    needs: build-long-window
+    runs-on: ubuntu-latest
+    env:
+      LEAN_NUM_THREADS: 1
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: endpoint-branches-build
           path: .lake/build
       - uses: leanprover/lean-action@v1
         with:
