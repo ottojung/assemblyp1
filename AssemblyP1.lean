@@ -5,6 +5,7 @@ import AssemblyP1.BBTReplacementInvariant
 import AssemblyP1.BBTAdmissibleObstruction
 import AssemblyP1.BBTInterleavedAdmissible
 import AssemblyP1.P2RepeatResidual
+import AssemblyP1.P2TripleMaximalExtension
 import AssemblyP1.BBTUniqueEulerian
 import AssemblyP1.InterleavingNeededCounterexample
 import AssemblyP1.ScalarPrimitiveSpellings
@@ -166,3 +167,18 @@ than assumed. -/
 #print axioms AssemblyP1.SameLengthExactMLCounterexample.truth_information_feasible
 #print axioms AssemblyP1.SameLengthSection62Counterexample.truth_information_feasible
 #print axioms AssemblyP1.Section62BridgingCounterexample.truth_information_feasible
+
+/-! ## Axiom audit for the triple maximal-extension bridge (`#94` obligation 15)
+
+`AssemblyP1.P2TripleMaximalExtension` discharges, at general `G` and general
+`L`, the multiplicity reading of `P2`'s triple clause: three pairwise distinct
+starts of a primitive truth spelling the same `(L-1)`-mer lie inside a
+`Genome.IsTripleRepeat` of length `e` with `L - 1 <= e < G`, so a primitive
+`P2` genome has no `(L-1)`-mer of multiplicity `>= 3`, hence no
+`SelectedTriple theta` for any `theta`.  This is the lemma that was census-only
+in `docs/admissible-obstruction-94.md` section 5, step 3. -/
+
+#print axioms AssemblyP1.P2TripleResidual.triple_extension_of_repeated
+#print axioms AssemblyP1.P2TripleResidual.mer_multiplicity_le_two_of_P2_primitive
+#print axioms AssemblyP1.P2TripleResidual.not_SelectedTriple_of_P2_primitive
+#print axioms AssemblyP1.P2TripleResidual.no_long_triple_repeat_of_P2
