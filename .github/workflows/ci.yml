@@ -126,8 +126,9 @@ jobs:
           ) &
           monitor_pid=$!
           trap 'kill "$monitor_pid" 2>/dev/null || true; wait "$monitor_pid" 2>/dev/null || true' EXIT
-          # Limit parallel elaborations to avoid exhausting hosted-runner RAM.
-          lake -j 2 build --wfail
+          # Lake 4.34 does not support -j; LEAN_NUM_THREADS (set at the
+          # job level) is the supported way to limit its worker threads.
+          lake build --wfail
 
       - name: Save full compiled Lean cache
         uses: actions/cache/save@v4
@@ -135,11 +136,12 @@ jobs:
           path: .lake/build
           key: lean-project-v2-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('lean-toolchain', 'lake-manifest.json') }}-full-${{ github.sha }}
 
-      # With no module filter, leanchecker checks all modules in this
-      # package, not just the transitive dependencies of the final theorem.
+      # Lean 4.34 infers "Assemblyp1" from the lower-case package name
+      # when no argument is passed; our actual module prefix is "AssemblyP1".
+      # This prefix selects every built module, not just the final endpoint.
       - name: Replay entire Lean library through the kernel
         run: |
-          LEAN_NUM_THREADS=1 lake env leanchecker
+          LEAN_NUM_THREADS=1 lake env leanchecker AssemblyP1
 
       # Audit declarations from all source modules, including modules not
       # imported by the aggregator or the final #94 endpoint. In particular,
