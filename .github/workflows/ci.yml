@@ -28,9 +28,22 @@ jobs:
       LEAN_NUM_THREADS: 1
     steps:
       - uses: actions/checkout@v4
+      - name: Runner resources
+        run: |
+          free -h
+          swapon --show || true
+          df -h /
+      - name: Add swap headroom
+        run: |
+          sudo fallocate -l 4G /swapfile-extra
+          sudo chmod 600 /swapfile-extra
+          sudo mkswap /swapfile-extra
+          sudo swapon /swapfile-extra
+          free -h
+          swapon --show
       - uses: leanprover/lean-action@v1
         with:
           build: true
-          build-args: "--wfail"
+          build-args: "+AssemblyP1.Issue94Complete --wfail"
           axiom-audit: true
-          axiom-audit-root: AssemblyP1
+          axiom-audit-root: AssemblyP1.Issue94Complete
