@@ -185,15 +185,34 @@ consumed by `BBTEulerian.bbtCompleteSpec_of_obstruction`, whose discharger is
    the condensed `(L-1)`-mer graph, produce
    `θ = succOf σ : Fin K → Fin K` with `Function.Bijective θ`,
    `FibrePreserving θ`, `OneCycle θ`, `¬ OrbitVertexEq θ`.
-   *Missing:* `θ` bijective. `succOf σ = σ ∘ nextPos ∘ σ⁻¹` is a conjugate of a
-   rotation, so this should be `rfl`-level; not yet derived in this module.
+   **CLOSED, kernel-checked** (`BBTEulerianSearch`, this branch):
+   `succOf_bijective`, `fibrePreserving_succOf` and `oneCycle_succOf` give the
+   three positive clauses, and `vertexCycleEq_to_orbit` /
+   `orbit_to_vertexCycleEq` (assembled into `uniqueAt_iff_orbit`) bridge
+   `¬ VertexCycleEq σ refl` with `¬ OrbitVertexEq θ`.  An earlier note in this
+   file claimed `θ` bijective was still missing; that was wrong, it is proved.
 2. **The support dichotomy** — `SelectedTriple θ ∨ SelectedInterleaved θ`
    (`BBTSupportInvariant.SupportDichotomy`). *Missing:* the whole statement;
    it is the external Arratia-descent content.
 3. **`¬ SelectedTriple θ` from primitivity + `P2`** — needs
-   *primitive `S`* and the unproved lemma "no `(L-1)`-mer of multiplicity `≥ 3`
-   on a primitive `P2` genome" (§2). *Missing:* that lemma, currently census
-   only. Without primitivity this step fails and the `(T)` branch is live.
+   *primitive `S`* and the lemma "no `(L-1)`-mer of multiplicity `≥ 3`
+   on a primitive `P2` genome" (§2). **CLOSED, kernel-checked** on branch
+   `agent/issue94-p2triple-maxext` (commit `1c7e466`), at general `G` and
+   general `L`, in `AssemblyP1/P2TripleMaximalExtension.lean`:
+
+   ```lean
+   triple_extension_of_repeated              -- 3 distinct starts spelling one
+                                             -- (L-1)-mer lie inside an
+                                             -- IsTripleRepeat e, L-1 <= e < G
+   mer_multiplicity_le_two_of_P2_primitive  -- (fibre v).card <= 2
+   not_SelectedTriple_of_P2_primitive       -- ¬ SelectedTriple θ, for every θ
+   ```
+
+   The axiom audit of these four public theorems is
+   `[propext, Classical.choice, Quot.sound]`.  Without primitivity this step
+   does fail and the `(T)` branch is live — the counterexample is
+   `S = 0101`, `G = 4`, `L = 3` (a square), where `SelectedTriple θ` holds
+   for `θ = (0 2)(1 3)`.
 4. **`SelectedInterleaved θ` ⟹ `AdmissibleObstruction`** — the new obligation
    this front states. *Missing:* everything. The kernel-checked input is
    `selectedInterleaved_crux` (a preceding-blocked constituent) plus
