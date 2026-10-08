@@ -224,7 +224,7 @@ jobs:
           include-hidden-files: true
           retention-days: 1
 
-  build-p2-descent:
+  build-support-descent:
     needs: build-same-altf
     runs-on: ubuntu-latest
     env:
@@ -234,6 +234,75 @@ jobs:
       - uses: actions/download-artifact@v4
         with:
           name: same-altf-build
+          path: .lake/build
+      - uses: leanprover/lean-action@v1
+        with:
+          build: true
+          build-args: "+AssemblyP1.Issue94SupportDescent --wfail"
+          use-github-cache: false
+      - uses: actions/upload-artifact@v4
+        with:
+          name: support-descent-build
+          path: .lake/build
+          include-hidden-files: true
+          retention-days: 1
+
+  build-component-coordinates:
+    needs: build-support-descent
+    runs-on: ubuntu-latest
+    env:
+      LEAN_NUM_THREADS: 1
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: support-descent-build
+          path: .lake/build
+      - uses: leanprover/lean-action@v1
+        with:
+          build: true
+          build-args: "+AssemblyP1.Issue94ComponentCoordinates --wfail"
+          use-github-cache: false
+      - uses: actions/upload-artifact@v4
+        with:
+          name: component-coordinates-build
+          path: .lake/build
+          include-hidden-files: true
+          retention-days: 1
+
+  build-component-residual:
+    needs: build-component-coordinates
+    runs-on: ubuntu-latest
+    env:
+      LEAN_NUM_THREADS: 1
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: component-coordinates-build
+          path: .lake/build
+      - uses: leanprover/lean-action@v1
+        with:
+          build: true
+          build-args: "+AssemblyP1.Issue94ComponentResidual --wfail"
+          use-github-cache: false
+      - uses: actions/upload-artifact@v4
+        with:
+          name: component-residual-build
+          path: .lake/build
+          include-hidden-files: true
+          retention-days: 1
+
+  build-p2-descent:
+    needs: build-component-residual
+    runs-on: ubuntu-latest
+    env:
+      LEAN_NUM_THREADS: 1
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: component-residual-build
           path: .lake/build
       - uses: leanprover/lean-action@v1
         with:
