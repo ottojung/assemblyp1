@@ -1,4 +1,3 @@
-import Mathlib
 import AssemblyP1.OrientedRigidity
 
 /-!
