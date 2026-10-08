@@ -155,15 +155,25 @@ jobs:
         run: |
           LEAN_NUM_THREADS=1 lake env leanchecker AssemblyP1.Issue94Complete
 
-      - name: Audit final theorem axioms
-        uses: leanprover/lean-action@v1
-        with:
-          auto-config: false
-          build: false
-          test: false
-          lint: false
-          use-github-cache: false
-          use-mathlib-cache: false
-          axiom-audit: true
-          axiom-audit-root: AssemblyP1.Issue94Complete
+      # lean-action's bundled audit helper calls bare 'lake build' even when
+      # build: false. That unnecessarily rebuilds every module (including
+      # unrelated high-memory research code) and OOMs hosted runners.
+      # Invoke the same pinned audit tool directly over the kernel-checked
+      # endpoint .olean artifacts instead.
+      - name: Audit final theorem axioms without full-project rebuild
+        shell: bash
+        run: |
+          set -euo pipefail
+          workdir="$(mktemp -d "${RUNNER_TEMP:-/tmp}/axiom-audit.XXXXXX")"
+          trap 'rm -rf "$workdir"' EXIT
+          audit_dir="$workdir/axiom-audit"
+          git clone --quiet --depth 1 --branch v0.1.2 \
+            https://github.com/leanprover-community/axiom-audit.git "$audit_dir"
+          test "$(git -C "$audit_dir" rev-parse HEAD)" = \
+            46024e005996495c65ef609368e11ab39c4222e3
+          cp lean-toolchain "$audit_dir/"
+          (cd "$audit_dir" && lake build)
+          lake env "$audit_dir/.lake/build/bin/axiom-audit" \
+            --allow propext,Classical.choice,Quot.sound \
+            --root AssemblyP1.Issue94Complete
 
