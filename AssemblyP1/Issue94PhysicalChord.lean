@@ -1,4 +1,4 @@
-import AssemblyP1.Issue94NoCollision
+import AssemblyP1.Issue94InterleavedPairSwap
 import AssemblyP1.Issue94InterlaceParity
 import AssemblyP1.BBTLadder
 
@@ -11,7 +11,7 @@ open AssemblyP1
 open AssemblyP1.BBTUniqueEulerian
 open AssemblyP1.BBTLadder
 open AssemblyP1.BBTEulerian
-open AssemblyP1.Issue94NoCollision
+open AssemblyP1.Issue94InterleavedPairSwap
 
 variable {α : Type} [DecidableEq α] {K : ℕ}
 
