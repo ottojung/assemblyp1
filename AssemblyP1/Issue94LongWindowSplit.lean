@@ -1,5 +1,5 @@
 import AssemblyP1.Issue94P2PrimInterface
-import AssemblyP1.Issue94KShort
+import AssemblyP1.Issue94KShortGeneral
 
 set_option linter.unusedSimpArgs false
 set_option linter.unusedSectionVars false
