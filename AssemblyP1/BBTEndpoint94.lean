@@ -1,6 +1,8 @@
 import AssemblyP1.PopulationUniqueness
 import AssemblyP1.BBTAdmissibleObstruction
 import AssemblyP1.BBTInterleavedAdmissible
+import AssemblyP1.PrimitivityBridge
+import AssemblyP1.P2TripleMaximalExtension
 
 /-!
 # Board 94, front `94b15` (ENDPOINT): the SINGLE final theorem for #89
@@ -95,6 +97,9 @@ namespace AssemblyP1.BBTEndpoint94
 open AssemblyP1
 open AssemblyP1.P2
 open AssemblyP1.BBTEulerian
+open AssemblyP1.BBTEulerianSearch
+open AssemblyP1.BBTSupport
+open AssemblyP1.PrimitivityBridge
 open AssemblyP1.PopulationUniqueness
 open AssemblyP1.PopulationGibbs
 open AssemblyP1.PopulationReduction
@@ -137,7 +142,8 @@ def Residual (L : ℕ) : Prop := BBTEulerian.EulerianCycleObstruction (α := α)
 
 /-- **The endpoint follows from the single residual obligation.**  Kernel-checked;
 this is the whole of the gap. -/
-theorem endpoint_of_obstruction (L : ℕ) (h : Residual (L := L)) : Endpoint (L := L) := by
+theorem endpoint_of_obstruction (L : ℕ) (h : Residual (α := α) (L := L)) :
+    Endpoint (α := α) (G := G) (L := L) := by
   intro hG hL S hPrimS hP2S
   exact population_unique_ML_up_to_rotation L hG hL S hPrimS hP2S h
 
@@ -216,5 +222,64 @@ theorem admissible_not_refuted_by_P2 :
       BBTAdmissible.AdmissibleObstruction (hG := BBTChords.hG5) (L := 3)
         BBTReplacement.S5b :=
   BBTAdmissible.P2_and_admissible_00101
+
+
+/-! ## 5. Composing the three closed steps: one obligation left
+
+Steps 1, 3 and 4 of `docs/admissible-obstruction-94.md` §5 are kernel-checked
+on this tree:
+
+* step 1 (`succOf_bijective`, `fibrePreserving_succOf`, `oneCycle_succOf`,
+  `vertexCycleEq_to_orbit` / `orbit_to_vertexCycleEq` → `uniqueAt_iff_orbit`)
+  extracts the bad `θ` from a non-rotational `EulerianCycle σ`;
+* step 3 (`P2TripleResidual.not_SelectedTriple_of_P2_primitive`) refutes
+  `SelectedTriple θ` from primitivity plus `P2`, for every `θ`, with no `θ`
+  hypothesis at all — it is the lemma that was census-only;
+* step 4 (`BBTInterleaved.selectedInterleaved_admissible`) turns a selected
+  interleaving into the admissible obstruction.
+
+`PrimitivityBridge` is what lets them compose: step 3 needs
+`RepeatAdapter.IsPrimitive`, while the endpoint and `DescentObligation` above
+carry `PopulationReduction.IsPrimitive`.
+
+The two theorems below are therefore the *whole* remaining obligation, and
+note the shape: `AdmissibleObstruction` is still only ever a **conclusion**,
+and the `θ`-side hypotheses that carry the contradiction (`¬ OrbitVertexEq`)
+are hypotheses of the statement, never its conclusion. -/
+
+omit [Fintype α] in
+/-- **The dichotomy plus primitivity and `P2` forces the interleaved
+disjunct.**  `SupportDichotomy` would offer `SelectedTriple θ`, but primitivity
+plus `P2` makes that branch impossible for every `θ`.  So on a genus with a bad
+one-cycle, fibre-preserving `θ`, the *only* live move of
+`Arratia et al. 1996` Theorem 6 is the interleaved one. -/
+theorem selectedInterleaved_of_supportDichotomy (hG : 0 < G) (L : ℕ) (S : Fin G → α)
+    (θ : Fin G → Fin G) (hL : 2 ≤ L)
+    (hprim : PopulationReduction.IsPrimitive S) (hP2 : P2 hG L S)
+    (hb : Function.Bijective θ) (hf : FibrePreserving hG L S θ)
+    (ho : OneCycle hG θ) (hbad : ¬ OrbitVertexEq hG L S θ)
+    (hD : SupportDichotomy hG L S θ) :
+    SelectedInterleaved hG L S θ := by
+  rcases hD hb hf ho hbad with ht | hi
+  · exact absurd ht
+      (P2TripleResidual.not_SelectedTriple_of_P2_primitive hG hL S hP2
+        (isPrimitive_repeatAdapter_of_population hG S hprim) θ)
+  · exact hi
+
+/-- **And the displacement obligation, at general `G` and general `L`: a bad
+one-cycle, fibre-preserving successor on a primitive `P2` genome yields the
+admissible obstruction.**  Everything except `SupportDichotomy` itself is
+proved here, so the remaining mathematical content of the `#89` endgame is that
+one `Prop` (and its `LongObstruction`-free discharger). -/
+theorem admissibleObstruction_of_supportDichotomy (hG : 0 < G) (L : ℕ) (S : Fin G → α)
+    (θ : Fin G → Fin G) (hL : 2 ≤ L)
+    (hprim : PopulationReduction.IsPrimitive S) (hP2 : P2 hG L S)
+    (hb : Function.Bijective θ) (hf : FibrePreserving hG L S θ)
+    (ho : OneCycle hG θ) (hbad : ¬ OrbitVertexEq hG L S θ)
+    (hD : SupportDichotomy hG L S θ) :
+    BBTAdmissible.AdmissibleObstruction hG L S :=
+  BBTInterleaved.selectedInterleaved_admissible_of_P2 hG L S hL
+    (isPrimitive_repeatAdapter_of_population hG S hprim) hP2
+    (selectedInterleaved_of_supportDichotomy hG L S θ hL hprim hP2 hb hf ho hbad hD)
 
 end AssemblyP1.BBTEndpoint94

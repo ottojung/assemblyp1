@@ -25,6 +25,9 @@ import AssemblyP1.FiniteSamplingCounterexample
 import AssemblyP1.PopulationReduction
 import AssemblyP1.OrientedRigidity
 import AssemblyP1.RepeatAdapter
+import AssemblyP1.BBTEndpoint94
+import AssemblyP1.PrimitivityBridge
+import AssemblyP1.BBTEndpoint94
 import AssemblyP1.PrimitivityBridge
 import AssemblyP1.OrientedFinalRigidity
 import AssemblyP1.BridgingBridge
@@ -196,3 +199,29 @@ than conflated for the reduction chain to compose. -/
 #print axioms AssemblyP1.PrimitivityBridge.cyc_eq_cyc_mod_of_period
 #print axioms AssemblyP1.PrimitivityBridge.isPrimitive_population_of_repeatAdapter
 #print axioms AssemblyP1.PrimitivityBridge.isPrimitive_repeatAdapter_of_population
+
+/-! ## Axiom audit for the two primitivity predicates (issue #89)
+
+`AssemblyP1/PrimitivityBridge.lean` identifies
+`AssemblyP1.RepeatAdapter.IsPrimitive` (no nonzero shift below `G` preserves the
+word) with `AssemblyP1.PopulationReduction.IsPrimitive` (not a nontrivial
+whole-genome power).  The population endpoint takes the second one and every
+BBT/rematch lemma takes the first one, so the two must be identified rather
+than conflated for the reduction chain to compose. -/
+
+#print axioms AssemblyP1.PrimitivityBridge.cyc_eq_cyc_mod_of_period
+#print axioms AssemblyP1.PrimitivityBridge.isPrimitive_population_of_repeatAdapter
+#print axioms AssemblyP1.PrimitivityBridge.isPrimitive_repeatAdapter_of_population
+
+/-! ## Axiom audit for the `#89` endpoint statement (`BBTEndpoint94`)
+
+`Endpoint` is `PopulationUniqueness.population_unique_ML_up_to_rotation` on the
+single non-kernel input `EulerianCycleObstruction`; `Residual` is that input
+as a `def`.  The two composition theorems are the whole of what is now closed
+between the extraction of the bad `θ`, the refutation of `SelectedTriple`, and
+the `AdmissibleObstruction` descent step: everything except `SupportDichotomy`.
+`AdmissibleObstruction` appears only as a conclusion. -/
+
+#print axioms AssemblyP1.BBTEndpoint94.endpoint_of_obstruction
+#print axioms AssemblyP1.BBTEndpoint94.selectedInterleaved_of_supportDichotomy
+#print axioms AssemblyP1.BBTEndpoint94.admissibleObstruction_of_supportDichotomy
