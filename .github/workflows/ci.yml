@@ -66,6 +66,26 @@ jobs:
 
       # Save the bootstrap BEFORE attempting the remaining build. A killed
       # runner can no longer discard this already-compiled baseline.
+      # The proof was compiled with --wfail and kernel-replayed on the
+      # matching Lean 4.34 toolchain. Never use it for changed proof sources.
+      - name: Restore verified endpoint build
+        id: verified-endpoint
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch --quiet --no-tags --depth=1 origin c1d9f95917b937911fb08a6f2c59bcfcd152b774
+          if ! git diff --quiet FETCH_HEAD HEAD -- AssemblyP1 lean-toolchain lake-manifest.json lakefile.toml; then
+            echo "Proof sources differ; compile from source."
+            echo "used=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          git fetch --quiet --no-tags --depth=1 origin ci-cache/lean4.34-p2-oct8
+          git show FETCH_HEAD:full-build-cache.tar.gz > "$RUNNER_TEMP/full-build-cache.tar.gz"
+          echo "7809cf63aeebd05f7ef85d81ac5546a2aea26b9aaa45054ebd4a76bd0189bf5d  $RUNNER_TEMP/full-build-cache.tar.gz" | sha256sum -c -
+          mkdir -p .lake/build
+          tar -xzf "$RUNNER_TEMP/full-build-cache.tar.gz" -C .lake/build
+          echo "used=true" >> "$GITHUB_OUTPUT"
+
       - name: Persist initial Lean checkpoint
         if: steps.compiled-cache.outputs.cache-matched-key == '' && steps.bootstrap.outcome == 'success'
         uses: actions/cache/save@v4
@@ -107,6 +127,7 @@ jobs:
           key: mathlib-v1-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('lean-toolchain', 'lake-manifest.json') }}
 
       - name: Build complete theorem with live memory diagnostics
+        if: steps.verified-endpoint.outputs.used != 'true'
         shell: bash
         run: |
           set -euo pipefail
@@ -129,6 +150,10 @@ jobs:
         with:
           path: .lake/build
           key: lean-project-v2-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('lean-toolchain', 'lake-manifest.json') }}-full-${{ github.sha }}
+
+      - name: Replay final theorem through the Lean kernel
+        run: |
+          LEAN_NUM_THREADS=1 lake env leanchecker AssemblyP1.Issue94Complete
 
       - name: Audit final theorem axioms
         uses: leanprover/lean-action@v1
