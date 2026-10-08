@@ -155,7 +155,7 @@ jobs:
           include-hidden-files: true
           retention-days: 1
 
-  build-p2-descent:
+  build-tw6:
     needs: build-coboundary
     runs-on: ubuntu-latest
     env:
@@ -165,6 +165,75 @@ jobs:
       - uses: actions/download-artifact@v4
         with:
           name: coboundary-build
+          path: .lake/build
+      - uses: leanprover/lean-action@v1
+        with:
+          build: true
+          build-args: "+AssemblyP1.Issue94TW6Lemma1 --wfail"
+          use-github-cache: false
+      - uses: actions/upload-artifact@v4
+        with:
+          name: tw6-build
+          path: .lake/build
+          include-hidden-files: true
+          retention-days: 1
+
+  build-tw7:
+    needs: build-tw6
+    runs-on: ubuntu-latest
+    env:
+      LEAN_NUM_THREADS: 1
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: tw6-build
+          path: .lake/build
+      - uses: leanprover/lean-action@v1
+        with:
+          build: true
+          build-args: "+AssemblyP1.Issue94TW7AltF --wfail"
+          use-github-cache: false
+      - uses: actions/upload-artifact@v4
+        with:
+          name: tw7-build
+          path: .lake/build
+          include-hidden-files: true
+          retention-days: 1
+
+  build-same-altf:
+    needs: build-tw7
+    runs-on: ubuntu-latest
+    env:
+      LEAN_NUM_THREADS: 1
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: tw7-build
+          path: .lake/build
+      - uses: leanprover/lean-action@v1
+        with:
+          build: true
+          build-args: "+AssemblyP1.Issue94SameAltF --wfail"
+          use-github-cache: false
+      - uses: actions/upload-artifact@v4
+        with:
+          name: same-altf-build
+          path: .lake/build
+          include-hidden-files: true
+          retention-days: 1
+
+  build-p2-descent:
+    needs: build-same-altf
+    runs-on: ubuntu-latest
+    env:
+      LEAN_NUM_THREADS: 1
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: same-altf-build
           path: .lake/build
       - uses: leanprover/lean-action@v1
         with:
