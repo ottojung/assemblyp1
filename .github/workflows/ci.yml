@@ -33,7 +33,8 @@ jobs:
 
       # Reuse the Mathlib sources and its downloaded binary cache between runs.
       - name: Restore Mathlib packages and cache
-        uses: actions/cache@v4
+        id: mathlib-cache
+        uses: actions/cache/restore@v4
         with:
           path: .lake/packages
           key: mathlib-v1-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('lean-toolchain', 'lake-manifest.json') }}
@@ -96,6 +97,15 @@ jobs:
 
       # Keep heartbeat and memory diagnostics in the SAME step as the compiler.
       # A separate background step loses its log if GitHub terminates the job.
+      # Persist the expensive Mathlib download independently of the project
+      # build; otherwise every failed build discards it.
+      - name: Persist Mathlib dependency cache
+        if: steps.mathlib-cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v4
+        with:
+          path: .lake/packages
+          key: mathlib-v1-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('lean-toolchain', 'lake-manifest.json') }}
+
       - name: Build complete theorem with live memory diagnostics
         shell: bash
         run: |
