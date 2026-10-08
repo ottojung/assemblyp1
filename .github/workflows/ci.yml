@@ -25,7 +25,7 @@ jobs:
 
   build:
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: 360
     env:
       LEAN_NUM_THREADS: 1
     steps:
@@ -39,9 +39,8 @@ jobs:
           path: .lake/packages
           key: mathlib-v1-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('lean-toolchain', 'lake-manifest.json') }}
 
-      # A complete checkpoint from an earlier successful stage provides a
-      # bootstrap even though the old 17-job chain never reached its final job.
-      # Once a full cache exists, neither this download nor the seed save runs.
+      # Reuse precompiled objects to avoid needless rebuilds. These are only
+      # accelerators: a full library build and audit are mandatory below.
       - name: Restore compiled Lean objects
         id: compiled-cache
         uses: actions/cache/restore@v4
@@ -68,24 +67,6 @@ jobs:
       # runner can no longer discard this already-compiled baseline.
       # The proof was compiled with --wfail and kernel-replayed on the
       # matching Lean 4.34 toolchain. Never use it for changed proof sources.
-      - name: Restore verified endpoint build
-        id: verified-endpoint
-        shell: bash
-        run: |
-          set -euo pipefail
-          git fetch --quiet --no-tags --depth=1 origin c1d9f95917b937911fb08a6f2c59bcfcd152b774
-          if ! git diff --quiet FETCH_HEAD HEAD -- AssemblyP1 lean-toolchain lake-manifest.json lakefile.toml; then
-            echo "Proof sources differ; compile from source."
-            echo "used=false" >> "$GITHUB_OUTPUT"
-            exit 0
-          fi
-          git fetch --quiet --no-tags --depth=1 origin ci-cache/lean4.34-p2-oct8
-          git show FETCH_HEAD:full-build-cache.tar.gz > "$RUNNER_TEMP/full-build-cache.tar.gz"
-          echo "7809cf63aeebd05f7ef85d81ac5546a2aea26b9aaa45054ebd4a76bd0189bf5d  $RUNNER_TEMP/full-build-cache.tar.gz" | sha256sum -c -
-          mkdir -p .lake/build
-          tar -xzf "$RUNNER_TEMP/full-build-cache.tar.gz" -C .lake/build
-          echo "used=true" >> "$GITHUB_OUTPUT"
-
       - name: Persist initial Lean checkpoint
         if: steps.compiled-cache.outputs.cache-matched-key == '' && steps.bootstrap.outcome == 'success'
         uses: actions/cache/save@v4
@@ -126,12 +107,14 @@ jobs:
           path: .lake/packages
           key: mathlib-v1-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('lean-toolchain', 'lake-manifest.json') }}
 
-      - name: Build complete theorem with live memory diagnostics
-        if: steps.verified-endpoint.outputs.used != 'true'
+      # The endpoint module imports only a subset of the project. The default
+      # Lake library target compiles every AssemblyP1/*.lean module, including
+      # independent results not imported by Issue94Complete.
+      - name: Build every Lean theorem module with live memory diagnostics
         shell: bash
         run: |
           set -euo pipefail
-          echo "=== Lean build starting ==="
+          echo "=== Full Lean library build starting ==="
           (
             while true; do
               echo "=== Build heartbeat $(date -u +%FT%TZ) ==="
@@ -143,7 +126,8 @@ jobs:
           ) &
           monitor_pid=$!
           trap 'kill "$monitor_pid" 2>/dev/null || true; wait "$monitor_pid" 2>/dev/null || true' EXIT
-          timeout --signal=TERM --kill-after=15s 900s lake build +AssemblyP1.Issue94Complete --wfail
+          # Limit parallel elaborations to avoid exhausting hosted-runner RAM.
+          lake -j 2 build --wfail
 
       - name: Save full compiled Lean cache
         uses: actions/cache/save@v4
@@ -151,16 +135,16 @@ jobs:
           path: .lake/build
           key: lean-project-v2-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('lean-toolchain', 'lake-manifest.json') }}-full-${{ github.sha }}
 
-      - name: Replay final theorem through the Lean kernel
+      # With no module filter, leanchecker checks all modules in this
+      # package, not just the transitive dependencies of the final theorem.
+      - name: Replay entire Lean library through the kernel
         run: |
-          LEAN_NUM_THREADS=1 lake env leanchecker AssemblyP1.Issue94Complete
+          LEAN_NUM_THREADS=1 lake env leanchecker
 
-      # lean-action's bundled audit helper calls bare 'lake build' even when
-      # build: false. That unnecessarily rebuilds every module (including
-      # unrelated high-memory research code) and OOMs hosted runners.
-      # Invoke the same pinned audit tool directly over the kernel-checked
-      # endpoint .olean artifacts instead.
-      - name: Audit final theorem axioms without full-project rebuild
+      # Audit declarations from all source modules, including modules not
+      # imported by the aggregator or the final #94 endpoint. In particular,
+      # --modules-from avoids silently omitting standalone theorem files.
+      - name: Audit axioms in every theorem module
         shell: bash
         run: |
           set -euo pipefail
@@ -175,5 +159,4 @@ jobs:
           (cd "$audit_dir" && lake build)
           lake env "$audit_dir/.lake/build/bin/axiom-audit" \
             --allow propext,Classical.choice,Quot.sound \
-            --root AssemblyP1.Issue94Complete
-
+            --root AssemblyP1 --modules-from AssemblyP1
