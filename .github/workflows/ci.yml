@@ -9,6 +9,7 @@ on:
 
 permissions:
   contents: read
+  actions: read
 
 concurrency:
   group: ci-${{ github.workflow }}-${{ github.ref }}
@@ -22,384 +23,114 @@ jobs:
       - name: Check research documentation integrity
         run: python3 scripts/check-research-docs.py
 
-  build-prereq:
-    runs-on: ubuntu-latest
-    env:
-      LEAN_NUM_THREADS: 1
-    steps:
-      - uses: actions/checkout@v4
-      - uses: leanprover/lean-action@v1
-        with:
-          build: true
-          build-args: "+AssemblyP1.Issue94IterSlide --wfail"
-          use-github-cache: false
-      - uses: actions/upload-artifact@v4
-        with:
-          name: prereq-build
-          path: .lake/build
-          include-hidden-files: true
-          retention-days: 1
-
-  build-nat-boundary:
-    needs: build-prereq
-    runs-on: ubuntu-latest
-    env:
-      LEAN_NUM_THREADS: 1
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/download-artifact@v4
-        with:
-          name: prereq-build
-          path: .lake/build
-      - uses: leanprover/lean-action@v1
-        with:
-          build: true
-          build-args: "+AssemblyP1.Issue94InterlaceKernelNatBoundary --wfail"
-          use-github-cache: false
-      - uses: actions/upload-artifact@v4
-        with:
-          name: nat-boundary-build
-          path: .lake/build
-          include-hidden-files: true
-          retention-days: 1
-
-  build-boundary:
-    needs: build-nat-boundary
-    runs-on: ubuntu-latest
-    env:
-      LEAN_NUM_THREADS: 1
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/download-artifact@v4
-        with:
-          name: nat-boundary-build
-          path: .lake/build
-      - uses: leanprover/lean-action@v1
-        with:
-          build: true
-          build-args: "+AssemblyP1.Issue94InterlaceKernelBoundary --wfail"
-          use-github-cache: false
-      - uses: actions/upload-artifact@v4
-        with:
-          name: boundary-build
-          path: .lake/build
-          include-hidden-files: true
-          retention-days: 1
-
-  build-interlace:
-    needs: build-boundary
-    runs-on: ubuntu-latest
-    env:
-      LEAN_NUM_THREADS: 1
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/download-artifact@v4
-        with:
-          name: boundary-build
-          path: .lake/build
-      - uses: leanprover/lean-action@v1
-        with:
-          build: true
-          build-args: "+AssemblyP1.Issue94InterlaceKernelBase --wfail"
-          use-github-cache: false
-      - uses: actions/upload-artifact@v4
-        with:
-          name: interlace-build
-          path: .lake/build
-          include-hidden-files: true
-          retention-days: 1
-
-  build-color:
-    needs: build-interlace
-    runs-on: ubuntu-latest
-    env:
-      LEAN_NUM_THREADS: 1
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/download-artifact@v4
-        with:
-          name: interlace-build
-          path: .lake/build
-      - uses: leanprover/lean-action@v1
-        with:
-          build: true
-          build-args: "+AssemblyP1.Issue94InterlaceKernelColor --wfail"
-          use-github-cache: false
-      - uses: actions/upload-artifact@v4
-        with:
-          name: color-build
-          path: .lake/build
-          include-hidden-files: true
-          retention-days: 1
-
-  build-coboundary:
-    needs: build-color
-    runs-on: ubuntu-latest
-    env:
-      LEAN_NUM_THREADS: 1
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/download-artifact@v4
-        with:
-          name: color-build
-          path: .lake/build
-      - uses: leanprover/lean-action@v1
-        with:
-          build: true
-          build-args: "+AssemblyP1.Issue94ComponentCoboundary --wfail"
-          use-github-cache: false
-      - uses: actions/upload-artifact@v4
-        with:
-          name: coboundary-build
-          path: .lake/build
-          include-hidden-files: true
-          retention-days: 1
-
-  build-tw6:
-    needs: build-coboundary
-    runs-on: ubuntu-latest
-    env:
-      LEAN_NUM_THREADS: 1
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/download-artifact@v4
-        with:
-          name: coboundary-build
-          path: .lake/build
-      - uses: leanprover/lean-action@v1
-        with:
-          build: true
-          build-args: "+AssemblyP1.Issue94TW6Lemma1 --wfail"
-          use-github-cache: false
-      - uses: actions/upload-artifact@v4
-        with:
-          name: tw6-build
-          path: .lake/build
-          include-hidden-files: true
-          retention-days: 1
-
-  build-tw7:
-    needs: build-tw6
-    runs-on: ubuntu-latest
-    env:
-      LEAN_NUM_THREADS: 1
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/download-artifact@v4
-        with:
-          name: tw6-build
-          path: .lake/build
-      - uses: leanprover/lean-action@v1
-        with:
-          build: true
-          build-args: "+AssemblyP1.Issue94TW7AltF --wfail"
-          use-github-cache: false
-      - uses: actions/upload-artifact@v4
-        with:
-          name: tw7-build
-          path: .lake/build
-          include-hidden-files: true
-          retention-days: 1
-
-  build-same-altf:
-    needs: build-tw7
-    runs-on: ubuntu-latest
-    env:
-      LEAN_NUM_THREADS: 1
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/download-artifact@v4
-        with:
-          name: tw7-build
-          path: .lake/build
-      - uses: leanprover/lean-action@v1
-        with:
-          build: true
-          build-args: "+AssemblyP1.Issue94SameAltF --wfail"
-          use-github-cache: false
-      - uses: actions/upload-artifact@v4
-        with:
-          name: same-altf-build
-          path: .lake/build
-          include-hidden-files: true
-          retention-days: 1
-
-  build-support-descent:
-    needs: build-same-altf
-    runs-on: ubuntu-latest
-    env:
-      LEAN_NUM_THREADS: 1
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/download-artifact@v4
-        with:
-          name: same-altf-build
-          path: .lake/build
-      - uses: leanprover/lean-action@v1
-        with:
-          build: true
-          build-args: "+AssemblyP1.Issue94SupportDescent --wfail"
-          use-github-cache: false
-      - uses: actions/upload-artifact@v4
-        with:
-          name: support-descent-build
-          path: .lake/build
-          include-hidden-files: true
-          retention-days: 1
-
-  build-component-coordinates:
-    needs: build-support-descent
-    runs-on: ubuntu-latest
-    env:
-      LEAN_NUM_THREADS: 1
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/download-artifact@v4
-        with:
-          name: support-descent-build
-          path: .lake/build
-      - uses: leanprover/lean-action@v1
-        with:
-          build: true
-          build-args: "+AssemblyP1.Issue94ComponentCoordinates --wfail"
-          use-github-cache: false
-      - uses: actions/upload-artifact@v4
-        with:
-          name: component-coordinates-build
-          path: .lake/build
-          include-hidden-files: true
-          retention-days: 1
-
-  build-component-residual:
-    needs: build-component-coordinates
-    runs-on: ubuntu-latest
-    env:
-      LEAN_NUM_THREADS: 1
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/download-artifact@v4
-        with:
-          name: component-coordinates-build
-          path: .lake/build
-      - uses: leanprover/lean-action@v1
-        with:
-          build: true
-          build-args: "+AssemblyP1.Issue94ComponentResidual --wfail"
-          use-github-cache: false
-      - uses: actions/upload-artifact@v4
-        with:
-          name: component-residual-build
-          path: .lake/build
-          include-hidden-files: true
-          retention-days: 1
-
-  build-p2-descent:
-    needs: build-component-residual
-    runs-on: ubuntu-latest
-    env:
-      LEAN_NUM_THREADS: 1
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/download-artifact@v4
-        with:
-          name: component-residual-build
-          path: .lake/build
-      - uses: leanprover/lean-action@v1
-        with:
-          build: true
-          build-args: "+AssemblyP1.Issue94P2SupportDescent --wfail"
-          use-github-cache: false
-      - uses: actions/upload-artifact@v4
-        with:
-          name: p2-descent-build
-          path: .lake/build
-          include-hidden-files: true
-          retention-days: 1
-
-  build-component-switch:
-    needs: build-p2-descent
-    runs-on: ubuntu-latest
-    env:
-      LEAN_NUM_THREADS: 1
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/download-artifact@v4
-        with:
-          name: p2-descent-build
-          path: .lake/build
-      - uses: leanprover/lean-action@v1
-        with:
-          build: true
-          build-args: "+AssemblyP1.Issue94ComponentSwitchProduct --wfail"
-          use-github-cache: false
-      - uses: actions/upload-artifact@v4
-        with:
-          name: component-switch-build
-          path: .lake/build
-          include-hidden-files: true
-          retention-days: 1
-
-  build-concrete:
-    needs: build-component-switch
-    runs-on: ubuntu-latest
-    env:
-      LEAN_NUM_THREADS: 1
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/download-artifact@v4
-        with:
-          name: component-switch-build
-          path: .lake/build
-      - uses: leanprover/lean-action@v1
-        with:
-          build: true
-          build-args: "+AssemblyP1.Issue94ConcreteAntiderivative --wfail"
-          use-github-cache: false
-      - uses: actions/upload-artifact@v4
-        with:
-          name: concrete-build
-          path: .lake/build
-          include-hidden-files: true
-          retention-days: 1
-
-  build-long-window:
-    needs: build-concrete
-    runs-on: ubuntu-latest
-    env:
-      LEAN_NUM_THREADS: 1
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/download-artifact@v4
-        with:
-          name: concrete-build
-          path: .lake/build
-      - uses: leanprover/lean-action@v1
-        with:
-          build: true
-          build-args: "+AssemblyP1.Issue94LongWindowSplit --wfail"
-          use-github-cache: false
-      - uses: actions/upload-artifact@v4
-        with:
-          name: endpoint-branches-build
-          path: .lake/build
-          include-hidden-files: true
-          retention-days: 1
-
   build:
-    needs: build-long-window
     runs-on: ubuntu-latest
+    timeout-minutes: 60
     env:
       LEAN_NUM_THREADS: 1
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/download-artifact@v4
+
+      # Reuse the Mathlib sources and its downloaded binary cache between runs.
+      - name: Restore Mathlib packages and cache
+        uses: actions/cache@v4
         with:
-          name: endpoint-branches-build
+          path: .lake/packages
+          key: mathlib-v1-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('lean-toolchain', 'lake-manifest.json') }}
+
+      # A complete checkpoint from an earlier successful stage provides a
+      # bootstrap even though the old 17-job chain never reached its final job.
+      # Once a full cache exists, neither this download nor the seed save runs.
+      - name: Restore compiled Lean objects
+        id: compiled-cache
+        uses: actions/cache/restore@v4
+        with:
           path: .lake/build
-      - uses: leanprover/lean-action@v1
+          key: lean-project-v2-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('lean-toolchain', 'lake-manifest.json') }}-full-${{ github.sha }}
+          restore-keys: |
+            lean-project-v2-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('lean-toolchain', 'lake-manifest.json') }}-full-
+            lean-project-v2-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('lean-toolchain', 'lake-manifest.json') }}-seed-
+
+      - name: Bootstrap from successful support-descent artifact
+        id: bootstrap
+        if: steps.compiled-cache.outputs.cache-matched-key == ''
+        continue-on-error: true
+        uses: actions/download-artifact@v4
         with:
+          name: support-descent-build
+          repository: ${{ github.repository }}
+          run-id: 37842180341
+          github-token: ${{ github.token }}
+          path: .lake/build
+
+      # Save the bootstrap BEFORE attempting the remaining build. A killed
+      # runner can no longer discard this already-compiled baseline.
+      - name: Persist initial Lean checkpoint
+        if: steps.compiled-cache.outputs.cache-matched-key == '' && steps.bootstrap.outcome == 'success'
+        uses: actions/cache/save@v4
+        with:
+          path: .lake/build
+          key: lean-project-v2-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('lean-toolchain', 'lake-manifest.json') }}-seed-${{ github.sha }}
+
+      - name: Runner diagnostics and swap
+        run: |
+          echo "Memory before build"
+          free -h
+          df -h .
+          echo "Cgroup memory limit (if applicable):"
+          cat /sys/fs/cgroup/memory.max 2>/dev/null || true
+          sudo fallocate -l 6G /mnt/lean-ci.swap
+          sudo chmod 600 /mnt/lean-ci.swap
+          sudo mkswap /mnt/lean-ci.swap
+          sudo swapon /mnt/lean-ci.swap
+          free -h
+
+      - name: Monitor memory during Lean build
+        run: |
+          (
+            while true; do
+              date -u
+              free -m
+              ps -eo pid,rss,pcpu,comm --sort=-rss | head -7
+              sleep 30
+            done
+          ) > "$RUNNER_TEMP/lean-memory.log" 2>&1 &
+          echo $! > "$RUNNER_TEMP/lean-memory.pid"
+
+      - name: Build complete theorem with warnings as errors
+        uses: leanprover/lean-action@v1
+        with:
+          auto-config: false
           build: true
-          build-args: "+AssemblyP1.Issue94Complete --wfail"
+          test: false
+          lint: false
           use-github-cache: false
+          build-args: "+AssemblyP1.Issue94Complete --wfail"
+
+      - name: Save full compiled Lean cache
+        uses: actions/cache/save@v4
+        with:
+          path: .lake/build
+          key: lean-project-v2-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('lean-toolchain', 'lake-manifest.json') }}-full-${{ github.sha }}
+
+      - name: Audit final theorem axioms
+        uses: leanprover/lean-action@v1
+        with:
+          auto-config: false
+          build: false
+          test: false
+          lint: false
+          use-github-cache: false
+          use-mathlib-cache: false
           axiom-audit: true
           axiom-audit-root: AssemblyP1.Issue94Complete
+
+      - name: Report peak build memory
+        if: always()
+        run: |
+          if [ -f "$RUNNER_TEMP/lean-memory.pid" ]; then
+            kill "$(cat "$RUNNER_TEMP/lean-memory.pid")" 2>/dev/null || true
+          fi
+          if [ -f "$RUNNER_TEMP/lean-memory.log" ]; then
+            tail -140 "$RUNNER_TEMP/lean-memory.log"
+          fi
