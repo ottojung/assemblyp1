@@ -1,5 +1,4 @@
 import AssemblyP1.Issue94ComponentCoordinate
-import AssemblyP1.Issue94InterlaceKernel
 
 namespace AssemblyP1.Issue94ComponentCoordinates
 
@@ -17,7 +16,6 @@ open AssemblyP1.Issue94InterlaceComponents
 open AssemblyP1.Issue94CoordinateValidity
 open AssemblyP1.Issue94ComponentCoordinate
 open AssemblyP1.Issue94CLEDeletion
-open AssemblyP1.Issue94InterlaceKernel
 
 variable {α : Type} [DecidableEq α] {K L : ℕ}
 

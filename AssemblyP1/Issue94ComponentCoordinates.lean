@@ -1,4 +1,5 @@
 import AssemblyP1.Issue94ComponentCoordinatesExact
+import AssemblyP1.Issue94InterlaceKernel
 
 namespace AssemblyP1.Issue94ComponentCoordinates
 
