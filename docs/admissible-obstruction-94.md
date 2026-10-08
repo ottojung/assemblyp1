@@ -241,3 +241,44 @@ endpoint is "primitive-`P2` source **+ primitive-`P2` candidate** + equal
 wants the candidate's `P2` to do work, the transfer
 "`E` is `P2` at `L` ⟹ the extracted `θ` preserves something" must be stated
 explicitly; it is currently nowhere in the library.
+
+## 6. Composition, and the single `Prop` that is left (branch `agent/issue94-p2triple-maxext`)
+
+Steps 1, 3 and 4 of §5 above are now kernel-checked *and compose*, which
+requires one lemma the tree was missing: the two primitivity predicates are
+identified (`AssemblyP1/PrimitivityBridge.lean`), because step 3 needs
+`RepeatAdapter.IsPrimitive` while the endpoint and `DescentObligation` carry
+`PopulationReduction.IsPrimitive`.
+
+Consequently, at general `G` and general `L`
+(`AssemblyP1/BBTEndpoint94.lean`):
+
+```lean
+omit [Fintype α] in
+theorem selectedInterleaved_of_supportDichotomy (hG : 0 < G) (L : ℕ) (S : Fin G → α)
+    (θ : Fin G → Fin G) (hL : 2 ≤ L)
+    (hprim : PopulationReduction.IsPrimitive S) (hP2 : P2 hG L S)
+    (hb : Function.Bijective θ) (hf : FibrePreserving hG L S θ)
+    (ho : OneCycle hG θ) (hbad : ¬ OrbitVertexEq hG L S θ)
+    (hD : SupportDichotomy hG L S θ) :
+    SelectedInterleaved hG L S θ
+
+theorem admissibleObstruction_of_supportDichotomy (hG : 0 < G) (L : ℕ) (S : Fin G → α)
+    (θ : Fin G → Fin G) (hL : 2 ≤ L)
+    (hprim : PopulationReduction.IsPrimitive S) (hP2 : P2 hG L S)
+    (hb : Function.Bijective θ) (hf : FibrePreserving hG L S θ)
+    (ho : OneCycle hG θ) (hbad : ¬ OrbitVertexEq hG L S θ)
+    (hD : SupportDichotomy hG L S θ) :
+    BBTAdmissible.AdmissibleObstruction hG L S
+```
+
+So the remaining mathematical content is **exactly** `SupportDichotomy`
+(`BBTSupportInvariant`, still a `Prop` with no inhabitant) plus a
+`LongObstruction`-free discharger for it.  Nothing else in the descent is open.
+
+One housekeeping defect was fixed on the way: `BBTEndpoint94.lean` was never
+imported by `AssemblyP1.lean`, so `lake build` never elaborated the module
+stating "the single final theorem for #89".  It hid a stuck
+`DecidableEq`/`G` synthesis in `endpoint_of_obstruction` and a batch of
+unscoped identifiers (`FibrePreserving`, `OneCycle`, `OrbitVertexEq`,
+`SelectedTriple`, `SelectedInterleaved`).  The module is inside the target now.
