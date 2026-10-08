@@ -1,4 +1,4 @@
-import Mathlib
+import Mathlib.Data.Finset.Defs
 
 /-!
 # A shared source-faithful circular read / repeat / bridging layer
