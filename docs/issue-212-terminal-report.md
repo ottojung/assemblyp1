@@ -13,7 +13,7 @@ onto issue #212 verbatim.**
 ## 1. Progress comment that should open this front's board record
 
 > **state: solved** — issue #212, owner `openclaw@marceline-dev`, branch
-> `agent/board-212-37b45b`, ahead `origin/main` by 2 commits.
+> `agent/board-212-37b45b`, ahead `origin/main` by 4 commits.
 >
 > **Verdict.** Finite ML maximality for `|D| = |S|` in the
 > reverse-complement-collapsed MB09 bidirected spelled-flow model is **false**
@@ -109,10 +109,9 @@ onto issue #212 verbatim.**
 | commit | content |
 |---|---|
 | `6aeb95e` (inherited) | `scripts/verify_peroccurrence_dna_samelength_212.py`: first independent exact verification of the witness |
-| next | `AssemblyP1/PerOccurrenceSameLengthCounterexample.lean`: rewritten, kernel-checks the full statement (replaces the broken untracked file) |
-| next | `scripts/verify_peroccurrence_dna_samelength_212_sourcefaithful.py`: second from-scratch verification mirroring the repository's own definitions, plus negative controls |
-| next | `docs/peroccurrence-samelength-dna-counterexample-212.md`: the front note |
-| next | pointer updates in `docs/bridging-se62-flow-ml-counterexample.md`, `docs/section62-same-length-bidirected-counterexample.md`, `docs/source-notes/same-length-witnesses-candidate-set-inclusion.md` |
+| `56af4a3` | `AssemblyP1/PerOccurrenceSameLengthCounterexample.lean`: rewritten, kernel-checks the full statement (replaces the broken untracked file) |
+| `fd4b64a` | `scripts/verify_peroccurrence_dna_samelength_212_sourcefaithful.py`: second from-scratch verification mirroring the repository's own definitions, plus negative controls |
+| `076cf17` | `docs/peroccurrence-samelength-dna-counterexample-212.md`: the front note, plus pointer updates in `docs/bridging-se62-flow-ml-counterexample.md`, `docs/section62-same-length-bidirected-counterexample.md`, `docs/source-notes/same-length-witnesses-candidate-set-inclusion.md` |
 
 ## 3. Reporting blocker (precise)
 
