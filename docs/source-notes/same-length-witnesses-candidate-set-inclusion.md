@@ -144,6 +144,34 @@ all-bridged maximal triple repeat, no interleaved pair).
 | `AAACC → AAAAC` (#32) | literal fixed-`N` product of binomial marginals | `5, 5` | `1125/512 > 1` | reading 2 `truthIsML` over circular candidates with `\|D\| ≤ N` (in particular the length-`G` class) |
 | `AAABCBC → AAAAABC` | exact multinomial | `7, 7` | `27` | reading 1 `truthIsML` over **all** circular candidates, with a read-tiled competitor |
 
+**Parameters of the `AAABCBC → AAAAABC` row (recorded by issue #209, second
+pass).** This row was previously unparameterized: no read length, no realized
+reads, no `I_s` certificate. A working realization is:
+
+* read length `L = 3`;
+* truth `S = AAABCBC`, competitor `D = AAAAABC`, both length `7`;
+* observed read multiset `AAA`×3, `AAB`, `ABC`, `BCA`, `CAA` (`n = 7`), so the
+  start `0` of `S` is used three times;
+* distinct realized starts `R = {0, 1, 2, 5, 6}`.
+
+Under this realization the exact-multinomial ratio is `3^3 = 27`. Write
+`n!/∏ x_i!` for the observation-only multinomial coefficient, which is
+`7!/(3!·1!·1!·1!·1!) = 840` here. The type `AAA` has multiplicity `1` in `S`
+and `3` in `D`; every other observed type has multiplicity `1` in both; and the
+unobserved types `BCB`, `CBC` are absent from both. Hence
+
+`L_E(D) = 840 · (3/7)^3 · (1/7)^4 = 3240/117649` and
+`L_E(S) = 840 · (1/7)^7 = 120/117649`, so `L_E(D)/L_E(S) = 3^{x_{AAA}} = 27`.
+
+`R` covers `S`, and the full
+source-faithful `I_s` (including both bridging clauses) holds for
+`(S, L, R)` — confirmed by two independently written implementations. Of the
+625 observations over `S`'s window types with per-type counts in `0..4` that
+give ratio `27`, 256 are fully `I_s`-feasible and 400 give coverage; the
+minimal feasible one is the realization above. The row remains **bounded
+evidence, not a kernel check** — no Lean theorem states this instance — and it
+still places only the competitor in the §6.2 spellable set.
+
 Each entry is a same-length pair, so by §3 its refutation is not confined to the
 length-`G` class. The different-length `ACGT → ACACGT` witness of issue #24 is
 therefore not needed to negate the unrestricted-length exact-multinomial

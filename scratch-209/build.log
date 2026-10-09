@@ -1,0 +1,528 @@
+ℹ [8990/9052] Replayed AssemblyP1.BBTVertexCycleReduction
+info: AssemblyP1/BBTVertexCycleReduction.lean:275:0: 'AssemblyP1.BBTVertexCycle.vertexCycleEq_conj' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: AssemblyP1/BBTVertexCycleReduction.lean:276:0: 'AssemblyP1.BBTVertexCycle.listing_conjugate' depends on axioms: [propext, Quot.sound]
+info: AssemblyP1/BBTVertexCycleReduction.lean:277:0: 'AssemblyP1.BBTVertexCycle.altF_eq' depends on axioms: [Quot.sound]
+info: AssemblyP1/BBTVertexCycleReduction.lean:278:0: 'AssemblyP1.BBTVertexCycle.vertexCycleEq_of_both' depends on axioms: [propext, Classical.choice, Quot.sound]
+ℹ [8994/9052] Replayed AssemblyP1.Issue94TransposePreserve
+info: AssemblyP1/Issue94TransposePreserve.lean:254:0: 'AssemblyP1.BBTTranspose.vertexCycleEq_of_pointwise_vtx' depends on axioms: [propext, Quot.sound]
+info: AssemblyP1/Issue94TransposePreserve.lean:255:0: 'AssemblyP1.BBTTranspose.vertexCycleEq_transposition' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: AssemblyP1/Issue94TransposePreserve.lean:256:0: 'AssemblyP1.BBTTranspose.vertexCycleEq_transposition_AltF' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: AssemblyP1/Issue94TransposePreserve.lean:257:0: 'AssemblyP1.BBTTranspose.vertexCycleEq_transposition_DoubledPair' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+info: AssemblyP1/Issue94TransposePreserve.lean:258:0: 'AssemblyP1.BBTTranspose.vertexCycleEq_transpositionList' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: AssemblyP1/Issue94TransposePreserve.lean:259:0: 'AssemblyP1.BBTTranspose.altF_tau4_0' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: AssemblyP1/Issue94TransposePreserve.lean:260:0: 'AssemblyP1.BBTTranspose.transposition_at_chord_S4' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: AssemblyP1/Issue94TransposePreserve.lean:261:0: 'AssemblyP1.BBTTranspose.transposition_at_chord_S4_ne' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: AssemblyP1/Issue94TransposePreserve.lean:262:0: 'AssemblyP1.BBTTranspose.vertexCycleEq_sigma3' depends on axioms: [propext, Quot.sound]
+info: AssemblyP1/Issue94TransposePreserve.lean:263:0: 'AssemblyP1.BBTTranspose.not_vertexCycleEq_sigma3_swap01' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: AssemblyP1/Issue94TransposePreserve.lean:264:0: 'AssemblyP1.BBTTranspose.AnyTranspositionPreserves' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: AssemblyP1/Issue94TransposePreserve.lean:265:0: 'AssemblyP1.BBTTranspose.interlaceAlone_insufficient' depends on axioms: [propext, Classical.choice, Quot.sound]
+ℹ [8999/9052] Replayed AssemblyP1.Issue94ObstructionEquiv
+info: AssemblyP1/Issue94ObstructionEquiv.lean:253:0: 'AssemblyP1.BBTEulerian.uniqueEulerianCycle_of_obstruction' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: AssemblyP1/Issue94ObstructionEquiv.lean:254:0: 'AssemblyP1.BBTEulerian.obstruction_of_uniqueEulerianCycle' depends on axioms: [Quot.sound]
+info: AssemblyP1/Issue94ObstructionEquiv.lean:255:0: 'AssemblyP1.BBTEulerian.bbtUniqueAt_of_obstruction' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: AssemblyP1/Issue94ObstructionEquiv.lean:256:0: 'AssemblyP1.BBTEulerian.pullback_isEulerianCycle' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: AssemblyP1/Issue94ObstructionEquiv.lean:257:0: 'AssemblyP1.BBT94.window_readOff_refuted_S0001' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: AssemblyP1/Issue94ObstructionEquiv.lean:258:0: 'AssemblyP1.BBT94.window_readOff_refuted' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: AssemblyP1/Issue94ObstructionEquiv.lean:259:0: 'AssemblyP1.BBT94.equiv_identity_refuted' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: AssemblyP1/Issue94ObstructionEquiv.lean:260:0: 'AssemblyP1.BBT94.exists_matching_pullback_refuted' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: AssemblyP1/Issue94ObstructionEquiv.lean:261:0: 'AssemblyP1.BBT94.bbtUniqueAt_of_obstruction'' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: AssemblyP1/Issue94ObstructionEquiv.lean:262:0: 'AssemblyP1.BBT94.bbtUniqueAt_iff_residual' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: AssemblyP1/Issue94ObstructionEquiv.lean:263:0: 'AssemblyP1.Issue94EulerianTheta.theta_of_same_spectrum_is_one_cycle' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+info: AssemblyP1/Issue94ObstructionEquiv.lean:264:0: 'AssemblyP1.Issue94EulerianTheta.badThetaObstruction_of_bbt' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: AssemblyP1/Issue94ObstructionEquiv.lean:265:0: 'AssemblyP1.Issue94EulerianTheta.bbt_of_badThetaObstruction' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: AssemblyP1/Issue94ObstructionEquiv.lean:266:0: 'AssemblyP1.Issue94EulerianTheta.vertexCycleEq_of_RotEquiv_pullback' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+info: AssemblyP1/Issue94ObstructionEquiv.lean:267:0: 'AssemblyP1.PopulationUniqueness.population_unique_ML_up_to_rotation' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+ℹ [9000/9052] Replayed AssemblyP1.Issue94EulerianRealize
+info: AssemblyP1/Issue94EulerianRealize.lean:466:0: 'AssemblyP1.Issue94Realize.traversalRead_window_refuted' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: AssemblyP1/Issue94EulerianRealize.lean:467:0: 'AssemblyP1.Issue94Realize.traversalRead_window_refuted_instance' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+info: AssemblyP1/Issue94EulerianRealize.lean:468:0: 'AssemblyP1.Issue94Realize.not_eulerianCycle_refuted_instance' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+info: AssemblyP1/Issue94EulerianRealize.lean:469:0: 'AssemblyP1.Issue94Realize.traversalRead_window_of_eulerianCycle_small' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+info: AssemblyP1/Issue94EulerianRealize.lean:470:0: 'AssemblyP1.Issue94Realize.eq_of_window_eq' depends on axioms: [propext]
+info: AssemblyP1/Issue94EulerianRealize.lean:471:0: 'AssemblyP1.Issue94Realize.window_traversalRead_of_traverses' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: AssemblyP1/Issue94EulerianRealize.lean:472:0: 'AssemblyP1.Issue94Realize.matching_traversalRead_of_traverses' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+info: AssemblyP1/Issue94EulerianRealize.lean:473:0: 'AssemblyP1.Issue94Realize.eulerianCycle_realized' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: AssemblyP1/Issue94EulerianRealize.lean:474:0: 'AssemblyP1.Issue94Realize.eulerianCycle_specCount_eq' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: AssemblyP1/Issue94EulerianRealize.lean:475:0: 'AssemblyP1.Issue94Realize.vertexCycleEq_of_RotEquiv_traversalRead' depends on axioms: [propext, Quot.sound]
+info: AssemblyP1/Issue94EulerianRealize.lean:476:0: 'AssemblyP1.Issue94Realize.obstruction_of_BBTUniqueAt' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: AssemblyP1/Issue94EulerianRealize.lean:477:0: 'AssemblyP1.Issue94Realize.obstruction_iff_bbtUniqueAt' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: AssemblyP1/Issue94EulerianRealize.lean:478:0: 'AssemblyP1.PopulationUniqueness.population_unique_ML_up_to_rotation' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+ℹ [9001/9052] Replayed AssemblyP1.Issue94P2PrimInterface
+info: AssemblyP1/Issue94P2PrimInterface.lean:402:0: 'AssemblyP1.Issue94Interface.long_short_of_long' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: AssemblyP1/Issue94P2PrimInterface.lean:403:0: 'AssemblyP1.Issue94Interface.population_unique_ML_of_long_unique' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+info: AssemblyP1/Issue94P2PrimInterface.lean:404:0: 'AssemblyP1.Issue94Interface.p2LongUnique_of_bbtUniqueAt' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: AssemblyP1/Issue94P2PrimInterface.lean:405:0: 'AssemblyP1.Issue94Interface.bbTP2Prim_iff_bbTP2Prim'' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: AssemblyP1/Issue94P2PrimInterface.lean:406:0: 'AssemblyP1.Issue94Interface.bbtCompleteSpec_of_P2Prim'' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: AssemblyP1/Issue94P2PrimInterface.lean:407:0: 'AssemblyP1.Issue94Interface.bbtCompleteSpec_of_P2Prim' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: AssemblyP1/Issue94P2PrimInterface.lean:408:0: 'AssemblyP1.Issue94Interface.population_unique_ML_of_P2Prim' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: AssemblyP1/Issue94P2PrimInterface.lean:409:0: 'AssemblyP1.Issue94Interface.population_unique_ML_same_length_of_P2Prim' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+info: AssemblyP1/Issue94P2PrimInterface.lean:410:0: 'AssemblyP1.Issue94Interface.population_tie_implies_rotation_of_P2Prim' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+info: AssemblyP1/Issue94P2PrimInterface.lean:411:0: 'AssemblyP1.Issue94Interface.bbTP2Prim_of_bbtUniqueAt' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: AssemblyP1/Issue94P2PrimInterface.lean:412:0: 'AssemblyP1.Issue94Interface.bbTP2Prim_of_obstruction' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: AssemblyP1/Issue94P2PrimInterface.lean:413:0: 'AssemblyP1.Issue94Interface.population_unique_ML_of_BBTUniqueAt' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+info: AssemblyP1/Issue94P2PrimInterface.lean:414:0: 'AssemblyP1.Issue94Realize.obstruction_iff_bbtUniqueAt' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: AssemblyP1/Issue94P2PrimInterface.lean:415:0: 'AssemblyP1.PopulationUniqueness.population_unique_ML_up_to_rotation' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+ℹ [9002/9052] Replayed AssemblyP1.Issue94FibreCommute
+info: AssemblyP1/Issue94FibreCommute.lean:105:0: 'AssemblyP1.Issue94FibreCommute.image_left_or_right' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: AssemblyP1/Issue94FibreCommute.lean:106:0: 'AssemblyP1.Issue94FibreCommute.image_right_or_left' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: AssemblyP1/Issue94FibreCommute.lean:107:0: 'AssemblyP1.Issue94FibreCommute.doubledPair_action' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: AssemblyP1/Issue94FibreCommute.lean:108:0: 'AssemblyP1.Issue94FibreCommute.swap_commutes_vtxPreserving' depends on axioms: [propext, Classical.choice, Quot.sound]
+ℹ [9003/9052] Replayed AssemblyP1.Issue94P2DoubledPair
+info: AssemblyP1/Issue94P2DoubledPair.lean:74:0: 'AssemblyP1.Issue94P2DoubledPair.doubledPair_of_vtx_eq' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: AssemblyP1/Issue94P2DoubledPair.lean:75:0: 'AssemblyP1.Issue94P2DoubledPair.swap_commutes_of_vtx_eq' depends on axioms: [propext, Classical.choice, Quot.sound]
+ℹ [9004/9052] Replayed AssemblyP1.Issue94LadderAligned
+info: AssemblyP1/Issue94LadderAligned.lean:64:0: 'AssemblyP1.Issue94LadderAligned.aligned_vtx_of_support_chord' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+info: AssemblyP1/Issue94LadderAligned.lean:65:0: 'AssemblyP1.Issue94LadderAligned.aligned_doubledPair_of_support_chord' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+info: AssemblyP1/Issue94LadderAligned.lean:66:0: 'AssemblyP1.Issue94LadderAligned.aligned_swap_commutes' depends on axioms: [propext, Classical.choice, Quot.sound]
+ℹ [9007/9052] Replayed AssemblyP1.Issue94ComponentAlgebra
+info: AssemblyP1/Issue94ComponentAlgebra.lean:66:0: 'AssemblyP1.Issue94ComponentAlgebra.altF_postcompose' depends on axioms: [propext, Quot.sound]
+info: AssemblyP1/Issue94ComponentAlgebra.lean:67:0: 'AssemblyP1.Issue94ComponentAlgebra.delete_component' depends on axioms: [propext, Quot.sound]
+ℹ [9008/9052] Replayed AssemblyP1.Issue94AlignedPairs
+info: AssemblyP1/Issue94AlignedPairs.lean:59:0: 'AssemblyP1.Issue94AlignedPairs.pair_eq_of_shared_endpoint' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: AssemblyP1/Issue94AlignedPairs.lean:128:0: 'AssemblyP1.Issue94AlignedPairs.ladder_pair_eq_of_shared_endpoint' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+info: AssemblyP1/Issue94AlignedPairs.lean:129:0: 'AssemblyP1.Issue94AlignedPairs.ladder_distinct_pairs_no_shared_endpoint' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+ℹ [9010/9052] Replayed AssemblyP1.Issue94InterlaceParity
+info: AssemblyP1/Issue94InterlaceParity.lean:92:0: 'AssemblyP1.Issue94InterlaceParity.principalInterlace_kerZero' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+info: AssemblyP1/Issue94InterlaceParity.lean:93:0: 'AssemblyP1.Issue94InterlaceParity.interlaceUnion_even_card' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: AssemblyP1/Issue94InterlaceParity.lean:94:0: 'AssemblyP1.Issue94InterlaceParity.interlaceComponent_even_card' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+ℹ [9011/9052] Replayed AssemblyP1.Issue94SameAltF
+info: AssemblyP1/Issue94SameAltF.lean:217:0: 'AssemblyP1.Issue94SameAltF.rotAdd_comp_inv' depends on axioms: [propext, Quot.sound]
+info: AssemblyP1/Issue94SameAltF.lean:218:0: 'AssemblyP1.Issue94SameAltF.succ_eq_of_altF_eq' depends on axioms: [propext, Quot.sound]
+info: AssemblyP1/Issue94SameAltF.lean:219:0: 'AssemblyP1.Issue94SameAltF.qfun_comm_nextPos' depends on axioms: [Quot.sound]
+info: AssemblyP1/Issue94SameAltF.lean:220:0: 'AssemblyP1.Issue94SameAltF.qfun_isRotation' depends on axioms: [propext, Quot.sound]
+info: AssemblyP1/Issue94SameAltF.lean:221:0: 'AssemblyP1.Issue94SameAltF.tau_eq_sigma_rot' depends on axioms: [propext, Quot.sound]
+info: AssemblyP1/Issue94SameAltF.lean:222:0: 'AssemblyP1.Issue94SameAltF.sigma_eq_tau_rot' depends on axioms: [propext, Quot.sound]
+info: AssemblyP1/Issue94SameAltF.lean:223:0: 'AssemblyP1.Issue94SameAltF.same_altF_centralizer' depends on axioms: [propext, Quot.sound]
+info: AssemblyP1/Issue94SameAltF.lean:224:0: 'AssemblyP1.Issue94SameAltF.same_altF_vertexCycleEq' depends on axioms: [propext, Quot.sound]
+ℹ [9012/9052] Replayed AssemblyP1.Issue94Antiderivative
+info: AssemblyP1/Issue94Antiderivative.lean:47:0: 'AssemblyP1.Issue94Antiderivative.rho_conj_alignedSwap' depends on axioms: [propext, Classical.choice, Quot.sound]
+ℹ [9013/9052] Replayed AssemblyP1.Issue94IntervalCore
+info: AssemblyP1/Issue94IntervalCore.lean:49:0: 'AssemblyP1.Issue94IntervalCore.intervalProd_inv' depends on axioms: [propext]
+info: AssemblyP1/Issue94IntervalCore.lean:187:0: 'AssemblyP1.Issue94IntervalCore.intervalProd_commutator_local' depends on axioms: [propext, Quot.sound]
+ℹ [9014/9052] Replayed AssemblyP1.Issue94CommutatorProduct
+info: AssemblyP1/Issue94CommutatorProduct.lean:62:0: 'AssemblyP1.Issue94CommutatorProduct.coboundary_mul' depends on axioms: [propext]
+info: AssemblyP1/Issue94CommutatorProduct.lean:63:0: 'AssemblyP1.Issue94CommutatorProduct.coboundary_prod_pairs' depends on axioms: [propext, Quot.sound]
+ℹ [9015/9052] Replayed AssemblyP1.Issue94AntiderivativeInterval
+info: AssemblyP1/Issue94AntiderivativeInterval.lean:118:0: 'AssemblyP1.Issue94AntiderivativeInterval.aligned_interval_commutator' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+ℹ [9016/9052] Replayed AssemblyP1.Issue94EvenPairing
+info: AssemblyP1/Issue94EvenPairing.lean:119:0: 'AssemblyP1.Issue94EvenPairing.coordinatePairs_endpoints_toFinset' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+info: AssemblyP1/Issue94EvenPairing.lean:120:0: 'AssemblyP1.Issue94EvenPairing.coordinatePair_interval_valid' depends on axioms: [propext, Classical.choice, Quot.sound]
+ℹ [9017/9052] Replayed AssemblyP1.Issue94ComponentCoboundary
+info: AssemblyP1/Issue94ComponentCoboundary.lean:181:0: 'AssemblyP1.Issue94ComponentCoboundary.coordinatePairs_coboundary_prod' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+ℹ [9019/9052] Replayed AssemblyP1.Issue94PhysicalChord
+info: AssemblyP1/Issue94PhysicalChord.lean:68:0: 'AssemblyP1.Issue94PhysicalChord.chord_ne_image' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: AssemblyP1/Issue94PhysicalChord.lean:69:0: 'AssemblyP1.Issue94PhysicalChord.altFInterlaceGraph_adj' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: AssemblyP1/Issue94PhysicalChord.lean:102:0: 'AssemblyP1.Issue94PhysicalChord.exists_physical_chord_of_support' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+ℹ [9020/9052] Replayed AssemblyP1.Issue94PhysicalComponent
+info: AssemblyP1/Issue94PhysicalComponent.lean:48:0: 'AssemblyP1.Issue94PhysicalComponent.reachable_interlaceConnected' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+info: AssemblyP1/Issue94PhysicalComponent.lean:49:0: 'AssemblyP1.Issue94PhysicalComponent.component_same_extension' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+ℹ [9021/9052] Replayed AssemblyP1.Issue94CoordinateValidity
+info: AssemblyP1/Issue94CoordinateValidity.lean:79:0: 'AssemblyP1.Issue94CoordinateValidity.pairBack_add_window_le_maxPairLen' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+info: AssemblyP1/Issue94CoordinateValidity.lean:94:0: 'AssemblyP1.Issue94CoordinateValidity.support_chord_coordinate_valid' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+ℹ [9022/9052] Replayed AssemblyP1.Issue94ComponentCoordinate
+info: AssemblyP1/Issue94ComponentCoordinate.lean:119:0: 'AssemblyP1.Issue94ComponentCoordinate.rotAdd_pairBack_maxPairStart' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+info: AssemblyP1/Issue94ComponentCoordinate.lean:120:0: 'AssemblyP1.Issue94ComponentCoordinate.component_chord_coordinate' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+ℹ [9027/9052] Replayed AssemblyP1.Issue94InterlaceKernelBase
+info: AssemblyP1/Issue94InterlaceKernelBase.lean:132:0: 'AssemblyP1.Issue94InterlaceKernel.color_pair_eq' depends on axioms: [propext, Classical.choice, Quot.sound]
+ℹ [9028/9052] Replayed AssemblyP1.Issue94InterlaceKernelColor
+info: AssemblyP1/Issue94InterlaceKernelColor.lean:70:0: 'AssemblyP1.Issue94InterlaceKernel.color_boundary_of_endpoint' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+info: AssemblyP1/Issue94InterlaceKernelColor.lean:200:0: 'AssemblyP1.Issue94InterlaceKernel.color_succ_eq_of_kernel' depends on axioms: [propext, Classical.choice, Quot.sound]
+ℹ [9029/9052] Replayed AssemblyP1.Issue94InterlaceKernel
+info: AssemblyP1/Issue94InterlaceKernel.lean:38:0: 'AssemblyP1.Issue94InterlaceKernel.color_constant_of_kernel' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: AssemblyP1/Issue94InterlaceKernel.lean:39:0: 'AssemblyP1.Issue94InterlaceKernel.physicalInterlace_kerZero' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: AssemblyP1/Issue94InterlaceKernel.lean:54:0: 'AssemblyP1.Issue94InterlaceKernel.physicalInterlace_component_even_card' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+info: AssemblyP1/Issue94InterlaceKernel.lean:57:0: 'AssemblyP1.Issue94InterlaceKernel.physical_four_distinct' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: AssemblyP1/Issue94InterlaceKernel.lean:58:0: 'AssemblyP1.Issue94InterlaceKernel.arcBit_pair_eq_interlace' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: AssemblyP1/Issue94InterlaceKernel.lean:60:0: 'AssemblyP1.Issue94InterlaceKernel.intervalBit_boundary_nat' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: AssemblyP1/Issue94InterlaceKernel.lean:61:0: 'AssemblyP1.Issue94InterlaceKernel.arcBit_boundary_val' depends on axioms: [propext, Classical.choice, Quot.sound]
+ℹ [9030/9052] Replayed AssemblyP1.Issue94ComponentCoordinates
+info: AssemblyP1/Issue94ComponentCoordinates.lean:113:0: 'AssemblyP1.Issue94ComponentCoordinates.chordCoordinate_injective_on_component' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+info: AssemblyP1/Issue94ComponentCoordinates.lean:114:0: 'AssemblyP1.Issue94ComponentCoordinates.componentCoordinates_even' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+info: AssemblyP1/Issue94ComponentCoordinates.lean:115:0: 'AssemblyP1.Issue94ComponentCoordinates.componentCoordinate_mem_data' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+ℹ [9031/9052] Replayed AssemblyP1.Issue94SupportDescent
+info: AssemblyP1/Issue94SupportDescent.lean:188:0: 'AssemblyP1.Issue94SupportDescent.exists_terminal_of_support_descent' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+info: AssemblyP1/Issue94SupportDescent.lean:189:0: 'AssemblyP1.Issue94SupportDescent.long_eulerian_unique_of_support_descent' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+ℹ [9036/9052] Replayed AssemblyP1.Issue94ComponentSwitchProduct
+info: AssemblyP1/Issue94ComponentSwitchProduct.lean:335:0: 'AssemblyP1.Issue94ComponentSwitchProduct.coordinatePairs_boundary_eq_componentSwitch' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+ℹ [9037/9052] Replayed AssemblyP1.Issue94ComponentResidualCommute
+info: AssemblyP1/Issue94ComponentResidualCommute.lean:187:0: 'AssemblyP1.Issue94ComponentResidualCommute.alignedSwap_commute_componentResidual' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+info: AssemblyP1/Issue94ComponentResidualCommute.lean:188:0: 'AssemblyP1.Issue94ComponentResidualCommute.intervalProd_commute_componentResidual' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+info: AssemblyP1/Issue94ComponentResidualCommute.lean:189:0: 'AssemblyP1.Issue94ComponentResidualCommute.coordinatePairs_antiderivative_commute_componentResidual' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+ℹ [9038/9052] Replayed AssemblyP1.Issue94ComponentAntiderivativeVtx
+info: AssemblyP1/Issue94ComponentAntiderivativeVtx.lean:104:0: 'AssemblyP1.Issue94ComponentAntiderivativeVtx.coordinatePairs_antiderivative_preserves_vtx' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+ℹ [9039/9052] Replayed AssemblyP1.Issue94ComponentDeleteEulerian
+info: AssemblyP1/Issue94ComponentDeleteEulerian.lean:59:0: 'AssemblyP1.Issue94ComponentDeleteEulerian.delete_component_eulerian' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+ℹ [9040/9052] Replayed AssemblyP1.Issue94P2SupportDescent
+info: AssemblyP1/Issue94P2SupportDescent.lean:79:0: 'AssemblyP1.Issue94P2SupportDescent.support_descent_step_of_P2Prim' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+ℹ [9041/9052] Replayed AssemblyP1.Issue94SupportDescentAdapter
+info: AssemblyP1/Issue94SupportDescentAdapter.lean:262:0: 'AssemblyP1.Issue94SupportDescentAdapter.SupportDescentStep' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: AssemblyP1/Issue94SupportDescentAdapter.lean:263:0: 'AssemblyP1.Issue94SupportDescentAdapter.bbtCompleteSpec_of_supportDescent' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+info: AssemblyP1/Issue94SupportDescentAdapter.lean:264:0: 'AssemblyP1.Issue94SupportDescentAdapter.p2LongUnique_of_supportDescentStep' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+info: AssemblyP1/Issue94SupportDescentAdapter.lean:265:0: 'AssemblyP1.Issue94SupportDescentAdapter.population_unique_ML_of_supportDescentStep' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+info: AssemblyP1/Issue94SupportDescentAdapter.lean:266:0: 'AssemblyP1.Issue94SupportDescent.long_eulerian_unique_of_support_descent' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+info: AssemblyP1/Issue94SupportDescentAdapter.lean:267:0: 'AssemblyP1.Issue94Interface.population_unique_ML_of_long_unique' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+ℹ [9042/9052] Replayed AssemblyP1.Issue94ConcreteAntiderivative
+info: AssemblyP1/Issue94ConcreteAntiderivative.lean:153:0: 'AssemblyP1.Issue94ConcreteAntiderivative.componentAntiderivative_witness' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+info: AssemblyP1/Issue94ConcreteAntiderivative.lean:154:0: 'AssemblyP1.Issue94ConcreteAntiderivative.concrete_p2PrimSupportDescentStep' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+info: AssemblyP1/Issue94ConcreteAntiderivative.lean:155:0: 'AssemblyP1.Issue94ConcreteAntiderivative.concrete_p2LongUnique' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+ℹ [9044/9052] Replayed AssemblyP1.Issue94LongWindowSplit
+info: AssemblyP1/Issue94LongWindowSplit.lean:219:0: 'AssemblyP1.Issue94Split.bbtCompleteSpec_of_short_window' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: AssemblyP1/Issue94LongWindowSplit.lean:220:0: 'AssemblyP1.Issue94Split.bbtCompleteSpec_short_window' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: AssemblyP1/Issue94LongWindowSplit.lean:221:0: 'AssemblyP1.Issue94Split.shortRangeUnique' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: AssemblyP1/Issue94LongWindowSplit.lean:222:0: 'AssemblyP1.Issue94Split.population_unique_ML_of_p2LongUnique' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+info: AssemblyP1/Issue94LongWindowSplit.lean:223:0: 'AssemblyP1.Issue94Split.obstruction_iff_longRangeObstruction' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+info: AssemblyP1/Issue94LongWindowSplit.lean:224:0: 'AssemblyP1.Issue94Split.bbtUniqueAt_iff_longRangeSpectrum' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: AssemblyP1/Issue94LongWindowSplit.lean:225:0: 'AssemblyP1.Issue94Split.p2LongUnique_of_longRangeSpectrum' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: AssemblyP1/Issue94LongWindowSplit.lean:226:0: 'AssemblyP1.Issue94Split.longRangeSpectrum_of_p2LongUnique' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: AssemblyP1/Issue94LongWindowSplit.lean:227:0: 'AssemblyP1.Issue94Split.p2LongUnique_iff_longRange' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: AssemblyP1/Issue94LongWindowSplit.lean:228:0: 'AssemblyP1.Issue94KShort.vertexCycleEq_short_window_general' depends on axioms: [propext, Quot.sound]
+info: AssemblyP1/Issue94LongWindowSplit.lean:229:0: 'AssemblyP1.Issue94KShort.obstruction_short_window_general' depends on axioms: [propext, Quot.sound]
+info: AssemblyP1/Issue94LongWindowSplit.lean:230:0: 'AssemblyP1.Issue94Interface.population_unique_ML_of_long_unique' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+ℹ [9045/9052] Replayed AssemblyP1.Issue94Complete
+info: AssemblyP1/Issue94Complete.lean:41:0: 'AssemblyP1.Issue94Complete.population_unique_ML' depends on axioms: [propext, Classical.choice, Quot.sound]
+⚠ [9046/9052] Replayed AssemblyP1.Issue94ComponentAlignedSwaps
+warning: AssemblyP1/Issue94ComponentAlignedSwaps.lean:98:61: `if_true` has been deprecated: Use `ite_true` instead
+warning: AssemblyP1/Issue94ComponentAlignedSwaps.lean:100:61: `if_true` has been deprecated: Use `ite_true` instead
+info: AssemblyP1/Issue94ComponentAlignedSwaps.lean:103:0: 'AssemblyP1.Issue94ComponentAlignedSwaps.componentSwitch_swap_aligned' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+ℹ [9047/9052] Replayed AssemblyP1.Issue94ComponentAntiderivativeAdapter
+info: AssemblyP1/Issue94ComponentAntiderivativeAdapter.lean:81:0: 'AssemblyP1.Issue94ComponentAntiderivativeAdapter.altF_trans_of_antiderivative' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+✖ [9048/9052] Building AssemblyP1.BBTTripleBridge (125s)
+trace: .> LEAN_PATH=/workspace/assemblyp1/.lake/packages/Cli/.lake/build/lib/lean:/workspace/assemblyp1/.lake/packages/batteries/.lake/build/lib/lean:/workspace/assemblyp1/.lake/packages/Qq/.lake/build/lib/lean:/workspace/assemblyp1/.lake/packages/aesop/.lake/build/lib/lean:/workspace/assemblyp1/.lake/packages/proofwidgets/.lake/build/lib/lean:/workspace/assemblyp1/.lake/packages/importGraph/.lake/build/lib/lean:/workspace/assemblyp1/.lake/packages/LeanSearchClient/.lake/build/lib/lean:/workspace/assemblyp1/.lake/packages/plausible/.lake/build/lib/lean:/workspace/assemblyp1/.lake/packages/mathlib/.lake/build/lib/lean:/workspace/assemblyp1-finite-209/.lake/build/lib/lean /home/lubko/.elan/toolchains/leanprover--lean4---v4.34.0/bin/lean /workspace/assemblyp1-finite-209/AssemblyP1/BBTTripleBridge.lean -o /workspace/assemblyp1-finite-209/.lake/build/lib/lean/AssemblyP1/BBTTripleBridge.olean -i /workspace/assemblyp1-finite-209/.lake/build/lib/lean/AssemblyP1/BBTTripleBridge.ilean -c /workspace/assemblyp1-finite-209/.lake/build/ir/AssemblyP1/BBTTripleBridge.c --setup /workspace/assemblyp1-finite-209/.lake/build/ir/AssemblyP1/BBTTripleBridge.setup.json --json
+error: AssemblyP1/BBTTripleBridge.lean:81:28: Application type mismatch: The argument
+  h
+has type
+  x % G = y
+but is expected to have type
+  ↑⟨x % G, ⋯⟩ = ↑⟨y % G, ⋯⟩
+in the application
+  Fin.ext h
+error: AssemblyP1/BBTTripleBridge.lean:85:9: typeclass instance problem is stuck
+  DecidableEq ?m.15
+
+Note: Lean will not try to resolve this typeclass instance problem because the type argument to `DecidableEq` is a metavariable. This argument must be fully determined before Lean will try to resolve the typeclass.
+
+Hint: Adding type annotations and supplying implicit arguments to functions can give Lean more information for typeclass resolution. For example, if you have a variable `x` that you intend to be a `Nat`, but Lean reports it as having an unresolved type like `?m`, replacing `x` with `(x : Nat)` can get typeclass resolution un-stuck.
+error: AssemblyP1/BBTTripleBridge.lean:97:22: Type mismatch
+  hab
+has type
+  a % G ≠ b % G
+but is expected to have type
+  A ≠ B
+error: AssemblyP1/BBTTripleBridge.lean:100:23: Application type mismatch: The argument
+  d.isLt
+has type
+  ↑d < G
+but is expected to have type
+  ↑d < ℓ
+in the application
+  h (↑d) d.isLt
+error: AssemblyP1/BBTTripleBridge.lean:101:8: Tactic `rewrite` failed: Did not find an occurrence of the pattern
+  A
+in the target expression
+  cyc hG S (a + ↑d) = cyc hG S (b + ↑d)
+
+α : Type
+inst✝ : DecidableEq α
+G : ℕ
+hG : 0 < G
+S : Fin G → α
+a b ℓ : ℕ
+hab : a % G ≠ b % G
+hℓ : G ≤ ℓ
+h : ∀ d < ℓ, cyc hG S (a + d) = cyc hG S (b + d)
+A : Fin G := ⟨a % G, ⋯⟩
+hA : A = ⟨a % G, ⋯⟩
+B : Fin G := ⟨b % G, ⋯⟩
+hB : B = ⟨b % G, ⋯⟩
+hAB : A ≠ B
+d : Fin G
+h1 : cyc hG S (a + ↑d) = cyc hG S (b + ↑d)
+⊢ cyc hG S (↑A + ↑d) = cyc hG S (↑B + ↑d)
+error: AssemblyP1/BBTTripleBridge.lean:106:74: Application type mismatch: The argument
+  hspec.right.right
+has type
+  leastPeriod hG S ≤ G
+but is expected to have type
+  sh hG A B ≤ G
+in the application
+  leastPeriod_dvd_period hG S hspec.right.right
+error: AssemblyP1/BBTTripleBridge.lean:109:51: Application type mismatch: The argument
+  hab
+has type
+  a % G ≠ b % G
+but is expected to have type
+  ↑⟨a % G, ⋯⟩ = ↑⟨b % G, ⋯⟩
+in the application
+  congrArg (fun x => x % leastPeriod hG S) hab
+error: AssemblyP1/BBTTripleBridge.lean:113:8: Tactic `rewrite` failed: Did not find an occurrence of the pattern
+  A
+in the target expression
+  cyc hG S (a + 0) = cyc hG S (a % G + 0)
+
+α : Type
+inst✝ : DecidableEq α
+G : ℕ
+hG : 0 < G
+S : Fin G → α
+a b ℓ : ℕ
+hab : a % G ≠ b % G
+hℓ : G ≤ ℓ
+h : ∀ d < ℓ, cyc hG S (a + d) = cyc hG S (b + d)
+A : Fin G := ⟨a % G, ⋯⟩
+hA : A = ⟨a % G, ⋯⟩
+B : Fin G := ⟨b % G, ⋯⟩
+hB : B = ⟨b % G, ⋯⟩
+hAB : A ≠ B
+hagall : ∀ (d : Fin G), cyc hG S (↑A + ↑d) = cyc hG S (↑B + ↑d)
+hper : Period hG S (sh hG A B)
+hspec : Period hG S (leastPeriod hG S) ∧ 0 < leastPeriod hG S ∧ leastPeriod hG S ≤ G
+hpG : leastPeriod hG S ∣ G
+hdvd : leastPeriod hG S ∣ sh hG A B
+hcong : ↑A % leastPeriod hG S = ↑B % leastPeriod hG S
+h3 : cyc hG S (a + 0) = cyc hG S (a % G + 0)
+⊢ a % leastPeriod hG S = a % G % leastPeriod hG S
+error: AssemblyP1/BBTTripleBridge.lean:117:8: Tactic `rewrite` failed: Did not find an occurrence of the pattern
+  B
+in the target expression
+  cyc hG S (b + 0) = cyc hG S (b % G + 0)
+
+α : Type
+inst✝ : DecidableEq α
+G : ℕ
+hG : 0 < G
+S : Fin G → α
+a b ℓ : ℕ
+hab : a % G ≠ b % G
+hℓ : G ≤ ℓ
+h : ∀ d < ℓ, cyc hG S (a + d) = cyc hG S (b + d)
+A : Fin G := ⟨a % G, ⋯⟩
+hA : A = ⟨a % G, ⋯⟩
+B : Fin G := ⟨b % G, ⋯⟩
+hB : B = ⟨b % G, ⋯⟩
+hAB : A ≠ B
+hagall : ∀ (d : Fin G), cyc hG S (↑A + ↑d) = cyc hG S (↑B + ↑d)
+hper : Period hG S (sh hG A B)
+hspec : Period hG S (leastPeriod hG S) ∧ 0 < leastPeriod hG S ∧ leastPeriod hG S ≤ G
+hpG : leastPeriod hG S ∣ G
+hdvd : leastPeriod hG S ∣ sh hG A B
+hcong : ↑A % leastPeriod hG S = ↑B % leastPeriod hG S
+h1 : a % leastPeriod hG S = a % G % leastPeriod hG S
+h3 : cyc hG S (b + 0) = cyc hG S (b % G + 0)
+⊢ b % leastPeriod hG S = b % G % leastPeriod hG S
+error: AssemblyP1/BBTTripleBridge.lean:120:62: Application type mismatch: The argument
+  Ne.symm hab
+has type
+  b % G ≠ a % G
+but is expected to have type
+  ↑B = b % G
+in the application
+  congrArg (fun x => x % leastPeriod hG S) (Ne.symm hab)
+error: AssemblyP1/BBTTripleBridge.lean:135:22: Type mismatch
+  hab
+has type
+  a % G ≠ b % G
+but is expected to have type
+  A ≠ B
+error: AssemblyP1/BBTTripleBridge.lean:136:22: Type mismatch
+  hbc
+has type
+  b % G ≠ c % G
+but is expected to have type
+  B ≠ C
+error: AssemblyP1/BBTTripleBridge.lean:139:24: Application type mismatch: The argument
+  d.isLt
+has type
+  ↑d < G
+but is expected to have type
+  ↑d < ℓ
+in the application
+  h (↑d) d.isLt
+error: AssemblyP1/BBTTripleBridge.lean:140:8: Tactic `rewrite` failed: Did not find an occurrence of the pattern
+  A
+in the target expression
+  cyc hG S (a + ↑d) = cyc hG S (b + ↑d)
+
+α : Type
+inst✝ : DecidableEq α
+G : ℕ
+hG : 0 < G
+S : Fin G → α
+a b c ℓ : ℕ
+hab : a % G ≠ b % G
+hbc : b % G ≠ c % G
+hℓ : G ≤ ℓ
+h : TriAgree hG S a b c ℓ
+hspec : Period hG S (leastPeriod hG S) ∧ 0 < leastPeriod hG S ∧ leastPeriod hG S ≤ G
+hpG : leastPeriod hG S ∣ G
+A : Fin G := ⟨a % G, ⋯⟩
+hA : A = ⟨a % G, ⋯⟩
+B : Fin G := ⟨b % G, ⋯⟩
+hB : B = ⟨b % G, ⋯⟩
+C : Fin G := ⟨c % G, ⋯⟩
+hC : C = ⟨c % G, ⋯⟩
+hAB : A ≠ B
+hBC : B ≠ C
+d : Fin G
+h1 : cyc hG S (a + ↑d) = cyc hG S (b + ↑d)
+⊢ cyc hG S (↑A + ↑d) = cyc hG S (↑B + ↑d)
+error: AssemblyP1/BBTTripleBridge.lean:144:24: Application type mismatch: The argument
+  d.isLt
+has type
+  ↑d < G
+but is expected to have type
+  ↑d < ℓ
+in the application
+  h (↑d) d.isLt
+error: AssemblyP1/BBTTripleBridge.lean:144:50: Application type mismatch: The argument
+  d.isLt
+has type
+  ↑d < G
+but is expected to have type
+  ↑d < ℓ
+in the application
+  h (↑d) d.isLt
+error: AssemblyP1/BBTTripleBridge.lean:150:32: Application type mismatch: The argument
+  hspec.right.right
+has type
+  leastPeriod hG S ≤ G
+but is expected to have type
+  sh hG A B ≤ G
+in the application
+  leastPeriod_dvd_period hG S hspec.right.right
+error: AssemblyP1/BBTTripleBridge.lean:152:32: Application type mismatch: The argument
+  hspec.right.right
+has type
+  leastPeriod hG S ≤ G
+but is expected to have type
+  sh hG A C ≤ G
+in the application
+  leastPeriod_dvd_period hG S hspec.right.right
+error: AssemblyP1/BBTTripleBridge.lean:153:66: Application type mismatch: The argument
+  hdAC
+has type
+  leastPeriod hG S ∣ sh hG A C
+but is expected to have type
+  leastPeriod hG S ∣ sh hG B ?m.261
+in the application
+  sh_dvd_trans hG hpG hdAC
+✖ [9049/9052] Building AssemblyP1.Issue94Transposition (304s)
+trace: .> LEAN_PATH=/workspace/assemblyp1/.lake/packages/Cli/.lake/build/lib/lean:/workspace/assemblyp1/.lake/packages/batteries/.lake/build/lib/lean:/workspace/assemblyp1/.lake/packages/Qq/.lake/build/lib/lean:/workspace/assemblyp1/.lake/packages/aesop/.lake/build/lib/lean:/workspace/assemblyp1/.lake/packages/proofwidgets/.lake/build/lib/lean:/workspace/assemblyp1/.lake/packages/importGraph/.lake/build/lib/lean:/workspace/assemblyp1/.lake/packages/LeanSearchClient/.lake/build/lib/lean:/workspace/assemblyp1/.lake/packages/plausible/.lake/build/lib/lean:/workspace/assemblyp1/.lake/packages/mathlib/.lake/build/lib/lean:/workspace/assemblyp1-finite-209/.lake/build/lib/lean /home/lubko/.elan/toolchains/leanprover--lean4---v4.34.0/bin/lean /workspace/assemblyp1-finite-209/AssemblyP1/Issue94Transposition.lean -o /workspace/assemblyp1-finite-209/.lake/build/lib/lean/AssemblyP1/Issue94Transposition.olean -i /workspace/assemblyp1-finite-209/.lake/build/lib/lean/AssemblyP1/Issue94Transposition.ilean -c /workspace/assemblyp1-finite-209/.lake/build/ir/AssemblyP1/Issue94Transposition.c --setup /workspace/assemblyp1-finite-209/.lake/build/ir/AssemblyP1/Issue94Transposition.setup.json --json
+error: Lean exited with code 137
+✔ [9050/9052] Built AssemblyP1.Issue94WitnessPair (348s)
+Some required targets logged failures:
+- AssemblyP1.BBTTripleBridge
+- AssemblyP1.Issue94Transposition
+error: build failed

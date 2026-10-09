@@ -1,0 +1,56 @@
+import AssemblyP1.Issue209EAudit
+import AssemblyP1.FixedLengthBinomialCounterexample
+import AssemblyP1.FixedLengthExactCounterexample
+import AssemblyP1.ExactVariantECounterexample
+import AssemblyP1.SourceFaithfulIs
+
+-- Issue209EAudit: every named theorem of the audit module
+#print axioms AssemblyP1.Issue209EAudit.aaab_refutes_fixed_N_binomial
+#print axioms AssemblyP1.Issue209EAudit.truth_information_feasible
+#print axioms AssemblyP1.Issue209EAudit.truth_not_maximum_likelihood
+#print axioms AssemblyP1.Issue209EAudit.likelihood_ratio
+#print axioms AssemblyP1.Issue209EAudit.likelihood_aaab
+#print axioms AssemblyP1.Issue209EAudit.likelihood_aaaab
+#print axioms AssemblyP1.Issue209EAudit.competitor_beats_truth
+#print axioms AssemblyP1.Issue209EAudit.realized_reads
+#print axioms AssemblyP1.Issue209EAudit.winCount_le_len
+#print axioms AssemblyP1.Issue209EAudit.binomial_marginal_probability_on_le_len
+#print axioms AssemblyP1.Issue209EAudit.external_N_domain_boundary
+#print axioms AssemblyP1.Issue209EAudit.likelihood_eq_relevant_prod
+
+-- FixedLengthBinomialCounterexample
+#print axioms AssemblyP1.FixedLengthBinomialCounterexample.fixed_length_binomial_counterexample
+#print axioms AssemblyP1.FixedLengthBinomialCounterexample.truth_information_feasible
+#print axioms AssemblyP1.FixedLengthBinomialCounterexample.truth_not_maximum_likelihood
+#print axioms AssemblyP1.FixedLengthBinomialCounterexample.likelihood_truth
+#print axioms AssemblyP1.FixedLengthBinomialCounterexample.likelihood_competitor
+#print axioms AssemblyP1.FixedLengthBinomialCounterexample.likelihood_ratio
+#print axioms AssemblyP1.FixedLengthBinomialCounterexample.likelihood_eq_relevant_prod
+#print axioms AssemblyP1.FixedLengthBinomialCounterexample.realized_reads
+#print axioms AssemblyP1.FixedLengthBinomialCounterexample.truth_covers
+
+-- FixedLengthExactCounterexample
+#print axioms AssemblyP1.FixedLengthExactCounterexample.fixed_length_exact_counterexample
+#print axioms AssemblyP1.FixedLengthExactCounterexample.truth_information_feasible
+#print axioms AssemblyP1.FixedLengthExactCounterexample.truth_not_maximum_likelihood
+#print axioms AssemblyP1.FixedLengthExactCounterexample.likelihood_truth
+#print axioms AssemblyP1.FixedLengthExactCounterexample.likelihood_competitor
+#print axioms AssemblyP1.FixedLengthExactCounterexample.likelihood_ratio
+#print axioms AssemblyP1.FixedLengthExactCounterexample.realized_reads
+#print axioms AssemblyP1.FixedLengthExactCounterexample.truth_covers
+
+-- ExactVariantECounterexample
+#print axioms AssemblyP1.ExactVariantECounterexample.finite_unrestricted_exact_variant_e_counterexample
+#print axioms AssemblyP1.ExactVariantECounterexample.truth_information_feasible
+#print axioms AssemblyP1.ExactVariantECounterexample.truth_not_maximum_likelihood
+#print axioms AssemblyP1.ExactVariantECounterexample.truth_likelihood
+#print axioms AssemblyP1.ExactVariantECounterexample.competitor_likelihood
+#print axioms AssemblyP1.ExactVariantECounterexample.competitor_beats_truth
+#print axioms AssemblyP1.ExactVariantECounterexample.realized_reads
+#print axioms AssemblyP1.ExactVariantECounterexample.truth_covers
+
+-- shared layer
+#print axioms AssemblyP1.SourceFaithfulIs.bridgesCopy_length
+#print axioms AssemblyP1.SourceFaithfulIs.bridgesCopy_lifted_iff
+#print axioms AssemblyP1.SourceFaithfulIs.IsTripleRepeatAllBridged.bridgesRepeat
+#print axioms AssemblyP1.SourceFaithfulIs.Interleaved.swap₂

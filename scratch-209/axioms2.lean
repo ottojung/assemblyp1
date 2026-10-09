@@ -1,0 +1,12 @@
+import AssemblyP1.Issue209EAudit
+#print axioms AssemblyP1.Issue209EAudit.aaab_refutes_fixed_N_binomial
+#print axioms AssemblyP1.Issue209EAudit.truth_information_feasible
+#print axioms AssemblyP1.Issue209EAudit.truth_not_maximum_likelihood
+#print axioms AssemblyP1.Issue209EAudit.likelihood_ratio
+#print axioms AssemblyP1.Issue209EAudit.likelihood_aaab
+#print axioms AssemblyP1.Issue209EAudit.likelihood_aaaab
+#print axioms AssemblyP1.Issue209EAudit.realized_reads
+#print axioms AssemblyP1.Issue209EAudit.winCount_le_len
+#print axioms AssemblyP1.Issue209EAudit.binomial_marginal_probability_on_le_len
+#print axioms AssemblyP1.Issue209EAudit.external_N_domain_boundary
+#print axioms AssemblyP1.Issue209EAudit.likelihood_eq_relevant_prod

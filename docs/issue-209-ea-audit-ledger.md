@@ -1,10 +1,12 @@
 # Issue #209 audit: E/A strict counterexamples and hypothesis coverage
 
-_Status: independent audit ledger, 2026-10-09. Owner: issue #209
+_Status: independent audit ledger, 2026-10-09; second verification pass
+2026-10-09 (§9b, §11). Owner: issue #209
 (<https://vau.place/a/antonina/?issue=209>), a leaf of the meta-issue #217.
 This document records what the repository's exact-multinomial (Variant E) and
 fixed-`N` product-of-binomial-marginals (Variant A) negative results actually
-establish, what they do not, and the two documentation corrections they forced.
+establish, what they do not, the two documentation corrections they forced, and
+the two script defects the second pass found and fixed.
 
 It does **not** re-run the Section 6.2 research programme (another issue owns
 that) and it does **not** resolve which Medvedev–Brudno object Shomorony et al.
@@ -200,16 +202,27 @@ depends only on `[propext, Classical.choice, Quot.sound]`; no `sorryAx`, no
 * `FixedLengthExactCounterexample.fixed_length_exact_counterexample`,
   `.truth_information_feasible`, `.truth_not_maximum_likelihood`,
   `.likelihood_truth`, `.likelihood_competitor`, `.likelihood_ratio`,
-  `.realized_reads`;
+  `.realized_reads`, `.truth_covers`;
 * `FixedLengthBinomialCounterexample.fixed_length_binomial_counterexample`,
   `.truth_information_feasible`, `.truth_not_maximum_likelihood`,
   `.likelihood_truth`, `.likelihood_competitor`, `.likelihood_ratio`,
-  `.likelihood_eq_relevant_prod`, `.realized_reads`;
+  `.likelihood_eq_relevant_prod`, `.realized_reads`, `.truth_covers`;
 * `Issue209EAudit.aaab_refutes_fixed_N_binomial`, `.truth_information_feasible`,
   `.truth_not_maximum_likelihood`, `.likelihood_aaab`, `.likelihood_aaaab`,
   `.likelihood_ratio`, `.winCount_le_len`,
   `.binomial_marginal_probability_on_le_len`, `.external_N_domain_boundary`,
-  `.likelihood_eq_relevant_prod`, `.realized_reads`.
+  `.likelihood_eq_relevant_prod`, `.realized_reads`, `.competitor_beats_truth`.
+
+**Re-audited in the second pass** (`scratch-209/axioms3.lean` → 42 names,
+includes `FixedLengthExactCounterexample.truth_covers` and
+`Issue209EAudit.competitor_beats_truth`, which the first pass's audit file
+omitted): all 42 depend only on `[propext, Classical.choice, Quot.sound]`. No
+new axiom, no `sorry`, no `native_decide`. The five modules build in isolation
+(`lake build AssemblyP1.SourceFaithfulIs AssemblyP1.ExactVariantECounterexample
+AssemblyP1.FixedLengthExactCounterexample
+AssemblyP1.FixedLengthBinomialCounterexample AssemblyP1.Issue209EAudit` →
+"Build completed successfully (8928 jobs)"); see §10.7 for the unrelated
+full-library breakage.
 
 The shared hypothesis layer `SourceFaithfulIs.bridgesCopy_length` and
 `bridgesCopy_lifted_iff` are also clean. The audit module is registered in the
@@ -266,6 +279,48 @@ Bounded searches (exhaustive over the stated class, **bounded evidence**):
   it says the maximizer, when unique up to cyclic shift, is not the truth up to
   cyclic shift. It is **bounded evidence, not a kernel-checked theorem**.
 
+## 9b. Second-pass re-verification (front #209, reconciliation run)
+
+The audit was re-derived from scratch by a second, independently written
+implementation (`scratch-209/independent_recheck.py`, this front; it shares no
+code with the audit script and none with the Lean library) after two defects
+were found in the audit script itself. Results of the second pass:
+
+| item | second-pass result |
+|---|---|
+| all likelihood values in the §1 table (E-1..E-4, A-1..A-4) | reproduced exactly, including both zero-count readings |
+| full `I_s` on every witness (clauses 1, 2 and 3) | holds; clause 3 vacuous in every one, as §2 records |
+| duplicate-read families, `k = 1..6` | `2^k` for Variant E; `(1125/512)(5/2)^(k-1)` for Variant A |
+| `d ≤ N` domain; `|D| ≤ N ⇒` product of probabilities; negative marginal for the length-6 all-`A` candidate with `N = 5` | confirmed |
+| maximizer censuses over the complete length-5 and length-4 classes | confirmed, at both `N = 4` and `N = 5` |
+| `ACGT` observation over all `≤ 8` circular candidates (`{A,C,G,T}`, 87380 objects) | max `1/18`, attained by exactly the six cyclic shifts of `ACACGT` |
+| `AAABCBC → AAAAABC` "read-tiled" row (see §10.4) | ratio `27` **is** attained and **is** `I_s`-feasible |
+
+Two things the second pass established that the first pass did not:
+
+* **The fixed-length kernel checks do transfer to the unrestricted Variant E
+  statement.** The values `6/125` (`AAABB`) and `12/125` (`AAAAB`) are proved in
+  `FixedLengthExactCounterexample` against an objective restricted to
+  `Fin 5 → Base`. The second pass recomputed both against the *unrestricted*
+  objective (candidate-intrinsic `N(D)`), and they agree, so the
+  subclass-to-superclass argument of
+  `docs/source-notes/same-length-witnesses-candidate-set-inclusion.md` §3 is
+  verified numerically and not merely asserted. The unrestricted statement
+  remains a mathematical transfer argument, not a separate kernel-checked
+  theorem.
+* **The binomial type space must be the model alphabet, not the candidate's
+  symbol set.** The first implementation of the second-pass script scored the
+  binomial objective over `sorted(set(cand.symbols)) ^ L`. That is *not*
+  equivalent to the literal objective: an observed read type whose symbols do
+  not occur in the candidate then silently loses its factor, which is `0`
+  when `d_w = 0` and `x_w ≥ 1`. The bug inflated the census maximum
+  (`14155776/244140625` at 10 candidates instead of `7962624/244140625` at 5)
+  by letting relabelled candidates such as `AAAAC` score the `AAABB`
+  observation while ignoring the `AAB`/`BAA` types entirely. Corrected to the
+  model's `Fin 3 → Base` space, the second-pass numbers match the Lean
+  objective. Recorded here because it is the same class of error as defect 2
+  below: an objective quietly evaluated over a different set of read types.
+
 ## 10. Remaining blockers (concrete, for the parent matrix)
 
 1. **Clause 3 of `I_s` is unexercised** by every E/A witness (§2). A witness in
@@ -279,17 +334,21 @@ Bounded searches (exhaustive over the stated class, **bounded evidence**):
    instances only as bounded evidence.
 3. **§6.2 feasible-set correspondence** remains open for both objectives, and
    is owned by other issues.
-4. **The "read-tiled" row is unparameterized.**
-   `docs/source-notes/same-length-witnesses-candidate-set-inclusion.md` §4 lists
-   `AAABCBC → AAAAABC` with "exact multinomial, `7, 7`, `27`" but records
-   neither the read length, nor the realized reads, nor an `I_s` certificate,
-   and no kernel check of the instance exists in the library. Reconstruction
-   from the audit script: `L = 3`, observed reads `AAA`×3, `AAB`, `ABC`, `BCA`,
-   `CAA` (`n = 7`), distinct starts `{0,1,2,5,6}` with start `0` used three
-   times; the ratio is then exactly `27`, the observation is realizable, the
-   starts cover the truth, and the audit's independent `I_s` re-implementation
-   reports full feasibility. **Action for the parent:** either record these
-   parameters and kernel-check the instance, or delete the row.
+4. **~~The "read-tiled" row is unparameterized.~~ RESOLVED by the second pass
+   (§9b).** The row is realizable and the ledger's reconstruction was correct;
+   what was missing was that `scripts/verify_issue209_ea_witnesses.py` §F
+   could not actually produce it because of defect 1 below. With that fixed,
+   the parameters are `L = 3`, observed reads `AAA`×3, `AAB`, `ABC`, `BCA`,
+   `CAA` (`n = 7`), distinct starts `{0, 1, 2, 5, 6}` with start `0` used three
+   times; the exact-multinomial ratio is `3^3 = 27`, the observation is
+   realizable, the starts cover the truth, and the `I_s` certificate holds
+   under both implementations. 256 of the 625 ratio-27 observations with
+   per-type counts in `0..4` are fully feasible, and 400 give coverage. It is
+   still **not kernel-checked** in the Lean library, and it still says nothing
+   about the Section 6.2 feasible set; the row in
+   `docs/source-notes/same-length-witnesses-candidate-set-inclusion.md` §4
+   remains bounded evidence. What is fixed is that the parameters are now
+   recorded and reproducible rather than absent.
 5. **Source correspondence of the fixed-`N` reading.** That the approximation is
    a product over the *whole* read-type space, retaining zero-count factors, is
    a repository reading of Medvedev–Brudno §6.1 recorded in
@@ -303,6 +362,45 @@ Bounded searches (exhaustive over the stated class, **bounded evidence**):
    worker's summary changes that. The aggregate claim of #217 may state that
    every *objective-and-candidate-class* pair with a defensible reading has been
    resolved, but not that the 2016 question is settled.
+7. **The full-library `lake build` is red for reasons outside this issue.**
+   `AssemblyP1/BBTTripleBridge.lean` fails to elaborate at HEAD (17 errors,
+   first at line 81) and `AssemblyP1/Issue94Transposition.lean` is killed by
+   the OOM reaper (`Lean exited with code 137`). Neither file is touched by
+   this front's commits and `git diff origin/main..HEAD` for this issue does
+   not include them, so both failures are inherited from `origin/main`. Every
+   module this front is responsible for —
+   `SourceFaithfulIs`, `ExactVariantECounterexample`,
+   `FixedLengthExactCounterexample`, `FixedLengthBinomialCounterexample`,
+   `Issue209EAudit` — builds clean (`lake build <those modules>` → "Build
+   completed successfully"), and all 42 headline theorems of those modules
+   depend only on `[propext, Classical.choice, Quot.sound]`. A parent that
+   needs one green `lake build` must repair `BBTTripleBridge` first; that is
+   not an E/A blocker.
+
+## 11. Defects found and fixed in this front
+
+Both are in `scripts/verify_issue209_ea_witnesses.py` and both are fixed in
+this front. Neither changes any theorem, witness instance, likelihood value or
+`I_s` certificate, and no definition was altered to make anything provable.
+
+1. **§F inherited a read length of 2.** Section E2(b) sets the read length to
+   `2` and section F never resets it, so `exact_likelihood` in section F looked
+   up length-3 read types among a candidate's *length-2* windows. Every
+   multiplicity was `0`, every likelihood `0`, and the section reported
+   "observations with ratio 27: 0", contradicting the ledger's own §10.4
+   reconstruction. With `set_read_length(3)` restored, §F reports 625 ratio-27
+   observations, 256 of them fully feasible. The script's own text was the
+   authority for the §10.4 claim it failed to reproduce; the claim was right
+   and the script was wrong.
+2. **§G's `N = 4` census row was evaluated at `N = 5`.** The objective was a
+   single hard-coded lambda `binomial_likelihood(c, ob, 5)`, so the row
+   labelled `binomial A (N=4), AB/BA obs` reported the *N = 5* numbers
+   (truth `16384/390625`, maximum `144/625` at `ABAB`,`BABA`). The row now
+   passes `N` explicitly and two rows are printed: at `N = 4`, truth
+   `729/16384` and maximum `1/4` at `ABAB`,`BABA` (ratio `4096/729`, matching
+   §1's A-3); at `N = 5`, truth `16384/390625` and maximum `144/625`. The
+   qualitative conclusion was unaffected — the truth is not a maximizer either
+   way — so this was a reporting defect, not a mathematical one.
 
 Primary sources relied on (unchanged by this audit):
 

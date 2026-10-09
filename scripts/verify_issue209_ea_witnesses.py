@@ -578,6 +578,10 @@ def main():
 
     # ----------------------------------------------------------------------
     section("F. The unparameterized 'read-tiled' row: AAABCBC -> AAAAABC, ratio 27")
+    # The previous section leaves the module-global read length at 2; the
+    # read-tiled row uses length-3 reads, so it must be reset explicitly
+    # (it used to be inherited, which silently zeroed every likelihood here).
+    set_read_length(3)
     truth = Circ("AAABCBC")
     cand = Circ("AAAAABC")
     print("  truth windows: %s" % (truth.windows(3),))
@@ -644,11 +648,17 @@ def main():
               "maximizer" if vals[str(truth)] == mx else "NOT a maximizer"))
         return mx, best, non_shift
 
+    def objAN(N):
+        # Variance-A objective for an explicit external length `N`.  The census
+        # rows below pass `N` explicitly; an earlier version hardcoded `5`, so
+        # the row labelled "N=4" actually reported the N=5 numbers.
+        return lambda c, ob: binomial_likelihood(c, ob, N)[0]
+
     ALPHABET = "ABCG"
     set_read_length(3)
     classes = ["".join(p) for p in iproduct(ALPHABET, repeat=5)]
     objE = lambda c, ob: exact_likelihood(c, ob)
-    objA = lambda c, ob: binomial_likelihood(c, ob, 5)[0]
+    objA5 = objAN(5)
     for nm, t, ob in [
         ("exact E, AAABB obs", Circ("AAABB"),
          {("A", "A", "A"): 1, ("A", "A", "B"): 1, ("B", "A", "A"): 1}),
@@ -659,7 +669,7 @@ def main():
         ("binomial A (N=5), AAACC obs", Circ("AAACC"),
          {("A", "A", "A"): 1, ("A", "A", "C"): 1, ("C", "A", "A"): 1}),
     ]:
-        census(nm, t, ob, objE if nm.startswith("exact") else objA,
+        census(nm, t, ob, objE if nm.startswith("exact") else objA5,
                classes, ALPHABET)
 
     ALPHABET = "AB"
@@ -668,7 +678,9 @@ def main():
     census("exact E, AB/BA obs", Circ("AABB"),
            {("A", "B"): 1, ("B", "A"): 1}, objE, classes2, ALPHABET)
     census("binomial A (N=4), AB/BA obs", Circ("AABB"),
-           {("A", "B"): 1, ("B", "A"): 1}, objA, classes2, ALPHABET)
+           {("A", "B"): 1, ("B", "A"): 1}, objAN(4), classes2, ALPHABET)
+    census("binomial A (N=5), AB/BA obs", Circ("AABB"),
+           {("A", "B"): 1, ("B", "A"): 1}, objAN(5), classes2, ALPHABET)
 
     # ----------------------------------------------------------------------
     section("G. Summary")

@@ -1,0 +1,167 @@
+
+==============================================================================
+A. Exact multinomial (Variant E) - unrestricted-length witness
+==============================================================================
+
+--- ACGT -> ACACGT (issue #24 / docs/exact-variant-e-counterexample.md)
+  truth=ACGT (G=4)  competitor=ACACGT (|D|=6)  L=2  starts=[0, 2]  N_external=None
+  observation: {('A', 'C'): 2, ('G', 'T'): 1} (n=3)
+  [PASS] I_s membership (full predicate)                                      ok
+  [PASS] realization reproduces observation                                   {('A', 'C'): 2, ('G', 'T'): 1}
+  repeats: 0 maximal pairs, 0 maximal triples, 0 interleaved pairs
+  [PASS] exact E: D strictly more likely than truth                           L(S)=3/64 L(D)=1/18 ratio=32/27
+
+==============================================================================
+B. Exact multinomial (Variant E) and Variant A - same-length AAABB
+==============================================================================
+
+--- AAABB -> AAAAB (issue #31 / docs/fixed-length-exact-counterexample.md)
+  truth=AAABB (G=5)  competitor=AAAAB (|D|=5)  L=3  starts=[0, 1, 4]  N_external=5
+  observation: {('A', 'A', 'A'): 1, ('A', 'A', 'B'): 1, ('B', 'A', 'A'): 1} (n=3)
+  [PASS] I_s membership (full predicate)                                      ok
+  [PASS] realization reproduces observation                                   {('A', 'A', 'A'): 1, ('A', 'A', 'B'): 1, ('B', 'A', 'A'): 1}
+  repeats: 6 maximal pairs, 6 maximal triples, 0 interleaved pairs
+    distinct triples: [(1, 0, 1, 2), (1, 0, 2, 1), (1, 1, 0, 2), (1, 1, 2, 0), (1, 2, 0, 1), (1, 2, 1, 0)]
+  [PASS] exact E: D strictly more likely than truth                           L(S)=6/125 L(D)=12/125 ratio=2
+  [PASS] binomial A: D more likely than truth                                 L_A(S)=452984832/30517578125 L_A(D)=7962624/244140625 ratio=1125/512
+    zero-count factors retained:   ratio=1125/512  (7962624/244140625 / 452984832/30517578125)
+    zero-count factors dropped:    ratio=9/8  (124416/1953125 / 110592/1953125)
+    type AAA: x=1  d_S=1  d_D=2   observed
+    type ABA: x=0  d_S=0  d_D=1   zero-count factor retained
+    type ABB: x=0  d_S=1  d_D=0   zero-count factor retained
+    type BBA: x=0  d_S=1  d_D=0   zero-count factor retained
+
+  duplicate-read families (extra copies of the start-0 read AAA):
+  [PASS] exact E with AAA x1: ratio 2^1                                       ratio=2
+      binomial A (N=5) with AAA x1: L_A(S)=452984832/30517578125 L_A(D)=7962624/244140625 ratio=1125/512
+  [PASS] exact E with AAA x2: ratio 2^2                                       ratio=4
+      binomial A (N=5) with AAA x2: L_A(S)=412316860416/95367431640625 L_A(D)=3623878656/152587890625 ratio=5625/1024
+  [PASS] exact E with AAA x3: ratio 2^3                                       ratio=8
+      binomial A (N=5) with AAA x3: L_A(S)=2199023255552/2384185791015625 L_A(D)=9663676416/762939453125 ratio=28125/2048
+  [PASS] exact E with AAA x4: ratio 2^4                                       ratio=16
+      binomial A (N=5) with AAA x4: L_A(S)=30399297484750848/186264514923095703125 L_A(D)=66795331387392/11920928955078125 ratio=140625/4096
+  [PASS] exact E with AAA x5: ratio 2^5                                       ratio=32
+      binomial A (N=5) with AAA x5: L_A(S)=74147264265027846144/2910383045673370361328125 L_A(D)=81460617478668288/37252902984619140625 ratio=703125/8192
+  [PASS] exact E with AAA x6: ratio 2^6                                       ratio=64
+      binomial A (N=5) with AAA x6: L_A(S)=33056565380087516495872/9094947017729282379150390625 L_A(D)=18158513697557839872/23283064365386962890625 ratio=3515625/16384
+
+==============================================================================
+C. Variant A and Variant E - same-length AAACC -> AAAAC (B->C)
+==============================================================================
+
+--- AAACC -> AAAAC (issue #32 / docs/fixed-length-binomial-counterexample.md)
+  truth=AAACC (G=5)  competitor=AAAAC (|D|=5)  L=3  starts=[0, 1, 4]  N_external=5
+  observation: {('A', 'A', 'A'): 1, ('A', 'A', 'C'): 1, ('C', 'A', 'A'): 1} (n=3)
+  [PASS] I_s membership (full predicate)                                      ok
+  [PASS] realization reproduces observation                                   {('A', 'A', 'A'): 1, ('A', 'A', 'C'): 1, ('C', 'A', 'A'): 1}
+  repeats: 6 maximal pairs, 6 maximal triples, 0 interleaved pairs
+    distinct triples: [(1, 0, 1, 2), (1, 0, 2, 1), (1, 1, 0, 2), (1, 1, 2, 0), (1, 2, 0, 1), (1, 2, 1, 0)]
+  [PASS] exact E: D strictly more likely than truth                           L(S)=6/125 L(D)=12/125 ratio=2
+  [PASS] binomial A: D more likely than truth                                 L_A(S)=452984832/30517578125 L_A(D)=7962624/244140625 ratio=1125/512
+    zero-count factors retained:   ratio=1125/512  (7962624/244140625 / 452984832/30517578125)
+    zero-count factors dropped:    ratio=9/8  (124416/1953125 / 110592/1953125)
+    type AAA: x=1  d_S=1  d_D=2   observed
+    type ACA: x=0  d_S=0  d_D=1   zero-count factor retained
+    type ACC: x=0  d_S=1  d_D=0   zero-count factor retained
+    type CCA: x=0  d_S=1  d_D=0   zero-count factor retained
+
+==============================================================================
+D. Domain of the binomial marginal: `0 <= d_i <= N`
+==============================================================================
+  candidate AAA      |D|=3  d_AAA= 3  L_A(cand | N=5) = 0 
+  candidate AAAA     |D|=4  d_AAA= 4  L_A(cand | N=5) = 0 
+  candidate AAAAA    |D|=5  d_AAA= 5  L_A(cand | N=5) = 0 
+  candidate AAAAAA   |D|=6  d_AAA= 6  L_A(cand | N=5) = UNDEFINED (domain) domain violation: d=6 > N=5 for type AAA
+  => three regions: |D| <= N (objective automatically a product of probabilities), {D : forall w, d_w <= N} (happens to be well-defined), and the unrestricted circular class (negative values occur).
+  [PASS] for |D| = N = 5, max d_i <= N always                                 max d over all 4^5 length-5 genomes = 5
+
+==============================================================================
+E. Bounded searches over the candidate universe
+==============================================================================
+  [PASS] exact E (ACGT): truth not maximizer over |D|<=8, {A,C,G,T}           best=1/18 L=ACACGT  truth L=3/64
+  [PASS] AAABB -> AAAAB (exact E): truth not maximizer over 4^5 length-5 genomes best=12/125 (cand AAAAB)  truth=6/125
+  [PASS] AAABB -> AAAAB (binomial A): truth not maximizer over 4^5 length-5 genomes best=7962624/244140625 (cand AAAAB)  truth=452984832/30517578125
+  [PASS] AAABB -> AAAAB (binomial A, zero-count dropped): truth not maximizer over 4^5 length-5 genomes best=124416/1953125 (cand AAAAB)  truth=110592/1953125
+  [PASS] AAACC -> AAAAC (exact E): truth not maximizer over 4^5 length-5 genomes best=12/125 (cand AAAAC)  truth=6/125
+  [PASS] AAACC -> AAAAC (binomial A): truth not maximizer over 4^5 length-5 genomes best=7962624/244140625 (cand AAAAC)  truth=452984832/30517578125
+  [PASS] AAACC -> AAAAC (binomial A, zero-count dropped): truth not maximizer over 4^5 length-5 genomes best=124416/1953125 (cand AAAAC)  truth=110592/1953125
+
+==============================================================================
+E2. Variant A on the other E witnesses
+==============================================================================
+  ACGT/ACACGT with external N = 4: L_A(S)=177147/16777216  L_A(D)=1594323/134217728  ratio D/S=9/8
+  |D| of competitor = 6 > N = 4: outside the domain in which the
+  literal marginal is a product of binomial probabilities.
+
+--- AABB -> ABAB (oriented same-length witness, issues #88/#211)
+  truth=AABB (G=4)  competitor=ABAB (|D|=4)  L=2  starts=[1, 3]  N_external=4
+  observation: {('A', 'B'): 1, ('B', 'A'): 1} (n=2)
+  [PASS] I_s membership (full predicate)                                      ok
+  [PASS] realization reproduces observation                                   {('A', 'B'): 1, ('B', 'A'): 1}
+  repeats: 4 maximal pairs, 0 maximal triples, 0 interleaved pairs
+  [PASS] exact E: D strictly more likely than truth                           L(S)=1/8 L(D)=1/2 ratio=4
+  [PASS] binomial A: D more likely than truth                                 L_A(S)=729/16384 L_A(D)=1/4 ratio=4096/729
+    zero-count factors retained:   ratio=4096/729  (1/4 / 729/16384)
+    zero-count factors dropped:    ratio=16/9  (1/4 / 9/64)
+    type AA: x=0  d_S=1  d_D=0   zero-count factor retained
+    type AB: x=1  d_S=1  d_D=2   observed
+    type BA: x=1  d_S=1  d_D=2   observed
+    type BB: x=0  d_S=1  d_D=0   zero-count factor retained
+
+==============================================================================
+F. The unparameterized 'read-tiled' row: AAABCBC -> AAAAABC, ratio 27
+==============================================================================
+  truth windows: [('A', 'A', 'A'), ('A', 'A', 'B'), ('A', 'B', 'C'), ('B', 'C', 'B'), ('C', 'B', 'C'), ('B', 'C', 'A'), ('C', 'A', 'A')]
+  cand   windows: [('A', 'A', 'A'), ('A', 'A', 'A'), ('A', 'A', 'A'), ('A', 'A', 'B'), ('A', 'B', 'C'), ('B', 'C', 'A'), ('C', 'A', 'A')]
+  observations (multisets of truth windows, counts 0..4) with ratio 27: 625
+  ... of which fully I_s-feasible: 256
+    obs={'AAA': 3}  R=[0]  coverage=False  I_s=False 
+    obs={'AAA': 3, 'CAA': 1}  R=[0, 6]  coverage=False  I_s=False 
+    obs={'AAA': 3, 'CAA': 2}  R=[0, 6]  coverage=False  I_s=False 
+    obs={'AAA': 3, 'CAA': 3}  R=[0, 6]  coverage=False  I_s=False 
+    obs={'AAA': 3, 'CAA': 4}  R=[0, 6]  coverage=False  I_s=False 
+    obs={'AAA': 3, 'BCA': 1}  R=[0, 5]  coverage=False  I_s=False 
+    obs={'AAA': 3, 'BCA': 1, 'CAA': 1}  R=[0, 5, 6]  coverage=False  I_s=False 
+    obs={'AAA': 3, 'BCA': 1, 'CAA': 2}  R=[0, 5, 6]  coverage=False  I_s=False 
+    FEASIBLE obs={'AAA': 3, 'AAB': 1, 'ABC': 1, 'BCA': 1, 'CAA': 1}  R=[0, 1, 2, 5, 6]  (ok)
+    FEASIBLE obs={'AAA': 3, 'AAB': 1, 'ABC': 1, 'BCA': 1, 'CAA': 2}  R=[0, 1, 2, 5, 6]  (ok)
+    FEASIBLE obs={'AAA': 3, 'AAB': 1, 'ABC': 1, 'BCA': 1, 'CAA': 3}  R=[0, 1, 2, 5, 6]  (ok)
+    FEASIBLE obs={'AAA': 3, 'AAB': 1, 'ABC': 1, 'BCA': 1, 'CAA': 4}  R=[0, 1, 2, 5, 6]  (ok)
+  ... of these, 400 give coverage of the truth
+
+==============================================================================
+G. Maximizer census (bounded: exhaustive over the candidate class)
+==============================================================================
+  exact E, AAABB obs (class size 1024)
+    maximum value 12/125 attained by 5 candidates; 5 are NOT cyclic shifts of the truth
+    maximizers: ['AAAAB', 'AAABA', 'AABAA', 'ABAAA', 'BAAAA']
+    truth value 6/125 (NOT a maximizer)
+  exact E, AAACC obs (class size 1024)
+    maximum value 12/125 attained by 5 candidates; 5 are NOT cyclic shifts of the truth
+    maximizers: ['AAAAC', 'AAACA', 'AACAA', 'ACAAA', 'CAAAA']
+    truth value 6/125 (NOT a maximizer)
+  binomial A (N=5), AAABB obs (class size 1024)
+    maximum value 7962624/244140625 attained by 5 candidates; 5 are NOT cyclic shifts of the truth
+    maximizers: ['AAAAB', 'AAABA', 'AABAA', 'ABAAA', 'BAAAA']
+    truth value 452984832/30517578125 (NOT a maximizer)
+  binomial A (N=5), AAACC obs (class size 1024)
+    maximum value 7962624/244140625 attained by 5 candidates; 5 are NOT cyclic shifts of the truth
+    maximizers: ['AAAAC', 'AAACA', 'AACAA', 'ACAAA', 'CAAAA']
+    truth value 452984832/30517578125 (NOT a maximizer)
+  exact E, AB/BA obs (class size 16)
+    maximum value 1/2 attained by 2 candidates; 2 are NOT cyclic shifts of the truth
+    maximizers: ['ABAB', 'BABA']
+    truth value 1/8 (NOT a maximizer)
+  binomial A (N=4), AB/BA obs (class size 16)
+    maximum value 1/4 attained by 2 candidates; 2 are NOT cyclic shifts of the truth
+    maximizers: ['ABAB', 'BABA']
+    truth value 729/16384 (NOT a maximizer)
+  binomial A (N=5), AB/BA obs (class size 16)
+    maximum value 144/625 attained by 2 candidates; 2 are NOT cyclic shifts of the truth
+    maximizers: ['ABAB', 'BABA']
+    truth value 16384/390625 (NOT a maximizer)
+
+==============================================================================
+G. Summary
+==============================================================================
+  All checks passed.
