@@ -28,6 +28,7 @@ import AssemblyP1.SourceFaithfulIs
 import AssemblyP1.ExactVariantECounterexample
 import AssemblyP1.FixedLengthExactCounterexample
 import AssemblyP1.FixedLengthBinomialCounterexample
+import AssemblyP1.Issue209EAudit
 import AssemblyP1.Section62BridgingCounterexample
 import AssemblyP1.SameLengthSection62Counterexample
 import AssemblyP1.Section62BidirectedFlow
@@ -318,6 +319,31 @@ than assumed. -/
 #print axioms AssemblyP1.SameLengthExactMLCounterexample.truth_information_feasible
 #print axioms AssemblyP1.SameLengthSection62Counterexample.truth_information_feasible
 #print axioms AssemblyP1.Section62BridgingCounterexample.truth_information_feasible
+
+/-! ## Axiom audit for the issue #209 E/A witness audit
+
+`AssemblyP1.Issue209EAudit` is the kernel-checked residue of the issue #209
+audit of the exact-multinomial (Variant E) and fixed-`N` product-of-binomial-
+marginals (Variant A) negative results.  Its likelihood arithmetic is
+re-derived from locally written definitions rather than imported from the
+modules it audits, so agreement is an independent check; its `I_s` certificates
+are the same full-strength `SourceFaithfulIs.InformationFeasible` predicate the
+witness modules use.  See `docs/issue-209-ea-audit-ledger.md`.
+
+The block-1 theorem records that the `AAABB → AAAAB` witness also refutes the
+fixed-`N` binomial objective, with ratio `1125/512`; the block-2 theorems
+record that `d_w ≤ N(D)`, so an external fixed `N` restricts the admissible
+candidate class to `|D| ≤ N` rather than merely parameterizing the objective. -/
+
+#print axioms AssemblyP1.Issue209EAudit.aaab_refutes_fixed_N_binomial
+#print axioms AssemblyP1.Issue209EAudit.truth_information_feasible
+#print axioms AssemblyP1.Issue209EAudit.truth_not_maximum_likelihood
+#print axioms AssemblyP1.Issue209EAudit.likelihood_ratio
+#print axioms AssemblyP1.Issue209EAudit.likelihood_aaab
+#print axioms AssemblyP1.Issue209EAudit.likelihood_aaaab
+#print axioms AssemblyP1.Issue209EAudit.winCount_le_len
+#print axioms AssemblyP1.Issue209EAudit.binomial_marginal_probability_on_le_len
+#print axioms AssemblyP1.Issue209EAudit.external_N_domain_boundary
 
 /-! ## Axiom audit for the `#89` fibre/period lemma
 
