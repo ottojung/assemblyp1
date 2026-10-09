@@ -146,26 +146,39 @@ and runs a bounded census of the transfer categories. **79/79 checks pass.**
 The census counts are **bounded evidence**, not proofs: a zero count in a range
 is a negative search result, never a theorem. **[V]**
 
-## 7. The sample-multiplicity axis (amplification): pending in this module
+## 7. The sample-multiplicity axis (amplification): redundant, superseded by #210
 
 A later #216 research pass added a *sample-multiplicity* axis — how the ratio
 changes when the same observed read type is seen `m` more times. Its exact
 statements (the `E` multiplier `(p_D(w)/p_S(w))^m`, the fixed-`N` binomial
 multiplier `Q_w^m`, the population `KL` decomposition, and the three
-strict/tie/failure regimes) are recorded in an **uncommitted** `Part 6` of
+strict/tie/failure regimes) were drafted in an **uncommitted** `Part 6` of
 `AssemblyP1/ImplicationLattice.lean` that **does not compile** (its `Finset`
-reindexing and `omega` steps fail). It is therefore **not** part of the
-kernel-checked lattice and is not claimed here. **[O]**
+reindexing and `omega` steps fail).
 
-The *result* of that axis is nonetheless already landed independently by front
-**#210**: `docs/source-notes/oriented-variable-length-se62.md` proves the
-exact-ML amplification lemma and the fixed-`N` binomial amplification lemma as
+**Resolution: `Part 6` is redundant and is not tracked as pending.** It is
+deliberately **not** integrated into `AssemblyP1/ImplicationLattice.lean`, which
+stops at Part 2; the general sample-multiplicity *result* is already landed and
+kernel-checked elsewhere (below), so re-proving it inside the implication lattice
+would duplicate an existing kernel-checked result at the cost of a large,
+currently non-compiling module. It is therefore recorded here as
+**superseded by #210** rather than as an open item. **[redundant]**; the lattice
+makes no general amplification claim and needs none.
+
+The *result* of that axis is landed independently by front **#210**:
+`docs/source-notes/oriented-variable-length-se62.md` proves the exact-ML
+amplification lemma and the fixed-`N` binomial amplification lemma as
 mathematical facts, and `AssemblyP1/OrientedVariableLengthSe62.lean`
 kernel-checks concrete instances (ratios `15625/11664` at `M = 1`,
 `2109375/823543` at `M = 2`; binomial `81/64`, `27/16`), with the growing- and
 fixed-competitor families strict for every `M ≥ 1`. The amplification mechanism
-is thus kernel-checked in the matrix rows R14 and R10/R12; only the *general*
-`Part 6` formalization remains pending. **[K]** for #210; **[O]** for `Part 6`.
+is thus kernel-checked in the matrix rows R14 and R10/R12. **Pointer:** the
+canonical kernel-checked carrier is
+`AssemblyP1/OrientedVariableLengthSe62.lean` (module
+`AssemblyP1.OrientedVariableLengthSe62`) plus the row R14 entry in
+[`source-notes/interpretation-matrix-217.md`](source-notes/interpretation-matrix-217.md);
+`Part 6` is not needed for any matrix row. **[K]** for #210; **[redundant]** for
+`Part 6`.
 
 ## 8. Epistemic status
 
@@ -176,6 +189,6 @@ is thus kernel-checked in the matrix rows R14 and R10/R12; only the *general*
 | The transfer edges and the witness × cell table | **V** (script §E) |
 | A strict witness refutes every schema; a tie refutes only uniqueness | **K** (`strict_refutes_*`, `tie_refutes_unique`) |
 | W-τ refutes rotation-uniqueness but not dihedral-uniqueness | **V** |
-| The sample-multiplicity amplification `Part 6` formalization | **O** (uncommitted, does not compile) |
-| The amplification result itself | **K** via #210 (`OrientedVariableLengthSe62`) |
+| The sample-multiplicity amplification `Part 6` formalization | **redundant** (uncommitted, does not compile; superseded by #210) |
+| The amplification result itself | **K** via #210 (`OrientedVariableLengthSe62`) — the canonical carrier; no lattice claim needed |
 | The 2016 likelihood referent | source gap, unchanged |

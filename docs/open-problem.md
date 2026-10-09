@@ -71,9 +71,11 @@ disclosed two-disjoint-circles duplex model `(S, rc(S))`: circle-by-circle `I_s`
 is exactly equivalent to `I_s(S)`, while duplex-as-a-whole is ill-defined and
 strictly stronger, and when orientation is unobserved its normalized class
 likelihood equals the Medvedev–Brudno molecule distribution. One further leaf
-artifact is **pending, not integrated, and not a matrix row**: #216's general
+artifact is **resolved as redundant and is not a matrix row**: #216's general
 sample-multiplicity `Part 6` formalization (uncommitted, no committed or board
-result, and it does not compile; its result is already kernel-checked via #210).
+result, and it does not compile) is **superseded by #210**, whose result is
+already kernel-checked in `AssemblyP1/OrientedVariableLengthSe62.lean`; the
+implication lattice claims no general amplification theorem.
 #219's same-length complete-spectrum fibre-count is now **integrated**: its note
 and exact-arithmetic audit are in the repository, and its Lean divisor-sum core
 `AssemblyP1/FibreCountArithmetic.lean` (Möbius inversion, totient
@@ -82,7 +84,15 @@ external. It is a population counting result, not a matrix row. The positive
 same-length *rotation-uniqueness* half
 stays conditional on the external complete-spectrum input; only the population
 theorem is now kernel-checked without it.
-The referent question itself is untouched.
+The referent question itself is untouched. The **final source-gap count** for the
+2016 finite question is **7 unresolved items** (the canonical register
+`docs/source-notes/finite-interpretation-universe-audit.md` §6, items 1–6 and 8;
+item 7, the repository-provenance gap, was closed); the three bearing directly on
+the matrix claim are the likelihood referent, the uninspected publisher
+supplement, and the strand/equivalence convention. None is a matrix row, and none
+is used to decide one; the enumeration is in
+[`docs/source-notes/interpretation-matrix-217.md`](source-notes/interpretation-matrix-217.md)
+§3.1.
 
 ## What would count as settlement
 

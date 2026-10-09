@@ -508,12 +508,14 @@ settled:
     (Thm.~\ref{thm:cex-peroccurrence}). This is a \emph{determinate} row, so it
     is reported as settled; it is not a reading of the 2016 sentence, because the
     strengthening is a repository-added surface.
-  \item \textbf{Open in both directions, and not a reading of the 2016 sentence
-    at all.} The doubled-strand $2G$ \emph{concatenation} convention of
-    \cite{bresler2013}, i.e.\ one length-$2G$ circle $S\cdot\rc(S)$, under which
-    the repository has zero exact-multinomial beats in its searched scopes, with
-    two of those scopes vacuous because the remapped $\Is$ is unsatisfiable
-    there. The known $AAATAT\to AAAAAT$ witness is \emph{inadmissible} under this
+  \item \textbf{Open in both directions, and not a determinate reading of the
+    2016 sentence at all.} The doubled-strand $2G$ \emph{concatenation}
+    convention of \cite{bresler2013}, i.e.\ one length-$2G$ circle
+    $S\cdot\rc(S)$. No bounded search is used as evidence in either direction:
+    the absence of a known beat in the searched scopes is recorded as
+    \emph{absence of a known witness}, not as evidence of openness, and two of
+    those scopes are vacuous because the remapped $\Is$ is unsatisfiable there.
+    The known $AAATAT\to AAAAAT$ witness is \emph{inadmissible} under this
     remap: the doubled circle carries a length-$4$ triple repeat that no
     length-$3$ read can bridge, for \emph{every} read set
      (\texttt{doubled\_not\_information\_feasible}). The row is therefore open in
@@ -538,10 +540,12 @@ No determinate row of the matrix remains open. The last determinate row that was
 open on \texttt{main} at the start of this round, the per-occurrence same-length
 §6.2 row, is refuted above. What lies outside the resolved set is (i) the
 doubled-strand $2G$ concatenation convention, which is a different paper's
-convention, is bounded evidence only, and is open in \emph{both} directions
-because the known witness is inadmissible there, and (ii) the
-unspecified-principle reading, which is not a determinate proposition. Neither
-is a determinate source-supported reading of the 2016 sentence.
+convention (a project-level convention, not a source fact), is \emph{not a
+determinate source row}, and is open in \emph{both} directions with no bounded
+search used as evidence because the known witness is inadmissible there, and
+(ii) the unspecified-principle reading, which is not a determinate proposition
+and cannot be settled from source. Neither is a determinate source-supported
+reading of the 2016 sentence.
 We flag these because they are exactly the kind of assumption-surface change
 that separates a refuted statement from an open one, and because a claim that
 ``all source-supported interpretations are resolved'' must not silently absorb
@@ -689,8 +693,10 @@ fixed-$N$ product moves the $(n-x_i)$ exponents at every other type. The same
 word pair also appears as a reverse-complement variable-length witness; here the
 orientation is fixed by observing every truth type plus an extra $AAA$, so the
 mechanism is observed-multiplicity skew rather than strand collapse. The
-general sample-multiplicity formalization (issue~\#216) is still pending; the
-result is already kernel-checked through the instances above.
+general sample-multiplicity formalization drafted for issue~\#216 is
+\emph{redundant} and is deliberately not integrated (it does not compile); the
+result is already kernel-checked through the instances above, whose module
+\texttt{OrientedVariableLengthSe62} is the canonical carrier.
 \end{remark}
 
 \subsection{Summary of the finite landscape}
