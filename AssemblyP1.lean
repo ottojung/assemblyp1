@@ -30,6 +30,7 @@ import AssemblyP1.FixedLengthExactCounterexample
 import AssemblyP1.FixedLengthBinomialCounterexample
 import AssemblyP1.Section62BridgingCounterexample
 import AssemblyP1.SameLengthSection62Counterexample
+import AssemblyP1.Section62VarlenPerOccurrence
 import AssemblyP1.Section62BidirectedFlow
 import AssemblyP1.FiniteSamplingCounterexample
 import AssemblyP1.PopulationReduction
@@ -318,6 +319,37 @@ than assumed. -/
 #print axioms AssemblyP1.SameLengthExactMLCounterexample.truth_information_feasible
 #print axioms AssemblyP1.SameLengthSection62Counterexample.truth_information_feasible
 #print axioms AssemblyP1.Section62BridgingCounterexample.truth_information_feasible
+
+/-! ## Axiom audit for the issue-#213 audit of the variable-length,
+per-occurrence, bidirected §6.2 witness (`AssemblyP1.Section62VarlenPerOccurrence`).
+
+`truth_not_maximizer_in_flow_universe` is the exported audit endpoint for the
+variable-length cell: a throughput vector realized by a feasible §6.2
+bidirected *flow* (not only by a spelled circuit) and inside the literal §6.1
+domain `0 ≤ d_i ≤ N` is strictly more likely than the truth's.  It is stated
+against the same shared source-faithful `I_s` predicate
+`SourceFaithfulIs.InformationFeasible` that the sibling witness modules use
+(through `AssemblyP1.Section62BridgingCounterexample`), and it does not depend
+on whether the §6.2 vertex lower bound `1` is read as the source's per-vertex
+rule or as the stronger per-occurrence rule `x ≤ d`: both hold for this
+instance, which is recorded by `truth_rule_agreement`.
+
+`lik_le_likD_of_domain` / `lik_lt_likD_of_ne` place the witness inside the
+*whole* objective domain: the competitor's throughput vector is the unique
+maximizer, so the refutation is not an artifact of a restricted candidate
+search.  `competitor_outside_length_constrained_domain` is the recorded
+boundary: the competitor's multiplicities sum to `6 ≠ 5 = N`, so this pair does
+not reach the same-length cell. -/
+
+#print axioms AssemblyP1.Section62VarlenPerOccurrence.truth_not_maximizer_in_flow_universe
+#print axioms AssemblyP1.Section62VarlenPerOccurrence.not_all_feasible_throughputs_le_truth
+#print axioms AssemblyP1.Section62VarlenPerOccurrence.dS_flow_throughput
+#print axioms AssemblyP1.Section62VarlenPerOccurrence.dD_flow_throughput
+#print axioms AssemblyP1.Section62VarlenPerOccurrence.lik_le_likD_of_domain
+#print axioms AssemblyP1.Section62VarlenPerOccurrence.lik_lt_likD_of_ne
+#print axioms AssemblyP1.Section62VarlenPerOccurrence.competitor_is_unique_optimizer
+#print axioms AssemblyP1.Section62VarlenPerOccurrence.truth_rule_agreement
+#print axioms AssemblyP1.Section62VarlenPerOccurrence.competitor_outside_length_constrained_domain
 
 /-! ## Axiom audit for the `#89` fibre/period lemma
 
