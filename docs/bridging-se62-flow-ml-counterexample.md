@@ -75,8 +75,14 @@ Two boundaries are emphasized:
 1. **Candidate length.** `|D| = 6 ≠ N = 5`. Section 6.2 does not constrain the
    candidate-flow length; `N` enters only as the binomial denominator and the
    domain bound `d_i ≤ N` (both satisfied: `max d = 2 < 5`). If one *adds* the
-   fixed-length restriction `|D| = N`, this witness does not apply and that
-   sub-case is left **open** here (and was open in the cited branch).
+   fixed-length restriction `|D| = N`, this particular witness does not apply.
+   **That sub-case is now closed**, and negatively, by the same-length molecule
+   witness `AAATAT → AAAAAT` (exact ratio `3`, §6.1 binomial ratio `5`), which
+   also certifies literal §6.2 feasibility of both genomes; see
+   [`section62-same-length-bidirected-counterexample.md`](section62-same-length-bidirected-counterexample.md).
+   What remains open there is only the sub-case with the *per-occurrence*
+   strengthening `d_D(w) ≥ x(w)` added on top, where this witness’s truth is not
+   a candidate (`d_S(AAA) = 1 < x_AAA = 2`).
 2. **Strand reading.** The witness uses the involution `A ↔ T`. Under the
    single-strand reading the bounded search found no non-degenerate witness in
    the searched scope (§6); the mechanism in §4 needs the reverse-complement
@@ -283,11 +289,36 @@ molecule-class space), and the strict likelihood inequality. The `§6.1` product
 is reduced to the three-element class support and evaluated with `norm_num`; the
 file contains no `sorry`, `axiom`, `admit`, or `native_decide`, and the main
 theorem depends only on the three standard Lean axioms (`propext`,
-`Classical.choice`, `Quot.sound`). The Lean file does **not** model the
-bidirected graph, transitive reduction, balance, or supersource/sink; that
-source-level certificate is checked separately in
-`scripts/verify_se62_mb09_bidirected_graph.py` (verified computation, not
-kernel-checked). [verified computation, kernel-checked]
+`Classical.choice`, `Quot.sound`). [verified computation, kernel-checked]
+
+**Correction (issue #217).** This paragraph used to state that “the Lean file
+does not model the bidirected graph, transitive reduction, balance, or
+supersource/sink”. That is no longer true and was already stale when this note
+was merged. The module now imports `AssemblyP1.Section62BidirectedFlow` and
+kernel-checks the **literal** Medvedev–Brudno §6.2 feasibility of both
+candidates: the explicit bidirected read-overlap graph on the observed read
+molecules (its edges written out and proved equal to the generated
+`overlapEdges`), the transitive edge reduction, the §6.2 vertex lower bound `1`
+and edge lower bounds `0`, the §3.4 signed-incidence balance `0` at every read
+vertex, the absence of any supersource/supersink usage, and the vertex
+throughputs (which by Observation 7 are the candidates’ molecule spectra `d_S`
+and `d_D`). The exported endpoint is
+
+```text
+AssemblyP1.Section62BridgingCounterexample.se62_bridging_bidirected_flow_counterexample
+  : SourceFaithfulIs.InformationFeasible truthGenome 3 realizedStarts ∧
+    SourceCertificate ∧
+    SpelledFeasible62 … spellTruth … dS' ∧
+    SpelledFeasible62 … spellCompetitor … dD' ∧
+    lik obs dS < lik obs dD
+```
+
+so the source-level graph/flow certificate is a kernel check, not a script. The
+module-local `SeqSupportLB` proxy and the older
+`se62_bridging_flow_counterexample` statement are retained only as supporting
+evidence; the §6.2 theorem is the one that uses the source object.
+`scripts/verify_se62_mb09_bidirected_graph.py` remains an independent
+reproduction, not the sole check.
 
 ---
 
@@ -372,7 +403,7 @@ The single-strand bounded zero is evidence only and is stated as such.
 | Shomorony `I_s` definition and the 2016 open-question sentence | source fact (Shomorony et al. 2016, Eq. (1), §5) |
 | MB §6.1 objective and §6.2 bidirected flow | source fact (MB09 §6.1–6.2, PMC3154397) |
 | Sequence-level support/lower-bound certificate = support equality ∧ per-occurrence lower bound | mathematical/verified finite condition; **not** the §6.2 definition |
-| `S = AAATT`, `D = AAAATT`: `I_s`; both are admissible bidirected §6.2 circuits (vertex LB 1, edge LB 0, balance 0, no supersource/sink) | **verified computation** (`scripts/verify_se62_mb09_bidirected_graph.py`) + mathematical proof (`docs/section62-mb09-bidirected-graph-audit.md`) |
+| `S = AAATT`, `D = AAAATT`: `I_s`; both are admissible bidirected §6.2 circuits (vertex LB 1, edge LB 0, balance 0, no supersource/supersink) | **kernel-checked** (`AssemblyP1.Section62BridgingCounterexample.se62_bridging_bidirected_flow_counterexample`, via `AssemblyP1.Section62Flow`); independently reproduced by `scripts/verify_se62_mb09_bidirected_graph.py` |
 | `SeqSupportLB dS obs ∧ SeqSupportLB dD obs` | **kernel-checked** (`AssemblyP1.Section62BridgingCounterexample`) |
 | Literal §6.1 ratio `9/8 > 1` | mathematical argument + **kernel-checked** (`AssemblyP1.Section62BridgingCounterexample`) |
 | Statement (P) is false for the bidirected spelled-circuit sub-case | follows |
@@ -393,8 +424,24 @@ truth to be ML.
 
 **Does not.** It does not settle which Medvedev–Brudno object the 2016 sentence
 denotes, nor the strand/conclusion conventions (maximizer vs uniqueness up to
-equivalence), nor the single-strand and fixed-length sub-cases. Those remain
-source/model questions, not consequences of this witness.
+equivalence). **The fixed-length sub-case and the single-strand sub-case, which
+this note used to list as open, are now resolved elsewhere and are no longer
+residue of this witness** (see
+[`source-notes/interpretation-matrix-217.md`](source-notes/interpretation-matrix-217.md))):
+
+* fixed-length, source per-vertex reading: **false** (`AAATAT → AAAAAT`,
+  [`section62-same-length-bidirected-counterexample.md`](section62-same-length-bidirected-counterexample.md));
+* fixed-length, per-occurrence strengthening: **open** (bounded zeros only);
+* single-strand (oriented) read types, same-length, §6.2 support equality:
+  **true**, in the truth’s favour — the opposite direction — by the
+  kernel-checked oriented rigidity theorem and maximizer theorem
+  (`AssemblyP1.OrientedSameLengthML`, `AssemblyP1.MLEscape`). No strict
+  single-strand same-length counterexample exists for any `G`, `L`, alphabet;
+* single-strand read types, unrestricted length: **false** by the oriented
+  variable-length boundary witness once `n > G` (matrix row R14).
+
+The single-strand bounded zeros recorded below are therefore evidence, and are
+superseded by the theorem on the same-length slice; they are not proof.
 
 ---
 

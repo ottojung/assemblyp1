@@ -180,10 +180,30 @@ the literal §6.1 product of binomial marginals with `N = 6`, `n = 5`, and
 `exactLik` is the same-length exact multinomial up to cancelled constants. The
 main theorem depends only on the three standard Lean axioms.
 
-The grid-level certificate (explicit graph, transitive reduction, incidences,
-balance, supersource/sink) is checked by the Python script, not reproduced in
-Lean, exactly as in the merged
-[`bridging-se62-flow-ml-counterexample.md`](bridging-se62-flow-ml-counterexample.md).
+**Correction (issue #217).** This paragraph used to state that the grid-level
+certificate (explicit graph, transitive reduction, incidences, balance,
+supersource/sink) is “checked by the Python script, not reproduced in Lean”.
+That is stale. The module now imports `AssemblyP1/Section62BidirectedFlow.lean`
+and kernel-checks the literal §6.2 feasibility of **both** genomes, via the
+exported endpoint
+
+```text
+AssemblyP1.SameLengthSection62Counterexample.samelength_se62_bidirected_flow_counterexample
+  : SourceFaithfulIs.InformationFeasible truthGenome 3 realizedStarts ∧
+    genomeLength truth = genomeLength competitor ∧
+    (SpelledFeasible62 … spellTruth … dS' ∧
+      (SpelledFeasible62 … spellCompetitor … dD' ∧
+        (lik obs dS < lik obs dD ∧ exactLik dD obs / exactLik dS obs = 3)))
+```
+
+which certifies the bidirected circuit on the observed read molecules, every
+step an edge of the transitively reduced overlap graph, the vertex lower bound
+`1`, edge lower bounds `0`, signed-incidence balance `0`, no supersource/sink
+usage, and vertex throughput equal to the candidate’s own molecule spectrum. The
+`SeqSupport` proxy and the older `samelength_se62_counterexample` statement are
+retained as supporting evidence only. `scripts/verify_se62_mb09_bidirected_graph.py`
+and `scripts/verify_samelength_se62_counterexample.py` remain independent
+reproductions, not the sole checks.
 
 ---
 
