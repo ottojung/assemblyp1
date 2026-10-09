@@ -193,15 +193,22 @@ def throughput(f, graph, verts):
 
 
 # ---------------------------------------------------------------- likelihood
-def exact_multinomial_ratio(dS, dD):
-    from math import factorial
-    def prod_fact(d):
-        p = 1
-        for v in d.values():
-            p *= factorial(v)
-        return p
-    return Fraction(prod_fact(dS), prod_fact(dD))
+def exact_multinomial_ratio(dS, dD, x):
+    """Candidate-intrinsic multinomial ratio for the *observed* type counts.
 
+    The common n!/prod(x_i!) factor cancels; candidate genome lengths are
+    intrinsic and must not be confused with the observed sample size.
+    """
+    N_S, N_D = sum(dS.values()), sum(dD.values())
+    assert N_S > 0 and N_D > 0
+    ratio = Fraction(1)
+    for v, k in x.items():
+        if not k:
+            continue
+        assert dS.get(v, 0) > 0, "truth must assign positive mass to observed type"
+        ratio *= (Fraction(dD.get(v, 0), N_D) /
+                  Fraction(dS.get(v, 0), N_S)) ** k
+    return ratio
 
 def fixed_N_binomial_ratio(dS, dD, x, N):
     r = Fraction(1)
@@ -306,10 +313,22 @@ def main():
     dD_or = oriented_spectrum(comp_genome, L)
     x_or = obs_oriented
     print("\n### likelihood")
-    print("molecule: exact multinomial L(D)/L(S) =", exact_multinomial_ratio(dS_mol, dD_mol))
+    print("molecule: exact multinomial L(D)/L(S) =", exact_multinomial_ratio(dS_mol, dD_mol, x_mol))
     print("molecule: fixed-N=8 binomial L(D)/L(S) =", fixed_N_binomial_ratio(dS_mol, dD_mol, x_mol, 8))
-    print("oriented: exact multinomial L(D)/L(S) =", exact_multinomial_ratio(dS_or, dD_or))
+    print("oriented: exact multinomial L(D)/L(S) =", exact_multinomial_ratio(dS_or, dD_or, x_or))
     print("oriented: fixed-N=8 binomial L(D)/L(S) =", fixed_N_binomial_ratio(dS_or, dD_or, x_or, 8))
+
+    assert exact_multinomial_ratio(dS_mol, dD_mol, x_mol) == Fraction(4096, 729)
+    assert exact_multinomial_ratio(dS_or, dD_or, x_or) == Fraction(2)
+    assert fixed_N_binomial_ratio(dS_mol, dD_mol, x_mol, 8) == Fraction(
+        57953201611271925373278879744, 6211904899255558013916015625)
+
+    # The longer-overlap-only proxy can remove a nontransitive edge:
+    # AAAB -> BAAA of overlap 1 spells AAABAAA; the detour via ABBA
+    # has overlaps 2,2 and spells AAABBAAA (a *different* string).
+    false_transitive = dict(sx="AAAB", sy="BAAA", len=1)
+    assert is_reducible_longer_B(false_transitive, ["ABBA"], 4)
+    assert not myers_spelled_reducible(false_transitive, ["ABBA"], 4)[0]
 
     # ---- verdict assertions
     print("\n### verdict")

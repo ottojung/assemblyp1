@@ -25,10 +25,10 @@ lake build AssemblyP1.Section62VariableOverlap247e
    overlap-`1` edge `AAB → BAB` is removed by the source's transitive edge
    reduction. [kernel-checked]
 
-2. **`D` is nevertheless a genuine §6.2 candidate**, via the ordinary
+2. **`D` has a full-overlap source-graph circuit (a candidate certificate to complete)**, via the ordinary
    full-overlap (`L − 1 = 2`) window walk
    `AAA → AAA → AAB → ABA → BAB → ABB → BBA → BAA`, whose molecule throughput
-   equals `D`'s molecule spectrum exactly. [kernel-checked]
+   equals `D`'s molecule spectrum exactly. These sublemmas are kernel-checked; a direct `SpelledFeasible62` theorem, including reduction, signed balance and terminal clauses, is still required.
 
 3. **The "unobserved `ABA`" premise is a strand-orientation artifact.** In the
    molecule reading used by the source, `ABA = rc(BAB)` and `BAB` was sampled,
@@ -82,12 +82,12 @@ which is why it reports `ABA` as unobserved.
 `{AAA:2, AAB:2, ABA:1, BAA:2}`. The walk skips the offset-`3` window `ABA`,
 which is a real read molecule. Hence the walk is not a flow for `D`.
 
-## 4. `D` is a genuine §6.2 candidate
+## 4. `D`'s full-overlap witness: direct `SpelledFeasible62` endpoint outstanding
 
 Full-overlap window walk (all overlaps `2`): strands
 `AAA, AAA, AAB, ABA, BAB, ABB, BBA, BAA`; every step is a graph edge; every
 interior incidence is opposite; molecule throughput
-`{AAA:2, AAB:2, ABA:2, BAA:2}` equals `D`'s spectrum. [kernel-checked]
+`{AAA:2, AAB:2, ABA:2, BAA:2}` equals `D`'s spectrum. The finite component lemmas are kernel-checked; the direct flow/circuit/terminal conjunction remains to be constructed.
 
 ## 5. Likelihood (exact rationals)
 
@@ -98,8 +98,14 @@ Sampling: all `8` starts once plus `4` extra copies of start `0`
 
 | objective | oriented reading | molecule reading |
 |---|---|---|
-| exact candidate-intrinsic multinomial `L(D)/L(S)` | `2` | `9/4` |
+| exact candidate-intrinsic multinomial `L(D)/L(S)` | `2` | `4096/729` |
 | fixed-`N=8` product-binomial `L(D)/L(S)` | `1341068619663964900807/448762029294263205888 ≈ 2.98837` | `57953201611271925373278879744/6211904899255558013916015625 ≈ 9.3303` |
+
+In the molecule reading, exact likelihood is evaluated using observed
+read counts `x=(AAA:5,AAB:3,ABA:1,BAA:3)`, and source-correct candidate
+molecule spectra `d_S=(1,3,1,3)`, `d_D=(2,2,2,2)`: the common multinomial
+coefficient cancels and `L(D)/L(S)=2^5*(2/3)^3*2*(2/3)^3=4096/729`.
+Factorials of genome spectrum counts are **not** the observed-data likelihood.
 
 The oriented values reproduce board PART 7 / message 12 exactly. Under the
 source's molecule reading both objectives still strictly prefer `D`, so the
@@ -111,7 +117,7 @@ mechanism is not variable overlaps.
 The proposed variable-overlap walk does **not** rescue `D` as a §6.2 flow, and
 the premise that `D` fails §6.2 support equality is false under the source's
 molecule reading. The real, still-valid content of the witness is:
-(i) a same-length molecule §6.2 candidate with strictly larger exact/binomial
+(i) a same-length molecule candidate with a partial, full-overlap flow certificate and strictly larger exact/binomial
 likelihood than the truth, and (ii) evidence that the current
 `Spelling.step` hardcoding `readLen − 1` is an expressiveness gap for
 `oMin < readLen − 1` — but that gap is *not* what makes this witness work.
