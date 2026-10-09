@@ -80,9 +80,14 @@ Two boundaries are emphasized:
    witness `AAATAT → AAAAAT` (exact ratio `3`, §6.1 binomial ratio `5`), which
    also certifies literal §6.2 feasibility of both genomes; see
    [`section62-same-length-bidirected-counterexample.md`](section62-same-length-bidirected-counterexample.md).
-   What remains open there is only the sub-case with the *per-occurrence*
-   strengthening `d_D(w) ≥ x(w)` added on top, where this witness’s truth is not
-   a candidate (`d_S(AAA) = 1 < x_AAA = 2`).
+   What remained open there for a while was only the sub-case with the
+   *per-occurrence* strengthening `d_D(w) ≥ x(w)` added on top, where this
+   witness’s truth is not a candidate (`d_S(AAA) = 1 < x_AAA = 2`). **That
+   sub-case is now closed too, and negatively**, by `ATATACAC → ATACACAC`
+   (`G=8`, `L=3`, exact ratio `3/2`, §6.1 binomial ratio `9/5`), whose truth *is*
+   per-occurrence feasible on the real four-letter DNA alphabet — the binary
+   `A ↔ T` alphabet cannot produce one in the searched scope; see
+   [`peroccurrence-samelength-dna-counterexample-212.md`](peroccurrence-samelength-dna-counterexample-212.md).
 2. **Strand reading.** The witness uses the involution `A ↔ T`. Under the
    single-strand reading the bounded search found no non-degenerate witness in
    the searched scope (§6); the mechanism in §4 needs the reverse-complement
@@ -408,7 +413,7 @@ The single-strand bounded zero is evidence only and is stated as such.
 | Literal §6.1 ratio `9/8 > 1` | mathematical argument + **kernel-checked** (`AssemblyP1.Section62BridgingCounterexample`) |
 | Statement (P) is false for the bidirected spelled-circuit sub-case | follows |
 | Statement (P) under the single-strand reading | **open** (bounded zero evidence) |
-| Statement (P) under the fixed-length restriction `|D| = N` | **false** under the source per-vertex reading (same-length witness `AAATAT → AAAAAT`, [`section62-same-length-bidirected-counterexample.md`](section62-same-length-bidirected-counterexample.md)); **open** under the per-occurrence strengthening (bounded zero evidence) |
+| Statement (P) under the fixed-length restriction `|D| = N` | **false** under the source per-vertex reading (same-length witness `AAATAT → AAAAAT`, [`section62-same-length-bidirected-counterexample.md`](section62-same-length-bidirected-counterexample.md)); **false** under the per-occurrence strengthening (same-length witness `ATATACAC → ATACACAC`, [`peroccurrence-samelength-dna-counterexample-212.md`](peroccurrence-samelength-dna-counterexample-212.md)) |
 | Which §6.1/§6.2 object and strand convention the 2016 sentence intends | source ambiguity, unchanged |
 
 ---
@@ -431,7 +436,8 @@ residue of this witness** (see
 
 * fixed-length, source per-vertex reading: **false** (`AAATAT → AAAAAT`,
   [`section62-same-length-bidirected-counterexample.md`](section62-same-length-bidirected-counterexample.md));
-* fixed-length, per-occurrence strengthening: **open** (bounded zeros only);
+* fixed-length, per-occurrence strengthening: **false** (`ATATACAC → ATACACAC`,
+  [`peroccurrence-samelength-dna-counterexample-212.md`](peroccurrence-samelength-dna-counterexample-212.md));
 * single-strand (oriented) read types, same-length, §6.2 support equality:
   **true**, in the truth’s favour — the opposite direction — by the
   kernel-checked oriented rigidity theorem and maximizer theorem

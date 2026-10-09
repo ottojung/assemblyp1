@@ -21,8 +21,7 @@ was written to.** All untracked material remains in place.
 
 | worktree | relevant notes on `main` | extra material not on `main` | verdict |
 |---|---|---|---|
-| `94-axiomaudit` | same set as `main` | `docs/front-94-p2population-endpoint.md` (a §94 doc); untracked `AssemblyP1/ScratchNameCheck.lean`, `scratch94/Audit94a401.lean`, `scratch94/Mutations94a401.lean`, `audit94/*.{log,exit}` build logs | nothing to collect for #217 |
-| `94-altroute` | same set as `main` | one modified tracked file `AssemblyP1/Issue94AltRoute.lean` (uncommitted) | nothing to collect; the modification is left for its owner |
+| `94-axiomaudit` | same set as `main` | `docs/front-94-p2population-endpoint.md` (a §94 doc); untracked `AssemblyP1/ScratchNameCheck.lean`, `scratch94/Audit94a401.lean`, `scratch94/Mutations94a401.lean`, `audit94/*.{log,exit}` build logs | nothing to collect for #217 || `94-altroute` | same set as `main` | one modified tracked file `AssemblyP1/Issue94AltRoute.lean` (uncommitted) | nothing to collect; the modification is left for its owner |
 | `94-replacement` | same set as `main` | 13 §94-specific notes (`admissible-obstruction-94.md`, `backward-extension-common-back-step-94.md`, `bad-selected-interleaving-witness-94.md`, `bbt-replacement-invariant-host-constraint.md`, `bbt-support-invariant-89.md`, `board94-endgame-statement-94.md`, `case1-landing-94.md`, `half-period-no-bad-theta-94.md`, `interleaved-admissible-94a09.md`, `rematching-invariant-94.md`, `selected-interleaving-crux-94.md`, `two-transposition-criterion-94.md`) and ~40 untracked `scratch/*.lean` + `scratch/*.py` files | nothing for #217; all preserved |
 | `94-endpointcheck` | same set as `main` | untracked `scratch/` (8 Lean probes + 2 search scripts + `BOARD94-ENDPOINT-REPAIR-1717.md`) | nothing to collect; preserved |
 | `94-census-recheck` | — (not a git repo) | `recheck.py` (independent case-1 census re-derivation, `GMAX_CAP = 13`, `CONFIGS_CAP = 4·10⁶`), `verify_cex.py` (exhaustive from-definition check of the `G=5, L=3, S=00101` configuration), `witnesses.py`, `xval.py`, `landing.py`, `landing2.py`, `pred/`, `pred_regime.out` | nothing for #217; see §3 |
@@ -79,3 +78,47 @@ merged, not cherry-picked, and not used as evidence for any matrix row.
 | `main`'s `exact-same-length-spectrum-fibre-count.md` is newer than the copies in `94-replacement` and `94-endpointcheck` | verified by `diff` |
 | The census-recheck scripts re-derive the bridging predicate from `AssemblyP1/SourceFaithfulIs.lean` | repository fact (their docstrings) |
 | The landing/LongObstruction findings in §3 | **verified by running the scripts read-only in their own directory**; owned by #94/#89, not by #217 |
+
+## 5. The leaf-#212 harvest, which *did* change a matrix row
+
+Section 2 above records that the five protected #94 worktrees hold nothing that
+changes a matrix row. Section 5 records the opposite outcome for the **one
+live leaf** consulted in the second half of this round.
+
+Leaf `#212` (agent `cedd79adfeae`, registered worktree
+`/workspace/assemblyp1-finite-212`, branch `agent/board-212-37b45b`, based on
+`cc0aa8a`) was also consulted **read-only**: it was never written to, its working
+directory was never reused as a `cwd`, and no cherry-pick, merge, or deletion was
+performed on it either. It held two artifacts that resolve row **R13**, the only
+determinate row open on `main`:
+
+| artifact | state in #212 | how it was taken |
+|---|---|---|
+| `AssemblyP1/PerOccurrenceSameLengthCounterexample.lean` | **untracked** (kernel-checked; built there, no `sorry`/`axiom`/`admit`/`native_decide`) | copied by path into this worktree, then rebuilt, kernel-replayed, axiom-checked and re-run **here** |
+| `scripts/verify_peroccurrence_dna_samelength_212.py` | committed in #212 as `6aeb95e` | copied by path, re-run here |
+
+Taking a leaf artifact by copy is not the same as trusting it. Two guards were
+applied before any matrix row changed.
+
+1. **No predicate drift.** #212's `AssemblyP1/SourceFaithfulIs.lean` and
+   `AssemblyP1/Section62BidirectedFlow.lean` — the two modules the harvested file
+   imports besides Mathlib — are **byte-identical** to this worktree's copies
+   (`diff -q`). The certificate therefore checks the same `InformationFeasible`
+   and the same `SpelledFeasible62` here as it did there.
+2. **Re-execution, not inheritance.** The module was rebuilt in this worktree
+   (**Build completed successfully, 8926 jobs**), replayed through the kernel one
+   module per process (**exit 0**, with a control
+   `leanchecker AssemblyP1.NoSuchModuleXYZ` **exit 1** proving the pass is not a
+   silent no-op), re-axiom-checked (`[propext, Classical.choice, Quot.sound]` on
+   both endpoints and on the `Prop`), and its script re-run (**ALL CHECKS PASS**,
+   46 assertions). In addition, front #217 independently re-derived the
+   observation, both spectra, the support and per-occurrence conditions, and both
+   exact ratios (`3/2`, `9/5`) from the two strings alone.
+
+The result is row R13 resolved to **FALSE** by `ATATACAC → ATACACAC`
+(`G=8`, `L=3`, `n=6 < N=8`, both candidates literal §6.2 bidirected circuits,
+both per-occurrence feasible). The full record, including the bounded census and
+its explicit non-claim of completeness, is
+[`peroccurrence-samelength-dna-counterexample-212.md`](peroccurrence-samelength-dna-counterexample-212.md).
+
+## 6. Epistemic status

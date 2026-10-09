@@ -185,12 +185,16 @@ The length axis, however, is closed.
    [`../section62-same-length-bidirected-counterexample.md`](../section62-same-length-bidirected-counterexample.md).
    The variable-length sub-case is closed too, by `AAATT → AAAATT` in
    [`../bridging-se62-flow-ml-counterexample.md`](../bridging-se62-flow-ml-counterexample.md),
-   which also satisfies the per-occurrence strengthening. The **only** remaining
-   deterministic gap is the same-length sub-case **under the per-occurrence
-   strengthening**, where the truth `AAATAT` is not a candidate; see
-   [`../source-notes/interpretation-matrix-217.md`](interpretation-matrix-217.md)
-   row R13. That strengthening is not the §6.2 definition, so it is outside the
-   source-supported class, but it is a live mathematical question.
+   which also satisfies the per-occurrence strengthening. The same-length
+   sub-case **under the per-occurrence strengthening** — where the truth `AAATAT`
+   is not a candidate — was the last deterministic gap, recorded as row R13 of
+   [`interpretation-matrix-217.md`](interpretation-matrix-217.md); it is now
+   **closed, negatively**, by `ATATACAC → ATACACAC` on the real four-letter DNA
+   alphabet, whose truth *is* per-occurrence feasible; see
+   [`../peroccurrence-samelength-dna-counterexample-212.md`](../peroccurrence-samelength-dna-counterexample-212.md).
+   That strengthening is not the §6.2 definition, so it is outside the
+   source-supported class; it was closed because it is determinate, not because a
+   source asserts it.
 2. **Reading 4, the broad ML principle.** If the phrase denotes an
    objective family rather than one formula, no finite witness settles it,
    because the objective is not fixed by the source.
@@ -226,8 +230,8 @@ repository’s decision to keep the exact/binomial/flow variants distinct.
 | MB (2009) contains the three distinct objects | source fact |
 | Negative results transfer from a candidate subclass to any superclass | mathematical proof (§3) |
 | #31/#32/read-tiled witnesses refute the maximizer claim over all circular candidates for readings 1/2 | mathematical proof + kernel-checked finite instances (#31, #32) + verified computation (read-tiled) + §3 |
-| Since the same-length packet, at least one witness has both the truth and the competitor in the sequence-level §6.2 feasible set | verified computation + kernel-checked (§6.2 `SpelledFeasible62` on both genomes): `AAATAT → AAAAAT` under the source per-vertex reading; **still open** under the per-occurrence strengthening |
-| The published question remains unresolved because readings 3–4 and strand/tie are open | source-analysis / open |
+| Since the same-length packet, at least one witness has both the truth and the competitor in the sequence-level §6.2 feasible set | verified computation + kernel-checked (§6.2 `SpelledFeasible62` on both genomes): `AAATAT → AAAAAT` under the source per-vertex reading, and `ATATACAC → ATACACAC` under the per-occurrence strengthening |
+| The published question remains unresolved because readings 3–4 and strand/tie are open | source-analysis / open — reading 3 is now closed negatively at both sub-cases and under both candidate rules; what remains unresolved is the referent itself, the strand/equivalence axis, and reading 4 |
 
 Primary sources: Paul Medvedev, Michael Brudno, *Maximum Likelihood Genome
 Assembly*, J. Comput. Biol. 16(8) (2009) 1101–1116, §6.1–6.2, PMC3154397; Ilan

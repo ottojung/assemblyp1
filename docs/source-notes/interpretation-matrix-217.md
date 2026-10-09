@@ -126,7 +126,7 @@ Legend for the resolution column: **FALSE** (a strict counterexample refutes
 | R10 | `A` | `U3` flows, length free | `Fgen`/`Fspell` | `mol` | `Is` | `W` and `S` both false | **FALSE** | `AAATT → AAAATT`, `|D|=6 ≠ N=5`, external `N=5`, ratio `9/8`; literal §6.2 feasibility of **both** genomes, incl. the explicit graph, transitive reduction, vertex LB 1, signed-incidence balance | **[K]** `AssemblyP1/Section62BridgingCounterexample.lean` (`se62_bridging_bidirected_flow_counterexample`) |
 | R11 | `E`/`A` | `U3` flows, **same length** | `Fgen`/`Fspell` | `mol` | `Is` | `W` and `S` both false | **FALSE** | `AAATAT → AAAAAT`, `G=6`, `L=3`, starts `(0,0,1,3,5)`, `n=5`, external `N=6`; exact ratio `3`, §6.1 binomial ratio `5`; **the interleaving clause of `I_s` is non-vacuous here** | **[K]** `AssemblyP1/SameLengthSection62Counterexample.lean` |
 | R12 | `E`/`A` | `U3` flows, length free | `Fgen` + `Focc` (per-occurrence) | `mol` | `Is` | `W` and `S` both false | **FALSE** | the same `AAATT → AAAATT` instance: `d_S = (AAA:1, AAT:2, TAA:2) ≥ x`, `d_D = (AAA:2, AAT:2, TAA:2) ≥ x`, so it satisfies the strengthening, and it is a spelled circuit, hence a general §6.2 flow | **[K]** same modules as R10 (`SeqSupportLB` conjuncts) |
-| R13 | `E`/`A` | `U3` flows, **same length** | `Fgen` + `Focc` | `mol` | `Is` | `W` and `S` both false | **OPEN** | bounded zeros only, at `(G,L,maxmul) = (6,3,2)`; “zero rows are computational evidence bounded by the stated scope, not a proof of absence”. Leaf #212 is producing an independent kernel-checked witness | **[O]** `docs/section62-same-length-bidirected-counterexample.md` |
+| R13 | `E`/`A` | `U3` flows, **same length** | `Fgen` + `Focc` | `mol` | `Is` | `W` and `S` both false | **FALSE** | Strict witness `ATATACAC → ATACACAC`, `G=8`, `L=3`, o_min `2`, realized starts `(1,3,4,5,6,7)`, `n=6`, external `N=8`; `x = {ATA/TAT:1, TAC/GTA:1, ACA/TGT:2, CAC/GTG:1, CAT/ATG:1}`, `d_S = {…, ATA/TAT:3, ACA/TGT:2, …}`, `d_D = {…, ATA/TAT:1, ACA/TGT:3, CAC/GTG:2, …}`; both spectra support-equal to `x` **and** per-occurrence feasible (tight coordinate `ACA/TGT`, `x = d_S = 2`), `n = 6 < G = 8` so not read-tiled; exact ratio `3/2`, §6.1 binomial ratio `9/5`; both literal §6.2 bidirected circuits on the 16-edge graph, reduction vacuous under both readings. Census: 4 distinct beats at `(G,L,sigma)=(8,3,4)`, bounded evidence only. Harvested read-only from leaf #212 | **[K]** `AssemblyP1/PerOccurrenceSameLengthCounterexample.lean` (`peroccurrence_samelength_se62_bidirected_flow_counterexample`, `peroccurrence_samelength_maximality_refuted`), **V** `scripts/verify_peroccurrence_dna_samelength_212.py`, record `docs/peroccurrence-samelength-dna-counterexample-212.md` |
 | R14 | `E`/`A` | `U1`/`U2` | `F0` | `or` | `Is` | `W` false as soon as `n > G` | **FALSE** | oriented variable-length boundary `AAATT → AAAATT` with `x = spec₃(S) + M·e_AAA`: exact ratio `3125/3888, 15625/11664, 78125/34992` at `M = 0,1,2` and binomial `81/128, 81/64, 81/32`; the truth wins exactly at `n = G` | **[V]** `scripts/verify_oriented_se62_rigidity.py` (leaf #210 owns the classification) |
 | R15 | `E`/`A` | `U2` ∩ `Fgen` | `Fgen` + `Focc` | `or` | `Is` | `W` true | **TRUE, inherited** | a per-occurrence-restricted candidate class is a *subclass* of the genuine §6.2 class quantified over by R7 — for a spelled circuit of length `G` whose window support is `supp(x)`, the walk flow is a feasible §6.2 flow with every vertex throughput `≥ 1` — so R7’s maximizer conclusion applies unchanged. No general theorem on `main` states the subclass containment as a lemma; it is the argument used case-by-case by the same-length §6.2 modules | **[K]** inherited from R7; containment is a **M** fact for spelled circuits, **O** as a named lemma |
 | R16 | `E` | `U1`/`U2` | `F0` | `2G` (Bresler doubled-strand) | remapped `Is` | — | **OPEN** | zero exact-multinomial beats in the seven searched scopes; at `G=3,5` the remapped `Is` is unsatisfiable, so those rows are vacuous rather than positive | **[O]** `docs/source-notes/uniform-strand-convention-search-2026-09-20.md` |
@@ -142,8 +142,15 @@ Legend for the resolution column: **FALSE** (a strict counterexample refutes
 * Row R6 is the row that shows the **length restriction alone is not enough**:
   without the §6.2 membership conjunct the same-length question is already
   negative.
-* Row R13 is the only **determinate** row that is open on `main`. Its
-  assumption `Focc` is an editorial strengthening, not the source’s §6.2 rule.
+* Row R13 was the only **determinate** row that was open on `main`; it is now
+  resolved to **FALSE** by a kernel-checked per-occurrence witness (see the
+  row). Its assumption `Focc` is an editorial strengthening, not the source’s
+  §6.2 rule, so its resolution is a mathematical service to a *repository*
+  question, not the reading of a source statement that the other rows are.
+* No determinate row remains open on `main`. The residue is R16 (bounded
+  evidence under a different paper’s `2G` convention) and R17 (not a determinate
+  proposition) — neither is determinate, and neither is a source-supported
+  reading of the 2016 sentence.
 
 ---
 
@@ -169,13 +176,13 @@ Legend for the resolution column: **FALSE** (a strict counterexample refutes
 
 ## 4. The claim, stated precisely
 
-Counting rows: R1–R6, R10–R12, R14 are the ten negative rows, of which the
-kernel-checked ones are R1, R2, R5, R6, R10, R11, R12 (seven, sharing five
-modules) and the exact-arithmetic ones are R3, R4, R14 (three). R7, R8, R9, R15
-are the four positive rows (R9 conditional on the external BBT input, R15
+Counting rows: R1–R6, R10–R13, R14 are the **eleven** negative rows, of which
+the kernel-checked ones are R1, R2, R5, R6, R10, R11, R12, R13 (eight, sharing
+six modules) and the exact-arithmetic ones are R3, R4, R14 (three). R7, R8, R9,
+R15 are the four positive rows (R9 conditional on the external BBT input, R15
 inherited from R7). R9 and R8 are two views of one argument, and R10 and R12 are
 one witness, so the row count overstates the number of distinct results and
-understates nothing.
+underrates nothing.
 
 **Resolved (with a reviewed proof or an exact counterexample):**
 
@@ -188,6 +195,13 @@ understates nothing.
   per-vertex lower bound, under molecule read types, at either variable
   (R10, R12) or equal (R11) candidate length — refuted by strict
   kernel-checked witnesses, each of which certifies literal §6.2 feasibility;
+* the same-length §6.2 question under the **per-occurrence strengthening**
+  `Focc` (R13) — refuted by a strict kernel-checked witness whose truth *is*
+  per-occurrence feasible, on the real four-letter DNA alphabet
+  (`ATATACAC → ATACACAC`, exact ratio `3/2`, binomial ratio `9/5`). This row’s
+  assumption is a repository-added surface, so its resolution is **not** a
+  reading of the 2016 sentence; it is closed because the matrix commits to
+  reporting determinate rows as resolved or open, not because a source asks it;
 * the one **positive** slice: oriented read types, same-length candidates that
   are genuine §6.2 candidates on both sides, full `I_s` (R7) or just its
   triple-repeat clause (R8) — the truth is a maximizer for both `E` and `A`,
@@ -196,11 +210,12 @@ understates nothing.
 
 **Open / not determinate, stated explicitly:**
 
-1. **R13** is open on `main`: molecule read types, same-length §6.2 candidates,
-   under the **per-occurrence** strengthening. It currently has bounded zeros
-   only. Its assumption is not the source’s §6.2 rule, so it is outside the
-   class of *source-supported* interpretations, but it is a defensible
-   mathematical question and must not be reported as settled. Leaf #212 owns it.
+1. **R13 is resolved (FALSE).** It was open at the start of this round with
+   bounded zeros only, and is now closed by the leaf-#212 witness integrated in
+   `docs/peroccurrence-samelength-dna-counterexample-212.md`. Its assumption is
+   not the source’s §6.2 rule, so it is outside the class of *source-supported*
+   interpretations; it was a determinate mathematical question, and a determinate
+   question with a counterexample is settled.
 2. **R16** (Bresler doubled-strand convention) is bounded evidence only and is
    not a source-supported reading of the 2016 sentence.
 3. **R17** (the unspecified general principle) is not a determinate
@@ -217,12 +232,13 @@ understates nothing.
    argument fixing the referent.
 
 So: **every interpretation of the 2016 finite question that is both
-determinate and source-supported is resolved — eight negatively and one
-positively — and the residue is one determinate-but-not-source-supported row
-(R13), one bounded-evidence row using a different paper’s convention (R16), and
-one non-determinate row (R17).** The claim “all source-supported
-interpretations are resolved” is therefore justified for the source-supported
-class, and explicitly not extended to R13, R16, or R17.
+determinate and source-supported is resolved — nine negatively and one
+positively — and the residue is one bounded-evidence row using a different
+paper’s convention (R16) and one non-determinate row (R17).** No determinate row
+remains open. The claim “all source-supported interpretations are resolved” is
+therefore justified for the source-supported class, and explicitly not extended
+to R16 or R17; R13, which was determinate but not source-supported, is now
+resolved in the same sense as the negative rows.
 
 ---
 
@@ -233,7 +249,8 @@ class, and explicitly not extended to R13, R16, or R17.
 * [`equivalence-and-tie-wellposedness.md`](equivalence-and-tie-wellposedness.md) — the invariance lemmas and the cyclic-shift/reverse-complement coupling.
 * [`conclusion-semantics-strict-witness-robustness.md`](conclusion-semantics-strict-witness-robustness.md) — why a strict witness is equivalence- and tie-proof.
 * [`oriented-se62-rigidity-theorem.md`](oriented-se62-rigidity-theorem.md) — the oriented same-length rigidity theorem (rows R7–R9).
-* [`../bridging-se62-flow-ml-counterexample.md`](../bridging-se62-flow-ml-counterexample.md), [`../section62-same-length-bidirected-counterexample.md`](../section62-same-length-bidirected-counterexample.md) — rows R10–R13.
+* [`../bridging-se62-flow-ml-counterexample.md`](../bridging-se62-flow-ml-counterexample.md), [`../section62-same-length-bidirected-counterexample.md`](../section62-same-length-bidirected-counterexample.md) — rows R10–R12.
+* [`../peroccurrence-samelength-dna-counterexample-212.md`](../peroccurrence-samelength-dna-counterexample-212.md) — row R13, the per-occurrence same-length refutation, with the leaf-#212 provenance record.
 * [`same-length-witnesses-candidate-set-inclusion.md`](same-length-witnesses-candidate-set-inclusion.md) — the negative-transfer lemma.
 * [`../ml-formalization-contract.md`](../ml-formalization-contract.md) — Variants `E`/`A`/`F` and the two conclusion schemas.
 
@@ -251,10 +268,12 @@ class, and explicitly not extended to R13, R16, or R17.
 | Rows R7, R8 are proved (maximizer) | **K** |
 | Row R9 is proved conditional on an external BBT premise | **K** conditional |
 | Rows R10, R11, R12 are refuted by kernel-checked strict witnesses certifying literal §6.2 feasibility | **K** |
+| Row R13 is refuted by a kernel-checked strict witness certifying literal §6.2 feasibility on both sides under the per-occurrence strengthening (`ATATACAC → ATACACAC`, ratios `3/2` and `9/5`) | **K** |
 | Rows R3, R4, R14 are refuted by exact-arithmetic reproductions | **V** |
-| Row R13 is open; bounded zeros only | **O** |
 | Row R16 is bounded evidence only, under a non-source convention | **O** |
 | Row R17 is not a determinate proposition | **I** |
+| the leaf-#212 census is bounded evidence, not a proof of absence | **V** bounded |
+| no determinate row remains open on `main` | repository fact |
 | which MB object the 2016 sentence denotes | **source gap, unchanged** |
 
 ---
@@ -264,7 +283,15 @@ class, and explicitly not extended to R13, R16, or R17.
 Everything below was run in `/workspace/assemblyp1-finite-217` at `cc0aa8a`
 plus this document's own edits. The worktree shares the pre-built Mathlib
 dependency tree through `.lake/packages` (a symlink to the host's shared
-`assemblyp1/.lake/packages`), so no Mathlib rebuild was needed.
+`assemblyp1/.lake/packages`), so no Mathlib rebuild was needed. Every command
+ran inside a per-command fence: fresh `HOME`, `XDG_STATE_HOME`,
+`XDG_CONFIG_HOME`, `XDG_CACHE_HOME`, `XDG_DATA_HOME` and `ELAN_HOME` under
+`/tmp`, so no ambient agent state is read or mutated.
+
+Rows R1–R12, R14–R15 carry the verification below, which was executed in the
+first half of this round. Row R13 was resolved in the second half by the
+leaf-#212 witness; the checks that changed it are listed separately in §7.1 and
+were re-executed in this worktree after the copy.
 
 | check | command | result |
 |---|---|---|
@@ -275,7 +302,7 @@ dependency tree through `.lake/packages` (a symlink to the host's shared
 | documentation integrity | `python3 scripts/check-research-docs.py` | **research documentation integrity checks passed** |
 | uniform-strand witness reproduction | `python3 scripts/uniform_strand_semantics_search.py --witness` | **all checks passed** (oriented `AAATT→AAAAT` ratio `2`, binomial `1125/512`; molecule `AAATAT→AAAAAT` exact `3`, binomial `5`) |
 | uniform-strand bounded search | `python3 scripts/uniform_strand_semantics_search.py --search` | **all checks passed**, matching the note's table (`(6,3)`: 960 beats, `(7,3)`: 0, `(6,4)`: 0, `(8,3)` maxmul 3: 4540) |
-| new read-tiled witness script | `python3 scripts/verify_readtiled_exact_counterexample.py` | **all checks passed** (`I_s` clause by clause, `L_E(S|x)=120/117649`, `L_E(D|x)=3240/117649`, ratio `27`) |
+| read-tiled witness script | `python3 scripts/verify_readtiled_exact_counterexample.py` | **all checks passed** (`I_s` clause by clause, `L_E(S|x)=120/117649`, `L_E(D|x)=3240/117649`, ratio `27`) |
 
 Theorem-level axiom results (`#print axioms`), all
 `[propext, Classical.choice, Quot.sound]`:
@@ -292,15 +319,54 @@ Theorem-level axiom results (`#print axioms`), all
 * `AssemblyP1.OrientedSameLengthML.informationFeasible_exactLik_maximizer`, `…same_length_exactLik_maximizer`, `…same_length_maximality_and_rotation_uniqueness_of_bbt` (rows R7–R9)
 * `AssemblyP1.OrientedRigidity.unique_positive_circulation` (row R8 core)
 * `AssemblyP1.BridgingBridge.informationFeasible_no_long_triple_repeat` (the `Is ⇒ ¬LTR` transfer)
+* `AssemblyP1.PerOccurrenceSameLengthCounterexample.peroccurrence_samelength_se62_bidirected_flow_counterexample`, `…peroccurrence_samelength_maximality_refuted` (row R13)
+
+### 7.1 Row R13: the leaf-#212 harvest, re-verified here
+
+The leaf-#212 worktree `/workspace/assemblyp1-finite-212` was consulted
+**read-only**: it was never written to, its working directory was never reused
+as a `cwd`, and no cherry-pick, merge, or deletion was performed. Two of its
+shared dependencies — `AssemblyP1/SourceFaithfulIs.lean` and
+`AssemblyP1/Section62BidirectedFlow.lean` — are **byte-identical** to this
+worktree's copies (verified by `diff -q`), so the harvested module cannot have
+been checking a different predicate. The module and the script were copied in
+by path (Lean SHA-256 `96e44d42…ba7b2`, script SHA-256 `8c30c2ef…9c700`) and
+then **rebuilt, replayed, re-axiom-checked and re-run in this worktree**, not
+trusted from the leaf:
+
+| check | command | result |
+|---|---|---|
+| build | `LEAN_NUM_THREADS=4 lake build AssemblyP1.PerOccurrenceSameLengthCounterexample` | **Build completed successfully (8926 jobs)**, exit 0 |
+| kernel replay | `LEAN_NUM_THREADS=1 lake env leanchecker AssemblyP1.PerOccurrenceSameLengthCounterexample`, one module per process | **exit 0** |
+| control for that replay | `LEAN_NUM_THREADS=1 lake env leanchecker AssemblyP1.NoSuchModuleXYZ` | **exit 1**, `uncaught exception: Could not find any oleans for: AssemblyP1.NoSuchModuleXYZ` — so the exit 0 above is a real check, not a silent no-op |
+| axioms | `lake env lean` with `#print axioms` on `peroccurrence_samelength_se62_bidirected_flow_counterexample`, `peroccurrence_samelength_maximality_refuted`, and the `Prop` `PerOccurrenceSameLengthMaximality` | all three `[propext, Classical.choice, Quot.sound]` |
+| witness script | `python3 scripts/verify_peroccurrence_dna_samelength_212.py` | **ALL CHECKS PASS** (46 assertions, non-zero exit on any failure) |
+| bounded census | `python3 scripts/verify_peroccurrence_dna_samelength_212.py --search` | **ALL CHECKS PASS**; 4 distinct `(S,D)` beats at `(G,L,sigma)=(8,3,4)`, 0 at the other eight scopes |
+| independent re-derivation | a separate from-first-principles script recomputing `x`, `d_S`, `d_D`, the supports, the per-occurrence conditions and both ratios from the two strings alone | agrees with the leaf script and the Lean module on every value |
+
+The Lean module contains no `sorry`, `axiom`, `admit`, or `native_decide`
+(scanned), and the strengthened statement is a `Prop`
+(`PerOccurrenceSameLengthMaximality`) rather than a theorem, so refuting it
+changed no definition.
+
 
 **Not** done here, and deliberately left to CI: the full-library
 `lake build --wfail` over every `AssemblyP1/*.lean` module, the whole-library
 kernel replay, and the `axiom-audit` pass with `--modules-from`. The
 whole-library runs need every `AssemblyP1/*.lean` module compiled, which is a
-multi-hour job on this host (CI allows 360 minutes for it); the matrix only
-asserts results that live in the 16 modules audited here. The one-process kernel
-replay over all 17 modules was killed by the memory reaper (exit 137) and was
-redone one module per process. The PDF build
+multi-hour job on this host (CI allows 360 minutes for it). The first half of
+this round asserted results that live in the 16 modules audited here; after the
+leaf-#212 harvest the per-occurrence module is a 17th, built, kernel-replayed
+and axiom-checked on its own (§7.1) but **not** included in the 16-module
+`axiom-audit --modules` tally of 1315 declarations, which predates it. The
+one-process kernel replay over all 17 modules was killed by the memory reaper
+(exit 137) and was redone one module per process. The PDF build
 requires a Guix TeX profile that is not provisioned on this host, so the paper
 edits in this round are verified by inspection and by LaTeX environment-balance
 checks only; the CI `documents.yml` workflow is the arbiter of the PDF.
+
+One source gap is unchanged: the publisher's supplementary ZIP remains
+**uninspected** (HTTP 403 on both recorded retrieval paths). It was not
+inspected during this round either — it is not reachable from this host — and it
+remains the last unexamined accepted artifact that could contain a likelihood or
+tie definition. No matrix row was decided by anything in it, and none can be.
