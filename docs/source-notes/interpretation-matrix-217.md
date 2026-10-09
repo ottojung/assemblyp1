@@ -191,7 +191,12 @@ Legend for the resolution column: **FALSE** (a strict counterexample refutes
   `SameLength62TieUniqueness` supplies the `I_s ⇒ ¬ interleaved long repeats`
   adapter and refutes the BBT premise on a concrete `G=6, L=2` instance, but
   the finite same-length rotation uniqueness remains **Lean-conditional** on
-  that input; only the *population* theorem is now unconditional (below).
+  that input; only the *population* theorem is now unconditional (below). Within
+  the finite `#211` scope the **non-primitive subcase is not closed**: its
+  corrected residue is the named `NoBranching` predicate (the earlier
+  "periodicity forces a long repeat" mechanism is kernel-refuted), it is not
+  formalized in Lean, and it remains **pending** (leaf `#211`, branch
+  `agent/board-211-8d5103`); this pass does not claim it.
 * Row R6 is the row that shows the **length restriction alone is not enough**:
   without the §6.2 membership conjunct the same-length question is already
   negative.
@@ -1030,8 +1035,12 @@ same-length rotation uniqueness conditional on the external complete-spectrum
 input), so they are consistent rather than conflicting.
 
 **Residual (unchanged).** `#211` finite same-length rotation uniqueness stays
-Lean-conditional on the external complete-spectrum input; only the population
-theorem is unconditional. The 2016 likelihood referent and the publisher
-supplementary ZIP remain unknown/uninspected. The full `lake build --wfail`
-whole-library pass is left to CI (host OOM on `Issue94Transposition`,
-pre-existing).
+Lean-conditional on the external complete-spectrum input, and its
+**non-primitive subcase remains pending** (named `NoBranching` residue, not
+formalized in Lean); only the population theorem is unconditional. The 2016
+likelihood referent and the publisher supplementary ZIP remain
+unknown/uninspected. The full `lake build --wfail` whole-library pass is left to
+CI (host OOM on `Issue94Transposition`, pre-existing). `#211` itself is **not**
+in this pass's harvest list, so its newer committed extension is deliberately
+not taken here; the pending status is recorded so the finite `#211` result is
+not overclaimed.
