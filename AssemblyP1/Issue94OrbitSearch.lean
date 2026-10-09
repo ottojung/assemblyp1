@@ -202,11 +202,10 @@ instance instIterStep4 (K : ℕ) (hK : 0 < K) [NeZero K] : Decidable (IterStep4 
 section Timing
 set_option maxHeartbeats 40000000
 set_option maxRecDepth 100000
-theorem t_oe_3 : OrbitExcl 3 (by norm_num) := by decide
-theorem t_oe_4 : OrbitExcl 4 (by norm_num) := by decide
-theorem t_oe_5 : OrbitExcl 5 (by norm_num) := by decide
-theorem t_oe_6 : OrbitExcl 6 (by norm_num) := by decide
-theorem t_oe_7 : OrbitExcl 7 (by norm_num) := by decide
+/-! The five bounded OrbitExcl certificates are in
+`Issue94OrbitChecksFromGeneral.lean`. They are now specializations of the
+general kernel proof in `Issue94Step2Path`, not exponentially expanding
+`decide` terms. No statement, input case, or axiom has been dropped. -/
 theorem t_is4_3 : IterStep4 3 (by norm_num) := by decide
 theorem t_is4_4 : IterStep4 4 (by norm_num) := by decide
 /-- The same statement with the primitivity hypothesis dropped: **false**. -/
