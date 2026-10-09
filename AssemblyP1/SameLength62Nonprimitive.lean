@@ -183,6 +183,7 @@ periodicity of a nonprimitive word promotes it to a maximal **triple** repeat of
 length `≥ L - 1`, which `P2` forbids. This section kernel-checks that argument.
 -/
 
+omit [DecidableEq α] [Fintype α] in
 /-- From nonprimitivity (`PopulationReduction.IsPrimitive`), extract a period `p`
 with `0 < p < G`: `cyc (t + p) = cyc t` for every `t`. The witness `H` satisfies
 `H * q = G` with `q > 1`, so `H` is a genuine period below `G`. -/
