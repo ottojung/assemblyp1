@@ -4,7 +4,10 @@
 
 This note records a finite counterexample to the repository's **unrestricted-length exact multinomial Variant E**. It does not settle the broader question posed by Shomorony et al., because that paper refers to the Medvedev–Brudno maximum-likelihood formulation without resolving the repository's source-documented fork between the literal exact objective and the later fixed-length approximation/flow formulation.
 
-The arithmetic, candidate admissibility for the literal exact objective, and repeat/bridging hypotheses have been independently checked. The finite claim is mature enough for a small Phase-B formal verification. Nothing here claims a result for fixed-length exact ML, the separable approximation, or flow optimization.
+The arithmetic, candidate admissibility for the literal exact objective, and repeat/bridging hypotheses have been independently checked, and the whole certificate is **kernel-checked**: the headline theorem is
+`AssemblyP1.ExactVariantECounterexample.finite_unrestricted_exact_variant_e_counterexample`
+in `AssemblyP1/ExactVariantECounterexample.lean` (imported by `AssemblyP1.lean`).
+Nothing here claims a result for fixed-length exact ML, the separable approximation, or flow optimization.
 
 ## Instance
 
@@ -72,4 +75,4 @@ The mechanism is finite-sample frequency fitting. Bridging constrains reconstruc
 
 The competitor has length 6 while the truth has length 4. It therefore does not refute a fixed-length candidate universe. It also does not refute the later Medvedev–Brudno approximation or its flow formulation. Most importantly, it does not by itself resolve which interpretation Shomorony et al. intended when asking whether bridging guarantees that the maximum-likelihood sequence is the true sequence.
 
-The appropriate formalization target is the finite Variant-E statement above, with the broader source ambiguity kept explicit.
+The appropriate formalization target is the finite Variant-E statement above, with the broader source ambiguity kept explicit. **That formalization now exists** (see the status note at the top of this file); the note’s remaining job is the source-correspondence argument, not the arithmetic.

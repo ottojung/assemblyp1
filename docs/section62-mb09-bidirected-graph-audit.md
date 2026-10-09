@@ -219,8 +219,12 @@ The §6.1 separable binomial with external `N = 5`, `n = 3` (all observed
 ```text
 L(D)/L(S)
   = [ (2/5)(3/5)² / ((1/5)(4/5)²) ] · 1 · 1
-  = (18/25) / (16/25) = 9/8 > 1.
+  = (18/125) / (16/125) = 9/8 > 1.
 ```
+
+*(Arithmetic correction, issue #217: the two intermediate products were printed
+as `18/25` and `16/25`. The ratio `9/8`, the script output and the conclusion
+are unaffected.)*
 
 The only coordinate that changes is `AAA` (`1 → 2`); `d_S = d_D` on `AAT` and
 `TAA`; both spectra have support exactly `supp(x)`, so every other factor is
@@ -249,8 +253,8 @@ the same values, so the *certificates* were right and only the prose was wrong.
 | §6.2 vertices = read DNA molecules; edges = bidirected overlaps `≥ o_min`; transitive reduction; vertex LB `1`, edge LB `0`, `u = ∞`; supersource/sink with large cost; `d_i` = vertex flow | **source fact** (MB09 §3.3–3.4, §5.2, §6.2) |
 | The 10-edge graph on `{AAA, AAT, TAA}` at `o_min = 2` and the two explicit circuits | **mathematical proof + verified computation** |
 | Transitively-reduced graph retains every employed edge (both reduction readings) | **mathematical proof + verified computation** |
-| `d_S = {AAA:1, AAT:2, TAA:2}`, `d_D = {AAA:2, AAT:2, TAA:2}` are admissible §6.2 flows (LB1, LB0, balance 0, no source/sink) | **mathematical proof + verified computation** |
-| `L_{6.1}(D)/L_{6.1}(S) = 9/8 > 1` | **mathematical proof + verified computation** |
+| `d_S = {AAA:1, AAT:2, TAA:2}`, `d_D = {AAA:2, AAT:2, TAA:2}` are admissible §6.2 flows (LB1, LB0, balance 0, no source/sink) | **kernel-checked** (`AssemblyP1.Section62BridgingCounterexample.se62_bridging_bidirected_flow_counterexample`, via `AssemblyP1.Section62Flow`); independently reproduced by `scripts/verify_se62_mb09_bidirected_graph.py` |
+| `L_{6.1}(D)/L_{6.1}(S) = 9/8 > 1` | **kernel-checked** (same module) + verified computation |
 | PR #39 criterion "support equality ∧ `x ≤ d`" is §6.2 feasibility | **false as a source definition**; it is a stricter sufficient certificate for this instance and is exact only at `o_min = L−1` with a per-occurrence lower-bound reading |
 | The witness decides the §6.2-restricted implication negatively | follows for the single-molecule sub-case: a spelled bidirected circuit is an admissible flow |
 | Which MB09 layer the 2016 sentence denotes; single-strand / fixed-length sub-cases; whether a non-spellable flow is needed | **open** |

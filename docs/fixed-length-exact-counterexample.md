@@ -16,10 +16,17 @@ kernel-checked Lean theorem
 in `AssemblyP1/FixedLengthExactCounterexample.lean`.
 
 This note does **not** settle the published Shomorony et al. open question. In
-particular it says nothing about unrestricted-length exact ML (issue #24 /
-PR #25), the separable/binomial approximation, or the Section 6.2 flow
-feasible set. See `docs/ml-formalization-contract.md` for the variant
-discipline.
+particular it says nothing new about the separable/binomial approximation or
+the Section 6.2 flow
+feasible set. On unrestricted-length exact ML it is not silent but
+*non-load-bearing*: the witness is a same-length pair, so it already refutes
+the maximizer claim at every candidate length, and the separate
+`ACGT → ACACGT` witness of issue #24 / PR #25 is useful only because it
+exhibits an unrestricted-length competitor and the length-dependence mechanism.
+See `docs/ml-formalization-contract.md` for the variant
+discipline and
+[`source-notes/same-length-witnesses-candidate-set-inclusion.md`](source-notes/same-length-witnesses-candidate-set-inclusion.md)
+for the transfer argument.
 
 ## Instance
 

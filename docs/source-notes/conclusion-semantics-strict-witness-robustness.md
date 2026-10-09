@@ -101,10 +101,10 @@ strings … that are reverse complements of each other”, and §4.1 represents
 likelihood is additionally invariant under reverse complement of a candidate.
 So the read-type convention and the equivalence convention are one coupled
 choice: oriented read types support cyclic shift only; molecule read types
-support the dihedral quotient. This coupling is derived independently in the
-concurrent unmerged note
-`analysis/issue36-equiv-ties-wp:docs/source-notes/equivalence-and-tie-wellposedness.md`
-(§4, Facts 3–4) and is not re-derived here. [source fact + mathematical fact]
+support the dihedral quotient. This coupling is derived independently in
+[`equivalence-and-tie-wellposedness.md`](equivalence-and-tie-wellposedness.md)
+(§4, Facts 3–4), which **is now integrated on `main`** and is not re-derived
+here. [source fact + mathematical fact]
 
 ## 3. The decisive logical point
 
@@ -233,13 +233,11 @@ a new one for these strict witnesses. [interpretation]
 - The maximizer-vs-uniqueness ambiguity remains live for **positive** claims
   and for any candidate instance with no strict competitor; this note does not
   narrow that for the source question.
-- The concurrent unmerged note
-  `analysis/issue36-equiv-ties-wp:docs/source-notes/equivalence-and-tie-wellposedness.md`
+- [`equivalence-and-tie-wellposedness.md`](equivalence-and-tie-wellposedness.md)
   establishes the same general invariance/coupling facts (Lemmas 1–2,
-  Facts 3–5). It should be reconciled and, if accepted, integrated so the
-  repository does not carry this determination only on a branch. This note is
-  its application to the witnesses currently on `main` and is written to be
-  self-contained should that integration be deferred. [interpretation]
+  Facts 3–5) and is **integrated on `main`**. This note is its application to
+  the witnesses currently on `main` and is written to remain self-contained.
+  [interpretation]
 
 ## 7. Epistemic status
 
@@ -281,8 +279,8 @@ standard library, and exits non-zero on any failed assertion.
   the integrated strict witnesses (PR #43, PR #40).
 - [`same-length-witnesses-candidate-set-inclusion.md`](same-length-witnesses-candidate-set-inclusion.md):
   negative transfer across candidate classes.
-- `analysis/issue36-equiv-ties-wp:docs/source-notes/equivalence-and-tie-wellposedness.md`
-  (unmerged branch): concurrent derivation of the invariance/coupling facts.
+- [`equivalence-and-tie-wellposedness.md`](equivalence-and-tie-wellposedness.md):
+  derivation of the invariance/coupling facts (now on `main`).
 - `AssemblyP1/Model.lean`, `AssemblyP1/OpenProblem.lean`: the abstract schemas.
 
 Primary sources: Ilan Shomorony, Samuel H. Kim, Thomas A. Courtade, David N. C.
