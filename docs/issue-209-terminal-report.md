@@ -1,17 +1,21 @@
 # Issue #209 terminal report
 
 _Status: TERMINAL — the finite E/A front for issue #209 is closed at the level
-of the claims it makes._
+of the claims it makes. The board report has been posted on issue #209.
 Author (board identity): the previous owner recorded `openclaw@marceline-dev`;
 git commits on this front are authored as `Otto Jung <otto.jung@vauplace.com>`.
 Branch: `agent/board-209-6cf9bd`, pushed to `origin`.
 Commits on this front: `cf92561`, `ec783e4`, `d6de84d` (inherited), `5822125`
-and `1ceebf5` (previous owner's reconciliation pass), and this pass.
+and `1ceebf5` (previous owner's reconciliation pass), and `5b18b1a` (this pass).
 
-**This file exists because the board comment cannot be posted from this
-host — see the "Reporting blocker" section, whose measured facts were
-re-verified in this pass. Its text is written to be copied onto issue #209
-verbatim.**
+**This file also exists as the durable copy of the board report: the previous
+owner recorded that the board comment could not be posted from this host. That
+claim is **wrong**, and the report below was posted to issue #209 (author
+`openclaw@marceline-dev`, 2026-10-09T03:18Z) with
+`~/.local/bin/antonina board comment --id 209 --body …`. The GitHub REST API and
+`gh` are indeed unavailable here (repository is private, unauthenticated calls
+return `404`, no token, `gh` not on `PATH`), but the Antonina board has its own
+CLI with a working write path. See "Reporting path" at the end.**
 
 ---
 
@@ -65,11 +69,11 @@ them mathematical:
 No source fact, witness instance, likelihood value or `I_s` certificate was
 changed, and no definition was altered to make anything provable.
 
-## 1. Progress comment that should open this front's board record
+## 1. Board report posted on issue #209 (verbatim, 2026-10-09T03:18Z)
 
-> **state: terminal** — issue #209, E/A finite-research front. Worktree
+> **state: TERMINAL** — issue #209, E/A finite-research front. Worktree
 > `/workspace/assemblyp1-finite-209`, branch `agent/board-209-6cf9bd`
-> (ahead 5 of `origin/main`), pushed.
+> (ahead 6 of `origin/main`), pushed.
 >
 > I re-derived the inherited state by execution rather than trusting it, and
 > I re-verified every claim in the inherited ledger: both audit-script defects
@@ -186,7 +190,9 @@ unobserved length-`L` window — E-1 both, E-2/E-3 the competitor, E-4 the truth
 6. The full-library `lake build` is red for reasons outside this front; a
    parent that needs one green build must repair `BBTTripleBridge` first.
 
-### Reporting blocker (precise, re-verified in this pass)
+### Reporting path (corrected)
+
+The inherited report claimed a board-posting blocker. Measured in this pass:
 
 * `gh` is not installed and is not on `PATH`.
 * No GitHub token exists in the environment (`env | grep -i token` finds only
@@ -194,20 +200,18 @@ unobserved length-`L` window — E-1 both, E-2/E-3 the competitor, E-4 the truth
   kind), in `~/.git-credentials` or `~/.netrc` (neither exists).
 * The repository is private: unauthenticated calls to
   `api.github.com/repos/ottojung/assemblyp1/issues/209` return `404 Not Found`,
-  not `401`, so the API cannot be used even for a read.
+  not `401`, so the GitHub REST API cannot be used even for a read.
 * `git` over SSH authenticates as `ottojung` (used to push this branch), but
   GitHub's REST API has no SSH transport.
-* The board itself is a React SPA at `https://vau.place/a/antonina/`; its
-  bundle contains no API endpoint, so there is no client-side path either.
-* `docs/skills/itinerary-assemblyp1.md` routes board work through the Lubko /
-  Supabase transport on `marceline-dev`, but `marceline-dev` is unreachable
-  from this host (`ssh: connect to host marceline-dev port 22: Connection
-  refused`) and no `lubko-agent` binary exists locally.
+* **But the Antonina board does have a local CLI with a working write path:**
+  `~/.local/bin/antonina board comment --id 209 --body <text> --author <name>`
+  (also `board show`, `board close`, `board review`, `board create`). Read
+  access was already available through `~/.local/bin/antonina-scheduler-issue`,
+  which wraps `antonina board show`. The previous owner appears never to have
+  found the write subcommand, so the "blocker" was an artefact of not looking,
+  not a measured fact. The terminal report of §1 is posted on issue #209 as of
+  2026-10-09T03:18Z, and issue #209 was closed after it was posted.
 
-**Action for the orchestrator:** post §0 and §1 verbatim as the terminal report
-on issue #209. Everything needed to verify the claims is in the commits of this
-pass on branch `agent/board-209-6cf9bd`
-(`scripts/verify_issue209_ea_witnesses_third_pass.py`,
-`scripts/audit_issue209_axioms_full.py` and their run logs,
-`scratch-209/independent_recheck.py`, `docs/issue-209-ea-audit-ledger.md`,
-`docs/issue-209-terminal-report.md`).
+A separate local tool, `~/.local/bin/lubko-board`, is **not** the AssemblyP1
+board: it is a small local Supabase board whose issues are unrelated test rows.
+Do not use it for AssemblyP1 board comments.
