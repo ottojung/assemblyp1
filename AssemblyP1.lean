@@ -40,6 +40,7 @@ import AssemblyP1.BridgingBridge
 import AssemblyP1.OrientedSameLengthML
 import AssemblyP1.SameLengthExactMLCounterexample
 import AssemblyP1.SameLength62Maximizer
+import AssemblyP1.SameLength62NonprimitiveRotation
 import AssemblyP1.WraparoundTripleRepeat
 import AssemblyP1.MLEscape
 import AssemblyP1.PopulationUniqueness
