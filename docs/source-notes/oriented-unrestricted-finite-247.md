@@ -44,17 +44,20 @@ verification script is `scripts/verify_oriented_unrestricted_247.py`.
    outside the relevant seven `{A, C}`-words all have `x = d_S = d_D = 0` and
    contribute factor `1`.
 
-5. **`D` is NOT a §6.2 support-equality / spelled / flow candidate.**  `D`
+5. **`D` fails the oriented full-overlap support-equality proxy.**  `D`
    contains the **unobserved** window `ABA` (`d_D(ABA) = 1` but `x(ABA) = 0`).
-   `D` satisfies the **weak** §6.2 per-vertex lower bound `1` (every observed
-   type occurs in `D`), but fails the support-equality form
-   `∀ c, 0 < d c ↔ 0 < x c`.
+   `D` satisfies the oriented per-vertex lower bound `1` (every observed
+   oriented type occurs in `D`) but fails oriented support equality
+   `∀ c, 0 < d c ↔ 0 < x c`. This does **not** disqualify the source's
+   reverse-complement DNA-molecule flow: `ABA = rc(BAB)` is an observed
+   *molecule* when `BAB` was sampled.
 
 ## Scope
 
 This is a counterexample among **all circular candidates of the true length**
-(the unrestricted candidate class `F0`).  It is **not** a §6.2 support-equality /
-bidirected-flow statement and must not be used to settle the §6.2 molecule row.
+(the unrestricted candidate class `F0`).  It excludes `D` only from the project-level **oriented full-overlap proxy**,
+not from all source §6.2 bidirected DNA-molecule flows. See draft PR #133
+for the separate reverse-complement molecule analysis.
 
 ## Coordination
 

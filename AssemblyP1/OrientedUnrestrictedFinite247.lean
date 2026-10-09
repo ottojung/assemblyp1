@@ -39,14 +39,15 @@ historical-coverage ML counterexample proposed in board issue #247 parts 7-8.
   types, zero-count factors retained): the **same** ratio, because every type
   containing `G` or `T` has `x = d_S = d_D = 0` and hence contributes factor `1`.
 * that `D` satisfies the **weak** §6.2 per-vertex lower bound `1` (every
-  observed type occurs in `D`), but is **NOT** a §6.2 support-equality / spelled
-  / flow candidate: `D` contains the **unobserved** window `ABA`.
+  observed type occurs in `D`), but **fails this module's oriented full-overlap support-equality proxy**:
+  `D` contains the unobserved oriented window `ABA`. This does **not**
+  exclude a genuine reverse-complement DNA-molecule §6.2 flow.
 
 ## Scope and coordination
 
 This is a counterexample among **all circular candidates of the true length**
-(the unrestricted candidate class `F0`): it is **not** a §6.2 support-equality /
-bidirected-flow statement and must not be used to settle the §6.2 molecule row.
+(the unrestricted candidate class `F0`): its oriented support failure is **not** a theorem about the source's
+bidirected DNA-molecule flow class, which identifies reverse complements.
 
 The historical read-string coverage predicate `HistoricalCovers`, the
 `DenseSampledStarts` certificate, and the `DenseSampledStarts ⇒ HistoricalCovers`
@@ -315,17 +316,18 @@ theorem competitor_strictly_better_binom :
   rw [binomLik_truth, binomLik_competitor]
   norm_num
 
-/-! ## The competitor is NOT a §6.2 support-equality / flow candidate -/
+/-! ## The competitor fails the oriented full-overlap support proxy -/
 
-/-- The literal Medvedev–Brudno §6.2 per-vertex lower bound `1`: every observed
-read type occurs in the candidate at least once.  The competitor **does**
-satisfy this weak bound. -/
+/-- The **oriented analogue** of MB09 §6.2's per-vertex lower bound `1`:
+every observed oriented read type occurs in the candidate at least once.
+This is not the original reverse-complement molecule-vertex predicate. -/
 def PerVertexFeasible (d x : Fin 8 → Nat) : Prop :=
   ∀ c : Fin 8, 0 < x c → 1 ≤ d c
 
-/-- The spelled support-equality form: the candidate's window support is exactly
-the observed support.  The competitor **fails** this, because of the unobserved
-`ABA`. -/
+/-- A project-level **oriented full-overlap support-equality proxy**:
+the candidate's oriented window support equals the observed oriented support.
+It is not the full original §6.2 bidirected-flow predicate.  The competitor
+fails this proxy because oriented `ABA` was unobserved. -/
 def SpelledFeasible62 (d x : Fin 8 → Nat) : Prop :=
   (∀ c : Fin 8, 0 < d c ↔ 0 < x c) ∧ PerVertexFeasible d x
 
@@ -337,8 +339,8 @@ theorem truth_spelled_feasible : SpelledFeasible62 dS obs := by
 
 /-- **The unobserved `ABA` window of `D`.**  `ABA` is code `2`: it occurs once in
 `D` (`d_D(ABA) = 1`) but was never observed (`x(ABA) = 0`).  This is the single
-fact that disqualifies `D` from the §6.2 support-equality / spelled / flow
-candidate class. -/
+fact that excludes `D` from this module's oriented support-equality
+proxy, not from the original reverse-complement molecule-flow class. -/
 theorem aba_unobserved : dD 2 = 1 ∧ obs 2 = 0 := by
   obtain ⟨_, _, g2, _, _, _, _, _⟩ := dD_eq
   obtain ⟨_, _, h2, _, _, _, _, _⟩ := obs_eq
@@ -585,9 +587,10 @@ candidate class `F0` — **strictly beats the truth** under
   ratio `1341068619663964900807/448762029294263205888`.
 
 The competitor `D` contains the **unobserved** window `ABA`; it satisfies the
-weak §6.2 per-vertex lower bound `1` but is **NOT** a §6.2 support-equality /
-spelled / flow candidate.  This is therefore a legitimate counterexample among
-all circular candidates of the true length, and **not** a §6.2 statement. -/
+weak oriented per-vertex lower bound `1` but fails the oriented full-overlap
+support-equality proxy.  This is a legitimate unrestricted same-length
+finite counterexample; it makes **no negative candidacy claim** about original
+reverse-complement §6.2 molecule flows (where `ABA = rc(BAB)`). -/
 theorem oriented_unrestricted_finite247_counterexample :
     SourceFaithfulIs.InformationFeasible truthGenome 3 realizedStarts ∧
       binomDomain 8 dS ∧ binomDomain 8 dD ∧
