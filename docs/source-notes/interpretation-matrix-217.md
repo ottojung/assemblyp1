@@ -270,7 +270,8 @@ dependency tree through `.lake/packages` (a symlink to the host's shared
 |---|---|---|
 | targeted library build | `LEAN_NUM_THREADS=8 lake build AssemblyP1.SourceFaithfulIs AssemblyP1.FixedLengthExactCounterexample AssemblyP1.FixedLengthBinomialCounterexample AssemblyP1.ExactVariantECounterexample AssemblyP1.FiniteSamplingCounterexample AssemblyP1.Section62BridgingCounterexample AssemblyP1.SameLengthSection62Counterexample AssemblyP1.SameLengthExactMLCounterexample AssemblyP1.MLEscape AssemblyP1.OrientedFinalRigidity AssemblyP1.OrientedSameLengthML` | **Build completed successfully (8935 jobs)** |
 | kernel replay | `LEAN_NUM_THREADS=1 lake env leanchecker <module>`, one module per process (a single process over all 17 modules was killed by the OOM reaper, exit 137) | each replayed module reports **exit 0**; see the record below |
-| axiom audit | `lake env lean` with `#print axioms` on 18 headline theorems | every one depends only on `[propext, Classical.choice, Quot.sound]` |
+| axiom audit, theorem level | `lake env lean` with `#print axioms` on 18 headline theorems | every one depends only on `[propext, Classical.choice, Quot.sound]` |
+| axiom audit, module level | the CI-pinned `axiom-audit` (`leanprover-community/axiom-audit` at `46024e005996495c65ef609368e11ab39c4222e3`, built with the pinned toolchain), run as `lake env axiom-audit --allow propext,Classical.choice,Quot.sound --root AssemblyP1 --modules <the 16 built modules>` | **`audited 1315 declaration(s) under 'AssemblyP1'; all within the allowlist [propext, Classical.choice, Quot.sound]`**, exit 0 |
 | documentation integrity | `python3 scripts/check-research-docs.py` | **research documentation integrity checks passed** |
 | uniform-strand witness reproduction | `python3 scripts/uniform_strand_semantics_search.py --witness` | **all checks passed** (oriented `AAATT→AAAAT` ratio `2`, binomial `1125/512`; molecule `AAATAT→AAAAAT` exact `3`, binomial `5`) |
 | uniform-strand bounded search | `python3 scripts/uniform_strand_semantics_search.py --search` | **all checks passed**, matching the note's table (`(6,3)`: 960 beats, `(7,3)`: 0, `(6,4)`: 0, `(8,3)` maxmul 3: 4540) |
@@ -294,7 +295,12 @@ Theorem-level axiom results (`#print axioms`), all
 
 **Not** done here, and deliberately left to CI: the full-library
 `lake build --wfail` over every `AssemblyP1/*.lean` module, the whole-library
-kernel replay, and the `axiom-audit` pass with `--modules-from`. The PDF build
+kernel replay, and the `axiom-audit` pass with `--modules-from`. The
+whole-library runs need every `AssemblyP1/*.lean` module compiled, which is a
+multi-hour job on this host (CI allows 360 minutes for it); the matrix only
+asserts results that live in the 16 modules audited here. The one-process kernel
+replay over all 17 modules was killed by the memory reaper (exit 137) and was
+redone one module per process. The PDF build
 requires a Guix TeX profile that is not provisioned on this host, so the paper
 edits in this round are verified by inspection and by LaTeX environment-balance
 checks only; the CI `documents.yml` workflow is the arbiter of the PDF.
