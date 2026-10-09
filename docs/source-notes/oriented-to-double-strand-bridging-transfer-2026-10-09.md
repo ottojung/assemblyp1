@@ -294,9 +294,10 @@ repeat — both directions were re-checked exhaustively in the script):
 | 10 | 1024 | 4 (`--full`) |
 
 So the remapped `I_s` is satisfiable only on a sparse minority of `u`, at a
-density far below the original single-strand `I_s`: for `L = 3`, `G ≤ 7`, `122` of
-`240` binary genomes are `I_s`-compatible at the triple-repeat clause, while only
-`28` of `252` *doubled* genomes are. The remap is therefore not a harmless
+density far below the original single-strand `I_s`: in the same `L = 3` binary
+scope, `162` of `496` genomes (`4 ≤ G ≤ 8`) pass the triple-repeat clause of
+`I_s` on themselves, while only `28` of `252` doubled genomes (`2 ≤ G ≤ 7`) pass
+it on the doubled circle. The remap is therefore not a harmless
 rephrasing; it is a materially stronger hypothesis engine.
 
 ---
