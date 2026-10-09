@@ -508,11 +508,18 @@ settled:
     (Thm.~\ref{thm:cex-peroccurrence}). This is a \emph{determinate} row, so it
     is reported as settled; it is not a reading of the 2016 sentence, because the
     strengthening is a repository-added surface.
-  \item \textbf{Open, and not a reading of the 2016 sentence at all.} The
-    doubled-strand $2G$ convention of \cite{bresler2013}, under which the
-    repository has zero exact-multinomial beats in its searched scopes, with
+  \item \textbf{Open in both directions, and not a reading of the 2016 sentence
+    at all.} The doubled-strand $2G$ \emph{concatenation} convention of
+    \cite{bresler2013}, i.e.\ one length-$2G$ circle $S\cdot\rc(S)$, under which
+    the repository has zero exact-multinomial beats in its searched scopes, with
     two of those scopes vacuous because the remapped $\Is$ is unsatisfiable
-    there.
+    there. The known $AAATAT\to AAAAAT$ witness is \emph{inadmissible} under this
+    remap: the doubled circle carries a length-$4$ triple repeat that no
+    length-$3$ read can bridge, for \emph{every} read set
+    (\texttt{doubled\_not\_information\_feasible}). The row is therefore open in
+    both directions rather than refuted. The physical duplex is better
+    represented as \emph{two disjoint} cyclic strands $S$ and $\rc(S)$
+    (Remark~\ref{rem:duplex}).
   \item \textbf{Not a determinate proposition.} The reading of the sentence as an
     unspecified general ML principle: the 2016 text fixes no objective, so no
     finite witness settles it as stated. Its three source-nameable members (the
@@ -522,15 +529,19 @@ settled:
 No determinate row of the matrix remains open. The last determinate row that was
 open on \texttt{main} at the start of this round, the per-occurrence same-length
 §6.2 row, is refuted above. What lies outside the resolved set is (i) the
-doubled-strand $2G$ convention, which is a different paper's convention and is
-bounded evidence only, and (ii) the unspecified-principle reading, which is not
-a determinate proposition. Neither is a determinate source-supported reading of
-the 2016 sentence.
+doubled-strand $2G$ concatenation convention, which is a different paper's
+convention, is bounded evidence only, and is open in \emph{both} directions
+because the known witness is inadmissible there, and (ii) the
+unspecified-principle reading, which is not a determinate proposition. Neither
+is a determinate source-supported reading of the 2016 sentence.
 We flag these because they are exactly the kind of assumption-surface change
 that separates a refuted statement from an open one, and because a claim that
 ``all source-supported interpretations are resolved'' must not silently absorb
-them. The full row-by-row matrix, with every axis value tagged as source fact,
-source-supported inference, or modelling choice, is
+them. On the positive side, the finite same-length \emph{rotation-uniqueness}
+half remains conditional on the external complete-spectrum input of
+\cite{bresler2013}; only the population theorem of Section~\ref{sec:population}
+is now kernel-checked without it. The full row-by-row matrix, with every axis
+value tagged as source fact, source-supported inference, or modelling choice, is
 \texttt{docs/source-notes/interpretation-matrix-217.md}.
 \end{remark}
 
@@ -557,8 +568,45 @@ exist there. Two optima must be kept separate:
 The relaxation is a different, larger upper bound; substituting it for the
 integer flow optimum would overstate what the §6.2 domain refutes. The board
 records the integer optimum as the §6.2 result and keeps the relaxation distinct.
-Leaf~\#214 is active; its committed result is tracked in the matrix (§2.2) and
-its module is not harvested while its refinements are in progress.
+The general-flow result is kernel-checked in
+\texttt{AssemblyP1/Section62NonSpelledFlow.lean}
+(\texttt{spelled\_subset\_general}, \texttt{star\_argmax},
+\texttt{no\_sequence\_has\_star\_spectrum},
+\texttt{nonspelled\_se62\_flow\_domain\_countermodel}), which certifies that a
+spelled candidate is a genuine §6.2 flow, exhibits the integer optimum $d^*$,
+and proves no circular molecule realizes its throughputs.
+\end{remark}
+
+\begin{remark}[The physical duplex is two disjoint circles, not a concatenation]
+\label{rem:duplex}
+The doubled-strand convention must not be conflated across its two readings. The
+$2G$ \emph{concatenation} of \cite{bresler2013} glues $S$ and $\rc(S)$ into one
+circle; the alternative --- the one matching the physical double-stranded
+circle --- is \emph{two disjoint} cyclic strands $S$ and $\rc(S)$. The
+distinction is material rather than cosmetic. The reverse-complement map
+$\rho(i)=(G-1-i)\bmod G$ reverses order and preserves strict bridging, so
+\emph{circle-by-circle} $\Is$ on the disjoint duplex is exactly equivalent to
+$\Is(S)$, and the $AAATAT\to AAAAAT$ witness survives (ratios $3$ and $5$). The
+\emph{duplex-as-a-whole} reading is ill-defined (there is no cyclic order on two
+disjoint circles) and strictly stronger: six mixed cross-strand triple repeats
+of length $\ge L-1$ are unbridgeable for every read set. The concatenation and
+the disjoint duplex are genuinely inequivalent: their candidate spectra differ
+exactly when the seam words are not matched by wrapping words, which happens for
+half of the binary words in the searched scope. Finally, when strand orientation
+is \emph{unobserved}, the disjoint-duplex molecule-class distribution
+$2\,m_S(C)/(2G)=m_S(C)/G$ is identical to the Medvedev--Brudno molecule
+distribution (self-reverse-complementary palindromes counted once), so it is not
+a distinct likelihood objective there; only \emph{oriented} reads differ. All of
+this is a disclosed modelling decision, not a reading of the 2016 sentence, and
+it settles neither the concatenation row nor the referent.
+\statusline{The non-equivalence, the circle-by-circle equivalence and the
+mixed-repeat obstruction are \kernelcheck{} in
+\texttt{AssemblyP1/DoubleStrandBridgingTransfer.lean} and
+\texttt{AssemblyP1/TwoDisjointCirclesDuplex.lean}; the spectrum/seam arithmetic
+and the witness ratios are \computed{} by
+\texttt{scripts/verify\_two\_disjoint\_circles\_duplex.py} and
+\texttt{scripts/verify\_oriented\_molecule\_bridging.py}. The representation
+choice is a \projchoice{} and the historical strand convention stays open.}
 \end{remark}
 
 \subsection{The candidate-length boundary}
@@ -639,10 +687,15 @@ Section~6.2, molecule, same length, per-occurrence strengthening
   & exact / binomial
   & §6.2 spelled
   & \textbf{false} ($ATATACAC\to ATACACAC$, ratios $3/2$ and $9/5$; \emph{not} the source's §6.2 rule) \\
-doubled-strand $2G$ convention of \cite{bresler2013}
+doubled-strand $2G$ \emph{concatenation} of \cite{bresler2013}
   & exact multinomial
   & $2G$-doubled candidates
-  & \openstatus{} (bounded zeros, two scopes vacuous) \\
+  & \openstatus{} (open both ways; known witness inadmissible, two scopes vacuous) \\
+\addlinespace
+duplex as \emph{two disjoint} circles $(S,\rc(S))$
+  & exact / binomial
+  & disjoint-duplex candidates
+  & \projchoice{}: circle-by-circle $\Is\equiv\Is(S)$, witness survives; duplex-as-a-whole ill-defined; unobserved-orientation likelihood $=$ MB09 molecule (Rem.~\ref{rem:duplex}) \\
 \bottomrule
 \end{tabular}
 \caption{The finite landscape. ``False'' means a strict counterexample over the
@@ -650,12 +703,15 @@ stated class; the evidence level (kernel-checked, exact computation, or script)
 is recorded in the corresponding theorem or status line. The positive
 same-length rows assert maximizer and, with the external BBT input, uniqueness
 up to cyclic rotation, not merely that the truth ties. By Lemma~\ref{lem:negative-transfer} each same-length falsity
-transfers to all circular candidates for that objective. The last row is
-\emph{not} a reading of the 2016 sentence: the $2G$ doubled-strand convention
-belongs to a different paper, and it is the only row left open. The
-per-occurrence strengthening in the row above it is likewise a repository-added
+transfers to all circular candidates for that objective. The last two rows are
+\emph{not} readings of the 2016 sentence: the $2G$ doubled-strand concatenation
+belongs to a different paper and is the only determinate-looking row left open
+(and it is open in both directions), while the disjoint-duplex row is a
+repository modelling choice whose circle-by-circle reading is exactly $\Is(S)$.
+The
+per-occurrence strengthening in the row above them is likewise a repository-added
 assumption surface rather than Medvedev--Brudno's §6.2 rule; that row is a
-\emph{determinate} question and is now refuted rather than left open. Both
+\emph{determinate} question and is now refuted rather than left open. All
 non-source rows are listed so that the claim of exhaustion is not overstated. See
 \texttt{docs/source-notes/interpretation-matrix-217.md} for the row-by-row
 matrix with every axis value tagged.}

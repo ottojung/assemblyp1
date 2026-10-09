@@ -1,13 +1,20 @@
 # Interpretation matrix for the 2016 finite bridging ⇒ ML question (issue #217)
 
-_Status: META front #217, 2026-10-09. The matrix was built on `origin/main`
-at `cc0aa8a`; the board branch `agent/board-217-978a0a` now also carries the
-merged Lean CI repair PR #117 (`e9fcf01`, "Repair full-library CI compilation
-blockers (initial fixes)") on top of that base. The #217 content is unchanged
-by the rebase — `git diff origin/agent/board-217-978a0a HEAD` over `docs/`,
-`paper/`, and `AssemblyP1.lean` is empty; only the four PR #117 Lean files
-(`BBTTripleBridge`, `Issue94ComponentAlignedSwaps`, `Issue94KShortGeneral`,
-`Issue94LongWindowSplit`) differ.
+_Status: META front #217, 2026-10-09 (integration round). The matrix was built
+on `origin/main` at `cc0aa8a`; the board branch `agent/board-217-978a0a` now
+carries, in order, the merged Lean CI repair PR #117 (`e9fcf01`), the #217
+matrix commits, and the #221 white-paper correction `729f50c` (population
+uniqueness is fully kernel-checked with no external BBT premise; LaTeX
+`\range`/underscore/emphasis defects fixed; the finite same-length rotation
+corollary kept distinct and still Lean-conditional). On top of that base this
+integration round added the novel artifacts of the live finite leaves
+#208 (provenance docs/scripts), #211 (`SameLength62TieUniqueness`), #214
+(`Section62NonSpelledFlow`), #215 (`TwoDisjointCirclesDuplex`,
+`DoubleStrandBridgingTransfer`) and #216 (`ImplicationLattice`). The
+cc0aa8a-based **paper** edits on those leaf branches were deliberately **not**
+merged, because they would have reverted the #217/#221 paper state; only their
+new, self-contained files were taken. All five integrated Lean modules build and
+are axiom-audited at `[propext, Classical.choice, Quot.sound]`.
 This document is the source-backed classification matrix for the finite
 (finite-sample) reading of the 2016 sentence
 
@@ -136,8 +143,9 @@ Legend for the resolution column: **FALSE** (a strict counterexample refutes
 | R13 | `E`/`A` | `U3` flows, **same length** | `Fgen` + `Focc` | `mol` | `Is` | `W` and `S` both false | **FALSE** | Strict witness `ATATACAC → ATACACAC`, `G=8`, `L=3`, o_min `2`, realized starts `(1,3,4,5,6,7)`, `n=6`, external `N=8`; `x = {ATA/TAT:1, TAC/GTA:1, ACA/TGT:2, CAC/GTG:1, CAT/ATG:1}`, `d_S = {…, ATA/TAT:3, ACA/TGT:2, …}`, `d_D = {…, ATA/TAT:1, ACA/TGT:3, CAC/GTG:2, …}`; both spectra support-equal to `x` **and** per-occurrence feasible (tight coordinate `ACA/TGT`, `x = d_S = 2`), `n = 6 < G = 8` so not read-tiled; exact ratio `3/2`, §6.1 binomial ratio `9/5`; both literal §6.2 bidirected circuits on the 16-edge graph, reduction vacuous under both readings. Census: 4 distinct beats at `(G,L,sigma)=(8,3,4)`, bounded evidence only. Harvested read-only from leaf #212 | **[K]** `AssemblyP1/PerOccurrenceSameLengthCounterexample.lean` (`peroccurrence_samelength_se62_bidirected_flow_counterexample`, `peroccurrence_samelength_maximality_refuted`), **V** `scripts/verify_peroccurrence_dna_samelength_212.py`, record `docs/peroccurrence-samelength-dna-counterexample-212.md` |
 | R14 | `E`/`A` | `U1`/`U2` | `F0` | `or` | `Is` | `W` false as soon as `n > G` | **FALSE** | oriented variable-length boundary `AAATT → AAAATT` with `x = spec₃(S) + M·e_AAA`: exact ratio `3125/3888, 15625/11664, 78125/34992` at `M = 0,1,2` and binomial `81/128, 81/64, 81/32`; the truth wins exactly at `n = G` | **[V]** `scripts/verify_oriented_se62_rigidity.py` (leaf #210 owns the classification) |
 | R15 | `E`/`A` | `U2` ∩ `Fgen` | `Fgen` + `Focc` | `or` | `Is` | `W` true | **TRUE, inherited** | a per-occurrence-restricted candidate class is a *subclass* of the genuine §6.2 class quantified over by R7 — for a spelled circuit of length `G` whose window support is `supp(x)`, the walk flow is a feasible §6.2 flow with every vertex throughput `≥ 1` — so R7’s maximizer conclusion applies unchanged. No general theorem on `main` states the subclass containment as a lemma; it is the argument used case-by-case by the same-length §6.2 modules | **[K]** inherited from R7; containment is a **M** fact for spelled circuits, **O** as a named lemma |
-| R16 | `E` | `U1`/`U2` | `F0` | `2G` (Bresler doubled-strand) | remapped `Is` | — | **OPEN** | zero exact-multinomial beats in the seven searched scopes; at `G=3,5` the remapped `Is` is unsatisfiable, so those rows are vacuous rather than positive | **[O]** `docs/source-notes/uniform-strand-convention-search-2026-09-20.md` |
+| R16 | `E` | `U1`/`U2` | `F0` | `2G` (Bresler doubled-strand concatenation) | remapped `Is` on the length-`2G` circle | — | **OPEN** | zero exact-multinomial beats in the seven searched scopes; at `G=3,5` the remapped `Is` is unsatisfiable, so those rows are vacuous rather than positive. The known `AAATAT → AAAAAT` witness is **inadmissible** under the remap: the doubled circle `AAATATATATTT` (length `12`) carries the maximal length-`4` triple repeat `ATAT` at starts `2,4,6`, which no length-`3` read can bridge, kernel-checked for **every** read set (`doubled_not_information_feasible`). The row is therefore open in **both** directions, not refuted | **[K]** `AssemblyP1/DoubleStrandBridgingTransfer.lean` (`doubled_not_information_feasible`); **[O]** `docs/source-notes/uniform-strand-convention-search-2026-09-20.md` |
 | R17 | `U` | — | — | — | `Is` | — | **not a determinate proposition** | the 2016 text names no objective, so no finite witness can settle “the” ML formulation. Decomposed into its three source-nameable members (`E`, `A`, the `Fgen` flow with `A` costs = R1/R5/R10/R11/R12), all of which are refuted | **[I]** |
+| R18 | `E` | `U1`/`U2` | `F0` | `V5` **two disjoint circles** `(S, rc(S))` | componentwise `Is` (circle-by-circle) vs duplex-as-a-whole | `W`/`S` | **split** | The physical double-stranded circle is modelled as **two disjoint cyclic strands** `S` and `rc(S)`, not one joined length-`2G` circle. Circle-by-circle `I_s` is **exactly equivalent** to `I_s(S)` — the rc map `ρ(i)=(G-1-i) mod G` reverses order and preserves strict bridging, so it is a bijection of `I_s`-solutions — hence the `AAATAT → AAAAAT` witness survives here (ratios `3` exact / `5` binomial). Duplex-as-a-whole is ill-defined (no cyclic order on two disjoint circles) and strictly stronger: six mixed cross-strand triple repeats of length `≥ L-1` are unbridgeable for every read set, so the witness is inadmissible there. Statistically, when orientation is **unobserved** the V5 duplex class count `2·m_S(C)` over `2G` normalizes to `m_S(C)/G`, **identical** to the MB09 molecule distribution (palindromes counted once), so V5 is not a distinct likelihood objective there; **oriented** reads are a distinct surface requiring explicit source justification. V5 is a disclosed **new modelling decision**, not a reading of the 2016 sentence, and it does not settle V3/R16 | **[K]** `AssemblyP1/TwoDisjointCirclesDuplex.lean`, `AssemblyP1/DoubleStrandBridgingTransfer.lean`; **[V]** `scripts/verify_two_disjoint_circles_duplex.py`, `scripts/verify_oriented_molecule_bridging.py`; appendix `docs/source-notes/oriented-to-double-strand-bridging-transfer-2026-10-09.md` |
 
 ### 2.1 What the matrix says about the schema
 
@@ -145,7 +153,11 @@ Legend for the resolution column: **FALSE** (a strict counterexample refutes
   and `S` simultaneously and for every `≈` and every tie convention. **[M]**
 * Rows R7–R9 are the only positive rows, and they are positive only on the
   `U2 ∩ Fgen ∩ or` slice. R9’s uniqueness needs `≈` = cyclic shift (forced)
-  and the external BBT complete-spectrum input (not formalized).
+  and the external BBT complete-spectrum input (not formalized). Leaf #211’s
+  `SameLength62TieUniqueness` supplies the `I_s ⇒ ¬ interleaved long repeats`
+  adapter and refutes the BBT premise on a concrete `G=6, L=2` instance, but
+  the finite same-length rotation uniqueness remains **Lean-conditional** on
+  that input; only the *population* theorem is now unconditional (below).
 * Row R6 is the row that shows the **length restriction alone is not enough**:
   without the §6.2 membership conjunct the same-length question is already
   negative.
@@ -154,10 +166,18 @@ Legend for the resolution column: **FALSE** (a strict counterexample refutes
   row). Its assumption `Focc` is an editorial strengthening, not the source’s
   §6.2 rule, so its resolution is a mathematical service to a *repository*
   question, not the reading of a source statement that the other rows are.
+* Row R18 records the #215 duplex finding in the form the board adopted: the
+  physical double-stranded circle is **two disjoint cyclic strands** `S` and
+  `rc(S)`, and circle-by-circle `I_s` is exactly equivalent to `I_s(S)`. This is
+  a disclosed modelling decision, and when orientation is unobserved its
+  normalized class likelihood coincides with the MB09 molecule distribution, so
+  it adds no new *objective* row; it does settle the representation question the
+  research synthesis raised.
 * No determinate row remains open on `main`. The residue is R16 (bounded
-  evidence under a different paper’s `2G` convention) and R17 (not a determinate
+  evidence under a different paper’s `2G` concatenation convention, now with the
+  known witness kernel-checked **inadmissible**) and R17 (not a determinate
   proposition) — neither is determinate, and neither is a source-supported
-  reading of the 2016 sentence.
+  reading of the 2016 sentence. R18 is a disclosed new model, not a source row.
 
 ### 2.2 Front states, coordination, and the general-flow upgrade (this round)
 
@@ -167,12 +187,14 @@ can recover the research graph.
 
 | leaf | branch / worktree | state this round | board action |
 |---|---|---|---|
-| #208 | `agent/board-208-0c8fcf` / `assemblyp1-finite-208` | source census committed; untracked `scratch-208/` preserved | tracked; referent/2G-2N source audit, no matrix row change |
+| #208 | `agent/board-208-0c8fcf` / `assemblyp1-finite-208` | source census + provenance audit committed (`3f532c5`); untracked `scratch-208/` preserved | **integrated** (novel docs/scripts only; its stale cc0aa8a-based paper edits were *not* merged); no matrix row change |
 | #210 | `agent/board-210-e8b6b2` / `assemblyp1-finite-210` | untracked `OrientedVariableLengthSe62.lean` + script preserved | tracked; R14 classification owned by this leaf |
-| #211 | `agent/board-211-8d5103` / `assemblyp1-finite-211` | `SameLength62TieUniqueness` committed; uncommitted umbrella wiring + 2 scripts preserved | tracked; uniqueness half of the same-length §6.2 tie |
+| #211 | `agent/board-211-8d5103` / `assemblyp1-finite-211` | `SameLength62TieUniqueness` committed (`8bef1f6`); uncommitted umbrella wiring + 2 scripts preserved | **module integrated**; finite same-length uniqueness stays Lean-conditional on the complete-spectrum input |
 | #212 | `agent/board-212-37b45b` / `assemblyp1-finite-212` | clean; module + script already harvested | **harvested** — R13 resolved FALSE (see §7.1) |
-| #214 | `agent/board-214-d0e372` / `assemblyp1-finite-214` | `Section62NonSpelledFlow` committed (`6f024ba`); uncommitted refinements preserved | tracked below; **not** harvested (active leaf) |
-| #216 | `agent/board-216-eb3281` / `assemblyp1-finite-216` | `ImplicationLattice` committed | tracked; conclusion-schema lattice, no matrix row change |
+| #214 | `agent/board-214-d0e372` / `assemblyp1-finite-214` | `Section62NonSpelledFlow` committed through `d2163b8`; worktree clean | **module integrated**; R10–R12 upgrade to the general `Feasible62` flow domain |
+| #215 | `agent/board-215-745214` / `assemblyp1-finite-215` | `TwoDisjointCirclesDuplex` + `DoubleStrandBridgingTransfer` committed (`a852879`); worktree clean | **modules integrated**; new row R18, R16 refined |
+| #216 | `agent/board-216-eb3281` / `assemblyp1-finite-216` | `ImplicationLattice` committed (`486d60f`); uncommitted refinement preserved | **module integrated**; conclusion-schema lattice, no matrix row change |
+| #219 | `agent/board-219-547404` / `assemblyp1-finite-219` | uncommitted `FibreCountArithmetic.lean` + doc + script | **not integrated** — the Lean module does not compile (WIP reindexing proofs); recorded as pending, no matrix row change |
 
 **PR #117 (merged Lean CI repair).** The board branch carries `e9fcf01`, the
 merge of PR #117 ("Repair full-library CI compilation blockers (initial
@@ -210,8 +232,15 @@ in any tracking of this result:
 The relaxation is a different, larger upper bound; conflating it with the
 integer flow optimum would overstate what the §6.2 domain refutes. The board
 records the integer optimum as the §6.2 result and does not substitute the
-relaxation. #214 remains an active leaf with uncommitted refinements; the board
-tracks its committed result here rather than harvesting the module.
+relaxation. Leaf #214 is now **terminal for its scope**: its
+`AssemblyP1/Section62NonSpelledFlow.lean` is integrated here (root-imported and
+axiom-audited at `[propext, Classical.choice, Quot.sound]`), it certifies that a
+spelled candidate is a general `Feasible62` flow
+(`spelled_subset_general`), exhibits the non-spelled flow optimum `d*`
+(`star_argmax`), and proves no circular molecule realizes its throughputs
+(`no_sequence_has_star_spectrum`). The paper’s flow-domain remark is updated
+accordingly. The half-integral relaxation remains a *separate* object and is
+never substituted for the integer flow optimum.
 
 ---
 
@@ -243,7 +272,10 @@ six modules) and the exact-arithmetic ones are R3, R4, R14 (three). R7, R8, R9,
 R15 are the four positive rows (R9 conditional on the external BBT input, R15
 inherited from R7). R9 and R8 are two views of one argument, and R10 and R12 are
 one witness, so the row count overstates the number of distinct results and
-underrates nothing.
+underrates nothing. R18 is a **disclosed new model** (the two-disjoint-circles
+duplex), not a reading of the 2016 sentence: circle-by-circle it is exactly
+equivalent to `I_s(S)`, and when orientation is unobserved its normalized class
+likelihood coincides with the MB09 molecule distribution.
 
 **Resolved (with a reviewed proof or an exact counterexample):**
 
@@ -277,8 +309,11 @@ underrates nothing.
    not the source’s §6.2 rule, so it is outside the class of *source-supported*
    interpretations; it was a determinate mathematical question, and a determinate
    question with a counterexample is settled.
-2. **R16** (Bresler doubled-strand convention) is bounded evidence only and is
-   not a source-supported reading of the 2016 sentence.
+2. **R16** (Bresler doubled-strand **concatenation** convention, one length-`2G`
+   circle) is bounded evidence only and is not a source-supported reading of the
+   2016 sentence. It is open in **both** directions: no beat is known, and the
+   known `AAATAT → AAAAAT` witness is kernel-checked **inadmissible** under the
+   remap (`doubled_not_information_feasible`).
 3. **R17** (the unspecified general principle) is not a determinate
    proposition: the source fixes no objective, so no finite witness can settle
    it as stated. Its decomposition into the source-nameable members is
@@ -291,15 +326,22 @@ underrates nothing.
    `E`, `A`, the §6.2 flow, and the principle. A negative settlement of the
    published sentence is therefore available *conditionally* on a source
    argument fixing the referent.
+7. **R18** is a disclosed new model, not a source row. Its circle-by-circle
+   reading is exactly `I_s(S)`; its duplex-as-a-whole reading is ill-defined and
+   strictly stronger. It is recorded so that the exhaustiveness claim is not
+   overstated by silently folding a new representation into a source reading.
 
 So: **every interpretation of the 2016 finite question that is both
 determinate and source-supported is resolved — nine negatively and one
 positively — and the residue is one bounded-evidence row using a different
-paper’s convention (R16) and one non-determinate row (R17).** No determinate row
-remains open. The claim “all source-supported interpretations are resolved” is
-therefore justified for the source-supported class, and explicitly not extended
-to R16 or R17; R13, which was determinate but not source-supported, is now
-resolved in the same sense as the negative rows.
+paper’s convention (R16, open in both directions) and one non-determinate row
+(R17).** No determinate row remains open. The claim “all source-supported
+interpretations are resolved” is therefore justified for the source-supported
+class, and explicitly **not** extended to R16, R17, or the disclosed model R18;
+R13, which was determinate but not source-supported, is now resolved in the same
+sense as the negative rows. The finite same-length rotation-uniqueness half of
+the positive row (R9) remains Lean-conditional on the external complete-spectrum
+input; only the *population* theorem is now kernel-checked without it.
 
 ---
 
@@ -312,6 +354,9 @@ resolved in the same sense as the negative rows.
 * [`oriented-se62-rigidity-theorem.md`](oriented-se62-rigidity-theorem.md) — the oriented same-length rigidity theorem (rows R7–R9).
 * [`../bridging-se62-flow-ml-counterexample.md`](../bridging-se62-flow-ml-counterexample.md), [`../section62-same-length-bidirected-counterexample.md`](../section62-same-length-bidirected-counterexample.md) — rows R10–R12.
 * [`../peroccurrence-samelength-dna-counterexample-212.md`](../peroccurrence-samelength-dna-counterexample-212.md) — row R13, the per-occurrence same-length refutation, with the leaf-#212 provenance record.
+* [`oriented-to-double-strand-bridging-transfer-2026-10-09.md`](oriented-to-double-strand-bridging-transfer-2026-10-09.md) — rows R16/R18, the three oriented↔double-strand bridging versions (V1/V2, V3, V5) and the two-disjoint-circles duplex model, with the kernel-checked V3 non-equivalence and the six mixed cross-strand triples.
+* [`../section62-nonspelled-flow-domain.md`](../section62-nonspelled-flow-domain.md) — the #214 general `Feasible62` flow-domain countermodel and the integer/half-integral separation.
+* [`finite-interpretation-universe-audit.md`](finite-interpretation-universe-audit.md) — the #208 source-exhaustiveness census behind the “source-supported” class.
 * [`same-length-witnesses-candidate-set-inclusion.md`](same-length-witnesses-candidate-set-inclusion.md) — the negative-transfer lemma.
 * [`../ml-formalization-contract.md`](../ml-formalization-contract.md) — Variants `E`/`A`/`F` and the two conclusion schemas.
 
@@ -331,15 +376,18 @@ resolved in the same sense as the negative rows.
 | Rows R10, R11, R12 are refuted by kernel-checked strict witnesses certifying literal §6.2 feasibility | **K** |
 | Row R13 is refuted by a kernel-checked strict witness certifying literal §6.2 feasibility on both sides under the per-occurrence strengthening (`ATATACAC → ATACACAC`, ratios `3/2` and `9/5`) | **K** |
 | Rows R3, R4, R14 are refuted by exact-arithmetic reproductions | **V** |
-| Row R16 is bounded evidence only, under a non-source convention | **O** |
+| Row R16 is open in both directions, under a non-source convention; the known witness is kernel-checked inadmissible under the `2G` remap | **O** + **K** (inadmissibility) |
 | Row R17 is not a determinate proposition | **I** |
+| Row R18 (two-disjoint-circles duplex) is a disclosed new model; circle-by-circle `I_s` exactly equals `I_s(S)`, duplex-as-a-whole is ill-defined/strictly stronger, and the unobserved-orientation class likelihood equals the MB09 molecule distribution | **K** + **C** |
 | the leaf-#212 census is bounded evidence, not a proof of absence | **V** bounded |
 | no determinate row remains open on `main` | repository fact |
 | which MB object the 2016 sentence denotes | **source gap, unchanged** |
 | the accepted supplementary ZIP (could hold a likelihood/tie definition) | **uninspected, unchanged** — HTTP 403 on both recorded retrieval paths; not reachable from this host |
-| the #214 general-flow upgrade (§6.2 refutation over the whole `Feasible62` domain; optimum spells no genome) | **K** (committed `6f024ba`, active leaf) — tracked in §2.2, module not harvested |
+| the #214 general-flow upgrade (§6.2 refutation over the whole `Feasible62` domain; optimum spells no genome) | **K** — `AssemblyP1/Section62NonSpelledFlow.lean`, integrated and axiom-audited (`d2163b8`) |
 | the integer flow optimum vs. the half-integral relaxation | **kept separate** in §2.2; the relaxation is not the §6.2 object |
-| R9’s BBT complete-spectrum input | **O** (external) — carried as explicit `hObs`/`hBBT` premise, not discharged |
+| R9’s BBT complete-spectrum input (finite same-length rotation uniqueness) | **O** (external) — carried as explicit `hObs`/`hBBT` premise, not discharged; the **population** theorem is now kernel-checked without it |
+| leaf #211’s `I_s ⇒ ¬ interleaved long repeats` adapter and its `G=6, L=2` refutation of the BBT premise | **K** — `AssemblyP1/SameLength62TieUniqueness.lean`, integrated and axiom-audited |
+| leaf #219’s exact fibre-count arithmetic | **pending** — `FibreCountArithmetic.lean` does not compile (WIP); not integrated |
 
 ---
 
@@ -455,3 +503,57 @@ The six active leaves were consulted read-only; their uncommitted work
 (#208 `scratch-208/`, #210 `OrientedVariableLengthSe62.lean` + script, #211
 umbrella wiring + 2 scripts, #214 `Section62NonSpelledFlow` refinements) was
 preserved in place and not harvested, merged, or deleted.
+
+### 7.3 Integration round (this pass), 2026-10-09
+
+Base: `729f50c` (main `e9fcf01` + the #217 matrix commits + the #221 white-paper
+correction). The #221 branch is a **linear descendant** of the #217 head, so it
+was fast-forwarded, not merged. The other leaf branches (#208, #211, #214, #215,
+#216) are all rooted at `cc0aa8a` and therefore **predate** the #217 matrix and
+PR #117; merging them wholesale would have deleted the #217 artifacts and
+reverted the #221 paper state. Only their **novel, self-contained files** were
+taken (`git checkout <head> -- <new-path>`), never their paper or shared-file
+edits:
+
+| leaf | files integrated |
+|---|---|
+| #208 | `docs/source-notes/finite-interpretation-universe-audit.md`, `…/shomorony-mb-formulation-referent-reconciliation.md`, `…/shomorony-ml-quantifier-sequence-resolution.md`, `scripts/audit_source_note_citations.py`, `scripts/verify_finite_interpretation_audit.py` |
+| #211 | `AssemblyP1/SameLength62TieUniqueness.lean` |
+| #214 | `AssemblyP1/Section62NonSpelledFlow.lean`, `docs/section62-nonspelled-flow-domain.md`, `scripts/verify_se62_nonspelled_flow_domain.py` |
+| #215 | `AssemblyP1/DoubleStrandBridgingTransfer.lean`, `AssemblyP1/TwoDisjointCirclesDuplex.lean`, `docs/source-notes/oriented-to-double-strand-bridging-transfer-2026-10-09.md`, `scripts/verify_two_disjoint_circles_duplex.py`, `scripts/verify_oriented_molecule_bridging.py`, `scripts/audit_215_transfer_reconciliation.py` |
+| #216 | `AssemblyP1/ImplicationLattice.lean`, `scripts/verify_implication_lattice_216.py` |
+| #219 | **none** — the uncommitted `FibreCountArithmetic.lean` does not compile (its Möbius-reindexing proofs fail: `rw [sum_congr rfl]` misuse and `Nat.cast_div`/`Nat.div_pos` type mismatches); recorded as pending |
+
+The five integrated Lean modules were root-imported in `AssemblyP1.lean` and
+checked here:
+
+| check | command | result |
+|---|---|---|
+| integrated module build | `LEAN_NUM_THREADS=8 lake build AssemblyP1.{SameLength62TieUniqueness,Section62NonSpelledFlow,DoubleStrandBridgingTransfer,TwoDisjointCirclesDuplex,ImplicationLattice}` | **all five built** (`Section62NonSpelledFlow` 200s, `TwoDisjointCirclesDuplex` 209s) |
+| `--wfail` recheck | the five modules rebuilt under `lake build --wfail AssemblyP1` | **no warnings** |
+| axiom audit | `#print axioms` on 18 headline theorems of the five modules | all `[propext, Classical.choice, Quot.sound]`; `spelled_subset_general` depends on **no** axioms |
+| population endpoint (user-flagged) | `LEAN_NUM_THREADS=1 lake build AssemblyP1.Issue94Complete` | **built**; `Issue94Complete.population_unique_ML` depends on `[propext, Classical.choice, Quot.sound]` — fully kernel-checked, **no external BBT premise** |
+| paper build | `bash paper/build.sh`-equivalent (`latexmk -pdf -halt-on-error`) with the pinned Guix TeX profile | **`main.pdf`, 33 pages, 0 undefined references** |
+| documentation integrity | `python3 scripts/check-research-docs.py` | **passed** |
+| #214 script | `python3 scripts/verify_se62_nonspelled_flow_domain.py` | **ALL 37 CHECKS PASS** (flow optimum ratio `256/81`) |
+| #215 scripts | `python3 scripts/verify_two_disjoint_circles_duplex.py`; `…verify_oriented_molecule_bridging.py`; `…audit_215_transfer_reconciliation.py` | **all assertions pass** |
+| #216 script | `python3 scripts/verify_implication_lattice_216.py` | **79/79 checks pass** |
+| #208 scripts | `python3 scripts/verify_finite_interpretation_audit.py` | **all checks pass** (64-cell interpretation universe) |
+| #208 citation audit | `python3 scripts/audit_source_note_citations.py` | **exit 1 by design**: reports the one dead locator already recorded in `finite-interpretation-universe-audit.md` (`se62-revcomp-index-decision.md` on absent branch `analysis/se62-revcomp-index-decision-0920`, commit `7bb1f3a`); CI runs only `check-research-docs.py`, so this diagnostic does not gate CI |
+
+**Host limitation, pre-existing.** The full `lake build --wfail` (CI's gate)
+cannot complete on this host: `AssemblyP1/Issue94Transposition.lean` is
+OOM-killed (exit 137) even at `LEAN_NUM_THREADS=1`, and the root imports it. The
+module is byte-identical to `main` and untouched by this integration; the same
+limitation is already recorded in §7. `AssemblyP1.Issue94OrbitSearch`, the other
+heavy module, **does** build single-threaded (249s). CI's `build` job
+(`LEAN_NUM_THREADS=1`, 6 GiB swap, 360-minute budget) remains the arbiter of the
+whole-library `--wfail` build, the `leanchecker AssemblyP1` replay, and the
+`axiom-audit --modules-from AssemblyP1` pass; the five new modules and the
+population endpoint are each verified above on this host.
+
+**Source fidelity unchanged.** The historical 2016 likelihood referent is still
+unselected (no primary source fixes `E`, `A`, the §6.2 flow, or the general
+principle), and the publisher's supplementary ZIP remains uninspected (HTTP
+403). The population theorem's being kernel-checked does **not** settle the
+finite 2016 sentence: it answers the project's own population model.

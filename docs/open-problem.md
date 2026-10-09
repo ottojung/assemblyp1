@@ -57,10 +57,20 @@ the same-length §6.2 question under the per-occurrence strengthening
 `ATATACAC → ATACACAC` (exact ratio `3/2`, binomial `9/5`), kernel-checked in
 `AssemblyP1/PerOccurrenceSameLengthCounterexample.lean`; see
 [`docs/peroccurrence-samelength-dna-counterexample-212.md`](peroccurrence-samelength-dna-counterexample-212.md).
-The residue outside the resolved set is one bounded-evidence row under a
-different paper's doubled-strand convention (R16) and one non-determinate row,
-the unspecified general principle (R17); neither is a determinate
-source-supported reading of the 2016 sentence, and neither is extended to.
+The residue outside the resolved set is one row under a different paper's
+doubled-strand **concatenation** convention (R16), now open in *both*
+directions — the known `AAATAT → AAAAAT` witness is kernel-checked
+*inadmissible* under the length-`2G` remap (`doubled_not_information_feasible`),
+and no beat is known — and one non-determinate row, the unspecified general
+principle (R17); neither is a determinate source-supported reading of the 2016
+sentence, and neither is extended to. A third non-source entry (R18) records the
+disclosed two-disjoint-circles duplex model `(S, rc(S))`: circle-by-circle `I_s`
+is exactly equivalent to `I_s(S)`, while duplex-as-a-whole is ill-defined and
+strictly stronger, and when orientation is unobserved its normalized class
+likelihood equals the Medvedev–Brudno molecule distribution. The positive
+same-length *rotation-uniqueness* half stays conditional on the external
+complete-spectrum input; only the population theorem is now kernel-checked
+without it.
 The referent question itself is untouched.
 
 ## What would count as settlement
