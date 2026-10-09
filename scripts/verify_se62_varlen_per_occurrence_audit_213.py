@@ -31,27 +31,33 @@ section 6.2 feasibility:
        walks: every step is a graph edge, consecutive edges have opposite
        incidences at every interior vertex, every visited vertex is an observed
        read molecule;
-  (F)  the induced flows: vertex throughput (= the molecule spectrum, MB09
-       Observation 7), the section 6.2 vertex lower bound ``1``, edge lower
-       bounds ``0``, signed-incidence balance ``0`` at every read vertex, and no
-       supersource/supersink usage;
-  (A)  both admissibility readings, kept distinct: the source per-vertex rule
-       (every observed read present at least once) and the strictly stronger
-       per-occurrence rule ``d(w) >= x(w)`` -- and the fact that *both* hold for
-       *both* molecules of this witness;
-  (D)  the section 6.1 domain ``0 <= d_i <= N`` for every molecule class, plus
-       the ``n < N`` regime;
-  (L)  the literal section 6.1 objective with the zero-count factors retained
-       over the full reverse-complement class space, and the exact ratio;
-  (O)  the placement of the competitor inside the objective domain: over the
-       *whole* section 6.1 domain the competitor's throughput vector is the
-       unique maximizer, so the refutation is not an artifact of a restricted
-       search;
-  (S)  the fixed-length boundary: the competitor's spectrum sums to ``6 != 5``,
-       so this witness does *not* transfer to the same-length case, and within
-       the sum-constrained slice the truth is already optimal;
-  (C)  the oriented (single-strand) control: under strict oriented indexing the
-       witness inverts.
+   (F)  the induced flows: vertex throughput (= the molecule spectrum, MB09
+        Observation 7), the section 6.2 vertex lower bound ``1``, edge lower
+        bounds ``0``, signed-incidence balance ``0`` at every read vertex, and no
+        supersource/supersink usage;
+   (U)  the lift out to the *general* flow universe: the same flows satisfy the
+        ``Admissible`` clauses with supersource/supersink usage left free, so
+        the witness is not an artifact of the zero-terminal-usage reading;
+   (A)  both admissibility readings, kept distinct: the source per-vertex rule
+        (every observed read present at least once) and the strictly stronger
+        per-occurrence rule ``d(w) >= x(w)`` -- and the fact that *both* hold for
+        *both* molecules of this witness;
+   (D)  the section 6.1 domain ``0 <= d_i <= N`` for every molecule class, plus
+        the ``n < N`` regime;
+   (L)  the literal section 6.1 objective with the zero-count factors retained
+        over the full reverse-complement class space, and the exact ratio;
+   (O)  the placement of the competitor inside the objective domain: over the
+        *whole* section 6.1 domain the competitor's throughput vector is the
+        unique maximizer, so the refutation is not an artifact of a restricted
+        search;
+   (S)  the fixed-length boundary: the competitor's spectrum sums to ``6 != 5``,
+        so this witness does *not* transfer to the same-length case, and within
+        the sum-constrained slice the truth is already optimal;
+   (C)  the oriented (single-strand) control: under strict oriented indexing the
+        witness inverts;
+   (E)  the control objective (exact candidate-intrinsic multinomial);
+   (V)  the fixed-``N`` vs actual-binomial residual source ambiguity: both
+        readings are strict improvements for this pair.
 
 All arithmetic is exact (``fractions.Fraction`` / integers); the script exits
 non-zero on any failed assertion.  Run with ``--census`` for the bounded
@@ -582,6 +588,36 @@ def main() -> int:
           True)
 
     # -----------------------------------------------------------------------
+    # (U) the lift out to the general (terminal-allowed) flow universe
+    # -----------------------------------------------------------------------
+    # `Feasible62` is `Admissible` (edge lower bound 0, vertex lower bound 1,
+    # signed-incidence balance 0, vertex throughput = d) AND zero
+    # supersource/supersink usage.  The general flow universe drops the second
+    # conjunct, so a terminal-free flow belongs to both universes.  This is the
+    # precise content of "a spelled-circuit witness lifts into the flow
+    # universe": the lift is checked clause by clause, not asserted.
+
+    def admissible_general(thr, flow, bal, spec) -> bool:
+        """The clauses of `Admissible` with terminal usage left free."""
+        return (all(f >= 0 for f in flow.values())
+                and all(thr[v] >= 1 for v in read_verts)
+                and all(bal[v] == 0 for v in read_verts)
+                and dict(thr) == dict(spec))
+
+    for name, thr, flow, bal, spec in (
+            ("truth AAATT", thr_s, flow_s, bal_s, d_s),
+            ("competitor AAAATT", thr_d, flow_d, bal_d, d_d)):
+        print(f"(U) {name}: admissible with terminal usage left free: "
+              f"{admissible_general(thr, flow, bal, spec)}")
+
+    check("(U) truth flow is admissible in the general flow universe "
+          "(terminal usage free)",
+          admissible_general(thr_s, flow_s, bal_s, d_s))
+    check("(U) competitor flow is admissible in the general flow universe "
+          "(terminal usage free)",
+          admissible_general(thr_d, flow_d, bal_d, d_d))
+
+    # -----------------------------------------------------------------------
     # (A) the two admissibility readings, kept distinct
     # -----------------------------------------------------------------------
 
@@ -810,6 +846,50 @@ def main() -> int:
           "strict improvement too (125/108 > 1): the variable-length witness is "
           "not a tie, and not a same-length one either",
           exact_ratio == Fraction(125, 108))
+
+    # -----------------------------------------------------------------------
+    # (V) the fixed-N vs actual-binomial residual source ambiguity
+    # -----------------------------------------------------------------------
+    # Section 6.1 as literally written takes the binomial size to be the
+    # *external* known genome size N.  The defensible alternative takes it to be
+    # the candidate's own length, which coincides with N on the truth's side
+    # (N = |S|) and differs on the competitor's side (|D| = 6).  This cell is
+    # insensitive to that ambiguity, which is worth recording rather than
+    # assuming.
+
+    def marginal_at(w: str, xw: int, d: Counter, n_ext: int) -> Fraction:
+        """One binomial marginal with the binomial size `n_ext`."""
+        return Fraction(comb(n, xw)) * \
+            Fraction(d.get(w, 0), n_ext) ** xw * \
+            Fraction(n_ext - d.get(w, 0), n_ext) ** (n - xw)
+
+    def lik_at(d: Counter, n_ext: int) -> Fraction:
+        out = Fraction(1)
+        for c in dna_classes:
+            out *= marginal_at(c, x.get(c, 0), d, n_ext)
+        return out
+
+    fixed_s = lik_at(d_s, N)
+    fixed_d = lik_at(d_d, N)
+    actual_s = lik_at(d_s, g_s)
+    actual_d = lik_at(d_d, g_d)
+    fixed_ratio = fixed_d / fixed_s
+    actual_ratio = actual_d / actual_s
+    print("(V) fixed external N = 5 (literal section 6.1) vs the "
+          "actual-binomial alternative (binomial size = candidate length):")
+    print(f"    fixed N    : L(S) = {fixed_s}, L(D) = {fixed_d}, "
+          f"ratio {fixed_ratio}")
+    print(f"    actual     : L(S) = {actual_s}, L(D) = {actual_d}, "
+          f"ratio {actual_ratio}")
+
+    check("(V) literal fixed-N reading: the ratio is exactly 9/8 > 1",
+          fixed_ratio == Fraction(9, 8))
+    check("(V) actual-binomial reading (binomial size = |candidate|): the "
+          "ratio is 1953125/1594323 > 1",
+          actual_ratio == Fraction(1953125, 1594323))
+    check("(V) the fixed-N vs actual-binomial ambiguity does not change the "
+          "verdict for this pair: both readings are strict improvements",
+          fixed_ratio > 1 and actual_ratio > 1)
 
     # -----------------------------------------------------------------------
     # summary

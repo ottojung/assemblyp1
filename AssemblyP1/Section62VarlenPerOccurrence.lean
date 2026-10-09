@@ -16,9 +16,11 @@ merged module does not state:
    `0 ≤ d_i ≤ N`, with the external known genome size `N = 5`.  Both spectra of
    the witness are checked to lie in it.
 2. **The lift from the spelled circuit to the flow universe.** `FlowThroughput`
-   quantifies over *all* feasible §6.2 flows on the read-overlap graph of the
-   observed read molecules, not over spelled candidates, and both throughput
-   vectors are members.
+   quantifies over arbitrary feasible §6.2 flows that use neither the
+   supersource nor the supersink (`Feasible62`), and `FlowThroughputGeneral`
+   over the strictly larger universe that also allows terminal usage
+   (`Admissible`); neither is restricted to spelled candidates, and both
+   throughput vectors of the witness are members of both.
 3. **The two admissibility readings, kept apart.** The source's §6.2 rule is the
    per-vertex lower bound `1`; the per-occurrence strengthening `x ≤ d` is
    strictly stronger and is *not* the §6.2 definition.  Both hold here, so this
@@ -48,16 +50,27 @@ external genome size is `N = 5` and MB09 §6.1 requires `0 ≤ d_i ≤ N`. -/
 def Domain (d : Fin 8 → Nat) : Prop :=
   ∀ c, d c ≤ 5
 
-/-- A throughput vector belongs to the **§6.2 flow universe** when some feasible
-§6.2 bidirected flow on the read-overlap graph of the observed read molecules
-realizes it.  This quantifies over all feasible flows, not only over spelled
-candidates: a spelled circuit is the special case with no supersource/supersink
-usage, which is why membership of a spelled circuit already gives membership
-here, and why a refutation inside this universe is stronger than one stated only
-for spelled molecules. -/
+/-- A throughput vector belongs to the **zero-terminal §6.2 flow universe** when
+some feasible §6.2 bidirected flow on the read-overlap graph of the observed read
+molecules, using neither the supersource nor the supersink, realizes it.  This
+quantifies over arbitrary flows with that property, not only over spelled
+candidates: a spelled circuit is the special case whose flow is the multiset of
+its own step edges and whose terminal usage is zero, so membership of a spelled
+circuit already gives membership here.  The larger, terminal-allowed universe is
+`FlowThroughputGeneral` below. -/
 def FlowThroughput (d : Fin 8 → Nat) : Prop :=
   ∃ (f : BdFlow Base Strand3) (t : SuperTerminals Strand3),
     Feasible62 Base Strand3 rep3 readVerts graph f t (fun w => d (repCode w))
+
+/-- The **general §6.2 flow universe**: a throughput vector realized by *any*
+admissible §6.2 bidirected flow, with supersource/supersink usage left free.
+`Feasible62` is `Admissible` plus the zero-terminal-usage clause, so this is a
+superset of `FlowThroughput` and also covers the non-spelled flows that route
+through the terminals.  A refutation stated here is therefore strictly stronger
+than one stated only for spelled molecules or only for terminal-free flows. -/
+def FlowThroughputGeneral (d : Fin 8 → Nat) : Prop :=
+  ∃ (f : BdFlow Base Strand3) (t : SuperTerminals Strand3),
+    Admissible Base Strand3 0 1 rep3 readVerts graph f t (fun w => d (repCode w))
 
 /-! ## The instance is in the domain and in the flow universe -/
 
@@ -85,6 +98,19 @@ theorem dD_flow_throughput : FlowThroughput dD := by
   refine ⟨competitorCircuitFlow, noTerm, ?_⟩
   rw [graph_eq]
   exact competitor_feasible62
+
+/-- The truth's throughput vector is realized by an admissible §6.2 flow with
+terminal usage left free — the lift from the spelled circuit out to the general
+flow universe. -/
+theorem dS_flow_throughput_general : FlowThroughputGeneral dS := by
+  obtain ⟨f, t, hf⟩ := dS_flow_throughput
+  exact ⟨f, t, hf.1⟩
+
+/-- The competitor's throughput vector is realized by an admissible §6.2 flow
+with terminal usage left free. -/
+theorem dD_flow_throughput_general : FlowThroughputGeneral dD := by
+  obtain ⟨f, t, hf⟩ := dD_flow_throughput
+  exact ⟨f, t, hf.1⟩
 
 /-! ## The two admissibility readings, kept apart -/
 
@@ -304,11 +330,33 @@ theorem not_all_feasible_throughputs_le_truth :
   exact absurd (h dD dD_flow_throughput dD_domain)
     (not_le.mpr competitor_strictly_better)
 
+/-- The negated universal form of the refuted claim, in the general flow
+universe. -/
+theorem not_all_general_flows_le_truth :
+    ¬ ∀ d, FlowThroughputGeneral d → Domain d → lik obs d ≤ lik obs dS := by
+  intro h
+  exact absurd (h dD dD_flow_throughput_general dD_domain)
+    (not_le.mpr competitor_strictly_better)
+
 /-- The refutation, in the existential witness form: a feasible §6.2 flow's
 throughput vector is strictly more likely than the truth's. -/
 theorem truth_not_maximizer_in_flow_universe :
     ∃ d, FlowThroughput d ∧ Domain d ∧ lik obs dS < lik obs d :=
   ⟨dD, dD_flow_throughput, dD_domain, competitor_strictly_better⟩
+
+/-- The same refutation in the **general** flow universe, where terminal usage is
+free.  So the refutation does not depend on the zero-terminal-usage reading of
+§6.2's "prohibitively large costs", nor on the candidate being spelled. -/
+theorem truth_not_maximizer_in_general_flow_universe :
+    ∃ d, FlowThroughputGeneral d ∧ Domain d ∧ lik obs dS < lik obs d :=
+  ⟨dD, dD_flow_throughput_general, dD_domain, competitor_strictly_better⟩
+
+/-- The competitor's throughput vector maximizes the §6.1 objective over every
+candidate class inside the domain — spelled or not, terminal-using or not.  This
+is what makes the refutation insensitive to the choice of candidate class. -/
+theorem competitor_maximizes_general_flow_universe :
+    ∀ d, FlowThroughputGeneral d → Domain d → lik obs d ≤ lik obs dD :=
+  fun d _ hd => lik_le_likD_of_domain d hd
 
 /-- The competitor's throughput vector is the unique maximizer of the §6.1
 objective over the §6.1 domain, and it is realized by a feasible §6.2 flow while
