@@ -54,7 +54,9 @@ strings are the corresponding windows $W_t(S)$. It \emph{covers} $S$ if every
 position of $S$ lies in at least one read interval. The observable data are the
 read \emph{multiplicities} $x(w) = \#\{t \in R : W_t(S)=w\}$, not merely the set
 of distinct read strings.
-\statusline{\srcfact{} for independent error-free sampling;\n\projchoice{} for defining coverage using latent sampled placements.\nThe original 2016 read-string coverage is distinguished below.}
+\statusline{\srcfact{} for independent error-free sampling;
+\projchoice{} for defining coverage using latent sampled placements.
+The original 2016 read-string coverage is distinguished below.}
 \end{definition}
 
 We now record the repeat and bridging vocabulary. The source-faithful reading is
@@ -92,23 +94,25 @@ A read realization $R$ of $S$ is \emph{information-feasible}, written $R \in
   \item every triple repeat of $S$ is all-bridged;
   \item every interleaved repeat pair of $S$ is bridged.
 \end{enumerate}
-\statusline{\projchoice{} for the placement-based realization predicate;\n\srcfact{} for the analogous historical three-clause structure, whose coverage\nand bridging quantify matching observed read strings rather than latent starts.}
+\statusline{\projchoice{} for the placement-based realization predicate;
+\srcfact{} for the analogous historical three-clause structure, whose coverage
+and bridging quantify matching observed read strings rather than latent starts.}
 \end{definition}
 
-\\begin{remark}[Observed read strings versus sampled placements]
-\\label{rem:historical-coverage}
-The original coverage condition of Shomorony et al.\\
-\\cite[Supplement, \\S6.4, Definition~1]{shomorony2016} is stated in terms
-of observed \\emph{read strings}, not their hidden sampled starts. For every
+\begin{remark}[Observed read strings versus sampled placements]
+\label{rem:historical-coverage}
+The original coverage condition of Shomorony et al.\
+\cite[Supplement, \S6.4, Definition~1]{shomorony2016} is stated in terms
+of observed \emph{read strings}, not their hidden sampled starts. For every
 circular start position $t$, some observed length-$L$ string must match a
-window beginning at one of $t,t+1,\\ldots,t+L-2$. The same observed string may
+window beginning at one of $t,t+1,\ldots,t+L-2$. The same observed string may
 match many positions when repeats occur. Definition~2 similarly counts any
-\\emph{matching occurrence} of an observed read that strictly straddles a
+\emph{matching occurrence} of an observed read that strictly straddles a
 selected repeat copy as a bridge. All-bridged triples and bridged
 interleavings in the historical condition use these matching occurrences.
 
-We write $I_s^{\\mathrm{match}}$ for this historical three-clause predicate and
-reserve $\\Is$ in the original placement-based theorem statements of this
+We write $I_s^{\mathrm{match}}$ for this historical three-clause predicate and
+reserve $\Is$ in the original placement-based theorem statements of this
 manuscript for the repository normalization defined above. They are not
 identical. For example, on circular $AAAA$ with $L=3$, one observed $AAA$
 matches everywhere and meets historical coverage even though its single
@@ -118,10 +122,10 @@ base, but fail the historical length-$(L-1)$ matching-start condition.
 The finite formalization audit treats both notions separately; any passage
 from a placement-based theorem to the historical question requires an explicit
 adapter proof.
-\\statusline{\\srcfact{} for the historical matching-string definitions;
-\\projchoice{} for the placement-based variant used by the existing Lean
+\statusline{\srcfact{} for the historical matching-string definitions;
+\projchoice{} for the placement-based variant used by the existing Lean
 library.}
-\\end{remark}
+\end{remark}
 
 A length-$L$ read can bridge a copy of a repeat of length $\ell$ only if
 $\ell \le L-2$: strict extension on both sides requires the repeat to fit
