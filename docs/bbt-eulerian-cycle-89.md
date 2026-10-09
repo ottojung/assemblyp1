@@ -2,10 +2,22 @@
 
 _Status: kernel-checked Lean object, reduction and refutations, 2026-09-26.
 The uniqueness step itself (`AssemblyP1.BBTEulerian.EulerianCycleObstruction`)
-is **not** proved; it is the one remaining input of the exported population
-theorem. No `sorry`, no `admit`, no new axiom: `#print axioms` reports only
-`propext`, `Classical.choice` and `Quot.sound` for every theorem named here.
-Full `lake build` passes._
+is **not** proved here. No `sorry`, no `admit`, no new axiom: `#print axioms`
+reports only `propext`, `Classical.choice` and `Quot.sound` for every theorem
+named here. Full `lake build` passes._
+
+> **Update (2026-10-09, board #221).** `EulerianCycleObstruction` remains
+> unproved *as a standalone statement*, but it is **no longer an input of the
+> project endpoint**. The population endpoint
+> `AssemblyP1.Issue94Complete.population_unique_ML` bypasses it through the
+> `P2`-restricted residual `P2LongUnique L`, which is inhabited for every
+> `L ≥ 2` by `Issue94ConcreteAntiderivative.concrete_p2LongUnique` (support
+> descent / component antiderivative), so the endpoint carries no external BBT
+> premise. `population_unique_ML_up_to_rotation`, which literally takes
+> `hPevzner : EulerianCycleObstruction`, is retained only as a reusable
+> conditional core. See `paper/sections/05-population.tex`,
+> `docs/population-uniqueness-end-to-end-89.md`, and
+> `AssemblyP1/Issue94LongWindowSplit.lean`.
 
 ## 1. The literature correction that re-centres the packet
 

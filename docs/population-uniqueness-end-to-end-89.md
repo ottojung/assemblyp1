@@ -1,5 +1,21 @@
 # End-to-end population uniqueness from the real objective (issue #89)
 
+> **2026-10-09 correction (board #221).** The acceptance criterion recorded as
+> "NOT met" below was subsequently met on `main` (PR #117, merge `e9fcf01`):
+> `AssemblyP1.Issue94Complete.population_unique_ML` is fully kernel-checked with
+> **no external BBT premise**, proving optimality and uniqueness up to rotation
+> over *every* positive-length primitive P2 candidate for a primitive P2 truth
+> at `L >= 2`. Its `#print axioms` reports only `propext`, `Classical.choice`,
+> `Quot.sound`. The residual `P2LongUnique L` named below is now inhabited by
+> `AssemblyP1.Issue94ConcreteAntiderivative.concrete_p2LongUnique` (a
+> support-descent / component-antiderivative proof). The theorem
+> `PopulationUniqueness.population_unique_ML_up_to_rotation` still literally
+> takes `hPevzner : EulerianCycleObstruction L`; it is now a *reusable
+> conditional core*, not the project endpoint. The historical 2016 referent
+> remains a source gap, and the **finite** same-length rotation corollary still
+> uses the external Bresler–Bresler–Tse input. See
+> `paper/sections/05-population.tex` (Remark on the internal discharge).
+
 _Status: kernel-checked Lean theorems, 2026-09-26, updated by
 `docs/bbt-eulerian-cycle-89.md`. **The issue's acceptance criterion — that the
 exported theorem take no BBT / complete-spectrum uniqueness premise — is NOT
@@ -108,8 +124,14 @@ new, parallel repeat semantics.
 
 ## The one residual formalization boundary
 
-`thm:BBT` (Bresler–Bresler–Tse 2013, Theorem 3) is the only external
-mathematical input left. It is irreducible for this project at present:
+> **Superseded 2026-10-09 (board #221).** This boundary was subsequently
+> discharged internally by the support-descent / component-antiderivative proof
+> (`concrete_p2LongUnique`); see the correction banner at the top and the
+> "Acceptance status" supersession note. The material below records the
+> pre-discharge state.
+
+`thm:BBT` (Bresler–Bresler–Tse 2013, Theorem 3) was the only external
+mathematical input at the time of this packet. It was treated as irreducible:
 complete-spectrum uniqueness for a Ukkonen-satisfying circular word is
 itself a substantial combinatorial theorem about Eulerian cycles in
 de Bruijn graphs, and the project's own note
@@ -215,7 +237,16 @@ refute the `W^g` competitor — is kernel-checked in this repository.
 
 ## Acceptance status (issue #89 criterion)
 
-**Not met.** The exported theorem still reads
+> **Superseded 2026-10-09 (board #221).** The criterion is now **met**. The
+> `hPevzner : BBTEulerian.EulerianCycleObstruction` hypothesis below is no longer
+> the project endpoint: that obstruction is discharged by the concrete
+> component-antiderivative proof `AssemblyP1.Issue94ConcreteAntiderivative.concrete_p2LongUnique`,
+> and `AssemblyP1.Issue94Complete.population_unique_ML` composes it with the
+> short-window theorem to give the axiom-free end-to-end result (axioms only
+> `propext`, `Classical.choice`, `Quot.sound`). The text below records the state
+> of this packet *before* that discharge and is retained for provenance.
+
+**At the time of this packet, not met.** The exported theorem still reads
 
 ```text
 population_unique_ML_up_to_rotation

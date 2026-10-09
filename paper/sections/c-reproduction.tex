@@ -1,4 +1,5 @@
 \section{Reproduction guide}
+\sloppy % Allow source paths and long proof identifiers to break in this appendix.
 \label{app:reproduction}
 
 This appendix records how to rebuild the paper and re-run every computational
@@ -15,7 +16,7 @@ sh paper/build.sh
 \end{verbatim}
 
 The script changes into \texttt{paper/}, creates or reuses a local Guix profile
-at \texttt{paper/.guix-profile} from \texttt{manifest.scm}, sources that
+at \texttt{paper/\allowbreak{}.\allowbreak{}guix-profile} from \texttt{manifest.scm}, sources that
 profile, and runs \texttt{latexmk} with \texttt{pdflatex} and \texttt{biber},
 crossing references and the bibliography as needed. It writes
 \texttt{paper/main.pdf} and the usual intermediate files, which are ignored by
@@ -37,31 +38,77 @@ The finite and computational claims correspond to artifacts in the repository:
 
 \begin{itemize}[leftmargin=*]
   \item exact and binomial same-length witnesses:
-        \texttt{scripts/} exact-rational verifiers and the Lean modules
-        \texttt{AssemblyP1/FixedLengthExactCounterexample.lean} and
-        \texttt{AssemblyP1/FixedLengthBinomialCounterexample.lean};
+        \texttt{scripts/\allowbreak{}} exact-rational verifiers and the Lean modules
+        \texttt{Assembly\allowbreak{}P1/\allowbreak{}Fixed\allowbreak{}Length\allowbreak{}Exact\allowbreak{}Counterexample.\allowbreak{}lean} and
+        \texttt{Assembly\allowbreak{}P1/\allowbreak{}Fixed\allowbreak{}Length\allowbreak{}Binomial\allowbreak{}Counterexample.\allowbreak{}lean};
   \item Section~6.2 molecule witnesses:
-        \texttt{scripts/verify\_se62\_bridging\_flow\_counterexample.py},
-        \texttt{scripts/verify\_se62\_mb09\_bidirected\_graph.py},
-        \texttt{scripts/verify\_samelength\_se62\_counterexample.py}, and the
-        Lean modules \texttt{Section62BridgingCounterexample.lean} and
-        \texttt{SameLengthSection62Counterexample.lean};
+        \texttt{scripts/\allowbreak{}verify\_\allowbreak{}se62\_\allowbreak{}bridging\_\allowbreak{}flow\_\allowbreak{}counterexample.\allowbreak{}py},
+        \texttt{scripts/\allowbreak{}verify\_\allowbreak{}se62\_\allowbreak{}mb09\_\allowbreak{}bidirected\_\allowbreak{}graph.\allowbreak{}py},
+        \texttt{scripts/\allowbreak{}verify\_\allowbreak{}samelength\_\allowbreak{}se62\_\allowbreak{}counterexample.\allowbreak{}py}, and the
+        Lean modules \texttt{Section62Bridging\allowbreak{}Counterexample.\allowbreak{}lean} and
+        \texttt{Same\allowbreak{}Length\allowbreak{}Section62Counterexample.\allowbreak{}lean};
   \item same-length oriented rigidity:
-        \texttt{scripts/verify\_oriented\_se62\_rigidity.py}, plus the
+        \texttt{scripts/\allowbreak{}verify\_\allowbreak{}oriented\_\allowbreak{}se62\_\allowbreak{}rigidity.\allowbreak{}py}, plus the
         kernel-checked abstract circulation core and circular-spectrum adapter in
-        \texttt{AssemblyP1/OrientedRigidity.lean}, the primitive/periodic
-        repeat-theory adapter in \texttt{AssemblyP1/RepeatAdapter.lean}, and the
+        \texttt{Assembly\allowbreak{}P1/\allowbreak{}Oriented\allowbreak{}Rigidity.\allowbreak{}lean}, the primitive/periodic
+        repeat-theory adapter in \texttt{Assembly\allowbreak{}P1/\allowbreak{}Repeat\allowbreak{}Adapter.\allowbreak{}lean}, and the
         thin final conditional spectrum-rigidity reduction in
-        \texttt{AssemblyP1/OrientedFinalRigidity.lean}.  The reduction is
+        \texttt{Assembly\allowbreak{}P1/\allowbreak{}Oriented\allowbreak{}Final\allowbreak{}Rigidity.\allowbreak{}lean}.  The reduction is
         kernel-checked conditional on the explicit no-long-triple-repeat boundary,
         with the primitive/periodic split discharged internally by the
-        kernel-checked dichotomy; the $\Is$ bridging implication
-        and the rotation-uniqueness (BBT) input remain external;
+        kernel-checked dichotomy. The faithful $\Is$ bridge to the
+        no-long-triple-repeat boundary and the truth-candidate-conditional
+        finite rotation theorem are now also kernel-checked
+        (\texttt{BridgingBridge}, \texttt{Same\allowbreak{}Length62Uniqueness});
+        the source's unrestricted ML referent remains undetermined;
+  \item oriented single-strand variable-length Section~6.2 classification:
+        \texttt{scripts/\allowbreak{}verify\_\allowbreak{}oriented\_\allowbreak{}variable\_\allowbreak{}length\_\allowbreak{}se62.\allowbreak{}py} and
+        \texttt{scripts/\allowbreak{}verify\_\allowbreak{}oriented\_\allowbreak{}variable\_\allowbreak{}length\_\allowbreak{}se62\_\allowbreak{}amplification.\allowbreak{}py}
+        (exact families $M=0..200$), plus the kernel-checked certificate
+        \texttt{Assembly\allowbreak{}P1/\allowbreak{}Oriented\allowbreak{}Variable\allowbreak{}Length\allowbreak{}Se62.\allowbreak{}lean} (full-strength
+        $\Is$ by \texttt{decide}, both objectives, $M=1,2$) and the general
+        proof in \texttt{docs/\allowbreak{}source-notes/\allowbreak{}oriented-variable-length-se62.\allowbreak{}md};
+  \item variable-length per-occurrence audit of the $AAATT\to AAAATT$ witness:
+        \texttt{scripts/\allowbreak{}verify\_\allowbreak{}se62\_\allowbreak{}varlen\_\allowbreak{}per\_\allowbreak{}occurrence\_\allowbreak{}audit\_\allowbreak{}213.\allowbreak{}py}
+        and \texttt{Assembly\allowbreak{}P1/\allowbreak{}Section62Varlen\allowbreak{}Per\allowbreak{}Occurrence.\allowbreak{}lean} (per-vertex
+        and per-occurrence feasibility, and the unique-optimizer lift over the
+        whole §6.1 domain and the general flow universe);
+  \item general §6.2 flow domain (non-spelled optima and full-overlap
+        disconnectedness):
+        \path{scripts/verify_se62_nonspelled_flow_domain.py} with
+        \path{AssemblyP1/Section62NonSpelledFlow.lean} (the $o_{\min}=1$
+        non-spellable integer optimum), and
+        \path{scripts/verify_se62_full_overlap_disconnected_optimum.py}
+        with \path{AssemblyP1/Section62FullOverlapDisconnected.lean} (the
+        $o_{\min}=L-1$ disconnected optimum whose spellable throughput beats the
+        truth, ratio $1280/243$);
+  \item conclusion-schema transfer table: \texttt{Assembly\allowbreak{}P1/\allowbreak{}Implication\allowbreak{}Lattice.\allowbreak{}lean}
+        and \texttt{scripts/\allowbreak{}verify\_\allowbreak{}implication\_\allowbreak{}lattice\_\allowbreak{}216.\allowbreak{}py}
+        (\texttt{docs/\allowbreak{}implication-lattice-216.\allowbreak{}md}). Its sample-multiplicity
+        refinement is redundant and deliberately not integrated; the result is
+        kernel-checked through the variable-length module above;
+  \item same-length complete-spectrum fibre count (population): the note
+        \texttt{docs/\allowbreak{}exact-fibre-count-theorem-219.\allowbreak{}md}, the exact-arithmetic
+        audit \texttt{scripts/\allowbreak{}audit\_\allowbreak{}fibre\_\allowbreak{}count\_\allowbreak{}219.\allowbreak{}py}, and the kernel-checked
+        divisor-sum core \texttt{Assembly\allowbreak{}P1/\allowbreak{}Fibre\allowbreak{}Count\allowbreak{}Arithmetic.\allowbreak{}lean}
+        (\texttt{fibre\_\allowbreak{}mobius\_\allowbreak{}inversion}, \texttt{fibre\_totient}). The
+        BEST/Matrix-Tree graph content remains external; this is a population
+        result, not a kernel-checked matrix row;
+  \item population uniqueness (oriented primitive P2, every positive length):
+        the end-to-end kernel-checked theorem
+        \popml{}, built from
+        \texttt{Issue94Long\allowbreak{}Window\allowbreak{}Split} and the internal
+        support-descent/component-antiderivative proof in
+        \texttt{Issue94Concrete\allowbreak{}Antiderivative}. Its complete-spectrum uniqueness
+        step is discharged in the kernel rather than taken as the former
+        external \texttt{BBTUniqueAt} premise, and the theorem's axiom audit
+        reports only \texttt{propext}, \texttt{Classical.choice}, and
+        \texttt{Quot.sound};
   \item equivalence coupling:
-        \texttt{scripts/verify\_equivalence\_coupling.py}.
+        \texttt{scripts/\allowbreak{}verify\_\allowbreak{}equivalence\_\allowbreak{}coupling.\allowbreak{}py}.
 \end{itemize}
 
-Every Python verifier is self-contained, uses exact \texttt{fractions.Fraction}
+Every Python verifier is self-contained, uses exact \texttt{fractions.\allowbreak{}Fraction}
 arithmetic, is deterministic, and exits non-zero on any failed assertion. The
 Lean modules contain no \texttt{sorry}, \texttt{axiom}, or \texttt{admit};
 
@@ -72,6 +119,18 @@ lake build
 builds them under the pinned toolchain. Where a claim is kernel-checked, the
 corresponding module is named in Appendix~\ref{app:ledger}; where a claim is
 only computationally verified, it is labeled accordingly.
+
+\subsection{Continuous-integration repair (PR \#117)}
+
+The full-library Lean build is checked in CI (workflow \texttt{ci.yml}, 360-minute
+timeout, \texttt{LEAN\_\allowbreak{}NUM\_\allowbreak{}THREADS=1}). PR \#117 (merged as \texttt{e9fcf01},
+``Repair full-library CI compilation blockers (initial fixes)'') repaired
+compile-level blockers in four modules so the whole-library build and the
+per-module kernel replay and axiom audit pass cleanly. PR \#117 is a build/CI
+repair, not a mathematical result: it changes no theorem statement, witness,
+candidate class, or matrix row. The board branch \texttt{agent/\allowbreak{}board-217-978a0a}
+carries it; the interpretation matrix records it so the verification base is
+auditable.
 
 \subsection{Epistemic boundary of reproduction}
 

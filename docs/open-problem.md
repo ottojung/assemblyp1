@@ -35,9 +35,64 @@ That progress does **not** by itself settle which theorem the 2016 sentence deno
 - maximizer versus uniqueness semantics and the corresponding genome equivalence;
 - the exact bridge from Shomorony's information-feasibility condition to the hypotheses consumed by a particular formal theorem.
 
-For the current positive oriented theorem, the project keeps the source-supported implication from `I_s` to the required no-long-triple-repeat condition explicit rather than silently redefining `I_s`. Likewise, upgrading equality of complete spectra to genome uniqueness up to rotation uses the external Bresler–Bresler–Tse complete-spectrum theorem unless and until that theorem is separately formalized.
+For the current positive oriented theorem, the project keeps the source-supported implication from `I_s` to the required no-long-triple-repeat condition explicit rather than silently redefining `I_s`. Upgrading equality of complete spectra to genome uniqueness up to rotation still uses the external Bresler–Bresler–Tse complete-spectrum theorem on the **finite** same-length slice; the **population** theorem, by contrast, now discharges that step internally in the kernel (`AssemblyP1.Issue94Complete.population_unique_ML`, no external premise, axioms only `propext`, `Classical.choice`, `Quot.sound`). The finite corollary and the population endpoint must therefore not be conflated.
 
 Two candidate conclusion schemas live in `AssemblyP1/Model.lean`: truth is an ML maximizer, and truth is the unique ML maximizer up to genome equivalence. Neither is designated as *the* published conjecture while the source ambiguity above remains unresolved.
+
+## Finite-sample landscape
+
+The finite (finite-sample) reading of the sentence has been classified
+interpretation-by-interpretation in
+[`docs/source-notes/interpretation-matrix-217.md`](source-notes/interpretation-matrix-217.md),
+which is the row-by-row record behind issue #217. Its summary: every
+interpretation of the finite question that is both determinate and
+source-supported is resolved — eleven negative rows (nine kernel-checked,
+sharing eight witness modules, and two exact-arithmetic reproductions) and four
+positive rows, of which three are kernel-checked — the
+oriented/same-length/genuine-§6.2 slice carries a kernel-checked maximizer
+theorem plus kernel-checked rotation-uniqueness conditional on the external BBT
+input, and the oriented **variable-length** slice is refuted in infinite
+families (`AssemblyP1/OrientedVariableLengthSe62.lean`, the #210
+classification, with the amplification mechanism kernel-checked at `M = 1, 2`).
+**No determinate source-supported row remains open.** The last determinate row to
+close was the same-length §6.2 question under the per-occurrence strengthening
+`d_D(w) ≥ x(w)`, which Medvedev–Brudno §6.2 does not state: it is refuted by
+`ATATACAC → ATACACAC` (exact ratio `3/2`, binomial `9/5`), kernel-checked in
+`AssemblyP1/PerOccurrenceSameLengthCounterexample.lean`; see
+[`docs/peroccurrence-samelength-dna-counterexample-212.md`](peroccurrence-samelength-dna-counterexample-212.md).
+The residue outside the resolved set is one row under a different paper's
+doubled-strand **concatenation** convention (R16), now open in *both*
+directions — the known `AAATAT → AAAAAT` witness is kernel-checked
+*inadmissible* under the length-`2G` remap (`doubled_not_information_feasible`),
+and no beat is known — and one non-determinate row, the unspecified general
+principle (R17); neither is a determinate source-supported reading of the 2016
+sentence, and the resolved claim is not extended to either. A third non-source entry (R18) records the
+disclosed two-disjoint-circles duplex model `(S, rc(S))`: circle-by-circle `I_s`
+is exactly equivalent to `I_s(S)`, while duplex-as-a-whole is ill-defined and
+strictly stronger, and when orientation is unobserved its normalized class
+likelihood equals the Medvedev–Brudno molecule distribution. One further leaf
+artifact is **resolved as redundant and is not a matrix row**: #216's general
+sample-multiplicity `Part 6` formalization (uncommitted, no committed or board
+result, and it does not compile) is **superseded by #210**, whose result is
+already kernel-checked in `AssemblyP1/OrientedVariableLengthSe62.lean`; the
+implication lattice claims no general amplification theorem.
+#219's same-length complete-spectrum fibre-count is now **integrated**: its note
+and exact-arithmetic audit are in the repository, and its Lean divisor-sum core
+`AssemblyP1/FibreCountArithmetic.lean` (Möbius inversion, totient
+rearrangement) is kernel-checked, with the BEST/Matrix-Tree graph content
+external. It is a population counting result, not a matrix row. The positive
+same-length *rotation-uniqueness* half
+stays conditional on the external complete-spectrum input; only the population
+theorem is now kernel-checked without it.
+The referent question itself is untouched. The **final source-gap count** for the
+2016 finite question is **7 unresolved items** (the canonical register
+`docs/source-notes/finite-interpretation-universe-audit.md` §6, items 1–6 and 8;
+item 7, the repository-provenance gap, was closed); the three bearing directly on
+the matrix claim are the likelihood referent, the uninspected publisher
+supplement, and the strand/equivalence convention. None is a matrix row, and none
+is used to decide one; the enumeration is in
+[`docs/source-notes/interpretation-matrix-217.md`](source-notes/interpretation-matrix-217.md)
+§3.1.
 
 ## What would count as settlement
 

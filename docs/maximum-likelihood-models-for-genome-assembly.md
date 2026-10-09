@@ -172,14 +172,13 @@ If primitive P2 genomes `S, D` satisfy `p_S = p_D`, then `|S| spec_L(D) = |D| sp
 
 The remaining step — equal complete `L`-spectra plus P2 force rotation equivalence — is the step an earlier version of this note left as an external Bresler–Bresler–Tse (2013) Theorem 3 premise. It is now a kernel-checked theorem of this repository, in two halves:
 
-- **Short window (`K <= L-1`).** `AssemblyP1.Issue94Split.bbtCompleteSpec_of_short_window` proves rotation equivalence for arbitrary words at genome lengths below the read length; no P2, no primitivity, no Ukkonen is needed.
 - **Long window (`K >= L`).** `AssemblyP1.Issue94ConcreteAntiderivative.concrete_p2LongUnique` proves the `P2`-restricted long-range uniqueness directly, by the concrete component-antiderivative construction. It consumes no external premise.
 
 The end-to-end endpoint is the merged module `AssemblyP1.Issue94Complete`:
 
 > **Population uniqueness theorem (oriented primitive P2), kernel-checked.** For `L >= 2`, a primitive P2 truth `S` of any positive length `G`, and **any** positive-length candidate `W` with `IsPrimitive W ∧ P2 W` (`AdmClass`): the population log likelihood of `W` is at most the truth's, and a tie forces `|W| = |S|` and `W` a cyclic rotation of `S`.
 
-The proof chain is: the Gibbs/KL tie characterization (`AssemblyP1.PopulationGibbs`: `popLogLik_le_self'`, `popTie_iff` — the project's own formalization of Cover–Thomas, not an assumed premise); the P2-specific gcd-one/division argument and the normalized-to-ordinary step (`AssemblyP1.PopulationReduction`, issue #70); the short- and long-window spectrum uniqueness (`Issue94Split`, `Issue94ConcreteAntiderivative`); and the end-to-end wiring (`Issue94Complete.population_unique_ML`, which composes the proved `concrete_p2LongUnique` with `population_unique_ML_of_p2LongUnique`). The kernel-checker records
+The proof chain is: the Gibbs/KL tie characterization (`AssemblyP1.PopulationGibbs`: `popLogLik_le_self'`, `popTie_iff` — the project's own formalization of Cover–Thomas, not an assumed premise); the P2-specific gcd-one/division argument and the normalized-to-ordinary step (`AssemblyP1.PopulationReduction`, issue #70); the short- and long-window spectrum uniqueness (`Issue94LongWindowSplit`, `Issue94ConcreteAntiderivative`); and the end-to-end wiring (`Issue94Complete.population_unique_ML`, which composes the proved `concrete_p2LongUnique` with `population_unique_ML_of_p2LongUnique`). The kernel-checker records
 
 ```
 #print axioms AssemblyP1.Issue94Complete.population_unique_ML
@@ -188,11 +187,26 @@ The proof chain is: the Gibbs/KL tie characterization (`AssemblyP1.PopulationGib
 
 — only the three standard axioms, with no BBT or Eulerian-cycle premise appearing anywhere (full-CI leanchecker log, build 9051 jobs, 2026-10-09; merged in PR #117 at main `e9fcf01`). The older conditional route `AssemblyP1.PopulationUniqueness.population_unique_ML_up_to_rotation` (issues #73/#89) retains its `hPevzner : EulerianCycleObstruction` premise; it is the explicitly-conditional path, retained for the audit trail, and is now superseded by the concrete proof.
 
-### 6.1 Do not conflate with the finite same-length uniqueness question (#211)
+### 6.1 Finite same-length candidate rotation: a separate proof surface
 
-The population theorem above is **not** the finite oriented same-length `I_s` rotation-uniqueness question, and the two have different proof status. The finite question — can distinct tied maximizing circular genomes exist under oriented single-strand `I_s`, `|D|=|S|`, and the exact finite objective? — is source-backed but **Lean-conditional**: `AssemblyP1.BBTEulerian.bbtCompleteSpec_of_obstruction` consumes `EulerianCycleObstruction` as a hypothesis, `AssemblyP1.BBTCondense.spectrum_unique_of_P1` covers only the stronger P1 class (no repeated `(L-1)`-mer), and the #211 front's `SameLength62TieUniqueness` consumes the BBT input as an explicit `hBBT` hypothesis. The population theorem's uniqueness is kernel-checked; the finite `I_s` same-length uniqueness is not. Recording the stronger status for the population result does not promote the finite one.
+The population theorem is a distributional theorem, not a finite-sample
+likelihood result. The finite-oriented same-length flow-candidate theorem is
+now also internally kernel-checked, but its assumptions differ. The theorem
+SameLength62Uniqueness.unique_62_maximizer_up_to_rotation (merged PR #124)
+requires source-faithful information feasibility AND genuine Section 6.2
+candidate certificates for both truth and competitor. The separate
+SameLength62NonprimitiveRotation theorem (merged PR #126) removes truth
+candidacy for nonprimitive truths by using observed-read provenance.
 
-This result is for the oriented spectrum model. It should not be silently transferred to reverse-complement-collapsed molecule classes, whose representation changes the observation object.
+The same removal is FALSE for primitive truths: Primitive62Uniqueness
+(merged PR #127) gives I_s-feasible AABB with observed AB,BA and a genuine
+same-length ABAB flow-candidate not cyclically equivalent to AABB.
+The existing SameLengthExactMLCounterexample also shows a strict exact
+multinomial preference for ABAB on that sample. These results do not
+identify the full approximate Section 6.2 flow optimization domain with
+an exact likelihood maximizer. The older conditional BBT interface
+continues to exist but is no longer a missing external axiom for the
+conditional genuine-candidate rotation theorem.
 
 ## 7. What the sequence of results teaches us
 

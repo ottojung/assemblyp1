@@ -223,15 +223,24 @@ The project now has precise finite positive/negative results and a clean, kernel
 \textbf{Lean proof} & The formal statement and proof term are checked by Lean's kernel.\\
 \end{tabular}
 \vfill
-\small AssemblyP1 keeps these labels separate. The repaired population theorem is \textbf{kernel-checked end to end}. One ingredient stays external: the \textbf{finite} same-length rotation-uniqueness argument still takes the Bresler--Bresler--Tse complete-spectrum theorem as an explicit premise.
+\small The repaired population theorem is \textbf{kernel-checked end to end}.
+The finite same-length candidate-rotation result is also kernel-checked
+\textbf{when both truth and competitor have genuine Section 6.2 certificates}.
+Without truth candidacy the nonprimitive case is positive; the primitive case
+has a genuine nonrotation counterexample.
 \end{frame}
 
 \begin{frame}{Backup: exactly what Lean kernel-checks}
 \scriptsize
 \textbf{Population theorem --- checked, no external premise.}\\
 \texttt{AssemblyP1.Issue94Complete.population\_unique\_ML}: oriented circular truth, $0<G$, $1<L$, truth primitive and P2 at read length $L$; for \emph{every} candidate length $K>0$ and \emph{every} primitive P2 candidate $W$:\quad (1) its population log-likelihood is $\le$ the truth's;\quad (2) any tie forces $K=G$ and $W$ a cyclic rotation of the truth.\par\smallskip
-\textbf{Finite same-length theorem --- one external premise.}\\
-\texttt{OrientedSameLengthML.same\_length\_maximality\_and\_rotation\_uniqueness\_of\_bbt}: under the structural no-long-triple-repeat hypothesis, the truth is the unique maximizer among spelled same-length oriented candidates up to cyclic rotation, \emph{conditional on} the Bresler--Bresler--Tse complete-spectrum statement, which remains an explicit premise --- not a Lean proof.
+\textbf{Finite same-length candidate rotation --- checked, conditional.}\\
+\texttt{SameLength62Uniqueness.unique\_62\_maximizer\_up\_to\_rotation}:
+under full information feasibility and genuine Section 6.2 truth and
+competitor certificates, every candidate rotates the truth (PR~\#124).
+The older no-long-triple-repeat route through an explicit BBT premise
+is a valid historical conditional argument, not the strongest current
+result.
 \end{frame}
 
 \end{document}

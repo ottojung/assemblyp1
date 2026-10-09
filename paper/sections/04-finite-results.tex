@@ -3,13 +3,17 @@
 
 This section reports what is known about the question when the observation model
 is a finite sample and the objective is one of the Medvedev--Brudno objects of
-Section~\ref{sec:model}. The results are of two kinds. First a \emph{positive}
+Section~\ref{sec:model}. The results are of three kinds. First a \emph{positive}
 rigidity theorem for same-length oriented Section~6.2 candidates under
-Shomorony's $\Is$; the same complete-spectrum uniqueness input used by the
-population model upgrades its conclusion from a tie to uniqueness up to cyclic
-rotation. Then a sequence of \emph{negative} witnesses, each refuting a
-named, precisely scoped statement. We begin with the logical device that makes
-the negatives robust.
+Shomorony's $\Is$, which makes the truth's spectrum the only positive
+circulation of total $G$; the maximizer statement on that slice, and the
+uniqueness statement obtained by adding the external complete-spectrum
+uniqueness input, come next. Then a sequence of \emph{negative}
+witnesses, each refuting a named, precisely scoped statement. Finally, the row
+that stays open is identified precisely, together with the two rows that are not
+readings of the 2016 sentence at all
+(Remark~\ref{rem:surfaces}, Table~\ref{tab:finite}). We begin with the logical
+device that makes the negatives robust.
 
 \subsection{Negative results transfer; positive results do not}
 
@@ -174,9 +178,74 @@ observation is common, so the scores coincide.
 
 Only the triple-repeat clause of $\Is$ is used for the spectrum-rigidity and
 no-strict-counterexample conclusions; the interleaved-repeat and coverage clauses
-are not needed there. The next corollary does use the interleaved clause, because
+are not needed there. Corollary~\ref{cor:same-length-rotation} at the end of this
+subsection does use the interleaved clause, because
 it invokes the complete-spectrum uniqueness input of
 Section~\ref{sec:population}, whose hypothesis is Ukkonen's full condition.
+
+\subsubsection{The maximizer theorem on this slice}
+
+The rigidity theorem proves \emph{spectrum} equality, and equal spectra give an
+exact \emph{tie} for every objective that factors through the spectrum. The
+maximizer statement itself is proved separately, and is stronger than the
+hypothesis surface used above: the theorem below takes the full source $\Is$
+at the realized read placement set and \emph{derives} §6.2 candidate membership
+rather than assuming it.
+
+\begin{theorem}[Same-length maximizer, oriented read types, full $\Is$]
+\label{thm:maximizer}
+Let $S$ be a circular word of length $G$, and let the realized read placement
+set $R$ (the set of starts at which reads were actually drawn) be information
+feasible, $R\in\Is$. Suppose the truth is a genuine §6.2 candidate for the
+observed read set, and let $D$ be any same-length genuine §6.2 candidate for the
+same observation. Then, for both the exact
+Medvedev--Brudno multinomial and the §6.1 binomial approximation at $N=G$,
+\[
+  \Lik(D;x) \le \Lik(S;x).
+\]
+\end{theorem}
+
+The hypothesis set is exactly the source's: $2 \le L \le G$, full $\Is$, and the
+§6.2 data. There is no long-triple-repeat premise, no primitivity or period
+premise, and no ``escape'' or culprit hypothesis; $\Is \Rightarrow \neg
+\textsc{LongTripleRepeat}$ is a consequence proved inside the chain. The start
+set is the \emph{range} of the realization, not a superset: because every clause
+of $\Is$ is a ``some $r \in R$ does \dots'' or a coverage condition, a start set
+$R \supseteq \range\rho$ that contains starts at which no read was drawn is a
+strictly weaker hypothesis, and the theorem is stated at the faithful one.
+For genuine same-length candidates with truth candidacy, cyclic-rotation
+uniqueness is now proved directly in the Lean kernel, without an external
+BBT obstruction premise (Corollary~\ref{cor:same-length-rotation}).
+
+\statusline{\kernelcheck{} in \texttt{Assembly\allowbreak{}P1/\allowbreak{}MLEscape.\allowbreak{}lean}
+(\texttt{information\allowbreak{}Feasible\_\allowbreak{}62\_\allowbreak{}spelled\allowbreak{}ML}) and
+\texttt{Assembly\allowbreak{}P1/\allowbreak{}Same\allowbreak{}Length62Maximizer.\allowbreak{}lean}
+(\texttt{information\allowbreak{}Feasible\_\allowbreak{}62\_\allowbreak{}maximizer}); the conditional core is
+\texttt{Oriented\allowbreak{}Same\allowbreak{}Length\allowbreak{}ML.\allowbreak{}same\_\allowbreak{}length\_\allowbreak{}exact\allowbreak{}Lik\_\allowbreak{}maximizer} and
+\texttt{same\_\allowbreak{}length\_\allowbreak{}binomial\allowbreak{}Lik\_\allowbreak{}maximizer}; the $\Is$-to-no-long-triple-repeat
+step is \texttt{Bridging\allowbreak{}Bridge.\allowbreak{}information\allowbreak{}Feasible\_\allowbreak{}no\_\allowbreak{}long\_\allowbreak{}triple\_\allowbreak{}repeat};
+under the extra truth-candidate certificate, rotation-uniqueness is \kernelcheck{} in
+\texttt{Assembly\allowbreak{}P1.\allowbreak{}Same\allowbreak{}Length62Uniqueness} (PR~\#124), using internal
+primitive and periodic simple-cycle proofs; classical \cite{bresler2013}
+remains an alternative mathematical route.}
+
+\subsubsection{The §6.2 acceptance boundary is a separate question}
+
+Theorem~\ref{thm:maximizer} requires \emph{both} the truth and the competitor to
+be genuine §6.2 candidates. Dropping the conjunct on the truth is a different
+statement, and it is false at equal length: with $S=AABB$ ($G=4$, $L=2$) and the
+realized reads $AB,BA$ at starts $1,3$, full $\Is$ holds, while the same-length
+genome $ABAB$ is a literal §6.2 \texttt{SpelledFeasible62} candidate whose exact
+likelihood is $1/4$ against the truth's $1/16$. So the §6.2 candidate
+restriction does not rescue the maximum-likelihood claim unless the truth is
+itself admissible, which is precisely what distinguishes the molecule-class
+witnesses below from this positive row.
+
+\statusline{\kernelcheck{} in
+\texttt{Assembly\allowbreak{}P1/\allowbreak{}Same\allowbreak{}Length\allowbreak{}Exact\allowbreak{}MLCounterexample.\allowbreak{}lean}
+(\texttt{same\_\allowbreak{}length\_\allowbreak{}exact\_\allowbreak{}ML\_\allowbreak{}refutation\_\allowbreak{}62}), which also refutes the
+unrestricted ``$\Is \Rightarrow$ same-length ML'' statement for the same
+instance.}
 
 \begin{corollary}[Uniqueness up to rotation on the truth-admissible same-length row]
 \label{cor:same-length-rotation}
@@ -199,16 +268,20 @@ likelihood ratio $1$ by Corollary~\ref{cor:same-length-zero}, the maximizer set 
 exactly the rotation class of $S$.
 \end{proof}
 
-\statusline{The spectrum-rigidity reduction is \kernelcheck{} in
-\texttt{AssemblyP1/OrientedFinalRigidity.lean}, conditional on the explicit
-no-long-triple-repeat boundary, with the primitive/periodic split discharged
-internally by the kernel-checked dichotomy; the
-$\Is$-to-no-triple-repeat bridging implication is source-supported, and the
-spectrum-identifiability (rotation-uniqueness) step is the external \srcfact{}
-input \cite{bresler2013} (Theorem~\ref{thm:BBT}), the same input accepted for the
-population theorem. The whole chain is source-supported mathematics with a
-kernel-checked conditional core, not a kernel-checked proof of $\Is$ or BBT,
-and it does not transfer to molecule classes.}
+\statusline{The spectrum-rigidity reduction and the full conditional
+candidate-rotation theorem are \kernelcheck{}: see
+\texttt{Assembly\allowbreak{}P1/\allowbreak{}Oriented\allowbreak{}Final\allowbreak{}Rigidity.\allowbreak{}lean} and
+\texttt{Assembly\allowbreak{}P1/\allowbreak{}Same\allowbreak{}Length62Uniqueness.\allowbreak{}lean} (merged PR~\#124).
+The candidate theorem consumes source-faithful $\Is$ and explicit
+genuine Section~6.2 certificates for BOTH the truth and the competitor;
+it requires no external BBT obstruction axiom. The older citation
+\cite{bresler2013} remains an alternative published mathematical
+argument, not a missing formal proof premise for this conditional result.
+Without truth candidacy the nonprimitive theorem remains positive
+(merged PR~\#126), while the primitive claim is refuted by a genuine
+flow-certified AABB/ABAB competitor (merged PR~\#127). This does not establish
+unrestricted finite maximum-likelihood uniqueness, nor transfer to
+reverse-complement-collapsed molecules.}
 
 The equal length assumption, by contrast, is essential and sharp; we return to it
 in Section~\ref{sec:finite:length}.
@@ -231,16 +304,16 @@ same-length non-rigid pair, found by exact search, is $S=AAAAB$,
 $D=AABAB$ ($G=5$, $L=2$); its truth carries a long triple repeat and is
 therefore not $\Is$-admissible. Skirting the triple-repeat clause is precisely
 what permits the multiplicity reallocation.
-\statusline{Theorem~\ref{thm:rigidity} and
-Corollary~\ref{cor:same-length-zero} are \mathfact{} with a \kernelcheck{}
-conditional core (\texttt{OrientedFinalRigidity}, modulo the source-supported
-$\Is$ bridging implication, the primitive/periodic split now being
-kernel-checked internally); the rotation
-conclusion of Corollary~\ref{cor:same-length-rotation} adds the external BBT input
-\cite{bresler2013} and is therefore source-supported mathematics rather than
-kernel-checked. The same-spectrum conclusion gives equality/ties for
-spectrum-based finite objectives, not strict recovery by itself. The minimum non-rigid pair and the bounded verifications are
-\computed, exhaustive in the cited scope.}
+\statusline{Theorem~\ref{thm:rigidity} and the
+spectrum-equality corollary have a \kernelcheck{} core in
+\texttt{Oriented\allowbreak{}Final\allowbreak{}Rigidity}. On the genuine truth-candidate
+surface, rotation uniqueness is now kernel-checked in
+\texttt{Same\allowbreak{}Length62Uniqueness} (merged PR~\#124) rather than
+depending on an external BBT axiom. Removing that truth certificate
+is safe for nonprimitive truth only (PR~\#126); merged PR~\#127 refutes the
+primitive case with a genuine same-length Section~6.2 candidate.
+The numerical spectrum examples and bounded verifications are
+\computed{} within the stated ranges.}
 
 \subsection{Strict finite counterexamples}
 
@@ -285,12 +358,26 @@ clause is therefore genuinely exercised. The transfers to all circular
 candidates by Lemma~\ref{lem:negative-transfer} because the witness is
 same-length.
 \statusline{\kernelcheck{} in the repository's
-\texttt{FixedLengthExactCounterexample} module.}
+\texttt{Fixed\allowbreak{}Length\allowbreak{}Exact\allowbreak{}Counterexample} module.}
 \end{proof}
 
 Repeating the start-$0$ read $k$ times gives the observed multiset
 $\{AAA^k,AAB,BAA\}$ and ratio $2^k$, so the failure is a one-parameter family,
-not a coincidental tie.
+not a coincidental tie. A second, independent same-length instance with a
+larger separation is $S=AAABCBC$, $D=AAAAABC$ ($G=7$, $L=3$), realized starts
+$(0,0,0,1,2,5,6)$ and observed $x=\{AAA:3,AAB:1,ABC:1,BCA:1,CAA:1\}$, for which
+$\Lik_{\mathrm{ex}}(D;x)/\Lik_{\mathrm{ex}}(S;x)=27$ and $\Is$ holds
+non-vacuously (coverage, the all-bridged maximal length-$1$ triple repeat at
+$(0,1,2)$, and no interleaved pair).
+\statusline{The $AAABB\to AAAAB$ witness is \kernelcheck{}
+(\texttt{Fixed\allowbreak{}Length\allowbreak{}Exact\allowbreak{}Counterexample}); the read-tiled $AAABCBC\to AAAAABC$
+witness is \computed{} by
+\texttt{scripts/\allowbreak{}verify\_\allowbreak{}readtiled\_\allowbreak{}exact\_\allowbreak{}counterexample.\allowbreak{}py}, which checks every
+clause of $\Is$ on the instance and shares the bridging predicate
+implementation with the repository's other verification scripts. It was cited
+without an observation or artifact until issue~\#217; the refutation it supports
+does not depend on it, since $AAABB\to AAAAB$ and the unrestricted-length
+variant $ACGT\to ACACGT$ already settle the row.}
 
 \begin{theorem}[Fixed-length binomial counterexample]
 \label{thm:cex-binomial}
@@ -313,7 +400,7 @@ zero-multiplicity types changes the ratio from $2$ to $1125/512$:
   \Lik_{\mathrm{bin}}(S;x)=\frac{452984832}{30517578125},\qquad
   \Lik_{\mathrm{bin}}(D;x)=\frac{7962624}{244140625}.
 \]
-\statusline{\kernelcheck{} in \texttt{FixedLengthBinomialCounterexample}. The
+\statusline{\kernelcheck{} in \texttt{Fixed\allowbreak{}Length\allowbreak{}Binomial\allowbreak{}Counterexample}. The
 difference from the exact ratio shows that dropping or retaining the zero-count
 factors changes the objective. By Lemma~\ref{lem:negative-transfer} the witness
 refutes the maximizer statement over every circular candidate on which the
@@ -358,26 +445,271 @@ smallest same-length witness is $S=AAATAT$, $D=AAAAAT$ ($G=6$), for which the
 exact ratio is $3$ and the binomial ratio is $5$, with both genomes
 Section~6.2-feasible under the source's per-vertex lower bound.
 
-\begin{remark}[A strengthening is open]
-The witnesses above use the source's per-vertex lower bound, i.e.\ support
-equality. Under the strictly stronger per-occurrence requirement
-$d_D(w)\ge x(w)$ for every observed type, the same-length Section~6.2 statement
-is \openstatus{} in the searched scope; the witnesses' truths are not candidates
-under that strengthening. We flag this because it is the kind of
-assumption-surface change that separates a refuted statement from an open one.
+\begin{theorem}[Section~6.2 same-length counterexample under the per-occurrence
+strengthening]
+\label{thm:cex-peroccurrence}
+Let $\Alphabet=\{A,C,G,T\}$ with the DNA involution $A\leftrightarrow T$,
+$C\leftrightarrow G$ (no self-complementary base), $L=3$, truth
+$S=ATATACAC$ ($G=8$) with realized starts $1,3,4,5,6,7$, and competitor
+$D=ATACACAC$ ($|D|=|S|=8$), external $N=8$. Then $R\in\Is$ holds; both $S$ and
+$D$ induce admissible Section~6.2 bidirected circuits; both spectra have the same
+support as the observation $x$; \emph{and} both are per-occurrence feasible,
+$x(w)\le d_S(w)$ and $x(w)\le d_D(w)$ for every observed molecule class $w$ (the
+tight coordinate is $ACA/TGT$, where $x=d_S=2$, while $x_{ATA/TAT}=1<3=d_S$, so
+$n=6<G=8$ and the instance is not read-tiled). With both same-length objectives
+the competitor is strictly better:
+\[
+  \frac{\Lik_E(D)}{\Lik_E(S)}=\frac{3}{2}>1,
+  \qquad
+  \frac{\Lik_{6.1}(D)}{\Lik_{6.1}(S)}=\frac{9}{5}>1 .
+\]
+\end{theorem}
+
+\begin{proof}[Sketch]
+The molecule classes are $x=(ATA/TAT:1,TAC/GTA:1,ACA/TGT:2,CAC/GTG:1,CAT/ATG:1)$,
+$d_S=(ATA/TAT:3,TAC/GTA:1,ACA/TGT:2,CAC/GTG:1,CAT/ATG:1)$ and
+$d_D=(ATA/TAT:1,TAC/GTA:1,ACA/TGT:3,CAC/GTG:2,CAT/ATG:1)$; all three have the
+same support, and $d_S,d_D\ge x$ coordinate-wise. Since $|D|=|S|$, the exact
+factors are $3\cdot2$ against $1\cdot3$ on the redistributed coordinates, giving
+$3/2$, and the binomial marginals give $9/5$. The $\Is$ certificate, the explicit
+sixteen-edge bidirected overlap graph, the vacuous transitive reduction, the
+signed-incidence balances and the vertex lower bound $1$ are all checked exactly,
+for both genomes.
+\statusline{\kernelcheck{} for the whole certificate, including the literal
+Section~6.2 feasibility of both genomes and both strict inequalities.}
+\end{proof}
+
+The per-occurrence rule is what makes this witness necessary. The same-length
+witness $AAATAT\to AAAAAT$ refutes the source's per-vertex reading, but its truth
+is \emph{not} per-occurrence feasible ($d_S(AAA)=1<2=x_{AAA}$), so that
+refutation does not transfer. On the binary alphabet $A\leftrightarrow T$ the
+mechanism does not arise at all in the searched scope: with a self-complementary
+base, a same-length per-occurrence instance has zero beats at
+$(G,L)=(6,3),(7,3),(8,3)$ and $(6,4),(8,4)$, and the first beats appear at
+$(G,L)=(8,3)$ on the real four-letter alphabet. The strengthening is a
+repository-added surface, so this refutation settles a determinate mathematical
+question rather than a reading of the 2016 sentence; it is reported because the
+matrix commits to resolving determinate rows one way or the other.
+
+\begin{remark}[Which assumption surfaces are still open, and which are not the
+source's]
+\label{rem:surfaces}
+The molecule witnesses above use the source's per-vertex lower bound, i.e.\
+support equality. Medvedev--Brudno §6.2 states only ``Each vertex has a lower
+bound of $1$ since it represents a read that must be present in the genome at
+least once''; the strictly stronger per-occurrence requirement $d_D(w)\ge x(w)$
+for every observed type is a \emph{repository-added} assumption surface, not a
+source definition. That distinction matters for what may be reported as
+settled:
+
+\begin{itemize}
+  \item \textbf{Refuted.} Same-length §6.2 candidate class, molecule read types,
+    per-occurrence strengthening. The witness is $S=ATATACAC$, $D=ATACACAC$
+    ($G=8$, $L=3$, realized starts $(1,3,4,5,6,7)$, $n=6<N=8$): exact ratio
+    $3/2$, binomial ratio $9/5$, with both genomes literal §6.2 bidirected
+    circuits and both per-occurrence feasible. The mechanism needs the real
+    four-letter DNA alphabet: with a self-complementary base the searched scope
+    contains no same-length instance at all
+    (Thm.~\ref{thm:cex-peroccurrence}). This is a \emph{determinate} row, so it
+    is reported as settled; it is not a reading of the 2016 sentence, because the
+    strengthening is a repository-added surface.
+  \item \textbf{Open in both directions, and not a determinate reading of the
+    2016 sentence at all.} The doubled-strand $2G$ \emph{concatenation}
+    convention of \cite{bresler2013}, i.e.\ one length-$2G$ circle
+    $S\cdot\rc(S)$. No bounded search is used as evidence in either direction:
+    the absence of a known beat in the searched scopes is recorded as
+    \emph{absence of a known witness}, not as evidence of openness, and two of
+    those scopes are vacuous because the remapped $\Is$ is unsatisfiable there.
+    The known $AAATAT\to AAAAAT$ witness is \emph{inadmissible} under this
+    remap: the doubled circle carries a length-$4$ triple repeat that no
+    length-$3$ read can bridge, for \emph{every} read set
+     (\texttt{doubled\_\allowbreak{}not\_\allowbreak{}information\_\allowbreak{}feasible}). The row is therefore open in
+     both directions rather than refuted. The \emph{compatibility} of this
+     convention with the oriented one is now kernel-checked in both directions:
+     the remap is exactly compatible with the oriented reading iff read-seat
+     preservation, seam--wrap agreement, and doubled-circle feasibility all hold,
+     and off that locus the two models are incomparable --- $GGGA$ satisfies the
+     remapped $\Is$ while failing the oriented $\Is$ (spurious wrapping-read
+     seats), and $AAATAT$ is the reverse
+     (\texttt{Bresler\allowbreak{}Remap\allowbreak{}Compatibility.\allowbreak{}remap\_\allowbreak{}natural\_\allowbreak{}seat\_\allowbreak{}not\_\allowbreak{}sound},
+     \texttt{remap\_\allowbreak{}not\_\allowbreak{}complete}). The physical duplex is better
+     represented as \emph{two disjoint} cyclic strands $S$ and $\rc(S)$
+     (Remark~\ref{rem:duplex}).
+  \item \textbf{Not a determinate proposition.} The reading of the sentence as an
+    unspecified general ML principle: the 2016 text fixes no objective, so no
+    finite witness settles it as stated. Its three source-nameable members (the
+    exact multinomial, the fixed-$N$ binomial, and the §6.2 flow with §6.1
+    costs) are each refuted above.
+\end{itemize}
+No determinate row of the matrix remains open. The last determinate row that was
+open on \texttt{main} at the start of this round, the per-occurrence same-length
+§6.2 row, is refuted above. What lies outside the resolved set is (i) the
+doubled-strand $2G$ concatenation convention, which is a different paper's
+convention (a project-level convention, not a source fact), is \emph{not a
+determinate source row}, and is open in \emph{both} directions with no bounded
+search used as evidence because the known witness is inadmissible there, and
+(ii) the unspecified-principle reading, which is not a determinate proposition
+and cannot be settled from source. Neither is a determinate source-supported
+reading of the 2016 sentence.
+We flag these because they are exactly the kind of assumption-surface change
+that separates a refuted statement from an open one, and because a claim that
+``all source-supported interpretations are resolved'' must not silently absorb
+them. On the positive, truth-admissible same-length candidate surface, the
+finite rotation-uniqueness theorem is now kernel-checked directly in
+\texttt{Same\allowbreak{}Length62Uniqueness}, with explicit truth candidacy.
+It is not a general finite ML theorem; the source-faithful primitive
+no-truth-candidacy alternative has a genuine candidate counterexample. The full row-by-row matrix, with every axis
+value tagged as source fact, source-supported inference, or modelling choice, is
+\texttt{docs/\allowbreak{}source-notes/\allowbreak{}interpretation-matrix-217.\allowbreak{}md}.
+\end{remark}
+
+\begin{remark}[The general §6.2 flow domain, and two optima and an overlap
+floor that must not be conflated]
+\label{rem:flow-domain}
+The §6.2 refutations above are stated for \emph{spelled} bidirected circuits.
+Leaf~\#214 upgrades them to the \emph{whole} §6.2 flow domain, at two values of
+the explicit overlap floor $o_{\min}$:
+\begin{itemize}
+  \item at $o_{\min}=1$ ($L=3$) the truth is still not a maximizer, and the flow
+        optimum $d^*=(AAA{:}2,AAT{:}1,TAA{:}1)$ (with
+        $d^*_3=(AAA{:}3,AAT{:}1,TAA{:}1)$) spells no circular molecule of any
+        length, so the maximum-likelihood \emph{object} of the flow domain is a
+        non-sequence and the maximum-likelihood \emph{sequence} does not exist
+        there;
+  \item at the full overlap $o_{\min}=L-1=2$ ($L=3$) the truth $AAATAT$ is
+        likewise not a maximizer, but here the unique integer optimum
+        $d^*=(AAA{:}2,AAT{:}1,ATA{:}1,TAA{:}1)$ has \emph{disconnected positive
+        support} (a doubled $AAA$ self-overlap together with the circuit
+        $AAT\to ATA\to TAA\to AAT$), so positive-support connectedness of all
+        optima is false, and it strictly beats the truth
+        ($\Lik(d^*)/\Lik(d_S)=1280/243$). Its throughput, however, \emph{is}
+        spellable: it is the spectrum of $AAAAT$ and also has a connected
+        realization. This is disconnectedness of the \emph{flow}, not
+        non-spellability of the \emph{throughput}; ``positive-support
+        connectedness of all optima'' is a project-level strengthening, not a
+        Medvedev--Brudno notion, and the flow-to-sequence gap is untouched by
+        it.
+\end{itemize}
+Two optima, one parameter, and one distinction must be kept separate:
+\begin{itemize}
+  \item the \textbf{integer flow optimum} --- the argmax of the §6.1 objective
+        over integer throughput vectors $1\le d\le N$ that are genuine §6.2 flows
+        (the kernel-checked $d^*$, $d^*_3$); this is the §6.2 object the source
+        defines;
+  \item the \textbf{half-integral relaxation} --- the argmax when $d$ ranges over
+        half-integers (the per-coordinate maximizer of
+        $(d/N)^x((N-d)/N)^{n-x}$ is $d=xN/n$, e.g.\ $5/2$ for the $AAA$ coordinate
+        here, which is neither an integer nor a §6.2 flow throughput);
+  \item the \textbf{overlap floor} $o_{\min}$ --- the $o_{\min}=1$ and the
+        $o_{\min}=L-1$ witnesses live on different graphs (the shorter overlaps
+        exist only when $o_{\min}\le L-2$), so neither may be read as the other;
+        the merged spelled witnesses (Thm.~\ref{thm:cex-molecule} and the rows
+        below it) are stated at $o_{\min}=L-1=2$;
+  \item the \textbf{throughput versus the flow realization} --- the
+        $o_{\min}=L-1$ optimum's throughput is spellable ($AAAAT$) while its
+        flow support is disconnected, whereas the $o_{\min}=1$ optimum's
+        throughput is not spellable at all. ``Non-spellable spectrum'' and
+        ``disconnected flow'' are \emph{different} properties and must not be
+        conflated.
+\end{itemize}
+The relaxation is a different, larger upper bound; substituting it for the
+integer flow optimum would overstate what the §6.2 domain refutes. The board
+records the integer optimum as the §6.2 result and keeps the relaxation distinct.
+Both general-flow results are kernel-checked:
+\texttt{Assembly\allowbreak{}P1/\allowbreak{}Section62Non\allowbreak{}Spelled\allowbreak{}Flow.\allowbreak{}lean}
+(\texttt{spelled\_\allowbreak{}subset\_\allowbreak{}general}, \texttt{star\_argmax},
+\texttt{no\_\allowbreak{}sequence\_\allowbreak{}has\_\allowbreak{}star\_\allowbreak{}spectrum},
+\texttt{nonspelled\_\allowbreak{}se62\_\allowbreak{}flow\_\allowbreak{}domain\_\allowbreak{}countermodel}) for $o_{\min}=1$, which
+certifies that a spelled candidate is a genuine §6.2 flow and proves no circular
+molecule realizes $d^*$; and
+\texttt{Assembly\allowbreak{}P1/\allowbreak{}Section62Full\allowbreak{}Overlap\allowbreak{}Disconnected.\allowbreak{}lean}
+(\texttt{full\_\allowbreak{}overlap\_\allowbreak{}disconnected\_\allowbreak{}optimum},
+\texttt{disc\_\allowbreak{}support\_\allowbreak{}disconnected}, \texttt{dStar\_argmax},
+\texttt{star\_better}) for $o_{\min}=L-1$, which proves the disconnected
+full-overlap optimum and its strict beat. Both audit to the three standard
+axioms.
+\end{remark}
+
+\begin{remark}[The physical duplex is two disjoint circles, not a concatenation]
+\label{rem:duplex}
+The doubled-strand convention must not be conflated across its two readings. The
+$2G$ \emph{concatenation} of \cite{bresler2013} glues $S$ and $\rc(S)$ into one
+circle; the alternative --- the one matching the physical double-stranded
+circle --- is \emph{two disjoint} cyclic strands $S$ and $\rc(S)$. The
+distinction is material rather than cosmetic. The reverse-complement map
+$\rho(i)=(G-1-i)\bmod G$ reverses order and preserves strict bridging, so
+\emph{circle-by-circle} $\Is$ on the disjoint duplex is exactly equivalent to
+$\Is(S)$, and the $AAATAT\to AAAAAT$ witness survives (ratios $3$ and $5$). The
+\emph{duplex-as-a-whole} reading is ill-defined (there is no cyclic order on two
+disjoint circles) and strictly stronger: six mixed cross-strand triple repeats
+of length $\ge L-1$ are unbridgeable for every read set. The concatenation and
+the disjoint duplex are genuinely inequivalent: their candidate spectra differ
+exactly when the seam words are not matched by wrapping words, which happens for
+half of the binary words in the searched scope. Finally, when strand orientation
+is \emph{unobserved}, the disjoint-duplex molecule-class distribution
+$2\,m_S(C)/(2G)=m_S(C)/G$ is identical to the Medvedev--Brudno molecule
+distribution (self-reverse-complementary palindromes counted once), so it is not
+a distinct likelihood objective there; only \emph{oriented} reads differ. All of
+this is a disclosed modelling decision, not a reading of the 2016 sentence, and
+it settles neither the concatenation row nor the referent.
+\statusline{The non-equivalence, the circle-by-circle equivalence and the
+mixed-repeat obstruction are \kernelcheck{} in
+\texttt{Assembly\allowbreak{}P1/\allowbreak{}Double\allowbreak{}Strand\allowbreak{}Bridging\allowbreak{}Transfer.\allowbreak{}lean} and
+\texttt{Assembly\allowbreak{}P1/\allowbreak{}Two\allowbreak{}Disjoint\allowbreak{}Circles\allowbreak{}Duplex.\allowbreak{}lean}; the spectrum/seam arithmetic
+and the witness ratios are \computed{} by
+\texttt{scripts/\allowbreak{}verify\_\allowbreak{}two\_\allowbreak{}disjoint\_\allowbreak{}circles\_\allowbreak{}duplex.\allowbreak{}py} and
+\texttt{scripts/\allowbreak{}verify\_\allowbreak{}oriented\_\allowbreak{}molecule\_\allowbreak{}bridging.\allowbreak{}py}. The representation
+choice is a \projchoice{} and the historical strand convention stays open.}
 \end{remark}
 
 \subsection{The candidate-length boundary}
 \label{sec:finite:length}
 
 The same-length restriction in the positive theorem is not cosmetic. On the next
-slice, where $|D|>G$ is allowed, the truth need not be optimal even under $\Is$.
+slice, where $|D|>G$ is allowed, the truth need not be optimal even under $\Is$,
+and this is an infinite-family phenomenon rather than a bounded search.
 
-\begin{example}[Variable-length oriented boundary]
-\label{ex:variable-length}
-Take truth $S=AAATT$ ($G=5$), $L=3$, and competitor $D=AAAATT$ ($|D|=6$). The
-supports agree and $\Is$ holds. With the observed counts
-$x=\spec_3(S)+M e_{AAA}$,
+\begin{theorem}[Oriented variable-length Section~6.2 classification]
+\label{thm:cex-variable-length}
+Let $\Alphabet=\{A,T\}$, $L=3$, truth $S=AAATT$ ($G=5$), realized starts
+$R=\{0,1,2,3,4\}$, so $R\in\Is$ holds at full strength (coverage, the unique
+maximal length-$1$ triple repeat all-bridged, the interleaved clause vacuous).
+Write $x^{(M)}=\spec_3(S)+M e_{AAA}$ ($n=5+M$). For the growing competitor
+$D_M=A^{3+M}TT$ ($|D_M|=5+M$),
+\[
+  \frac{\Lik_E(D_M;x^{(M)})}{\Lik_E(S;x^{(M)})}
+    = \Bigl(\tfrac{5}{5+M}\Bigr)^{5+M}(1+M)^{1+M} > 1
+  \qquad\text{for every } M\ge 1 ;
+\]
+for the fixed competitor $D=AAAATT$ ($|D|=6$) the exact ratio is
+$(\tfrac{3125}{3888})(\tfrac53)^M>1$ and the fixed-$N$ binomial ratio
+($N=5$) is $(\tfrac{81}{128})2^M>1$, for every $M\ge 1$. Every candidate is a
+genuine Section~6.2 candidate under the per-vertex, spelled-support and
+single-circuit readings. The truth wins exactly at $n=G$; a single extra
+observation of the over-represented $AAA$ type overturns it.
+\end{theorem}
+
+\begin{proof}[Sketch]
+For the exact objective the observation-only coefficient is common, so the
+competitor with $d_{D_M}=x^{(M)}$ and $|D_M|=n$ attains the AM--GM upper bound
+$\Lik^*(x^{(M)})=\binom{n}{x}\prod_w(x_w/n)^{x_w}$, while the truth's normalized
+spectrum differs at the $AAA$ coordinate for every $M\ge1$. The fixed-competitor
+families are the amplification lemma made concrete: each additional observation
+of an observed type $w$ multiplies the exact odds by
+$p_D(w)/p_S(w)$ and the fixed-$N$ binomial odds by
+$Q_w=(p_D(w)/p_S(w))\prod_{i\ne w}(1-p_D(i))/(1-p_S(i))$; here
+$p_D(AAA)/p_S(AAA)=5/3>1$ and $Q_{AAA}=2>1$.
+\statusline{\kernelcheck{} at $M=1,2$ in
+\texttt{Assembly\allowbreak{}P1/\allowbreak{}Oriented\allowbreak{}Variable\allowbreak{}Length\allowbreak{}Se62.\allowbreak{}lean}
+(\texttt{oriented\_\allowbreak{}variable\_\allowbreak{}length\_\allowbreak{}se62\_\allowbreak{}counterexample}, exact
+$15625/11664$, $2109375/823543$; binomial $81/64$, $27/16$), which also
+discharges $\Is$ by \texttt{decide} on the shared predicate. The general
+families are \mathfact{} (the note
+\texttt{docs/\allowbreak{}source-notes/\allowbreak{}oriented-variable-length-se62.\allowbreak{}md}); the identities are
+\computed{} for $M=0..200$ by
+\texttt{scripts/\allowbreak{}verify\_\allowbreak{}oriented\_\allowbreak{}variable\_\allowbreak{}length\_\allowbreak{}se62*.\allowbreak{}py}.}
+\end{proof}
+
 \begin{center}
 \begin{tabular}{@{}lll@{}}
 \toprule
@@ -389,13 +721,24 @@ $2$ & $78125/34992>1$ & $81/32>1$ \\
 \bottomrule
 \end{tabular}
 \end{center}
-The boundary is exactly $n>G$: at $n=G$ the truth wins, and a single extra
-observation of an over-represented type overturns it.
-\statusline{\computed{}. The same word pair also appears as a
-reverse-complement variable-length witness; here the orientation is fixed by
-observing every truth type plus an extra $AAA$, so the mechanism is
-observed-multiplicity skew rather than strand collapse.}
-\end{example}
+
+\begin{remark}[Sampling instability is the mechanism]
+\label{rem:amplification}
+The variable-length failure is not a coincidence of one word pair. The
+amplification lemmas show that whenever a competitor over-weights an observed
+type ($p_D(w)>p_S(w)$), repeating that type in the sample drives the odds in the
+competitor's favour without bound; symmetrically, a tie ($Q_w=1$) stays a tie
+and a multiplier below one drives the odds to zero. The
+exact-vs-fixed-$N$ distinction matters: the two multipliers differ because the
+fixed-$N$ product moves the $(n-x_i)$ exponents at every other type. The same
+word pair also appears as a reverse-complement variable-length witness; here the
+orientation is fixed by observing every truth type plus an extra $AAA$, so the
+mechanism is observed-multiplicity skew rather than strand collapse. The
+general sample-multiplicity formalization drafted for issue~\#216 is
+\emph{redundant} and is deliberately not integrated (it does not compile); the
+result is already kernel-checked through the instances above, whose module
+\texttt{Oriented\allowbreak{}Variable\allowbreak{}Length\allowbreak{}Se62} is the canonical carrier.
+\end{remark}
 
 \subsection{Summary of the finite landscape}
 
@@ -410,34 +753,84 @@ same-length oriented Section~6.2, $R\in\Is$, truth §6.2-admissible
   & exact / binomial
   & same-length spelled
   & \textbf{true}, unique up to rotation (Thm.~\ref{thm:rigidity}, Cor.~\ref{cor:same-length-rotation}) \\
+\addlinespace
+same-length oriented, $R\in\Is$ at the realized placements, truth a genuine §6.2 candidate
+  & exact / binomial
+  & same-length genuine §6.2
+  & \textbf{true}, maximizer (Thm.~\ref{thm:maximizer}) \\
+\addlinespace
+same-length, no §6.2 admissibility on either side
+  & exact
+  & all circular of length $G$
+  & \textbf{false} ($AABB\to ABAB$, ratio $4$) \\
+\addlinespace
 exact ML maximizer
   & exact multinomial
   & all circular
-  & \textbf{false} (Thm.~\ref{thm:cex-exact}) \\
+  & \textbf{false} (Thm.~\ref{thm:cex-exact}; also $AAABCBC\to AAAAABC$, ratio $27$) \\
 binomial ML maximizer
   & fixed-$N$ binomial
   & all circular (on its domain)
   & \textbf{false} (Thm.~\ref{thm:cex-binomial}) \\
-Section~6.2 flow, molecule reads
+Section~6.2 flow, molecule reads, variable length
   & Section~6.1 product
   & §6.2 circuits
-  & \textbf{false} (Thm.~\ref{thm:cex-molecule}) \\
+  & \textbf{false} (Thm.~\ref{thm:cex-molecule}); competitor the \emph{unique} optimizer over the whole §6.1 domain (issue~\#213, \texttt{Section62Varlen\allowbreak{}Per\allowbreak{}Occurrence}) \\
+\addlinespace
+§6.2 flow, full overlap, all optima connected
+  & §6.1 product
+  & §6.2 integral flows
+  & \textbf{false}: disconnected optimum $d^*$ for $AAATAT$ (ratio $1280/243$), yet $d^*$ is spellable as $AAAAT$ (issue~\#214) \\
+\addlinespace
+§6.2 flow, $o_{\min}=1$, optimum spellable
+  & §6.1 product
+  & §6.2 integral flows
+  & \textbf{false}: optimum $(2,1,1)$ for $AAATT$ is no circular molecule's spectrum (issue~\#214) \\
 Section~6.2 flow, molecule, same length, per-vertex
   & exact / binomial
   & §6.2 spelled
   & \textbf{false} ($AAATAT\to AAAAAT$) \\
-Section~6.2, per-occurrence strengthening
+Section~6.2 flow, molecule, variable length, per-occurrence strengthening
+  & exact / binomial
+  & §6.2 circuits
+  & \textbf{false} (the same $AAATT\to AAAATT$ witness satisfies it) \\
+Section~6.2, molecule, same length, per-occurrence strengthening
   & exact / binomial
   & §6.2 spelled
-  & \openstatus \\
+  & \textbf{false} ($ATATACAC\to ATACACAC$, ratios $3/2$ and $9/5$; \emph{not} the source's §6.2 rule) \\
+oriented single-strand, Section~6.2, variable length
+  & exact / binomial
+  & §6.2 circuits
+  & \textbf{false} in infinite families (Thm.~\ref{thm:cex-variable-length}; amplification of an over-represented type, strict for every $M\ge1$) \\
+doubled-strand $2G$ \emph{concatenation} of \cite{bresler2013}
+  & exact multinomial
+  & $2G$-doubled candidates
+  & \openstatus{} (open both ways; known witness inadmissible; compatibility with the oriented reading kernel-checked incomparable off the R1$\land$R2$\land$R3 locus) \\
+\addlinespace
+duplex as \emph{two disjoint} circles $(S,\rc(S))$
+  & exact / binomial
+  & disjoint-duplex candidates
+  & \projchoice{}: circle-by-circle $\Is\equiv\Is(S)$, witness survives; duplex-as-a-whole ill-defined; unobserved-orientation likelihood $=$ MB09 molecule (Rem.~\ref{rem:duplex}) \\
 \bottomrule
 \end{tabular}
 \caption{The finite landscape. ``False'' means a strict counterexample over the
 stated class; the evidence level (kernel-checked, exact computation, or script)
 is recorded in the corresponding theorem or status line. The positive
-same-length row asserts uniqueness up to cyclic rotation, not merely that the
-truth ties. By Lemma~\ref{lem:negative-transfer} each same-length falsity
-transfers to all circular candidates for that objective.}
+same-length rows assert maximizer and, on the truth-admissible genuine
+candidate class, internally kernel-checked uniqueness up to cyclic rotation,
+not merely that the truth ties. By Lemma~\ref{lem:negative-transfer} each same-length falsity
+transfers to all circular candidates for that objective. The last two rows are
+\emph{not} readings of the 2016 sentence: the $2G$ doubled-strand concatenation
+belongs to a different paper and is the only determinate-looking row left open
+(and it is open in both directions), while the disjoint-duplex row is a
+repository modelling choice whose circle-by-circle reading is exactly $\Is(S)$.
+The
+per-occurrence strengthening in the row above them is likewise a repository-added
+assumption surface rather than Medvedev--Brudno's §6.2 rule; that row is a
+\emph{determinate} question and is now refuted rather than left open. All
+non-source rows are listed so that the claim of exhaustion is not overstated. See
+\texttt{docs/\allowbreak{}source-notes/\allowbreak{}interpretation-matrix-217.\allowbreak{}md} for the row-by-row
+matrix with every axis value tagged.}
 \label{tab:finite}
 \end{table}
 

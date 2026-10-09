@@ -114,12 +114,12 @@ positive circulation of its window-support graph (Theorem~\ref{thm:rigidity}).
 Consequently every same-length Section~6.2 spelled candidate ties the truth under
 any spectrum-based objective, and no strict same-length counterexample exists for
 \emph{any} genome length, read length, or alphabet. Moreover, since $\Is$ supplies
-Ukkonen's condition at $K=L-1$, the same complete-spectrum uniqueness input used
-in the population model shows that every such candidate is a cyclic rotation of
-the truth, so on this truth-admissible row the truth is the unique maximizer up to
+Ukkonen's condition at $K=L-1$, the external complete-spectrum uniqueness input
+shows that every such candidate is a cyclic rotation of the truth, so on this
+truth-admissible row the truth is the unique maximizer up to
 rotation (Corollary~\ref{cor:same-length-rotation}). The equal-length restriction
 is essential: allowing one extra symbol reintroduces a strict witness
-(Example~\ref{ex:variable-length}).
+(Theorem~\ref{thm:cex-variable-length}).
 
 \paragraph{A repaired population model.}
 We present a new model, motivated by the finite failures rather than by the
@@ -127,10 +127,12 @@ historical papers: replace empirical read counts by the exact population read
 distribution. A Gibbs/KL identity (Lemma~\ref{lem:gibbs}) makes the truth a
 population maximizer \emph{unconditionally}. Uniqueness then reduces to spectrum
 identifiability, and for the project's oriented, primitive, P2-admissible
-candidate class this is supplied by a complete-spectrum uniqueness theorem of
-Bresler, Bresler, and Tse \cite{bresler2013}. The resulting
-Theorem~\ref{thm:population} is the current positive high point of the project.
-It does not settle the finite 2016 question, and we state the gap explicitly.
+candidate class this is now proved in full in the kernel: the complete-spectrum
+uniqueness step formerly imported from Bresler, Bresler, and Tse
+\cite{bresler2013} is discharged internally, so Theorem~\ref{thm:population}
+has no external premise. The resulting theorem is the current positive high
+point of the project. It does not settle the finite 2016 question, and we state
+the gap explicitly.
 
 \paragraph{Exposition as a first-class concern.}
 Because the mathematical content is an interface between under-specified

@@ -30,6 +30,7 @@ import AssemblyP1.FixedLengthExactCounterexample
 import AssemblyP1.FixedLengthBinomialCounterexample
 import AssemblyP1.Section62BridgingCounterexample
 import AssemblyP1.SameLengthSection62Counterexample
+import AssemblyP1.PerOccurrenceSameLengthCounterexample
 import AssemblyP1.Section62BidirectedFlow
 import AssemblyP1.FiniteSamplingCounterexample
 import AssemblyP1.PopulationReduction
@@ -170,6 +171,26 @@ import AssemblyP1.Issue94SameAltF
 import AssemblyP1.Issue94Antiderivative
 import AssemblyP1.Issue94IntervalCore
 import AssemblyP1.Issue94Complete
+-- #217 finite-front integrations: same-length §6.2 tie uniqueness (#211); the
+-- general (non-spelled) §6.2 flow domain at o_min = 1 (#214) and the
+-- full-overlap disconnected flow optimum at o_min = L-1 (#214); the two
+-- disjoint-circles duplex model and the 2G-remap non-equivalence (#215); the
+-- conclusion-schema implication lattice (#216); the oriented unrestricted-length
+-- §6.2 classification (#210); the variable-length per-occurrence audit (#213);
+-- the E/A audit (#209); the Bresler-remap compatibility (#215); and the
+-- fibre-count arithmetic (#219, terminal B219 `81d29c6`).  Each is
+-- self-contained; the imports carry their own modules.
+import AssemblyP1.SameLength62TieUniqueness
+import AssemblyP1.Section62NonSpelledFlow
+import AssemblyP1.Section62FullOverlapDisconnected
+import AssemblyP1.DoubleStrandBridgingTransfer
+import AssemblyP1.TwoDisjointCirclesDuplex
+import AssemblyP1.ImplicationLattice
+import AssemblyP1.OrientedVariableLengthSe62
+import AssemblyP1.Section62VarlenPerOccurrence
+import AssemblyP1.BreslerRemapCompatibility
+import AssemblyP1.Issue209EAudit
+import AssemblyP1.FibreCountArithmetic
 
 /-! ## `Issue94Transposition`: the Kotzig/Ukkonen/Pevzner descent, and an obstruction
 
@@ -897,6 +918,61 @@ container's 8 GiB cgroup --- pre-existing, see
 #print axioms AssemblyP1.Issue94Interface.p2LongUnique_of_bbtUniqueAt
 #print axioms AssemblyP1.Issue94Interface.bbTP2Prim_of_bbtUniqueAt
 #print axioms AssemblyP1.Issue94Interface.bbTP2Prim_of_obstruction
+
+/-! ## Axiom audit for the #217 finite-front integrations
+
+These five modules are the novel artifacts of the live finite leaves, integrated
+on `agent/board-217-978a0a`; each is self-contained and namespace-isolated.  The
+finite same-length tie/uniqueness module (#211) still carries the complete-
+spectrum uniqueness input as an explicit premise (`FibreFreedomForcesLongRepeat`),
+so its rotation conclusion is conditional; the *population* theorem
+`AssemblyP1.Issue94Complete.population_unique_ML` is unconditional.  The two
+general-flow modules (#214: `Section62NonSpelledFlow` at `o_min = 1`, whose
+optimum has a non-spellable throughput, and `Section62FullOverlapDisconnected`
+at `o_min = L-1`, whose disconnected optimum's throughput *is* spellable), the
+two duplex modules (#215) and the implication lattice (#216) are unconditional.
+#219's fibre-count arithmetic module (`FibreCountArithmetic`) is committed
+(leaf #219 terminal, `81d29c6`) and imported here: it is the kernel-checked
+divisor-sum core (Möbius inversion, totient rearrangement); the BEST/Matrix-Tree
+graph content remains external. -/
+#print axioms AssemblyP1.SameLength62TieUniqueness.informationFeasible_62_exact_tie
+#print axioms AssemblyP1.SameLength62TieUniqueness.maximizer_and_tie_of_Is_and_62
+#print axioms AssemblyP1.SameLength62TieUniqueness.no_interleaved_long_repeats_of_Is
+#print axioms AssemblyP1.SameLength62TieUniqueness.bbt_premise_refuted_G6_L2
+#print axioms AssemblyP1.Section62NonSpelledFlow.nonspelled_se62_flow_domain_countermodel
+#print axioms AssemblyP1.Section62NonSpelledFlow.star_argmax
+#print axioms AssemblyP1.Section62NonSpelledFlow.half_integral_strictly_better
+#print axioms AssemblyP1.Section62NonSpelledFlow.no_sequence_has_star_spectrum
+#print axioms AssemblyP1.Section62NonSpelledFlow.spelled_subset_general
+#print axioms AssemblyP1.Section62FullOverlapDisconnected.full_overlap_disconnected_optimum
+#print axioms AssemblyP1.Section62FullOverlapDisconnected.disc_support_disconnected
+#print axioms AssemblyP1.Section62FullOverlapDisconnected.dStar_argmax
+#print axioms AssemblyP1.Section62FullOverlapDisconnected.star_better
+#print axioms AssemblyP1.DoubleStrandBridgingTransfer.doubled_not_information_feasible
+#print axioms AssemblyP1.TwoDisjointCirclesDuplex.partner_window_rc
+#print axioms AssemblyP1.TwoDisjointCirclesDuplex.rcS_information_feasible
+#print axioms AssemblyP1.TwoDisjointCirclesDuplex.specDuplex_eq
+#print axioms AssemblyP1.TwoDisjointCirclesDuplex.two_readings_diverge
+#print axioms AssemblyP1.ImplicationLattice.unique_implies_maximizer_with_membership
+#print axioms AssemblyP1.ImplicationLattice.strict_refutes_unique
+#print axioms AssemblyP1.ImplicationLattice.membership_failure_refutes_maximizer_with_membership
+#print axioms AssemblyP1.ImplicationLattice.conversion
+#print axioms AssemblyP1.ImplicationLattice.population_D_le_S
+#print axioms AssemblyP1.ImplicationLattice.population_eq_iff_spectra
+#print axioms AssemblyP1.ImplicationLattice.amplification_strict_of_qMul_gt_one
+#print axioms AssemblyP1.ImplicationLattice.ConcretePanel.sigma_oriented_strict
+#print axioms AssemblyP1.ImplicationLattice.ConcretePanel.upsilon_molecular_strict
+#print axioms AssemblyP1.ImplicationLattice.ConcretePanel.lambda1_A_tie
+#print axioms AssemblyP1.OrientedVariableLengthSe62.oriented_variable_length_se62_counterexample
+#print axioms AssemblyP1.OrientedVariableLengthSe62.oriented_variable_length_se62_counterexample'
+#print axioms AssemblyP1.Section62VarlenPerOccurrence.truth_not_maximizer_in_general_flow_universe
+#print axioms AssemblyP1.Section62VarlenPerOccurrence.competitor_is_unique_optimizer
+#print axioms AssemblyP1.FibreCount.sum_antidiagonal_eq_sum_divisors
+#print axioms AssemblyP1.FibreCount.sum_divisors_inv_mul_eq
+#print axioms AssemblyP1.FibreCount.sum_divisors_divisors
+#print axioms AssemblyP1.FibreCount.sum_moebius_div_eq_totient
+#print axioms AssemblyP1.FibreCount.fibre_mobius_inversion
+#print axioms AssemblyP1.FibreCount.fibre_totient
 #print axioms AssemblyP1.Issue94Interface.population_unique_ML_of_BBTUniqueAt
 
 /-! ## Axiom audit for the same-length §6.2 tie analysis (issue #211)

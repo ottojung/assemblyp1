@@ -51,15 +51,25 @@ Combining §1 with `Issue94P2PrimInterface.long_short_of_long`:
   P2LongUnique L              ↔  the class-restricted one         (§4)
 ```
 
-so the endpoint's single remaining mathematical input is **`P2LongUnique L`**,
-and `Issue94P2PrimInterface.population_unique_ML_of_long_unique` turns that,
-plus the assumptions the endpoint already carries, into `thm:population`.
+so at the time of this module the endpoint's single remaining mathematical input
+was **`P2LongUnique L`**, and
+`Issue94P2PrimInterface.population_unique_ML_of_long_unique` turns that, plus the
+assumptions the endpoint already carries, into `thm:population`.
+
+> **UPDATE (board #94, consumed by board #221).** `P2LongUnique L` is now
+> inhabited for every `L ≥ 2` by
+> `Issue94ConcreteAntiderivative.concrete_p2LongUnique` (support descent with an
+> explicit component antiderivative), and
+> `Issue94Complete.population_unique_ML` composes it with the short-window
+> theorem. The endpoint is therefore closed with no external BBT premise, and the
+> "residual" isolated here is discharged downstream.
 
 ## 3. What this does not do
 
-* **No inhabitant of `P2LongUnique L`**, at any `L`. Issue #89 is not settled;
-  `P2LongUnique L` is `thm:BBT` on the `P2`-primitive class in the long window,
-  and it has no inhabitant in the tree.
+* **No inhabitant of `P2LongUnique L` *in this module*.** It is inhabited
+  downstream (`Issue94ConcreteAntiderivative.concrete_p2LongUnique`); this module
+  only isolates the residual. `P2LongUnique L` is `thm:BBT` on the `P2`-primitive
+  class in the long window.
 * No definition is changed. `BBTCompleteSpectrumUniqueness`, `P2`, `IsPrimitive`,
   `Ukkonen`, `RotEquiv`, `specCount`, `EulerianCycleObstruction`, `BBTUniqueAt`
   and the `PopulationUniqueness` conclusions are used as their own modules state
