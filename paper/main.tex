@@ -6,10 +6,9 @@
 
 \addbibresource{references.bib}
 
-\title{\bfseries Maximum-Likelihood Genome Assembly:\\
-Structural Rigidity and Finite-Sample Failure}
+\title{\bfseries When Does Maximum Likelihood Recover the True Genome?}
 
-\author{AssemblyP1 Project}
+\author{Vitaliy Mysak\\\href{mailto:assemblyp1@vau.place}{\texttt{assemblyp1@vau.place}}}
 
 \date{\today}
 
@@ -19,35 +18,30 @@ Structural Rigidity and Finite-Sample Failure}
 
 \begin{abstract}
 \noindent
-Genome assembly reconstructs a DNA sequence from short, overlapping reads.
-The overlaps constrain how fragments fit together, while maximum likelihood
-ranks candidate genomes by how well they explain the observed frequencies of
-read sequences. When do these two forms of evidence lead to the same
-reconstruction? We investigate this question for error-free reads from circular
-genomes, separating the effects of repeat structure, candidate restrictions,
-and finite sampling.
+Genome assembly seeks to reconstruct a DNA sequence from many short reads. A
+natural approach is to choose the genome that makes the observed reads most
+likely. But under what conditions is this choice guaranteed to be correct?
 
-Our central positive result is a combinatorial rigidity theorem: excluding
-sufficiently long triple repeats forces the true length-$L$ read spectrum to be
-the unique positive circulation of its overlap-support graph with the correct
-total length. Together with the appropriate bridging hypothesis and an explicit
-truth-admissibility condition, this gives maximum-likelihood recovery and
-uniqueness up to rotation among same-length oriented candidates. But these
-guarantees do not extend indiscriminately. We give kernel-checked finite
-counterexamples under exact multinomial and fixed-size binomial likelihoods,
-including same-length alternatives, and under reverse-complement molecule
-models. An oriented variable-length family exposes a particularly simple
-mechanism: additional observations of a read type can reverse a likelihood
-ranking without removing the structural bridging certificate.
+We establish both positive and negative results. First, we prove a
+combinatorial rigidity theorem showing that restrictions on repeated DNA
+sequences can uniquely determine the frequencies of genomic fragments
+consistent with an assembly graph. Under suitable conditions, this yields
+guarantees for maximum-likelihood reconstruction, including uniqueness of the
+recovered genome up to circular rotation. We then demonstrate the limits of
+these guarantees through explicit counterexamples in which an incorrect genome
+has greater likelihood. These examples reveal how genome length, the
+representation of DNA strands, and the random sampling of reads affect
+reconstruction.
 
-At population read frequencies, the usual Kullback--Leibler inequality makes
-the true genome a likelihood maximizer; the nontrivial question is
-\emph{uniqueness}. We prove this uniqueness up to cyclic rotation for primitive
-genomes satisfying a candidate-intrinsic repeat condition (P2), with the
-combinatorial argument checked in Lean. The results delineate where structural
-reconstruction and statistical optimization agree, and where they diverge.
-Their relationship to the motivating 2016 question of Shomorony et al., citing
-Medvedev and Brudno, is discussed with the relevant assumptions made explicit.
+Finally, we study maximum likelihood when the read distribution is known
+exactly, without sampling fluctuations. In this setting, the true genome always
+maximizes likelihood, but uniqueness remains a nontrivial mathematical
+question. We prove that uniqueness holds for a class of primitive genomes
+satisfying a structural condition on repeats.
+
+Together, these results clarify when likelihood-based genome assembly succeeds,
+why it can fail, and which mathematical properties of DNA sequences determine
+the outcome.
 \end{abstract}
 
 \clearpage
