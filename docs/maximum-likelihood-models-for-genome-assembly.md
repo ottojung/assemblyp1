@@ -172,7 +172,6 @@ If primitive P2 genomes `S, D` satisfy `p_S = p_D`, then `|S| spec_L(D) = |D| sp
 
 The remaining step — equal complete `L`-spectra plus P2 force rotation equivalence — is the step an earlier version of this note left as an external Bresler–Bresler–Tse (2013) Theorem 3 premise. It is now a kernel-checked theorem of this repository, in two halves:
 
-- **Short window (`K <= L-1`).** `AssemblyP1.Issue94LongWindowSplit.bbtCompleteSpec_of_short_window` proves rotation equivalence for arbitrary words at genome lengths below the read length; no P2, no primitivity, no Ukkonen is needed.
 - **Long window (`K >= L`).** `AssemblyP1.Issue94ConcreteAntiderivative.concrete_p2LongUnique` proves the `P2`-restricted long-range uniqueness directly, by the concrete component-antiderivative construction. It consumes no external premise.
 
 The end-to-end endpoint is the merged module `AssemblyP1.Issue94Complete`:
@@ -200,7 +199,7 @@ SameLength62NonprimitiveRotation theorem (merged PR #126) removes truth
 candidacy for nonprimitive truths by using observed-read provenance.
 
 The same removal is FALSE for primitive truths: Primitive62Uniqueness
-(PR #127) gives I_s-feasible AABB with observed AB,BA and a genuine
+(merged PR #127) gives I_s-feasible AABB with observed AB,BA and a genuine
 same-length ABAB flow-candidate not cyclically equivalent to AABB.
 The existing SameLengthExactMLCounterexample also shows a strict exact
 multinomial preference for ABAB on that sample. These results do not

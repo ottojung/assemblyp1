@@ -42,6 +42,7 @@ import AssemblyP1.OrientedSameLengthML
 import AssemblyP1.SameLengthExactMLCounterexample
 import AssemblyP1.SameLength62Maximizer
 import AssemblyP1.SameLength62NonprimitiveRotation
+import AssemblyP1.Primitive62Uniqueness
 import AssemblyP1.WraparoundTripleRepeat
 import AssemblyP1.MLEscape
 import AssemblyP1.SameLength62TieUniqueness
@@ -319,6 +320,25 @@ and no auxiliary start set. -/
 #print axioms AssemblyP1.OrientedSameLengthML.informationFeasible_exactLik_maximizer_of_superset_starts
 #print axioms AssemblyP1.OrientedSameLengthML.informationFeasible_of_exact_subset
 #print axioms AssemblyP1.OrientedSameLengthML.realizedStarts
+
+/-! ## Axiom audit for the #246 primitive no-`hStruth` uniqueness refutation
+
+`AssemblyP1.Primitive62Uniqueness` kernel-checks that the primitive
+source-faithful same-length §6.2 uniqueness reading **without** the truth
+certificate `hStruth` is false, on the `AABB`/`ABAB` witness with the
+realization at starts `{1, 3}`. The genuine same-length candidate class is
+non-empty (`ABAB`), so this is genuine non-uniqueness, not an existence
+failure. -/
+
+#print axioms AssemblyP1.Primitive62Uniqueness.infoFeasible_realizedStarts
+#print axioms AssemblyP1.Primitive62Uniqueness.S_primitive
+#print axioms AssemblyP1.Primitive62Uniqueness.D_is_genuine
+#print axioms AssemblyP1.Primitive62Uniqueness.D_not_rotation
+#print axioms AssemblyP1.Primitive62Uniqueness.observed_support_ne_truth_support
+#print axioms AssemblyP1.Primitive62Uniqueness.specCount_D_ne_S
+#print axioms AssemblyP1.Primitive62Uniqueness.S_not_genuine
+#print axioms AssemblyP1.Primitive62Uniqueness.genuine_candidate_exists_not_rotation
+#print axioms AssemblyP1.Primitive62Uniqueness.noHStruthPrimitive62Uniqueness_refuted
 #print axioms AssemblyP1.OrientedSameLengthML.mem_realizedStarts
 #print axioms AssemblyP1.OrientedSameLengthML.mem_realizedStarts_self
 
