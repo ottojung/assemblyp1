@@ -34,11 +34,15 @@ A circular genome is copied and read as many short, overlapping fragments.
 
 ```
 source:  A C G T T A C G A T
-reads:   ACGTT   TTACG   ACGAT
+reads:   ACGTT   TTACG   CGATA
 ```
 
 <div class="pt-6 text-lg">
-The assembly problem: infer the circular source genome from the fragments alone.
+The <b>assembly problem</b>: infer the circular source genome from the fragments alone.
+</div>
+
+<div class="pt-4 text-sm opacity-70">
+This is the computational core of every genome project — from bacterial genomes to the Human Genome Project.
 </div>
 
 ---
@@ -56,7 +60,11 @@ ACGTT
 ```
 
 <div class="pt-6 text-lg">
-Overlap evidence says: these pieces came from the same place.
+<b>Overlap evidence</b> says: these pieces came from the same place.
+</div>
+
+<div class="pt-4 text-sm opacity-70">
+Overlap-layout-consensus (OLC) assemblers — Celera Assembler, Canu — build on exactly this principle.
 </div>
 
 ---
@@ -65,7 +73,7 @@ layout: default
 
 # Repeats create genuine ambiguity
 
-<div class="text-xl pt-6">
+<div class="text-xl pt-6 font-mono">
 
 `...A `**`CGCG`**` T...`
 `...G `**`CGCG`**` C...`
@@ -76,6 +84,10 @@ A read lying entirely inside a repeated block cannot tell which copy it came fro
 
 <div class="pt-8 text-amber-600 text-lg">
 This is ambiguity in the data itself — not a shortcoming of a particular assembler.
+</div>
+
+<div class="pt-4 text-sm opacity-70">
+Real genomes are full of repeats: transposons, segmental duplications, ribosomal RNA arrays. A human genome is ~50% repetitive.
 </div>
 
 ---
@@ -91,7 +103,13 @@ read:        ————————————————>
 
 A single read that extends beyond **both** ends of a repeat carries the context needed to place it.
 
-Bridging conditions were introduced precisely to rule out the repeat configurations that make assembly ill-posed.
+<div class="pt-6 text-lg">
+<b>Bridging conditions</b> were introduced precisely to rule out the repeat configurations that make assembly ill-posed.
+</div>
+
+<div class="pt-4 text-sm opacity-70">
+Shomorony, Kim, Courtade & Tse (2016) formalized when bridging is sufficient — and left a key question open.
+</div>
 
 ---
 layout: default
@@ -140,6 +158,10 @@ Which candidate gives the observed read counts the highest probability?
 A genome can be structurally consistent with the reads yet not be the most likely explanation of their frequencies.
 </div>
 
+<div class="pt-4 text-sm opacity-70">
+This distinction — structure vs. frequency — is the central insight of the AssemblyP1 project.
+</div>
+
 ---
 layout: default
 ---
@@ -153,6 +175,10 @@ layout: default
 These are different mechanisms and need different arguments.
 </div>
 
+<div class="pt-4 text-sm opacity-70">
+A useful analogy: structural ambiguity is like having two maps that both fit the landmarks; frequency effects are like one map being more likely given how often you visited each landmark.
+</div>
+
 ---
 layout: default
 ---
@@ -161,16 +187,16 @@ layout: default
 
 Oriented reads of length `L = 3`, comparing:
 
-- truth `S = AAATT`
-- decoy `D = AAAATT`
+- truth `S = AAATT` (length 5)
+- decoy `D = AAAATT` (length 6)
 
 <div class="grid grid-cols-2 gap-8 pt-4">
 <div>
 
-**Exact candidate likelihood**
+**Candidate-intrinsic likelihood** (n = 6 reads)
 
 $$
-\frac{15625}{11664} > 1
+\frac{\mathcal{L}(D)}{\mathcal{L}(S)} = \frac{15625}{11664} > 1
 $$
 
 the decoy scores higher
@@ -178,10 +204,10 @@ the decoy scores higher
 </div>
 <div>
 
-**With the full-start sample (`n = 5`)**
+**Full-start sample** (n = 5 reads)
 
 $$
-\frac{3125}{3888} < 1
+\frac{\mathcal{L}(D)}{\mathcal{L}(S)} = \frac{3125}{3888} < 1
 $$
 
 the truth scores higher
@@ -197,17 +223,87 @@ The winner depends on how we model the sampling — a caution for any finite-rea
 layout: default
 ---
 
+# Why the reversal happens
+
+<div class="pt-4 text-lg">
+The decoy `AAAATT` has an extra `A`, so it produces the read `AAA` from <b>two</b> start positions.
+</div>
+
+<div class="pt-4">
+When the sample happens to contain extra `AAA` reads, the decoy's higher `AAA` probability is rewarded.
+</div>
+
+<div class="pt-6 text-amber-600">
+This is a <b>frequency-skew</b> effect: the same structural comparison gives different answers at different sample sizes.
+</div>
+
+<div class="pt-4 text-sm opacity-70">
+The exact ratio 15625/11664 is kernel-checked in Lean (AssemblyP1.OrientedVariableLengthSe62).
+</div>
+
+---
+layout: default
+---
+
 # A positive result: structural rigidity
 
 Model the reads as a **support graph**:
 
-- vertices = the length-`(L-1)` prefixes and suffixes,
-- edges = the distinct length-`L` reads.
-
-Under the structural conditions, the graph's possible read spectra are tightly constrained.
+- **vertices** = the length-`(L-1)` prefixes and suffixes,
+- **edges** = the distinct length-`L` reads.
 
 <div class="pt-6 text-lg text-emerald-600">
 Repeat structure imposes genuine combinatorial rigidity — a positive, not merely negative, result.
+</div>
+
+<div class="pt-4 text-sm opacity-70">
+Under the bridging conditions, the graph's possible read spectra are tightly constrained. Not every distribution of read counts is achievable.
+</div>
+
+---
+layout: default
+---
+
+# The support graph in detail
+
+<div class="pt-4">
+For `L = 3`, each read `XYZ` is an **edge** from vertex `XY` to vertex `YZ`.
+</div>
+
+```
+        AAA
+       ↙   ↘
+     AA ———— AT
+     ↓  ↘   ↓
+     AT ———— TT
+       ↘   ↙
+        TTA
+```
+
+<div class="pt-4 text-sm">
+Each vertex's in-degree equals its out-degree in any valid assembly — a <b>balanced circulation</b>.
+</div>
+
+<div class="pt-4 text-sm opacity-70">
+This is the de Bruijn graph construction, fundamental to modern assemblers (SPAdes, ABySS, MEGAHIT).
+</div>
+
+---
+layout: default
+---
+
+# What rigidity gives us
+
+<div class="pt-4 text-lg">
+The support graph's structure constrains which read-count spectra are achievable by <b>any</b> candidate genome.
+</div>
+
+<div class="pt-4">
+This is a <b>positive</b> combinatorial result: the repeat structure of the truth limits the possible explanations.
+</div>
+
+<div class="pt-6 text-sm opacity-70">
+Formally: under the bridging hypothesis, the set of feasible spectra is a strict subset of all non-negative integer vectors on the support.
 </div>
 
 ---
@@ -224,6 +320,10 @@ Then the expected log-likelihood is maximized exactly when the candidate predict
 
 <div class="pt-6 text-amber-600 text-lg">
 The statistical noise disappears; what remains is a clean identifiability question.
+</div>
+
+<div class="pt-4 text-sm opacity-70">
+This is the "population" limit: infinitely many reads, so frequencies are exact.
 </div>
 
 ---
@@ -245,6 +345,28 @@ the population maximum-likelihood genome is unique up to circular rotation.
 
 <div class="pt-4 text-base">
 This result is verified by a machine-checked proof (Lean), not only by computation.
+</div>
+
+---
+layout: default
+---
+
+# What P2 means biologically
+
+<div class="pt-4 text-lg">
+<b>P2</b> (Ukkonen-admissible) rules out two pathological repeat configurations:
+</div>
+
+<div class="pt-4">
+1. <b>Triple repeats</b> — a sequence appearing three or more times, which creates irreducible ambiguity.
+</div>
+
+<div class="pt-4">
+2. <b>Interleaved repeats</b> — two repeats that alternate, preventing clean separation.
+</div>
+
+<div class="pt-6 text-sm opacity-70">
+These are the same repeat structures that cause real assemblers to produce fragmented or misassembled contigs.
 </div>
 
 ---
@@ -290,6 +412,10 @@ layout: default
 - Bridging conditions help with structure, but do not by themselves remove sampling effects.
 - Population-level reasoning isolates the part of the problem that is genuinely combinatorial.
 
+<div class="pt-6 text-sm opacity-70">
+For working genomics: long reads (PacBio, Oxford Nanopore) and linked reads (10x) directly attack the repeat problem by providing more bridging information.
+</div>
+
 ---
 layout: default
 ---
@@ -329,6 +455,10 @@ layout: default
 - Error-free reads, as in the 2016 information-theoretic model.
 - Two genomes that differ only by circular rotation are the same oriented genome.
 
+<div class="pt-6 text-sm opacity-70">
+The model follows Medvedev & Brudno (2009) and Shomorony et al. (2016).
+</div>
+
 ---
 layout: default
 ---
@@ -343,4 +473,10 @@ layout: default
 
 **Shomorony, Kim, Courtade & Tse (2016).** "Information-optimal genome assembly via sparse read-overlap graphs." *Bioinformatics* 32(17), i494–i502.
 
+**Ukkonen (1992).** "Approximate string-matching with q-grams and maximal matches." *Theoretical Computer Science* 92(1), 191–211.
+
+</div>
+
+<div class="pt-6 text-sm opacity-70">
+Full formalization: <a href="https://github.com/ottojung/assemblyp1">github.com/ottojung/assemblyp1</a>
 </div>
