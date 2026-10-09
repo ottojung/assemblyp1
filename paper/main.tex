@@ -6,15 +6,9 @@
 
 \addbibresource{references.bib}
 
-\title{\bfseries Bridging Conditions and Maximum-Likelihood\\
-Genome Assembly\\[0.4em]
-\large A Source-Faithful Study of a 2016 Open Question}
+\title{\bfseries The Most Likely Genome}
 
-\author{AssemblyP1 Project\thanks{This manuscript is a research artifact of the
-\href{https://github.com/ottojung/assemblyp1}{assemblyp1} repository. It
-distinguishes source facts, project interpretations, proved theorems, and
-kernel-checked finite certificates throughout; see
-Appendix~\ref{app:ledger} for the consolidated epistemic ledger.}}
+\author{Vitaliy Mysak\\\href{mailto:assemblyp1@vau.place}{\texttt{assemblyp1@vau.place}}}
 
 \date{\today}
 
@@ -24,44 +18,35 @@ Appendix~\ref{app:ledger} for the consolidated epistemic ledger.}}
 
 \begin{abstract}
 \noindent
-Shomorony, Kim, Courtade, and Tse (2016) asked whether the repeat-bridging
-conditions that make shotgun assembly \emph{information-feasible} also guarantee
-that ``the maximum-likelihood sequence is the true sequence,'' referring to the
-maximum-likelihood assembly formulation of Medvedev and Brudno (2009). We give a
-source-faithful mathematical study of this question that keeps four layers
-visibly separate: the historical definitions, the ambiguities those definitions
-leave open, theorems and counterexamples about the resulting formulations, and
-new models introduced by this project to repair the weaknesses found.
+Genome assembly seeks to reconstruct the genome from which a collection of
+short DNA reads originated. Because sequencing involves random sampling, we can
+ask how likely we would have been to observe those same reads if they had come
+from a different genome. Is the true genome necessarily the one that makes the
+observed reads most likely?
 
-We show that the published sentence does not by itself determine several
-modeling axes --- which Medvedev--Brudno likelihood layer is meant, whether reads
-are oriented or reverse-complement molecules, whether candidates are
-length-restricted, and whether the conclusion asserts existence of a maximizer
-or uniqueness of the maximizing genome. Along these axes we record two kinds of
-concrete results. On the negative side, kernel-checked same-length witnesses
-refute the maximizer conclusion under the exact multinomial and under the
-fixed-length binomial approximation, over all circular candidates, and further
-witnesses refute it under the reverse-complement molecule reading of the
-Medvedev--Brudno Section~6.2 flow. On the positive side, we prove a rigidity
-theorem: under Shomorony's information-feasibility condition and strict oriented
-read types, the truth's length-$L$ spectrum is the unique positive circulation
-of its length-$L$ support graph, so no strict same-length Section~6.2
-counterexample exists for any genome length, read length, or alphabet; on that
-truth-admissible row the external complete-spectrum uniqueness input makes the
-truth unique up to cyclic rotation.
+We establish both positive and negative results. First, we prove a
+combinatorial rigidity theorem showing that restrictions on repeated DNA
+sequences can uniquely determine the frequencies of genomic fragments
+consistent with an assembly graph. Under suitable conditions, this implies that
+the true genome maximizes likelihood among the relevant same-length candidates,
+uniquely up to circular rotation. We then demonstrate the limits of these
+guarantees through explicit counterexamples in which an incorrect genome has
+greater likelihood. These examples reveal how candidate length, the
+representation of DNA strands, and random sampling of reads affect likelihood
+rankings.
 
-We then present a \emph{new}, project-level model that isolates the statistical
-failure mechanism and removes it. Under population (infinite-read) maximum
-likelihood, the truth is always a maximizer by a Gibbs/KL identity, so
-uniqueness becomes pure spectrum identifiability. For the project's oriented,
-primitive, P2-admissible candidate class we prove the resulting uniqueness up
-to cyclic rotation \emph{in full}: the long-window complete-spectrum step that
-was formerly imported from Bresler, Bresler, and Tse (2013) is now discharged
-inside the kernel, and the end-to-end theorem has no external premise. This
-repaired result does not settle the 2016 finite-sample question, and we say
-exactly why.
+Finally, we study maximum likelihood when the read distribution is known
+exactly, without sampling fluctuations. In this setting, the true genome always
+maximizes likelihood, but uniqueness remains a nontrivial mathematical
+question. We prove that uniqueness holds for a class of primitive genomes
+satisfying a structural condition on repeats.
+
+Together, these results clarify when the true genome has the greatest
+likelihood, when another genome can be more likely, and when the maximizer is
+unique.
 \end{abstract}
 
+\clearpage
 \tableofcontents
 
 \input{sections/01-introduction}
