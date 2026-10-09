@@ -509,6 +509,7 @@ distinction, and it is needed here as well.
 | oriented rigidity on its own support; non-rigidity under the class condition | **mathematical proof** (oriented, on `main`) + **verified computation** (molecule) |
 | census numbers, repair refutations, remap feasibility densities | **bounded computation** (scope stated) |
 | "every `(L - 1)`-mer class and every `L`-mer class `≤ 2` restores molecule rigidity" | **conjecture**, bounded evidence only |
+| V3 exactly compatible with V1/V2/V5 iff R1∧R2∧R3; incomparable off it (§11) | **mathematical proof** + **kernel-checked witnesses** (`AAATAT`, `GGGA`) |
 | which strand convention the 2016 sentence intends | **open** |
 
 ## 8. Sources and repository cross-references
