@@ -6,7 +6,7 @@
 
 \addbibresource{references.bib}
 
-\title{\bfseries When Does Maximum Likelihood Recover the True Genome?}
+\title{\bfseries The Most Likely Genome}
 
 \author{Vitaliy Mysak\\\href{mailto:assemblyp1@vau.place}{\texttt{assemblyp1@vau.place}}}
 
@@ -18,20 +18,20 @@
 
 \begin{abstract}
 \noindent
-Genome assembly seeks to reconstruct a DNA sequence from many short reads. A
-natural approach is to choose the genome that makes the observed reads most
-likely. But under what conditions is this choice guaranteed to be correct?
+Genome assembly seeks to reconstruct a DNA sequence from many short reads. Each
+candidate genome assigns probabilities to the reads observed in a sequencing
+experiment. Is the true genome necessarily the most likely?
 
 We establish both positive and negative results. First, we prove a
 combinatorial rigidity theorem showing that restrictions on repeated DNA
 sequences can uniquely determine the frequencies of genomic fragments
-consistent with an assembly graph. Under suitable conditions, this yields
-guarantees for maximum-likelihood reconstruction, including uniqueness of the
-recovered genome up to circular rotation. We then demonstrate the limits of
-these guarantees through explicit counterexamples in which an incorrect genome
-has greater likelihood. These examples reveal how genome length, the
-representation of DNA strands, and the random sampling of reads affect
-reconstruction.
+consistent with an assembly graph. Under suitable conditions, this implies that
+the true genome maximizes likelihood among the relevant same-length candidates,
+uniquely up to circular rotation. We then demonstrate the limits of these
+guarantees through explicit counterexamples in which an incorrect genome has
+greater likelihood. These examples reveal how candidate length, the
+representation of DNA strands, and random sampling of reads affect likelihood
+rankings.
 
 Finally, we study maximum likelihood when the read distribution is known
 exactly, without sampling fluctuations. In this setting, the true genome always
@@ -39,9 +39,9 @@ maximizes likelihood, but uniqueness remains a nontrivial mathematical
 question. We prove that uniqueness holds for a class of primitive genomes
 satisfying a structural condition on repeats.
 
-Together, these results clarify when likelihood-based genome assembly succeeds,
-why it can fail, and which mathematical properties of DNA sequences determine
-the outcome.
+Together, these results clarify when the true genome has the greatest
+likelihood, when another genome can be more likely, and when the maximizer is
+unique.
 \end{abstract}
 
 \clearpage
