@@ -44,6 +44,7 @@ import AssemblyP1.SameLength62NonprimitiveRotation
 import AssemblyP1.Primitive62Uniqueness
 import AssemblyP1.WraparoundTripleRepeat
 import AssemblyP1.MLEscape
+import AssemblyP1.SameLength62TieUniqueness
 import AssemblyP1.PopulationUniqueness
 import AssemblyP1.Issue94GcdOneP2
 import AssemblyP1.P2GcdOne
@@ -897,3 +898,30 @@ container's 8 GiB cgroup --- pre-existing, see
 #print axioms AssemblyP1.Issue94Interface.bbTP2Prim_of_bbtUniqueAt
 #print axioms AssemblyP1.Issue94Interface.bbTP2Prim_of_obstruction
 #print axioms AssemblyP1.Issue94Interface.population_unique_ML_of_BBTUniqueAt
+
+/-! ## Axiom audit for the same-length §6.2 tie analysis (issue #211)
+
+`AssemblyP1.SameLength62TieUniqueness` is the uniqueness-up-to-rotation half of
+the #211 question. It does **not** re-prove the maximizer theorem; it records
+that the maximizer's `≤` is an equality, that the tie class is exactly the
+spectrum fibre of the truth, and it isolates the single combinatorial
+proposition (`FibreFreedomForcesLongRepeat`) that would close the uniqueness
+reading. Two finite checks anchor it: the refuted BBT premise's witness is not
+`I_s`-feasible, and at the `AABB`/`ABAB` floor instance the fibre is a singleton. -/
+
+#print axioms AssemblyP1.SameLength62TieUniqueness.support_eq_iff_specCount_eq
+#print axioms AssemblyP1.SameLength62TieUniqueness.informationFeasible_62_exact_tie
+#print axioms AssemblyP1.SameLength62TieUniqueness.same_support_word_ties_truth
+#print axioms AssemblyP1.SameLength62TieUniqueness.no_interleaved_long_repeats_of_Is
+#print axioms AssemblyP1.SameLength62TieUniqueness.unique_maximizer_up_to_rotation_of_residue
+#print axioms AssemblyP1.SameLength62TieUniqueness.support_rigidity_iff_fibre_singleton
+#print axioms AssemblyP1.SameLength62TieUniqueness.unique_62_maximizer_up_to_rotation_of_support_rigidity
+#print axioms AssemblyP1.SameLength62TieUniqueness.isCyclicShift_iff_fin_shift
+#print axioms AssemblyP1.SameLength62TieUniqueness.rotEquiv_iff_isCyclicShift
+#print axioms AssemblyP1.SameLength62TieUniqueness.truth6_not_information_feasible
+#print axioms AssemblyP1.SameLength62TieUniqueness.truth4_support_rigid
+#print axioms AssemblyP1.SameLength62TieUniqueness.truth4_is62Candidate
+#print axioms AssemblyP1.SameLength62TieUniqueness.truth4_tie_instance
+#print axioms AssemblyP1.SameLength62TieUniqueness.bbTP2Prim_of_94
+#print axioms AssemblyP1.SameLength62TieUniqueness.unique_62_maximizer_up_to_rotation_of_primitive
+#print axioms AssemblyP1.SameLength62TieUniqueness.fibre_singleton_of_Iss_and_obstruction
