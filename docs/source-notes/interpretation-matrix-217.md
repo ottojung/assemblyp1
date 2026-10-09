@@ -265,8 +265,8 @@ kernel-checks that the §6.2 refutation is not confined to spelled circuits:
 over the *whole* `Feasible62` flow domain the truth is not a maximizer, and the
 flow optimum `d* = (AAA:2, AAT:1, TAA:1)` (with `d*₃ = (AAA:3, AAT:1, TAA:1)`)
 spells no circular molecule of any length. This upgrades R10–R12 from the
-spelled sub-case to the general flow domain. Two objects must **stay separate**
-in any tracking of this result:
+spelled sub-case to the general flow domain. Two objects and one parameter must
+**stay separate** in any tracking of this result:
 
 * the **integer flow optimum** — the argmax of the §6.1 objective over the
   integer throughput vectors `1 ≤ d ≤ N` that are genuine §6.2 flows (the
@@ -274,7 +274,15 @@ in any tracking of this result:
 * the **half-integral relaxation** — the argmax of the same objective when `d`
   is allowed to range over half-integers (the per-coordinate maximizer of
   `(d/N)^x((N−d)/N)^(n−x)` is `d = xN/n`, e.g. `5/2` for the `AAA` coordinate
-  here, which is not an integer and not a §6.2 flow throughput).
+  here, which is not an integer and not a §6.2 flow throughput);
+* the **overlap floor `o_min`** — the #214 non-spelled flow counterexample is
+  stated at `o_min = 1` (`L = 3`), whereas the merged spelled witnesses R10,
+  R11, R12 and R13 are stated at `o_min = L − 1 = 2`. These are different graphs
+  (the shorter overlaps exist only when `o_min ≤ L − 2`), so the **proved
+  `o_min = 1` counterexample must not be read as the `o_min = L − 1` result**,
+  nor conversely; `o_min` is an explicit MB09 §6.2 parameter and each setting is
+  recorded with its own witness. At `o_min = L − 1` the non-spellable phenomenon
+  is exactly an `o_min < L − 1` effect on the `{AAA, AAT, TAA}` support.
 
 The relaxation is a different, larger upper bound; conflating it with the
 integer flow optimum would overstate what the §6.2 domain refutes. The board
