@@ -11,8 +11,9 @@
    "texlive-amscls"         ; amsthm
    "texlive-geometry"       ; page layout
    "texlive-hyperref"       ; hyperlinks, \autoref
-   "texlive-booktabs"       ; professional tables
-   "texlive-microtype"      ; typographic refinement
+    "texlive-booktabs"       ; professional tables
+    "texlive-tools"          ; longtable (multi-page Table 3) and tools bundle
+    "texlive-microtype"      ; typographic refinement
    "texlive-enumitem"       ; list customization
    "texlive-xcolor"         ; color
    "texlive-pgf"            ; TikZ figures
