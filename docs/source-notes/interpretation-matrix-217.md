@@ -238,9 +238,11 @@ can recover the research graph.
 | #211 | `agent/board-211-8d5103` / `assemblyp1-finite-211` | `SameLength62TieUniqueness` committed (`8bef1f6`); uncommitted umbrella wiring + 2 scripts preserved | **module integrated**; finite same-length uniqueness stays Lean-conditional on the complete-spectrum input |
 | #212 | `agent/board-212-37b45b` / `assemblyp1-finite-212` | clean; module + script already harvested | **harvested** — R13 resolved FALSE (see §7.1) |
 | #213 | `agent/board-213-5fff16` / `assemblyp1-finite-213` | `Section62VarlenPerOccurrence` + doc + script committed (`a47107c`); worktree clean | **module integrated** — R10/R12 hardened (per-occurrence + unique-optimizer over the whole §6.1 domain and the general flow universe); no new row |
-| #214 | `agent/board-214-d0e372` / `assemblyp1-finite-214` | `Section62NonSpelledFlow` committed through `d2163b8`; worktree clean | **module integrated**; R10–R12 upgrade to the general `Feasible62` flow domain |
+| #214 | `agent/board-214-d0e372` / `assemblyp1-finite-214` | `Section62NonSpelledFlow` (`d2163b8`, `o_min = 1`) **and** `Section62FullOverlapDisconnected` (`f7a9355`, `o_min = L-1`) committed; worktree clean | **both modules integrated this round**; R10–R12 upgrade to the general `Feasible62` flow domain; the `o_min = 1` (non-spellable throughput) and `o_min = L-1` (disconnected flow, **spellable** throughput `AAAAT`) results are kept distinct — see §2.2 |
 | #215 | `agent/board-215-745214` / `assemblyp1-finite-215` | `TwoDisjointCirclesDuplex` + `DoubleStrandBridgingTransfer` committed (`a852879`); **V3 row settled** (`67de8b7`+`20b6c71`+`2a3d2cf`): `BreslerRemapCompatibility` + script + appendix §11 | **modules integrated**; new row R18, R16 refined; **this round** integrates the V3-settle artifacts — R16 compatibility kernel-checked (incomparable off R1∧R2∧R3) |
-| #216 | `agent/board-216-eb3281` / `assemblyp1-finite-216` | `ImplicationLattice` committed (`486d60f`); **uncommitted `Part 6` sample-multiplicity refinement does not compile** | base **module integrated** (conclusion-schema lattice, no matrix row change); `Part 6` **resolved as redundant, not integrated** — superseded by #210's already-`[K]` result (`OrientedVariableLengthSe62`), with the pointer recorded in `implication-lattice-216.md` §7 |
+| #216 | `agent/board-216-eb3281` / `assemblyp1-finite-216` | `ImplicationLattice` **upgraded to `07ba0d8`** (sample-multiplicity axis + concrete DNA strand panel; 440 → 1193 lines, **compiles**); the earlier uncommitted `Part 6` is superseded by this committed result | **upgraded module integrated this round**: the conclusion-schema transfer lattice plus the five `W-*` strand/objective non-transfer witnesses and the sample-multiplicity/KL facts; no matrix row change |
+| #220 | `agent/board-220-source-synthesis-20261009` | `docs/maximum-likelihood-models-for-genome-assembly.md` repaired (`7ca8217`): population theorem kernel-checked, `#210`/`#212`/`#214` witnesses added, finite `#211` conditional kept distinct | **doc integrated this round** (module-name typo `Issue94Split` → `Issue94LongWindowSplit` fixed); no matrix row change |
+| #222 | `agent/board-222-beamer-20261009` | `talk/` corrected (`b59e353`): kernel-checked status, de Bruijn teaching slide, pinned-Guix build | **talk integrated this round** (builds, 22 pp); consistent with the #221 paper corrections; no matrix row change |
 | #219 | `agent/board-219-547404` / `assemblyp1-finite-219` | **terminal** (`B219 TERMINAL`, 11:06): `FibreCountArithmetic.lean` + updated note + fixed audit script committed (`81d29c6`, doc cross-ref `1ec6195`); worktree clean | **fully integrated this round**: `AssemblyP1/FibreCountArithmetic.lean` (kernel-checked divisor-sum core), `docs/exact-fibre-count-theorem-219.md` (adds prior-art boundary and kernel check), `scripts/audit_fibre_count_219.py` (placeholder bug fixed); root-imported and axiom-audited; no matrix row change (population result) |
 
 **PR #117 (merged Lean CI repair).** The board branch carries `e9fcf01`, the
@@ -260,13 +262,30 @@ both keep the hypothesis as a premise — the uniqueness conclusion is **not**
 kernel-checked unconditionally. This round did not discharge, weaken, or
 re-state that hypothesis.
 
-**The #214 general-flow upgrade, and the separation to keep.** Leaf #214
-kernel-checks that the §6.2 refutation is not confined to spelled circuits:
-over the *whole* `Feasible62` flow domain the truth is not a maximizer, and the
-flow optimum `d* = (AAA:2, AAT:1, TAA:1)` (with `d*₃ = (AAA:3, AAT:1, TAA:1)`)
-spells no circular molecule of any length. This upgrades R10–R12 from the
-spelled sub-case to the general flow domain. Two objects and one parameter must
-**stay separate** in any tracking of this result:
+**The two #214 general-flow upgrades, and the separations to keep.** Leaf #214
+kernel-checks **two distinct** results over the *whole* `Feasible62` flow
+domain, at two different values of the explicit MB09 §6.2 overlap floor
+`o_min`:
+
+* **(i) `o_min = 1` (`L = 3`): non-spellable throughput.** The §6.2 refutation
+  is not confined to spelled circuits: the truth is not a maximizer, and the
+  integer flow optimum `d* = (AAA:2, AAT:1, TAA:1)` (with
+  `d*₃ = (AAA:3, AAT:1, TAA:1)`) spells no circular molecule of any length. The
+  *throughput vector itself* is not a genome spectrum.
+* **(ii) `o_min = L − 1 = 2` (`L = 3`): disconnected flow, spellable
+  throughput.** The truth `AAATAT` is likewise not a maximizer, but the
+  phenomenon is different: the unique integer optimum
+  `d* = (AAA:2, AAT:1, ATA:1, TAA:1)` has **disconnected positive support**
+  (`{AAA}` together with `{AAT, ATA, TAA}`), so positive-support connectedness
+  of all optima is **false** — yet this throughput vector **is** spellable: it
+  is the spectrum of the circular molecule `AAAAT` (windows
+  `AAA, AAA, AAT, ATA, TAA`). This is disconnectedness of the *flow
+  realization*, **not** non-spellability of the *throughput*. The optimum set
+  here contains both a connected and a disconnected realization.
+
+These upgrade R10–R12 from the spelled sub-case to the general flow domain.
+Three objects and one parameter must **stay separate** in any tracking of these
+results:
 
 * the **integer flow optimum** — the argmax of the §6.1 objective over the
   integer throughput vectors `1 ≤ d ≤ N` that are genuine §6.2 flows (the
@@ -275,27 +294,32 @@ spelled sub-case to the general flow domain. Two objects and one parameter must
   is allowed to range over half-integers (the per-coordinate maximizer of
   `(d/N)^x((N−d)/N)^(n−x)` is `d = xN/n`, e.g. `5/2` for the `AAA` coordinate
   here, which is not an integer and not a §6.2 flow throughput);
-* the **overlap floor `o_min`** — the #214 non-spelled flow counterexample is
-  stated at `o_min = 1` (`L = 3`), whereas the merged spelled witnesses R10,
-  R11, R12 and R13 are stated at `o_min = L − 1 = 2`. These are different graphs
-  (the shorter overlaps exist only when `o_min ≤ L − 2`), so the **proved
-  `o_min = 1` counterexample must not be read as the `o_min = L − 1` result**,
-  nor conversely; `o_min` is an explicit MB09 §6.2 parameter and each setting is
-  recorded with its own witness. At `o_min = L − 1` the non-spellable phenomenon
-  is exactly an `o_min < L − 1` effect on the `{AAA, AAT, TAA}` support.
+* the **overlap floor `o_min`** — the `o_min = 1` and the `o_min = L − 1`
+  witnesses live on **different graphs** (the shorter overlaps exist only when
+  `o_min ≤ L − 2`); the proved `o_min = 1` counterexample must not be read as
+  the `o_min = L − 1` result, nor conversely, and each setting is recorded with
+  its own witness;
+* the **throughput vector vs. the flow realization** — the `o_min = L − 1`
+  optimum’s throughput is spellable (`AAAAT`) while its flow support is
+  disconnected; the `o_min = 1` optimum’s throughput is not spellable at all.
+  “Non-spellable spectrum” and “disconnected flow” are **different**
+  properties and must not be conflated.
 
 The relaxation is a different, larger upper bound; conflating it with the
 integer flow optimum would overstate what the §6.2 domain refutes. The board
 records the integer optimum as the §6.2 result and does not substitute the
 relaxation. Leaf #214 is now **terminal for its scope**: its
-`AssemblyP1/Section62NonSpelledFlow.lean` is integrated here (root-imported and
-axiom-audited at `[propext, Classical.choice, Quot.sound]`), it certifies that a
-spelled candidate is a general `Feasible62` flow
+`AssemblyP1/Section62NonSpelledFlow.lean` (result (i)) is integrated here
+(root-imported and axiom-audited at `[propext, Classical.choice, Quot.sound]`),
+certifies that a spelled candidate is a general `Feasible62` flow
 (`spelled_subset_general`), exhibits the non-spelled flow optimum `d*`
 (`star_argmax`), and proves no circular molecule realizes its throughputs
-(`no_sequence_has_star_spectrum`). The paper’s flow-domain remark is updated
-accordingly. The half-integral relaxation remains a *separate* object and is
-never substituted for the integer flow optimum.
+(`no_sequence_has_star_spectrum`); its
+`AssemblyP1/Section62FullOverlapDisconnected.lean` (result (ii)) is integrated
+too (`full_overlap_disconnected_optimum`, `disc_support_disconnected`,
+`dStar_argmax`), certifying the disconnected full-overlap optimum. The paper’s
+flow-domain remark is updated accordingly. The half-integral relaxation remains
+a *separate* object and is never substituted for the integer flow optimum.
 
 ---
 
@@ -938,3 +962,76 @@ stays explicit in §1.1/§1.4, §3, §4 and §6; it is not resolved by this pass
 (audit register §6 items 1–6 and 8; item 7 closed); the three bearing on the
 matrix claim are the referent, the publisher supplement, and the
 strand/equivalence convention. The full enumeration is §3.1.
+
+### 7.8 Conflation-fix and pending-branch integration round (this pass), 2026-10-09
+
+Base: `3abfd96`. This pass acts on the board's newest direction: **do not
+conflate the full-overlap disconnected *flow* optimality of `#214` (`f7a9355`)
+with a non-spellable *spectrum*.** The earlier §2.2 sentence ("At
+`o_min = L − 1` the non-spellable phenomenon is exactly an `o_min < L − 1`
+effect …") was exactly that conflation and is now corrected. The two `#214`
+results are:
+
+| setting | truth | optimal throughput | spellable? | phenomenon |
+|---|---|---|---|---|
+| `o_min = 1` (`L = 3`) | `AAATT` | `(AAA:2, AAT:1, TAA:1)` | **no** (any length) | non-spellable throughput |
+| `o_min = L − 1 = 2` (`L = 3`) | `AAATAT` | `(AAA:2, AAT:1, ATA:1, TAA:1)` | **yes** (`AAAAT`) | disconnected flow support |
+
+So "non-spellable spectrum" and "disconnected flow" are different properties,
+and neither may be read as the other.
+
+**Branches harvested and independently reviewed this pass.** Every listed
+branch was inspected read-only; only novel, self-contained files were taken by
+path (never a leaf's `AssemblyP1.lean`, paper, or shared-doc edits). The
+already-integrated results `#208` (`3f532c5`), `#210` (`7d48eab`), `#215`
+(`a852879`), `#219` (`1ec6195`), `#221` (`729f50c`) were confirmed byte-identical
+to HEAD (or HEAD ahead, for the `#215` appendix).
+
+| branch | commit | verdict | files integrated |
+|---|---|---|---|
+| #214 | `f7a9355` | **new, verified** | `AssemblyP1/Section62FullOverlapDisconnected.lean`, `docs/section62-full-overlap-disconnected-optimum.md`, `scripts/verify_se62_full_overlap_disconnected_optimum.py` |
+| #216 | `07ba0d8` | **upgrade, verified** (supersedes the §7.7 "`Part 6` redundant" note: this is a *committed*, compiling result) | `AssemblyP1/ImplicationLattice.lean` (440 → 1193 lines), `docs/implication-lattice-216.md` |
+| #220 | `7ca8217` | **doc repair, verified** | `docs/maximum-likelihood-models-for-genome-assembly.md` (with `Issue94Split` → `Issue94LongWindowSplit` corrected) |
+| #222 | `b59e353` | **talk correction, verified** | `talk/main.tex`, `talk/build.sh`, `talk/.gitignore` |
+
+**Theorem-statement / axiom / forbidden-token review.** For each newly
+integrated Lean module the headline statements were read against the source
+model, scanned for `sorry`/`axiom`/`admit`/`native_decide` (none), and
+axiom-audited:
+
+| module | headline theorems audited | axioms |
+|---|---|---|
+| `Section62FullOverlapDisconnected` | `full_overlap_disconnected_optimum`, `disc_support_disconnected`, `dStar_argmax`, `star_better` | `[propext, Classical.choice, Quot.sound]` (`disc_support_disconnected` depends on none) |
+| `ImplicationLattice` (upgrade) | `population_D_le_S`, `population_eq_iff_spectra`, `amplification_strict_of_qMul_gt_one`, `ConcretePanel.sigma_oriented_strict`, `…upsilon_molecular_strict`, `…lambda1_A_tie`, `…tau_E_tie_molecular` | `[propext, Classical.choice, Quot.sound]` |
+
+The `#214` module's own docstring and §2.4 table already make the
+non-spellability/disconnectedness distinction explicitly; the conflation was in
+the **matrix prose**, not in the leaf result.
+
+**Gates re-run this pass (real exit codes).**
+
+| check | command | result |
+|---|---|---|
+| scoped `--wfail` build | `LEAN_NUM_THREADS=8 lake build --wfail AssemblyP1.Section62FullOverlapDisconnected AssemblyP1.ImplicationLattice AssemblyP1.Section62NonSpelledFlow` | **0** (8930 jobs) |
+| `#214` module build | `lake build AssemblyP1.Section62FullOverlapDisconnected` | **0** (15s) |
+| `#216` module build | `lake build AssemblyP1.ImplicationLattice` | **0** (4.9s) |
+| `#214` script | `python3 scripts/verify_se62_full_overlap_disconnected_optimum.py` | **0**, `ALL CHECKS PASSED` |
+| `#216` script | `python3 scripts/verify_implication_lattice_216.py` | **0**, 79/79 |
+| `#219` script | `python3 scripts/audit_fibre_count_219.py` | **0**, `AUDIT PASSED` |
+| `#215` script | `python3 scripts/verify_two_disjoint_circles_duplex.py` | **0**, all assertions |
+| documentation integrity | `python3 scripts/check-research-docs.py` | **0** |
+| paper build | `latexmk -pdf -halt-on-error` (pinned Guix profile) | **0**, `main.pdf`, 36 pp, 0 undefined refs |
+| talk build | `latexmk -pdf -halt-on-error` (pinned Guix profile) | **0**, `main.pdf`, 22 pp |
+
+**No conflicting LaTeX rewrites.** `#220` (Markdown synthesis), `#222` (`talk/`)
+and `#221` (`paper/`) touch disjoint documents; the `#222` talk and the `#221`
+paper state the same proof-status facts (population kernel-checked; finite
+same-length rotation uniqueness conditional on the external complete-spectrum
+input), so they are consistent rather than conflicting.
+
+**Residual (unchanged).** `#211` finite same-length rotation uniqueness stays
+Lean-conditional on the external complete-spectrum input; only the population
+theorem is unconditional. The 2016 likelihood referent and the publisher
+supplementary ZIP remain unknown/uninspected. The full `lake build --wfail`
+whole-library pass is left to CI (host OOM on `Issue94Transposition`,
+pre-existing).

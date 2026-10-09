@@ -561,12 +561,25 @@ value tagged as source fact, source-supported inference, or modelling choice, is
 floor that must not be conflated]
 \label{rem:flow-domain}
 The §6.2 refutations above are stated for \emph{spelled} bidirected circuits.
-Leaf~\#214 upgrades them to the \emph{whole} §6.2 flow domain: over the general
-\texttt{Feasible62} predicate the truth is still not a maximizer, and the flow optimum
-$d^*=(AAA{:}2,AAT{:}1,TAA{:}1)$ (with $d^*_3=(AAA{:}3,AAT{:}1,TAA{:}1)$) spells
-no circular molecule of any length, so the maximum-likelihood \emph{object} of the
-flow domain is a non-sequence and the maximum-likelihood \emph{sequence} does not
-exist there. Two optima and one parameter must be kept separate:
+Leaf~\#214 upgrades them to the \emph{whole} §6.2 flow domain, at two values of
+the explicit overlap floor $o_{\min}$:
+\begin{itemize}
+  \item at $o_{\min}=1$ ($L=3$) the truth is still not a maximizer, and the flow
+        optimum $d^*=(AAA{:}2,AAT{:}1,TAA{:}1)$ (with
+        $d^*_3=(AAA{:}3,AAT{:}1,TAA{:}1)$) spells no circular molecule of any
+        length, so the maximum-likelihood \emph{object} of the flow domain is a
+        non-sequence and the maximum-likelihood \emph{sequence} does not exist
+        there;
+  \item at the full overlap $o_{\min}=L-1=2$ ($L=3$) the truth $AAATAT$ is
+        likewise not a maximizer, but here the unique integer optimum
+        $d^*=(AAA{:}2,AAT{:}1,ATA{:}1,TAA{:}1)$ has \emph{disconnected positive
+        support} ($\{AAA\}$ together with $\{AAT,ATA,TAA\}$), so
+        positive-support connectedness of all optima is false. Its throughput,
+        however, \emph{is} spellable: it is the spectrum of $AAAAT$. This is
+        disconnectedness of the \emph{flow}, not non-spellability of the
+        \emph{throughput}.
+\end{itemize}
+Two optima, one parameter, and one distinction must be kept separate:
 \begin{itemize}
   \item the \textbf{integer flow optimum} --- the argmax of the §6.1 objective
         over integer throughput vectors $1\le d\le N$ that are genuine §6.2 flows
@@ -576,23 +589,32 @@ exist there. Two optima and one parameter must be kept separate:
         half-integers (the per-coordinate maximizer of
         $(d/N)^x((N-d)/N)^{n-x}$ is $d=xN/n$, e.g.\ $5/2$ for the $AAA$ coordinate
         here, which is neither an integer nor a §6.2 flow throughput);
-  \item the \textbf{overlap floor} $o_{\min}$ --- the \#214 non-spelled flow
-        counterexample is stated at $o_{\min}=1$ ($L=3$), whereas the merged
-        spelled witnesses (Thm.~\ref{thm:cex-molecule} and the rows below it) are
-        stated at $o_{\min}=L-1=2$. These are different graphs, so the proved
-        $o_{\min}=1$ counterexample must not be read as the $o_{\min}=L-1$
-        result, nor conversely.
+  \item the \textbf{overlap floor} $o_{\min}$ --- the $o_{\min}=1$ and the
+        $o_{\min}=L-1$ witnesses live on different graphs (the shorter overlaps
+        exist only when $o_{\min}\le L-2$), so neither may be read as the other;
+        the merged spelled witnesses (Thm.~\ref{thm:cex-molecule} and the rows
+        below it) are stated at $o_{\min}=L-1=2$;
+  \item the \textbf{throughput versus the flow realization} --- the
+        $o_{\min}=L-1$ optimum's throughput is spellable ($AAAAT$) while its
+        flow support is disconnected, whereas the $o_{\min}=1$ optimum's
+        throughput is not spellable at all. ``Non-spellable spectrum'' and
+        ``disconnected flow'' are \emph{different} properties and must not be
+        conflated.
 \end{itemize}
 The relaxation is a different, larger upper bound; substituting it for the
 integer flow optimum would overstate what the §6.2 domain refutes. The board
 records the integer optimum as the §6.2 result and keeps the relaxation distinct.
-The general-flow result is kernel-checked in
+Both general-flow results are kernel-checked:
 \texttt{AssemblyP1/Section62NonSpelledFlow.lean}
 (\texttt{spelled\_subset\_general}, \texttt{star\_argmax},
 \texttt{no\_sequence\_has\_star\_spectrum},
-\texttt{nonspelled\_se62\_flow\_domain\_countermodel}), which certifies that a
-spelled candidate is a genuine §6.2 flow, exhibits the integer optimum $d^*$,
-and proves no circular molecule realizes its throughputs.
+\texttt{nonspelled\_se62\_flow\_domain\_countermodel}) for $o_{\min}=1$, which
+certifies that a spelled candidate is a genuine §6.2 flow and proves no circular
+molecule realizes $d^*$; and
+\texttt{AssemblyP1/Section62FullOverlapDisconnected.lean}
+(\texttt{full\_overlap\_disconnected\_optimum},
+\texttt{disc\_support\_disconnected}, \texttt{dStar\_argmax}) for
+$o_{\min}=L-1$.
 \end{remark}
 
 \begin{remark}[The physical duplex is two disjoint circles, not a concatenation]
