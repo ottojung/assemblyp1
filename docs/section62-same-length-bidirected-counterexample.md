@@ -106,7 +106,13 @@ The repository must keep the readings distinct. Requiring in addition
 strictly stronger than the source's per-vertex lower bound, and is **not** the
 §6.2 definition. Under that strengthening the truth of this witness is not a
 candidate at all (`d_S(AAA) = 1 < x_AAA = 2`), and the fixed-length residue
-remains **open** in the searched scope. See
+remained **open** in the searched scope. **Update (issue #212, 2026-10-09).**
+The per-occurrence strengthening is now refuted too, independently of this
+witness: `ATATACAC → ATACACAC` (`G = 8`, DNA alphabet, ratios `3/2` and `9/5`),
+where the truth itself is per-occurrence feasible (`x(ACA/TGT) = d_S(ACA/TGT) =
+2` is the tight coordinate) and `I_s`'s interleaving clause is non-vacuous.  See
+[`peroccurrence-samelength-dna-counterexample-212.md`](peroccurrence-samelength-dna-counterexample-212.md),
+which also records the row-by-row comparison with this note.  See
 [`source-notes/same-length-witnesses-candidate-set-inclusion.md`](source-notes/same-length-witnesses-candidate-set-inclusion.md)
 for the reading split and
 [`section62-mb09-bidirected-graph-audit.md`](section62-mb09-bidirected-graph-audit.md)
@@ -212,6 +218,14 @@ proof of absence. The single-strand and per-occurrence rows are controls: both
 remove the mechanism (reverse-complement collapse; candidate reuse of a
 duplicated observation), consistent with the merged note's
 [`§6`](bridging-se62-flow-ml-counterexample.md) bounded-search record.
+
+> **Update (issue #212, 2026-10-09).** The per-occurrence row above is `G = 6`
+> only.  Under the strengthened rule the fixed-length statement is **false**:
+> the kernel-checked `ATATACAC → ATACACAC` witness (`G = 8`, DNA alphabet) has a
+> per-occurrence feasible truth *and* a per-occurrence feasible same-length
+> competitor that strictly improves both objectives (`3/2`, `9/5`); see
+> [`peroccurrence-samelength-dna-counterexample-212.md`](peroccurrence-samelength-dna-counterexample-212.md)
+> §5 for the bounded census of the enlarged scope.
 [verified computation, bounded]
 
 ---
@@ -275,7 +289,7 @@ elsewhere (`agent/issue36-literal-flow-search-0920`).
 | interleaving conjunct is non-vacuous and satisfied (earlier prose wrong) | **verified computation** |
 | same-length beats exist only at `(G,L) = (6,3)` in the stated scope | **verified computation**, bounded |
 | `(P_fix)` is false under the source per-vertex reading | **follows** |
-| `(P_fix)` under the per-occurrence strengthening | **open** (bounded zero evidence) |
+| `(P_fix)` under the per-occurrence strengthening | **open** (bounded zero evidence). **Update (issue #212, 2026-10-09): false** — see [`peroccurrence-samelength-dna-counterexample-212.md`](peroccurrence-samelength-dna-counterexample-212.md) |
 | `(P_fix)` under single-strand | **open** (bounded zero evidence) |
 | which §6.1/§6.2 object the 2016 sentence intends | **source interpretation, unresolved** |
 

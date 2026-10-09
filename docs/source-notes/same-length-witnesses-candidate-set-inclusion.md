@@ -171,7 +171,14 @@ The length axis, however, is closed.
    (`G = 6`) are both sequence-level §6.2-feasible and same-length, and `D`
    strictly improves the §6.1 objective; see
    [`../section62-same-length-bidirected-counterexample.md`](../section62-same-length-bidirected-counterexample.md).
-   The gap remains under the per-occurrence strengthening.
+   **Update (issue #212, 2026-10-09).** The gap is now **also closed under the
+   per-occurrence strengthening**: `S = ATATACAC`, `D = ATACACAC` (`G = 8`) are
+   both §6.2 spelled candidates, same-length, and both satisfy `d ≥ x`, with
+   `D` strictly improving both objectives (`3/2`, `9/5`); see
+   [`../peroccurrence-samelength-dna-counterexample-212.md`](../peroccurrence-samelength-dna-counterexample-212.md).
+   Note the two closures are independent: the per-vertex witness
+   `AAATAT → AAAAAT` is not per-occurrence feasible, and the per-occurrence
+   witness is not needed to refute the per-vertex statement.
 2. **Reading 4, the broad ML principle.** If the phrase denotes an
    objective family rather than one formula, no finite witness settles it,
    because the objective is not fixed by the source.

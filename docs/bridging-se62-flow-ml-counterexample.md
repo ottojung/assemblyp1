@@ -319,7 +319,7 @@ clean integer ratio. [verified computation, bounded]
 | Existing claim | Location | Status after this note |
 |---|---|---|
 | Fixed-length §6.2 statement false under bidirected **per-type** lower bound (`S = AAATAT`, `D = AAAAAT`, ratio 3) | issue-#36 branch `analysis/issue36-nonspellable-broader`, `docs/section62-fixed-length-bidirected-counterexample.md` | unchanged |
-| §6.2 statement **open under per-occurrence**, bounded zero counterexamples | same, §7.1 | **resolved negatively** in the variable-length case by §3 here |
+| §6.2 statement **open under per-occurrence**, bounded zero counterexamples | same, §7.1 | **resolved negatively** in the variable-length case by §3 here; the **fixed-length** (`|D| = |S|`) per-occurrence residue was open here and is **refuted** by the kernel-checked `ATATACAC → ATACACAC` witness of [`peroccurrence-samelength-dna-counterexample-212.md`](peroccurrence-samelength-dna-counterexample-212.md) |
 | No sequence-level §6.2 counterexample over 85 572 instances | `docs/section62-bidirected-flow-feasibility.md` §5 | explained: that search fixed `n = |S| = N`; the collapse there is the `n = N` slice, not bridging |
 | `I_s` unused in the `n = N` slice collapse | `docs/section62-conditional-conservation-lemma.md` §2, Theorem 3 | consistent: §3 here uses `n ≠ N` |
 | Per-occurrence, `I_s`, truth-feasible `AAATT → AAAATT`, ratio 9/8 | `docs/section62-conditional-conservation-lemma.md` §5 (branch commit `03a695e`) | same numerical witness; this note adds the explicit §6.2 bidirected-graph/flow certificate, the spelled-circuit checks, and the resolution of the branch’s open item |
@@ -377,7 +377,7 @@ The single-strand bounded zero is evidence only and is stated as such.
 | Literal §6.1 ratio `9/8 > 1` | mathematical argument + **kernel-checked** (`AssemblyP1.Section62BridgingCounterexample`) |
 | Statement (P) is false for the bidirected spelled-circuit sub-case | follows |
 | Statement (P) under the single-strand reading | **open** (bounded zero evidence) |
-| Statement (P) under the fixed-length restriction `|D| = N` | **false** under the source per-vertex reading (same-length witness `AAATAT → AAAAAT`, [`section62-same-length-bidirected-counterexample.md`](section62-same-length-bidirected-counterexample.md)); **open** under the per-occurrence strengthening (bounded zero evidence) |
+| Statement (P) under the fixed-length restriction `|D| = N` | **false** under the source per-vertex reading (same-length witness `AAATAT → AAAAAT`, [`section62-same-length-bidirected-counterexample.md`](section62-same-length-bidirected-counterexample.md)); **open** under the per-occurrence strengthening (bounded zero evidence). **Update (issue #212, 2026-10-09):** the per-occurrence strengthening is now refuted too — `ATATACAC → ATACACAC` (`G = 8`, ratios `3/2` and `9/5`), where both the truth and the competitor are §6.2 spelled circuits and per-occurrence feasible; see [`peroccurrence-samelength-dna-counterexample-212.md`](peroccurrence-samelength-dna-counterexample-212.md) |
 | Which §6.1/§6.2 object and strand convention the 2016 sentence intends | source ambiguity, unchanged |
 
 ---
@@ -427,10 +427,13 @@ inequality (see §3.4).
 2. **Fixed length.** Is (P) true when candidates are restricted to `|D| = N`?
    The branch's bounded per-occurrence search found zero; the `n < N` regime was
    not systematically covered. Under the source-faithful per-vertex reading this
-   is now **refuted** by a same-length spelled witness (`S = AAATAT`,
+   is **refuted** by a same-length spelled witness (`S = AAATAT`,
    `D = AAAAAT`, `G = 6`, ratio `5`); see
    [`section62-same-length-bidirected-counterexample.md`](section62-same-length-bidirected-counterexample.md).
-   Under the per-occurrence strengthening it remains open in scope.
+   **Closed 2026-10-09 (issue #212):** the per-occurrence strengthening is
+   refuted as well, with `S = ATATACAC`, `D = ATACACAC` (`G = 8`, ratios `3/2`
+   and `9/5`); see
+   [`peroccurrence-samelength-dna-counterexample-212.md`](peroccurrence-samelength-dna-counterexample-212.md).
 3. **Poincaré / certificate form.** Is there a clean invariant (e.g. a
    potential on the bidirected overlap graph) that characterizes when the
    truth-induced flow is the §6.1 optimum, beyond the complete-spectrum case?
