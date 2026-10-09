@@ -256,6 +256,88 @@ is observed as a molecule even though the oriented window `ABA` was not sampled.
 theorem ABA_eq_rc_BAB : m3 .A .B .A = rc (m3 .B .A .B) := by
   decide
 
+
+/-! ## Direct source flow endpoints for full-overlap walks -/
+
+/-- The candidate's full-overlap spelling viewed as a cyclic read circuit. -/
+def fullSpellD : AssemblyP1.Section62Flow.Spelling Base Strand 8 :=
+  ⟨fun i => win8 D8 i.val, by decide⟩
+
+/-- The truth's full-overlap spelling viewed as a cyclic read circuit. -/
+def fullSpellS : AssemblyP1.Section62Flow.Spelling Base Strand 8 :=
+  ⟨fun i => win8 S8 i.val, by decide⟩
+
+/-- The (L-1=2) overlap threshold at which all full-window steps are
+retained under either source spelling-preserving reduction. -/
+def fullOverlapMin : Nat := 2
+
+/-- Unlike mere read support / visit-count checks, this directly certifies
+the *whole* source-model conjunction for the candidate, including reduction,
+incidence signs, flow conservation, vertex lower bounds and zero terminals. -/
+theorem D_full_spelled_feasible62 :
+    AssemblyP1.Section62Flow.SpelledFeasible62 Base Strand id rep rc
+      readLen fullOverlapMin readVerts fullSpellD
+      (fullSpellD.flow rep readLen)
+      (AssemblyP1.Section62Flow.noTerminals Strand) (spec8 D8) := by
+  refine ⟨?_, ?_, ?_, ?_, ?_⟩
+  · intro i
+    fin_cases i <;> decide
+  · intro i
+    fin_cases i <;> decide
+  · intro i
+    fin_cases i <;> decide
+  · intro i
+    unfold AssemblyP1.Section62Flow.OppositeAtInterior
+    fin_cases i <;> decide
+  · refine ⟨⟨?_, ?_, ?_, ?_⟩, ?_⟩
+    · intro e he
+      exact Nat.zero_le _
+    · intro v hv
+      simp only [readVerts, List.mem_cons, List.not_mem_nil, or_false] at hv
+      rcases hv with rfl | rfl | rfl | rfl <;> decide
+    · intro v hv
+      simp only [readVerts, List.mem_cons, List.not_mem_nil, or_false] at hv
+      rcases hv with rfl | rfl | rfl | rfl <;> decide
+    · intro v hv
+      simp only [readVerts, List.mem_cons, List.not_mem_nil, or_false] at hv
+      rcases hv with rfl | rfl | rfl | rfl <;> decide
+    · intro v
+      exact ⟨rfl, rfl⟩
+
+/-- The same direct whole-flow proof for the circular truth. -/
+theorem S_full_spelled_feasible62 :
+    AssemblyP1.Section62Flow.SpelledFeasible62 Base Strand id rep rc
+      readLen fullOverlapMin readVerts fullSpellS
+      (fullSpellS.flow rep readLen)
+      (AssemblyP1.Section62Flow.noTerminals Strand) (spec8 S8) := by
+  refine ⟨?_, ?_, ?_, ?_, ?_⟩
+  · intro i
+    fin_cases i <;> decide
+  · intro i
+    fin_cases i <;> decide
+  · intro i
+    fin_cases i <;> decide
+  · intro i
+    unfold AssemblyP1.Section62Flow.OppositeAtInterior
+    fin_cases i <;> decide
+  · refine ⟨⟨?_, ?_, ?_, ?_⟩, ?_⟩
+    · intro e he
+      exact Nat.zero_le _
+    · intro v hv
+      simp only [readVerts, List.mem_cons, List.not_mem_nil, or_false] at hv
+      rcases hv with rfl | rfl | rfl | rfl <;> decide
+    · intro v hv
+      simp only [readVerts, List.mem_cons, List.not_mem_nil, or_false] at hv
+      rcases hv with rfl | rfl | rfl | rfl <;> decide
+    · intro v hv
+      simp only [readVerts, List.mem_cons, List.not_mem_nil, or_false] at hv
+      rcases hv with rfl | rfl | rfl | rfl <;> decide
+    · intro v
+      exact ⟨rfl, rfl⟩
+
+#print axioms D_full_spelled_feasible62
+#print axioms S_full_spelled_feasible62
+
 /-! ## Kernel and axiom audit -/
 
 #print axioms edgeAAB_BAB_not_reducibleB
