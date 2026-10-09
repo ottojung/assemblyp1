@@ -968,22 +968,26 @@ new axioms; axioms `propext, Classical.choice, Quot.sound` only)._
 oriented `I_s` (§1.1); V5 is the two-disjoint-circles duplex (§10), whose
 circle-by-circle reading is *exactly equivalent* to V1/V2 (Corollary 10.3).
 
-**Result.** V3 is exactly compatible with V1/V2 (equivalently, with V5
-circle-by-circle) precisely on the conjunction of the three hypotheses that §9.1
-already named:
+**Result.** The three hypotheses that §9.1 named are each **necessary** for exact
+compatibility, and each is witnessed:
 
 * **(R1) read-seat preservation.** Every realized read of the circular genome has
   a *faithful* seat in `S · ρ(S)`: a position where its string (or the string of
-  its reverse complement) actually occurs.
+  its reverse complement) actually occurs.  Necessary for `V3 ⟹ V1/V2`
+  (`GGGA`, §11.1).
 * **(R2) seam–wrap agreement.** `j_S(w) = wrap_S(w) + wrap_S(ρ(w))` for every
-  word `w` — the doubled and two-disjoint-circles candidate spectra agree (§6
-  item 3, §10.3).
+  word `w` — necessary for the doubled and two-disjoint-circles candidate
+  spectra (hence likelihoods) to agree (`AAGG`, §6 item 3, §10.3).
 * **(R3) feasibility on the doubled circle.** `I_s` holds on `S · ρ(S)` with the
-  doubled read set.
+  doubled read set.  Necessary for `V1/V2 ⟹ V3` (`AAATAT`, §11.2).
 
-Outside this locus the two models are **incomparable**: each direction of
-implication fails, on a kernel-checked witness.  [mathematical proof of the
-classification; kernel-checked witnesses below]
+**Sufficiency is established only under (R1), on the searched scope, and is a
+conjecture in general.**  With faithful seats the remap is sound
+(`V3 ⟹ V1/V2`) in `0` of `180` V3-feasible instances (`L = 3`, `3 ≤ G ≤ 7`,
+binary and ternary); no general proof is given here.  Outside the locus the two
+models are **incomparable**: each direction of implication fails, on a
+kernel-checked witness.  [necessity: kernel-checked witnesses; sufficiency:
+verified computation in scope + conjecture]
 
 ### 11.1 V3 does **not** imply V1/V2 (R1): the `GGGA` witness
 
@@ -1051,10 +1055,10 @@ wrapping seat).  Hence:
 
 **Consequence for the V3 row.**  The row is settled as: V3 is **not** a
 source-faithful reduction of the double-strand bridging problem to the
-single-strand one, and is **not** interchangeable with V1/V2 or with V5.  It
-coincides with the clean (V5 circle-by-circle) reading exactly on the
-R1∧R2∧R3 locus, where the published question reduces to the V1/V2 row; off that
-locus it is a seam artifact.  The published 2016 question is therefore **not**
+single-strand one, and is **not** interchangeable with V1/V2 or with V5.  On the
+R1∧R2∧R3 locus (under the R1 soundness, verified in scope) it coincides with the
+clean V5 circle-by-circle reading, where the published question reduces to the
+V1/V2 row; off that locus it is a seam artifact.  The published 2016 question is therefore **not**
 settled under V3 in either direction by any single verdict: it inherits the
 V1/V2 counterexample on the locus, and off the locus the model is not the
 source's double-strand model.  [mathematical proof + kernel-checked witnesses;
