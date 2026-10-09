@@ -13,7 +13,7 @@ namespace AssemblyP1.BBTEulerian
 
 open OrientedRigidity
 
-variable {α : Type} [DecidableEq α] {G : ℕ}
+variable {α : Type} {G : ℕ}
   (hG : 0 < G) (L : ℕ) (S : Fin G → α)
 
 /-- Three starts have identical length-ℓ observed cyclic windows. -/
