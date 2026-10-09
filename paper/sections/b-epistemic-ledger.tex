@@ -77,19 +77,18 @@ Gibbs/KL: truth is a population maximizer over any class, with equality iff
 the read distributions agree
   & kernel-checked project formalization of \cite{cover2006} &
   Lemma~\ref{lem:gibbs}, \texttt{PopulationGibbs}, issue \#89 \\
-Primitivity plus P2 gives gcd-one spectra (division + Eulerian + BBT),
-  reducing normalized to ordinary spectra
+Primitivity plus P2 gives gcd-one spectra (division + Eulerian + complete-spectrum
+step), reducing normalized to ordinary spectra
   & kernel-checked project reduction &
   \texttt{PopulationReduction}, issue \#70 \\
 P1/P2 implies Ukkonen's condition at $K=L-1$
   & kernel-checked project fact &
   Def.~\ref{def:P1P2}, \texttt{P2}, issue \#89 \\
-Population uniqueness, oriented primitive P2
-  & source-supported mathematical theorem; objective, P2 condition and the
-  whole project-side chain kernel-checked, with complete-spectrum uniqueness
-  the one named external premise &
-  Thm.~\ref{thm:population}, \texttt{PopulationUniqueness} (issues \#73,
-  \#89), \cite{bresler2013} \\
+Population uniqueness, oriented primitive P2, every positive-length candidate
+  & kernel-checked project theorem, no external premise (objective, P2 condition,
+  gcd-one reduction and complete-spectrum uniqueness all in the kernel) &
+  Thm.~\ref{thm:population},
+  \popml{} (issues \#89, \#94) \\
 P1/P2 intrinsic admissibility; population objective
   & project modeling choice & this paper, Defs.~\ref{def:P1P2},
   \ref{def:population} \\
@@ -98,10 +97,12 @@ P1/P2 intrinsic admissibility; population objective
 \caption{Mathematical and project-level results. The same-length rigidity core, its primitive/periodic repeat reduction, its
 conditional final wiring, the population Gibbs/KL layer, the P1/P2
 definitions and their Ukkonen alignment, and the population
-division/Eulerian reduction plus tie-to-rotation wiring are kernel-checked.
-External source-boundary and complete-spectrum uniqueness premises are not
-claimed as kernel-checked; the latter is carried as the single named
-statement \texttt{BBTUniqueAt}.}
+division/Eulerian reduction plus the formerly external complete-spectrum
+uniqueness step (now discharged internally) are kernel-checked. The end-to-end
+population theorem \popml{} carries no
+external premise. The \emph{finite} same-length rotation corollary still uses
+the external Bresler--Bresler--Tse theorem as a source input, and
+source-boundary correspondence claims are not claimed as kernel-checked.}
 \end{table}
 
 \subsection{Finite certificates and computations}
@@ -168,16 +169,17 @@ MB09 Section~6.1; (6) the unretrieved publisher supplement; and (9) the populati
 model for molecule read types.
 
 Three items that used to appear on this list have been resolved and are recorded
-in Table~\ref{tab:finite} instead. Item (7), the *per-occurrence same-length*
-Section~6.2 statement, is **false**: the $ATATACAC\to ATACACAC$ witness
+in Table~\ref{tab:finite} instead. Item (7), the \emph{per-occurrence
+same-length} Section~6.2 statement, is \emph{false}: the
+$ATATACAC\to ATACACAC$ witness
 (Theorem~\ref{thm:cex-peroccurrence}) has a per-occurrence-feasible truth and a
 strictly better same-length competitor, and it needs the real four-letter DNA
 alphabet — with a self-complementary base the searched scope has no same-length
-beat at all. Item (8), the *single-strand variable-length* Section~6.2
-statement, is also **false**: the oriented variable-length boundary witness beats
+beat at all. Item (8), the \emph{single-strand variable-length} Section~6.2
+statement, is also \emph{false}: the oriented variable-length boundary witness beats
 the truth as soon as $n>G$, under both objectives.
 
-Two further items are explicitly **not** settled and must not be absorbed into
+Two further items are explicitly \emph{not} settled and must not be absorbed into
 the resolved class. The doubled-strand $2G$ convention of
 \cite{bresler2013} is bounded computational evidence only, under a different
 paper's convention. The reading of the 2016 sentence as an unspecified general
@@ -186,7 +188,7 @@ objective; its three source-nameable members are each refuted, but the family
 reading itself cannot be settled by a finite witness.
 
 Item (7) deserves a label rather than a silent reclassification: the
-per-occurrence requirement `$d_D(w)\ge x(w)$` is **not** Medvedev--Brudno's §6.2
+per-occurrence requirement $d_D(w)\ge x(w)$ is \emph{not} Medvedev--Brudno's §6.2
 rule, which states a per-vertex lower bound of $1$ and nothing stronger, so it is
 a repository-added assumption surface (issue \#212). It is refuted because it is
 a determinate mathematical question, not because the 2016 sentence asserts it.

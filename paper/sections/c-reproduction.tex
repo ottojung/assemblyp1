@@ -57,6 +57,16 @@ The finite and computational claims correspond to artifacts in the repository:
         with the primitive/periodic split discharged internally by the
         kernel-checked dichotomy; the $\Is$ bridging implication
         and the rotation-uniqueness (BBT) input remain external;
+  \item population uniqueness (oriented primitive P2, every positive length):
+        the end-to-end kernel-checked theorem
+        \popml{}, built from
+        \texttt{Issue94LongWindowSplit} and the internal
+        support-descent/component-antiderivative proof in
+        \texttt{Issue94ConcreteAntiderivative}. Its complete-spectrum uniqueness
+        step is discharged in the kernel rather than taken as the former
+        external \texttt{BBTUniqueAt} premise, and the theorem's axiom audit
+        reports only \texttt{propext}, \texttt{Classical.choice}, and
+        \texttt{Quot.sound};
   \item equivalence coupling:
         \texttt{scripts/verify\_equivalence\_coupling.py}.
 \end{itemize}
@@ -76,7 +86,7 @@ only computationally verified, it is labeled accordingly.
 \subsection{Continuous-integration repair (PR \#117)}
 
 The full-library Lean build is checked in CI (workflow \texttt{ci.yml}, 360-minute
-timeout, \texttt{LEAN_NUM_THREADS=1}). PR \#117 (merged as \texttt{e9fcf01},
+timeout, \texttt{LEAN\_NUM\_THREADS=1}). PR \#117 (merged as \texttt{e9fcf01},
 ``Repair full-library CI compilation blockers (initial fixes)'') repaired
 compile-level blockers in four modules so the whole-library build and the
 per-module kernel replay and axiom audit pass cleanly. PR \#117 is a build/CI

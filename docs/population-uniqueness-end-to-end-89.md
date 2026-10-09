@@ -1,5 +1,21 @@
 # End-to-end population uniqueness from the real objective (issue #89)
 
+> **2026-10-09 correction (board #221).** The acceptance criterion recorded as
+> "NOT met" below was subsequently met on `main` (PR #117, merge `e9fcf01`):
+> `AssemblyP1.Issue94Complete.population_unique_ML` is fully kernel-checked with
+> **no external BBT premise**, proving optimality and uniqueness up to rotation
+> over *every* positive-length primitive P2 candidate for a primitive P2 truth
+> at `L >= 2`. Its `#print axioms` reports only `propext`, `Classical.choice`,
+> `Quot.sound`. The residual `P2LongUnique L` named below is now inhabited by
+> `AssemblyP1.Issue94ConcreteAntiderivative.concrete_p2LongUnique` (a
+> support-descent / component-antiderivative proof). The theorem
+> `PopulationUniqueness.population_unique_ML_up_to_rotation` still literally
+> takes `hPevzner : EulerianCycleObstruction L`; it is now a *reusable
+> conditional core*, not the project endpoint. The historical 2016 referent
+> remains a source gap, and the **finite** same-length rotation corollary still
+> uses the external Bresler–Bresler–Tse input. See
+> `paper/sections/05-population.tex` (Remark on the internal discharge).
+
 _Status: kernel-checked Lean theorems, 2026-09-26, updated by
 `docs/bbt-eulerian-cycle-89.md`. **The issue's acceptance criterion — that the
 exported theorem take no BBT / complete-spectrum uniqueness premise — is NOT
