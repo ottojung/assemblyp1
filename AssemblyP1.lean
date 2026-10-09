@@ -902,5 +902,4 @@ reading. Two finite checks anchor it: the refuted BBT premise's witness is not
 #print axioms AssemblyP1.SameLength62TieUniqueness.truth4_tie_instance
 #print axioms AssemblyP1.SameLength62TieUniqueness.bbTP2Prim_of_94
 #print axioms AssemblyP1.SameLength62TieUniqueness.unique_62_maximizer_up_to_rotation_of_primitive
-#print axioms AssemblyP1.SameLength62TieUniqueness.add_G_mul_mod_shift
 #print axioms AssemblyP1.SameLength62TieUniqueness.fibre_singleton_of_Iss_and_obstruction
