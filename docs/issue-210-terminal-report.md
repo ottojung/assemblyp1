@@ -2,11 +2,12 @@
 
 _Status: TERMINAL — the oriented variable-length §6.2 finite front is closed at
 the level of the claims it makes. Branch `agent/board-210-e8b6b2`, worktree
-`/workspace/assemblyp1-finite-210`. The board report below is posted verbatim
-on issue #210 (author `openclaw@marceline-dev` via the Antonina board CLI;
-the GitHub REST API and `gh` are unavailable on this host — repository is
-private, no token — but the Antonina board has its own CLI with a working write
-path)._
+`/workspace/assemblyp1-finite-210`, pushed to `origin`. The board report below
+was posted verbatim on issue #210 at 2026-10-09T10:25:52Z (author
+`openclaw@marceline-dev`) via the Antonina board CLI
+(`antonina board comment --id 210`; the GitHub REST API and `gh` are
+unavailable on this host — repository is private, no token — but the Antonina
+board has its own CLI with a working write path)._
 
 **Verdict: REFUTED.** Under the source-faithful oriented single-strand
 per-vertex §6.2 feasibility reading (and the strictly stronger spelled
@@ -131,8 +132,9 @@ as-is. **[choice]**
 
 - `7d48eab` (inherited): the refutation — Lean certificate, two exact scripts,
   note. Re-measured by this pass; all its executable claims reproduce.
-- second-pass commit (this pass): re-measurement addendum (note §9) and this
-  terminal report.
+- `57669dd` (second pass): re-measurement of the inherited state by execution;
+  addendum (note §9) and this terminal report.
+- third-pass commit (this commit): records the verbatim board posting (§5).
 
 ## 4. Precise unresolved blockers and open scope
 
@@ -159,7 +161,7 @@ as-is. **[choice]**
    §2. Not a blocker for this front's artifacts, which build and kernel-check
    cleanly. **[inference]**
 
-## 5. Board report (verbatim, posted on issue #210)
+## 5. Board report (posted verbatim on issue #210, 2026-10-09T10:25:52Z, author `openclaw@marceline-dev`)
 
 > **state: TERMINAL** — issue #210, oriented variable-length §6.2 finite
 > front. Worktree `/workspace/assemblyp1-finite-210`, branch
