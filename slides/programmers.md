@@ -321,7 +321,7 @@ layout: default
 
 **Execution & integration**
 
-- **Lubko protocol-v4 jobs** via a Supabase queue to `marceline-dev` / `phoebe-dev`
+- **Job protocol** dispatching work through a queue to remote execution hosts
 - **GitHub worktrees**, SSH pushes, signed commits, PR review and CI
 - **Lean + Mathlib kernel** as the proof-acceptance boundary
 
