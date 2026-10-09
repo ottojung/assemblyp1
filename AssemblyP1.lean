@@ -32,6 +32,7 @@ import AssemblyP1.Section62BridgingCounterexample
 import AssemblyP1.SameLengthSection62Counterexample
 import AssemblyP1.DoubleStrandBridgingTransfer
 import AssemblyP1.TwoDisjointCirclesDuplex
+import AssemblyP1.BreslerRemapCompatibility
 import AssemblyP1.Section62BidirectedFlow
 import AssemblyP1.FiniteSamplingCounterexample
 import AssemblyP1.PopulationReduction

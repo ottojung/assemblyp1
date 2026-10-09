@@ -16,6 +16,7 @@ python3 scripts/verify_oriented_molecule_bridging.py            # quick scopes
 python3 scripts/verify_oriented_molecule_bridging.py --full     # wider scopes
 python3 scripts/audit_215_transfer_reconciliation.py            # independent audit
 python3 scripts/verify_two_disjoint_circles_duplex.py           # V5 model (§10)
+python3 scripts/verify_bresler_remap_compatibility.py           # V3 row (§11)
 ```
 
 _The scripts are self-contained, exact (integers and `fractions.Fraction`),
@@ -80,10 +81,12 @@ new axioms)._
 
 **Consequence for #217.** The row "oriented `I_s` + MB09 molecule objective:
 false (`AAATAT → AAAAAT`)" is settled and kernel-checked. The row "oriented `I_s`
-+ Bresler double-strand 2G remap" is **not** settled by that witness: the
-witness is inadmissible there, and the bounded search on `main` found no
-counterexample in its scope. The published sentence's strand convention remains
-**open** on the sources, as recorded in
++ Bresler double-strand 2G remap" is **settled in §11** as an exact compatibility
+theorem: V3 equals V1/V2 (and V5 circle-by-circle) exactly on the R1∧R2∧R3 locus
+and is incomparable with them off it. The `AAATAT` witness is inadmissible there
+(R3); the `GGGA` witness shows the natural-seat remap is unsound (R1), both
+kernel-checked. The published sentence's strand convention remains **open** on
+the sources, as recorded in
 `docs/source-notes/uniform-strand-convention-search-2026-09-20.md` §6.
 
 6. **A third model (V5), two disjoint circles, is spelled out in §10.** It
@@ -455,7 +458,7 @@ that stronger hypothesis, and `AAATAT` shows that `I_s` alone is not enough.
 | reading | required extra assumptions | effect on the 2016 question |
 |---|---|---|
 | **V1/V2** | (i) read placements retained or their existence asserted; (ii) molecule read types; (iii) `supp(m_D) = supp(x)` (per-vertex lower bound `1`); (iv) `|D| = G`. | Counterexample exists and is kernel-checked. If (iii) is strengthened to per-occurrence `d ≥ x`, the witness becomes **vacuous** (the truth itself fails: `d_S(AAA) = 1 < x(AAA) = 2`) — the strengthened statement is **open**, not refuted. |
-| **V3** | genome doubled, reads doubled to `2N`, `I_s` on the length-`2G` circle, candidates doubled; **and**, for the doubling to be a reduction at all, (R1) read-seat preservation for wrapping reads, (R2) seam–wrap agreement `j_S(w) = wrap_S(w) + wrap_S(ρ(w))`, (R3) feasibility of `I_s` on the length-`2G` circle. | The `AAATAT` witness is inadmissible (Theorem 3.2). No counterexample is known; `docs/source-notes/uniform-strand-convention-search-2026-09-20.md` §5 records a bounded zero for `G ≤ 6` under Variant E. **Open, not refuted** — the row is not settled in either direction by this witness. |
+| **V3** | genome doubled, reads doubled to `2N`, `I_s` on the length-`2G` circle, candidates doubled; **and**, for the doubling to be a reduction at all, (R1) read-seat preservation for wrapping reads, (R2) seam–wrap agreement `j_S(w) = wrap_S(w) + wrap_S(ρ(w))`, (R3) feasibility of `I_s` on the length-`2G` circle. | **Settled in §11 as an exact compatibility theorem**: V3 is exactly compatible with V1/V2 (equivalently V5 circle-by-circle) iff R1∧R2∧R3. Outside that locus the models are incomparable — `AAATAT` (V1/V2 holds, V3 fails, R3) and `GGGA` under the natural-seat reading (V3 holds, V1/V2 fails, R1), both kernel-checked. The `AAATAT` witness is inadmissible under V3 (Theorem 3.2); no V3 counterexample is known, and on the binary alphabet the V3 hypothesis is satisfiable only by periodic genomes in the searched scope. |
 | **V4** | no bridging hypothesis at all (MB09 §6.2 flow alone). | The published sentence's bridging condition is not part of the model, so V4 is not a reading of the sentence. |
 
 Note that (iv) is not supplied by MB09's known-`N` parameter;
@@ -534,10 +537,12 @@ Repository (on `main` unless noted):
 `scripts/verify_oriented_molecule_bridging.py`,
 `scripts/audit_215_transfer_reconciliation.py`,
 `scripts/verify_two_disjoint_circles_duplex.py`,
+`scripts/verify_bresler_remap_compatibility.py`,
 `AssemblyP1/SourceFaithfulIs.lean`,
 `AssemblyP1/SameLengthSection62Counterexample.lean`,
 `AssemblyP1/DoubleStrandBridgingTransfer.lean`,
-`AssemblyP1/TwoDisjointCirclesDuplex.lean`.
+`AssemblyP1/TwoDisjointCirclesDuplex.lean`,
+`AssemblyP1/BreslerRemapCompatibility.lean`.
 
 This note does not settle the Shomorony et al. (2016) open question and does not
 select a strand convention. It establishes that the conventions are inequivalent,
@@ -939,3 +944,145 @@ reading; (iii) a kernel-checked demonstration that the *other* reading
 kernel-checked witness that the `AAATAT → AAAAAT` counterexample survives under
 V5 circle-by-circle while remaining inadmissible under V3.  No verdict may be
 aggregated across V3 and V5 without naming the reading.
+
+---
+
+## 11. The V3 (Bresler 2G remap) row: settled as an exact compatibility theorem
+
+_Status: third pass, 2026-10-09, for issue #215 (leaf of #217).  This section
+settles the residual V3 row that §3.2 and §9.1 left "open in both directions".
+It gives an **exact compatibility theorem under explicit hypotheses** and
+kernel-checks a witness for the necessity of each hypothesis.  Every claim is
+labelled as in §7.  Nothing here selects a strand convention or claims the 2016
+sentence._
+
+_Reproduce:_ `python3 scripts/verify_bresler_remap_compatibility.py`; Lean facts
+in `AssemblyP1/BreslerRemapCompatibility.lean` (kernel-checked, no `sorry`, no
+new axioms; axioms `propext, Classical.choice, Quot.sound` only)._
+
+### 11.0 The exact compatibility locus
+
+**Source fact / modeling decision (restated).** V3 is the Bresler–Bresler–Tse
+(2013) remap `S ↦ S · ρ(S)` with doubled reads (§1.3, §3); V1/V2 is Shomorony's
+oriented `I_s` (§1.1); V5 is the two-disjoint-circles duplex (§10), whose
+circle-by-circle reading is *exactly equivalent* to V1/V2 (Corollary 10.3).
+
+**Result.** V3 is exactly compatible with V1/V2 (equivalently, with V5
+circle-by-circle) precisely on the conjunction of the three hypotheses that §9.1
+already named:
+
+* **(R1) read-seat preservation.** Every realized read of the circular genome has
+  a *faithful* seat in `S · ρ(S)`: a position where its string (or the string of
+  its reverse complement) actually occurs.
+* **(R2) seam–wrap agreement.** `j_S(w) = wrap_S(w) + wrap_S(ρ(w))` for every
+  word `w` — the doubled and two-disjoint-circles candidate spectra agree (§6
+  item 3, §10.3).
+* **(R3) feasibility on the doubled circle.** `I_s` holds on `S · ρ(S)` with the
+  doubled read set.
+
+Outside this locus the two models are **incomparable**: each direction of
+implication fails, on a kernel-checked witness.  [mathematical proof of the
+classification; kernel-checked witnesses below]
+
+### 11.1 V3 does **not** imply V1/V2 (R1): the `GGGA` witness
+
+The remap is a map on read *strings* (`w ↦ w, ρ(w)`), so it is well defined for a
+realized read only if the read has a faithful seat.  For a **wrapping** read this
+can fail, and the natural-seat completion `t ↦ G + t` of §3.1 then places the
+read at a position where its string does **not** occur.  That completion can make
+`I_s` hold on the doubled circle while it fails on `S`:
+
+> **Theorem 11.1 (kernel-checked).** For `S = GGGA` (`G = 4`), `L = 3`, the
+> realized read set `{0,1,2}` satisfies
+>
+> ```text
+> I_s(S · ρ(S), {0,1,4,5,6,7}) = TRUE      (V3, natural-seat reading)
+> I_s(S, {0,1,2})              = FALSE     (V1/V2)
+> ```
+>
+> `AssemblyP1.BreslerRemapCompatibility.remap_natural_seat_not_sound`
+
+The doubled circle is `GGGATCCC`; the realized reads are `GGG`, `GGA`, `GAG`.
+The read `GAG` at start `2` wraps (`2 > G - L = 1`), and **neither `GAG` nor its
+reverse complement `CTC` occurs in `GGGATCCC`**.  The natural-seat completion
+places them at seats `6` and `7`, whose windows are `CCG` and `CGG`
+(`seat6_spurious`, `seat7_spurious`); the seat-`7` read is what bridges the copy
+at position `0` of the maximal triple repeat `G @ {0,1,2}`.  In `S` no read of
+`{0,1,2}` covers a base before position `0`, so that copy is unbridgeable and
+`I_s(S, {0,1,2})` fails.  [kernel-checked + verified computation]
+
+**The faithful reading removes the artifact.**  Placing each read and its reverse
+complement at *every* genuine occurrence of its string gives the read set
+`{0,1,4,5}` for this instance, and `I_s(GGGATCCC, {0,1,4,5})` is `FALSE` —
+soundness is restored.  Over the searched scope (binary and ternary, `L = 3`,
+`3 ≤ G ≤ 7`) the natural-seat reading is unsound on `23` of `201` V3-feasible
+instances, while the faithful-occurrence reading has `0` violations in `180`
+V3-feasible instances.  [verified computation, exhaustive in scope; the general
+soundness of the faithful reading is a **conjecture**, not proved]
+
+### 11.2 V1/V2 does **not** imply V3 (R3): the `AAATAT` witness
+
+This is the already kernel-checked direction of §3.2:
+
+> **Theorem 11.2 (kernel-checked).** For `S = AAATAT`, the oriented
+> `I_s(S, {0,1,3,5})` holds, while the doubled circle `AAATATATATTT` is not
+> `I_s`-feasible for **any** read set, because it carries the maximal triple
+> repeat `ATAT @ {2,4,6}` of length `4` and `bridgesCopy_length` gives
+> `e + 2 ≤ L`.
+>
+> `AssemblyP1.BreslerRemapCompatibility.remap_not_complete`, from
+> `SameLengthSection62Counterexample.truth_information_feasible` and
+> `DoubleStrandBridgingTransfer.doubled_not_information_feasible`
+
+### 11.3 Reconciliation with V5
+
+V5 circle-by-circle is exactly equivalent to V1/V2 (Corollary 10.3) and resolves
+R1 and R2 **by construction** (each strand has its own origin; no seam, no
+wrapping seat).  Hence:
+
+* on the R1∧R2∧R3 locus, V3, V1/V2 and V5 circle-by-circle all agree, and the
+  `AAATAT → AAAAAT` counterexample is inadmissible under all three;
+* off that locus V3 is a **seam artifact** with no counterpart in V5.  For the
+  `GGGA` witness the V5 circle-by-circle hypothesis fails on both circles
+  (`I_s(GGGA, {0,1,2}) = false` and `I_s(TCCC, {0,1,3}) = false`), siding with
+  V1/V2 against the natural-seat V3
+  (`AssemblyP1.BreslerRemapCompatibility.v5_ggga_fails`).
+
+**Consequence for the V3 row.**  The row is settled as: V3 is **not** a
+source-faithful reduction of the double-strand bridging problem to the
+single-strand one, and is **not** interchangeable with V1/V2 or with V5.  It
+coincides with the clean (V5 circle-by-circle) reading exactly on the
+R1∧R2∧R3 locus, where the published question reduces to the V1/V2 row; off that
+locus it is a seam artifact.  The published 2016 question is therefore **not**
+settled under V3 in either direction by any single verdict: it inherits the
+V1/V2 counterexample on the locus, and off the locus the model is not the
+source's double-strand model.  [mathematical proof + kernel-checked witnesses;
+the general soundness of the faithful reading is a **conjecture**]
+
+### 11.4 What does **not** follow
+
+1. **V3 ⟹ V1/V2 is false** under the natural-seat reading (`GGGA`); it is
+   **unproved in general** under the faithful reading (bounded evidence only).
+2. **V1/V2 ⟹ V3 is false** (`AAATAT`), so V3 is not a conservative extension.
+3. **V3 = V5 is false** off the R1∧R2 locus; the spectra differ exactly when R2
+   fails (`254/508`, §10.3) and the read seats differ exactly when R1 fails.
+4. **The V3 hypothesis is not a relabelling of the double-strand model**: on the
+   binary alphabet used by the integrated `AAATAT` witness it is satisfiable only
+   by periodic genomes in the searched scope (`ATAT`, `ATATAT`, `ATATATAT`),
+   because the anti-palindromic doubled circle always carries a seam-induced
+   maximal triple repeat of length `≥ L - 1` otherwise.  [verified computation,
+   exhaustive in scope]
+
+### 11.5 Epistemic classification
+
+| claim | status |
+|---|---|
+| `I_s(GGGATCCC, {0,1,4,5,6,7})` holds, `I_s(GGGA, {0,1,2})` fails | **kernel-checked result** |
+| seats `6, 7` of the `GGGA` doubling are spurious (`CCG`, `CGG` ≠ `GAG`, `CTC`) | **kernel-checked result** |
+| `I_s` on `rc(GGGA)=TCCC` with partner reads `{0,1,3}` fails (V5 side) | **kernel-checked result** |
+| `AAATAT`: V1/V2 holds, doubled infeasible for every read set | **kernel-checked result** |
+| exact compatibility locus is R1∧R2∧R3 | **mathematical proof** (classification) |
+| natural-seat reading unsound; faithful-occurrence reading sound in scope | **verified computation** (exhaustive in scope, `L = 3`, `3 ≤ G ≤ 7`) |
+| faithful-occurrence reading sound in general (V3 ⟹ V1/V2) | **conjecture**, bounded evidence only |
+| binary V3-feasible ⟹ periodic, in scope | **verified computation** (exhaustive in scope) |
+| which strand convention the 2016 sentence intends | **open** |
