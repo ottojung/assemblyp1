@@ -25,6 +25,11 @@ Circular oriented length-$L$ read model; independent uniform starts
   & source fact & \cite[\S2]{shomorony2016} \\
 $\Is$ = coverage $\wedge$ all triple repeats all-bridged $\wedge$ interleaved
 pairs bridged & source fact & \cite[Eq.~1]{shomorony2016} \\
+Historical read-string coverage (Def.~1) and matched-string bridging (Def.~2)
+  & source fact & \cite[Supplement, \S6.4]{shomorony2016} \\
+Placement-based $\Is$ and source $\Is^{\mathrm{match}}$ are incomparable
+  & kernel-checked project fact & \S\ref{sec:finite:historical},
+  \texttt{Historical\allowbreak{}Covers} \\
 Repeat/triple-repeat maximality; bridging strict on both sides
   & source fact & \cite{bresler2013} \\
 Exact multinomial with candidate-intrinsic $N(D)$
@@ -41,7 +46,8 @@ Which MB09 object the 2016 sentence denotes
   & source gap & \cite[\S5]{shomorony2016} \\
 Which read-type convention / equivalence; candidate length; maximizer vs.\
 uniqueness & source gap & \cite[\S5]{shomorony2016} \\
-Publisher supplement unretrieved & source gap & repository record \\
+Publisher-hosted supplement archive unretrieved (author-hosted manuscript with
+supplement \S6.4 reviewed) & source gap & repository record \\
 \bottomrule
 \end{tabular}
 \caption{Source facts and gaps. The gaps are what prevent any single theorem
@@ -50,13 +56,39 @@ from being advertised as settling the published sentence.}
 
 \subsection{Mathematical and project results}
 
-\begin{table}[h]
-\centering
-\small
-\begin{tabular}{@{}p{0.48\textwidth}p{0.20\textwidth}p{0.24\textwidth}@{}}
+{\small
+\begin{longtable}{@{}p{0.48\textwidth}p{0.20\textwidth}p{0.24\textwidth}@{}}
+\caption{Mathematical and project-level results. The same-length rigidity core, its primitive/periodic repeat reduction, its
+conditional final wiring, the population Gibbs/KL layer, the P1/P2
+definitions and their Ukkonen alignment, and the population
+division/Eulerian reduction plus the formerly external complete-spectrum
+uniqueness step (now discharged internally) are kernel-checked. The end-to-end
+population theorem \popml{} carries no
+external premise. The \emph{finite} same-length candidate-rotation
+corollary is also kernel-checked when truth and competitor are both genuine
+Section~6.2 candidates (\texttt{Same\allowbreak{}Length62Uniqueness}, merged PR~\#124),
+rather than requiring the older external BBT obstruction input.
+Nonprimitive candidate rotation without truth candidacy is also checked
+(merged PR~\#126), while the primitive claim without truth candidacy is
+refuted (merged PR~\#127). Source-referent correspondence, candidate
+existence, and unrestricted likelihood-optimality are not kernel-checked
+by these rotation theorems.}
+\label{tab:math-results}\\
 \toprule
 Claim & Status & Provenance \\
 \midrule
+\endfirsthead
+\multicolumn{3}{@{}l@{}}{\small Table~\thetable, continued from previous page}\\
+\addlinespace
+\toprule
+Claim & Status & Provenance \\
+\midrule
+\endhead
+\midrule
+\multicolumn{3}{@{}r@{}}{\small Continued on next page}\\
+\endfoot
+\bottomrule
+\endlastfoot
 Cyclic shift is forced for the strong schema; reverse complement forced iff
 molecule types & mathematical fact & repository equivalence note \\
 Negative results transfer to superclasses; positives do not
@@ -92,34 +124,32 @@ Population uniqueness, oriented primitive P2, every positive-length candidate
 P1/P2 intrinsic admissibility; population objective
   & project modeling choice & this paper, Defs.~\ref{def:P1P2},
   \ref{def:population} \\
-\bottomrule
-\end{tabular}
-\caption{Mathematical and project-level results. The same-length rigidity core, its primitive/periodic repeat reduction, its
-conditional final wiring, the population Gibbs/KL layer, the P1/P2
-definitions and their Ukkonen alignment, and the population
-division/Eulerian reduction plus the formerly external complete-spectrum
-uniqueness step (now discharged internally) are kernel-checked. The end-to-end
-population theorem \popml{} carries no
-external premise. The \emph{finite} same-length candidate-rotation
-corollary is also kernel-checked when truth and competitor are both genuine
-Section~6.2 candidates (\texttt{Same\allowbreak{}Length62Uniqueness}, merged PR~\#124),
-rather than requiring the older external BBT obstruction input.
-Nonprimitive candidate rotation without truth candidacy is also checked
-(merged PR~\#126), while the primitive claim without truth candidacy is
-refuted (merged PR~\#127). Source-referent correspondence, candidate
-existence, and unrestricted likelihood-optimality are not kernel-checked
-by these rotation theorems.}
-\end{table}
+\end{longtable}
+}
 
 \subsection{Finite certificates and computations}
 
-\begin{table}[h]
-\centering
-\small
-\begin{tabular}{@{}p{0.44\textwidth}p{0.20\textwidth}p{0.28\textwidth}@{}}
+{\small
+\begin{longtable}{@{}p{0.44\textwidth}p{0.20\textwidth}p{0.28\textwidth}@{}}
+\caption{Finite certificates. Kernel-checked statements concern the finite
+instance and arithmetic; the source-correspondence claims are separate
+source-supported inferences.}
+\label{tab:finite-certs}\\
 \toprule
 Claim & Status & Artifact \\
 \midrule
+\endfirsthead
+\multicolumn{3}{@{}l@{}}{\small Table~\thetable, continued from previous page}\\
+\addlinespace
+\toprule
+Claim & Status & Artifact \\
+\midrule
+\endhead
+\midrule
+\multicolumn{3}{@{}r@{}}{\small Continued on next page}\\
+\endfoot
+\bottomrule
+\endlastfoot
 $AAABB\to AAAAB$, exact ratio $2$, $\Is$ certificate
   & kernel-checked & \texttt{Fixed\allowbreak{}Length\allowbreak{}Exact\allowbreak{}Counterexample} \\
 $AAABCBC\to AAAAABC$, same length, exact ratio $27$, $\Is$ non-vacuous
@@ -136,6 +166,16 @@ $AAATAT\to AAAAAT$, same length, exact $3$, binomial $5$, literal §6.2
 feasibility of both genomes
   & kernel-checked (incl. the §6.2 graph certificate) &
   \texttt{Same\allowbreak{}Length\allowbreak{}Section62Counterexample} \\
+$AAATAT\to AAAAAT$ under the \emph{source historical} $\Is^{\mathrm{match}}$,
+same length, exact $3$, binomial $5$
+  & kernel-checked in \emph{open} PR~\#137 (head \texttt{2a94b9d}) on the
+    historical layer of PR~\#135; not yet merged &
+  \texttt{Historical\allowbreak{}Coverage\allowbreak{}Same\allowbreak{}Length\allowbreak{}Witnesses},
+  \texttt{Historical\allowbreak{}Covers} \\
+$ATATACAC\to ATACACAC$ under the \emph{source historical}
+$\Is^{\mathrm{match}}$, per-occurrence, exact $3/2$, binomial $9/5$
+  & kernel-checked in \emph{open} PR~\#137; not yet merged &
+  \texttt{Historical\allowbreak{}Coverage\allowbreak{}Same\allowbreak{}Length\allowbreak{}Witnesses} \\
 $AABB\to ABAB$, same length, exact ratio $4$; full $\Is$; the competitor is a
 literal §6.2 candidate while the truth is not — the §6.2 acceptance boundary is
 a separate, false, statement
@@ -171,12 +211,8 @@ types, full $\Is$ at the realized placements, both objectives
   \texttt{Same\allowbreak{}Length62Uniqueness} \\
 Direct P2 matching proof's maximal-extension step is invalid
   & counterexample to a proof step, not the theorem & audit note \\
-\bottomrule
-\end{tabular}
-\caption{Finite certificates. Kernel-checked statements concern the finite
-instance and arithmetic; the source-correspondence claims are separate
-source-supported inferences.}
-\end{table}
+\end{longtable}
+}
 
 \subsection{Unresolved register}
 
@@ -184,7 +220,9 @@ We reproduce the project's open items so that the boundary of this paper is
 explicit: (1) the referent of the 2016 sentence; (2) the read-type convention and
 hence the equivalence; (3) the candidate-length convention; (4) the
 maximizer-vs-uniqueness reading; (5) the $4^k$ vs.\ molecule-class index count in
-MB09 Section~6.1; (6) the unretrieved publisher supplement; and (9) the population
+MB09 Section~6.1; (6) the unretrieved publisher-hosted supplement archive
+(the author-hosted manuscript with supplement \S6.4 has been reviewed); and
+(9) the population
 model for molecule read types. The \textbf{final source-gap count} for the 2016
 finite question is \textbf{7 unresolved items} (the canonical register
 \texttt{docs/\allowbreak{}source-notes/\allowbreak{}finite-interpretation-universe-audit.\allowbreak{}md}, \S6, items

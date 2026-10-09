@@ -105,7 +105,15 @@ fixed-length binomial approximation over all circular candidates
 the Section~6.2 flow (Theorem~\ref{thm:cex-molecule}). A candidate-set inclusion
 lemma (Lemma~\ref{lem:negative-transfer}) shows that a same-length refutation
 transfers to every superclass of candidates, so these results are not confined
-to length-restricted comparisons.
+to length-restricted comparisons. The same failure survives under the
+\emph{source's own} read-string predicate of supplement \S6.4, where coverage
+and bridging quantify observed read strings matched at any genomic position
+rather than latent sampled placements: two same-length molecule witnesses
+(Theorem~\ref{thm:cex-historical-W1} and~\ref{thm:cex-historical-W2}) satisfy
+historical coverage and matched-string bridging at full strength while beating
+the truth under both source-named objectives. This last result is a draft
+carrying an explicit proof dependency on the still-open historical-coverage pull
+requests \#135 and~\#137.
 
 \paragraph{A positive same-length rigidity theorem.}
 Under \emph{strict oriented} read types, Shomorony's $\Is$, and the
