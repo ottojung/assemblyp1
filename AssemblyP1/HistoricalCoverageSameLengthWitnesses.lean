@@ -49,15 +49,17 @@ source's 1-based interval `[t, t+L−2]` is translated here to the 0-based
 `Fin G` index `t` with offset `δ : Fin (L−1)`, i.e. `δ ∈ [0, L−2]`, and the
 window is read cyclically at `(t+δ) % G`.
 
-The foundational historical-coverage module is owned by another worker (lane
-247a) and is deliberately **not** edited here.  Until that module appears, the
-predicate is stated locally in this file, in the exact form above, so that the
-bridge to the shared module is a one-line `Iff`: replace the local
-`HistoricalCovers` by the shared one and every theorem in this file stands.
-When the shared module appears, (1) import it, (2) prove
-`HistoricalCovers S L observed ↔ Shared.HistoricalCovers S L observed` (or
-whatever its signature is), and (3) delete the local definition.  No theorem
-statement or proof in this file needs to change.
+The independently developed shared historical-coverage layer is
+`AssemblyP1.HistoricalCovers` (lane 247a, PR #135). The finite witnesses
+here use a local predicate with explicit preconditions `2 ≤ L → L ≤ G →`,
+whereas the shared predicate has a different signature; these must **not**
+be silently identified. For these concrete witnesses the range conditions
+are discharged (`2 ≤ 3 ≤ 6` and `2 ≤ 3 ≤ 8`). The final integration
+must import the shared layer and explicitly prove the appropriate
+per-instance equivalences (or implications) before retiring these
+local definitions. Similarly, the local `HistoricalInformationFeasible`
+is phrased in terms of observed words, while the shared one accepts sampled
+starts, so the observed-word mapping must be supplied in the adapter.
 
 The observed word set is derived from the **sampled read multiset** by
 `observedWords`: the distinct strands `S.window L r` over the sampled starts
