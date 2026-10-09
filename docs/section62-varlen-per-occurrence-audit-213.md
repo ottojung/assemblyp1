@@ -4,6 +4,8 @@ _Status: independent adversarial audit + kernel-checked certificate additions,
 2026-10-09 (re-verified from a clean module artifact: the certificate module was
 rebuilt after deleting its `.olean`/`.ilean`, the axiom probe was widened to all
 35 theorems, and the script, census and blocker checks were re-run; see §11).
+A second round on the same branch at `216f8ee` re-ran all six gates after the
+terminal resume and reproduced every outcome identically (§11.1).
 Every claim below is tagged **fact**,
 **inference**, or **choice**, and additionally carries its verification class
 (**source fact**, **kernel-checked**, **verified computation**, **bounded
@@ -528,6 +530,24 @@ recorded from an earlier round without having been re-run.
 | `lean` probe `import AssemblyP1.Section62VarlenPerOccurrence` + `#print axioms` on **all 35** theorems | every theorem reports `depends on axioms: [propext, Classical.choice, Quot.sound]`, exit `0` |
 | `leanchecker AssemblyP1.Section62VarlenPerOccurrence` (kernel replay of the module's own `.olean`) | exit `0`, no diagnostic output |
 | `lake build AssemblyP1.BBTTripleBridge` | still fails with source-level type errors (now also at lines 152 and 153), confirming the §12 blocker |
+
+#### Second re-verification round (terminal resume, 2026-10-09, branch at `216f8ee`)
+
+Re-run after the front was resumed at the hardened witness; the worktree was
+clean and `HEAD = origin/agent/board-213-5fff16 = 216f8ee`. Outcomes identical to
+the first round above:
+
+| command | outcome |
+|---|---|
+| `git status --short` | clean; `HEAD` equals `origin/agent/board-213-5fff16` (`216f8ee`) |
+| `python3 scripts/check-research-docs.py` | pass |
+| `python3 scripts/verify_se62_varlen_per_occurrence_audit_213.py` | pass — `ALL AUDIT CHECKS PASS (60 checks)` |
+| `python3 scripts/verify_se62_varlen_per_occurrence_audit_213.py --census` | exit `0`; all six rows of §9 reproduced exactly (`58/56`, `532/126`, `2150/224`, `132/160`, `2216/536`, `12453/1162`; same-length beats `0` in every row) |
+| `lake build AssemblyP1.Section62VarlenPerOccurrence` | `Build completed successfully (8927 jobs)` |
+| `lean` probe `import AssemblyP1.Section62VarlenPerOccurrence` + `#print axioms` on **all 35** theorems | every theorem reports only `depends on axioms: [propext, Classical.choice, Quot.sound]`, exit `0` |
+| `leanchecker AssemblyP1.Section62VarlenPerOccurrence` (kernel replay of the module's own `.olean`) | exit `0`, no diagnostic output |
+| `grep -nE "sorry\|axiom \|admit\|native_decide" AssemblyP1/Section62VarlenPerOccurrence.lean` | no matches |
+| `lake build AssemblyP1.BBTTripleBridge` | still fails with the same source-level type-error signature, confirming the §12 blocker is unchanged |
 
 Two operational notes for whoever re-runs this. `lake env` on this host triggers
 the workspace's *default* target — the glob over every `AssemblyP1.*` submodule —
