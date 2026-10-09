@@ -27,3 +27,19 @@ lake build
 ```
 
 The repository commits `lake-manifest.json` and pins matching Lean and Mathlib `v4.34.0` releases. Run `lake update` only when intentionally changing or regenerating dependency pins.
+
+## Presentations
+
+Two audience-specific [Slidev](https://sli.dev) decks — one for programmers, one
+for biologists — live under [`slides/`](slides/) and are published together to
+GitHub Pages. See [`slides/README.md`](slides/README.md) for local development,
+`npm ci`/`npm run build`, validation, and deployment instructions.
+
+```sh
+cd slides
+npm ci
+npm run build
+```
+
+The LaTeX white paper under [`paper/`](paper/) is separate and still built as a
+PDF artifact by CI.

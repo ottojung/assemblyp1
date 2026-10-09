@@ -1,0 +1,25 @@
+{
+  "name": "assemblyp1-slides",
+  "private": true,
+  "type": "module",
+  "description": "Slidev decks for AssemblyP1: one for programmers, one for biologists.",
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "scripts": {
+    "dev:programmers": "slidev programmers.md --open",
+    "dev:biologists": "slidev biologists.md --open",
+    "build": "npm run clean && npm run build:programmers && npm run build:biologists && npm run build:portal && npm run validate",
+    "build:programmers": "slidev build programmers.md --out dist/programmers --base /assemblyp1/programmers/ --without-notes",
+    "build:biologists": "slidev build biologists.md --out dist/biologists --base /assemblyp1/biologists/ --without-notes",
+    "build:portal": "node scripts/build-portal.mjs",
+    "validate": "node scripts/validate-dist.mjs",
+    "clean": "node -e \"require('node:fs').rmSync('dist', { recursive: true, force: true })\"",
+    "preview": "node scripts/serve-dist.mjs"
+  },
+  "dependencies": {
+    "@slidev/cli": "53.0.0",
+    "@slidev/theme-default": "0.25.0",
+    "vue": "3.5.42"
+  }
+}
