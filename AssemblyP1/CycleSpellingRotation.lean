@@ -4,26 +4,29 @@ import AssemblyP1.RepeatAdapter
 /-!
 # Board #243: deterministic de Bruijn support forces a cyclic rotation
 
-Independent subgoal of #211. For two circular words `S D : Fin G → α` of the
+Independent subgoal of #211. The **strengthened** statement only needs a
+one-way support inclusion: for two circular words `S D : Fin G → α` of the
 same positive length `G`, if
 
-* their complete oriented length-`L` spectra agree
-  (`specCount hG D w = specCount hG S w` for every `w`), and
+* `D`'s oriented `L`-mer support is contained in `S`'s
+  (`∀ w, w ∈ support hG D → w ∈ support hG S`), and
 * the positive `L`-mer support of `S` has a **unique outgoing edge type** for
   every `(L-1)`-mer node (`RepeatAdapter.IsSimpleCycle L hG S`),
 
 then `D` is a cyclic rotation of `S` (`OrientedFinal.IsCyclicShift hG D S`).
+This is `isCyclicShift_of_isSimpleCycle_support_subset`; the original
+complete-spectrum version `isCyclicShift_of_isSimpleCycle_specCount` is an
+immediate corollary, since equal spectra give `support hG D ⊆ support hG S`.
 
 The argument is a deterministic-continuation induction:
 
-1. equal spectra make the two window supports coincide
-   (`support hG S = support hG D`), via `w ∈ support ↔ 0 < specCount w`;
-2. pick a start `j` of `S` spelling `D`'s initial `L`-mer (it occurs because
-   the spectra agree);
-3. `hstep`: if the `L`-window of `D` at `a` equals the `L`-window of `S` at
+1. pick a start `j` of `S` spelling `D`'s initial `L`-mer (it occurs by the
+   support inclusion applied to `window hG D ⟨0, ·⟩`);
+2. `hstep`: if the `L`-window of `D` at `a` equals the `L`-window of `S` at
    `b`, then their `(L-1)`-suffixes agree, so the unique outgoing edge from
-   that node in `S`'s support forces the two *next* `L`-windows to agree;
-4. induction on `t` gives `window hG D (t) = window hG S (j + t)`, and reading
+   that node in `S`'s support forces the two *next* `L`-windows to agree
+   (this consumes only the one-way membership `support D → support S`);
+3. induction on `t` gives `window hG D (t) = window hG S (j + t)`, and reading
    the first symbol gives `cyc hG D t = cyc hG S (j + t)`, i.e.
    `IsCyclicShift hG D S` with shift `j`.
 
@@ -88,8 +91,8 @@ private theorem winPrefix_next_eq_winSuffix {α : Type} {G L : ℕ} (hG : 0 < G)
 carries the unique-outgoing-edge property) have equal successors. -/
 private theorem step_eq {α : Type} [DecidableEq α] {G L : ℕ} (hG : 0 < G)
     (S D : Fin G → α)
-    (hsup : ∀ w : Fin L → α,
-      w ∈ OrientedRigidity.support hG S ↔ w ∈ OrientedRigidity.support hG D)
+    (hsub : ∀ w : Fin L → α,
+      w ∈ OrientedRigidity.support hG D → w ∈ OrientedRigidity.support hG S)
     (hcyc : RepeatAdapter.IsSimpleCycle L hG S) :
     ∀ a b : Fin G,
       OrientedRigidity.window (L := L) hG D a
@@ -114,7 +117,7 @@ private theorem step_eq {α : Type} [DecidableEq α] {G L : ℕ} (hG : 0 < G)
     winPrefix_next_eq_winSuffix hG S b
   have hmemD : OrientedRigidity.window (L := L) hG D ⟨(a.val + 1) % G, Nat.mod_lt _ hG⟩
       ∈ OrientedRigidity.support (L := L) hG S :=
-    (hsup _).mpr (Finset.mem_image.mpr
+    hsub _ (Finset.mem_image.mpr
       ⟨⟨(a.val + 1) % G, Nat.mod_lt _ hG⟩, Finset.mem_univ _, rfl⟩)
   have hmemS : OrientedRigidity.window (L := L) hG S ⟨(b.val + 1) % G, Nat.mod_lt _ hG⟩
       ∈ OrientedRigidity.support (L := L) hG S :=
@@ -122,30 +125,26 @@ private theorem step_eq {α : Type} [DecidableEq α] {G L : ℕ} (hG : 0 < G)
       ⟨⟨(b.val + 1) % G, Nat.mod_lt _ hG⟩, Finset.mem_univ _, rfl⟩
   rw [huniq _ ⟨hmemD, hpreD⟩, huniq _ ⟨hmemS, hpreS⟩]
 
-/-- **Board #243.** Equal complete oriented `L`-spectrum plus a simple-cycle
-support on `S` forces `D` to be a cyclic rotation of `S`. -/
-theorem isCyclicShift_of_isSimpleCycle_specCount {α : Type} [DecidableEq α]
+/-- **Board #243 (strengthened).** If `D`'s oriented `L`-mer support is
+contained in `S`'s and `S`'s support is a simple cycle, then `D` is a cyclic
+rotation of `S`. Only the one-way membership `support hG D → support hG S` is
+consumed; no spectrum equality is needed. -/
+theorem isCyclicShift_of_isSimpleCycle_support_subset {α : Type} [DecidableEq α]
     {G L : ℕ} (hG : 0 < G) (hL : 2 ≤ L) (S D : Fin G → α)
-    (hspec : ∀ w : Fin L → α,
-      OrientedRigidity.specCount hG D w = OrientedRigidity.specCount hG S w)
+    (hsub : ∀ w : Fin L → α,
+      w ∈ OrientedRigidity.support hG D → w ∈ OrientedRigidity.support hG S)
     (hcyc : RepeatAdapter.IsSimpleCycle L hG S) :
     OrientedFinal.IsCyclicShift hG D S := by
-  -- 1. Equal spectra ⟹ equal window supports.
-  have hsup : ∀ w : Fin L → α,
-      w ∈ OrientedRigidity.support hG S ↔ w ∈ OrientedRigidity.support hG D := by
-    intro w
-    rw [support_iff_specCount_pos hG S w, support_iff_specCount_pos hG D w,
-      hspec w]
-  -- 2. Pick a start `j` of `S` spelling `D`'s initial `L`-mer.
+  -- 1. Pick a start `j` of `S` spelling `D`'s initial `L`-mer.
   have hD0 : OrientedRigidity.window (L := L) hG D ⟨0, hG⟩
       ∈ OrientedRigidity.support (L := L) hG D :=
     Finset.mem_image.mpr ⟨⟨0, hG⟩, Finset.mem_univ _, rfl⟩
   have hS0 : OrientedRigidity.window (L := L) hG D ⟨0, hG⟩
       ∈ OrientedRigidity.support (L := L) hG S :=
-    (hsup _).mpr hD0
+    hsub _ hD0
   simp only [OrientedRigidity.support, Finset.mem_image] at hS0
   obtain ⟨j, _, hjwindow⟩ := hS0
-  -- 3. Deterministic-continuation induction.
+  -- 2. Deterministic-continuation induction.
   have hwalk : ∀ t : ℕ,
       OrientedRigidity.window (L := L) hG D ⟨t % G, Nat.mod_lt _ hG⟩
         = OrientedRigidity.window (L := L) hG S ⟨(j.val + t) % G, Nat.mod_lt _ hG⟩ := by
@@ -171,8 +170,8 @@ theorem isCyclicShift_of_isSimpleCycle_specCount {α : Type} [DecidableEq α]
           rw [show j.val + (t + 1) = j.val + t + 1 from by omega]
           exact (Nat.mod_add_mod (j.val + t) G 1).symm
         rw [eD, eS]
-        exact step_eq hG S D hsup hcyc _ _ ih
-  -- 4. Read the first symbol of each window.
+        exact step_eq hG S D hsub hcyc _ _ ih
+  -- 3. Read the first symbol of each window.
   refine ⟨j.val, fun i => ?_⟩
   have key : OrientedRigidity.cyc hG D i
       = OrientedRigidity.cyc hG S (j.val + i) := by
@@ -187,6 +186,22 @@ theorem isCyclicShift_of_isSimpleCycle_specCount {α : Type} [DecidableEq α]
     exact e1.symm.trans (h.trans e2)
   rw [key, Nat.add_comm]
 
+/-- **Board #243 (original form).** Equal complete oriented `L`-spectrum plus a
+simple-cycle support on `S` forces `D` to be a cyclic rotation of `S`. This is
+an immediate corollary of `isCyclicShift_of_isSimpleCycle_support_subset`:
+equal spectra give `support hG D ⊆ support hG S`. -/
+theorem isCyclicShift_of_isSimpleCycle_specCount {α : Type} [DecidableEq α]
+    {G L : ℕ} (hG : 0 < G) (hL : 2 ≤ L) (S D : Fin G → α)
+    (hspec : ∀ w : Fin L → α,
+      OrientedRigidity.specCount hG D w = OrientedRigidity.specCount hG S w)
+    (hcyc : RepeatAdapter.IsSimpleCycle L hG S) :
+    OrientedFinal.IsCyclicShift hG D S := by
+  refine isCyclicShift_of_isSimpleCycle_support_subset hG hL S D ?_ hcyc
+  intro w hw
+  rw [support_iff_specCount_pos hG S w, ← hspec w]
+  exact (support_iff_specCount_pos hG D w).mp hw
+
+#print axioms isCyclicShift_of_isSimpleCycle_support_subset
 #print axioms isCyclicShift_of_isSimpleCycle_specCount
 
 end AssemblyP1.CycleSpellingRotation
