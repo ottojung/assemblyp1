@@ -21,11 +21,18 @@ criterion and a positive totient/Burnside form of the orbit count) are
 claimed as cited theorems and no paper is cited as their source.  The
 classical identity `Σ_{d|n} μ(d)/d = φ(n)/n` is standard number theory.
 
+**Closest prior art.**  The `g = 1`, multiplicity-one-edge corner of Theorem 1
+is Shomorony–Kamath–Xia–Courtade–Tse, ISIT 2016, Appendix C, Corollary 1; see
+§11.  We do not claim that quotient, and we do not claim its singleton-edge
+hypothesis is necessary.
+
 **Epistemic status.**  Theorems 1–3 are **mathematical proofs**.  The
 computational checks in §10 are **independent execution evidence** (bounded
 enumeration), not proofs; their completeness is not claimed beyond the stated
-ranges.  Nothing here is a source claim about Shomorony et al. or
-Medvedev–Brudno; see §11 for the boundary to the published open problem.
+ranges.  The divisor-sum core is additionally **kernel-checked** in
+`AssemblyP1/FibreCountArithmetic.lean` (§10).  Nothing here is a source claim
+about Shomorony et al. or Medvedev–Brudno; see §12 for the boundary to the
+published open problem and §11 for the prior-art boundary.
 
 ---
 
@@ -244,14 +251,33 @@ instead of `1` and the wrong fibre count.
 
 ## 9. Complexity
 
-* **One level** `B_k`: assemble the Laplacian `O(|E|)`; determinant of an
-  `(n−1)×(n−1)` integer matrix by Bareiss `O(n³)` bit operations; factorials
-  `O(|V| + |E|)`.  Here `n = |V|`, the number of support vertices.
-* **Theorem 1 / 2 (exact `N(c)`):** `d(g)` levels, where `d(g)` is the number
-  of divisors of `g`; total `O(d(g)·n³)` arithmetic operations (plus big-integer
-  costs, since capacities and factorials grow).
-* **Theorem 3 (singleton yes/no):** no divisor sum — one determinant `O(n³)`,
-  a branching scan `O(|V|+|E|)`, and a gcd `O(|E|·log max)`.  Polynomial time.
+Let `G` be the length of the genome whose complete `L`-spectrum is `c`; then
+`Σ_e c e = G`, so `|E| ≤ G` and the capacity vector is an object of size
+`Θ(G)`.  Let `n = |V|` be the number of support vertices and `v = n`.
+
+* **One determinant suffices for all levels.**  Every directed in-arborescence
+  on the `v` support vertices has exactly `v − 1` non-loop arcs, so uniformly
+  scaling every weight by `h` multiplies each tree weight by `h^{v−1}`:
+  `τ_r(h·c₀) = h^{v−1} · τ_r(c₀)`.  Hence one weighted Matrix-Tree cofactor on
+  `c₀` gives every `B_h` via
+  `B_h = h^{v−1} τ_r(c₀) · ∏_u (h·d_u − 1)! / ∏_e (h·c₀ e)!`,
+  with the one-vertex loop-only case (`v − 1 = 0`, `τ = 1`) included.
+* **Assemble and invert once:** Laplacian `O(|E|)`; determinant of a
+  `(v−1)×(v−1)` integer matrix by Bareiss, `O(v³)` arithmetic operations;
+  factorials `O(|V| + |E|)`.
+* **Theorem 1 / 2 (exact `N(c)`):** `d(g)` divisor levels, where `d(g)` is the
+  number of divisors of `g`; `O(d(g)·(v³ + |V| + |E|))` arithmetic operations.
+* **Theorem 3 (singleton yes/no):** no divisor sum — one determinant `O(v³)`,
+  a branching scan `O(|V|+|E|)`, and a gcd `O(|E|·log max c e)`.  Polynomial
+  time in `G`.
+* **Bit-complexity caveat.**  The arithmetic is on big integers: the capacities
+  and the factorial/numerator products have `Θ(G log G)` bits (the count `N(c)`
+  can itself be exponentially large, so the output has `Ω(G log G)` bits).  The
+  bounds above count arithmetic operations and are polynomial in the
+  **explicitly given** genome length `G`.  They do **not** assert polynomial
+  time in a succinct binary encoding of the multiplicities alone: if the input
+  is only a binary encoding of the capacity vector, `G = Σ_e c e` is exponential
+  in the input length, and the factorials already force super-polynomial work.
 * **Brute-force audit (§10):** `O(2^G · G · L)` per read length `L`; bounded
   evidence only.
 
@@ -288,17 +314,101 @@ The finite enumeration is **evidence, not proof**; its completeness is not
 claimed beyond length `9`.  The proofs are §6 (Theorem 1), §4 (Theorem 2),
 and §5 (Theorem 3).
 
-## 11. Relationship to issues #92, #83, #217 and the open problem
+**Reproduction note.**  The script was re-run directly as
+`python3 scripts/audit_fibre_count_219.py` (not through `/bin/sh`, whose
+`PIPESTATUS` is a bash-only construct), yielding true exit code `0` and the
+`AUDIT PASSED` banner: all 9 hand-computed convention tests, and 88 (`L=2`) +
+119 (`L=3`) spectra, with zero mismatches on `N` (Möbius and totient), primitive
+counts, root independence, and the singleton criterion.  This matches the
+independent repro recorded on board #219.
+
+**Lean kernel check.**  The number-theoretic core is formalized in
+`AssemblyP1/FibreCountArithmetic.lean` (Theorems `sum_divisors_divisors`,
+`sum_moebius_div_eq_totient`, `fibre_mobius_inversion`, `fibre_totient`).
+`lake build --wfail AssemblyP1.FibreCountArithmetic` succeeds, and
+`#print axioms` reports each theorem depends only on
+`propext, Classical.choice, Quot.sound` (no `sorryAx`, no new axioms).  The
+BEST/graph content is external (classical BEST plus the kernel-checked
+branching construction in `AssemblyP1/ScalarPrimitiveSpellings.lean`).
+
+## 11. Primary prior art: Shomorony et al. (ISIT 2016), Appendix C, Corollary 1
+
+The closest published result is a special case of the `g = 1` part of
+Theorem 1, and must be cited as such.
+
+> **Shomorony, Kamath, Xia, Courtade & Tse, *Partial DNA Assembly: A
+> Rate-Distortion Perspective*, ISIT 2016 (arXiv:1605.01941), Appendix C,
+> Corollary 1.**  If an Eulerian directed multigraph `G = (V, E)` contains an
+> edge of multiplicity `1`, then the number `ec(G)` of Eulerian cycles distinct
+> up to edge multiplicity is
+>
+>     ec(G) = T_G · ∏_v (d_out(v) − 1)! / ∏_{(u,v)} m(u,v)!,
+>
+> where `T_G` is the number of arborescences and `m(u,v)` the multiplicity of
+> the edge `(u,v)` (each parallel copy counted separately in `T_G`).  Their
+> proof roots the tour at the multiplicity-one edge, which kills the rotational
+> stabilizer and makes the `∏ m(u,v)!` quotient exact.
+
+**This is exactly our `g = 1`, singleton-edge case.**  In the de Bruijn /
+`k`-mer multigraph an `L`-mer edge type `e` determines its vertex pair
+`(tail e, head e)`, so `m(u,v) = c e`; a labelled arborescence choosing one of
+the `c e` copies is the weighted count `τ_r(c) = T_G`; and
+`∏_e c e! = ∏_{(u,v)} m(u,v)!`.  With `g = 1` every spelling is primitive
+(`s(W) = 1`), so `B₁ = τ_r(c)∏_u(d_u−1)!/∏_e c e!` coincides with Corollary 1.
+The two notions of equivalence also coincide: "Eulerian cycles distinct up to
+edge multiplicity" is the same as our cyclic edge-type spelling orbits.
+
+**Where the board's result strictly extends it.**  We do **not** claim
+Corollary 1, and we do not claim its hypothesis is necessary.
+
+1. **The singleton-edge hypothesis is dropped at `g = 1`.**  A multiplicity-one
+   edge guarantees `gcd = 1`, but the converse fails, and Theorem 1 at `g = 1`
+   needs no singleton.  For example, one vertex with two loop types of
+   capacities `(2, 3)` has `gcd = 1` and no multiplicity-one edge; it is
+   branching, and `N = B₁ = 4!/(2!·3!) = 2` (the two binary necklaces `AABBB`
+   and `ABABB`).  Corollary 1 does not apply to it.
+2. **Arbitrary gcd `> 1`.**  Corollary 1 is silent when some multiplicity
+   exceeds one and the counts share a common factor: it counts `g = 1`
+   Eulerian cycles and does not model the nonprimitive/periodic spellings that
+   appear at level `g`.  Theorems 1–2 add the primitive-root decomposition and
+   its divisor-Möbius (equivalently positive totient) stabilizer sum.
+3. **Different mechanism for removing stabilizers.**  Corollary 1 uses a
+   singleton edge as a distinguished root.  Our `B_h` is instead the
+   stabilizer-weighted count `Σ_{[W]} 1/s(W)`, and the Möbius/totient step
+   removes the stabilizers arithmetically.  That is precisely what lets the
+   singleton hypothesis be dropped and the `g > 1` case be covered.
+
+The board's construction was derived independently (see the attribution note
+in the "Status and attribution" section above); the overlap with the
+literature is the `g = 1`, singleton-edge corner, which is Corollary 1's.  No
+priority over Corollary 1 is claimed.
+
+## 12. Relationship to issues #92, #83, #217 and the open problem
+
+**Source facts vs project-level strengthenings.**  The model of §1 (oriented
+circular genome, complete `L`-spectrum as a balanced capacity, same-length
+fibre modulo rotation) is a faithful reading of the *oriented* branch of the
+2016 sources, and the Shomorony et al. multigraph together with its `ec`
+equivalence is a source fact (§11).  Everything stated here *about that
+model* — Theorems 1–3, the nonbranching/branching split, and the exact count —
+is a **project-level mathematical theorem** for a stipulated model, not a claim
+extracted from any paper.  Agreement among project notes or agents does not
+promote any of it to a source claim.
 
 * **GitHub #92 (closed).**  `docs/scalar-primitive-spellings-83.md` and
-  `AssemblyP1/ScalarPrimitiveSpellings.lean` settle the **variable-length**
-  primitive question: a primitive truth is identifiable among
+  `AssemblyP1/ScalarPrimitiveSpellings.lean` prove the **variable-length**
+  primitive classification for the same oriented primitive complete-spectrum
+  model: *in that model* a primitive truth is identifiable among
   variable-length primitive candidates from its normalized complete spectrum
   iff its spectrum support is nonbranching (`identifiable_iff_nonbranching`).
-  Theorem 3 here is the **same-length** yes/no analogue; the branching half
-  of both rests on the same two-excursion/`A^m B^m` primitive-spelling
-  construction.  The two results are complementary: #92 fixes the length
-  spectrum modulo rotation across lengths, Theorem 3 fixes it at one length.
+  This is a **project-level theorem about a stipulated model**, conditional on
+  the oriented/primitive/normalized-spectrum reading; it is not a statement
+  about which Medvedev–Brudno or Shomorony candidate universe was intended.
+  Theorem 3 here is the **same-length** yes/no analogue; the branching half of
+  both rests on the same two-excursion/`A^m B^m` primitive-spelling
+  construction (kernel-checked in `AssemblyP1/ScalarPrimitiveSpellings.lean`).
+  The two are complementary: #92 fixes the fibre across lengths, Theorem 3
+  fixes it at one length.
 * **GitHub #83 (closed as "not planned"; migrated to Antonina #219).**  The
   close is **migration, not mathematical completion**.  The four packets of
   #83 are: (1) same-length exact criterion — Theorems 1–3; (2) graph
@@ -311,14 +421,18 @@ and §5 (Theorem 3).
   count is a population/complete-spectrum statement; it does not address
   finite-sample ML uniqueness uniformly over realizations.  Preserved as
   open.
-* **Antonina #217.**  The source-supported interpretation matrix there
-  concerns the *finite-data* bridging⇒ML question (objective, candidate
-  class, strand, ties).  The same-length complete-spectrum fibre here is the
-  population-level identifiability core that several #217 rows condition on;
-  the two should be reconciled at the interpretation level, not conflated.
-  The referent, candidate-universe, and tie-semantics ambiguities documented
-  in `docs/open-problem.md` remain open and are not settled by any counting
-  theorem.
+* **Antonina #217.**  That board is a *source-interpretation* matrix for the
+  **finite-data** bridging⇒ML question: its rows are source facts and
+  interpretation choices (objective, candidate class, strand, bridging, flow,
+  maximizer/ties).  The same-length complete-spectrum fibre here is a
+  **population-level, complete-spectrum** identifiability statement; it is the
+  core that several #217 rows *condition on*, not a row of that matrix.  The
+  correct reconciliation is at the interpretation level: our Theorems 1–3 fix
+  the fibre of a stipulated oriented complete-spectrum model, while #217 fixes
+  which model(s) the 2016 sources support.  They must not be conflated, and
+  neither implies the other.  The referent, candidate-universe, and
+  tie-semantics ambiguities documented in `docs/open-problem.md` remain open
+  and are not settled by any counting theorem here.
 * **Boundary.**  Theorems 1–3 answer the same-length, oriented,
   complete-spectrum counting problem modulo rotation for arbitrary positive
   capacity gcd.  They do not by themselves settle which Medvedev–Brudno

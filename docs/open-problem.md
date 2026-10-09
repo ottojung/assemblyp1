@@ -66,16 +66,20 @@ directions — the known `AAATAT → AAAAAT` witness is kernel-checked
 *inadmissible* under the length-`2G` remap (`doubled_not_information_feasible`),
 and no beat is known — and one non-determinate row, the unspecified general
 principle (R17); neither is a determinate source-supported reading of the 2016
-sentence, and neither is extended to. A third non-source entry (R18) records the
+sentence, and the resolved claim is not extended to either. A third non-source entry (R18) records the
 disclosed two-disjoint-circles duplex model `(S, rc(S))`: circle-by-circle `I_s`
 is exactly equivalent to `I_s(S)`, while duplex-as-a-whole is ill-defined and
 strictly stronger, and when orientation is unobserved its normalized class
-likelihood equals the Medvedev–Brudno molecule distribution. Two further leaf
-artifacts are **pending, not integrated, and not matrix rows**: #216's general
-sample-multiplicity `Part 6` formalization (its result is already kernel-checked
-via #210) and #219's same-length complete-spectrum fibre-count Lean core (a
-population counting result proved in a note and audited by a script, but whose
-Lean does not yet compile). The positive same-length *rotation-uniqueness* half
+likelihood equals the Medvedev–Brudno molecule distribution. One further leaf
+artifact is **pending, not integrated, and not a matrix row**: #216's general
+sample-multiplicity `Part 6` formalization (uncommitted, no committed or board
+result, and it does not compile; its result is already kernel-checked via #210).
+#219's same-length complete-spectrum fibre-count is now **integrated**: its note
+and exact-arithmetic audit are in the repository, and its Lean divisor-sum core
+`AssemblyP1/FibreCountArithmetic.lean` (Möbius inversion, totient
+rearrangement) is kernel-checked, with the BEST/Matrix-Tree graph content
+external. It is a population counting result, not a matrix row. The positive
+same-length *rotation-uniqueness* half
 stays conditional on the external complete-spectrum input; only the population
 theorem is now kernel-checked without it.
 The referent question itself is untouched.

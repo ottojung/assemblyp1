@@ -75,10 +75,12 @@ The finite and computational claims correspond to artifacts in the repository:
         refinement is pending; the result is kernel-checked through the
         variable-length module above;
   \item same-length complete-spectrum fibre count (population): the note
-        \texttt{docs/exact-fibre-count-theorem-219.md} and the exact-arithmetic
-        audit \texttt{scripts/audit\_fibre\_count\_219.py}. The Lean core is
-        pending (it does not compile), so this is \emph{not} a kernel-checked
-        matrix row;
+        \texttt{docs/exact-fibre-count-theorem-219.md}, the exact-arithmetic
+        audit \texttt{scripts/audit\_fibre\_count\_219.py}, and the kernel-checked
+        divisor-sum core \texttt{AssemblyP1/FibreCountArithmetic.lean}
+        (\texttt{fibre\_mobius\_inversion}, \texttt{fibre\_totient}). The
+        BEST/Matrix-Tree graph content remains external; this is a population
+        result, not a kernel-checked matrix row;
   \item population uniqueness (oriented primitive P2, every positive length):
         the end-to-end kernel-checked theorem
         \popml{}, built from

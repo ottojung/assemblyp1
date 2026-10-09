@@ -184,6 +184,7 @@ import AssemblyP1.OrientedVariableLengthSe62
 import AssemblyP1.Section62VarlenPerOccurrence
 import AssemblyP1.BreslerRemapCompatibility
 import AssemblyP1.Issue209EAudit
+import AssemblyP1.FibreCountArithmetic
 
 /-! ## `Issue94Transposition`: the Kotzig/Ukkonen/Pevzner descent, and an obstruction
 
@@ -902,8 +903,10 @@ spectrum uniqueness input as an explicit premise (`FibreFreedomForcesLongRepeat`
 so its rotation conclusion is conditional; the *population* theorem
 `AssemblyP1.Issue94Complete.population_unique_ML` is unconditional.  The
 general-flow module (#214), the two duplex modules (#215) and the implication
-lattice (#216) are unconditional.  #219's fibre-count arithmetic module is
-uncommitted WIP that does not compile and is deliberately not imported. -/
+lattice (#216) are unconditional.  #219's fibre-count arithmetic module
+(`FibreCountArithmetic`) is now committed (leaf #219 terminal, `81d29c6`) and
+imported here: it is the kernel-checked divisor-sum core (Möbius inversion,
+totient rearrangement); the BEST/Matrix-Tree graph content remains external. -/
 #print axioms AssemblyP1.SameLength62TieUniqueness.informationFeasible_62_exact_tie
 #print axioms AssemblyP1.SameLength62TieUniqueness.maximizer_and_tie_of_Is_and_62
 #print axioms AssemblyP1.SameLength62TieUniqueness.no_interleaved_long_repeats_of_Is
@@ -926,4 +929,10 @@ uncommitted WIP that does not compile and is deliberately not imported. -/
 #print axioms AssemblyP1.OrientedVariableLengthSe62.oriented_variable_length_se62_counterexample'
 #print axioms AssemblyP1.Section62VarlenPerOccurrence.truth_not_maximizer_in_general_flow_universe
 #print axioms AssemblyP1.Section62VarlenPerOccurrence.competitor_is_unique_optimizer
+#print axioms AssemblyP1.FibreCount.sum_antidiagonal_eq_sum_divisors
+#print axioms AssemblyP1.FibreCount.sum_divisors_inv_mul_eq
+#print axioms AssemblyP1.FibreCount.sum_divisors_divisors
+#print axioms AssemblyP1.FibreCount.sum_moebius_div_eq_totient
+#print axioms AssemblyP1.FibreCount.fibre_mobius_inversion
+#print axioms AssemblyP1.FibreCount.fibre_totient
 #print axioms AssemblyP1.Issue94Interface.population_unique_ML_of_BBTUniqueAt

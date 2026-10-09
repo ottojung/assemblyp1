@@ -26,13 +26,15 @@ exact multinomial (ratio `1125/512`), and the external-`N` domain boundary
 (`d_w ≤ N(D)`; the literal marginal is a probability only on `|D| ≤ N`) is
 kernel-checked. The cc0aa8a-based **paper** edits on the leaf branches were
 deliberately **not** merged, because they would have reverted the #217/#221
-paper state; only their new, self-contained files were taken. All nine
+paper state; only their new, self-contained files were taken. **This terminal
+round** adds leaf #219, which reached `B219 TERMINAL — state: done` (branch
+`agent/board-219-547404`, `81d29c6`): its `FibreCountArithmetic` module now
+**compiles** and is integrated, so the pending list shrinks to one item. All ten
 integrated Lean modules build and are axiom-audited at `[propext,
-Classical.choice, Quot.sound]`. Two further leaf items remain **pending, not
-integrated**, because their Lean does not compile: #216's uncommitted
-sample-multiplicity `Part 6` (its *result* is already kernel-checked via #210)
-and #219's `FibreCountArithmetic` (its count theorems are proved in a note and
-audited by a script, but not yet kernel-checked).
+Classical.choice, Quot.sound]`. One leaf item remains **pending, not
+integrated**, because its Lean does not compile and it has no committed or board
+result: #216's uncommitted sample-multiplicity `Part 6` (its *result* is already
+kernel-checked via #210).
 This document is the source-backed classification matrix for the finite
 (finite-sample) reading of the 2016 sentence
 
@@ -103,7 +105,7 @@ transfer); a positive theorem inside `U2` does **not** transfer to `U1`. **[M]**
 | `F0` | no read-overlap-graph feasibility: any circular candidate | **F** for `E` (MB09 §6.1 quantifies over circular genomes) |
 | `Fgen` | a **genuine** §6.2 candidate: a feasible flow in the transitively reduced bidirected read-overlap graph on the observed reads, vertex lower bound 1, edge lower bounds 0, §3.4 signed-incidence balance, no supersource/sink usage | **F**: MB09 §6.2, “Each vertex has a lower bound of 1 since it represents a read that must be present in the genome at least once … the `d_i`'s … correspond to the value of the flow through vertex `i`” |
 | `Fspell` | a `Fgen` candidate that is a single spelled bidirected circuit | **I**: a spelled circuit is a special case of a flow, so negatives over `Fspell` transfer to `Fgen` **[M]**; positives do not |
-| `Focc` | the per-occurrence strengthening `d_D(w) ≥ x(w)` for every observed type | **C**: **not** the §6.2 definition. MB09 §6.2 states only the per-vertex lower bound `1`; `Focc` is a repository-added assumption surface |
+| `Focc` | the per-occurrence strengthening `d_D(w) ≥ x(w)` for every observed type | **C**: **not** the §6.2 definition and **not** a source fact. MB09 §6.2 states only the per-vertex lower bound `1`; `Focc` is a **project-level strengthening** (a repository-added assumption surface) |
 
 `Focc ⊂ Fgen` when both are applied to the same observation only if a
 per-occurrence-feasible object is always a genuine §6.2 flow — that containment
@@ -210,9 +212,13 @@ Legend for the resolution column: **FALSE** (a strict counterexample refutes
   compatibility kernel-checked **incomparable off the R1∧R2∧R3 locus**) and
   R17 (not a determinate proposition) — neither is determinate, and neither is a
   source-supported reading of the 2016 sentence. R18 is a disclosed new model,
-  not a source row. Two leaf artifacts are pending rather than open rows: #216's
-  `Part 6` amplification (result already `[K]` via R14/R10–R12) and #219's
-  fibre-count Lean core (a population counting result, proved in a note).
+  not a source row. One leaf artifact remains pending rather than an open row:
+  #216's `Part 6` amplification (uncommitted, does not compile, no committed or
+  board result; its result is already `[K]` via R14/R10–R12). #219's
+  fibre-count Lean core is **no longer pending**: leaf #219 reached terminal and
+  its `FibreCountArithmetic` divisor-sum core is integrated and `[K]` (the
+  BEST/Matrix-Tree graph content stays external); it is a population counting
+  result, not a matrix row, so it changes no row resolution.
 
 ### 2.2 Front states, coordination, and the general-flow upgrade (final round)
 
@@ -231,7 +237,7 @@ can recover the research graph.
 | #214 | `agent/board-214-d0e372` / `assemblyp1-finite-214` | `Section62NonSpelledFlow` committed through `d2163b8`; worktree clean | **module integrated**; R10–R12 upgrade to the general `Feasible62` flow domain |
 | #215 | `agent/board-215-745214` / `assemblyp1-finite-215` | `TwoDisjointCirclesDuplex` + `DoubleStrandBridgingTransfer` committed (`a852879`); **V3 row settled** (`67de8b7`+`20b6c71`+`2a3d2cf`): `BreslerRemapCompatibility` + script + appendix §11 | **modules integrated**; new row R18, R16 refined; **this round** integrates the V3-settle artifacts — R16 compatibility kernel-checked (incomparable off R1∧R2∧R3) |
 | #216 | `agent/board-216-eb3281` / `assemblyp1-finite-216` | `ImplicationLattice` committed (`486d60f`); **uncommitted `Part 6` sample-multiplicity refinement does not compile** | base **module integrated** (conclusion-schema lattice, no matrix row change); `Part 6` **pending, not integrated** — its result is already `[K]` via #210 |
-| #219 | `agent/board-219-547404` / `assemblyp1-finite-219` | uncommitted `FibreCountArithmetic.lean` + doc + script; **the Lean module still does not compile** (Finset-reindexing and `omega` failures at lines 155/178/188/190) | **note + audit integrated** (`docs/exact-fibre-count-theorem-219.md`, `scripts/audit_fibre_count_219.py`, and the superseded-in-part note in `docs/exact-same-length-spectrum-fibre-count.md`; audit passes); **Lean core pending**; no matrix row change |
+| #219 | `agent/board-219-547404` / `assemblyp1-finite-219` | **terminal** (`B219 TERMINAL`, 11:06): `FibreCountArithmetic.lean` + updated note + fixed audit script committed (`81d29c6`, doc cross-ref `1ec6195`); worktree clean | **fully integrated this round**: `AssemblyP1/FibreCountArithmetic.lean` (kernel-checked divisor-sum core), `docs/exact-fibre-count-theorem-219.md` (adds prior-art boundary and kernel check), `scripts/audit_fibre_count_219.py` (placeholder bug fixed); root-imported and axiom-audited; no matrix row change (population result) |
 
 **PR #117 (merged Lean CI repair).** The board branch carries `e9fcf01`, the
 merge of PR #117 ("Repair full-library CI compilation blockers (initial
@@ -387,17 +393,24 @@ likelihood coincides with the MB09 molecule distribution.
    amplification result is already kernel-checked via #210 (R14) and #213
    (R10/R12). It is recorded so the schema lattice is not read as carrying a
    general amplification theorem it does not.
-9. **#219 (same-length complete-spectrum fibre count): note + audit
-   integrated, Lean core pending.** Its Theorems 1–3 are mathematical proofs in
-   `docs/exact-fibre-count-theorem-219.md` (integrated), with an independent
-   exact-arithmetic audit (`scripts/audit_fibre_count_219.py`, integrated, all
-   claims verified against brute force on binary words of length `1..9`), but
-   the Lean core `AssemblyP1/FibreCountArithmetic.lean` still does not compile
-   (Finset reindexing / `omega`). It is a **population-level counting** result,
-   not a finite-data matrix row; it is the identifiability core several positive
-   rows condition on, and its pending Lean status does not change any row's
-   resolution. It is recorded so that no kernel-checked count theorem is
-   claimed.
+9. **#219 (same-length complete-spectrum fibre count): fully integrated.**
+   Leaf #219 is terminal (`B219 TERMINAL`, `81d29c6`). Its Theorems 1–3 are
+   mathematical proofs in `docs/exact-fibre-count-theorem-219.md` (integrated),
+   with an independent exact-arithmetic audit (`scripts/audit_fibre_count_219.py`,
+   integrated, `AUDIT PASSED`, all claims verified against brute force on binary
+   words of length `1..9`), and its Lean core
+   `AssemblyP1/FibreCountArithmetic.lean` now **compiles** and is integrated: it
+   kernel-checks the divisor-sum reindexing, the Möbius inversion
+   (`fibre_mobius_inversion`) and the totient/Burnside rearrangement
+   (`fibre_totient`). What is *not* formalized is the BEST/Matrix-Tree graph
+   content (the weighted arborescence count `B_h` and the branching
+   primitive-spelling construction); that remains **external** (classical BEST
+   plus the kernel-checked `ScalarPrimitiveSpellings`). The closest prior art,
+   the `g = 1` multiplicity-one-edge corner, is Shomorony–Kamath–Xia–Courtade–Tse
+   ISIT 2016 Appendix C Corollary 1, cited and **not** claimed. It is a
+   **population-level counting** result, not a finite-data matrix row; its
+   integration changes no row's resolution. It is recorded so that the exact
+   scope of the kernel-checked count is not overstated.
 
 So: **every interpretation of the 2016 finite question that is both
 determinate and source-supported is resolved — nine distinct results
@@ -460,7 +473,7 @@ theorem is now kernel-checked without it.
 | Row R14 (oriented single-strand variable-length §6.2) is refuted by a kernel-checked certificate plus infinite strict families (`M ≥ 1`), exact `15625/11664`, `2109375/823543` and binomial `81/64`, `27/16` at `M=1,2` | **K** (`AssemblyP1/OrientedVariableLengthSe62.lean`) + **M** (families) + **V** (scripts) |
 | Row R10/R12 is hardened by #213: both throughput vectors in the §6.1 domain and general flow universe, competitor the unique optimizer over the whole domain | **K** (`AssemblyP1/Section62VarlenPerOccurrence.lean`) |
 | the #216 sample-multiplicity amplification `Part 6` | **O** (uncommitted, does not compile); its result is **K** via R14 |
-| the #219 same-length complete-spectrum fibre count (Theorems 1–3) | **M** (note proof) + **V** (audit script); the Lean core `FibreCountArithmetic.lean` is **O** (does not compile) |
+| the #219 same-length complete-spectrum fibre count (Theorems 1–3) | **M** (note proof) + **V** (audit script) + **K** (the divisor-sum core: `fibre_mobius_inversion`, `fibre_totient`, integrated); the BEST/Matrix-Tree graph content is **external**, not formalized |
 | Row R16 is open in both directions, under a non-source convention; the known witness is kernel-checked inadmissible under the `2G` remap | **O** + **K** (inadmissibility) |
 | R16 compatibility: V3 exactly compatible with V1/V2 (≡ V5 circle-by-circle) iff R1∧R2∧R3; incomparable off the locus, kernel-checked both directions (`GGGA` for R1, `AAATAT` for R3) | **K** — `AssemblyP1/BreslerRemapCompatibility.lean` (`remap_natural_seat_not_sound`, `remap_not_complete`, `seat6_spurious`, `seat7_spurious`, `v5_ggga_fails`), integrated and axiom-audited; appendix §11 |
 | the faithful-occurrence reading of the V3 remap is sound in general (V3 ⟹ V1/V2) | **conjecture** — verified computation in scope only (`0/180` violations, binary+ternary, `L=3`, `3≤G≤7`) |
@@ -474,7 +487,7 @@ theorem is now kernel-checked without it.
 | the integer flow optimum vs. the half-integral relaxation | **kept separate** in §2.2; the relaxation is not the §6.2 object |
 | R9’s BBT complete-spectrum input (finite same-length rotation uniqueness) | **O** (external) — carried as explicit `hObs`/`hBBT` premise, not discharged; the **population** theorem is now kernel-checked without it |
 | leaf #211’s `I_s ⇒ ¬ interleaved long repeats` adapter and its `G=6, L=2` refutation of the BBT premise | **K** — `AssemblyP1/SameLength62TieUniqueness.lean`, integrated and axiom-audited |
-| leaf #219’s exact fibre-count theorem | **M** + **V** — note `docs/exact-fibre-count-theorem-219.md` and audit `scripts/audit_fibre_count_219.py` integrated and passing; the Lean core `FibreCountArithmetic.lean` is **O** (does not compile) |
+| leaf #219’s exact fibre-count theorem | **M** + **V** + **K** (divisor-sum core) — note `docs/exact-fibre-count-theorem-219.md`, audit `scripts/audit_fibre_count_219.py` and Lean core `AssemblyP1/FibreCountArithmetic.lean` integrated and passing; the BEST/Matrix-Tree graph content is **external** |
 
 ---
 
@@ -677,12 +690,12 @@ The two modules were root-imported in `AssemblyP1.lean` (after
   **does not compile** (~40 errors: `unfold addRead`, `Finset` reindexing,
   `omega`, `Real.exp_inj`); it is left in its worktree. Its *result* is already
   `[K]` via R14 (#210). See [`../implication-lattice-216.md`](../implication-lattice-216.md) §7.
-* #219’s uncommitted `AssemblyP1/FibreCountArithmetic.lean` **does not compile**
-  (Finset-reindexing / `omega` failures at lines 155/178/188/190), so the Lean
-  core is left in its worktree. Its Theorems 1–3 are proved in
-  `docs/exact-fibre-count-theorem-219.md` (integrated) and audited by
-  `scripts/audit_fibre_count_219.py` (integrated; **AUDIT PASSED**, all claims
-  verified against brute force on binary words of length `1..9`). It is a
+* #219’s `AssemblyP1/FibreCountArithmetic.lean` at the time of this round did
+  **not** compile (Finset-reindexing / `omega` failures at lines 155/178/188/190)
+  and was left in its worktree. **Superseded by §7.7:** leaf #219 reached terminal
+  (`81d29c6`), the module now compiles, and it is integrated. Its Theorems 1–3
+  are proved in `docs/exact-fibre-count-theorem-219.md` (integrated) and audited
+  by `scripts/audit_fibre_count_219.py` (integrated; **AUDIT PASSED**). It is a
   population counting result, not a matrix row.
 
 **Host limitation, unchanged.** The full-library `lake build --wfail` remains
@@ -783,3 +796,87 @@ domain-boundary fact: the external `N` restricts the admissible class to
 `|D| ≤ N` (kernel-checked), which is why R5's witness is chosen with every
 `dᵢ ≤ 2 < N`. No other row changes; R16/R17/R18 and the two pending leaf
 artifacts are untouched.
+
+### 7.7 Terminal round: #219 integration and pending-leaf reconciliation (this pass), 2026-10-09
+
+Base: `5e79745` (the #209 integration round on top of `9627f18`). This is the
+META front's terminal pass. It reconciles the two leaf artifacts the earlier
+rounds tracked as pending, without writing into any live leaf worktree.
+
+**#219 `FibreCountArithmetic` — integrated.** Leaf #219 reached
+`B219 TERMINAL — state: done` at `81d29c6` (doc cross-reference `1ec6195`) on
+`agent/board-219-547404`, pushed. Its novel, self-contained artifacts were taken
+read-only by path (never the leaf's `AssemblyP1.lean` or paper edits):
+
+| leaf | files integrated | why |
+|---|---|---|
+| #219 | `AssemblyP1/FibreCountArithmetic.lean`, `docs/exact-fibre-count-theorem-219.md`, `scripts/audit_fibre_count_219.py` | the module now **compiles**; it is the kernel-checked divisor-sum core. The updated note adds the prior-art boundary (§11, Shomorony et al. ISIT 2016 App. C Cor. 1) and the kernel-check record; the updated audit script removes a dead placeholder helper and calls `spectrum_of_word` |
+
+The module was root-imported in `AssemblyP1.lean` (after `Issue209EAudit`) and
+checked here:
+
+| check | command | result |
+|---|---|---|
+| integrated module build | `LEAN_NUM_THREADS=4 lake build AssemblyP1.FibreCountArithmetic` | **Build completed successfully (8924 jobs)**; module built (2.7s), exit 0 |
+| kernel replay | `LEAN_NUM_THREADS=1 lake env leanchecker AssemblyP1.FibreCountArithmetic` | **exit 0** |
+| axiom audit | `#print axioms` on `sum_antidiagonal_eq_sum_divisors`, `sum_divisors_inv_mul_eq`, `sum_divisors_divisors`, `sum_moebius_div_eq_totient`, `fibre_mobius_inversion`, `fibre_totient` | every one `[propext, Classical.choice, Quot.sound]` |
+| forbidden-token scan | `grep -E '\b(sorry\|axiom\|admit\|native_decide)\b'` on the module | **no matches** |
+| #219 audit script | `python3 scripts/audit_fibre_count_219.py` | **AUDIT PASSED** (exit 0; 88 `L=2` + 119 `L=3` binary spectra, 0 mismatches on Möbius/totient/primitive/root/criterion) |
+| documentation integrity | `python3 scripts/check-research-docs.py` | **passed** (exit 0) |
+
+**Scope of the kernel check, stated exactly.** What is kernel-checked is the
+*arithmetic*: divisor-sum reindexing, Möbius inversion for the fibre count, and
+the totient/Burnside rearrangement. The BEST/Matrix-Tree graph content — the
+weighted arborescence quantity `B_h` and the branching primitive-spelling
+construction — is **external** (classical BEST, plus the kernel-checked
+`AssemblyP1/ScalarPrimitiveSpellings.lean`). The theorem note and audit script
+carry the population-level proof and its exact-arithmetic reproduction. This is
+a **population counting** result, not a finite-data matrix row; integrating it
+changes no row's resolution.
+
+**#216 `Part 6` — still pending, not integrated.** Leaf #216 is **live**
+(`/workspace/assemblyp1-finite-216`, branch `agent/board-216-eb3281` at
+`486d60f`, uncommitted `M AssemblyP1/ImplicationLattice.lean`, +534/−30). Its
+worktree was consulted **read-only**: never written to, never used as a `cwd`,
+never merged or cherry-picked. There is **no committed or board result** for
+`Part 6`: the branch HEAD's `ImplicationLattice.lean` contains no
+sample-multiplicity refinement (grep count `0`), the board's newest comments are
+all `state: working`, and the uncommitted `Part 6` still does not compile. The
+committed base module (`ImplicationLattice`, the conclusion-schema transfer
+lattice) is already integrated and its result is already `[K]` via R14/R10–R12.
+`Part 6` is therefore recorded as **pending with no board result**, and its
+absence opens no row.
+
+**R16 and R18, restated as bounded qualifications (no bounded search used as
+evidence).** These are unchanged from the earlier rounds and are restated here
+so the terminal verdict is self-contained:
+
+* **R16** (Bresler–Bresler–Tse `2G` concatenation) is **open in both
+  directions** under a *different paper's* convention, and is **not** a
+  source-supported reading of the 2016 sentence. What is *proved* is the
+  negative admissibility of the known witness
+  (`doubled_not_information_feasible`, kernel-checked) and the exact
+  compatibility classification (`BreslerRemapCompatibility`: V3 is compatible
+  with V1/V2 iff R1∧R2∧R3, incomparable off that locus in both directions,
+  kernel-checked). The absence of a beat in the seven searched scopes is
+  recorded only as **absence of a known witness**, never as evidence of
+  openness; no bounded search is used to claim either direction. The
+  faithful-occurrence reading's general soundness remains a **conjecture**
+  (verified in scope only).
+* **R18** (two-disjoint-circles duplex) is a **disclosed project-level modelling
+  decision**, not a source row. Circle-by-circle `I_s` is exactly equivalent to
+  `I_s(S)` (kernel-checked), so the `AAATAT → AAAAAT` witness survives there;
+  duplex-as-a-whole is ill-defined and strictly stronger. It settles no source
+  row.
+
+**Project-level strengthenings vs. source facts (labelling).** The
+per-occurrence rule `d_D(w) ≥ x(w)` (`Focc`) is a **repository-added
+assumption surface**, **not** Medvedev–Brudno's §6.2 rule (which states only the
+per-vertex lower bound `1`); the same is true of the fixed-`G` candidate
+restriction (`U2`) and the two-disjoint-circles duplex (`R18`). These are tagged
+**[C]** in §1 and are called project-level strengthenings here, never source
+facts. R13's resolution (FALSE) is a mathematical service to that repository
+question, not a reading of the 2016 sentence. Historical ambiguity (the
+unselected 2016 likelihood referent, the strand-convention gap, the
+`4^k` vs molecule-class index tension, the uninspected publisher supplement)
+stays explicit in §1.1/§1.4, §3, §4 and §6; it is not resolved by this pass.

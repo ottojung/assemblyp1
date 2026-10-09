@@ -377,13 +377,6 @@ def enumerate_primitive_spellings(g):
 
 def spectrum_of_word(word, L):
     G = len(word)
-    return {tuple(word[(r + i) % G] for i in range(L)):
-            sum(1 for r in range(G) if tuple(word[(r + i) % G] for i in range(L)) == tuple(word[(r + i) % G] for i in range(L)))
-            for _ in [0]}  # placeholder, replaced below
-
-
-def spectrum_of_word_fast(word, L):
-    G = len(word)
     spec = {}
     for r in range(G):
         w = tuple(word[(r + i) % G] for i in range(L))
@@ -413,7 +406,7 @@ def enumerate_fibres(GMAX, L):
     for G in range(1, GMAX + 1):
         for bits in product((0, 1), repeat=G):
             word = tuple(bits)
-            spec = spectrum_of_word_fast(word, L)
+            spec = spectrum_of_word(word, L)
             key = frozenset(spec.items())
             canon = canonical_rotation(word)
             fibres.setdefault(key, set()).add(canon)

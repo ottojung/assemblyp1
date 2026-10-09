@@ -195,14 +195,20 @@ ML principle is not a determinate proposition, because the source fixes no
 objective; its three source-nameable members are each refuted, but the family
 reading itself cannot be settled by a finite witness.
 
-Two leaf artifacts are pending rather than resolved, and neither is a matrix
-row. Issue~\#216's general sample-multiplicity amplification formalization is
-uncommitted and does not compile; the amplification result itself is already
-kernel-checked through \texttt{OrientedVariableLengthSe62} and the
-$AAATT\to AAAATT$ families. Issue~\#219's same-length complete-spectrum
-fibre-count theorem is proved in a note and audited by an exact-arithmetic
-script, but its Lean core does not yet compile; it is a population-level
-counting result, not a finite-data reading of the 2016 sentence.
+One leaf artifact is pending rather than resolved, and it is not a matrix row.
+Issue~\#216's general sample-multiplicity amplification formalization is
+uncommitted, has no committed or board result, and does not compile; the
+amplification result itself is already kernel-checked through
+\texttt{OrientedVariableLengthSe62} and the $AAATT\to AAAATT$ families.
+Issue~\#219's same-length complete-spectrum fibre-count theorem is now fully
+integrated: the note proves Theorems~1--3, an exact-arithmetic audit reproduces
+them against brute force, and the Lean module
+\texttt{FibreCountArithmetic.lean} kernel-checks the divisor-sum core (Möbius
+inversion and the totient rearrangement). The BEST/Matrix-Tree graph content is
+external, and the closest prior art (the $g=1$ multiplicity-one-edge corner) is
+Shomorony et al.\ ISIT 2016, Appendix~C, Corollary~1, cited and not claimed. It
+is a population-level counting result, not a finite-data reading of the 2016
+sentence, so it resolves no row.
 
 Item (7) deserves a label rather than a silent reclassification: the
 per-occurrence requirement $d_D(w)\ge x(w)$ is \emph{not} Medvedev--Brudno's §6.2
