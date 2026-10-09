@@ -19,14 +19,15 @@ reading of the 2016 sentence *as that reading is currently written down*:
 
 1. **Every genuine §6.2 candidate under `I_s` is an exact tie**
    (`informationFeasible_62_exact_tie`). The `≤` in the maximizer theorem is an
-   equality, so the maximizer set is not a singleton by construction: it
-   contains every same-length word with the truth's window support.
+   equality, so the maximizer statement is a tie statement by construction.
 2. **The tie class is characterized, not restricted**: under `I_s`, a same-length
    word ties the truth exactly when it has the truth's window support
    (`same_support_word_ties_truth`), with no §6.2 certificate needed at all. The
    §6.2 side of the bridge
    (`SameLength62Maximizer.oriented_support_eq_of_genuine62`) puts every genuine
-   §6.2 candidate inside that class.
+   §6.2 candidate inside that class, and `support_eq_iff_specCount_eq` shows the
+   class is exactly the fibre of the truth's complete spectrum, counted by
+   `docs/exact-same-length-spectrum-fibre-count.md`.
 3. **The external complete-spectrum (BBT) premise is not a theorem of this
    model.** `AssemblyP1.OrientedSameLengthML.same_length_unique_up_to_rotation_of_bbt`
    consumes `hBBT : equal length-L spectrum → cyclic shift`. That premise is
@@ -40,23 +41,39 @@ reading of the 2016 sentence *as that reading is currently written down*:
    of the truth". `support_rigidity_iff_fibre_singleton` shows it is equivalent
    under `I_s` to the spectrum-fibre form (`SpectrumFibreSingleton`), and
    `unique_62_maximizer_up_to_rotation_of_support_rigidity` shows it is exactly
-   what the uniqueness reading of the §6.2 maximizer statement needs. Whether it
-   holds is open in this repository; §5 of the companion note
+   what the uniqueness reading of the §6.2 maximizer statement needs. §2 then
+   isolates what closes it: `FibreFreedomForcesLongRepeat`, a purely
+   combinatorial statement about circular words, suffices
+   (`unique_maximizer_up_to_rotation_of_residue`), and `I_s` is precisely what
+   forbids both of its disjuncts
+   (`BridgingBridge.informationFeasible_no_long_triple_repeat` and
+   `no_interleaved_long_repeats_of_Is`). §5 of the companion note
    `docs/same-length-62-tie-uniqueness-211.md` records the finite evidence.
 
 §4 adds a **finite floor instance**: the first kernel-checked instance in the
 repository at which the truth is simultaneously fully `I_s`-feasible and a
 genuine §6.2 candidate (the `AABB`/`ABAB` witness of #88 could not provide this,
 because its truth was not a member of the §6.2 class), together with the tie
-conclusion verified at it.
+conclusion verified at it and the fact that its fibre is a singleton
+(`truth4_support_rigid`), so the residue is not vacuous there.
 
 ## Honest scope
 
 Nothing here claims that the tie class is a singleton, and nothing here claims
-it is not. The kernel-checked facts are the tie/equality theorems, the
-refutation of the BBT premise, and the finite floor instance. The residue is a
+it is not. The kernel-checked facts are the tie/equality theorems, the refutation
+of the BBT premise, the finite floor instance, and the two finite checks of §3–§4
+(`truth6_not_information_feasible`, `truth4_support_rigid`). The residue is a
 named proposition, not a concealed hypothesis, and it is *not* the same as the
 2016 paper's reconstruction theorem, although that theorem would imply it.
+
+One distinction the wording of the maximizer statement invites, and that this
+module keeps: the *tie class* — the set of circular genomes whose exact
+likelihood equals the truth's — is characterized in theorem 2 as the support
+class, while the *maximizer set* of
+`SameLength62Maximizer.informationFeasible_62_maximizer` ranges over genuine §6.2
+candidates only. Whether a given member of the tie class is itself a §6.2
+candidate is a separate question, not settled here; it does not matter for the
+residue, because the residue is stated over the support class.
 -/
 
 namespace AssemblyP1.SameLength62TieUniqueness
@@ -101,6 +118,31 @@ theorem Is_spectrum_eq_of_support_eq {G L n : ℕ} (hG : 0 < G) (hL2 : 2 ≤ L)
     (OrientedRigidity.specCount (L := L) hG D) hcir
     (fun w => Nat.le_of_not_gt fun hgt => hnoesc
       ⟨OrientedRigidity.specCount (L := L) hG D, hcir, ⟨w, hgt⟩⟩)
+
+/-- **The tie class is exactly the fibre of the truth's complete spectrum.**
+Under `I_s`, support equality and spectrum equality coincide for a same-length
+word. The `←` direction is purely formal (a spectrum is positive exactly on its
+support); the `→` direction is `Is_spectrum_eq_of_support_eq`.
+
+So the words that tie the truth under `I_s` are exactly the words in the fibre
+of the truth's complete length-`L` spectrum, i.e. the fibre whose number of
+rotation orbits `docs/exact-same-length-spectrum-fibre-count.md` counts with the
+BEST theorem. Tie freedom is therefore exactly fibre freedom. -/
+theorem support_eq_iff_specCount_eq {G L n : ℕ} (hG : 0 < G) (hL2 : 2 ≤ L)
+    (hLG : L ≤ G) (S : Fin G → α) (ρ : Realization G n)
+    (hfeas : InformationFeasible ⟨G, hG, S⟩ L (realizedStarts ρ))
+    (D : Fin G → α) :
+    OrientedRigidity.support (L := L) hG D
+        = OrientedRigidity.support (L := L) hG S ↔
+      (∀ w : Fin L → α, OrientedRigidity.specCount (L := L) hG D w
+          = OrientedRigidity.specCount (L := L) hG S w) := by
+  constructor
+  · intro hsup w
+    exact Is_spectrum_eq_of_support_eq hG hL2 hLG S ρ hfeas D hsup w
+  · intro hspec
+    ext w
+    rw [(OrientedSameLengthML.specCount_pos_iff hG D w).symm,
+      (OrientedSameLengthML.specCount_pos_iff hG S w).symm, hspec w]
 
 /-- **Every genuine same-length §6.2 candidate is an exact tie.** Same
 hypotheses as `AssemblyP1.MLEscape.informationFeasible_62_spelledML` *minus the
@@ -180,18 +222,29 @@ The uniqueness reading needs one proposition that this repository does not have:
 in as a hypothesis of a theorem, because it is the live mathematical content of
 the uniqueness reading, and because the tempting external input (BBT) is refuted
 by the model itself in §3.
+
+Under `I_s` the residue is equivalent to the statement that the truth's spectrum
+fibre is a singleton (`support_rigidity_iff_fibre_singleton`), i.e. to the fibre
+count of `docs/exact-same-length-spectrum-fibre-count.md` being `1`; and §3
+records that the external BBT premise which would deliver it does not hold in
+this model.
+
+`truth4_support_rigid` (§4) is a finite instance at which the residue does hold,
+so the residue is not vacuous.
 -/
 
-/-- **Support rigidity of an information-feasible truth.** Every circular word of
-the same length whose length-`L` window support is the truth's is a cyclic shift
-of the truth.
+/-- **Support rigidity of a circular truth.** Every circular word of the same
+length whose length-`L` window support is the truth's is a cyclic shift of the
+truth.
 
-This is the *exact* open residue of the uniqueness reading in this model:
-combined with `Is_spectrum_eq_of_support_eq` it is the statement that the
-spectrum fibre of an information-feasible truth is a singleton, and combined
-with the §6.2 bridge it is the statement that no second tied maximizer exists.
-A reconstruction theorem that recovers the truth from the read set would imply
-it; nothing in this repository proves or refutes it. -/
+This is the *exact* open residue of the uniqueness reading in this model: under
+`I_s` it is equivalent to fibre singularity
+(`support_rigidity_iff_fibre_singleton`), and combined with the §6.2 bridge it is
+the statement that no second tied maximizer exists. A reconstruction theorem
+that recovers the truth from the read set would imply it; nothing in this
+repository proves it. It is *not* refuted either — `bbt_premise_refuted_G6_L2`
+refutes the *external* BBT premise at an instance that is not `I_s`-feasible
+(`truth6_not_information_feasible`). -/
 def SupportRigidity {G : ℕ} (hG : 0 < G) (S : Fin G → α) (L : ℕ) : Prop :=
   ∀ D : Fin G → α, OrientedRigidity.support (L := L) hG D
     = OrientedRigidity.support (L := L) hG S → OrientedFinal.IsCyclicShift hG D S
@@ -242,6 +295,92 @@ theorem unique_62_maximizer_up_to_rotation_of_support_rigidity {G L : ℕ}
   hrig D (SameLength62Maximizer.oriented_support_eq_of_genuine62 (L := L)
     (toList := toList) hStruth hD rfl)
 
+/-! ### What `I_s` forbids, and what would close the residue
+
+The residue is not a missing technicality of the plumbing: `I_s` itself forbids
+both of the two repeat structures that a non-rigid spectrum fibre has to
+manufacture. The two facts below are the `I_s` half; the combinatorial half is
+`FibreFreedomForcesLongRepeat`.
+-/
+
+/-- **`I_s` forbids interleaved long maximal repeats.** A bridged copy of length
+`e` straddles a read, so `e + 2 ≤ L`
+(`SourceFaithfulIs.bridgesCopy_length`). Clause 3 of `I_s` bridges one of the
+four copies of an interleaved pair of maximal repeats, so at least one of the two
+lengths satisfies `e + 2 ≤ L`; two repeats of length `≥ L - 1` cannot. -/
+theorem no_interleaved_long_repeats_of_Is {α : Type} [DecidableEq α]
+    {G L : ℕ} (hG : 0 < G) (S : Fin G → α) (R : Finset (Fin G))
+    (hfeas : InformationFeasible ⟨G, hG, S⟩ L R)
+    {e₁ e₂ : ℕ} {a b c d : Fin G}
+    (h₁ : Genome.IsRepeat ⟨G, hG, S⟩ e₁ a b)
+    (h₂ : Genome.IsRepeat ⟨G, hG, S⟩ e₂ c d)
+    (hi : Interleaved ⟨G, hG, S⟩ a b c d)
+    (hL₁ : L - 1 ≤ e₁) (hL₂ : L - 1 ≤ e₂) : False := by
+  have hb : IsInterleavedPairBridged ⟨G, hG, S⟩ L R e₁ e₂ a b c d :=
+    hfeas.interleaved h₁ h₂ hi h₁.2.1 h₂.2.1
+  rcases hb with h | h | h | h
+  · exact absurd (bridgesCopy_length h) (by omega)
+  · exact absurd (bridgesCopy_length h) (by omega)
+  · exact absurd (bridgesCopy_length h) (by omega)
+  · exact absurd (bridgesCopy_length h) (by omega)
+
+/-- **The exact combinatorial residue of the uniqueness reading.** If the fibre
+of a circular word's complete length-`L` spectrum contains a word that is not a
+cyclic shift of it, then the word carries a triple repeat of length `≥ L - 1`,
+or two maximal repeats of length `≥ L - 1` whose selected starts interleave.
+
+Both alternatives are repeat structures that `I_s` excludes outright, by the
+triple-repeat clause and by `no_interleaved_long_repeats_of_Is` respectively.
+This is the only mathematical input that separates the truth's maximizer
+statement (proved) from its uniqueness-up-to-rotation reading (open in this
+repository); it is a purely combinatorial statement about circular words and is
+independent of the likelihood model.
+
+`docs/same-length-62-tie-uniqueness-211.md` §5 records the exhaustive finite
+check (`scripts/verify_samelength62_fibre_mechanism_211.py`): every circular
+word whose spectrum fibre has two rotation orbits was found to satisfy one of
+the two disjuncts, for every binary word of length ≤ 11 and every ternary word
+of length ≤ 8. That is evidence, not a proof. -/
+def FibreFreedomForcesLongRepeat {α : Type} [DecidableEq α] {G L : ℕ}
+    (hG : 0 < G) (S : Fin G → α) : Prop :=
+  (∃ D : Fin G → α,
+      (∀ w : Fin L → α, OrientedRigidity.specCount (L := L) hG D w
+          = OrientedRigidity.specCount (L := L) hG S w) ∧
+      ¬ OrientedFinal.IsCyclicShift hG D S) →
+    (∃ (e : ℕ) (a b c : Fin G), L - 1 ≤ e ∧ e < G ∧
+        Genome.IsTripleRepeat ⟨G, hG, S⟩ e a b c) ∨
+    (∃ (e₁ e₂ : ℕ) (a b c d : Fin G), L - 1 ≤ e₁ ∧ L - 1 ≤ e₂ ∧
+        Genome.IsRepeat ⟨G, hG, S⟩ e₁ a b ∧ Genome.IsRepeat ⟨G, hG, S⟩ e₂ c d ∧
+        Interleaved ⟨G, hG, S⟩ a b c d)
+
+/-- **The uniqueness reading, given the combinatorial residue.** With
+`FibreFreedomForcesLongRepeat` and full `I_s`, every same-length word with the
+truth's window support — hence every genuine same-length §6.2 candidate — is a
+cyclic shift of the truth. This is the exact shape of the missing proof: no
+hypothesis about the likelihood, the observation or the §6.2 certificate is
+needed beyond `I_s` itself. -/
+theorem unique_maximizer_up_to_rotation_of_residue {G L n : ℕ}
+    (hG : 0 < G) (hL2 : 2 ≤ L) (hLG : L ≤ G) (S : Fin G → α)
+    (ρ : Realization G n)
+    (hfeas : InformationFeasible ⟨G, hG, S⟩ L (realizedStarts ρ))
+    (hres : FibreFreedomForcesLongRepeat (L := L) hG S) :
+    ∀ D : Fin G → α,
+      OrientedRigidity.support (L := L) hG D
+          = OrientedRigidity.support (L := L) hG S →
+      OrientedFinal.IsCyclicShift hG D S := by
+  intro D hsup
+  by_contra hnot
+  obtain hlong | hint := hres ⟨D,
+    Is_spectrum_eq_of_support_eq (L := L) hG hL2 hLG S ρ hfeas D hsup, hnot⟩
+  · -- a triple repeat of length `≥ L - 1` cannot be bridged: clause 2 of `I_s`
+    obtain ⟨e, a, b, c, hLe, heG, htri⟩ := hlong
+    obtain ⟨hab, _, _⟩ := hfeas.triples htri heG
+    exact absurd (bridgesCopy_length hab) (by omega)
+  · -- two interleaved repeats of length `≥ L - 1`: clause 3 of `I_s`
+    obtain ⟨e₁, e₂, a, b, c, d, hLe₁, hLe₂, h₁, h₂, hi⟩ := hint
+    exact no_interleaved_long_repeats_of_Is hG S (realizedStarts ρ) hfeas
+      h₁ h₂ hi hLe₁ hLe₂
+
 /-! ## 3. The external complete-spectrum premise is not a theorem of this model
 
 `AssemblyP1.OrientedSameLengthML.same_length_unique_up_to_rotation_of_bbt`
@@ -273,6 +412,24 @@ def truth6 : Fin 6 → Fin 2 := ![0, 1, 1, 0, 0, 1]
 /-- The same-length word `010011`, with the same multiset of length-`2` windows
 and not a cyclic shift of `truth6`. -/
 def cand6 : Fin 6 → Fin 2 := ![0, 1, 0, 0, 1, 1]
+
+/-- **The `G = 6`, `L = 2` refutation witness is *not* `I_s`-feasible.** With
+`L = 2` no copy of length `≥ 1` can be bridged at all (a bridged copy needs
+`e + 2 ≤ L`), and `truth6` carries maximal repeats of length `2` at starts
+`(0, 4)` and `(2, 5)` that interleave. The refutation is by
+`no_interleaved_long_repeats_of_Is`, so the two repeat facts are the only
+computations. Consequently `bbt_premise_refuted_G6_L2` refutes the *external*
+BBT premise at an instance that lies **outside** the hypothesis surface of
+`informationFeasible_62_maximizer`: the refuting witness is not a tied
+maximizer, and it does not show that a tied maximizer exists under `I_s`. -/
+theorem truth6_not_information_feasible :
+    ¬ InformationFeasible ⟨6, hG6, truth6⟩ 2 Finset.univ := by
+  intro hfeas
+  have h₁ : Genome.IsRepeat ⟨6, hG6, truth6⟩ 2 0 4 := by decide
+  have h₂ : Genome.IsRepeat ⟨6, hG6, truth6⟩ 2 2 5 := by decide
+  have hi : Interleaved ⟨6, hG6, truth6⟩ 0 4 2 5 := by decide
+  exact no_interleaved_long_repeats_of_Is hG6 truth6 Finset.univ hfeas
+    h₁ h₂ hi (by omega) (by omega)
 
 /-- **The two words have equal length-`2` spectra.** Kernel-checked. -/
 theorem spectra_eq_G6_L2 :
@@ -458,6 +615,59 @@ theorem truth4_is62Candidate :
 
 /-- The realization with one read at every start. -/
 def rho4 : OrientedSameLengthML.Realization 4 4 := fun i => i
+
+/-- **A cyclic shift is witnessed by a shift below `G`.** The mod-shift bookkeeping
+that makes `IsCyclicShift` decidable at a finite instance: a shift by any natural
+number is a shift by its residue, and in the other direction a residue shift
+gives the natural-number form. -/
+theorem isCyclicShift_iff_fin_shift {α : Type} {G : ℕ} (hG : 0 < G)
+    {T S : Fin G → α} :
+    OrientedFinal.IsCyclicShift hG T S ↔
+      ∃ s : Fin G, ∀ i : Fin G,
+        T i = S ⟨(i.val + s.val) % G, Nat.mod_lt _ hG⟩ := by
+  have hfin : ∀ (W : Fin G → α) (i : ℕ), OrientedRigidity.cyc hG W i
+      = W ⟨i % G, Nat.mod_lt _ hG⟩ := fun _ _ => rfl
+  constructor
+  · rintro ⟨s, hs⟩
+    refine ⟨⟨s % G, Nat.mod_lt _ hG⟩, ?_⟩
+    intro i
+    have hidx : (⟨i.val % G, Nat.mod_lt _ hG⟩ : Fin G) = i :=
+      Fin.ext (Nat.mod_eq_of_lt i.isLt)
+    have hmod : (i.val + s) % G = (i.val + (s % G)) % G := by
+      rw [Nat.add_mod, Nat.mod_eq_of_lt i.isLt]
+    have h1 := hs i.val
+    rw [hfin T i.val, hidx, hfin S (i.val + s)] at h1
+    have h2 : (⟨(i.val + s) % G, Nat.mod_lt _ hG⟩ : Fin G)
+        = ⟨(i.val + (s % G)) % G, Nat.mod_lt _ hG⟩ := Fin.ext hmod
+    exact h2 ▸ h1
+  · rintro ⟨s, hs⟩
+    refine ⟨s.val, ?_⟩
+    intro i
+    have hideq : ((i % G) + s.val) % G = (i + s.val) % G := by
+      have h1 : ((i % G) + s.val) % G = (i % G + s.val % G) % G := by
+        rw [Nat.mod_eq_of_lt s.isLt]
+      rw [h1, Nat.mod_add_mod, Nat.mod_eq_of_lt s.isLt]
+    have h1 := hs ⟨i % G, Nat.mod_lt _ hG⟩
+    rw [hfin T i, hfin S (i + s.val)]
+    have h2 : (⟨((i % G) + s.val) % G, Nat.mod_lt _ hG⟩ : Fin G)
+        = ⟨(i + s.val) % G, Nat.mod_lt _ hG⟩ := Fin.ext hideq
+    exact h2 ▸ h1
+
+/-- **At the finite floor instance the residue holds: the fibre is a singleton.**
+Every length-`4` binary word with the window support of `AABB` — that is, with
+all four length-`2` windows — is a cyclic shift of `truth4`. Kernel-checked via
+`isCyclicShift_iff_fin_shift`, over all sixteen words. This is what keeps the
+residue honest at the one instance where the hypothesis surface is known to be
+satisfiable: the floor instance is not a tie witness, it is a rigidity
+instance. -/
+theorem truth4_support_rigid :
+    ∀ D : Fin 4 → Fin 2,
+      OrientedRigidity.support (L := 2) hG4 D
+        = OrientedRigidity.support (L := 2) hG4 truth4 →
+      OrientedFinal.IsCyclicShift hG4 D truth4 := by
+  classical
+  simp only [isCyclicShift_iff_fin_shift]
+  decide +kernel
 
 /-- **The tie conclusion, verified at the finite floor instance.** Every genuine
 same-length §6.2 candidate for the observed read set has exactly the truth's
