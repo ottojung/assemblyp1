@@ -15,6 +15,7 @@ _Reproduce:_
 python3 scripts/verify_oriented_molecule_bridging.py            # quick scopes
 python3 scripts/verify_oriented_molecule_bridging.py --full     # wider scopes
 python3 scripts/audit_215_transfer_reconciliation.py            # independent audit
+python3 scripts/verify_two_disjoint_circles_duplex.py           # V5 model (§10)
 ```
 
 _The scripts are self-contained, exact (integers and `fractions.Fraction`),
@@ -84,6 +85,18 @@ witness is inadmissible there, and the bounded search on `main` found no
 counterexample in its scope. The published sentence's strand convention remains
 **open** on the sources, as recorded in
 `docs/source-notes/uniform-strand-convention-search-2026-09-20.md` §6.
+
+6. **A third model (V5), two disjoint circles, is spelled out in §10.** It
+   represents the duplex as `(S, rc(S))`, with the exact spectrum
+   `spec_duplex(w) = spec_S(w) + spec_S(rc(w))` (no seam terms) and the exact
+   read-placement map `t ↦ (G-t-L) mod G`. Its **circle-by-circle** reading is
+   *exactly compatible* with the oriented single-strand reduction (the `rc`
+   symmetry), so R1/R2/R3 are resolved by construction; its **duplex-as-a-whole**
+   reading is ill-defined and strictly stronger (mixed triple repeats). Under
+   circle-by-circle the `AAATAT → AAAAAT` witness survives (kernel-checked);
+   under duplex-as-a-whole it is inadmissible. V5 is **not** MB09 and **not** the
+   Bresler remap; it is a distinct, disclosed modeling decision. [kernel-checked
+   + verified computation; §10]
 
 ---
 
@@ -520,9 +533,11 @@ Repository (on `main` unless noted):
 [`equivalence-and-tie-wellposedness.md`](equivalence-and-tie-wellposedness.md),
 `scripts/verify_oriented_molecule_bridging.py`,
 `scripts/audit_215_transfer_reconciliation.py`,
+`scripts/verify_two_disjoint_circles_duplex.py`,
 `AssemblyP1/SourceFaithfulIs.lean`,
 `AssemblyP1/SameLengthSection62Counterexample.lean`,
-`AssemblyP1/DoubleStrandBridgingTransfer.lean`.
+`AssemblyP1/DoubleStrandBridgingTransfer.lean`,
+`AssemblyP1/TwoDisjointCirclesDuplex.lean`.
 
 This note does not settle the Shomorony et al. (2016) open question and does not
 select a strand convention. It establishes that the conventions are inequivalent,
@@ -615,3 +630,312 @@ question therefore remains **open** under V3 rather than refuted. Under V4 there
 is no bridging hypothesis to transfer, so V4 is not a reading of the published
 sentence. The strand convention of the 2016 sentence remains **open** on the
 sources, and no reading may be promoted by agreement between agents.
+
+---
+
+## 10. The two-disjoint-circles duplex model (V5): an algebraic alternative to the Bresler remap
+
+_Status: independent mathematical analysis + exact computation + a bounded
+kernel-checked evaluator, for issue #215 (leaf of #217), 2026-10-09.  This
+section responds to the research-assistant board notes of 2026-10-09T07:05Z
+(the V5 direction) and 2026-10-09T07:43Z (the predicate-soundness audit).  Every
+claim is labelled as in §7.  Nothing here selects a strand convention or claims
+the 2016 sentence; V5 is a **third model**, distinct from V1/V2 and V3._
+
+_Reproduce:_
+
+```sh
+python3 scripts/verify_two_disjoint_circles_duplex.py
+```
+
+_The Lean facts are in `AssemblyP1/TwoDisjointCirclesDuplex.lean`
+(kernel-checked, no `sorry`, no new axioms; axioms `propext, Classical.choice,
+Quot.sound` only)._
+
+### 10.0 The model, stated exactly
+
+**Definition (two-disjoint-circles duplex).** Fix a circular genome `S` of
+length `G` over an alphabet `Σ` with involutive complement `comp`, and write
+`rc(S)` for the reverse-complement circle, `rc(S)[i] = comp(S[(G-1-i) mod G])`.
+The **V5 duplex** is the pair `(S, rc(S))` of *disjoint* circles, each of length
+`G`, with `2G` positions in total.  There is no seam, no concatenation, and no
+artificial length-`2G` circle.
+
+**Definition (duplex spectrum).**  For an oriented `L`-mer `w`,
+
+```text
+spec_duplex(w) = spec_S(w) + spec_rcS(w) = spec_S(w) + spec_S(rc(w)).
+```
+
+**Proposition 10.0 (exactness of the V5 spectrum).**  `spec_rcS(w) = spec_S(rc(w))`,
+so `spec_duplex(w) = spec_S(w) + spec_S(rc(w))`, and
+`Σ_w spec_duplex(w) = 2G`.  There are **no seam terms**, in contrast with V3's
+`spec_{S·ρ(S)}(w) = lint_S(w) + lint_S(ρ(w)) + j_S(w)` of §6.
+[mathematical proof; verified computation: exhaustive binary `2 ≤ G ≤ 8`, `L = 3`,
+`508/508` genomes, and total `2G` in every case.]
+
+**Definition (read-placement map).**  A read realized at `S`-start `t` (the
+window `S[t … t+L)`) has its reverse-complement partner realized at
+`rc(S)`-start `(G - t - L) mod G`:
+
+```text
+window_rcS((G - t - L) mod G) = rc(window_S(t)).
+```
+
+**Proposition 10.1 (exactness of the read-placement map).**  For **every**
+`t : Fin G`, including wrapping reads, the `rc(S)`-window at the partner start is
+the reverse complement of the `S`-window at `t`.  [mathematical proof; verified
+computation: exhaustive `508/508`; kernel-checked for the witness by
+`TwoDisjointCirclesDuplex.partner_window_rc`.]
+
+The exactness is because the two circles are disjoint and each has its own
+origin, so there is no seam to cross.  This removes V3's **R1** (read-seat
+preservation) and **R2** (seam–wrap agreement) failures **by construction**:
+every read has an exact seat on its own circle, and its partner has an exact seat
+on the other circle.
+
+**Definition (doubled read set).**  For a realized read multiset `R` on `S`, the
+V5 duplex read set is `R` on `S` together with the partner reads
+`{(G - t - L) mod G : t ∈ R}` on `rc(S)`: `2N` reads in total (multiplicities
+included).  This is the same *recorded* molecule data as V3's doubled read set
+(§3, Lemma 3.1), placed on two circles instead of one.
+
+### 10.1 The witness under V5
+
+Instance: `S = AAATAT` (`G = 6`), `L = 3`, realized starts `[0, 0, 1, 3, 5]`
+(start `0` sampled twice), `rc(S) = ATATTT`.  The distinct `S` read set is
+`{0, 1, 3, 5}`; the partner `rc(S)` read set is `{0, 2, 3, 4}`.
+
+There are two readings of `I_s` on the duplex.
+
+**(a) Circle-by-circle.**  `I_s` is applied to each strand separately:
+
+```text
+I_s on S     with {0, 1, 3, 5}  :  TRUE   (kernel-checked on main:
+                                            SameLengthSection62Counterexample.truth_information_feasible)
+I_s on rc(S) with {0, 2, 3, 4}  :  TRUE   (kernel-checked here:
+                                            TwoDisjointCirclesDuplex.rcS_information_feasible)
+```
+
+So under the circle-by-circle reading the witness **hypothesis side holds** on the
+duplex.  [kernel-checked result]
+
+**(b) Duplex-as-a-whole.**  `I_s` is applied to the duplex as a single object of
+`2G` positions.  This reading is **not well-defined**: two disjoint circles have
+no natural cyclic order, so the interleaving condition of `I_s` (cyclic
+alternation of four selected starts, §1.1) has no canonical transcription.
+Even *ignoring* interleaving, it is strictly stronger: the duplex carries
+**mixed triple repeats** (three positions with equal windows, not all on the same
+circle).  The `AAATAT` duplex has `24` mixed triple repeats, of which **six** have
+length `≥ L - 1 = 2` and are therefore **unbridgeable** by any length-`3` read
+(`bridgesCopy_length`: `e + 2 ≤ L`):
+
+| length `e` | word | copies (circle, start) | preceding | following |
+|---|---|---|---|---|
+| 2 | `AT` | `(rcS,0), (rcS,2), (S,2)` | `T, T, A` | `A, T, A` |
+| 2 | `AT` | `(rcS,2), (S,2), (S,4)` | `T, A, T` | `T, A, A` |
+| 2 | `TA` | `(rcS,1), (rcS,5), (S,5)` | `A, T, A` | `T, T, A` |
+| 2 | `TA` | `(rcS,5), (S,3), (S,5)` | `T, A, A` | `T, T, A` |
+| 3 | `ATA` | `(rcS,0), (S,2), (S,4)` | `T, A, T` | `T, T, A` |
+| 3 | `TAT` | `(rcS,1), (rcS,5), (S,3)` | `A, T, A` | `T, A, A` |
+
+Every row is a maximal triple repeat in the source's three-copy sense (the
+preceding symbols are not all equal and the following symbols are not all equal),
+kernel-checked by `mixed_triple_repeat_2a … _3b`.  Hence under the
+duplex-as-a-whole reading the witness **hypothesis side fails** for *every* read
+set.  [kernel-checked result + verified computation]
+
+**Verdict.**  The two readings **diverge on the same witness**:
+`TwoDisjointCirclesDuplex.two_readings_diverge` kernel-checks that
+`I_s` holds circle-by-circle and that a length-`2` mixed triple repeat exists
+(hence fails duplex-as-a-whole).  Under the circle-by-circle reading the
+`AAATAT → AAAAAT` witness is a genuine counterexample; under the
+duplex-as-a-whole reading it is inadmissible.  The circle-by-circle reading is
+the well-defined one (§10.2).
+
+### 10.2 Exact compatibility with the oriented single-strand reduction
+
+**Theorem 10.2 (the `rc` symmetry).**  The `rc` map on the circle,
+`ρ(i) = (G-1-i) mod G`, is a bijection `S ↔ rc(S)` that reverses the circular
+order.  It induces:
+
+* the **read-partner** map `τ_L(t) = (G - t - L) mod G` on length-`L` reads;
+* the **copy-partner** map `τ_e(t) = (G - t - e) mod G` on length-`e` copies.
+
+Both are the same underlying position map `ρ`; `ρ` maps a length-`e` window to
+the `rc` of a length-`e` window, and because it reverses the order it **preserves
+strict interval containment** — i.e. it preserves the bridging relation
+`r < t'` and `t' + e < r + L`.  It also swaps the preceding and following
+symbols up to `comp`, and the three-copy maximality condition of `IsTripleRepeat`
+is symmetric under that swap.  Hence, with `R' = τ_L(R)` the partner read set,
+
+```text
+I_s on rc(S) with R'   ⟺   I_s on S with R.
+```
+
+[mathematical proof; verified computation on `4800` random instances, binary
+`4 ≤ G ≤ 7`, `L = 3`, no counterexample.]
+
+**Corollary 10.3 (exact compatibility).**  Under the circle-by-circle reading,
+`I_s` on the V5 duplex is
+
+```text
+I_s on S with R   ∧   I_s on rc(S) with τ_L(R)   ⟺   I_s on S with R.
+```
+
+So the circle-by-circle V5 model is **exactly compatible** with the oriented
+single-strand reduction: it adds no hypothesis beyond `I_s` on `S` itself.  In
+particular it removes **R3** as a separate requirement — there is no length-`2G`
+circle, so feasibility reduces to `I_s` on the two length-`G` circles, and the
+`rc` half is automatic.  [mathematical proof + verified computation]
+
+**Non-compatibility of the other reading.**  The duplex-as-a-whole reading is
+*not* compatible: it adds the mixed-triple-repeat conditions of §10.1(b), which
+are absent from the single-strand model.  The **additional required hypotheses**
+for duplex-as-a-whole compatibility are therefore (i) no mixed triple repeat of
+length `≥ L - 1` (or all such bridged), and (ii) a convention for cross-circle
+interleaving.  Neither is supplied by the sources.
+
+### 10.3 The candidate set and the effect on the likelihood ratio
+
+Under V5 the candidate is the duplex `(D, rc(D))` for a length-`G` circle `D`; its
+duplex spectrum is `spec_D(w) + spec_D(rc(w))` (no seam terms) and its molecule
+spectrum is `2·m_D`.  Under V3 the candidate is the length-`2G` circle `D·rc(D)`;
+its spectrum is `lint_D(w) + lint_D(rc(w)) + j_D(w)` and its molecule spectrum is
+`m_{D·rc(D)}`.
+
+**Effect on the candidate set.**  V5 candidates are length-`G` circles (the same
+length universe as the single-strand model), whereas V3 candidates are
+length-`2G` circles.  The two candidate spectra differ by
+`j_D(w)` versus `wrap_D(w) + wrap_D(rc(D))(w)`, and coincide exactly when **R2**
+holds.  In the exhaustive binary scope (`2 ≤ G ≤ 8`, `L = 3`) they coincide for
+`254/508` genomes — exactly one half, and exactly half at each `G`:
+
+```text
+G = 2: 2/4   G = 3: 4/8   G = 4: 8/16   G = 5: 16/32
+G = 6: 32/64  G = 7: 64/128  G = 8: 128/256
+```
+
+[verified computation, exhaustive in scope]
+
+**The witness.**  For `D = AAAAAT`, R2 holds, so the V5 and V3 candidate spectra
+**coincide**: `{AAA:3, AAT:1, ATA:1, ATT:1, TAA:1, TAT:1, TTA:1, TTT:3}`, with
+molecule spectrum `{AAA,TTT}:6, {AAT,ATT}:2, {ATA,TAT}:2, {TAA,TTA}:2`.  The
+truth duplex molecule spectrum is exactly `2 × m_S =
+{AAA,TTT}:2, {AAT,ATT}:2, {ATA,TAT}:6, {TAA,TTA}:2`.  The factor `2` cancels
+between two candidates, so the likelihood ratio is the same as under V1/V2:
+**`3`** (exact candidate-intrinsic multinomial) and **`5`** (literal §6.1
+fixed-`N` binomial).  [verified computation; the V1/V2 ratios are kernel-checked
+on `main`]
+
+**Verdict.**  Under V5 circle-by-circle the witness is a genuine counterexample:
+the hypothesis side holds (§10.1a) and `D` beats `S` (§10.3).
+
+### 10.4 Source-faithfulness: V5 vs MB09 vs the Bresler remap
+
+**MB09 counting.**  MB09's read types are unordered reverse-complement
+`k`-molecules (§3.1), represented only once (§4.1), so the molecule count sums
+`S`-locus occurrences over the **distinct** words of the class: a palindrome
+class `{w}` (`w = rc(w)`) is counted **once** (`spec_S(w)`), a non-palindrome
+class `{w, rc(w)}` twice (`spec_S(w) + spec_S(rc(w))`).  For odd `L` there are no
+palindromes; for even `L` there are (`L = 2`: `AT, TA`; `L = 4`: four).  The V5
+duplex molecule spectrum counts windows on **both** strands, so it is exactly
+`2 × m_S` for every class, **palindromes included** (each strand contributes one
+window).  The factor `2` cancels between two candidates, so the likelihood ratio
+is unchanged.  [mathematical proof; verified computation for `L = 2, 3, 4`,
+binary scope]  For the witness `L = 3` there are **no** palindromes, so this
+subtlety does not touch it.
+
+**V5 is not MB09.**  MB09 uses a single circular genome with
+reverse-complement-collapsed read types; V5 uses two disjoint circles.  The
+molecule *classes* coincide and the multiplicities are exactly doubled, but the
+underlying object is different.
+
+**V5 is not the Bresler remap.**  Bresler maps the duplex to the single
+length-`2G` circle `S·rc(S)`; V5 keeps two disjoint circles of length `G`.  The
+spectra differ by the seam terms (§10.3), and the candidate sets differ
+accordingly.
+
+**The circle-by-circle reading is a modeling decision.**  Neither MB09 nor
+Bresler says to apply `I_s` to each strand separately; Bresler explicitly maps to
+a single length-`2G` circle.  The circle-by-circle reading is a new choice,
+motivated by the two-disjoint-circles representation.  It is exactly compatible
+with the single-strand reduction (Corollary 10.3), but it is a **modeling
+decision, not a source fact**.  If V5 were presented as "the MB09 model" or "the
+Bresler model", it would be a silent hybrid-model identification; presented as a
+distinct model with its own assumptions, it is a legitimate algebraic
+alternative.  It does **not** settle the 2016 sentence and does **not** settle
+V3.
+
+### 10.5 Explicit non-equivalences (audited witnesses)
+
+1. **V5 circle-by-circle vs V5 duplex-as-a-whole.**  The same witness gives
+   `I_s = true` circle-by-circle and `I_s = false` duplex-as-a-whole, via the six
+   unbridgeable mixed triple repeats of §10.1(b).  The reading of `I_s` on the
+   disjoint union is material.
+2. **V5 vs V3 spectra.**  `spec_duplex(w) = spec_S(w) + spec_S(rc(w))` (no seam)
+   versus `spec_{S·rc(S)}(w) = lint_S(w) + lint_S(rc(w)) + j_S(w)` (seam).  They
+   coincide iff R2 holds: `254/508` binary genomes, exactly half.
+3. **V5 vs MB09 spectra.**  The V5 duplex molecule spectrum is `2·m_S`, not
+   `m_S`.  The factor `2` cancels in the ratio, but the spectra differ.
+4. **V5 vs V3 candidate sets.**  V5 candidates are length-`G` circles; V3
+   candidates are length-`2G` circles; their spectra differ by the seam terms on
+   half the scope.
+5. **V5 vs V1/V2 on the hypothesis side.**  V1/V2 keep the read *placements* and
+   collapse only the recorded type; V5 circle-by-circle keeps the placements on
+   `S` and asserts the `rc` half automatically.  The two agree on the witness
+   (§10.1a), but V5 makes the `rc` half a theorem rather than an assertion.
+6. **V5 vs V3 on the same witness.**  V5 circle-by-circle: `I_s` holds; V3:
+   `I_s` fails (Theorem 3.2).  The witness is a counterexample under V5
+   circle-by-circle and inadmissible under V3.
+
+### 10.6 A predicate-soundness note (the corrected mixed-triple test)
+
+The first draft of the mixed-triple evaluator compared a **fixed three** symbol
+positions for every repeat length `e`.  That is unsound: for `e = 2` it demands
+equal `3`-mers (so *no* length-`2` repeat could ever satisfy it, and the six
+length-`2` witnesses above were falsely refuted by `by decide`), and for `e ≥ 4`
+it would compare only the first three positions and therefore **under-check**.
+The corrected predicate `windowsAgree` compares **exactly `e`** positions
+(`(List.range e).all`), with the bounds `1 ≤ e < G` and the exact flanking
+maximality retained.  After the fix the six mixed triple repeats were
+**re-enumerated from scratch** (`scripts/verify_two_disjoint_circles_duplex.py`
+§2) and then kernel-checked.  Two controls pin the fix:
+
+* `not_triple_repeat_control` — `e = 2`, three positions whose length-`2`
+  windows do **not** agree on their second symbol → predicate `false` (not
+  vacuous);
+* `triple_repeat_3_nonvacuous` — `e = 3`, two length-`3` windows agree → `true`
+  (the predicate does not collapse to a length-`1` test).
+
+No expected value was patched and no axiom/`sorry` was introduced.  The V5
+spectrum identity of §10.0 is independent of this predicate and was unaffected.
+[verified computation + kernel-checked result]
+
+### 10.7 Epistemic classification
+
+| claim | status |
+|---|---|
+| `spec_duplex(w) = spec_S(w) + spec_S(rc(w))`, total `2G`, no seam terms | **mathematical proof** + **verified computation** (exhaustive in scope) |
+| read-placement map `t ↦ (G-t-L) mod G` is exact for all `t`, including wrapping | **mathematical proof** + **verified computation** (exhaustive) + **kernel-checked** (`partner_window_rc`) |
+| circle-by-circle reading holds on the witness (`I_s` on `rc(S)` with partner reads) | **kernel-checked** (`rcS_information_feasible`) |
+| circle-by-circle reading is exactly compatible with the single-strand reduction | **mathematical proof** + **verified computation** (`4800` random instances) |
+| duplex-as-a-whole reading fails on the witness (six unbridgeable mixed triple repeats) | **kernel-checked** (`mixed_triple_repeat_2a … _3b`) + **verified computation** |
+| the two readings diverge on the same witness | **kernel-checked** (`two_readings_diverge`) |
+| V5 and V3 candidate spectra coincide iff R2; `254/508` in scope | **verified computation** (exhaustive in scope) |
+| witness is a counterexample under V5 circle-by-circle (ratios `3`, `5`) | **verified computation** + kernel-checked V1/V2 ratios on `main` |
+| V5 duplex molecule spectrum is `2·m_S`, palindromes included | **mathematical proof** + **verified computation** (`L = 2, 3, 4`) |
+| V5 is not MB09 and not the Bresler remap; circle-by-circle `I_s` is a modeling decision | **modeling decision** (disclosed) |
+| which strand convention the 2016 sentence intends | **open** |
+
+### 10.8 Relation to parent #217
+
+V5 is a **third row**, not a refinement of V3.  It does **not** settle the 2016
+sentence and does **not** settle the V3 row.  Its contribution to #217 is:
+(i) a clean algebraic alternative in which R1/R2/R3 are resolved by construction
+under the circle-by-circle reading; (ii) an exact-compatibility theorem for that
+reading; (iii) a kernel-checked demonstration that the *other* reading
+(duplex-as-a-whole) is both ill-defined and strictly stronger; and (iv) a
+kernel-checked witness that the `AAATAT → AAAAAT` counterexample survives under
+V5 circle-by-circle while remaining inadmissible under V3.  No verdict may be
+aggregated across V3 and V5 without naming the reading.
