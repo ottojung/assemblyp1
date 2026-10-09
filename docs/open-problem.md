@@ -35,7 +35,7 @@ That progress does **not** by itself settle which theorem the 2016 sentence deno
 - maximizer versus uniqueness semantics and the corresponding genome equivalence;
 - the exact bridge from Shomorony's information-feasibility condition to the hypotheses consumed by a particular formal theorem.
 
-For the current positive oriented theorem, the project keeps the source-supported implication from `I_s` to the required no-long-triple-repeat condition explicit rather than silently redefining `I_s`. Likewise, upgrading equality of complete spectra to genome uniqueness up to rotation uses the external Bresler–Bresler–Tse complete-spectrum theorem unless and until that theorem is separately formalized.
+For the current positive oriented theorem, the project keeps the source-supported implication from `I_s` to the required no-long-triple-repeat condition explicit rather than silently redefining `I_s`. Upgrading equality of complete spectra to genome uniqueness up to rotation still uses the external Bresler–Bresler–Tse complete-spectrum theorem on the **finite** same-length slice; the **population** theorem, by contrast, now discharges that step internally in the kernel (`AssemblyP1.Issue94Complete.population_unique_ML`, no external premise, axioms only `propext`, `Classical.choice`, `Quot.sound`). The finite corollary and the population endpoint must therefore not be conflated.
 
 Two candidate conclusion schemas live in `AssemblyP1/Model.lean`: truth is an ML maximizer, and truth is the unique ML maximizer up to genome equivalence. Neither is designated as *the* published conjecture while the source ambiguity above remains unresolved.
 

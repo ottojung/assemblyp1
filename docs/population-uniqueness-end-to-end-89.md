@@ -124,8 +124,14 @@ new, parallel repeat semantics.
 
 ## The one residual formalization boundary
 
-`thm:BBT` (Bresler–Bresler–Tse 2013, Theorem 3) is the only external
-mathematical input left. It is irreducible for this project at present:
+> **Superseded 2026-10-09 (board #221).** This boundary was subsequently
+> discharged internally by the support-descent / component-antiderivative proof
+> (`concrete_p2LongUnique`); see the correction banner at the top and the
+> "Acceptance status" supersession note. The material below records the
+> pre-discharge state.
+
+`thm:BBT` (Bresler–Bresler–Tse 2013, Theorem 3) was the only external
+mathematical input at the time of this packet. It was treated as irreducible:
 complete-spectrum uniqueness for a Ukkonen-satisfying circular word is
 itself a substantial combinatorial theorem about Eulerian cycles in
 de Bruijn graphs, and the project's own note
@@ -231,7 +237,16 @@ refute the `W^g` competitor — is kernel-checked in this repository.
 
 ## Acceptance status (issue #89 criterion)
 
-**Not met.** The exported theorem still reads
+> **Superseded 2026-10-09 (board #221).** The criterion is now **met**. The
+> `hPevzner : BBTEulerian.EulerianCycleObstruction` hypothesis below is no longer
+> the project endpoint: that obstruction is discharged by the concrete
+> component-antiderivative proof `AssemblyP1.Issue94ConcreteAntiderivative.concrete_p2LongUnique`,
+> and `AssemblyP1.Issue94Complete.population_unique_ML` composes it with the
+> short-window theorem to give the axiom-free end-to-end result (axioms only
+> `propext`, `Classical.choice`, `Quot.sound`). The text below records the state
+> of this packet *before* that discharge and is retained for provenance.
+
+**At the time of this packet, not met.** The exported theorem still reads
 
 ```text
 population_unique_ML_up_to_rotation

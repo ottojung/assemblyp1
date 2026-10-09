@@ -304,8 +304,10 @@ short-window theorem requires importing `AssemblyP1.Issue94KShort`, whose
 transitive imports reach `AssemblyP1.Issue94OrbitSearch`. That instantiation is
 `Issue94ShortWindowCombiner` in
 `AssemblyP1/Issue94LongWindowSplit.lean`, which imports this module; see the
-module docstring §4. `P2LongUnique` itself is a `Prop` and is **not** an
-inhabitant. -/
+module docstring §4. `P2LongUnique` itself is a `Prop`; it is **not** an
+inhabitant of this module, but it is now inhabited downstream for every `L ≥ 2`
+by `Issue94ConcreteAntiderivative.concrete_p2LongUnique` (board #94, consumed by
+board #221). -/
 def P2LongUnique (L : ℕ) : Prop :=
   ∀ (K : ℕ) (hK : 0 < K) (W : Fin K → α), L ≤ K → P2 hK L W → IsPrimitive W →
     ∀ E : Fin K → α,
