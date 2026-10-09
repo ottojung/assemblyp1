@@ -392,9 +392,6 @@ theorem oriented_support_eq_of_genuine62 {L : ℕ} {C D : Genome α}
 
 open SourceFaithfulIs
 
-
-/-! ## 4. The maximizer theorem -/
-
 /-! ## 4. The maximizer theorem -/
 
 /-- **A genuine same-length §6.2 candidate is a strict same-length spelled

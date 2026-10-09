@@ -1,4 +1,9 @@
 import AssemblyP1.MLEscape
+import AssemblyP1.Issue94P2Iff
+import AssemblyP1.BBTEulerian
+import AssemblyP1.Issue94P2PrimInterface
+import AssemblyP1.Issue94ConcreteAntiderivative
+import AssemblyP1.Issue94LongWindowSplit
 
 /-!
 # #211: the §6.2 same-length maximizer versus uniqueness up to rotation
@@ -683,6 +688,261 @@ theorem truth4_tie_instance :
           (OrientedSameLengthML.observedOf hG4 truth4 rho4) :=
   fun D hD => informationFeasible_62_exact_tie hG4 (by norm_num) (by norm_num)
     truth4 rho4 truth4_information_feasible truth4_is62Candidate D hD
+
+/-! ## 5. The `I_s` step into Ukkonen's condition, and the exact remaining gap
+
+The uniqueness reading of §2 needs one input this repository does not have.
+This section adds the two kernel-checked steps around it and isolates the gap
+with precision.
+
+1. **`informationFeasible_Ukkonen`.** Under `I_s`, the truth satisfies Ukkonen's
+   condition at `K = L - 1`, the hypothesis of Theorem 3 of Bresler--Bresler--Tse
+   (2013). The triple clause is `InformationFeasible.triples` composed with
+   `bridgesCopy_length`: a bridged copy satisfies `e + 2 ≤ L`, so a triple
+   repeat of length `≥ L - 1` cannot be all-bridged. The interleaved clause is
+   `no_interleaved_long_repeats_of_Is` (§2): an interleaved pair of repeats of
+   length `≥ L - 1` cannot be bridged. The transfer from the intermediate `P2`
+   is `Issue94P2Iff.P2_iff_Ukkonen`, so the `≤ L - 2` versus `< L - 1`
+   off-by-one is discharged by the kernel-checked equivalence, not by hand.
+
+2. **`fibre_singleton_of_Iss_and_obstruction`.** With (1) in hand, the *only*
+   remaining input is `BBTEulerian.EulerianCycleObstruction L`: under `I_s` it
+   delivers `BBTUniqueAt L` (`BBTEulerian.bbtUniqueAt_of_obstruction`), hence
+   complete-spectrum uniqueness up to rotation for the truth, hence the residue
+   `SpectrumFibreSingleton` of §2. The obstruction itself is **not proved** in
+   this repository — it is the uniqueness-of-the-Eulerian-cycle core of BBT 2013
+   Theorem 3 — and it is consumed here as the explicit hypothesis it is. The
+   reduction reuses the existing interfaces `BBTEulerian`, `BBTCondense`,
+   `BBTLadder` and `BBTUniqueEulerian` unchanged; no new Eulerian machinery is
+   introduced.
+
+3. **The branch-free `P1` route is not applicable.**
+   `BBTCondense.spectrum_unique_of_P1` proves complete-spectrum uniqueness only
+   for branch-free truths (`P1`: every `(L-1)`-mer occurs at most once). `I_s`
+   does **not** imply `P1`: the kernel-checked witness below is `I_s`-feasible
+   at `L = 3` and violates `P1` (the `2`-mer `01` occurs twice). So the
+   uniqueness reading cannot be closed by misapplying the branch-free theorem;
+   the obstruction hypothesis is exactly the input the source's Theorem 3
+   supplies for non-branch-free truths.
+-/
+
+/-- **`I_s` implies `P2` at read length `L`.** The triple clause: a triple
+repeat of length `≥ L - 1` would be all-bridged by clause 2 of `I_s`, but a
+bridged copy satisfies `e + 2 ≤ L` (`bridgesCopy_length`). The interleaved
+clause: an interleaved pair of repeats of length `≥ L - 1` would be bridged by
+clause 3 of `I_s`, contradicting `no_interleaved_long_repeats_of_Is`. -/
+theorem informationFeasible_P2 {α : Type} [DecidableEq α] {G L : ℕ}
+    (hG : 0 < G) (S : Fin G → α) (R : Finset (Fin G))
+    (hfeas : InformationFeasible ⟨G, hG, S⟩ L R) :
+    P2 hG L S := by
+  refine ⟨?_, ?_⟩
+  · intro e a b c ht
+    have hle := bridgesCopy_length ((hfeas.triples ht ht.2.1).1)
+    omega
+  · intro e₁ e₂ a b c d hR₁ hR₂ hI
+    by_contra hcon
+    exact no_interleaved_long_repeats_of_Is hG S R hfeas hR₁ hR₂ hI (by omega) (by omega)
+
+/-- **`I_s` implies Ukkonen's condition at `K = L - 1`** — the hypothesis of
+Theorem 3 of Bresler--Bresler--Tse (2013) — via the kernel-checked
+`Issue94P2Iff.P2_iff_Ukkonen`. This is the exact sense in which the source's
+`I_s`-feasible truth satisfies the classical Ukkonen condition: no triple
+repeat and no interleaved repeat pair of length `≥ L - 1`. -/
+theorem informationFeasible_Ukkonen {α : Type} [DecidableEq α] {G L : ℕ}
+    (hG : 0 < G) (hL2 : 2 ≤ L) (S : Fin G → α) (R : Finset (Fin G))
+    (hfeas : InformationFeasible ⟨G, hG, S⟩ L R) :
+    Ukkonen hG L S :=
+  (P2_iff_Ukkonen hG S hL2).mp (informationFeasible_P2 hG S R hfeas)
+
+/-- **Arithmetic lemma for the rotation bridge.** `i + (G - k % G) + k
+= i + G * (1 + k / G)`: the Euclidean division `k = G * (k / G) + k % G`,
+rearranged. This is the identity that reduces a shift by `G - k % G` to a shift
+by `k` modulo `G`; it is stated once and used by both directions of
+`rotEquiv_iff_isCyclicShift`. -/
+private theorem add_G_mul_mod_shift (i k G : ℕ) (hG : 0 < G) :
+    i + (G - k % G) + k = i + G * (1 + k / G) := by
+  have hle : k % G ≤ k := Nat.mod_le k G
+  have hlt : k % G < G := Nat.mod_lt k hG
+  have hq : G * (1 + k / G) = G + G * (k / G) := by
+    rw [Nat.mul_add, Nat.mul_one]
+  have key2 : G * (k / G) = k - k % G := by
+    apply Nat.add_left_cancel (n := k % G)
+    rw [Nat.add_comm, Nat.add_comm (k % G) (k - k % G), Nat.sub_add_cancel hle]
+    exact Nat.div_add_mod k G
+  have key : (G - k % G) + k = G + (k - k % G) := by omega
+  rw [Nat.add_assoc, key, hq, key2]
+
+/-- **The repository's two rotation-equivalences are the same notion.**
+`PopulationReduction.RotEquiv` (forward shift, `Fin`-indexed) and
+`OrientedFinal.IsCyclicShift` (`cyc`-indexed) state the same cyclic rotation;
+the bridge is the modular identity `(i + (G - k % G) + k) % G = i % G`. -/
+theorem rotEquiv_iff_isCyclicShift {α : Type} [DecidableEq α] {G : ℕ}
+    (hG : 0 < G) {D S : Fin G → α} :
+    AssemblyP1.PopulationReduction.RotEquiv hG D S ↔
+      AssemblyP1.OrientedFinal.IsCyclicShift hG D S := by
+  have hcyc : ∀ (W : Fin G → α) (i : ℕ), OrientedRigidity.cyc hG W i
+      = W ⟨i % G, Nat.mod_lt _ hG⟩ := fun _ _ => rfl
+  constructor
+  · rintro ⟨k, hk⟩
+    refine ⟨G - k % G, ?_⟩
+    intro i
+    have hidx : (((i + (G - k % G)) % G) + k) % G = i % G := by
+      rw [Nat.mod_add_mod, add_G_mul_mod_shift i k G hG,
+        Nat.add_mul_mod_self_left]
+    have hD : D ⟨((i + (G - k % G)) % G + k) % G, Nat.mod_lt _ hG⟩
+        = D ⟨i % G, Nat.mod_lt _ hG⟩ :=
+      congrArg D (Fin.ext hidx)
+    have hj := hk ⟨(i + (G - k % G)) % G, Nat.mod_lt _ hG⟩
+    rw [hD] at hj
+    exact hj
+  · rintro ⟨s, hs⟩
+    refine ⟨G - s % G, ?_⟩
+    intro i
+    have hidx : (((i.val + (G - s % G)) % G) + s) % G = i.val := by
+      rw [Nat.mod_add_mod, add_G_mul_mod_shift i.val s G hG,
+        Nat.add_mul_mod_self_left, Nat.mod_eq_of_lt i.isLt]
+    have hS : S ⟨((i.val + (G - s % G)) % G + s) % G, Nat.mod_lt _ hG⟩
+        = S ⟨i.val, i.isLt⟩ :=
+      congrArg S (Fin.ext hidx)
+    have hmod : ((i.val + (G - s % G)) % G) % G = (i.val + (G - s % G)) % G :=
+      Nat.mod_mod _ _
+    have hD : D ⟨((i.val + (G - s % G)) % G) % G, Nat.mod_lt _ hG⟩
+        = D ⟨(i.val + (G - s % G)) % G, Nat.mod_lt _ hG⟩ :=
+      congrArg D (Fin.ext hmod)
+    have hj : D ⟨((i.val + (G - s % G)) % G) % G, Nat.mod_lt _ hG⟩
+        = S ⟨(((i.val + (G - s % G)) % G) + s) % G, Nat.mod_lt _ hG⟩ :=
+      hs ((i.val + (G - s % G)) % G)
+    rw [hD, hS] at hj
+    exact hj
+
+omit [Fintype α] in
+/-- **Under `I_s`, the BBT Eulerian-cycle obstruction is exactly the missing
+input for the uniqueness reading.** Given `I_s`, the truth satisfies Ukkonen's
+condition (`informationFeasible_Ukkonen`); then
+`BBTEulerian.EulerianCycleObstruction L` delivers `BBTUniqueAt L`
+(`BBTEulerian.bbtUniqueAt_of_obstruction`), hence complete-spectrum uniqueness
+up to rotation for the truth, hence the residue `SpectrumFibreSingleton` of §2.
+
+The obstruction is the uniqueness-of-the-Eulerian-cycle core of BBT 2013
+Theorem 3. It is **not proved** in this repository; it is consumed here as the
+explicit hypothesis it is, and closing it is the remaining work toward a
+source-verified Theorem 3. -/
+theorem fibre_singleton_of_Iss_and_obstruction {G L n : ℕ} (hG : 0 < G)
+    (hL2 : 2 ≤ L) (_hLG : L ≤ G) (S : Fin G → α) (ρ : Realization G n)
+    (hfeas : InformationFeasible ⟨G, hG, S⟩ L (realizedStarts ρ))
+    (hObs : BBTEulerian.EulerianCycleObstruction (α := α) L) :
+    SpectrumFibreSingleton hG S L := by
+  intro D hspec
+  have hUkk : Ukkonen hG L S := informationFeasible_Ukkonen hG hL2 S _ hfeas
+  have hBBT : BBTUniqueAt (α := α) L :=
+    BBTEulerian.bbtUniqueAt_of_obstruction hL2 hObs
+  have hRot : AssemblyP1.PopulationReduction.RotEquiv hG D S :=
+    hBBT G hG S D hUkk (funext fun w => (hspec w).symm)
+  exact (rotEquiv_iff_isCyclicShift hG).mp hRot
+
+/-! ### The branch-free `P1` route is not applicable
+
+`BBTCondense.spectrum_unique_of_P1` is proved only for branch-free truths.
+`I_s` does not imply `P1`: the witness below is `I_s`-feasible at `L = 3` and
+violates `P1`, because the `2`-mer `01` of `0101` occurs twice (at starts `0`
+and `2`). The word `0101` has no maximal repeat at `L = 3` at all — the two
+occurrences of `01` have equal preceding symbols (`1` and `1`) and the two
+occurrences of `10` have equal preceding symbols (`0` and `0`) — so clauses 2
+and `3` of `I_s` are vacuous and coverage is trivial. -/
+
+/-- The `P1` witness: `0101` as a length-`4` binary circular word. -/
+def alt4 : Fin 4 → Fin 2 := ![0, 1, 0, 1]
+
+/-- **`0101` at `L = 3` is fully `I_s`-feasible.** Kernel-checked on the
+source-faithful `InformationFeasible`, at the single-lift bridging semantics. -/
+theorem alt4_information_feasible :
+    InformationFeasible ⟨4, hG4, alt4⟩ 3 Finset.univ := by
+  decide
+
+/-- **... but violates `P1`: the `2`-mer `01` occurs twice, so its out-degree
+is `2`, not `≤ 1`.** Kernel-checked. -/
+theorem alt4_not_P1 : ¬ AssemblyP1.BBTSequenceGraph.P1 hG4 3 alt4 := by
+  intro hP1
+  have h2 : AssemblyP1.BBTSequenceGraph.deg hG4 3 alt4 ![0, 1] = 2 := by decide
+  have hle : AssemblyP1.BBTSequenceGraph.deg hG4 3 alt4 ![0, 1] ≤ 1 := hP1 ![0, 1]
+  omega
+
+/-- **`I_s` does not imply the branch-free `P1`.** Kernel-checked witness, so
+the uniqueness reading cannot be closed by misapplying
+`BBTCondense.spectrum_unique_of_P1`; the obstruction hypothesis of
+`fibre_singleton_of_Iss_and_obstruction` is exactly the input the source's
+Theorem 3 supplies for non-branch-free truths. -/
+theorem iss_does_not_imply_P1 :
+    ¬ (∀ (G : ℕ) (hG : 0 < G) (L : ℕ) (S : Fin G → Fin 2) (R : Finset (Fin G)),
+      InformationFeasible ⟨G, hG, S⟩ L R → AssemblyP1.BBTSequenceGraph.P1 hG L S) := by
+  intro h
+  exact alt4_not_P1 (h 4 hG4 3 alt4 Finset.univ alt4_information_feasible)
+
+/-! ## 6. The primitive subcase closes source-free
+
+The residue of §2 is not needed when the truth is primitive. In that subcase
+the uniqueness reading is a **theorem**, proved from `I_s` alone with no
+external hypothesis:
+
+1. `I_s` gives `P2` (`informationFeasible_P2`, §5).
+2. The merged #94 route gives the interface `BBTP2Prim L`:
+   `Issue94ConcreteAntiderivative.concrete_p2LongUnique` proves the long half
+   `P2LongUnique L` for `2 ≤ L` (a `P2`, primitive truth of length `≥ L` is
+   determined by its complete `L`-spectrum, competitor unconstrained), and
+   `Issue94Split.shortRangeUnique` proves the short half `ShortRangeUnique L`
+   from the already-proved short-window theorem; the two compose by
+   `Issue94Interface.long_short_of_long`.
+3. `BBTP2Prim L` at the truth `S` (which is `P2` and primitive) turns the
+   candidate's equal spectrum into `RotEquiv hG D S`, and
+   `rotEquiv_iff_isCyclicShift` turns that into `IsCyclicShift hG D S`.
+
+So: **under `I_s`, if the truth is primitive, no distinct tied maximizing
+circular genome exists** — every genuine same-length §6.2 candidate is a
+cyclic shift of the truth. This is the exact sense in which the uniqueness
+reading is settled for primitive truths in this model, and it is the largest
+subcase that closes without the §2 residue or the §5 obstruction. -/
+
+/-- **`BBTP2Prim L` is inhabited, for every `L ≥ 2`.** The two kernel-checked
+halves of the merged #94 route, composed: the long half
+`Issue94ConcreteAntiderivative.concrete_p2LongUnique` (for `K ≥ L`, from the
+concrete component antiderivative) and the short half
+`Issue94Split.shortRangeUnique` (for `K < L`, from the short-window theorem),
+joined by `Issue94Interface.long_short_of_long`. This is the
+complete-spectrum uniqueness statement restricted to `P2`-and-primitive
+truths, and it needs no `EulerianCycleObstruction` hypothesis. -/
+theorem bbTP2Prim_of_94 {L : ℕ} (hL : 2 ≤ L) :
+    AssemblyP1.Issue94Interface.BBTP2Prim (α := α) L :=
+  AssemblyP1.Issue94Interface.long_short_of_long
+    (AssemblyP1.Issue94ConcreteAntiderivative.concrete_p2LongUnique hL)
+    (AssemblyP1.Issue94Split.shortRangeUnique hL)
+
+/-- **Uniqueness up to rotation, for a primitive `I_s`-feasible truth.** Under
+`I_s`, if the truth `S` is primitive, then every genuine same-length §6.2
+candidate is a cyclic shift of `S`. The chain is: `I_s → P2`
+(`informationFeasible_P2`), `P2` + primitivity + equal spectrum → `RotEquiv`
+(`bbTP2Prim_of_94`), `RotEquiv ↔ IsCyclicShift` (`rotEquiv_iff_isCyclicShift`).
+No `EulerianCycleObstruction` hypothesis and no §2 residue is consumed. -/
+theorem unique_62_maximizer_up_to_rotation_of_primitive {G L n : ℕ}
+    (hG : 0 < G) (hL2 : 2 ≤ L) (hLG : L ≤ G) (S : Fin G → α)
+    (hprim : AssemblyP1.PopulationReduction.IsPrimitive S)
+    (ρ : Realization G n)
+    (hfeas : InformationFeasible ⟨G, hG, S⟩ L (realizedStarts ρ))
+    {verts : List (Fin L → α)} {toList : (Fin L → α) → List α} {oMin : ℕ}
+    (hStruth : SameLength62Maximizer.Is62Candidate62 ⟨G, hG, S⟩ verts toList
+      (fun y => y) (fun y => y) oMin)
+    (D : Fin G → α)
+    (hD : SameLength62Maximizer.Is62Candidate62 ⟨G, hG, D⟩ verts toList
+      (fun y => y) (fun y => y) oMin) :
+    OrientedFinal.IsCyclicShift hG D S := by
+  have hP2 : P2 hG L S := informationFeasible_P2 hG S _ hfeas
+  have hsup := SameLength62Maximizer.oriented_support_eq_of_genuine62 (L := L)
+    (toList := toList) hStruth hD rfl
+  have hspec : ∀ w : Fin L → α, OrientedRigidity.specCount (L := L) hG D w
+      = OrientedRigidity.specCount (L := L) hG S w :=
+    Is_spectrum_eq_of_support_eq hG hL2 hLG S ρ hfeas D hsup
+  have hRot : AssemblyP1.PopulationReduction.RotEquiv hG D S :=
+    (bbTP2Prim_of_94 hL2) G hG S hP2 hprim D (funext fun w => (hspec w).symm)
+  exact (rotEquiv_iff_isCyclicShift hG).mp hRot
 
 end
 
