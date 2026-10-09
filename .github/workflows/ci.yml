@@ -135,6 +135,12 @@ jobs:
           path: .ci-cache/axiom-audit
           key: axiom-audit-v1-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('lean-toolchain') }}-46024e005996495c65ef609368e11ab39c4222e3
 
+      # Fail fast on the three formerly failing modules. These builds are
+      # reused by the later complete target (never replace the full build).
+      - name: Preflight previous source failures before expensive proof
+        run: |
+          lake build AssemblyP1.BBTTripleBridge             AssemblyP1.Issue94KShort             AssemblyP1.Issue94KShortGeneral             AssemblyP1.Issue94ComponentAlignedSwaps --wfail
+
       # Previously this one theorem module took ~2,207 s. Persist its compiled
       # object and transitive deps BEFORE attempting any other theorem module.
       # Lake's source fingerprints still rebuild stale oleans on later commits.
