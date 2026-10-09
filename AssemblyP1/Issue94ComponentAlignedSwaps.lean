@@ -95,9 +95,9 @@ theorem componentSwitch_swap_aligned (hK : 0 < K) (S : Fin K → α) (sigma : Fi
     · rw [← h2, hsq, h1]
     · rw [← h1, h2]
   refine ⟨?_, ?_⟩
-  · simp only [componentSwitch, onSetEquiv_apply, onSet, hp, if_true]
+  · simp only [componentSwitch, onSetEquiv_apply, onSet, hp, ite_true]
     exact hAltF_p
-  · simp only [componentSwitch, onSetEquiv_apply, onSet, hq, if_true]
+  · simp only [componentSwitch, onSetEquiv_apply, onSet, hq, ite_true]
     exact hAltF_q
 
 #print axioms AssemblyP1.Issue94ComponentAlignedSwaps.componentSwitch_swap_aligned

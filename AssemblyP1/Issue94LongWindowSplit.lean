@@ -20,11 +20,11 @@ theorem of `AssemblyP1.Issue94KShort`, and pins down the residual exactly.
 
 ## 1. What the short-window theorem gives
 
-`Issue94KShort.vertexCycleEq_short_window_general`
-(`AssemblyP1/Issue94KShort.lean:536`) states: at `K ≤ L - 1`, **every** word and
+`Issue94KShortGeneral.vertexCycleEq_short_window_general`
+(`AssemblyP1/Issue94KShortGeneral.lean:536`) states: at `K ≤ L - 1`, **every** word and
 **every** alternative `EulerianCycle` has the truth's vertex cycle. Its statement
 carries no `P2`, no primitivity and no `Ukkonen`, and its proof uses neither.
-`Issue94KShort.obstruction_short_window_general` (`:553`) is the same in the
+`Issue94KShortGeneral.obstruction_short_window_general` (`:553`) is the same in the
 dichotomy shape of the endpoint's hypothesis.
 
 `bbtCompleteSpec_of_short_window` converts the first into the spectrum language
@@ -35,7 +35,7 @@ by the short-range case:
 1. `BBTChords.exists_matching` --- equal spectra give a `Matching`;
 2. `BBTEulerian.pullback_isEulerianCycle` --- its pull-back is an
    `EulerianCycle`;
-3. `Issue94KShort.vertexCycleEq_short_window_general` --- short window, so the
+3. `Issue94KShortGeneral.vertexCycleEq_short_window_general` --- short window, so the
    truth's vertex cycle;
 4. `BBTEulerian.rotEquiv_of_vertexCycleEq` --- a rotational vertex cycle is a
    rotation of the word.
@@ -97,7 +97,7 @@ primitivity, no `Ukkonen` and no power-free hypothesis occurs in the statement.
 
 Proof: equal spectra give a `Matching` (`BBTChords.exists_matching`); its
 pull-back is an `EulerianCycle` (`BBTEulerian.pullback_isEulerianCycle`); the
-short-window theorem `Issue94KShort.vertexCycleEq_short_window_general` makes its
+short-window theorem `Issue94KShortGeneral.vertexCycleEq_short_window_general` makes its
 vertex cycle the truth's own; and `BBTEulerian.rotEquiv_of_vertexCycleEq` turns
 that into a rotation. `2 ≤ L` is needed only by that last step. -/
 theorem bbtCompleteSpec_of_short_window (hL : 2 ≤ L) {K : ℕ} (hK : 0 < K)
@@ -106,7 +106,7 @@ theorem bbtCompleteSpec_of_short_window (hL : 2 ≤ L) {K : ℕ} (hK : 0 < K)
     RotEquiv hK E S := by
   obtain ⟨σ, hm⟩ := exists_matching hK S E hspec
   refine rotEquiv_of_vertexCycleEq hK L S (pullback hK L S E hm.1) hL
-    (Issue94KShort.vertexCycleEq_short_window_general hK L S hKL
+    (Issue94KShortGeneral.vertexCycleEq_short_window_general hK L S hKL
       (pullback_isEulerianCycle hK L S hm)) ?_
   intro s
   exact (pullback_window hK L S E hm s).symm
@@ -151,7 +151,7 @@ theorem population_unique_ML_of_p2LongUnique
 
 /-- **`EulerianCycleObstruction L` is exactly its long-range half**, at **every**
 `L` and with no side condition: `K ≤ L - 1` is
-`Issue94KShort.obstruction_short_window_general` (which needs no `2 ≤ L`, no
+`Issue94KShortGeneral.obstruction_short_window_general` (which needs no `2 ≤ L`, no
 primitivity, no `Ukkonen`) and `K ≥ L` is the hypothesis. -/
 theorem obstruction_iff_longRangeObstruction :
     EulerianCycleObstruction (α := α) L ↔
@@ -164,7 +164,7 @@ theorem obstruction_iff_longRangeObstruction :
     exact h K hK S hUkk σ hEul
   · intro h K hK S hUkk σ hEul
     by_cases hKL : K ≤ L - 1
-    · exact Issue94KShort.obstruction_short_window_general hK L S hUkk hKL hEul
+    · exact Issue94KShortGeneral.obstruction_short_window_general hK L S hUkk hKL hEul
     · exact h K hK S (by omega) hUkk σ hEul
 
 /-- **`BBTUniqueAt L` is exactly its long-range half.**  `K ≤ L - 1` is §1, a
@@ -225,8 +225,8 @@ theorem p2LongUnique_iff_longRange (hL : 2 ≤ L) :
 #print axioms AssemblyP1.Issue94Split.p2LongUnique_of_longRangeSpectrum
 #print axioms AssemblyP1.Issue94Split.longRangeSpectrum_of_p2LongUnique
 #print axioms AssemblyP1.Issue94Split.p2LongUnique_iff_longRange
-#print axioms AssemblyP1.Issue94KShort.vertexCycleEq_short_window_general
-#print axioms AssemblyP1.Issue94KShort.obstruction_short_window_general
+#print axioms AssemblyP1.Issue94KShortGeneral.vertexCycleEq_short_window_general
+#print axioms AssemblyP1.Issue94KShortGeneral.obstruction_short_window_general
 #print axioms AssemblyP1.Issue94Interface.population_unique_ML_of_long_unique
 
 end AssemblyP1.Issue94Split
