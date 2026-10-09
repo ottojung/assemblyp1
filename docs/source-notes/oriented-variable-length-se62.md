@@ -415,3 +415,65 @@ rigidity theorem (which it uses only as contrast). The conclusion semantics
 (truth-is-a-maximizer vs. all-maximizers-are-truth) is untouched: the
 counterexamples refute even the weakest reading (truth is *a* maximizer), since
 the truth is beaten strictly.
+
+---
+
+## 9. Independent re-measurement addendum (2026-10-09, second pass)
+
+The inherited committed state (commit `7d48eab`) was re-measured by execution,
+not trusted. All claims below are tagged **[fact]** (verified by execution or
+kernel), **[inference]** (derived here), or **[choice]** (this pass's action).
+
+1. **Scripts re-run, exact `Fraction` arithmetic, self-contained.**
+   `python3 scripts/verify_oriented_variable_length_se62.py` →
+   `ALL ASSERTIONS PASSED`, exit `0` **[fact]**.
+   `python3 scripts/verify_oriented_variable_length_se62_amplification.py` →
+   `ALL ASSERTIONS PASSED`, exit `0` **[fact]**.
+2. **Lean kernel check.** `lake build AssemblyP1.OrientedVariableLengthSe62`
+   → success, exit `0` (8925 jobs) **[fact]**. `leanchecker` kernel replay of
+   the module → exit `0` **[fact]**. `#print axioms` on
+   `oriented_variable_length_se62_counterexample`,
+   `oriented_variable_length_se62_counterexample'`,
+   `truth_information_feasible`, `competitor_strictly_better_exact1`,
+   `competitor_strictly_better_binom1` → each depends on exactly
+   `[propext, Classical.choice, Quot.sound]`, no `sorryAx` **[fact]**.
+   `grep -nE "sorry|admit|axiom|native_decide"` over the module → no matches
+   **[fact]**.
+3. **Repository verification script.**
+   `python3 scripts/check-research-docs.py` → passed, exit `0` **[fact]**.
+4. **Full-library build.** `lake build --wfail` → exit `1` **[fact]**, but
+   only in modules this front does not touch and does not import:
+   `AssemblyP1.BBTTripleBridge`, `AssemblyP1.Issue94Transposition`,
+   `AssemblyP1.Issue94ComponentAlignedSwaps`, and the aggregator
+   `AssemblyP1.lean` (a `KShort` namespace collision). These failures are
+   pre-existing at the branch point `cc0aa8a` (this branch's diff vs `cc0aa8a`
+   is exactly the four new files; the aggregator does not import this module)
+   **[fact]**, and `origin/main` has since repaired them in commits `0ea7b44`,
+   `913ec4a`, `3e972e2` (not in this branch) **[fact]**. The failures are not
+   attributable to front #210 **[inference]**.
+5. **Independent arithmetic re-derivation** (fresh `Fraction` code sharing no
+   code with the front's scripts): spectra of `AAATT`, `AAAATT`, `AAAATTA`;
+   exact ratios `15625/11664` (`M=1`) and `2109375/823543` (`M=2`); binomial
+   ratios `81/64` (`M=1`) and `27/16` (`M=2`); Theorem A closed form
+   `(5/(5+M))^{5+M}(1+M)^{1+M}` matching the computed ratio at `M = 1..6`, all
+   strict `> 1`; Theorems B and C closed forms matching at `M = 1..5` — all
+   reproduced exactly **[fact]**.
+6. **Rotation observation (cosmetic, no effect).** The note's Theorem A writes
+   the growing competitor as `D_M = A^{3+M}TT`; the Python
+   `witness_competitor(M)` and the Lean `competitor2` use `A^{M+2}TTA` (e.g.
+   `AAAATTA` at `M=2`), a cyclic rotation of `A^{5}TT = AAAAATT`. Spectra and
+   both objectives are invariant under cyclic rotation, so every value in this
+   note is unaffected **[fact + inference]**. Kept as-is; recorded here so
+   future readers are not confused by the notation mismatch **[choice]**.
+7. **Source-fidelity spot check.** The MB09 §6.2 quote ("Each vertex has a
+   lower bound of `1` since it represents a read that must be present in the
+   genome at least once") and the §6.1 objective/domain quotes match the
+   repository provenance records
+   ([`shomorony-mb-formulation-provenance.md`](shomorony-mb-formulation-provenance.md)
+   §4.4, [`mb-formulation-referent-reconciliation.md`](mb-formulation-referent-reconciliation.md));
+   the shared `SourceFaithfulIs.InformationFeasible` predicate is the
+   full-strength `I_s` (coverage + all-bridged triple repeats + bridged
+   interleaved pairs), matching the front's Python transcription **[fact]**.
+   The per-occurrence `d ≥ x` variant remains a separate, open question; the
+   bounded census in script §6 is bounded evidence only, not a proof of
+   absence **[fact, unchanged from the inherited classification]**.
