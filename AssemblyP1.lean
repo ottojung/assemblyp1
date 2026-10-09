@@ -905,3 +905,5 @@ attains the §6.1 optimum over its whole domain. -/
 #print axioms AssemblyP1.Section62NonSpelledFlow.reducedList_eq
 #print axioms AssemblyP1.Section62NonSpelledFlow.graph_reduction_vacuous_literal
 #print axioms AssemblyP1.Section62NonSpelledFlow.nonspelled_se62_flow_domain_countermodel
+#print axioms AssemblyP1.Section62NonSpelledFlow.bridging_spelled_witnesses_general
+#print axioms AssemblyP1.Section62NonSpelledFlow.samelength_spelled_witnesses_general

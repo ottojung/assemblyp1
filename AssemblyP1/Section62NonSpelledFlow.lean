@@ -1,6 +1,8 @@
 import Mathlib
 import AssemblyP1.SourceFaithfulIs
 import AssemblyP1.Section62BidirectedFlow
+import AssemblyP1.Section62BridgingCounterexample
+import AssemblyP1.SameLengthSection62Counterexample
 
 /-!
 # The general (non-spelled) Medvedev–Brudno §6.2 flow domain
@@ -22,7 +24,10 @@ of `AssemblyP1/Section62BridgingCounterexample.lean` and
 `AssemblyP1/SameLengthSection62Counterexample.lean` each certify, in their last
 conjuncts, admissibility inside the *general* flow feasible set.  Their strict
 likelihood inequalities therefore already refute dominance over the whole flow
-domain; no non-spellable flow is required for that refutation.
+domain; no non-spellable flow is required for that refutation.  Both witnesses are
+packaged, in their own module namespaces, as the single kernel-checked objects
+`bridging_spelled_witnesses_general` and `samelength_spelled_witnesses_general`
+below.
 
 **(B) The general feasible set strictly contains the spelled circuits, and in this
 instance its maximizers are exactly non-spelled ones.** The instance below has a
@@ -60,9 +65,9 @@ them is a genome spectrum.  So any reading of the published sentence "the
 maximum-likelihood sequence is the true sequence" over the §6.2 flow domain needs
 an extra flow-to-sequence rule, and the rule changes the answer: restricting the
 candidate set to flows that do spell a genome excludes the optimum, and every
-spelled candidate is strictly worse (see `spelled_sup_lt_flow_optimum` in the
-companion note `docs/section62-nonspelled-flow-domain.md` §4, whose bounded
-certificate is `scripts/verify_se62_nonspelled_flow_domain.py`).
+  spelled candidate is strictly worse (the sequence-side comparison of the
+  companion note §4, a bounded certificate checked by
+  `scripts/verify_se62_nonspelled_flow_domain.py`).
 
 What is *not* claimed here.  The module does not decide which Medvedev–Brudno
 layer the Shomorony et al. (2016) sentence denotes.  It also does not decide
@@ -872,6 +877,79 @@ theorem spelled_subset_general {A : Type} {W : Type} [DecidableEq A] [DecidableE
       Feasible62 A W rep verts (overlapEdges A W toList rep rc readLen oMin verts) f t d :=
   fun h => h.2.2.2.2
 
+/-! ## The spelled witnesses are feasible in the general flow optimizer
+
+Claim (A) of issue #214, packaged as single kernel-checked objects: each
+already-accepted spelled witness is, without any change, a counterexample to
+dominance over the *whole* §6.2 flow feasible set.  Both witness modules state
+feasibility through `SpelledFeasible62`, whose last conjunct is a `Feasible62`
+instance over the *general* predicate — the same predicate under which the
+non-spellable `starFlow21`/`starFlow31` are certified above, and the projection
+recorded by `spelled_subset_general`.  Their strict likelihood inequalities
+therefore already refute "the truth-induced flow maximizes the §6.1 objective
+over the §6.2 feasible set"; no additional witness is needed for that
+refutation.  All module-local names are fully qualified because the two witness
+modules define `readVerts`, `graphList`, `dS'`, `dD'` of their own. -/
+
+/-- The `AAATT → AAAATT` witness (`o_min = 2`, ratio `9/8`): the truth and the
+competitor are both admissible flows for the *general* §6.2 feasibility
+predicate, and the competitor strictly beats the truth. -/
+theorem bridging_spelled_witnesses_general :
+    Feasible62 AssemblyP1.Section62BridgingCounterexample.Base
+        AssemblyP1.Section62BridgingCounterexample.Strand3
+        AssemblyP1.Section62BridgingCounterexample.rep3
+        AssemblyP1.Section62BridgingCounterexample.readVerts
+        AssemblyP1.Section62BridgingCounterexample.graphList
+        AssemblyP1.Section62BridgingCounterexample.truthCircuitFlow
+        AssemblyP1.Section62BridgingCounterexample.noTerm
+        AssemblyP1.Section62BridgingCounterexample.dS' ∧
+      Feasible62 AssemblyP1.Section62BridgingCounterexample.Base
+        AssemblyP1.Section62BridgingCounterexample.Strand3
+        AssemblyP1.Section62BridgingCounterexample.rep3
+        AssemblyP1.Section62BridgingCounterexample.readVerts
+        AssemblyP1.Section62BridgingCounterexample.graphList
+        AssemblyP1.Section62BridgingCounterexample.competitorCircuitFlow
+        AssemblyP1.Section62BridgingCounterexample.noTerm
+        AssemblyP1.Section62BridgingCounterexample.dD' ∧
+      AssemblyP1.Section62BridgingCounterexample.lik
+        AssemblyP1.Section62BridgingCounterexample.obs
+        AssemblyP1.Section62BridgingCounterexample.dS
+        < AssemblyP1.Section62BridgingCounterexample.lik
+          AssemblyP1.Section62BridgingCounterexample.obs
+          AssemblyP1.Section62BridgingCounterexample.dD :=
+  ⟨AssemblyP1.Section62BridgingCounterexample.truth_feasible62,
+    AssemblyP1.Section62BridgingCounterexample.competitor_feasible62,
+    AssemblyP1.Section62BridgingCounterexample.competitor_strictly_better⟩
+
+/-- The same-length `AAATAT → AAAAAT` witness (`o_min = 2`, ratio `5`): same
+packaging. -/
+theorem samelength_spelled_witnesses_general :
+    Feasible62 AssemblyP1.SameLengthSection62Counterexample.Base
+        AssemblyP1.SameLengthSection62Counterexample.Strand3
+        AssemblyP1.SameLengthSection62Counterexample.rep3
+        AssemblyP1.SameLengthSection62Counterexample.readVerts
+        AssemblyP1.SameLengthSection62Counterexample.graphList
+        AssemblyP1.SameLengthSection62Counterexample.truthCircuitFlow
+        AssemblyP1.SameLengthSection62Counterexample.noTerm
+        AssemblyP1.SameLengthSection62Counterexample.dS' ∧
+      Feasible62 AssemblyP1.SameLengthSection62Counterexample.Base
+        AssemblyP1.SameLengthSection62Counterexample.Strand3
+        AssemblyP1.SameLengthSection62Counterexample.rep3
+        AssemblyP1.SameLengthSection62Counterexample.readVerts
+        AssemblyP1.SameLengthSection62Counterexample.graphList
+        AssemblyP1.SameLengthSection62Counterexample.competitorCircuitFlow
+        AssemblyP1.SameLengthSection62Counterexample.noTerm
+        AssemblyP1.SameLengthSection62Counterexample.dD' ∧
+      AssemblyP1.SameLengthSection62Counterexample.lik
+        AssemblyP1.SameLengthSection62Counterexample.obs
+        AssemblyP1.SameLengthSection62Counterexample.dS
+        < AssemblyP1.SameLengthSection62Counterexample.lik
+          AssemblyP1.SameLengthSection62Counterexample.obs
+          AssemblyP1.SameLengthSection62Counterexample.dD :=
+  ⟨AssemblyP1.SameLengthSection62Counterexample.truth_feasible62,
+    AssemblyP1.SameLengthSection62Counterexample.competitor_feasible62,
+    AssemblyP1.SameLengthSection62Counterexample.competitor_strictly_better⟩
+
 /-! ## Main theorem -/
 
 /-- The other optimal flow attains the same optimum, so the complete maximizer set
@@ -897,6 +975,10 @@ certificate.** Under the literal Medvedev–Brudno §6.2 object:
    `1 ≤ d ≤ N`, and they are the complete maximizer set inside it;
 5. so the §6.2 feasible set contains no "maximum-likelihood sequence" at all for
    this instance — the maximizer is a flow that spells no genome.
+
+The sequence-side comparison of the companion note §4 — every spelled candidate
+is strictly worse than the flow optimum — is a bounded certificate checked by
+`scripts/verify_se62_nonspelled_flow_domain.py`, not a kernel-checked theorem.
 
 This is the countermodel for issue #214's question: a flow optimum over the
 literal §6.2 feasible set cannot be called an ML *sequence* without an additional

@@ -31,13 +31,16 @@ separable binomial with external genome size `N`. Fix the strict Shomorony et
 al. (2016) Eq. (1) bridging predicate `I_s`.
 
 1. **(A) The refutation of dominance over the whole flow feasible set needs no
-   additional witness.** `AssemblyP1/Section62BidirectedFlow.lean`'s `Feasible62`
-   is the *general* §6.2 feasibility predicate; a spelled circuit is a general
-   feasible flow (`spelled_subset_general`, kernel-checked projection). The already
-   kernel-checked spelled witnesses `AAATT → AAAATT` (ratio `9/8`) and
-   `AAATAT → AAAAAT` (ratio `5`) each certify admissibility against that general
-   predicate, so they already refute "the truth-induced flow maximizes the §6.1
-   objective over the §6.2 feasible set". [source fact + kernel-checked]
+    additional witness.** `AssemblyP1/Section62BidirectedFlow.lean`'s `Feasible62`
+    is the *general* §6.2 feasibility predicate; a spelled circuit is a general
+    feasible flow (`spelled_subset_general`, kernel-checked projection). The already
+    kernel-checked spelled witnesses `AAATT → AAAATT` (ratio `9/8`) and
+    `AAATAT → AAAAAT` (ratio `5`) each certify admissibility against that general
+    predicate, so they already refute "the truth-induced flow maximizes the §6.1
+    objective over the §6.2 feasible set". Both witnesses are packaged as the
+    single kernel-checked objects `bridging_spelled_witnesses_general` and
+    `samelength_spelled_witnesses_general` in
+    `AssemblyP1/Section62NonSpelledFlow.lean`. [source fact + kernel-checked]
 
 2. **(B) The general feasible set strictly contains the spelled circuits, and in
    this instance its maximizers are exactly non-spelled ones.** The witness below
@@ -457,6 +460,7 @@ has two disconnected components), so no bridged truth inhabits it.
 | MB09 §6.1/§6.2 object, per-vertex lower bound `1`, molecule-class vertices | **source fact** |
 | `I_s` definition and the strict bridging normalization | **source fact** |
 | `Feasible62` is the general §6.2 feasibility predicate; spelled ⊂ general | **source fact + kernel-checked** (`spelled_subset_general`) |
+| spelled witnesses `AAATT→AAAATT`, `AAATAT→AAAAAT` feasible in the general flow optimizer, hence refute dominance | **kernel-checked** (`bridging_spelled_witnesses_general`, `samelength_spelled_witnesses_general`) |
 | literal "two shorter overlaps" reduction is vacuous | **mathematical proof** + kernel-checked for this graph |
 | Myers reduction at `o_min = 1` leaves 12 of 28 edges | **kernel-checked** |
 | `S = AAATT` witness: `I_s`; truth admissible; `d*`, `d*₃` admissible with class **and** port balance; `L(d*)/L(d_S) = 256/81` | **kernel-checked** |
@@ -475,6 +479,14 @@ has two disconnected components), so no bridged truth inhabits it.
 ```sh
 python3 scripts/verify_se62_nonspelled_flow_domain.py     # 37 checks, exact rationals
 lake build AssemblyP1.Section62NonSpelledFlow             # kernel check
+lake build AssemblyP1.Section62BridgingCounterexample \
+           AssemblyP1.SameLengthSection62Counterexample   # witness modules
+lake env leanchecker AssemblyP1.Section62NonSpelledFlow \
+  AssemblyP1.Section62BridgingCounterexample \
+  AssemblyP1.SameLengthSection62Counterexample             # kernel replay
+lake env axiom-audit --allow propext,Classical.choice,Quot.sound \
+  --root AssemblyP1.Section62NonSpelledFlow \
+  --modules AssemblyP1.Section62NonSpelledFlow            # axiom audit
 ```
 
 The script independently rebuilds the `o_min = 1` graph, applies both reduction
@@ -483,6 +495,14 @@ balance, throughputs, lower bounds, no terminal use), checks `I_s` from scratch,
 corroborates the molecule-count lemma for all circular words up to length 12,
 enumerates the feasible throughput set inside `1 ≤ d ≤ 5`, computes the exact
 ratios, and asserts the negative boundary of §7. It exits non-zero on any failure.
+
+Note: the aggregator `AssemblyP1.lean` currently fails to build on this branch for
+a reason unrelated to #214 — a duplicate-declaration conflict between
+`AssemblyP1.Issue94KShort` and `AssemblyP1.Issue94KShortGeneral` introduced by
+`origin/main` advancing past this branch's base, plus elaboration errors in
+`AssemblyP1/BBTTripleBridge.lean` (last touched by 42ebed7, not a #214 commit).
+The three #214 modules above build, kernel-replay, and axiom-audit cleanly on
+their own.
 
 Primary sources: Medvedev & Brudno (2009), §3.1–3.4, §5.2, §6.1–6.2,
 [PMC3154397](https://pmc.ncbi.nlm.nih.gov/articles/PMC3154397/); Myers (2005),
