@@ -136,7 +136,26 @@ all-bridged maximal triple repeat, no interleaved pair).
 |---|---|---|---|---|
 | `AAABB → AAAAB` (#31) | exact multinomial, candidate-intrinsic `N(D)` | `5, 5` | `2` | reading 1 `truthIsML` over **all** circular candidates |
 | `AAACC → AAAAC` (#32) | literal fixed-`N` product of binomial marginals | `5, 5` | `1125/512 > 1` | reading 2 `truthIsML` over **all** circular candidates |
-| `AAABCBC → AAAAABC` | exact multinomial | `7, 7` | `27` | reading 1 `truthIsML` over **all** circular candidates, with a read-tiled competitor |
+| `AAABCBC → AAAAABC` (read-tiled) | exact multinomial | `7, 7` | `27` | reading 1 `truthIsML` over **all** circular candidates, with a read-tiled competitor |
+
+**The read-tiled row, made concrete (issue #217, matrix row R4).** The table above
+originally cited this pair without an observation and without an artifact. It is
+reproducible: `S = AAABCBC`, `D = AAAAABC`, both of length `G = 7`, read length
+`L = 3`, realized starts `(0, 0, 0, 1, 2, 5, 6)` (`n = 7`), giving
+`x = {AAA:3, AAB:1, ABC:1, BCA:1, CAA:1}`, `spec_3(S)` with `AAA:1`, `spec_3(D)`
+with `AAA:3`, and exact likelihoods `L_E(S|x) = 120/117649` against
+`L_E(D|x) = 3240/117649`, ratio `27`. On this instance `I_s` holds **and is
+non-vacuous**: coverage holds, the unique maximal triple repeat is the length-1
+`A` at `(0,1,2)` and all three copies are bridged (by the reads at starts
+`1, 2, 6`), and there is no interleaved pair, so clause 3 is vacuous. The
+reproduction is `scripts/verify_readtiled_exact_counterexample.py`, which shares
+the `I_s` implementation of `scripts/uniform_strand_semantics_search.py` rather
+than re-deriving it. Note that the ratio `27` requires `x(AAA) = 3`: with a
+single `AAA` read the ratio is only `3`, and no observation with `x(AAA) ≤ 2`
+reaches `27`. Before this record existed the row was an unbacked table entry,
+cited below as “kernel-checked finite instances”; that citation is now
+accurate only for the #31 and #32 rows, and the read-tiled row is verified
+computation, not a kernel check.
 
 Each entry is a same-length pair, so by §3 its refutation is not confined to the
 length-`G` class. The different-length `ACGT → ACACGT` witness of issue #24 is
@@ -157,21 +176,21 @@ The length axis, however, is closed.
 
 ## 5. What still blocks settlement
 
-1. **Reading 3, the §6.2 flow-feasible class.** No current witness has both the
-   truth and the competitor in the sequence-level §6.2 feasible set. The
-   membership table in the unmerged branch artifact
-   `docs/section-6-2-feasible-set-membership.md` on
-   `analysis/issue36-se62-bidirected-flow` §3 shows that in every witness either
-   the competitor or the truth carries an
-   unobserved length-`L` window; in the read-tiled witness only the competitor is
-   spellable, so the truth is not even a candidate and the implication is not
-   tested. This is a genuine gap, not a length gap. **Update (same-length
-   packet).** Under the source-faithful per-vertex reading (support equality) the
-   gap is now closed for the same-length sub-case: `S = AAATAT`, `D = AAAAAT`
-   (`G = 6`) are both sequence-level §6.2-feasible and same-length, and `D`
-   strictly improves the §6.1 objective; see
+1. **Reading 3, the §6.2 flow-feasible class.** *Was* open at the time this note
+   was written; **Update (same-length packet), and now true on `main`.** Under the
+   source-faithful per-vertex reading (support equality) the gap is closed for
+   the same-length sub-case: `S = AAATAT`, `D = AAAAAT` (`G = 6`) are both
+   sequence-level §6.2-feasible and same-length, and `D` strictly improves the
+   §6.1 objective; see
    [`../section62-same-length-bidirected-counterexample.md`](../section62-same-length-bidirected-counterexample.md).
-   The gap remains under the per-occurrence strengthening.
+   The variable-length sub-case is closed too, by `AAATT → AAAATT` in
+   [`../bridging-se62-flow-ml-counterexample.md`](../bridging-se62-flow-ml-counterexample.md),
+   which also satisfies the per-occurrence strengthening. The **only** remaining
+   deterministic gap is the same-length sub-case **under the per-occurrence
+   strengthening**, where the truth `AAATAT` is not a candidate; see
+   [`../source-notes/interpretation-matrix-217.md`](interpretation-matrix-217.md)
+   row R13. That strengthening is not the §6.2 definition, so it is outside the
+   source-supported class, but it is a live mathematical question.
 2. **Reading 4, the broad ML principle.** If the phrase denotes an
    objective family rather than one formula, no finite witness settles it,
    because the objective is not fixed by the source.
@@ -206,8 +225,8 @@ repository’s decision to keep the exact/binomial/flow variants distinct.
 | Accepted 2016 text names MB only by bibliography; no formula/variant/section pointer | source fact |
 | MB (2009) contains the three distinct objects | source fact |
 | Negative results transfer from a candidate subclass to any superclass | mathematical proof (§3) |
-| #31/#32/read-tiled witnesses refute the maximizer claim over all circular candidates for readings 1/2 | mathematical proof + kernel-checked finite instances + §3 |
-| No current witness has both truth and competitor sequence-level §6.2-feasible | verified computation (membership table) |
+| #31/#32/read-tiled witnesses refute the maximizer claim over all circular candidates for readings 1/2 | mathematical proof + kernel-checked finite instances (#31, #32) + verified computation (read-tiled) + §3 |
+| Since the same-length packet, at least one witness has both the truth and the competitor in the sequence-level §6.2 feasible set | verified computation + kernel-checked (§6.2 `SpelledFeasible62` on both genomes): `AAATAT → AAAAAT` under the source per-vertex reading; **still open** under the per-occurrence strengthening |
 | The published question remains unresolved because readings 3–4 and strand/tie are open | source-analysis / open |
 
 Primary sources: Paul Medvedev, Michael Brudno, *Maximum Likelihood Genome
