@@ -474,6 +474,30 @@ kernel), **[inference]** (derived here), or **[choice]** (this pass's action).
    the shared `SourceFaithfulIs.InformationFeasible` predicate is the
    full-strength `I_s` (coverage + all-bridged triple repeats + bridged
    interleaved pairs), matching the front's Python transcription **[fact]**.
-   The per-occurrence `d ≥ x` variant remains a separate, open question; the
-   bounded census in script §6 is bounded evidence only, not a proof of
-   absence **[fact, unchanged from the inherited classification]**.
+    The per-occurrence `d ≥ x` variant remains a separate, open question; the
+    bounded census in script §6 is bounded evidence only, not a proof of
+    absence **[fact, unchanged from the inherited classification]**.
+
+---
+
+## 10. Erratum (closure verification, 2026-10-09): precise divergence rate
+
+§3's consequence states the ratio "diverges (at least like `5^M`)". The
+divergence itself is correct and proved there (`f` strictly increasing,
+`f(M) → ∞`), but the parenthetical overstates the rate. Since
+`f'(M) = log(5(1+M)/(5+M))` approaches `log 5` *from below*, one has
+`f(M) < M·log 5`, hence `ratio(M) < 5^M` for every `M ≥ 1`. The precise
+asymptotic, from `f(M) = (1+M)log(1+M) − (5+M)log(1+M/5)`, is
+
+```text
+f(M) = M·log 5 − 4·log M + (5·log 5 − 4) − 12/M + O(1/M²),
+```
+
+so `ratio(M) = Θ(5^M / M⁴)`: exponential divergence with rate `log 5`, but
+strictly slower than `5^M`. (Verified: `f(M) − M·log 5 + 4·log M + 12/M →
+5·log 5 − 4` at `M = 100, 1000, 10000`; `ratio(M) < 5^M` for `M = 1..59`.)
+This correction affects only the supplementary divergence remark in §3; the
+verdict, the strict-improvement bounds of Theorems A/B/C (`ratio > 1` for
+every `M ≥ 1`), and the kernel-checked certificate are unchanged. **[fact:
+correction found and verified during closure verification of branch
+`agent/board-210-e8b6b2`; the underlying proof in §3 is correct as written.]**

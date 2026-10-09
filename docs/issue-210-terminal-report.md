@@ -220,3 +220,32 @@ as-is. **[choice]**
 > source-faithful oriented per-vertex reading with variable length.
 > Independent of the bidirected cases (#212/#213) and the fixed-length audit
 > (#211).
+
+---
+
+## 6. Closure verification (this pass, 2026-10-09)
+
+Independent verification of the inherited terminal state before landing:
+
+- Both exact scripts re-run: `ALL ASSERTIONS PASSED`, exit `0` **[fact]**.
+- `lake build AssemblyP1.OrientedVariableLengthSe62` → exit `0`;
+  `leanchecker` → exit `0`; `#print axioms` on all endpoint theorems →
+  exactly `[propext, Classical.choice, Quot.sound]`; no `sorry`/`admit`/
+  `axiom`/`native_decide` **[fact]**.
+- `check-research-docs.py` → exit `0` **[fact]**.
+- A fully independent fresh-`Fraction` re-derivation (sharing no code with
+  the front's scripts) reproduced: the three spectra; the run-extension lemma
+  (`M = 0..6`); support and `n = 5+M`; exact ratios `15625/11664`, `2109375/823543`;
+  binomial ratios `81/64`, `27/16`; Theorems A/B/C closed forms (`A`: `M = 0..6`,
+  strict `> 1` for `M ≥ 1`; `B`, `C`: `M = 0..5`, strict `> 1` for `M ≥ 1`);
+  AM-GM bound attainment and strict truth-below-bound; amplification factors
+  `5/3` and `Q_AAA = 2`; the three closed walks and their spellings; and the
+  three `I_s` clauses (coverage, unique maximal triple repeat all-bridged, no
+  interleaved pair) **[fact]**.
+- **One imprecision found and corrected [fact]:** the §3 divergence remark
+  "at least like `5^M`" overstates the rate; the precise asymptotic is
+  `ratio(M) = Θ(5^M/M⁴)` (see note §10). The divergence claim and all
+  strict-improvement bounds are unaffected.
+
+**Verdict stands: REFUTED.** The branch is complete, correctly stated, and
+properly kernel-checked at the level of its claims.
