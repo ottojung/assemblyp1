@@ -1,7 +1,8 @@
 # Transferring `I_s` from oriented single-strand reads to double-strand data
 
 _Status: independent mathematical analysis + exact computation + a bounded Lean
-evaluator, for issue #215 (leaf of #217), 2026-10-09. Every claim below is
+evaluator, for issue #215 (leaf of #217), 2026-10-09; audited and corrected on
+the same date (see §9). Every claim below is
 labelled **source fact**, **source-supported inference**, **modeling decision**,
 **mathematical proof**, **verified computation**, **bounded computation**, or
 **open**. Nothing here selects which reading the 2016 sentence denotes; the
@@ -11,13 +12,16 @@ to state precisely what each of them requires._
 _Reproduce:_
 
 ```sh
-python3 scripts/verify_oriented_molecule_bridging.py           # quick scopes
-python3 scripts/verify_oriented_molecule_bridging.py --full    # wider scopes
+python3 scripts/verify_oriented_molecule_bridging.py            # quick scopes
+python3 scripts/verify_oriented_molecule_bridging.py --full     # wider scopes
+python3 scripts/audit_215_transfer_reconciliation.py            # independent audit
 ```
 
-_The script is self-contained, exact (integers and `fractions.Fraction`),
-deterministic, shares no code with other repository scripts, and exits non-zero
-on any failed assertion. The Lean facts are in
+_The scripts are self-contained, exact (integers and `fractions.Fraction`),
+deterministic, and share no code with each other or with other repository
+scripts; each exits non-zero on any failed assertion. The second one re-derives
+every number in this note from scratch on a different data representation. The
+Lean facts are in
 `AssemblyP1/DoubleStrandBridgingTransfer.lean` (kernel-checked, no `sorry`, no
 new axioms)._
 
@@ -37,10 +41,12 @@ new axioms)._
 2. **The integrated `AAATAT → AAAAAT` witness is a genuine counterexample under
    V1/V2 and is inadmissible under V3.** Under V1/V2 its read realization
    `{0,1,3,5}` is `I_s`-feasible (this is already kernel-checked on `main`:
-   `AssemblyP1.SameLengthSection62Counterexample.truth_source_certificate`) and
+   `AssemblyP1.SameLengthSection62Counterexample.truth_information_feasible`,
+   which discharges the **authoritative** shared predicate
+   `AssemblyP1.SourceFaithfulIs.InformationFeasible`) and
    `D = AAAAAT` beats it (`3` exact, `5` binomial). Under V3 the doubling produces
    the length-`12` circle `AAATATATATTT`, which carries the **maximal triple
-   repeat `ATATA` of length `4` at starts `2, 4, 6`**, and
+   repeat `ATAT` of length `4` at starts `2, 4, 6`**, and
    `bridgesCopy_length` (`e + 2 ≤ L`) forbids any length-`3` read from bridging
    any copy of it. So `InformationFeasible` fails on the doubled genome for
    *every* read set. [kernel-checked result;
@@ -209,26 +215,32 @@ Three structural facts about the doubled circle `Ŝ = S · ρ(S)`:
    absolute start `b`. So the reverse complement of any read sitting at `b` sits at
    `2G - b - L`.
 3. A **wrapping** window of `S` (start `t > G - L`) is *not in general* a window
-   of `Ŝ`: in the exhaustive binary scope only `380` of `1016` wrapping windows
-   also occur in the doubled genome. This is a genuine wrinkle of the remap: the
-   doubled genome's seam reads are artifacts of the reduction, and some reads of
-   the original circle have no seat in `Ŝ`.
+   of `Ŝ` at its natural seat: in the exhaustive binary scope only `380` of
+   `1016` wrapping windows still occur at the seat `G + t` of the doubled genome
+   (and `936` occur somewhere, but `80` occur nowhere). This is a genuine wrinkle
+   of the remap: the doubled genome's seam reads are artifacts of the reduction,
+   and some reads of the original circle have no seat in `Ŝ`.
 
 For the witness (`G = 6`, `L = 3`) the realized read strings and their reverse
 complements are
 
 ```text
-read strings              : AAA, AAT, TAT, TAA   (from starts 0, 1, 3, 5)
+read strings              : AAA, AAT, TAT, TAA   (starts 0, 1, 3, 5 in S)
 reverse complements       : TTT, ATT, ATA, TTA
-absolute starts in Ŝ      : {0, 1, 3, 11} ∪ {9, 8, 6, 10}
+seats in Ŝ (absolute)     : {0, 1, 3, 11} ∪ {9, 8, 6, 10}
 doubled read starts       : {0, 1, 3, 6, 8, 9, 10, 11}
 ```
 
-The read `TAA` (start `5`, wrapping in `S`) does occur in `Ŝ`, at absolute start
-`11`, because this particular genome ends with the complement of its first base;
-its partner `TTA` sits at `10`. Each of these placements is verified to be a
-genuine occurrence of the read string, and the partner rule `2G - b - L` is
-kernel-checked (`DoubleStrandBridgingTransfer.partner_placements`). Under the
+Three of the four reads are non-wrapping in `S` and sit at their own start; the
+read `TAA` at start `5` wraps (`5 > G - L = 3`), so its seat is the absolute
+start `11` of `Ŝ`, where it genuinely occurs, because this genome ends with the
+complement of its first base. The partner of the read at absolute seat `b` is at
+`2G - b - L`, which is the seat rule `π(b) = 12 - b - 3 (mod 12)`; in particular
+the partner of `11` is `10`, **not** `2G - 5 - L = 4`, because `b` is the seat in
+`Ŝ` and not the start in `S`. Every one of these placements is verified to be a
+genuine occurrence of its read string, and the componentwise partner identity
+`window(b')(d) = comp(window(b)(L - 1 - d))` for all `d : Fin 3` is
+kernel-checked (`DoubleStrandBridgingTransfer.partner_windows`). Under the
 maximally generous placement of the doubled read strings, coverage of `Ŝ`
 holds. The verdict of §3.2 is placement-independent, so it does not depend on
 this generosity.
@@ -245,16 +257,30 @@ single-strand observation `x = {AAA:2, AAT:1, ATA:1, TAA:1}`, i.e.
 So the two double-strand conventions agree on *what is recorded*; they disagree
 on the object the bridging conditions live on.
 
+> **A structural caveat on V3 as a reduction.** Bresler's sentence transforms
+> "each read into itself and its reverse complement". That is only a map from
+> read realizations to read realizations if every read of the original circle
+> has a seat in `S · ρ(S)`. In the exhaustive binary scope only `380` of `1016`
+> wrapping windows keep their natural seat `G + t` in the doubled genome;
+> counting occurrence anywhere, `936` of the `1016` do occur in `S · ρ(S)`, and
+> **`80` do not occur at all**. So Bresler's "conditions hold verbatim" cannot
+> be read literally for a *circular* genome: the remap both loses some realized
+> reads and invents seam reads. This is a property of the reduction, not of the
+> `AAATAT` instance (for which the wrapping read does have a seat). It is one of
+> the reasons V1/V2 and V3 are not interchangeable. [verified computation,
+> exhaustive in scope]
+
 ### 3.2 The doubled genome of `AAATAT` is not `I_s`-feasible
 
 `Ŝ = AAATATATATTT`. Its maximal triple repeats of length `≥ L - 1 = 2` are
-`AT@{2,4,8}`, `AT@{2,6,8}`, `AT@{3,5,11}`, `AT@{3,7,11}`, `AT@{5,7,11}` and
-`ATATA@{2,4,6}`. The length-`4` repeat is maximal in the source's three-copy
+`AT@{2,4,8}`, `AT@{2,6,8}`, `TA@{3,5,11}`, `TA@{3,7,11}`, `TA@{5,7,11}` and
+`ATAT@{2,4,6}`. The length-`4` repeat is maximal in the source's three-copy
 sense: the preceding symbols are `A, T, T` and the following symbols are
-`A, A, T`, so no extension is possible.
+`A, A, T`, so no extension is possible. (Its three copies together read
+`ATATATAT` over the positions `2..9`.)
 
 > **Theorem 3.2 (kernel-checked).** No read set of length `3` can bridge the
-> length-`4` triple repeat `ATATA@{2,4,6}` of `Ŝ`, because
+> length-`4` triple repeat `ATAT@{2,4,6}` of `Ŝ`, because
 > `bridgesCopy_length` gives `e + 2 ≤ L` for any bridged copy and `4 + 2 > 3`.
 > Hence `InformationFeasible Ŝ 3 R` fails for every `R : Finset (Fin 12)`.
 >
@@ -361,7 +387,9 @@ oriented support* (`TAT` is absent, so `D` is not even an oriented spelled
 candidate) while its class support coincides. That is what lets it be a §6.2
 spelled candidate and beat the truth. The truth's own oriented rigidity is not
 contradicted; it is simply *not applicable* to the molecule candidate set.
-[verified computation; the `I_s` and the ratios are kernel-checked on `main`]
+[verified computation; the `I_s` (via `truth_information_feasible`, the
+  authoritative `SourceFaithfulIs.InformationFeasible`) and the ratios are
+  kernel-checked on `main`]
 
 ### 4.4 Census and the repair hypotheses (bounded computation)
 
@@ -386,7 +414,7 @@ Refuted repairs (all project-level hypotheses, none from the sources):
 | every `(L - 1)`-mer class `≤ 2` | 54 | 12 (`AAATAT` …) |
 | every `L`-mer class `≤ 2` | 90 | 44 (`AAATATT` …) |
 | truth spectrum class-symmetric (`d_u = d_{ρ(u)}`) | 48 | 16 (`AAATATTT` …) |
-| every `L`-mer class multiplicity even | 64 | 16 |
+| every `L`-mer class multiplicity even | 60 | 16 |
 | every `(L - 1)`-mer class multiplicity even | 76 | 44 |
 | **every `(L - 1)`-mer class and every `L`-mer class `≤ 2`** | 30 | **0** (not refuted in scope) |
 
@@ -406,7 +434,7 @@ that stronger hypothesis, and `AAATAT` shows that `I_s` alone is not enough.
 | reading | required extra assumptions | effect on the 2016 question |
 |---|---|---|
 | **V1/V2** | (i) read placements retained or their existence asserted; (ii) molecule read types; (iii) `supp(m_D) = supp(x)` (per-vertex lower bound `1`); (iv) `|D| = G`. | Counterexample exists and is kernel-checked. If (iii) is strengthened to per-occurrence `d ≥ x`, the witness becomes **vacuous** (the truth itself fails: `d_S(AAA) = 1 < x(AAA) = 2`) — the strengthened statement is **open**, not refuted. |
-| **V3** | genome doubled, reads doubled to `2N`, `I_s` on the length-`2G` circle, candidates doubled. | The `AAATAT` witness is inadmissible (Theorem 3.2). No counterexample is known; `docs/source-notes/uniform-strand-convention-search-2026-09-20.md` §5 records a bounded zero for `G ≤ 6` under Variant E. Open. |
+| **V3** | genome doubled, reads doubled to `2N`, `I_s` on the length-`2G` circle, candidates doubled; **and**, for the doubling to be a reduction at all, (R1) read-seat preservation for wrapping reads, (R2) seam–wrap agreement `j_S(w) = wrap_S(w) + wrap_S(ρ(w))`, (R3) feasibility of `I_s` on the length-`2G` circle. | The `AAATAT` witness is inadmissible (Theorem 3.2). No counterexample is known; `docs/source-notes/uniform-strand-convention-search-2026-09-20.md` §5 records a bounded zero for `G ≤ 6` under Variant E. **Open, not refuted** — the row is not settled in either direction by this witness. |
 | **V4** | no bridging hypothesis at all (MB09 §6.2 flow alone). | The published sentence's bridging condition is not part of the model, so V4 is not a reading of the sentence. |
 
 Note that (iv) is not supplied by MB09's known-`N` parameter;
@@ -436,7 +464,8 @@ distinction, and it is needed here as well.
 5. **Rigidity is not `κ`-stable**: `AAATAT` is oriented-rigid and molecule-
    non-rigid.
 6. **V1 vs V3 on the same witness**: `I_s` holds on `S` (kernel-checked on
-   `main`) and fails on `Ŝ` (kernel-checked here).
+   `main` by `truth_information_feasible`) and fails on `Ŝ` (kernel-checked here
+   by `doubled_not_information_feasible`).
 
 ---
 
@@ -451,7 +480,7 @@ distinction, and it is needed here as well.
 | `Φ` does not determine `I_s` status; the three liftings | **verified computation** (exact, deterministic) |
 | `spec_{Ŝ}(w) = lint_S(w) + lint_S(ρ(w)) + j_S(w)`; class symmetry of `spec_Ŝ` | **mathematical proof** + **verified computation** (exhaustive in scope) |
 | `c(w) = c(ρ(w))`, so the doubled observation is `2x` | **mathematical proof** + **verified computation** |
-| `AAATAT` molecule witness: `I_s`, supports, ratios `3` and `5`, per-occurrence vacuity | **kernel-checked result** on `main` + **verified computation** |
+| `AAATAT` molecule witness: `I_s`, supports, ratios `3` and `5`, per-occurrence vacuity | **kernel-checked result** on `main` (`SameLengthSection62Counterexample.truth_information_feasible`, the authoritative `SourceFaithfulIs.InformationFeasible`) + **verified computation** |
 | Bresler-doubled instance is not `I_s`-feasible for any read set | **kernel-checked result** (`AssemblyP1/DoubleStrandBridgingTransfer`) |
 | oriented rigidity on its own support; non-rigidity under the class condition | **mathematical proof** (oriented, on `main`) + **verified computation** (molecule) |
 | census numbers, repair refutations, remap feasibility densities | **bounded computation** (scope stated) |
@@ -482,6 +511,7 @@ Repository (on `main` unless noted):
 [`conclusion-semantics-determination.md`](conclusion-semantics-determination.md),
 [`equivalence-and-tie-wellposedness.md`](equivalence-and-tie-wellposedness.md),
 `scripts/verify_oriented_molecule_bridging.py`,
+`scripts/audit_215_transfer_reconciliation.py`,
 `AssemblyP1/SourceFaithfulIs.lean`,
 `AssemblyP1/SameLengthSection62Counterexample.lean`,
 `AssemblyP1/DoubleStrandBridgingTransfer.lean`.
@@ -490,3 +520,86 @@ This note does not settle the Shomorony et al. (2016) open question and does not
 select a strand convention. It establishes that the conventions are inequivalent,
 that the existing counterexample belongs to exactly one of them, and what each of
 the remaining ones requires.
+
+---
+
+## 9. Independent audit of this appendix, and the residual
+
+A second, code-independent pass (issue #215, second owner) re-derived every
+number here with `scripts/audit_215_transfer_reconciliation.py`, which shares no
+code with `scripts/verify_oriented_molecule_bridging.py`, and audited the kernel
+module. All substantive conclusions survived. Five defects were found and are
+corrected above; they are recorded here because each is the kind of defect that
+makes an *audited* witness list unusable, and none of them changes a verdict.
+
+1. **Four of the six long triple repeats of `Ŝ` were printed with the wrong
+   word.** The shipped list said `AT@{3,5,11}`, `AT@{3,7,11}`, `AT@{5,7,11}` and
+   `ATATA@{2,4,6}`; the computed length-`e` windows are `TA@{3,5,11}`,
+   `TA@{3,7,11}`, `TA@{5,7,11}` and `ATAT@{2,4,6}`. The last one is impossible
+   as written: `ATATA` has length `5` and cannot be the length-`4` window. The
+   kernel-checked theorem (`doubled_triple_repeat`, `doubled_agree_*`) never
+   names the word, so it was unaffected; only the prose was wrong.
+2. **The `I_s` kernel-check was credited to the wrong theorem.** The appendix
+   cited `SameLengthSection62Counterexample.truth_source_certificate`, which
+   discharges the module-local `SourceCertificate`, i.e. the **deprecated
+   endpoint-only** bridging predicate `bridgedCopy` (`inRead` on `t-1` and on
+   `t+e`), explicitly superseded in `SourceFaithfulIs.lean` ("that was the
+   definition used up to this commit") and retained in that module as
+   "supporting evidence only". The authoritative kernel-check on `main` is
+   `truth_information_feasible`, which proves
+   `SourceFaithfulIs.InformationFeasible truthGenome 3 {0,1,3,5}` at full
+   strength. The attribution now names the authoritative theorem. On this
+   instance the two predicates happen to agree, so the verdict is unchanged —
+   but the strength the appendix attributed to the citation was not the strength
+   the cited theorem has.
+3. **`380 of 1016` was ambiguous.** The shipped code checks the natural seat
+   `G + t`, not occurrence anywhere. The two numbers are different (`380` vs
+   `936`), and `80` wrapping windows occur nowhere in the doubled genome. §3.1
+   now states all three.
+4. **One cell of the §4.4 repair table was stale.** "every `L`-mer class
+   multiplicity even" was printed as `64 | 16`; the shipped script itself
+   computes `60 | 16`. Corrected to `60 | 16`. All other cells and the
+   `162 / 86 / 30 / 0` totals were reproduced exactly.
+5. **The kernel-checked partner statement covered fewer components than its
+   docstring claimed.** `partner_placements` compared `window 3 b 0` with
+   `comp (window 3 b' 2)`, i.e. **4 of the 12** symbol components of the four
+   partner windows, while the module docstring said it "kernel-checks the
+   read-partner placements that Bresler's doubling induces". It is replaced by
+   `partner_windows`, which proves the componentwise identity for every
+   `d : Fin 3`, plus `partner_starts` recording the seat rule. No definition was
+   changed and no theorem was weakened.
+
+### 9.1 Is V3 exactly compatible with V1/V2?
+
+No. **The two double-strand conventions are not exactly compatible**, and the
+gap is a conjunction of three independent requirements, each of which is
+necessary and none of which is automatic:
+
+- **(R1) read-seat preservation.** Bresler's doubling maps a read realization to
+  a read realization only if every realized read of the circular genome has a
+  seat in `S · ρ(S)`. For wrapping reads this fails in general: `636` of `1016`
+  lose their natural seat, `80` have no seat at all.
+- **(R2) seam–wrap agreement.** The two conventions induce the same read-type
+  distribution iff `j_S(w) = wrap_S(w) + wrap_S(ρ(w))` for every `w`, where
+  `j_S` counts the seam windows and `wrap_S` the wrapping windows of `S`. This
+  holds for `254` of `508` binary words in the exhaustive scope (`2 ≤ G ≤ 8`,
+  `L = 3`), and fails with the witnessed counterexample `S = AAGG`, whose seam
+  creates the class `{GGC, GCC}` that `S`'s own molecule spectrum does not
+  contain (§6, item 3).
+- **(R3) feasibility on the doubled circle.** Even with (R1) and (R2),
+  `InformationFeasible` must hold on the length-`2G` circle, which is a strictly
+  stronger hypothesis engine than on the length-`G` circle: `28` of `252` doubled
+  binary genomes (`2 ≤ G ≤ 7`, `L = 3`) are free of triple repeats of length
+  `≥ L - 1`, against `162` of `496` original genomes (`4 ≤ G ≤ 8`) that pass
+  the triple-repeat clause on themselves (§3.3).
+
+**Effect on the conclusion.** Under V1/V2 the `AAATAT → AAAAAT` witness is a
+genuine, kernel-checked counterexample, and the per-occurrence strengthening
+`d ≥ x` makes it vacuous without refuting the schema (the truth itself fails
+`d_S(AAA) = 1 < x(AAA) = 2`). Under V3 the same witness is **inadmissible**
+(Theorem 3.2) and the row is **not** settled by it: V3 is satisfied on a sparse
+minority of genomes, no counterexample is known there, and the published
+question therefore remains **open** under V3 rather than refuted. Under V4 there
+is no bridging hypothesis to transfer, so V4 is not a reading of the published
+sentence. The strand convention of the 2016 sentence remains **open** on the
+sources, and no reading may be promoted by agreement between agents.

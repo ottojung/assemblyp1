@@ -26,7 +26,7 @@ model:
 
 Under that reduction the `AAATAT → AAAAAT` witness is **inadmissible**: its
 doubled genome is the length-`12` circle `AAATATATATTT`, and that circle carries
-a maximal triple repeat of length `4` (the word `ATATA` at starts `2, 4, 6`).
+a maximal triple repeat of length `4` (the word `ATAT` at starts `2, 4, 6`).
 Since a bridged copy of length `e` needs `e + 2 ≤ L`
 (`AssemblyP1.SourceFaithfulIs.bridgesCopy_length`), no read of length `L = 3`
 can bridge any copy of it, for **any** read set.  Hence the doubled instance is
@@ -90,22 +90,44 @@ In the doubled circle, the reverse complement of the length-`3` window starting
 at absolute position `b` is the window starting at absolute position
 `2G - b - L`.  Kernel-checked for the four distinct starts of the realized
 `AAATAT` read set and their partners: start `0 ↦ 9`, `1 ↦ 8`, `3 ↦ 6`, and the
-wrapping read at `11 ↦ 10`.
+wrapping read, whose seat is the absolute start `11 ↦ 10`.
+
+The equality is checked **componentwise**, i.e. the whole partner *window*
+`window(b')` equals the reverse complement `ρ(window(b))` symbol by symbol, not
+merely at one offset: `doubled.window 3 b' d = comp (doubled.window 3 b (2 - d))`
+for every `d : Fin 3`.  That is what makes the statement a check of Bresler's
+"transforming each read into itself and its reverse complement" rather than a
+check of a single base.
 -/
 
-theorem partner_placements :
-    doubled.window 3 ⟨9, by decide⟩ 0 = comp (doubled.window 3 ⟨0, by decide⟩ 2) ∧
-      doubled.window 3 ⟨8, by decide⟩ 0 = comp (doubled.window 3 ⟨1, by decide⟩ 2) ∧
-      doubled.window 3 ⟨6, by decide⟩ 0 = comp (doubled.window 3 ⟨3, by decide⟩ 2) ∧
-      doubled.window 3 ⟨10, by decide⟩ 0 = comp (doubled.window 3 ⟨11, by decide⟩ 2) := by
-  refine ⟨?_, ?_, ?_, ?_⟩ <;> decide
+/-- Bresler's partner-placement rule at every symbol offset: the length-`3`
+window at `2G - b - L` is the reverse complement of the window at `b`, i.e.
+`window(b')(d) = comp (window(b)(L - 1 - d))` for each `d : Fin 3`. -/
+theorem partner_windows :
+    (∀ d : Fin 3, doubled.window 3 ⟨9, by decide⟩ d = comp (doubled.window 3 ⟨0, by decide⟩ ⟨2 - d.val, by omega⟩)) ∧
+    (∀ d : Fin 3, doubled.window 3 ⟨8, by decide⟩ d = comp (doubled.window 3 ⟨1, by decide⟩ ⟨2 - d.val, by omega⟩)) ∧
+    (∀ d : Fin 3, doubled.window 3 ⟨6, by decide⟩ d = comp (doubled.window 3 ⟨3, by decide⟩ ⟨2 - d.val, by omega⟩)) ∧
+    (∀ d : Fin 3, doubled.window 3 ⟨10, by decide⟩ d = comp (doubled.window 3 ⟨11, by decide⟩ ⟨2 - d.val, by omega⟩)) := by
+  refine ⟨?_, ?_, ?_, ?_⟩ <;> intro d <;> fin_cases d <;> decide
+
+/-- The four partner placements as a single table: `0 ↦ 9`, `1 ↦ 8`, `3 ↦ 6`,
+and the wrapping read's seat `11 ↦ 10`.  The rule is `π(b) = 2G - b - L` reduced
+modulo the length `2G = 12` of the doubled circle, with `b` the *seat* in the
+doubled circle, so the wrapping read's partner is `10` and not `2G - 5 - L = 4`. -/
+theorem partner_starts : (9 : ℕ) = (2 * 12 - 0 - 3) % 12 ∧
+    (8 : ℕ) = (2 * 12 - 1 - 3) % 12 ∧ (6 : ℕ) = (2 * 12 - 3 - 3) % 12 ∧
+    (10 : ℕ) = (2 * 12 - 11 - 3) % 12 := by
+  refine ⟨by decide, by decide, by decide, by decide⟩
 
 /-! ### The unbridgeable maximal triple repeat of the doubled genome
 
-`ATATA` occurs at starts `2, 4, 6`.  It is maximal in the source's three-copy
-sense: the symbols preceding the three copies are `A, T, T` (not all equal) and
-the symbols following them are `A, A, T` (not all equal), so the copy triple
-cannot be extended in either direction.
+The word `ATAT` occurs at starts `2, 4, 6`.  It is maximal in the source's
+three-copy sense: the symbols preceding the three copies are `A, T, T` (not all
+equal) and the symbols following them are `A, A, T` (not all equal), so the copy
+triple cannot be extended in either direction.  (The appendix first circulated
+this obstruction as the string `ATATA`, which has length `5` and therefore
+cannot be the length-`4` window; the word is `ATAT`, and the three copies
+together read `ATATATAT` over the positions `2..9`.)
 -/
 
 theorem doubled_agree_2_4 : Genome.Agree doubled 4 ⟨2, by decide⟩ ⟨4, by decide⟩ := by
@@ -117,7 +139,7 @@ theorem doubled_agree_2_6 : Genome.Agree doubled 4 ⟨2, by decide⟩ ⟨6, by d
 theorem doubled_agree_4_6 : Genome.Agree doubled 4 ⟨4, by decide⟩ ⟨6, by decide⟩ := by
   intro d; fin_cases d <;> rfl
 
-/-- The length-`4` repeat `ATATA` at starts `2, 4, 6` is a maximal triple repeat
+/-- The length-`4` repeat `ATAT` at starts `2, 4, 6` is a maximal triple repeat
 of the doubled genome. -/
 theorem doubled_triple_repeat :
     Genome.IsTripleRepeat doubled 4 ⟨2, by decide⟩ ⟨4, by decide⟩ ⟨6, by decide⟩ := by
