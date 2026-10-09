@@ -1,5 +1,13 @@
 # Exact same-length complete-spectrum fibre count
 
+> **Superseded in part by `docs/exact-fibre-count-theorem-219.md`.**  This
+> front-94e7 note records the original derivation of the weighted BEST /
+> divisor-Möbius fibre count.  The board-#219 note sharpens it: it pins the
+> self-loop, root, and complexity conventions, adds the positive
+> totient/Burnside form of the orbit count (its Theorem 2), and adds a
+> Möbius-free singleton criterion (its Theorem 3).  The derivation below is
+> unchanged and remains the proof of Theorem 1 of the #219 note.
+
 ## Scope and status
 
 This note records a human-readable combinatorial theorem for the oriented complete-spectrum model used in the same-length part of issue #83. It is a **mathematical proof**, not a source claim and not yet a Lean theorem.
