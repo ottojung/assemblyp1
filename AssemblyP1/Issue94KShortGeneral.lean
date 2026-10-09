@@ -8,7 +8,7 @@ This module contains the general K ≤ L - 1 vertex-cycle argument used by the
 Issue 94 endpoint, without importing the heavier TW/orbit-search development.
 -/
 
-namespace AssemblyP1.Issue94KShort
+namespace AssemblyP1.Issue94KShortGeneral
 
 open SourceFaithfulIs
 open OrientedRigidity
@@ -303,4 +303,4 @@ theorem obstruction_short_window (_hUkk : Ukkonen hK L S) (hKL : K ≤ L - 1)
 
 end ShortWindow
 
-end AssemblyP1.Issue94KShort
+end AssemblyP1.Issue94KShortGeneral

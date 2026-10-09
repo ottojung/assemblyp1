@@ -150,6 +150,7 @@ import AssemblyP1.Issue94P2Iff
 import AssemblyP1.Issue94TruthTraversal
 import AssemblyP1.AAABConverse
 import AssemblyP1.Issue94Step2Path
+import AssemblyP1.Issue94OrbitChecksFromGeneral
 import AssemblyP1.Issue94Transposition
 import AssemblyP1.Issue94ObstructionEquiv
 import AssemblyP1.Issue94EulerianRealize

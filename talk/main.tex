@@ -33,6 +33,27 @@
 \normalfont Overlap evidence links pieces into a consistent source.
 \end{frame}
 
+\begin{frame}{Assemblers organize reads as a de Bruijn graph}
+\centering
+\normalsize Each read is an \alert{edge} between its length-$(L-1)$ prefix and suffix nodes; shared pieces merge into shared nodes.\par\medskip
+\begin{tikzpicture}[font=\small]
+\node[draw,circle,inner sep=1.5pt] (AC) at (0,1) {AC};
+\node[draw,circle,inner sep=1.5pt,alert] (CG) at (2,1.5) {CG};
+\node[draw,circle,inner sep=1.5pt] (GC) at (4,1.5) {GC};
+\node[draw,circle,inner sep=1.5pt] (GT) at (4,-.6) {GT};
+\node[draw,circle,inner sep=1.5pt] (TA) at (2,-.5) {TA};
+\draw[->,thick] (AC) to[out=30,in=150] node[above,font=\scriptsize]{ACG} (CG);
+\draw[->,thick] (CG) to[out=25,in=155] node[above,font=\scriptsize]{CGC} (GC);
+\draw[->,thick] (GC) to[out=-155,in=-25] node[below,font=\scriptsize]{GCG} (CG);
+\draw[->,thick] (CG) to[out=-60,in=115] node[right,font=\scriptsize,xshift=1pt]{CGT} (GT);
+\draw[->,thick] (GT) to[out=-160,in=-10] node[below,font=\scriptsize]{GTA} (TA);
+\draw[->,thick] (TA) to[out=120,in=-30] node[left,font=\scriptsize,xshift=-1pt]{TAC} (AC);
+\end{tikzpicture}
+\par\smallskip
+\normalfont The walk AC$\to$CG$\to$GC$\to$CG$\to$GT$\to$TA$\to$AC spells \genome{ACGCGT} ($L=3$).\par\smallskip
+\alert{The repeat \genome{CGCG} turns node CG into a fork: two entries, two exits --- the graph alone cannot say which entry pairs with which exit.}
+\end{frame}
+
 \begin{frame}{Repeats create forks: the same piece can fit twice}
 \centering
 \Large \genome{...A \alert{CGCG} T...}\qquad
@@ -88,7 +109,8 @@ Observed multiplicities then give a likelihood score.\par\bigskip
 \begin{columns}[T]
 \column{.47\textwidth}
 \textbf{A strong positive case}\par\medskip
-Oriented reads + same-length candidates + the structural condition force the complete read spectrum. The truth is then uniquely determined up to circular rotation.
+Oriented reads + same-length candidates + the structural condition force the complete read spectrum. The truth is then uniquely determined up to circular rotation.\par\smallskip
+{\small Upgrading ``same spectrum'' to ``same genome'' still takes the external Bresler--Bresler--Tse theorem as a premise.}
 \column{.47\textwidth}
 \textbf{Nearby failures}\par\medskip
 Allow variable candidate length, change strand semantics, or use other source-derived formulations, and explicit finite counterexamples appear.
@@ -127,7 +149,7 @@ For oriented circular genomes that are
 \end{itemize}
 population ML uniquely recovers the true genome up to rotation.
 \vfill
-\normalsize The proof uses a P2-specific gcd/Eulerian argument plus the Bresler--Bresler--Tse complete-spectrum uniqueness theorem. This is source-supported mathematics; the full theorem is not yet kernel-checked in Lean.
+\normalsize \alert{This full theorem is Lean-kernel-checked}: \texttt{AssemblyP1.Issue94Complete.population\_unique\_ML} proves, for \emph{any-length} admissible candidates, both optimality and rotation uniqueness --- no external theorem assumed.
 \end{frame}
 
 \begin{frame}{Computation found witnesses; Lean checks exact claims}
@@ -137,7 +159,8 @@ population ML uniquely recovers the true genome up to rotation.
 Scripts exhaust small genomes and samples to discover surprising candidates and likelihood inequalities.
 \column{.47\textwidth}
 \textbf{Verification}\par\medskip
-For selected finite witnesses, Lean proves the exact instance satisfies the formal assumptions and the claimed inequality.
+Selected finite witnesses: Lean proves each exact instance satisfies the formal assumptions and the claimed inequality.\par\medskip
+The repaired population theorem: Lean kernel-checks the whole proof, not just instances.
 \end{columns}
 \vfill
 \alert{Testing suggests; exact arithmetic verifies a calculation; proof establishes a theorem; the Lean kernel checks a formal proof.}
@@ -165,7 +188,7 @@ $\rightarrow$ counterexample/proof $\rightarrow$ audit $\rightarrow$ synthesis
 
 \begin{frame}{Current frontier}
 The original 2016 sentence remains source-ambiguous enough that AssemblyP1 does not pretend one modern formulation is uniquely ``the'' historical conjecture.\par\bigskip
-The project now has precise finite positive/negative results and a clean repaired population theorem; remaining work is source fidelity, mechanization of mature results, and publication-quality exposition.
+The project now has precise finite positive/negative results and a clean, kernel-checked repaired population theorem; remaining work is source fidelity, separately formalizing the complete-spectrum theorem the finite argument still assumes, and publication-quality exposition.
 \end{frame}
 
 \appendix
@@ -200,7 +223,15 @@ The project now has precise finite positive/negative results and a clean repaire
 \textbf{Lean proof} & The formal statement and proof term are checked by Lean's kernel.\\
 \end{tabular}
 \vfill
-\small AssemblyP1 keeps these labels separate: the repaired population theorem is presently source-supported mathematics, while selected finite counterexamples are kernel-checked.
+\small AssemblyP1 keeps these labels separate. The repaired population theorem is \textbf{kernel-checked end to end}. One ingredient stays external: the \textbf{finite} same-length rotation-uniqueness argument still takes the Bresler--Bresler--Tse complete-spectrum theorem as an explicit premise.
+\end{frame}
+
+\begin{frame}{Backup: exactly what Lean kernel-checks}
+\scriptsize
+\textbf{Population theorem --- checked, no external premise.}\\
+\texttt{AssemblyP1.Issue94Complete.population\_unique\_ML}: oriented circular truth, $0<G$, $1<L$, truth primitive and P2 at read length $L$; for \emph{every} candidate length $K>0$ and \emph{every} primitive P2 candidate $W$:\quad (1) its population log-likelihood is $\le$ the truth's;\quad (2) any tie forces $K=G$ and $W$ a cyclic rotation of the truth.\par\smallskip
+\textbf{Finite same-length theorem --- one external premise.}\\
+\texttt{OrientedSameLengthML.same\_length\_maximality\_and\_rotation\_uniqueness\_of\_bbt}: under the structural no-long-triple-repeat hypothesis, the truth is the unique maximizer among spelled same-length oriented candidates up to cyclic rotation, \emph{conditional on} the Bresler--Bresler--Tse complete-spectrum statement, which remains an explicit premise --- not a Lean proof.
 \end{frame}
 
 \end{document}
