@@ -43,6 +43,11 @@ kernel-checked witnesses do and do not reach._
    4 (the broad, objective-undetermined ML principle), and the
    strand/equivalence/tie choices.
 
+For reading 2 the scope correction of issue #209 applies: the candidate class
+must be restricted to `|D| ≤ N`, because the literal binomial marginal is
+only a probability model there (see the caveat in §4 below, at the table). Reading 1, whose
+objective uses the candidate's own `N(D)`, needs no such restriction.
+
 ## 1. Independent re-retrieval (source facts)
 
 Retrieved 2026-09-20 with `urllib` + `pypdf`:
@@ -135,7 +140,8 @@ all-bridged maximal triple repeat, no interleaved pair).
 | witness | objective | `\|S\|`, `\|D\|` | ratio | refutes |
 |---|---|---|---|---|
 | `AAABB → AAAAB` (#31) | exact multinomial, candidate-intrinsic `N(D)` | `5, 5` | `2` | reading 1 `truthIsML` over **all** circular candidates |
-| `AAACC → AAAAC` (#32) | literal fixed-`N` product of binomial marginals | `5, 5` | `1125/512 > 1` | reading 2 `truthIsML` over **all** circular candidates |
+| `AAABB → AAAAB` (#31) | literal fixed-`N` product of binomial marginals | `5, 5` | `1125/512 > 1` | reading 2 `truthIsML` over circular candidates with `\|D\| ≤ N` (in particular the length-`G` class) |
+| `AAACC → AAAAC` (#32) | literal fixed-`N` product of binomial marginals | `5, 5` | `1125/512 > 1` | reading 2 `truthIsML` over circular candidates with `\|D\| ≤ N` (in particular the length-`G` class) |
 | `AAABCBC → AAAAABC` | exact multinomial | `7, 7` | `27` | reading 1 `truthIsML` over **all** circular candidates, with a read-tiled competitor |
 
 Each entry is a same-length pair, so by §3 its refutation is not confined to the
@@ -143,6 +149,20 @@ length-`G` class. The different-length `ACGT → ACACGT` witness of issue #24 is
 therefore not needed to negate the unrestricted-length exact-multinomial
 statement; its distinct value is to exhibit an *unrestricted-length* competitor
 and the length-dependence mechanism, not to establish the negation.
+
+**Caveat that is a length caveat after all, for reading 2 (issue #209).** The
+literal binomial marginal `Binom(n, x) (d/N)^x (1-d/N)^(n-x)` is a probability
+only when `d ≤ N`, and `d_w ≤ N(D)` for any circular candidate. So with an
+external fixed `N` the objective is automatically a product of probabilities on
+`|D| ≤ N`, is *not* defined as a probability on the unrestricted class (for
+`|D| > N` a read type can have `d_w > N` and the marginal becomes negative:
+concretely, a length-6 all-`A` candidate with `N = 5` has `d_AAA = 6` and an
+unobserved-type marginal of `(1-6/5)^3 = -1/125`), and between the two lies the
+region `{D : ∀ w, d_w ≤ N}` where it happens to be well-defined. The reading-2
+rows above are therefore scoped to `|D| ≤ N`, not to all circular candidates.
+Under reading 1 (exact multinomial with candidate-intrinsic `N(D)`) no such
+restriction exists, and "all circular candidates" is correct. See
+[`../issue-209-ea-audit-ledger.md`](../issue-209-ea-audit-ledger.md) §5–§6.
 
 **Caveat that is not a length caveat.** Under reading 1, `D = AAAAB` is an
 admissible circular genome because reading 1 imposes no read-overlap-graph
@@ -206,7 +226,7 @@ repository’s decision to keep the exact/binomial/flow variants distinct.
 | Accepted 2016 text names MB only by bibliography; no formula/variant/section pointer | source fact |
 | MB (2009) contains the three distinct objects | source fact |
 | Negative results transfer from a candidate subclass to any superclass | mathematical proof (§3) |
-| #31/#32/read-tiled witnesses refute the maximizer claim over all circular candidates for readings 1/2 | mathematical proof + kernel-checked finite instances + §3 |
+| #31/#32/read-tiled witnesses refute the maximizer claim over all circular candidates for reading 1, and over the class `\|D\| ≤ N` for reading 2 | mathematical proof + kernel-checked finite instances + §3 (reading-2 scoping added by issue #209; see §4 and its caveat) |
 | No current witness has both truth and competitor sequence-level §6.2-feasible | verified computation (membership table) |
 | The published question remains unresolved because readings 3–4 and strand/tie are open | source-analysis / open |
 

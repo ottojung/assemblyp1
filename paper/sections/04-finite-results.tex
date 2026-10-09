@@ -319,6 +319,28 @@ factors changes the objective. By Lemma~\ref{lem:negative-transfer} the witness
 refutes the maximizer statement over every circular candidate on which the
 binomial objective is defined, since both $S$ and $D$ lie in the domain
 ($\spec_3(D)(AAA)=2<5$).}
+
+\begin{remark}[The exact-multinomial witness also refutes the binomial objective]
+Theorem~\ref{thm:cex-exact} is the same instance as
+Theorem~\ref{thm:cex-binomial} up to a symbol renaming, and the fixed-$N$
+binomial objective is invariant under symbol renaming, so the $AAABB\to AAAAB$
+witness also satisfies
+\[
+  \frac{\Lik_{\mathrm{bin}}(D;x)}{\Lik_{\mathrm{bin}}(S;x)}
+  = \frac{1125}{512} > 1 .
+\]
+The exact-multinomial ratio $2^k$ and the binomial ratio
+$(1125/512)(5/2)^{k-1}$ of the duplicated-read families are both strict for
+every $k\ge1$, so neither failure is a small-sample artifact. Conversely, an
+external fixed $N$ is not a mere parameter change: the objective is a product of
+probabilities automatically on the class $|D|\le N$ (since $d_w\le N(D)$), is
+negative somewhere on the unrestricted class ($d_w>N$ is possible once
+$|D|>N$), and in between lies the region $\{D:\forall w, d_w\le N\}$ where it
+happens to be well-defined. The $AAACC\to AAAAC$ witness is same-length and
+therefore lands inside all three regions. These refinements are
+\computed{} and \kernelcheck{} in the repository's \texttt{Issue209EAudit}
+module; see \texttt{docs/issue-209-ea-audit-ledger.md}.
+\end{remark}
 \end{proof}
 
 We now turn to the reverse-complement molecular reading of the Section~6.2 flow.

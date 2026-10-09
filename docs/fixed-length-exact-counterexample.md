@@ -176,10 +176,27 @@ unrestricted-length exact Variant E as well: the length-`G` candidates are a
 subclass of the arbitrary-length candidates, and a counterexample in a subclass
 is a counterexample in the superclass. (The separate `ACGT → ACACGT` witness of
 issue #24 / PR #25 still has independent value: it exhibits an
-unrestricted-length competitor and the length-dependence mechanism.) It does
-**not** refute the Medvedev–Brudno separable/binomial approximation or the
-Section 6.2 bidirected-flow feasible set, and it does not resolve which
-interpretation Shomorony et al. intended. See
+unrestricted-length competitor and the length-dependence mechanism.)
+
+**Correction (issue #209).** This note previously stated that the `AAABB`
+witness does *not* refute the Medvedev–Brudno separable/binomial approximation.
+That is wrong for the literal objective. The instance `AAABB → AAAAB` scored
+with the fixed-`N` (`N = 5`) product of binomial marginals over the whole
+read-type space has likelihood ratio `1125/512 > 1`, the same ratio as the
+`AAACC → AAAAC` witness of `docs/fixed-length-binomial-counterexample.md`: the
+two witnesses differ only by a renaming of an unused symbol, and the objective
+is invariant under that renaming. This is kernel-checked by
+`AssemblyP1.Issue209EAudit.aaab_refutes_fixed_N_binomial`, whose likelihood
+arithmetic is written locally rather than imported from
+`AssemblyP1/FixedLengthBinomialCounterexample.lean`; the full ledger is
+`docs/issue-209-ea-audit-ledger.md` §1.
+
+What this instance therefore does **not** refute: the Section 6.2
+bidirected-flow feasible set (the competitor needs the unobserved `ABA`
+window), the *reduced* objective obtained by dropping zero-count factors as a
+claimed ratio (the ratio there is `9/8`, still `> 1`, so the refutation
+survives but the value does not), and any statement about which interpretation
+Shomorony et al. intended. See
 [`source-notes/same-length-witnesses-candidate-set-inclusion.md`](source-notes/same-length-witnesses-candidate-set-inclusion.md).
 
 Primary source for the open question and the `I_s` hypothesis:
