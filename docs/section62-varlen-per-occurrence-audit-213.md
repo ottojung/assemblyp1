@@ -1,8 +1,10 @@
 # Audit of the variable-length, per-occurrence, bidirected §6.2 witness `AAATT → AAAATT` (issue #213)
 
 _Status: independent adversarial audit + kernel-checked certificate additions,
-2026-10-09 (refreshed after re-execution: every check, build and kernel replay
-re-run from scratch in the worktree). Every claim below is tagged **fact**,
+2026-10-09 (re-verified from a clean module artifact: the certificate module was
+rebuilt after deleting its `.olean`/`.ilean`, the axiom probe was widened to all
+35 theorems, and the script, census and blocker checks were re-run; see §11).
+Every claim below is tagged **fact**,
 **inference**, or **choice**, and additionally carries its verification class
 (**source fact**, **kernel-checked**, **verified computation**, **bounded
 evidence**, or **open**). A **fact** is something established from the source
@@ -61,9 +63,9 @@ The merged witness **survives** the audit, and the audit hardens it:
 3. **The witness lifts to the whole flow universe, and further.** The
    competitor's throughput vector is the **unique maximizer** of the literal §6.1
    objective over the *entire* §6.1 domain `0 ≤ d_i ≤ N`, not merely over the
-   candidate class that was searched. No §6.2 flow of any kind can beat it, so
-   the refutation cannot be an artifact of a restricted candidate class.
-   [fact — kernel-checked]
+   candidate class that was searched. No §6.2 flow whose throughput vector lies
+   inside that domain can beat it, so the refutation cannot be an artifact of a
+   restricted candidate class. [fact — kernel-checked]
 
 4. **New in this refresh: the lift also reaches the terminal-allowed flow
    universe.** Both throughput vectors are realized by flows satisfying the
@@ -314,10 +316,11 @@ Consequences for the parent matrix:
   `d_D` are members. `FlowThroughputGeneral d` quantifies over admissible flows
   with terminal usage left *free*, and both are members of that too
   (`dS_flow_throughput_general`, `dD_flow_throughput_general`). Since `d_D`
-  is the global optimum, no flow — spelled or not, terminal-using or not — can be
-  more likely. [fact — kernel-checked]
+  is the global optimum, no flow — spelled or not, terminal-using or not —
+  whose throughput vector lies inside the §6.1 domain `0 ≤ d_i ≤ N` can be more
+  likely (`competitor_maximizes_general_flow_universe`). [fact — kernel-checked]
 - **The length-constrained domain is the only thing that saves the truth.** Add
-  `∑ d_i = N` (the same-length cell) and `d_D` leaves the domain. [verified computation
+  `∑ d_i = N` (the same-length cell) and `d_D` leaves the domain. [fact — verified computation
   + kernel-checked]
 
 ---
@@ -509,6 +512,32 @@ The Python script prints every intermediate graph edge, bridge witness and
 objective factor, and exits non-zero on any failure; all arithmetic is exact
 (`fractions.Fraction`). The census is run only under `--census` and takes about
 20 s on a laptop.
+
+### 11.1 Executed verification log (re-verification round, 2026-10-09)
+
+What was actually run on branch `agent/board-213-5fff16` in
+`/workspace/assemblyp1-finite-213`, with its observed outcome. No step is
+recorded from an earlier round without having been re-run.
+
+| command | outcome |
+|---|---|
+| `python3 scripts/check-research-docs.py` | pass |
+| `python3 scripts/verify_se62_varlen_per_occurrence_audit_213.py` | pass — `ALL AUDIT CHECKS PASS (60 checks)` |
+| `python3 scripts/verify_se62_varlen_per_occurrence_audit_213.py --census` | exit `0`; the six rows of §9 reproduced exactly, same-length beats still `0` in every row |
+| `rm` of the module's `.olean`/`.ilean`/`.trace`/`.c`/`.setup.json`, then `lake build AssemblyP1.Section62VarlenPerOccurrence` | rebuilds the module from source in 8.7 s, `Build completed successfully` — the certificate is not resting on a stale artifact |
+| `lean` probe `import AssemblyP1.Section62VarlenPerOccurrence` + `#print axioms` on **all 35** theorems | every theorem reports `depends on axioms: [propext, Classical.choice, Quot.sound]`, exit `0` |
+| `leanchecker AssemblyP1.Section62VarlenPerOccurrence` (kernel replay of the module's own `.olean`) | exit `0`, no diagnostic output |
+| `lake build AssemblyP1.BBTTripleBridge` | still fails with source-level type errors (now also at lines 152 and 153), confirming the §12 blocker |
+
+Two operational notes for whoever re-runs this. `lake env` on this host triggers
+the workspace's *default* target — the glob over every `AssemblyP1.*` submodule —
+so `lake env lean`/`lake env leanchecker` hang rather than answer; the probe and
+the replay above were therefore run against `<toolchain>/bin/lean` and
+`<toolchain>/bin/leanchecker` with `LEAN_PATH` assembled by hand from
+`.lake/build/lib/lean` and each `.lake/packages/*/.lake/build/lib/lean`. And
+`leanchecker` resolves *module names* from `LEAN_PATH`, so it must be given
+`AssemblyP1.Section62VarlenPerOccurrence`, not the `.olean` path (the latter
+fails with `Could not resolve module`).
 
 ---
 
