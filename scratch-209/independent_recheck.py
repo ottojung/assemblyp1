@@ -22,10 +22,12 @@ from math import comb, factorial
 
 FAIL = []
 
-# The model's read-type alphabet.  The Lean witness modules quantify the
-# whole-space product over `Fin 3 -> Base` with `Base = A|B|C|G`, so the
+# The default read-type alphabet of the *fixed-length* witness modules: the
+# whole-space product is over `Fin 3 -> Base` with `Base = A|B|C|G`, so the
 # binomial objective's type space is this alphabet, never the candidate's own
-# symbol set.
+# symbol set.  Note that `ExactVariantECounterexample` uses a different,
+# equally large, alphabet `DNA = A|C|G|T`; witnesses that use the letter `T`
+# must pass `alpha="ACGT"` (see `witness`).
 DNA = "ABCG"
 
 
@@ -163,21 +165,29 @@ def L_E(cand, obs):
     return acc
 
 
-def L_A(cand, obs, N, drop_zero=False):
+def L_A(cand, obs, N, drop_zero=False, alpha=DNA):
     """Literal MB 6.1 product of binomial marginals over the whole type space.
 
-    The type space is the *model's* read-type space (the four-letter DNA
-    alphabet), NOT the candidate's own symbol set: an observed read type whose
-    symbols do not occur in the candidate still contributes a factor, and that
-    factor is `0` when `d_w = 0` while `x_w >= 1`.  Restricting the type space
-    to the candidate's alphabet silently drops those factors and inflates the
-    candidates that avoid the observed symbols.
+    The type space is the *model's* read-type space, NOT the candidate's own
+    symbol set: an observed read type whose symbols do not occur in the
+    candidate still contributes a factor, and that factor is `0` when
+    `d_w = 0` while `x_w >= 1`.  Restricting the type space to the candidate's
+    alphabet silently drops those factors and inflates the candidates that
+    avoid the observed symbols.
+
+    `alpha` is that model alphabet.  It must be the alphabet of the Lean module
+    that states the instance, not a global default: `ExactVariantECounterexample`
+    uses `DNA = A | C | G | T` (which contains `T`), while the fixed-length
+    modules use `Base = A | B | C | G`.  The two have the same cardinality, so a
+    wrong-but-equal-size space changes the likelihood *values* while leaving the
+    truth/competitor ratio untouched -- which is why this parameter was dead and
+    why every value below is now asserted, not just the ratio.
     """
     L = len(list(obs)[0])
     m = cand.mult(L)
     n = sum(obs.values())
     acc = Fraction(1)
-    for w in iproduct(DNA, repeat=L):
+    for w in iproduct(alpha, repeat=L):
         x = obs.get(w, 0)
         d = m.get(w, 0)
         if drop_zero and x == 0:
@@ -189,7 +199,11 @@ def L_A(cand, obs, N, drop_zero=False):
 
 
 # =============================================================== witnesses
-def witness(name, S, D, L, starts, Nex=None, alpha=None):
+def witness(name, S, D, L, starts, Nex=None, alpha=None, expect=None):
+    """`alpha` is the module's model alphabet (default DNA); `expect` is the
+    ledger's (L_E(S), L_E(D), L_E(D)/L_E(S)) and, when Nex is given,
+    (L_A(S), L_A(D), L_A(D)/L_A(S)) oracle, asserted here so that the values
+    are reproduced and not only the ratios."""
     print("\n--- %s   S=%s  D=%s  L=%d  starts=%s  N=%s" %
           (name, S, D, L, sorted({r % len(S) for r in starts}), Nex))
     s, d = G(S), G(D)
@@ -201,26 +215,41 @@ def witness(name, S, D, L, starts, Nex=None, alpha=None):
     print("    I_s clause 2 (triple repeat) non-vacuous: %s ; clause 3 (interleaved): %s" % (t, i))
     lt, ld = L_E(s, obs), L_E(d, obs)
     ck("Variant E strict", ld > lt, "L_E(S)=%s L_E(D)=%s ratio=%s" % (lt, ld, ld / lt))
+    if expect is not None:
+        ck("Variant E values match the ledger/Lean oracle",
+           (lt, ld, ld / lt) == expect,
+           "%s %s %s vs %s %s %s" % (lt, ld, ld / lt, expect[0], expect[1],
+                                     expect[2]))
     if Nex is not None:
         for drop in (False, True):
-            va, wa = L_A(s, obs, Nex, drop)
-            vb, wb = L_A(d, obs, Nex, drop)
+            va, wa = L_A(s, obs, Nex, drop, alpha or DNA)
+            vb, wb = L_A(d, obs, Nex, drop, alpha or DNA)
             if va is None or vb is None:
                 ck("Variant A (drop_zero=%s) defined" % drop, False, wa + "/" + wb)
             else:
                 ck("Variant A strict (drop_zero=%s)" % drop, vb > va,
-                   "ratio=%s" % (vb / va))
+                   "L_A(S)=%s L_A(D)=%s ratio=%s" % (va, vb, vb / va))
     return lt, ld
 
 
 print("=" * 78)
 print("1. WITNESSES")
 print("=" * 78)
-witness("E-1  ACGT -> ACACGT", "ACGT", "ACACGT", 2, [0, 0, 2], alpha="ACGT")
-witness("E-2  AAABB -> AAAAB", "AAABB", "AAAAB", 3, [0, 1, 4], Nex=5)
-witness("E-3  AAACC -> AAAAC", "AAACC", "AAAAC", 3, [0, 1, 4], Nex=5)
-witness("E-4  AABB -> ABAB", "AABB", "ABAB", 2, [1, 3], Nex=4)
-witness("A-4  ACGT -> ACACGT  (external N=4)", "ACGT", "ACACGT", 2, [0, 0, 2], Nex=4)
+# The oracles are the ledger's Sec. 1 table, whose E rows and whose A-1/A-2 rows
+# are kernel-checked in Lean (ExactVariantECounterexample,
+# FixedLengthExactCounterexample, FixedLengthBinomialCounterexample,
+# Issue209EAudit) and whose A-3/A-4 rows are exact arithmetic.
+witness("E-1  ACGT -> ACACGT", "ACGT", "ACACGT", 2, [0, 0, 2], alpha="ACGT",
+        expect=(Fraction(3, 64), Fraction(1, 18), Fraction(32, 27)))
+witness("A-4  ACGT -> ACACGT  (external N=4)", "ACGT", "ACACGT", 2, [0, 0, 2],
+        Nex=4, alpha="ACGT",
+        expect=(Fraction(3, 64), Fraction(1, 18), Fraction(32, 27)))
+witness("E-2  AAABB -> AAAAB", "AAABB", "AAAAB", 3, [0, 1, 4], Nex=5,
+        expect=(Fraction(6, 125), Fraction(12, 125), Fraction(2)))
+witness("E-3  AAACC -> AAAAC", "AAACC", "AAAAC", 3, [0, 1, 4], Nex=5,
+        expect=(Fraction(6, 125), Fraction(12, 125), Fraction(2)))
+witness("E-4  AABB -> ABAB", "AABB", "ABAB", 2, [1, 3], Nex=4,
+        expect=(Fraction(1, 8), Fraction(1, 2), Fraction(4)))
 
 print("\n" + "=" * 78)
 print("2. DOMAIN  d_i <= N  AND THE THREE CANDIDATE REGIONS")

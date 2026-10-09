@@ -1,0 +1,124 @@
+==============================================================================
+1. WITNESSES
+==============================================================================
+
+--- E-1  ACGT -> ACACGT   S=ACGT  D=ACACGT  L=2  starts=[0, 2]  N=None
+  [PASS] I_s (full source-faithful predicate)                           ok
+  [PASS] realization reproduces observation                             
+    I_s clause 2 (triple repeat) non-vacuous: False ; clause 3 (interleaved): False
+  [PASS] Variant E strict                                               L_E(S)=3/64 L_E(D)=1/18 ratio=32/27
+  [PASS] Variant E values match the ledger/Lean oracle                  3/64 1/18 32/27 vs 3/64 1/18 32/27
+
+--- A-4  ACGT -> ACACGT  (external N=4)   S=ACGT  D=ACACGT  L=2  starts=[0, 2]  N=4
+  [PASS] I_s (full source-faithful predicate)                           ok
+  [PASS] realization reproduces observation                             
+    I_s clause 2 (triple repeat) non-vacuous: False ; clause 3 (interleaved): False
+  [PASS] Variant E strict                                               L_E(S)=3/64 L_E(D)=1/18 ratio=32/27
+  [PASS] Variant E values match the ledger/Lean oracle                  3/64 1/18 32/27 vs 3/64 1/18 32/27
+  [PASS] Variant A strict (drop_zero=False)                             L_A(S)=177147/16777216 L_A(D)=1594323/134217728 ratio=9/8
+  [PASS] Variant A strict (drop_zero=True)                              L_A(S)=243/4096 L_A(D)=81/512 ratio=8/3
+
+--- E-2  AAABB -> AAAAB   S=AAABB  D=AAAAB  L=3  starts=[0, 1, 4]  N=5
+  [PASS] I_s (full source-faithful predicate)                           ok
+  [PASS] realization reproduces observation                             
+    I_s clause 2 (triple repeat) non-vacuous: True ; clause 3 (interleaved): False
+  [PASS] Variant E strict                                               L_E(S)=6/125 L_E(D)=12/125 ratio=2
+  [PASS] Variant E values match the ledger/Lean oracle                  6/125 12/125 2 vs 6/125 12/125 2
+  [PASS] Variant A strict (drop_zero=False)                             L_A(S)=452984832/30517578125 L_A(D)=7962624/244140625 ratio=1125/512
+  [PASS] Variant A strict (drop_zero=True)                              L_A(S)=110592/1953125 L_A(D)=124416/1953125 ratio=9/8
+
+--- E-3  AAACC -> AAAAC   S=AAACC  D=AAAAC  L=3  starts=[0, 1, 4]  N=5
+  [PASS] I_s (full source-faithful predicate)                           ok
+  [PASS] realization reproduces observation                             
+    I_s clause 2 (triple repeat) non-vacuous: True ; clause 3 (interleaved): False
+  [PASS] Variant E strict                                               L_E(S)=6/125 L_E(D)=12/125 ratio=2
+  [PASS] Variant E values match the ledger/Lean oracle                  6/125 12/125 2 vs 6/125 12/125 2
+  [PASS] Variant A strict (drop_zero=False)                             L_A(S)=452984832/30517578125 L_A(D)=7962624/244140625 ratio=1125/512
+  [PASS] Variant A strict (drop_zero=True)                              L_A(S)=110592/1953125 L_A(D)=124416/1953125 ratio=9/8
+
+--- E-4  AABB -> ABAB   S=AABB  D=ABAB  L=2  starts=[1, 3]  N=4
+  [PASS] I_s (full source-faithful predicate)                           ok
+  [PASS] realization reproduces observation                             
+    I_s clause 2 (triple repeat) non-vacuous: False ; clause 3 (interleaved): False
+  [PASS] Variant E strict                                               L_E(S)=1/8 L_E(D)=1/2 ratio=4
+  [PASS] Variant E values match the ledger/Lean oracle                  1/8 1/2 4 vs 1/8 1/2 4
+  [PASS] Variant A strict (drop_zero=False)                             L_A(S)=729/16384 L_A(D)=1/4 ratio=4096/729
+  [PASS] Variant A strict (drop_zero=True)                              L_A(S)=9/64 L_A(D)=1/4 ratio=16/9
+
+==============================================================================
+2. DOMAIN  d_i <= N  AND THE THREE CANDIDATE REGIONS
+==============================================================================
+  cand AAA      |D|=3 d_AAA= 3  L_A(|N=5) = 0 ok
+  cand AAAA     |D|=4 d_AAA= 4  L_A(|N=5) = 0 ok
+  cand AAAAA    |D|=5 d_AAA= 5  L_A(|N=5) = 0 ok
+  cand AAAAAA   |D|=6 d_AAA= 6  L_A(|N=5) = UNDEFINED d=6>N=5 @AAA
+  cand AAAAAAA  |D|=7 d_AAA= 7  L_A(|N=5) = UNDEFINED d=7>N=5 @AAA
+  [PASS] |D|<=N implies the literal marginal is a probability           max d_i over all 4^5 length-5 genomes = 5
+  [PASS] the intermediate region is nonempty: |D|>N yet all d_i<=N      
+
+==============================================================================
+3. DUPLICATE-READ FAMILIES
+==============================================================================
+  [PASS] Variant E, AAA x1: ratio 2^1                                   2
+  [PASS] Variant A, AAA x1: strict (formula (1125/512)*(5/2)^(k-1))     1125/512
+  [PASS] Variant E, AAA x2: ratio 2^2                                   4
+  [PASS] Variant A, AAA x2: strict (formula (1125/512)*(5/2)^(k-1))     5625/1024
+  [PASS] Variant E, AAA x3: ratio 2^3                                   8
+  [PASS] Variant A, AAA x3: strict (formula (1125/512)*(5/2)^(k-1))     28125/2048
+  [PASS] Variant E, AAA x4: ratio 2^4                                   16
+  [PASS] Variant A, AAA x4: strict (formula (1125/512)*(5/2)^(k-1))     140625/4096
+  [PASS] Variant E, AAA x5: ratio 2^5                                   32
+  [PASS] Variant A, AAA x5: strict (formula (1125/512)*(5/2)^(k-1))     703125/8192
+  [PASS] Variant E, AAA x6: ratio 2^6                                   64
+  [PASS] Variant A, AAA x6: strict (formula (1125/512)*(5/2)^(k-1))     3515625/16384
+
+==============================================================================
+4. EXHAUSTIVE MAXIMIZER CENSUSES (complete classes)
+==============================================================================
+  E, AAABB obs (class 1024, defined 1024)
+     max 12/125 at 5 candidates, 5 not cyclic shifts of truth
+     truth value 6/125 -> NOT a maximizer
+  E, AAACC obs (class 1024, defined 1024)
+     max 12/125 at 5 candidates, 5 not cyclic shifts of truth
+     truth value 6/125 -> NOT a maximizer
+  A N=5, AAABB obs (class 1024, defined 1024)
+     max 7962624/244140625 at 5 candidates, 5 not cyclic shifts of truth
+     truth value 452984832/30517578125 -> NOT a maximizer
+  A N=5, AAACC obs (class 1024, defined 1024)
+     max 7962624/244140625 at 5 candidates, 5 not cyclic shifts of truth
+     truth value 452984832/30517578125 -> NOT a maximizer
+  A N=4, AB/BA obs (class 16, defined 16)
+     max 1/4 at 2 candidates, 2 not cyclic shifts of truth
+     truth value 729/16384 -> NOT a maximizer
+  A N=5, AB/BA obs (class 16, defined 16)
+     max 144/625 at 2 candidates, 2 not cyclic shifts of truth
+     truth value 16384/390625 -> NOT a maximizer
+  E, AB/BA obs (class 16, defined 16)
+     max 1/2 at 2 candidates, 2 not cyclic shifts of truth
+     truth value 1/8 -> NOT a maximizer
+
+==============================================================================
+4b. ACGT OBSERVATION OVER ALL CIRCULAR GENOMES UP TO LENGTH 8
+==============================================================================
+  class size 87380; max 1/18 at 6 candidates, 6 not cyclic shifts of ACGT
+  maximizers: ['ACACGT', 'ACGTAC', 'CACGTA', 'CGTACA', 'GTACAC', 'TACACG']
+  truth value 3/64 -> NOT a maximizer
+  [PASS] ledger §9: best value over |D|<=8 is 1/18, attained by ACACGT's shift class max=1/18
+
+==============================================================================
+5. 'READ-TILED' ROW  AAABCBC -> AAAAABC, claimed ratio 27
+==============================================================================
+  [PASS] claimed ratio 27 is attainable                                 1296 observations
+  [PASS] ... and some are fully I_s-feasible on the truth               625 feasible; minimal: obs={'AAA': 3, 'AAB': 1, 'ABC': 1, 'BCA': 1, 'CAA': 1} R=[0, 1, 2, 5, 6]
+  [PASS] ledger §10.4 reconstruction (AAA x3, AAB/ABC/BCA/CAA, R={0,1,2,5,6}) is feasible [0, 1, 2, 5, 6]
+
+==============================================================================
+6. REFUTATION INHERITANCE (which candidate universes inherit)
+==============================================================================
+  E-1: |S|=4 |D|=6  inside {D: d_i<=N=6}? True   inside {|D|<=N}? True
+  E-2: |S|=5 |D|=5  inside {D: d_i<=N=5}? True   inside {|D|<=N}? True
+  E-3: |S|=5 |D|=5  inside {D: d_i<=N=5}? True   inside {|D|<=N}? True
+  E-4: |S|=4 |D|=4  inside {D: d_i<=N=4}? True   inside {|D|<=N}? True
+
+==============================================================================
+SUMMARY: 0 failed checks

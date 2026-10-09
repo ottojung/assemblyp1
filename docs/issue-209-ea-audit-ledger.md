@@ -1,12 +1,13 @@
 # Issue #209 audit: E/A strict counterexamples and hypothesis coverage
 
 _Status: independent audit ledger, 2026-10-09; second verification pass
-2026-10-09 (§9b, §11). Owner: issue #209
+2026-10-09 (§9b, §11); third verification pass 2026-10-09 (§6, §7, §9b
+correction, §9c, §11 defects 3–4). Owner: issue #209
 (<https://vau.place/a/antonina/?issue=209>), a leaf of the meta-issue #217.
 This document records what the repository's exact-multinomial (Variant E) and
 fixed-`N` product-of-binomial-marginals (Variant A) negative results actually
 establish, what they do not, the two documentation corrections they forced, and
-the two script defects the second pass found and fixed.
+the script defects and count error found across the three verification passes.
 
 It does **not** re-run the Section 6.2 research programme (another issue owns
 that) and it does **not** resolve which Medvedev–Brudno object Shomorony et al.
@@ -178,9 +179,12 @@ Positive results do not transfer upward. Applying that to both objectives:
 | Section 6.2 sequence-level flow-feasible set | **not refuted by these witnesses** | **not refuted by these witnesses** |
 
 The last row is the honest boundary: in each E/A witness at least one of truth,
-competitor carries an unobserved length-`L` window (`ABA`/`ACA` for the
-competitor), so no E/A witness places both objects in the §6.2 feasible set.
-Which reading of Shomorony et al. is intended remains open (#208, #217).
+competitor carries an unobserved length-`L` window — for E-1 both do (`CG`,`TA`
+in the truth and `CA`,`CG`,`TA` in the competitor), for E-2/E-3 the competitor
+does (`ABA` resp. `ACA`), and for E-4 the **truth** does (`AA`,`BB`) while the
+competitor `ABAB` is completely spelled — so no E/A witness places both objects
+in the §6.2 feasible set. Which reading of Shomorony et al. is intended remains
+open (#208, #217).
 
 For both objectives, the refutation class containing all four E witnesses and
 all four A witnesses is `{D : ∀ w, d_w ≤ N} ∩ (candidates whose windows are
@@ -191,9 +195,10 @@ is what the Lean modules quantify over. A parent-issue matrix row that says
 
 ## 7. Axiom surfaces and Lean state
 
-Every headline theorem of the three audited modules and of the new audit module
-depends only on `[propext, Classical.choice, Quot.sound]`; no `sorryAx`, no
-`native_decide`-style extra axioms. Verified with `#print axioms` on:
+Every theorem of the five modules this issue is responsible for has an axiom
+surface inside `[propext, Classical.choice, Quot.sound]`; no `sorryAx`, no
+`native_decide`-style extra axioms. The hand-picked audit of the second pass
+listed:
 
 * `ExactVariantECounterexample.finite_unrestricted_exact_variant_e_counterexample`,
   `.truth_information_feasible`, `.truth_not_maximum_likelihood`,
@@ -210,19 +215,55 @@ depends only on `[propext, Classical.choice, Quot.sound]`; no `sorryAx`, no
 * `Issue209EAudit.aaab_refutes_fixed_N_binomial`, `.truth_information_feasible`,
   `.truth_not_maximum_likelihood`, `.likelihood_aaab`, `.likelihood_aaaab`,
   `.likelihood_ratio`, `.winCount_le_len`,
-  `.binomial_marginal_probability_on_le_len`, `.external_N_domain_boundary`,
-  `.likelihood_eq_relevant_prod`, `.realized_reads`, `.competitor_beats_truth`.
+   `.binomial_marginal_probability_on_le_len`, `.external_N_domain_boundary`,
+   `.likelihood_eq_relevant_prod`, `.realized_reads`, `.competitor_beats_truth`,
+and for `SourceFaithfulIs`: `bridgesCopy_length`, `bridgesCopy_lifted_iff`,
+`IsTripleRepeatAllBridged.bridgesRepeat`, `Interleaved.swap₂`.
 
-**Re-audited in the second pass** (`scratch-209/axioms3.lean` → 42 names,
+**Re-audited in the second pass** (`scratch-209/axioms3.lean` → 41 names,
 includes `FixedLengthExactCounterexample.truth_covers` and
 `Issue209EAudit.competitor_beats_truth`, which the first pass's audit file
-omitted): all 42 depend only on `[propext, Classical.choice, Quot.sound]`. No
+omitted): all 41 depend only on `[propext, Classical.choice, Quot.sound]`. No
 new axiom, no `sorry`, no `native_decide`. The five modules build in isolation
 (`lake build AssemblyP1.SourceFaithfulIs AssemblyP1.ExactVariantECounterexample
 AssemblyP1.FixedLengthExactCounterexample
 AssemblyP1.FixedLengthBinomialCounterexample AssemblyP1.Issue209EAudit` →
 "Build completed successfully (8928 jobs)"); see §10.7 for the unrelated
 full-library breakage.
+
+**Superseded in the third pass by a complete sweep.** The second pass's file is
+a hand-picked list, and the ledger had claimed it covered "42 names" — it covers
+**41** (the count was off by one; see §11 defect 4). A complete sweep now
+exists: `scripts/audit_issue209_axioms_full.py` parses the namespace stack of
+the five modules, emits `#print axioms` for *every* `theorem` they declare, and
+checks the report. Its output (`scratch-209/axioms-full.lean`,
+`scratch-209/axioms-full-run.log`):
+
+```
+reported 116 / 116 theorems
+  axiom-free: 11
+  on the permitted three: 105
+all 116 reported theorems have an axiom surface inside
+  ['Classical.choice', 'Quot.sound', 'propext']
+```
+
+So every theorem of `SourceFaithfulIs`, `ExactVariantECounterexample`,
+`FixedLengthExactCounterexample`, `FixedLengthBinomialCounterexample` and
+`Issue209EAudit` has an axiom surface inside `[propext, Classical.choice,
+Quot.sound]` — 105 of them on exactly those three, 11 (the pure predicate-logic
+lemmas of `SourceFaithfulIs`, e.g. `notAllEq_swap₁`, `Genome.Agree_comm`,
+`Interleaved.left_first`) on none. No `sorryAx`, no `native_decide`, no added
+axiom, and no definition was weakened to obtain a proof. The sweep is generated
+from the sources, so it cannot drift: add a theorem and re-running covers it.
+
+**Re-executed in the third pass.** `lake env lean scratch-209/axioms3.lean`
+was run again and reproduces `scratch-209/axioms3-run.log` byte for byte
+(41 printed lines for 41 names; `binomial_marginal_probability_on_le_len`
+wraps). The five modules still build in isolation ("Build completed
+successfully (8928 jobs)"), and both inherited full-library failures of
+§10.7 were re-measured: `lake build AssemblyP1.BBTTripleBridge` fails to
+elaborate and `lake build AssemblyP1.Issue94Transposition` is killed by the
+reaper (`Lean exited with code 137`). No new `sorry`, `admit` or `axiom`.
 
 The shared hypothesis layer `SourceFaithfulIs.bridgesCopy_length` and
 `bridgesCopy_lifted_iff` are also clean. The audit module is registered in the
@@ -288,7 +329,7 @@ were found in the audit script itself. Results of the second pass:
 
 | item | second-pass result |
 |---|---|
-| all likelihood values in the §1 table (E-1..E-4, A-1..A-4) | reproduced exactly, including both zero-count readings |
+| all likelihood values in the §1 table (E-1..E-4, A-1..A-3) | reproduced exactly, including both zero-count readings |
 | full `I_s` on every witness (clauses 1, 2 and 3) | holds; clause 3 vacuous in every one, as §2 records |
 | duplicate-read families, `k = 1..6` | `2^k` for Variant E; `(1125/512)(5/2)^(k-1)` for Variant A |
 | `d ≤ N` domain; `|D| ≤ N ⇒` product of probabilities; negative marginal for the length-6 all-`A` candidate with `N = 5` | confirmed |
@@ -320,6 +361,19 @@ Two things the second pass established that the first pass did not:
   model's `Fin 3 → Base` space, the second-pass numbers match the Lean
   objective. Recorded here because it is the same class of error as defect 2
   below: an objective quietly evaluated over a different set of read types.
+
+**Correction to this table (third pass).** The first row above read
+"all likelihood values in the §1 table (E-1..E-4, A-1..A-4) | reproduced
+exactly". That was an overstatement for **A-4**: the second-pass script
+evaluated every binomial objective over its single global alphabet
+`DNA = "ABCG"`, so the `ACGT`/`ACACGT` row — whose Lean module uses
+`DNA = A | C | G | T` — silently lost the `GT` and `TA` factors and produced
+`243/4096` and `2187/32768` instead of `177147/16777216` and
+`1594323/134217728`. The ratio `9/8` is invariant under that truncation, and
+the script only asserted the ratio, so nothing failed. The §1 table's A-4
+*values* are correct (they come from the audit script, which sets the alphabet
+per section, and from hand arithmetic); what the second pass did **not** do is
+reproduce them. See §11, defect 3.
 
 ## 10. Remaining blockers (concrete, for the parent matrix)
 
@@ -371,17 +425,18 @@ Two things the second pass established that the first pass did not:
    module this front is responsible for —
    `SourceFaithfulIs`, `ExactVariantECounterexample`,
    `FixedLengthExactCounterexample`, `FixedLengthBinomialCounterexample`,
-   `Issue209EAudit` — builds clean (`lake build <those modules>` → "Build
-   completed successfully"), and all 42 headline theorems of those modules
-   depend only on `[propext, Classical.choice, Quot.sound]`. A parent that
-   needs one green `lake build` must repair `BBTTripleBridge` first; that is
-   not an E/A blocker.
+    `Issue209EAudit` — builds clean (`lake build <those modules>` → "Build
+    completed successfully"), and all 116 theorems of those modules have an
+    axiom surface inside `[propext, Classical.choice, Quot.sound]` (§7). A
+    parent that needs one green `lake build` must repair `BBTTripleBridge`
+    first; that is not an E/A blocker.
 
 ## 11. Defects found and fixed in this front
 
-Both are in `scripts/verify_issue209_ea_witnesses.py` and both are fixed in
-this front. Neither changes any theorem, witness instance, likelihood value or
-`I_s` certificate, and no definition was altered to make anything provable.
+Defects 1–3 are in verification scripts; defect 4 is a wrong count in this
+ledger's own description of the axiom audit. None of them changes any theorem,
+witness instance, likelihood value or `I_s` certificate, and no definition was
+altered to make anything provable.
 
 1. **§F inherited a read length of 2.** Section E2(b) sets the read length to
    `2` and section F never resets it, so `exact_likelihood` in section F looked
@@ -401,6 +456,57 @@ this front. Neither changes any theorem, witness instance, likelihood value or
    §1's A-3); at `N = 5`, truth `16384/390625` and maximum `144/625`. The
    qualitative conclusion was unaffected — the truth is not a maximizer either
    way — so this was a reporting defect, not a mathematical one.
+3. **(third pass) the second-pass script's `alpha` argument was dead, so A-4's
+   binomial *values* were computed over the wrong type space.**
+   `scratch-209/independent_recheck.py` called `witness(..., alpha="ACGT")`
+   for E-1/A-4, but `witness` accepted `alpha` and never used it, and
+   `L_A` iterated over the global `DNA = "ABCG"` — the alphabet of the
+   *fixed-length* modules, not of `ExactVariantECounterexample`, whose
+   `DNA = A | C | G | T`. Both alphabets have four letters, so the two
+   objectives differ while every ratio is unchanged; the `GT`/`TA` factors of
+   an unobserved type are dropped and the A-4 values came out `243/4096` and
+   `2187/32768` instead of `177147/16777216` and `1594323/134217728`
+   (§1's A-4 row, which is correct). Because the script asserted only
+   strictness of the ratio, nothing failed and the §9b table claimed the A-4
+   values had been "reproduced exactly" — see the correction there.
+   Fixed in this front by threading `alpha` through `L_A`/`witness` and by
+   asserting the ledger's E-row oracle values as well. The third-pass script
+   (`scripts/verify_issue209_ea_witnesses_third_pass.py`) asserts every value of
+   §1 against an oracle transcribed from the Lean theorems, and carries an
+   explicit sensitivity check that exhibits the ratio-invariance trap.
+4. **(third pass) the axiom audit's own theorem count was off by one.** §7
+   reported that `scratch-209/axioms3.lean` audited "42 names". The file
+   contains 41 `#print axioms` lines, and the run log prints 41 reports. The
+   claim understated coverage rather than overstating it — every audited name
+   was indeed clean — but a parent quoting "42 theorems checked" would be
+   quoting a number that no artifact supports. Corrected, and superseded by the
+   complete sweep of §7, which covers all 116 theorems of the five modules
+   (`scripts/audit_issue209_axioms_full.py` → `scratch-209/axioms-full.lean`,
+   `scratch-209/axioms-full-run.log`; 105 on the permitted three axioms, 11
+   axiom-free).
+
+## 9c. Third-pass re-verification (front #209, terminal pass)
+
+A third implementation, `scripts/verify_issue209_ea_witnesses_third_pass.py`, was
+written from scratch for this pass: it shares no code with the audit script or
+with the second-pass script, and it re-derives every quantity against an
+oracle of expected values transcribed from the Lean theorems named in each
+witness row. 91 checks, all passing. Beyond reproducing §9b it
+
+* reproduces **every** likelihood value in §1, A-4 included, and asserts each
+  against the Lean/exact-arithmetic oracle;
+* re-implements `I_s` from the source definitions with its own repeat,
+  triple-repeat, interleaving and bridging code, and confirms clause 3 is
+  vacuous in all four witnesses and clause 2 non-vacuous exactly for
+  E-2/E-3;
+* confirms the maximizer censuses, including that the maximizer set in each
+  complete class is exactly the competitor's cyclic-shift class and never the
+  truth's, and that the `≤ 8` `ACGT` class has 87380 objects with a unique
+  (up to shift) maximizer `ACACGT` at `1/18`;
+* confirms the read-tiled row's parameters and the 625/256/400 counts;
+* exhibits the alphabet sensitivity of §11 defect 3 as a live check.
+
+Class of this script's output: **exact arithmetic** and **bounded evidence**.
 
 Primary sources relied on (unchanged by this audit):
 

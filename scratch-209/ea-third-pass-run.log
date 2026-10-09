@@ -1,0 +1,156 @@
+issue #209 independent re-verification (third implementation)
+alphabet ABCG; all arithmetic exact (Fraction)
+
+==============================================================================
+1. WITNESSES: full I_s, realization, exact values, strict ratios
+==============================================================================
+
+--- E-1  ACGT -> ACACGT   L=2  starts=[0, 2]
+  [PASS] I_s (full source-faithful predicate)                       ok
+  [PASS] every observed type is a window of S                       counts in S: {'AC': 1, 'CG': 1, 'GT': 1, 'TA': 1}
+  [PASS] R is exactly the set of starts producing an observed type  R=[0, 2]
+  [PASS] Variant E L(S) matches Lean                                3/64 (Lean 3/64)
+  [PASS] Variant E L(D) matches Lean                                1/18 (Lean 1/18)
+  [PASS] Variant E ratio strict, matches Lean                       32/27 (Lean 32/27)
+  [PASS] Variant A (N=4) defined for S and D                        L(S)=177147/16777216 L(D)=1594323/134217728
+  [PASS] Variant A L(S) matches                                     177147/16777216 (Lean 177147/16777216)
+  [PASS] Variant A L(D) matches                                     1594323/134217728 (Lean 1594323/134217728)
+  [PASS] Variant A ratio strict, matches                            9/8 (Lean 9/8)
+  [PASS] zero-count-dropped reading still refutes                   
+  [PASS] type space sensitivity: dropping a symbol used by the genomes changes the likelihood values drop A -> L(S)=729/4096 L(D)=729/4096 ratio=1; drop C -> L(S)=729/4096 L(D)=729/4096 ratio=1; drop G -> L(S)=243/4096 L(D)=2187/32768 ratio=9/8 (ratio unchanged!)
+  [PASS] I_s clause 2 vacuous (no triple repeat)                    clause3 non-vacuous=False
+
+--- E-2  AAABB -> AAAAB   L=3  starts=[0, 1, 4]
+  [PASS] I_s (full source-faithful predicate)                       ok
+  [PASS] every observed type is a window of S                       counts in S: {'AAA': 1, 'AAB': 1, 'ABB': 1, 'BAA': 1, 'BBA': 1}
+  [PASS] R is exactly the set of starts producing an observed type  R=[0, 1, 4]
+  [PASS] Variant E L(S) matches Lean                                6/125 (Lean 6/125)
+  [PASS] Variant E L(D) matches Lean                                12/125 (Lean 12/125)
+  [PASS] Variant E ratio strict, matches Lean                       2 (Lean 2)
+  [PASS] Variant A (N=5) defined for S and D                        L(S)=452984832/30517578125 L(D)=7962624/244140625
+  [PASS] Variant A L(S) matches                                     452984832/30517578125 (Lean 452984832/30517578125)
+  [PASS] Variant A L(D) matches                                     7962624/244140625 (Lean 7962624/244140625)
+  [PASS] Variant A ratio strict, matches                            1125/512 (Lean 1125/512)
+  [PASS] zero-count-dropped reading still refutes                   
+  [PASS] type space sensitivity: dropping a symbol used by the genomes changes the likelihood values drop A -> L(S)=1 L(D)=1 ratio=1; drop B -> L(S)=48/125 L(D)=54/125 ratio=9/8
+  [PASS] I_s clause 2 vacuous (no triple repeat)                    clause3 non-vacuous=False
+
+--- E-3  AAACC -> AAAAC   L=3  starts=[0, 1, 4]
+  [PASS] I_s (full source-faithful predicate)                       ok
+  [PASS] every observed type is a window of S                       counts in S: {'AAA': 1, 'AAC': 1, 'ACC': 1, 'CAA': 1, 'CCA': 1}
+  [PASS] R is exactly the set of starts producing an observed type  R=[0, 1, 4]
+  [PASS] Variant E L(S) matches Lean                                6/125 (Lean 6/125)
+  [PASS] Variant E L(D) matches Lean                                12/125 (Lean 12/125)
+  [PASS] Variant E ratio strict, matches Lean                       2 (Lean 2)
+  [PASS] Variant A (N=5) defined for S and D                        L(S)=452984832/30517578125 L(D)=7962624/244140625
+  [PASS] Variant A L(S) matches                                     452984832/30517578125 (Lean 452984832/30517578125)
+  [PASS] Variant A L(D) matches                                     7962624/244140625 (Lean 7962624/244140625)
+  [PASS] Variant A ratio strict, matches                            1125/512 (Lean 1125/512)
+  [PASS] zero-count-dropped reading still refutes                   
+  [PASS] type space sensitivity: dropping a symbol used by the genomes changes the likelihood values drop A -> L(S)=1 L(D)=1 ratio=1; drop C -> L(S)=48/125 L(D)=54/125 ratio=9/8
+  [PASS] I_s clause 2 vacuous (no triple repeat)                    clause3 non-vacuous=False
+
+--- E-4  AABB -> ABAB   L=2  starts=[1, 3]
+  [PASS] I_s (full source-faithful predicate)                       ok
+  [PASS] every observed type is a window of S                       counts in S: {'AA': 1, 'AB': 1, 'BA': 1, 'BB': 1}
+  [PASS] R is exactly the set of starts producing an observed type  R=[1, 3]
+  [PASS] Variant E L(S) matches Lean                                1/8 (Lean 1/8)
+  [PASS] Variant E L(D) matches Lean                                1/2 (Lean 1/2)
+  [PASS] Variant E ratio strict, matches Lean                       4 (Lean 4)
+  [PASS] Variant A (N=4) defined for S and D                        L(S)=729/16384 L(D)=1/4
+  [PASS] Variant A L(S) matches                                     729/16384 (Lean 729/16384)
+  [PASS] Variant A L(D) matches                                     1/4 (Lean 1/4)
+  [PASS] Variant A ratio strict, matches                            4096/729 (Lean 4096/729)
+  [PASS] zero-count-dropped reading still refutes                   
+  [PASS] type space sensitivity: dropping a symbol used by the genomes changes the likelihood values drop A -> L(S)=9/16 L(D)=1 ratio=16/9; drop B -> L(S)=9/16 L(D)=1 ratio=16/9
+  [PASS] I_s clause 2 vacuous (no triple repeat)                    clause3 non-vacuous=False
+
+==============================================================================
+2. DOMAIN d_w <= N and the three candidate regions
+==============================================================================
+  [PASS] length-6 all-A candidate, N=5: objective undefined (d_AAA=6 > 5) 
+  [PASS] ... d_AAA = 6 there                                        
+  [PASS] ... the unobserved-type marginal is (1-6/5)^3 = -1/125 < 0 
+  [PASS] |D| = N = 5: no length-5 word has d_w > 5                  
+  [PASS] intermediate region nonempty: ACACGT, |D|=6 > N=4, all d_w <= 4 
+
+==============================================================================
+3. DUPLICATE-READ FAMILIES (extra copies of the start-0 read AAA)
+==============================================================================
+  [PASS] k=1 exact E ratio 2^k                                      2 (2^1=2)
+  [PASS] k=1 binomial ratio (1125/512)(5/2)^(k-1)                   1125/512
+  [PASS] k=2 exact E ratio 2^k                                      4 (2^2=4)
+  [PASS] k=2 binomial ratio (1125/512)(5/2)^(k-1)                   5625/1024
+  [PASS] k=3 exact E ratio 2^k                                      8 (2^3=8)
+  [PASS] k=3 binomial ratio (1125/512)(5/2)^(k-1)                   28125/2048
+  [PASS] k=4 exact E ratio 2^k                                      16 (2^4=16)
+  [PASS] k=4 binomial ratio (1125/512)(5/2)^(k-1)                   140625/4096
+  [PASS] k=5 exact E ratio 2^k                                      32 (2^5=32)
+  [PASS] k=5 binomial ratio (1125/512)(5/2)^(k-1)                   703125/8192
+  [PASS] k=6 exact E ratio 2^k                                      64 (2^6=64)
+  [PASS] k=6 binomial ratio (1125/512)(5/2)^(k-1)                   3515625/16384
+
+==============================================================================
+4. EXHAUSTIVE MAXIMIZER CENSUSES (bounded evidence)
+==============================================================================
+  exact E, AAABB obs (class 1024)
+    max 12/125 at 5 candidates, 5 not cyclic shifts of the truth; maximizers=['AAAAB', 'AAABA', 'AABAA', 'ABAAA', 'BAAAA']
+    truth value 6/125 -> NOT a maximizer
+  exact E, AAACC obs (class 1024)
+    max 12/125 at 5 candidates, 5 not cyclic shifts of the truth; maximizers=['AAAAC', 'AAACA', 'AACAA', 'ACAAA', 'CAAAA']
+    truth value 6/125 -> NOT a maximizer
+  binomial A (N=5), AAABB obs (class 1024)
+    max 7962624/244140625 at 5 candidates, 5 not cyclic shifts of the truth; maximizers=['AAAAB', 'AAABA', 'AABAA', 'ABAAA', 'BAAAA']
+    truth value 452984832/30517578125 -> NOT a maximizer
+  binomial A (N=5), AAACC obs (class 1024)
+    max 7962624/244140625 at 5 candidates, 5 not cyclic shifts of the truth; maximizers=['AAAAC', 'AAACA', 'AACAA', 'ACAAA', 'CAAAA']
+    truth value 452984832/30517578125 -> NOT a maximizer
+  binomial A (N=5, zero dropped), AAABB obs (class 1024)
+    max 124416/1953125 at 5 candidates, 5 not cyclic shifts of the truth; maximizers=['AAAAB', 'AAABA', 'AABAA', 'ABAAA', 'BAAAA']
+    truth value 110592/1953125 -> NOT a maximizer
+  exact E, AB/BA obs (class 16)
+    max 1/2 at 2 candidates, 2 not cyclic shifts of the truth; maximizers=['ABAB', 'BABA']
+    truth value 1/8 -> NOT a maximizer
+  binomial A (N=4), AB/BA obs (class 16)
+    max 1/4 at 2 candidates, 2 not cyclic shifts of the truth; maximizers=['ABAB', 'BABA']
+    truth value 729/16384 -> NOT a maximizer
+  binomial A (N=5), AB/BA obs (class 16)
+    max 144/625 at 2 candidates, 2 not cyclic shifts of the truth; maximizers=['ABAB', 'BABA']
+    truth value 16384/390625 -> NOT a maximizer
+  [PASS] truth never a maximizer, maximizers never the truth's shift class 
+
+==============================================================================
+4b. ACGT OBSERVATION OVER EVERY CIRCULAR CANDIDATE OF LENGTH <= 8
+==============================================================================
+  [PASS] class size is sum_{G<=8} 4^G = 87380                       87380
+  [PASS] best value 1/18                                            1/18
+  [PASS] attained by exactly the six cyclic shifts of ACACGT        ['ACACGT', 'ACGTAC', 'CACGTA', 'CGTACA', 'GTACAC', 'TACACG']
+  [PASS] truth value 3/64 is not the max                            
+
+==============================================================================
+5. READ-TILED ROW  AAABCBC -> AAAAABC, claimed ratio 27
+==============================================================================
+  [PASS] the claimed realization is realizable on the truth         
+  [PASS] R is exactly the set of starts producing an observed type  
+  [PASS] full I_s holds for the claimed realization                 ok
+  [PASS] ratio 27 exactly                                           3240/117649 / 120/117649 = 27
+  [PASS] L_E(D) = 3240/117649 and L_E(S) = 120/117649               120/117649 3240/117649
+  [PASS] 625 ratio-27 observations (counts 0..4)                    625
+  [PASS] 256 of them fully I_s-feasible                             256
+  [PASS] 400 of them give coverage                                  400
+  [PASS] the ledger's minimal feasible realization is among them    {'AAA': 3, 'AAB': 1, 'ABC': 1, 'BCA': 1, 'CAA': 1}
+
+==============================================================================
+6. WHICH CANDIDATE UNIVERSES INHERIT THE REFUTATION
+==============================================================================
+  [PASS] E-1: all d_w <= |D| for both objects (so inside {D: d_w<=N} and {|D|<=N}) max d_S=1, max d_D=2
+  [PASS] E-1: at least one of truth/competitor has an unobserved length-2 window, so the pair is not inside the Sec 6.2 sequence-level feasible set truth feasible=False (unobserved ['CG', 'TA']), competitor feasible=False (unobserved ['CA', 'CG', 'TA'])
+  [PASS] E-2: all d_w <= |D| for both objects (so inside {D: d_w<=N} and {|D|<=N}) max d_S=1, max d_D=2
+  [PASS] E-2: at least one of truth/competitor has an unobserved length-3 window, so the pair is not inside the Sec 6.2 sequence-level feasible set truth feasible=False (unobserved ['ABB', 'BBA']), competitor feasible=False (unobserved ['ABA'])
+  [PASS] E-3: all d_w <= |D| for both objects (so inside {D: d_w<=N} and {|D|<=N}) max d_S=1, max d_D=2
+  [PASS] E-3: at least one of truth/competitor has an unobserved length-3 window, so the pair is not inside the Sec 6.2 sequence-level feasible set truth feasible=False (unobserved ['ACC', 'CCA']), competitor feasible=False (unobserved ['ACA'])
+  [PASS] E-4: all d_w <= |D| for both objects (so inside {D: d_w<=N} and {|D|<=N}) max d_S=1, max d_D=2
+  [PASS] E-4: at least one of truth/competitor has an unobserved length-2 window, so the pair is not inside the Sec 6.2 sequence-level feasible set truth feasible=False (unobserved ['AA', 'BB']), competitor feasible=True (unobserved [])
+
+==============================================================================
+All checks passed.
