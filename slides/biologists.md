@@ -14,6 +14,49 @@ routerMode: hash
 mdc: true
 ---
 
+<!--
+  NARRATIVE STRUCTURE
+  ==================
+  This deck tells the story of genome assembly from the biologist's perspective:
+  1. The sequencing problem: circular genome → short reads
+  2. Overlaps and repeats: the basic signal and its ambiguity
+  3. Bridging: how some repeats can be resolved
+  4. The open question: does structural sufficiency imply ML recovery?
+  5. The key distinction: reconstruction (structure) vs. likelihood (frequency)
+  6. A finite counterexample: the wrong genome can win
+  7. Positive results: structural rigidity and population uniqueness
+  8. Honest limitations: what the model does and does not capture
+
+  ARTIFACTS REFERENCED
+  ====================
+  - AssemblyP1.OrientedVariableLengthSe62: kernel-checked finite counterexample
+    S=AAATT, D=AAAATT, L=3, exact ratio 15625/11664 (n=6)
+  - AssemblyP1.Issue94Complete.population_unique_ML: kernel-checked population uniqueness
+  - AssemblyP1.OrientedRigidity: support graph and circulation definitions
+  - AssemblyP1.P2: P2 (Ukkonen-admissibility) definition
+  - AssemblyP1.PopulationReduction: primitivity definition
+
+  VERIFICATION STATUS
+  ===================
+  - Exact ratio 15625/11664: kernel-checked in Lean (decide on finite instance)
+  - Population uniqueness: kernel-checked in Lean (Issue94Complete)
+  - Rigidity theorems: proved in Lean (OrientedRigidity)
+  - Finite counterexample n=5 ratio 3125/3888: calculated, not separately kernel-checked
+  - Reverse-complement witness (AAATAT→AAAAAT): exact ratio 3, binomial ratio 5 (from #247)
+
+  MODEL CAVEATS
+  =============
+  All results are about an idealized model:
+  - Circular genome (no linear chromosome ends)
+  - Error-free reads (no sequencing errors)
+  - Fixed read length L (no length variation)
+  - Uniform random start positions (no coverage bias)
+  - Oriented reads (no reverse-complement collapse in main results)
+
+  These are deliberate simplifications that make the mathematics tractable.
+  They are NOT claims about the difficulty of real genome assembly.
+-->
+
 # Reading a genome from its fragments
 
 ### What sequencing can reveal, and where likelihood can disagree
@@ -457,6 +500,29 @@ layout: default
 
 <div class="pt-6 text-sm opacity-70">
 The model follows Medvedev & Brudno (2009) and Shomorony et al. (2016).
+</div>
+
+---
+layout: default
+---
+
+# Backup: reverse-complement witness
+
+When reads are considered as **molecules** (reverse-complement collapsed), a separate witness exists:
+
+- truth `S = AAATAT` (length 6)
+- competitor `D = AAAAAT` (length 6)
+
+<div class="pt-4">
+**Exact likelihood ratio**: `3` (competitor favored)
+</div>
+
+<div class="pt-4">
+**Fixed-N binomial ratio**: `5` (competitor favored)
+</div>
+
+<div class="pt-6 text-sm opacity-70">
+This is a same-length witness under the molecule model — distinct from the oriented variable-length example. Both are needed for a complete picture.
 </div>
 
 ---
