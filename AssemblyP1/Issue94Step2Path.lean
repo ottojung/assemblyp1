@@ -251,4 +251,24 @@ theorem step2_components_are_paths_proved (L : ℕ) : Step2_components_are_paths
   · exact disj1_false K hK a.isLt hj0 hjK h1
   · exact disj2_contradicts_prim K hK S a b hj0 hjK hprim hj h1 h2
 
+/-- A theorem for *all* primitive circular words, without the unused P2 and
+read-length assumptions of `Step2_components_are_paths`. This is the same
+fully kernel-checked argument, exposed so that finite OrbitExcl checks can
+reuse it rather than enumerate all functions `Fin K → Bin`. -/
+theorem orbitExcl_core (K : ℕ) (hK : 0 < K) (S : Fin K → Bin)
+    (hprim : IsPrimitive hK S) (a b : Fin K) (hab : a ≠ b)
+    (j : ℕ) (hj : j ≤ pairBack hK S a.val b.val) :
+    ¬ (j ≠ 0 ∧
+      ((a.val + K - j) % K = a.val ∧ (b.val + K - j) % K = b.val ∨
+       (a.val + K - j) % K = b.val ∧ (b.val + K - j) % K = a.val)) := by
+  have hKlt : pairBack hK S a.val b.val < K :=
+    pairBack_lt_G hK S hprim hab
+  have hjK : j < K := by omega
+  intro hneg
+  obtain ⟨hj0', hdisj⟩ := hneg
+  have hj0 : 0 < j := Nat.pos_of_ne_zero hj0'
+  rcases hdisj with ⟨h1, _h2⟩ | ⟨h1, h2⟩
+  · exact disj1_false K hK a.isLt hj0 hjK h1
+  · exact disj2_contradicts_prim K hK S a b hj0 hjK hprim hj h1 h2
+
 end AssemblyP1.Issue94Step2Path
