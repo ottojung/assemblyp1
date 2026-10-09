@@ -1138,8 +1138,9 @@ including witnesses that fail the stronger coverage, was **preserved**.
 
 **Two models, both first-class**
 
-The interpretation matrix documents both. An independent Python audit and kernel
-lemmas certify the new witnesses; the old model remains available.
+The interpretation matrix documents both. An independent Python audit
+(PR #128) certifies the new witnesses; kernel certification of the historical-coverage
+predicates is tracked on board #247 and not yet merged. The old model remains available.
 
 </div>
 </div>
