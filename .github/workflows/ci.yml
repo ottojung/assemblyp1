@@ -22,6 +22,8 @@ jobs:
       - uses: actions/checkout@v4
       - name: Check research documentation integrity
         run: python3 scripts/check-research-docs.py
+      - name: Verify historical coverage and finite likelihood witnesses
+        run: python3 scripts/verify_historical_coverage_audit.py
 
   build:
     runs-on: ubuntu-latest
