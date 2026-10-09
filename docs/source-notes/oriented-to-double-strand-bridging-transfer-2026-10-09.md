@@ -200,24 +200,42 @@ reads; candidate = doubled circle `D · ρ(D)` of length `2G`.
 
 ### 3.1 Where the doubled reads sit
 
-A length-`L` window of the circular `S` starting at `t ≤ G - L` occurs in `Ŝ` at
-absolute position `t`; a wrapping window (`t > G - L`) occurs in `Ŝ` at absolute
-position `G + t`. The reverse complement of a read at absolute position `b`
-occurs at absolute position `2G - b - L`. For the witness (`G = 6`, `L = 3`):
+Three structural facts about the doubled circle `Ŝ = S · ρ(S)`:
+
+1. Every **non-wrapping** window of `S` is a window of `Ŝ` at the same absolute
+   start (verified exhaustively for binary `2 ≤ G ≤ 8`, `L = 3`).
+2. The circle `Ŝ` is anti-palindromic — `Ŝ[i] = comp(Ŝ[2G - 1 - i])` — hence the
+   reflection identity `window_Ŝ(2G - b - L) = ρ(window_Ŝ(b))` holds for **every**
+   absolute start `b`. So the reverse complement of any read sitting at `b` sits at
+   `2G - b - L`.
+3. A **wrapping** window of `S` (start `t > G - L`) is *not in general* a window
+   of `Ŝ`: in the exhaustive binary scope only `380` of `1016` wrapping windows
+   also occur in the doubled genome. This is a genuine wrinkle of the remap: the
+   doubled genome's seam reads are artifacts of the reduction, and some reads of
+   the original circle have no seat in `Ŝ`.
+
+For the witness (`G = 6`, `L = 3`) the realized read strings and their reverse
+complements are
 
 ```text
-realized starts (on S)   : {0, 1, 3, 5}
-absolute starts (on Ŝ)   : {0, 1, 3, 11}          (5 wraps, so 11 = G + 5)
-partner starts (on Ŝ)    : {9, 8, 6, 10}          (2G - b - L)
-doubled read starts      : {0, 1, 3, 6, 8, 9, 10, 11}
-reads taken              : AAA, AAT, TAT, TAA, TTT, ATT, ATA, TTA
+read strings              : AAA, AAT, TAT, TAA   (from starts 0, 1, 3, 5)
+reverse complements       : TTT, ATT, ATA, TTA
+absolute starts in Ŝ      : {0, 1, 3, 11} ∪ {9, 8, 6, 10}
+doubled read starts       : {0, 1, 3, 6, 8, 9, 10, 11}
 ```
 
-The partner placements are kernel-checked
-(`DoubleStrandBridgingTransfer.partner_placements`), and the doubled read set's
-molecule class counts are **exactly twice** the single-strand observation
-`x = {AAA:2, AAT:1, ATA:1, TAA:1}`, i.e. `{AAA:4, AAT:2, ATA:2, TAA:2}`. This is
-a general fact, not an accident:
+The read `TAA` (start `5`, wrapping in `S`) does occur in `Ŝ`, at absolute start
+`11`, because this particular genome ends with the complement of its first base;
+its partner `TTA` sits at `10`. Each of these placements is verified to be a
+genuine occurrence of the read string, and the partner rule `2G - b - L` is
+kernel-checked (`DoubleStrandBridgingTransfer.partner_placements`). Under the
+maximally generous placement of the doubled read strings, coverage of `Ŝ`
+holds. The verdict of §3.2 is placement-independent, so it does not depend on
+this generosity.
+
+The doubled read set's molecule class counts are **exactly twice** the
+single-strand observation `x = {AAA:2, AAT:1, ATA:1, TAA:1}`, i.e.
+`{AAA:4, AAT:2, ATA:2, TAA:2}`. This is a general fact, not an accident:
 
 > **Lemma 3.1 (strand-invariance of the recorded class).** For any read `w`,
 > `c(w) = c(ρ(w))`. Hence every realized read contributes its class twice under

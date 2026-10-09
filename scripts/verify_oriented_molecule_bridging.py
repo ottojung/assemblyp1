@@ -350,9 +350,12 @@ def doubled_placements(g, starts, L):
     complement, giving `2N` reads placed on the doubled genome.
 
     A length-`L` window of the circular `S` starting at `t <= G-L` sits at
-    absolute position `t` of `S · ρ(S)`; a wrapping window (`t > G-L`) sits at
-    absolute position `G+t` (across the other seam).  The reverse complement of a
-    read at absolute position `b` sits at absolute position `2G-b-L`."""
+    absolute position `t` of `S · ρ(S)`, and the reverse complement of a read at
+    absolute position `b` sits at absolute position `2G-b-L` (an exact symmetry
+    of the doubled circle).  A *wrapping* window of `S` (`t > G-L`) is not in
+    general a window of `S · ρ(S)`; where the doubled read strings do occur, they
+    are placed at an occurrence, which is the most generous reading.  The
+    placements returned here are checked against the actual strings in §3."""
     G = len(g)
     W = 2 * G
     out = []
@@ -635,10 +638,58 @@ def section2(S, L, starts, x):
 
 def section3(S, L, starts, x):
     section("3. Bridging V3 (Bresler et al. 2013 2G double-strand remap)")
+    G = len(S)
     hs = doubled_genome(S)
     print(f"  doubled genome S·ρ(S) = {''.join(hs)}   (length {len(hs)})")
     pl = doubled_placements(S, starts, L)
     print(f"  doubled read placements (distinct starts): {pl}")
+    # each doubled read string must be an actual window of the doubled genome at
+    # its claimed placement (the read set is a set of substrings of the genome)
+    pairs = []
+    for t in sorted(set(starts)):
+        base = t if t <= G - L else G + t
+        pairs.append((base, window(S, L, t)))
+    for b, w in pairs:
+        check(window(hs, L, b % (2 * G)) == w,
+              f"the realized read {''.join(w)} is a window of the doubled genome "
+              f"at the claimed absolute start {b % (2 * G)}")
+    for b, _ in pairs:
+        check(window(hs, L, (2 * G - b - L) % (2 * G)) == rc(_),
+              f"the partner placement {(2 * G - b - L) % (2 * G)} carries the reverse "
+              f"complement of it")
+    # the general structural fact: non-wrapping windows always transfer
+    tot = ok_wrap = n_wrap = 0
+    for gg in range(2, 9):
+        for gw in product(("A", "T"), repeat=gg):
+            g = tuple(gw)
+            hh = doubled_genome(g)
+            for t in range(gg):
+                if t <= gg - L:
+                    if window(hh, L, t) != window(g, L, t):
+                        tot += 1
+                else:
+                    n_wrap += 1
+                    if window(hh, L, (gg + t) % (2 * gg)) == window(g, L, t):
+                        ok_wrap += 1
+    check(tot == 0,
+          "every non-wrapping length-L window of S is a window of S·ρ(S) at the "
+          "same absolute start (exhaustive, binary, 2 <= G <= 8)")
+    # the reflection identity: S·ρ(S) is anti-palindromic, so the window at
+    # 2G - b - L is the reverse complement of the window at b, for EVERY b
+    refl_ok = True
+    for gg in range(2, 9):
+        for gw in product(("A", "T"), repeat=gg):
+            g = tuple(gw)
+            hh = doubled_genome(g)
+            for b in range(2 * gg):
+                if window(hh, L, (2 * gg - b - L) % (2 * gg)) != rc(window(hh, L, b)):
+                    refl_ok = False
+    check(refl_ok,
+          "the doubled circle satisfies window(2G - b - L) = ρ(window(b)) for "
+          "every absolute start b (exhaustive, binary, 2 <= G <= 8)")
+    print(f"  wrapping windows of S that also occur in S·ρ(S): "
+          f"{ok_wrap}/{n_wrap} in scope (a wrapping window is NOT in general a "
+          f"window of the doubled genome)")
     check(covers(hs, L, pl),
           "coverage of the doubled genome holds under the generous string reading")
 
