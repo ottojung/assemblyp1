@@ -516,10 +516,18 @@ settled:
     there. The known $AAATAT\to AAAAAT$ witness is \emph{inadmissible} under this
     remap: the doubled circle carries a length-$4$ triple repeat that no
     length-$3$ read can bridge, for \emph{every} read set
-    (\texttt{doubled\_not\_information\_feasible}). The row is therefore open in
-    both directions rather than refuted. The physical duplex is better
-    represented as \emph{two disjoint} cyclic strands $S$ and $\rc(S)$
-    (Remark~\ref{rem:duplex}).
+     (\texttt{doubled\_not\_information\_feasible}). The row is therefore open in
+     both directions rather than refuted. The \emph{compatibility} of this
+     convention with the oriented one is now kernel-checked in both directions:
+     the remap is exactly compatible with the oriented reading iff read-seat
+     preservation, seam--wrap agreement, and doubled-circle feasibility all hold,
+     and off that locus the two models are incomparable --- $GGGA$ satisfies the
+     remapped $\Is$ while failing the oriented $\Is$ (spurious wrapping-read
+     seats), and $AAATAT$ is the reverse
+     (\texttt{BreslerRemapCompatibility.remap\_natural\_seat\_not\_sound},
+     \texttt{remap\_not\_complete}). The physical duplex is better
+     represented as \emph{two disjoint} cyclic strands $S$ and $\rc(S)$
+     (Remark~\ref{rem:duplex}).
   \item \textbf{Not a determinate proposition.} The reading of the sentence as an
     unspecified general ML principle: the 2016 text fixes no objective, so no
     finite witness settles it as stated. Its three source-nameable members (the
@@ -740,7 +748,7 @@ oriented single-strand, Section~6.2, variable length
 doubled-strand $2G$ \emph{concatenation} of \cite{bresler2013}
   & exact multinomial
   & $2G$-doubled candidates
-  & \openstatus{} (open both ways; known witness inadmissible, two scopes vacuous) \\
+  & \openstatus{} (open both ways; known witness inadmissible; compatibility with the oriented reading kernel-checked incomparable off the R1$\land$R2$\land$R3 locus) \\
 \addlinespace
 duplex as \emph{two disjoint} circles $(S,\rc(S))$
   & exact / binomial
