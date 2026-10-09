@@ -135,11 +135,11 @@ jobs:
           path: .ci-cache/axiom-audit
           key: axiom-audit-v1-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('lean-toolchain') }}-46024e005996495c65ef609368e11ab39c4222e3
 
-      # Fail fast on the three formerly failing modules. These builds are
-      # reused by the later complete target (never replace the full build).
-      - name: Preflight previous source failures before expensive proof
-        run: |
-          lake build AssemblyP1.BBTTripleBridge             AssemblyP1.Issue94KShort             AssemblyP1.Issue94KShortGeneral             AssemblyP1.Issue94ComponentAlignedSwaps --wfail
+      # Cheap local elaboration failure before the costly 37-minute proof.
+      # More expensive import-chain preflight runs only after the orbit proof
+      # has already been durably checkpointed.
+      - name: Preflight standalone triple-bridge module
+        run: lake build AssemblyP1.BBTTripleBridge --wfail
 
       # Previously this one theorem module took ~2,207 s. Persist its compiled
       # object and transitive deps BEFORE attempting any other theorem module.
@@ -153,6 +153,13 @@ jobs:
         with:
           path: .lake/build
           key: lean-project-v2-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('lean-toolchain', 'lake-manifest.json') }}-orbit-${{ github.run_id }}-${{ github.run_attempt }}
+
+      # Run the expensive shared-import preflight AFTER the orbit checkpoint:
+      # Issue94KShort imports orbit-search transitively, so putting it first
+      # would pay 37 minutes yet fail before preserving that compiled result.
+      - name: Preflight formerly failing import chains
+        run: |
+          lake build AssemblyP1.Issue94KShort             AssemblyP1.Issue94KShortGeneral             AssemblyP1.Issue94ComponentAlignedSwaps --wfail
 
       # The endpoint module imports only a subset of the project. The default
       # Lake library target compiles every AssemblyP1/*.lean module, including
