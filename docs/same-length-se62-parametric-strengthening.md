@@ -51,10 +51,23 @@ The set of realized *placements* is still `{0, 1, 3, 5}`, so
 * the historical `I_s` coverage/bridging hypothesis, and
 * the full MB09 §6.2 spelled-flow feasibility of both `S` and `D`
 
-are **literally unchanged** from the `k = 0` module: `I_s` is the same shared
-`SourceFaithfulIs.InformationFeasible` predicate on the same placement set, and
-the §6.2 feasibility theorems are reused verbatim. Only the multiplicity
-entering the two likelihood objectives changes.
+are **literally unchanged** from the `k = 0` module. Concretely:
+
+* `readStartsK_toFinset` proves `(readStartsK k).toFinset = {0,1,3,5}` and
+  `obsK_support` proves the observed support is `{AAA, AAT, ATA, TAA}` for every
+  `k`; on this witness the historical matching-position set `MatchStarts`
+  (Shomorony et al. 2016 supplement §6.4) is *exactly* the sampled placement
+  set, so it too is unchanged;
+* `truth_information_feasible_k` is the shared `SourceFaithfulIs.InformationFeasible`
+  predicate on the parameterized placement set — on `origin/main` this is the
+  base-coverage model; the companion historical module on branch `#137`
+  (`AssemblyP1.HistoricalCoverageSameLengthWitnesses`) consumes exactly the
+  observed support and matching-position inputs proven invariant here;
+* the §6.2 feasibility theorems of the base module (`truth_spelled_feasible62`,
+  `competitor_spelled_feasible62`) are reused verbatim, since neither the read
+  molecules, the overlap graph, nor the spectra `d_S`, `d_D` depend on `k`.
+
+Only the multiplicity entering the two likelihood objectives changes.
 
 The two same-length objectives become
 

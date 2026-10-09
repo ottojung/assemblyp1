@@ -23,8 +23,15 @@ The realized sampling then has `n = 5 + k` reads and observed molecule counts
 The set of realized *placements* is unchanged (`{0, 1, 3, 5}`), so the observed
 read support, the historical `I_s` coverage/bridging hypothesis and the full
 §6.2 spelled-flow feasibility of both `S` and `D` are *literally unchanged* from
-the `k = 0` module.  What changes is only the multiplicity entering the two
-likelihood objectives.
+the `k = 0` module.  (`readStartsK_toFinset` and `obsK_support` prove the
+placement set and observed support invariant; on this witness the historical
+matching-position set `MatchStarts` is exactly the sampled placement set, and
+the companion historical module on branch `#137` consumes exactly these inputs.
+On `origin/main` the shared predicate used here is the base-coverage
+`SourceFaithfulIs.InformationFeasible`.)  The §6.2 feasibility theorems are
+reused verbatim, since neither the read molecules, the overlap graph, nor the
+spectra `d_S`, `d_D` depend on `k`.  What changes is only the multiplicity
+entering the two likelihood objectives.
 
 The main results are the candidate-intrinsic exact multinomial ratio
 
