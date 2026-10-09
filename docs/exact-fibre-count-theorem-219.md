@@ -379,8 +379,9 @@ Corollary 1, and we do not claim its hypothesis is necessary.
    singleton hypothesis be dropped and the `g > 1` case be covered.
 
 The board's construction was derived independently (see the attribution note
-in §Status); the overlap with the literature is the `g = 1`, singleton-edge
-corner, which is Corollary 1's.  No priority over Corollary 1 is claimed.
+in the "Status and attribution" section above); the overlap with the
+literature is the `g = 1`, singleton-edge corner, which is Corollary 1's.  No
+priority over Corollary 1 is claimed.
 
 ## 12. Relationship to issues #92, #83, #217 and the open problem
 
