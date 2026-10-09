@@ -217,15 +217,15 @@ For genuine same-length candidates with truth candidacy, cyclic-rotation
 uniqueness is now proved directly in the Lean kernel, without an external
 BBT obstruction premise (Corollary~\ref{cor:same-length-rotation}).
 
-\statusline{\kernelcheck{} in \texttt{AssemblyP1/MLEscape.lean}
-(\texttt{informationFeasible\_62\_spelledML}) and
-\texttt{AssemblyP1/SameLength62Maximizer.lean}
-(\texttt{informationFeasible\_62\_maximizer}); the conditional core is
-\texttt{OrientedSameLengthML.same\_length\_exactLik\_maximizer} and
-\texttt{same\_length\_binomialLik\_maximizer}; the $\Is$-to-no-long-triple-repeat
-step is \texttt{BridgingBridge.informationFeasible\_no\_long\_triple\_repeat};
+\statusline{\kernelcheck{} in \texttt{Assembly\allowbreak{}P1/\allowbreak{}MLEscape.\allowbreak{}lean}
+(\texttt{information\allowbreak{}Feasible\_\allowbreak{}62\_\allowbreak{}spelled\allowbreak{}ML}) and
+\texttt{Assembly\allowbreak{}P1/\allowbreak{}Same\allowbreak{}Length62Maximizer.\allowbreak{}lean}
+(\texttt{information\allowbreak{}Feasible\_\allowbreak{}62\_\allowbreak{}maximizer}); the conditional core is
+\texttt{Oriented\allowbreak{}Same\allowbreak{}Length\allowbreak{}ML.\allowbreak{}same\_\allowbreak{}length\_\allowbreak{}exact\allowbreak{}Lik\_\allowbreak{}maximizer} and
+\texttt{same\_\allowbreak{}length\_\allowbreak{}binomial\allowbreak{}Lik\_\allowbreak{}maximizer}; the $\Is$-to-no-long-triple-repeat
+step is \texttt{Bridging\allowbreak{}Bridge.\allowbreak{}information\allowbreak{}Feasible\_\allowbreak{}no\_\allowbreak{}long\_\allowbreak{}triple\_\allowbreak{}repeat};
 under the extra truth-candidate certificate, rotation-uniqueness is \kernelcheck{} in
-\texttt{AssemblyP1.SameLength62Uniqueness} (PR~\#124), using internal
+\texttt{Assembly\allowbreak{}P1.\allowbreak{}Same\allowbreak{}Length62Uniqueness} (PR~\#124), using internal
 primitive and periodic simple-cycle proofs; classical \cite{bresler2013}
 remains an alternative mathematical route.}
 
@@ -242,8 +242,8 @@ itself admissible, which is precisely what distinguishes the molecule-class
 witnesses below from this positive row.
 
 \statusline{\kernelcheck{} in
-\texttt{AssemblyP1/SameLengthExactMLCounterexample.lean}
-(\texttt{same\_length\_exact\_ML\_refutation\_62}), which also refutes the
+\texttt{Assembly\allowbreak{}P1/\allowbreak{}Same\allowbreak{}Length\allowbreak{}Exact\allowbreak{}MLCounterexample.\allowbreak{}lean}
+(\texttt{same\_\allowbreak{}length\_\allowbreak{}exact\_\allowbreak{}ML\_\allowbreak{}refutation\_\allowbreak{}62}), which also refutes the
 unrestricted ``$\Is \Rightarrow$ same-length ML'' statement for the same
 instance.}
 
@@ -270,8 +270,8 @@ exactly the rotation class of $S$.
 
 \statusline{The spectrum-rigidity reduction and the full conditional
 candidate-rotation theorem are \kernelcheck{}: see
-\texttt{AssemblyP1/OrientedFinalRigidity.lean} and
-\texttt{AssemblyP1/SameLength62Uniqueness.lean} (merged PR~\#124).
+\texttt{Assembly\allowbreak{}P1/\allowbreak{}Oriented\allowbreak{}Final\allowbreak{}Rigidity.\allowbreak{}lean} and
+\texttt{Assembly\allowbreak{}P1/\allowbreak{}Same\allowbreak{}Length62Uniqueness.\allowbreak{}lean} (merged PR~\#124).
 The candidate theorem consumes source-faithful $\Is$ and explicit
 genuine Section~6.2 certificates for BOTH the truth and the competitor;
 it requires no external BBT obstruction axiom. The older citation
@@ -306,9 +306,9 @@ therefore not $\Is$-admissible. Skirting the triple-repeat clause is precisely
 what permits the multiplicity reallocation.
 \statusline{Theorem~\ref{thm:rigidity} and the
 spectrum-equality corollary have a \kernelcheck{} core in
-\texttt{OrientedFinalRigidity}. On the genuine truth-candidate
+\texttt{Oriented\allowbreak{}Final\allowbreak{}Rigidity}. On the genuine truth-candidate
 surface, rotation uniqueness is now kernel-checked in
-\texttt{SameLength62Uniqueness} (merged PR~\#124) rather than
+\texttt{Same\allowbreak{}Length62Uniqueness} (merged PR~\#124) rather than
 depending on an external BBT axiom. Removing that truth certificate
 is safe for nonprimitive truth only (PR~\#126); merged PR~\#127 refutes the
 primitive case with a genuine same-length Section~6.2 candidate.
@@ -358,7 +358,7 @@ clause is therefore genuinely exercised. The transfers to all circular
 candidates by Lemma~\ref{lem:negative-transfer} because the witness is
 same-length.
 \statusline{\kernelcheck{} in the repository's
-\texttt{FixedLengthExactCounterexample} module.}
+\texttt{Fixed\allowbreak{}Length\allowbreak{}Exact\allowbreak{}Counterexample} module.}
 \end{proof}
 
 Repeating the start-$0$ read $k$ times gives the observed multiset
@@ -370,9 +370,9 @@ $\Lik_{\mathrm{ex}}(D;x)/\Lik_{\mathrm{ex}}(S;x)=27$ and $\Is$ holds
 non-vacuously (coverage, the all-bridged maximal length-$1$ triple repeat at
 $(0,1,2)$, and no interleaved pair).
 \statusline{The $AAABB\to AAAAB$ witness is \kernelcheck{}
-(\texttt{FixedLengthExactCounterexample}); the read-tiled $AAABCBC\to AAAAABC$
+(\texttt{Fixed\allowbreak{}Length\allowbreak{}Exact\allowbreak{}Counterexample}); the read-tiled $AAABCBC\to AAAAABC$
 witness is \computed{} by
-\texttt{scripts/verify\_readtiled\_exact\_counterexample.py}, which checks every
+\texttt{scripts/\allowbreak{}verify\_\allowbreak{}readtiled\_\allowbreak{}exact\_\allowbreak{}counterexample.\allowbreak{}py}, which checks every
 clause of $\Is$ on the instance and shares the bridging predicate
 implementation with the repository's other verification scripts. It was cited
 without an observation or artifact until issue~\#217; the refutation it supports
@@ -400,7 +400,7 @@ zero-multiplicity types changes the ratio from $2$ to $1125/512$:
   \Lik_{\mathrm{bin}}(S;x)=\frac{452984832}{30517578125},\qquad
   \Lik_{\mathrm{bin}}(D;x)=\frac{7962624}{244140625}.
 \]
-\statusline{\kernelcheck{} in \texttt{FixedLengthBinomialCounterexample}. The
+\statusline{\kernelcheck{} in \texttt{Fixed\allowbreak{}Length\allowbreak{}Binomial\allowbreak{}Counterexample}. The
 difference from the exact ratio shows that dropping or retaining the zero-count
 factors changes the objective. By Lemma~\ref{lem:negative-transfer} the witness
 refutes the maximizer statement over every circular candidate on which the
@@ -523,7 +523,7 @@ settled:
     The known $AAATAT\to AAAAAT$ witness is \emph{inadmissible} under this
     remap: the doubled circle carries a length-$4$ triple repeat that no
     length-$3$ read can bridge, for \emph{every} read set
-     (\texttt{doubled\_not\_information\_feasible}). The row is therefore open in
+     (\texttt{doubled\_\allowbreak{}not\_\allowbreak{}information\_\allowbreak{}feasible}). The row is therefore open in
      both directions rather than refuted. The \emph{compatibility} of this
      convention with the oriented one is now kernel-checked in both directions:
      the remap is exactly compatible with the oriented reading iff read-seat
@@ -531,8 +531,8 @@ settled:
      and off that locus the two models are incomparable --- $GGGA$ satisfies the
      remapped $\Is$ while failing the oriented $\Is$ (spurious wrapping-read
      seats), and $AAATAT$ is the reverse
-     (\texttt{BreslerRemapCompatibility.remap\_natural\_seat\_not\_sound},
-     \texttt{remap\_not\_complete}). The physical duplex is better
+     (\texttt{Bresler\allowbreak{}Remap\allowbreak{}Compatibility.\allowbreak{}remap\_\allowbreak{}natural\_\allowbreak{}seat\_\allowbreak{}not\_\allowbreak{}sound},
+     \texttt{remap\_\allowbreak{}not\_\allowbreak{}complete}). The physical duplex is better
      represented as \emph{two disjoint} cyclic strands $S$ and $\rc(S)$
      (Remark~\ref{rem:duplex}).
   \item \textbf{Not a determinate proposition.} The reading of the sentence as an
@@ -556,11 +556,11 @@ that separates a refuted statement from an open one, and because a claim that
 ``all source-supported interpretations are resolved'' must not silently absorb
 them. On the positive, truth-admissible same-length candidate surface, the
 finite rotation-uniqueness theorem is now kernel-checked directly in
-\texttt{SameLength62Uniqueness}, with explicit truth candidacy.
+\texttt{Same\allowbreak{}Length62Uniqueness}, with explicit truth candidacy.
 It is not a general finite ML theorem; the source-faithful primitive
 no-truth-candidacy alternative has a genuine candidate counterexample. The full row-by-row matrix, with every axis
 value tagged as source fact, source-supported inference, or modelling choice, is
-\texttt{docs/source-notes/interpretation-matrix-217.md}.
+\texttt{docs/\allowbreak{}source-notes/\allowbreak{}interpretation-matrix-217.\allowbreak{}md}.
 \end{remark}
 
 \begin{remark}[The general §6.2 flow domain, and two optima and an overlap
@@ -616,15 +616,15 @@ The relaxation is a different, larger upper bound; substituting it for the
 integer flow optimum would overstate what the §6.2 domain refutes. The board
 records the integer optimum as the §6.2 result and keeps the relaxation distinct.
 Both general-flow results are kernel-checked:
-\texttt{AssemblyP1/Section62NonSpelledFlow.lean}
-(\texttt{spelled\_subset\_general}, \texttt{star\_argmax},
-\texttt{no\_sequence\_has\_star\_spectrum},
-\texttt{nonspelled\_se62\_flow\_domain\_countermodel}) for $o_{\min}=1$, which
+\texttt{Assembly\allowbreak{}P1/\allowbreak{}Section62Non\allowbreak{}Spelled\allowbreak{}Flow.\allowbreak{}lean}
+(\texttt{spelled\_\allowbreak{}subset\_\allowbreak{}general}, \texttt{star\_argmax},
+\texttt{no\_\allowbreak{}sequence\_\allowbreak{}has\_\allowbreak{}star\_\allowbreak{}spectrum},
+\texttt{nonspelled\_\allowbreak{}se62\_\allowbreak{}flow\_\allowbreak{}domain\_\allowbreak{}countermodel}) for $o_{\min}=1$, which
 certifies that a spelled candidate is a genuine §6.2 flow and proves no circular
 molecule realizes $d^*$; and
-\texttt{AssemblyP1/Section62FullOverlapDisconnected.lean}
-(\texttt{full\_overlap\_disconnected\_optimum},
-\texttt{disc\_support\_disconnected}, \texttt{dStar\_argmax},
+\texttt{Assembly\allowbreak{}P1/\allowbreak{}Section62Full\allowbreak{}Overlap\allowbreak{}Disconnected.\allowbreak{}lean}
+(\texttt{full\_\allowbreak{}overlap\_\allowbreak{}disconnected\_\allowbreak{}optimum},
+\texttt{disc\_\allowbreak{}support\_\allowbreak{}disconnected}, \texttt{dStar\_argmax},
 \texttt{star\_better}) for $o_{\min}=L-1$, which proves the disconnected
 full-overlap optimum and its strict beat. Both audit to the three standard
 axioms.
@@ -654,11 +654,11 @@ this is a disclosed modelling decision, not a reading of the 2016 sentence, and
 it settles neither the concatenation row nor the referent.
 \statusline{The non-equivalence, the circle-by-circle equivalence and the
 mixed-repeat obstruction are \kernelcheck{} in
-\texttt{AssemblyP1/DoubleStrandBridgingTransfer.lean} and
-\texttt{AssemblyP1/TwoDisjointCirclesDuplex.lean}; the spectrum/seam arithmetic
+\texttt{Assembly\allowbreak{}P1/\allowbreak{}Double\allowbreak{}Strand\allowbreak{}Bridging\allowbreak{}Transfer.\allowbreak{}lean} and
+\texttt{Assembly\allowbreak{}P1/\allowbreak{}Two\allowbreak{}Disjoint\allowbreak{}Circles\allowbreak{}Duplex.\allowbreak{}lean}; the spectrum/seam arithmetic
 and the witness ratios are \computed{} by
-\texttt{scripts/verify\_two\_disjoint\_circles\_duplex.py} and
-\texttt{scripts/verify\_oriented\_molecule\_bridging.py}. The representation
+\texttt{scripts/\allowbreak{}verify\_\allowbreak{}two\_\allowbreak{}disjoint\_\allowbreak{}circles\_\allowbreak{}duplex.\allowbreak{}py} and
+\texttt{scripts/\allowbreak{}verify\_\allowbreak{}oriented\_\allowbreak{}molecule\_\allowbreak{}bridging.\allowbreak{}py}. The representation
 choice is a \projchoice{} and the historical strand convention stays open.}
 \end{remark}
 
@@ -700,14 +700,14 @@ $p_D(w)/p_S(w)$ and the fixed-$N$ binomial odds by
 $Q_w=(p_D(w)/p_S(w))\prod_{i\ne w}(1-p_D(i))/(1-p_S(i))$; here
 $p_D(AAA)/p_S(AAA)=5/3>1$ and $Q_{AAA}=2>1$.
 \statusline{\kernelcheck{} at $M=1,2$ in
-\texttt{AssemblyP1/OrientedVariableLengthSe62.lean}
-(\texttt{oriented\_variable\_length\_se62\_counterexample}, exact
+\texttt{Assembly\allowbreak{}P1/\allowbreak{}Oriented\allowbreak{}Variable\allowbreak{}Length\allowbreak{}Se62.\allowbreak{}lean}
+(\texttt{oriented\_\allowbreak{}variable\_\allowbreak{}length\_\allowbreak{}se62\_\allowbreak{}counterexample}, exact
 $15625/11664$, $2109375/823543$; binomial $81/64$, $27/16$), which also
 discharges $\Is$ by \texttt{decide} on the shared predicate. The general
 families are \mathfact{} (the note
-\texttt{docs/source-notes/oriented-variable-length-se62.md}); the identities are
+\texttt{docs/\allowbreak{}source-notes/\allowbreak{}oriented-variable-length-se62.\allowbreak{}md}); the identities are
 \computed{} for $M=0..200$ by
-\texttt{scripts/verify\_oriented\_variable\_length\_se62*.py}.}
+\texttt{scripts/\allowbreak{}verify\_\allowbreak{}oriented\_\allowbreak{}variable\_\allowbreak{}length\_\allowbreak{}se62*.\allowbreak{}py}.}
 \end{proof}
 
 \begin{center}
@@ -737,7 +737,7 @@ mechanism is observed-multiplicity skew rather than strand collapse. The
 general sample-multiplicity formalization drafted for issue~\#216 is
 \emph{redundant} and is deliberately not integrated (it does not compile); the
 result is already kernel-checked through the instances above, whose module
-\texttt{OrientedVariableLengthSe62} is the canonical carrier.
+\texttt{Oriented\allowbreak{}Variable\allowbreak{}Length\allowbreak{}Se62} is the canonical carrier.
 \end{remark}
 
 \subsection{Summary of the finite landscape}
@@ -775,7 +775,7 @@ binomial ML maximizer
 Section~6.2 flow, molecule reads, variable length
   & Section~6.1 product
   & §6.2 circuits
-  & \textbf{false} (Thm.~\ref{thm:cex-molecule}); competitor the \emph{unique} optimizer over the whole §6.1 domain (issue~\#213, \texttt{Section62VarlenPerOccurrence}) \\
+  & \textbf{false} (Thm.~\ref{thm:cex-molecule}); competitor the \emph{unique} optimizer over the whole §6.1 domain (issue~\#213, \texttt{Section62Varlen\allowbreak{}Per\allowbreak{}Occurrence}) \\
 \addlinespace
 §6.2 flow, full overlap, all optima connected
   & §6.1 product
@@ -829,7 +829,7 @@ per-occurrence strengthening in the row above them is likewise a repository-adde
 assumption surface rather than Medvedev--Brudno's §6.2 rule; that row is a
 \emph{determinate} question and is now refuted rather than left open. All
 non-source rows are listed so that the claim of exhaustion is not overstated. See
-\texttt{docs/source-notes/interpretation-matrix-217.md} for the row-by-row
+\texttt{docs/\allowbreak{}source-notes/\allowbreak{}interpretation-matrix-217.\allowbreak{}md} for the row-by-row
 matrix with every axis value tagged.}
 \label{tab:finite}
 \end{table}

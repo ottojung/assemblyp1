@@ -189,10 +189,11 @@ long-window uniqueness for primitive P2 truths directly, by a support-descent
 argument whose local step is an explicit component antiderivative on the
 condensed length-$(L-1)$-mer graph; its axiom audit reports only the three
 standard axioms and it names no BBT premise. Theorem~\ref{thm:BBT} is retained
-because it is the source-faithful classical statement of the same step and
-because it remains the external input for the \emph{finite} same-length
-corollary (Corollary~\ref{cor:same-length-rotation}); the two uses are now
-distinct.
+because it is the source-faithful classical statement of the same step.
+The finite truth-and-competitor-certified same-length rotation theorem
+(Corollary~\ref{cor:same-length-rotation}, merged PR~\#124)
+now also has its own kernel-checked proof; the historical finite BBT
+interface remains an optional conditional route under weaker hypotheses.
 \end{remark}
 
 \subsection{Population uniqueness for the oriented primitive P2 class}
@@ -223,7 +224,7 @@ The Gibbs/KL layer of Lemma~\ref{lem:gibbs} (issue \#89, in
 Definition~\ref{def:P1P2} and their alignment with Ukkonen's condition at
 $K=L-1$ (issue \#89, in \texttt{P2}), the division/Eulerian gcd-one
 argument of Lemma~\ref{lem:scaling} (issue \#70, in
-\texttt{PopulationReduction}), and the complete-spectrum uniqueness step that
+\texttt{Population\allowbreak{}Reduction}), and the complete-spectrum uniqueness step that
 was formerly the external \texttt{BBTUniqueAt} premise are all proved in the
 kernel. The end-to-end result is
 \popml{}, which states the
@@ -233,9 +234,10 @@ primitive P2 candidate, and whose axiom audit reports only \texttt{propext},
 \texttt{Classical.choice}, and \texttt{Quot.sound}. The Gibbs/KL analysis is the
 project's own formalization of \cite{cover2006}, not an assumed premise. The
 classical Bresler--Bresler--Tse theorem (Theorem~\ref{thm:BBT}) is retained as
-the source-faithful statement of the same identifiability step and as the
-external input still used by the finite same-length corollary; it is no longer a
-premise here.}
+the source-faithful statement of the same identifiability step.
+Neither this population theorem nor the truth-candidate-conditional finite
+rotation theorem now requires a BBT obstruction premise; the former
+historical BBT-dependent interfaces remain available with their hypotheses.}
 
 \subsection{Scope and one failed proof route}
 

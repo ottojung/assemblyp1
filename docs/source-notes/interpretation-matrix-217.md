@@ -433,8 +433,13 @@ likelihood coincides with the MB09 molecule distribution.
 * the one **positive** slice: oriented read types, same-length candidates that
   are genuine §6.2 candidates on both sides, full `I_s` (R7) or just its
   triple-repeat clause (R8) — the truth is a maximizer for both `E` and `A`,
-  kernel-checked; and it is the unique maximizer up to cyclic rotation
-  conditional on the external BBT complete-spectrum input (R9).
+  kernel-checked; and genuine same-length truth-and-competitor-certified
+  candidates have kernel-checked rotation uniqueness under source-faithful
+  I_s (merged PR #124). The older R9 proof under merely no long triple
+  plus an external BBT input remains valid but is no longer the strongest
+  result. Truth candidacy is an essential extra premise (PR #125); its
+  nonprimitive no-truth-candidacy analogue holds (PR #126), and the
+  primitive analogue is refuted (PR #127).
 
 **Open / not determinate, stated explicitly:**
 

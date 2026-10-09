@@ -80,7 +80,7 @@ the read distributions agree
 Primitivity plus P2 gives gcd-one spectra (division + Eulerian + complete-spectrum
 step), reducing normalized to ordinary spectra
   & kernel-checked project reduction &
-  \texttt{PopulationReduction}, issue \#70 \\
+  \texttt{Population\allowbreak{}Reduction}, issue \#70 \\
 P1/P2 implies Ukkonen's condition at $K=L-1$
   & kernel-checked project fact &
   Def.~\ref{def:P1P2}, \texttt{P2}, issue \#89 \\
@@ -88,7 +88,7 @@ Population uniqueness, oriented primitive P2, every positive-length candidate
   & kernel-checked project theorem, no external premise (objective, P2 condition,
   gcd-one reduction and complete-spectrum uniqueness all in the kernel) &
   Thm.~\ref{thm:population},
-  \popml{} (issues \#89, \#94) \\
+  \texttt{Issue94Complete.\allowbreak{}population\_\allowbreak{}unique\_\allowbreak{}ML} (issues \#89, \#94) \\
 P1/P2 intrinsic admissibility; population objective
   & project modeling choice & this paper, Defs.~\ref{def:P1P2},
   \ref{def:population} \\
@@ -100,9 +100,15 @@ definitions and their Ukkonen alignment, and the population
 division/Eulerian reduction plus the formerly external complete-spectrum
 uniqueness step (now discharged internally) are kernel-checked. The end-to-end
 population theorem \popml{} carries no
-external premise. The \emph{finite} same-length rotation corollary still uses
-the external Bresler--Bresler--Tse theorem as a source input, and
-source-boundary correspondence claims are not claimed as kernel-checked.}
+external premise. The \emph{finite} same-length candidate-rotation
+corollary is also kernel-checked when truth and competitor are both genuine
+Section~6.2 candidates (\texttt{Same\allowbreak{}Length62Uniqueness}, merged PR~\#124),
+rather than requiring the older external BBT obstruction input.
+Nonprimitive candidate rotation without truth candidacy is also checked
+(merged PR~\#126), while the primitive claim without truth candidacy is
+refuted (merged PR~\#127). Source-referent correspondence, candidate
+existence, and unrestricted likelihood-optimality are not kernel-checked
+by these rotation theorems.}
 \end{table}
 
 \subsection{Finite certificates and computations}
@@ -115,54 +121,54 @@ source-boundary correspondence claims are not claimed as kernel-checked.}
 Claim & Status & Artifact \\
 \midrule
 $AAABB\to AAAAB$, exact ratio $2$, $\Is$ certificate
-  & kernel-checked & \texttt{FixedLengthExactCounterexample} \\
+  & kernel-checked & \texttt{Fixed\allowbreak{}Length\allowbreak{}Exact\allowbreak{}Counterexample} \\
 $AAABCBC\to AAAAABC$, same length, exact ratio $27$, $\Is$ non-vacuous
   & verified computation (recorded without an artifact until issue \#217) &
-  \texttt{verify\_readtiled\_exact\_counterexample.py} \\
+  \texttt{verify\_\allowbreak{}readtiled\_\allowbreak{}exact\_\allowbreak{}counterexample.\allowbreak{}py} \\
 $AAACC\to AAAAC$, binomial ratio $1125/512$
-  & kernel-checked & \texttt{FixedLengthBinomialCounterexample} \\
+  & kernel-checked & \texttt{Fixed\allowbreak{}Length\allowbreak{}Binomial\allowbreak{}Counterexample} \\
 $AAATT\to AAAATT$, §6.1 ratio $9/8$; $\Is$; literal §6.2 feasibility of both
 genomes (graph, transitive reduction, vertex LB 1, signed-incidence balance,
 no supersource/sink)
   & kernel-checked (incl. the §6.2 graph certificate) &
-  \texttt{Section62BridgingCounterexample} \\
+  \texttt{Section62Bridging\allowbreak{}Counterexample} \\
 $AAATAT\to AAAAAT$, same length, exact $3$, binomial $5$, literal §6.2
 feasibility of both genomes
   & kernel-checked (incl. the §6.2 graph certificate) &
-  \texttt{SameLengthSection62Counterexample} \\
+  \texttt{Same\allowbreak{}Length\allowbreak{}Section62Counterexample} \\
 $AABB\to ABAB$, same length, exact ratio $4$; full $\Is$; the competitor is a
 literal §6.2 candidate while the truth is not — the §6.2 acceptance boundary is
 a separate, false, statement
-  & kernel-checked & \texttt{SameLengthExactMLCounterexample} \\
+  & kernel-checked & \texttt{Same\allowbreak{}Length\allowbreak{}Exact\allowbreak{}MLCounterexample} \\
 $AAATT\to AAAATT$ variable-length oriented boundary, in infinite strict families
 (strict for every sample multiplicity $M\ge1$, exact and fixed-$N$ binomial)
   & kernel-checked at $M=1,2$ + general proof &
-  \texttt{OrientedVariableLengthSe62} \\
+  \texttt{Oriented\allowbreak{}Variable\allowbreak{}Length\allowbreak{}Se62} \\
 $AAATT\to AAAATT$ variable-length per-occurrence audit: both genomes satisfy the
 per-vertex \emph{and} per-occurrence rules; competitor the unique §6.1 optimizer
 over the whole domain and the general flow universe
-  & kernel-checked & \texttt{Section62VarlenPerOccurrence} \\
+  & kernel-checked & \texttt{Section62Varlen\allowbreak{}Per\allowbreak{}Occurrence} \\
 $o_{\min}=1$ §6.2 flow optimum $(2,1,1)$ for $AAATT$ is no circular molecule's
 spectrum (non-spellable flow maximum)
-  & kernel-checked & \texttt{Section62NonSpelledFlow} \\
+  & kernel-checked & \texttt{Section62Non\allowbreak{}Spelled\allowbreak{}Flow} \\
 $o_{\min}=L-1$ full-overlap disconnected optimum $d^*$ for $AAATAT$,
 $\Lik(d^*)/\Lik(d_S)=1280/243$; support disconnected yet $d^*$ spellable as
 $AAAAT$ (disconnectedness, not non-spellability)
-  & kernel-checked & \texttt{Section62FullOverlapDisconnected} \\
+  & kernel-checked & \texttt{Section62Full\allowbreak{}Overlap\allowbreak{}Disconnected} \\
 Minimum same-length non-rigid pair $AAAAB/AABAB$
   & verified computation (bounded, exhaustive in scope) &
   rigidity script \\
 $AABBC\to AABC$ sampling failure, ratio $25/16$
-  & kernel-checked & \texttt{FiniteSamplingCounterexample} \\
-Conditional same-length oriented spectrum rigidity (no-long-triple-repeat
-boundary + primitive/periodic case split; $\Is$ implication and BBT external)
-  & kernel-checked (conditional) & \texttt{OrientedFinalRigidity} \\
+  & kernel-checked & \texttt{Finite\allowbreak{}Sampling\allowbreak{}Counterexample} \\
+Oriented spectrum rigidity (no-long-triple-repeat boundary and
+primitive/periodic split; the older BBT rotation interface remains conditional)
+  & kernel-checked (exact hypotheses) & \texttt{Oriented\allowbreak{}Final\allowbreak{}Rigidity} \\
 Same-length maximizer over same-length genuine §6.2 candidates, oriented read
 types, full $\Is$ at the realized placements, both objectives
-  & kernel-checked (source $\Is$ and the $\Is\to\neg$long-triple step included;
-  rotation-uniqueness adds the external BBT premise) &
-  \texttt{MLEscape}, \texttt{SameLength62Maximizer},
-  \texttt{OrientedSameLengthML} \\
+  & kernel-checked with truth candidacy; candidate-rotation
+    additionally proved in \texttt{Same\allowbreak{}Length62Uniqueness} without BBT &
+  \texttt{MLEscape}, \texttt{Same\allowbreak{}Length62Maximizer},
+  \texttt{Same\allowbreak{}Length62Uniqueness} \\
 Direct P2 matching proof's maximal-extension step is invalid
   & counterexample to a proof step, not the theorem & audit note \\
 \bottomrule
@@ -181,12 +187,12 @@ maximizer-vs-uniqueness reading; (5) the $4^k$ vs.\ molecule-class index count i
 MB09 Section~6.1; (6) the unretrieved publisher supplement; and (9) the population
 model for molecule read types. The \textbf{final source-gap count} for the 2016
 finite question is \textbf{7 unresolved items} (the canonical register
-\texttt{docs/source-notes/finite-interpretation-universe-audit.md}, \S6, items
+\texttt{docs/\allowbreak{}source-notes/\allowbreak{}finite-interpretation-universe-audit.\allowbreak{}md}, \S6, items
 1--6 and~8; item~7, a repository-provenance gap, was closed). None is a matrix
 row and none is used to decide one; the enumeration, and the three that bear
 directly on the finite claim (the referent, the publisher supplement, and the
 strand/equivalence convention), are in
-\texttt{docs/source-notes/interpretation-matrix-217.md}, \S3.1.
+\texttt{docs/\allowbreak{}source-notes/\allowbreak{}interpretation-matrix-217.\allowbreak{}md}, \S3.1.
 
 Three items that used to appear on this list have been resolved and are recorded
 in Table~\ref{tab:finite} instead. Item (7), the \emph{per-occurrence
@@ -198,7 +204,7 @@ alphabet — with a self-complementary base the searched scope has no same-lengt
 beat at all. Item (8), the \emph{single-strand variable-length} Section~6.2
 statement, is also \emph{false}: the oriented variable-length boundary witness beats
 the truth as soon as $n>G$, under both objectives, and it is now kernel-checked
-(\texttt{OrientedVariableLengthSe62}) in infinite strict families, not merely
+(\texttt{Oriented\allowbreak{}Variable\allowbreak{}Length\allowbreak{}Se62}) in infinite strict families, not merely
 computed.
 
 Two further items are explicitly \emph{not} settled and must not be absorbed into
@@ -215,12 +221,12 @@ One leaf artifact is resolved as \emph{redundant} rather than pending, and it is
 not a matrix row. Issue~\#216's general sample-multiplicity amplification
 formalization is uncommitted, has no committed or board result, and does not
 compile; it is deliberately not integrated because the amplification result is
-already kernel-checked through \texttt{OrientedVariableLengthSe62} and the
+already kernel-checked through \texttt{Oriented\allowbreak{}Variable\allowbreak{}Length\allowbreak{}Se62} and the
 $AAATT\to AAAATT$ families, which are its canonical carriers.
 Issue~\#219's same-length complete-spectrum fibre-count theorem is now fully
 integrated: the note proves Theorems~1--3, an exact-arithmetic audit reproduces
 them against brute force, and the Lean module
-\texttt{FibreCountArithmetic.lean} kernel-checks the divisor-sum core (Möbius
+\texttt{Fibre\allowbreak{}Count\allowbreak{}Arithmetic.\allowbreak{}lean} kernel-checks the divisor-sum core (Möbius
 inversion and the totient rearrangement). The BEST/Matrix-Tree graph content is
 external, and the closest prior art (the $g=1$ multiplicity-one-edge corner) is
 Shomorony et al.\ ISIT 2016, Appendix~C, Corollary~1, cited and not claimed. It
@@ -238,6 +244,6 @@ such in Table~\ref{tab:finite}.
 
 The consolidated row-by-row matrix, with every axis value tagged as source fact,
 source-supported inference, or project modeling choice, is
-\texttt{docs/source-notes/interpretation-matrix-217.md}; the record of the
+\texttt{docs/\allowbreak{}source-notes/\allowbreak{}interpretation-matrix-217.\allowbreak{}md}; the record of the
 follow-up material collected from the protected \#94 worktrees in this same
-round is \texttt{docs/issue-217-followup-collection.md}.
+round is \texttt{docs/\allowbreak{}issue-217-followup-collection.\allowbreak{}md}.
