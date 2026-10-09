@@ -36,6 +36,21 @@ redundant**, not pending: its Lean does not compile, it has no committed or boar
 result, and its *result* is already kernel-checked via #210
 (`OrientedVariableLengthSe62`), so the lattice needs no general amplification
 theorem. No leaf item remains pending.
+
+
+## Current integration status: October 9, 2026
+
+The dated integration logs and earlier R9 conditional-proof audit below record
+their state **at the time**, not the final theorem frontier. Merged PR #124
+kernel-checks rotation for genuine same-length Section 6.2 candidates when
+BOTH truth and competitor have certificates. Merged PR #125 proves information
+feasibility alone does not give truth candidacy. Merged PR #126 proves the
+nonprimitive no-truth-certificate case. PR #127 proves the corresponding
+primitive case FALSE with a genuine AABB/ABAB flow candidate at G=4, L=2,
+observed starts {1,3}. The same example's exact multinomial ML preference
+was separately established. None of these facts licenses an unrestricted
+finite-ML uniqueness claim or chooses the unresolved 2016 likelihood referent.
+
 This document is the source-backed classification matrix for the finite
 (finite-sample) reading of the 2016 sentence
 
@@ -161,7 +176,7 @@ Legend for the resolution column: **FALSE** (a strict counterexample refutes
 | R4 | `E` | `U1` (free) | `F0` | `or` | `Is` | as above | **FALSE** | Read-tiled witness `AAABCBC → AAAAABC`, `G=7`, `L=3`, realized starts `(0,0,0,1,2,5,6)`, `n=7`, ratio `27`; `Is` non-vacuous (coverage + the all-bridged maximal length-1 triple repeat at `(0,1,2)`; interleaving vacuous) | **[V]** `scripts/verify_readtiled_exact_counterexample.py` |
 | R5 | `A` | `U1` (on the domain `0<dᵢ<N`) | `F0` | `or` | `Is` | `W` and `S` both false | **FALSE** | Strict witness `AAACC → AAAAC`, ratio `1125/512 > 1`; same-length pair with every `dᵢ ≤ 2 < N`, so both lie in `A`’s domain | **[K]** `AssemblyP1/FixedLengthBinomialCounterexample.lean` |
 | R6 | `E` | `U2` | `F0` | `or` | `Is` | `W` false | **FALSE** | `AABB → ABAB`, `G=4`, `L=2`, realized starts `{1,3}`; full `I_s` by computation; exact likelihoods `1/16` vs `1/4` | **[K]** `AssemblyP1/SameLengthExactMLCounterexample.lean` |
-| R7 | `E`/`A` | `U2` **and** `Fgen` on *both* truth and competitor | `Fgen` | `or` | `Is` | `W` **true**; `S` true up to cyclic shift | **TRUE** | `informationFeasible_62_spelledML` / `informationFeasible_62_maximizer`: full `I_s` at the realized range, `2 ≤ L ≤ G`, truth a genuine §6.2 candidate ⇒ every same-length genuine §6.2 candidate scores at most the truth | **[K]** `AssemblyP1/MLEscape.lean`, `AssemblyP1/SameLength62Maximizer.lean` |
+| R7 | `E`/`A` | `U2` **and** `Fgen` on *both* truth and competitor | `Fgen` | `or` | `Is` | `W` **true**; `S` true up to cyclic shift | **TRUE** | `SameLength62Uniqueness.unique_62_maximizer_up_to_rotation (conditional rotation); informationFeasible_62_spelledML` / `informationFeasible_62_maximizer`: full `I_s` at the realized range, `2 ≤ L ≤ G`, truth a genuine §6.2 candidate ⇒ every same-length genuine §6.2 candidate scores at most the truth | **[K]** `AssemblyP1/MLEscape.lean`, `AssemblyP1/SameLength62Maximizer.lean; SameLength62Uniqueness.lean` |
 | R8 | `E`/`A` | `U2` ∩ `Fgen` | `Fgen` | `or` | `¬LTR` only | `W` true | **TRUE** | `same_length_exactLik_maximizer`, `same_length_binomialLik_maximizer` under `hno : ¬ HasLongTripleRepeat` — the kernel-checked conditional core, with no `I_s`, no primitivity, no period premise | **[K]** `AssemblyP1/OrientedSameLengthML.lean`, `AssemblyP1/OrientedFinalRigidity.lean` |
 | R9 | `E` | `U2` ∩ `Fgen` | `Fgen` | `or` | `¬LTR` + external BBT input | `S` true, `≈` = cyclic shift | **TRUE, conditional** | `same_length_unique_up_to_rotation_of_bbt`, `same_length_maximality_and_rotation_uniqueness_of_bbt`; the complete-spectrum uniqueness input is an explicit premise `hBBT`, not formalized here | **[K]** conditional, `AssemblyP1/OrientedSameLengthML.lean` |
 | R10 | `A` | `U3` flows, length free | `Fgen`/`Fspell` | `mol` | `Is` | `W` and `S` both false | **FALSE** | `AAATT → AAAATT`, `|D|=6 ≠ N=5`, external `N=5`, ratio `9/8`; literal §6.2 feasibility of **both** genomes, incl. the explicit graph, transitive reduction, vertex LB 1, signed-incidence balance. Leaf #213 hardens the cell: both throughput vectors lie in the §6.1 domain `0 ≤ dᵢ ≤ N` and in the terminal-allowed general flow universe, and the competitor is the **unique** maximizer of the literal §6.1 objective over the **entire** domain, so the refutation is not an artifact of a restricted candidate class | **[K]** `AssemblyP1/Section62BridgingCounterexample.lean` (`se62_bridging_bidirected_flow_counterexample`); **[K]** `AssemblyP1/Section62VarlenPerOccurrence.lean` (`truth_not_maximizer_in_general_flow_universe`, `competitor_is_unique_optimizer`) |
@@ -185,18 +200,24 @@ Legend for the resolution column: **FALSE** (a strict counterexample refutes
   note proves the growing- and fixed-competitor families strict for every
   `M ≥ 1`. The mechanism is the sample-multiplicity **amplification** of an
   over-represented observed type.
-* Rows R7–R9 are the only positive rows, and they are positive only on the
-  `U2 ∩ Fgen ∩ or` slice. R9’s uniqueness needs `≈` = cyclic shift (forced)
-  and the external BBT complete-spectrum input (not formalized). Leaf #211’s
-  `SameLength62TieUniqueness` supplies the `I_s ⇒ ¬ interleaved long repeats`
-  adapter and refutes the BBT premise on a concrete `G=6, L=2` instance, but
-  the finite same-length rotation uniqueness remains **Lean-conditional** on
-  that input; only the *population* theorem is now unconditional (below). Within
-  the finite `#211` scope the **non-primitive subcase is not closed**: its
-  corrected residue is the named `NoBranching` predicate (the earlier
-  "periodicity forces a long repeat" mechanism is kernel-refuted), it is not
-  formalized in Lean, and it remains **pending** (leaf `#211`, branch
-  `agent/board-211-8d5103`); this pass does not claim it.
+* Rows R7–R9 are positive only on their explicitly restricted
+  same-length genuine-candidate surfaces. The original R9 proof under merely
+  no-long-triple-repeat PLUS an external BBT premise is a valid conditional
+  argument, but is NOT the strongest current proof. Under full source-faithful
+  I_s and with BOTH truth and competitor genuine Section 6.2 certificates,
+  merged PR #124 proves candidate rotation in Lean, using #94 and the
+  periodic simple-cycle route rather than an external BBT obstruction.
+* The truth certificate is additional: merged PR #125 gives a checked
+  sparse-observation ACGT witness where I_s holds but truth candidacy fails.
+  Merged PR #126 proves rotation WITHOUT that truth certificate for
+  nonprimitive truths, from actual observed-read provenance and support
+  inclusion. For primitive truths this no-truth-candidacy claim is FALSE:
+  PR #127 checks the genuine same-length candidate D=ABAB for a primitive
+  I_s-feasible truth S=AABB (G=4, L=2, starts {1,3}), and D is not a
+  cyclic rotation. The same AABB/ABAB exact multinomial likelihood failure
+  was already known; PR #127 adds literal Section 6.2 flow feasibility.
+  Consequently these finite results DO NOT imply uniqueness of unrestricted
+  ML maximizers or that truth candidacy follows from I_s.
 * Row R6 is the row that shows the **length restriction alone is not enough**:
   without the §6.2 membership conjunct the same-length question is already
   negative.
@@ -212,7 +233,9 @@ Legend for the resolution column: **FALSE** (a strict counterexample refutes
   normalized class likelihood coincides with the MB09 molecule distribution, so
   it adds no new *objective* row; it does settle the representation question the
   research synthesis raised.
-* No determinate row remains open on `main`. The residue is R16 (**not a
+* No determinate row in this explicitly defined source/model matrix remains
+unclassified, subject to the source-referent and candidate-universe
+qualifications below. The residue is R16 (**not a
   determinate source row** — a different paper's `2G` concatenation convention,
   with the known witness kernel-checked **inadmissible** and the V3↔V1/V2
   compatibility kernel-checked **incomparable off the R1∧R2∧R3 locus**; no
@@ -240,7 +263,7 @@ can recover the research graph.
 | #208 | `agent/board-208-0c8fcf` / `assemblyp1-finite-208` | source census + provenance audit committed (`3f532c5`); untracked `scratch-208/` preserved | **integrated** (novel docs/scripts only; its stale cc0aa8a-based paper edits were *not* merged); no matrix row change |
 | #209 | `agent/board-209-6cf9bd` / `assemblyp1-finite-209` | **closed/terminal** (03:18): `Issue209EAudit` + 3 scripts + ledger + terminal report committed (`cf92561`…`5b18b1a`, pushed); `scratch-209/` preserved | **this round** integrates the module + scripts + ledger/report: R1 strengthened (same `AAABB` witness refutes `A` too, ratio `1125/512`); objective-`A` domain boundary kernel-checked (`d_w ≤ N(D)`, negative marginal off `|D| ≤ N`) |
 | #210 | `agent/board-210-e8b6b2` / `assemblyp1-finite-210` | `OrientedVariableLengthSe62` + doc + 2 scripts committed (`7d48eab`); worktree clean | **module integrated** — R14 upgraded from `[V]` to `[K]`; the amplification families are the landed form of the sample-multiplicity axis |
-| #211 | `agent/board-211-8d5103` / `assemblyp1-finite-211` | `SameLength62TieUniqueness` committed (`8bef1f6`); uncommitted umbrella wiring + 2 scripts preserved | **module integrated**; finite same-length uniqueness stays Lean-conditional on the complete-spectrum input |
+| #211 | `agent/board-211-8d5103` / `assemblyp1-finite-211` | `SameLength62TieUniqueness` committed (`8bef1f6`); uncommitted umbrella wiring + 2 scripts preserved | **module integrated**; historically conditional at that snapshot; now resolved under truth candidacy by merged PR #124 |
 | #212 | `agent/board-212-37b45b` / `assemblyp1-finite-212` | clean; module + script already harvested | **harvested** — R13 resolved FALSE (see §7.1) |
 | #213 | `agent/board-213-5fff16` / `assemblyp1-finite-213` | `Section62VarlenPerOccurrence` + doc + script committed (`a47107c`); worktree clean | **module integrated** — R10/R12 hardened (per-occurrence + unique-optimizer over the whole §6.1 domain and the general flow universe); no new row |
 | #214 | `agent/board-214-d0e372` / `assemblyp1-finite-214` | `Section62NonSpelledFlow` (`d2163b8`, `o_min = 1`) **and** `Section62FullOverlapDisconnected` (`f7a9355`, `o_min = L-1`) committed; worktree clean | **both modules integrated this round**; R10–R12 upgrade to the general `Feasible62` flow domain; the `o_min = 1` (non-spellable throughput) and `o_min = L-1` (disconnected flow, **spellable** throughput `AAAAT`) results are kept distinct — see §2.2 |
@@ -257,7 +280,7 @@ fixes)"), which touches only `BBTTripleBridge`, `Issue94ComponentAlignedSwaps`,
 a mathematical result: it changes no matrix row, no witness, and no theorem
 statement. It is recorded here so the board’s base is auditable.
 
-**R9 stays Lean-conditional.** The 2013 BBT Theorem 3 input is *not* formalized
+**Historical R9 external-BBT route; superseded for the I_s plus truth-candidacy subcase.** The 2013 BBT Theorem 3 input is *not* formalized
 in this repository. `BBTEulerian.bbtCompleteSpec_of_obstruction` consumes it
 as the explicit premise `hObs : EulerianCycleObstruction`, and
 `OrientedSameLengthML.same_length_unique_up_to_rotation_of_bbt` /
@@ -375,7 +398,7 @@ and none is used to decide one.
 Counting rows: R1–R6, R10–R14 are the **eleven** negative rows, of which the
 kernel-checked ones are R1, R2, R5, R6, R10, R11, R12, R13, R14 (nine, sharing
 eight modules) and the exact-arithmetic ones are R3, R4 (two). R7, R8, R9, R15
-are the four positive rows (R9 conditional on the external BBT input, R15
+are the four positive rows (R9 historically conditional with BBT but kernel-checked under I_s and truth candidacy (PR #124), R15
 inherited from R7). R9 and R8 are two views of one argument, and R10 and R12 are
 one witness, so the row count overstates the number of distinct results and
 underrates nothing. R18 is a **disclosed new model** (the two-disjoint-circles
@@ -533,7 +556,7 @@ theorem is now kernel-checked without it.
 | Row R1's `AAABB → AAAAB` witness also refutes the fixed-`N` binomial objective `A` (ratio `1125/512`), not only the exact multinomial | **K** — `AssemblyP1/Issue209EAudit.lean` (`aaab_refutes_fixed_N_binomial`), integrated and axiom-audited |
 | objective `A`'s external `N` restricts the candidate class to `|D| ≤ N` (`d_w ≤ N(D)`); the literal marginal is negative off that class | **K** — `AssemblyP1/Issue209EAudit.lean` (`winCount_le_len`, `external_N_domain_boundary`) |
 | Rows R7, R8 are proved (maximizer) | **K** |
-| Row R9 is proved conditional on an external BBT premise | **K** conditional |
+| Original R9 no-long-triple-repeat plus BBT route is conditional; under I_s plus truth candidacy the internal proof of PR #124 removes that premise | **K** (distinct hypotheses) |
 | Rows R10, R11, R12 are refuted by kernel-checked strict witnesses certifying literal §6.2 feasibility | **K** |
 | Row R13 is refuted by a kernel-checked strict witness certifying literal §6.2 feasibility on both sides under the per-occurrence strengthening (`ATATACAC → ATACACAC`, ratios `3/2` and `9/5`) | **K** |
 | Rows R3, R4 are refuted by exact-arithmetic reproductions | **V** |
@@ -552,7 +575,7 @@ theorem is now kernel-checked without it.
 | the accepted supplementary ZIP (could hold a likelihood/tie definition) | **uninspected, unchanged** — HTTP 403 on both recorded retrieval paths; not reachable from this host |
 | the #214 general-flow upgrade (§6.2 refutation over the whole `Feasible62` domain; optimum spells no genome) | **K** — `AssemblyP1/Section62NonSpelledFlow.lean`, integrated and axiom-audited (`d2163b8`) |
 | the integer flow optimum vs. the half-integral relaxation | **kept separate** in §2.2; the relaxation is not the §6.2 object |
-| R9’s BBT complete-spectrum input (finite same-length rotation uniqueness) | **O** (external) — carried as explicit `hObs`/`hBBT` premise, not discharged; the **population** theorem is now kernel-checked without it |
+| Historical R9 external-BBT interface under weaker assumptions | **O** (external) — carried as explicit `hObs`/`hBBT` premise, not discharged; the **population** theorem is now kernel-checked without it |
 | leaf #211’s `I_s ⇒ ¬ interleaved long repeats` adapter and its `G=6, L=2` refutation of the BBT premise | **K** — `AssemblyP1/SameLength62TieUniqueness.lean`, integrated and axiom-audited |
 | leaf #219’s exact fibre-count theorem | **M** + **V** + **K** (divisor-sum core) — note `docs/exact-fibre-count-theorem-219.md`, audit `scripts/audit_fibre_count_219.py` and Lean core `AssemblyP1/FibreCountArithmetic.lean` integrated and passing; the BEST/Matrix-Tree graph content is **external** |
 
@@ -788,8 +811,7 @@ source reading; (iv) #216 `Part 6` (**resolved as redundant**, superseded by
 row. R13 is resolved although it
 is **not** source-supported (the per-occurrence strengthening is a
 repository-added surface). The positive same-length **rotation-uniqueness** half
-(R9) remains Lean-conditional on the external BBT complete-spectrum input; only
-the *population* theorem is kernel-checked without it. The referent question
+(historical R9 BBT route) was conditional at this audit; currently PR #124 checks rotation under I_s plus truth candidacy, PR #126 proves the nonprimitive no-truth-candidacy case, and PR #127 refutes the primitive one. The referent question
 (which MB09 object the 2016 sentence denotes) remains an unselected source gap,
 and the publisher’s supplementary ZIP remains uninspected.
 
@@ -1034,10 +1056,7 @@ paper state the same proof-status facts (population kernel-checked; finite
 same-length rotation uniqueness conditional on the external complete-spectrum
 input), so they are consistent rather than conflicting.
 
-**Residual (unchanged).** `#211` finite same-length rotation uniqueness stays
-Lean-conditional on the external complete-spectrum input, and its
-**non-primitive subcase remains pending** (named `NoBranching` residue, not
-formalized in Lean); only the population theorem is unconditional. The 2016
+**Historical residual from this specific October 9 audit round.** At that time #211 was still unintegrated. It is now superseded: merged PR #124 checks conditional rotation under truth candidacy, merged PR #126 proves the nonprimitive branch without truth candidacy, and PR #127 refutes its primitive analogue. The original weaker external-BBT proof remains an alternative conditional route, not the current theorem frontier. The 2016
 likelihood referent and the publisher supplementary ZIP remain
 unknown/uninspected. The full `lake build --wfail` whole-library pass is left to
 CI (host OOM on `Issue94Transposition`, pre-existing). `#211` itself is **not**

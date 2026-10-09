@@ -213,9 +213,9 @@ set is the \emph{range} of the realization, not a superset: because every clause
 of $\Is$ is a ``some $r \in R$ does \dots'' or a coverage condition, a start set
 $R \supseteq \range\rho$ that contains starts at which no read was drawn is a
 strictly weaker hypothesis, and the theorem is stated at the faithful one.
-Uniqueness up to cyclic rotation is then obtained by adding the external BBT
-complete-spectrum input, exactly as in
-Corollary~\ref{cor:same-length-rotation}.
+For genuine same-length candidates with truth candidacy, cyclic-rotation
+uniqueness is now proved directly in the Lean kernel, without an external
+BBT obstruction premise (Corollary~\ref{cor:same-length-rotation}).
 
 \statusline{\kernelcheck{} in \texttt{AssemblyP1/MLEscape.lean}
 (\texttt{informationFeasible\_62\_spelledML}) and
@@ -224,7 +224,10 @@ Corollary~\ref{cor:same-length-rotation}.
 \texttt{OrientedSameLengthML.same\_length\_exactLik\_maximizer} and
 \texttt{same\_length\_binomialLik\_maximizer}; the $\Is$-to-no-long-triple-repeat
 step is \texttt{BridgingBridge.informationFeasible\_no\_long\_triple\_repeat};
-rotation-uniqueness adds the \srcfact{} external input \cite{bresler2013}.}
+under the extra truth-candidate certificate, rotation-uniqueness is \kernelcheck{} in
+\texttt{AssemblyP1.SameLength62Uniqueness} (PR~\#124), using internal
+primitive and periodic simple-cycle proofs; classical \cite{bresler2013}
+remains an alternative mathematical route.}
 
 \subsubsection{The §6.2 acceptance boundary is a separate question}
 
@@ -265,18 +268,20 @@ likelihood ratio $1$ by Corollary~\ref{cor:same-length-zero}, the maximizer set 
 exactly the rotation class of $S$.
 \end{proof}
 
-\statusline{The spectrum-rigidity reduction is \kernelcheck{} in
-\texttt{AssemblyP1/OrientedFinalRigidity.lean}, conditional on the explicit
-no-long-triple-repeat boundary, with the primitive/periodic split discharged
-internally by the kernel-checked dichotomy; the
-$\Is$-to-no-triple-repeat bridging implication is source-supported, and the
-spectrum-identifiability (rotation-uniqueness) step is the external \srcfact{}
-input \cite{bresler2013} (Theorem~\ref{thm:BBT}). This \emph{finite} corollary
-still depends on that external input; the population theorem of
-Section~\ref{sec:population}, by contrast, is now kernel-checked without it
-(Theorem~\ref{thm:population}). The whole chain here is source-supported
-mathematics with a kernel-checked conditional core, not a kernel-checked proof
-of $\Is$ or BBT, and it does not transfer to molecule classes.}
+\statusline{The spectrum-rigidity reduction and the full conditional
+candidate-rotation theorem are \kernelcheck{}: see
+\texttt{AssemblyP1/OrientedFinalRigidity.lean} and
+\texttt{AssemblyP1/SameLength62Uniqueness.lean} (merged PR~\#124).
+The candidate theorem consumes source-faithful $\Is$ and explicit
+genuine Section~6.2 certificates for BOTH the truth and the competitor;
+it requires no external BBT obstruction axiom. The older citation
+\cite{bresler2013} remains an alternative published mathematical
+argument, not a missing formal proof premise for this conditional result.
+Without truth candidacy the nonprimitive theorem remains positive
+(merged PR~\#126), while the primitive claim is refuted by a genuine
+flow-certified AABB/ABAB competitor (PR~\#127). This does not establish
+unrestricted finite maximum-likelihood uniqueness, nor transfer to
+reverse-complement-collapsed molecules.}
 
 The equal length assumption, by contrast, is essential and sharp; we return to it
 in Section~\ref{sec:finite:length}.
@@ -299,16 +304,16 @@ same-length non-rigid pair, found by exact search, is $S=AAAAB$,
 $D=AABAB$ ($G=5$, $L=2$); its truth carries a long triple repeat and is
 therefore not $\Is$-admissible. Skirting the triple-repeat clause is precisely
 what permits the multiplicity reallocation.
-\statusline{Theorem~\ref{thm:rigidity} and
-Corollary~\ref{cor:same-length-zero} are \mathfact{} with a \kernelcheck{}
-conditional core (\texttt{OrientedFinalRigidity}, modulo the source-supported
-$\Is$ bridging implication, the primitive/periodic split now being
-kernel-checked internally); the rotation
-conclusion of Corollary~\ref{cor:same-length-rotation} adds the external BBT input
-\cite{bresler2013} and is therefore source-supported mathematics rather than
-kernel-checked. The same-spectrum conclusion gives equality/ties for
-spectrum-based finite objectives, not strict recovery by itself. The minimum non-rigid pair and the bounded verifications are
-\computed, exhaustive in the cited scope.}
+\statusline{Theorem~\ref{thm:rigidity} and the
+spectrum-equality corollary have a \kernelcheck{} core in
+\texttt{OrientedFinalRigidity}. On the genuine truth-candidate
+surface, rotation uniqueness is now kernel-checked in
+\texttt{SameLength62Uniqueness} (merged PR~\#124) rather than
+depending on an external BBT axiom. Removing that truth certificate
+is safe for nonprimitive truth only (PR~\#126); PR~\#127 refutes the
+primitive case with a genuine same-length Section~6.2 candidate.
+The numerical spectrum examples and bounded verifications are
+\computed{} within the stated ranges.}
 
 \subsection{Strict finite counterexamples}
 
@@ -549,10 +554,11 @@ reading of the 2016 sentence.
 We flag these because they are exactly the kind of assumption-surface change
 that separates a refuted statement from an open one, and because a claim that
 ``all source-supported interpretations are resolved'' must not silently absorb
-them. On the positive side, the finite same-length \emph{rotation-uniqueness}
-half remains conditional on the external complete-spectrum input of
-\cite{bresler2013}; only the population theorem of Section~\ref{sec:population}
-is now kernel-checked without it. The full row-by-row matrix, with every axis
+them. On the positive, truth-admissible same-length candidate surface, the
+finite rotation-uniqueness theorem is now kernel-checked directly in
+\texttt{SameLength62Uniqueness}, with explicit truth candidacy.
+It is not a general finite ML theorem; the source-faithful primitive
+no-truth-candidacy alternative has a genuine candidate counterexample. The full row-by-row matrix, with every axis
 value tagged as source fact, source-supported inference, or modelling choice, is
 \texttt{docs/source-notes/interpretation-matrix-217.md}.
 \end{remark}
@@ -810,8 +816,9 @@ duplex as \emph{two disjoint} circles $(S,\rc(S))$
 \caption{The finite landscape. ``False'' means a strict counterexample over the
 stated class; the evidence level (kernel-checked, exact computation, or script)
 is recorded in the corresponding theorem or status line. The positive
-same-length rows assert maximizer and, with the external BBT input, uniqueness
-up to cyclic rotation, not merely that the truth ties. By Lemma~\ref{lem:negative-transfer} each same-length falsity
+same-length rows assert maximizer and, on the truth-admissible genuine
+candidate class, internally kernel-checked uniqueness up to cyclic rotation,
+not merely that the truth ties. By Lemma~\ref{lem:negative-transfer} each same-length falsity
 transfers to all circular candidates for that objective. The last two rows are
 \emph{not} readings of the 2016 sentence: the $2G$ doubled-strand concatenation
 belongs to a different paper and is the only determinate-looking row left open
