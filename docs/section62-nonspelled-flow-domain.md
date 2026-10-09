@@ -282,6 +282,40 @@ L(d*)/L(d_S) = [(2/5)²(3/5)² / ((1/5)²(4/5)²)] · [(1/5)(4/5)³ / ((2/5)(3/5
 [kernel-checked: `lik_star_over_truth`, `star_better`, `lik_le_star`,
 `star_argmax`, `lik_star3_eq_star`; verified computation]
 
+### 2.6 Integral versus half-integral maximizers (three-level distinction)
+
+MB09 §5.1 discusses a half-integral LP/biflow relaxation as an *algorithmic
+approximation* to an optimal integral flow; §5.2 uses discrete convex costs
+`c_e : N → R`.  The `star_argmax` theorem above identifies the argmax over the
+**original integer genomics/count domain** (level (i)).  It does **not** extend to
+the half-integral biflow relaxation (level (ii)) or to a continuously-extended
+likelihood on relaxed flows (level (iii)).
+
+**The half-integral gap is exact.**  Let `f₂`, `f₃` be the feasible closed edge
+flows with throughputs `(2,1,1)` and `(3,1,1)`.  By affine balance and convex lower
+bounds, `h = (f₂ + f₃)/2` is a feasible half-integral flow with throughput
+`(5/2, 1, 1)`.  With `n = 4`, `x = (2,1,1)`, external `N = 5`, the AAA binomial
+factor is proportional to `d²(5−d)²`.  At `d = 2` or `3` it is `36`; at `d = 5/2`
+it is `625/16`.  All other factors are unchanged, so:
+
+```text
+L(h) / L(f₂) = (625/16) / 36 = 625/576 > 1
+L(h) / L(truth) = (625/576) · (256/81) = 2500/729 > 256/81
+```
+
+[kernel-checked: `half_integral_strictly_better`, `half_integral_ratio`]
+
+Thus the set `{f₂, f₃}` is the **integral** argmax only, not the half-integral or
+continuous argmax.  The three levels must be labelled explicitly:
+
+| Level | Domain | MB09 section | What `star_argmax` covers |
+|---|---|---|---|
+| (i) | Original integer genomics/count domain | §5.2 (`c_e : N → R`) | **Yes** — this is the integral argmax |
+| (ii) | Algorithmic half-integral biflow approximation | §5.1 (LP/biflow relaxation) | **No** — `h = (f₂+f₃)/2` beats it by `625/576` |
+| (iii) | Optional continuously-extended likelihood on relaxed flows | Not in MB09 | **No** — extra continuous extension |
+
+**No automatic transfer of optimality or interpretation between levels.**
+
 ---
 
 ## 3. Answering "is the truth the ML sequence over the flow domain?"

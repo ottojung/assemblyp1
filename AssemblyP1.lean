@@ -31,6 +31,7 @@ import AssemblyP1.FixedLengthBinomialCounterexample
 import AssemblyP1.Section62BridgingCounterexample
 import AssemblyP1.SameLengthSection62Counterexample
 import AssemblyP1.Section62BidirectedFlow
+import AssemblyP1.Section62NonSpelledFlow
 import AssemblyP1.FiniteSamplingCounterexample
 import AssemblyP1.PopulationReduction
 import AssemblyP1.OrientedRigidity
@@ -875,3 +876,32 @@ container's 8 GiB cgroup --- pre-existing, see
 #print axioms AssemblyP1.Issue94Interface.bbTP2Prim_of_bbtUniqueAt
 #print axioms AssemblyP1.Issue94Interface.bbTP2Prim_of_obstruction
 #print axioms AssemblyP1.Issue94Interface.population_unique_ML_of_BBTUniqueAt
+
+/-! ## Axiom audit for the general (non-spelled) §6.2 flow domain
+(`AssemblyP1.Section62NonSpelledFlow`).
+
+`spelled_subset_general` records that a §6.2 *spelled* candidate certifies
+admissibility against the *general* `Feasible62` predicate, which is why the
+already-merged spelled witnesses refute dominance over the whole flow feasible
+set without a new witness.  The module then exhibits an admissible §6.2 flow
+whose vertex throughputs no circular molecule realizes at any length, which
+attains the §6.1 optimum over its whole domain. -/
+
+#print axioms AssemblyP1.Section62NonSpelledFlow.truth_information_feasible
+#print axioms AssemblyP1.Section62NonSpelledFlow.truth_feasible62
+#print axioms AssemblyP1.Section62NonSpelledFlow.star21_feasible62
+#print axioms AssemblyP1.Section62NonSpelledFlow.star21_feasible62_reduced
+#print axioms AssemblyP1.Section62NonSpelledFlow.star31_feasible62
+#print axioms AssemblyP1.Section62NonSpelledFlow.star21_uses_short_overlap
+#print axioms AssemblyP1.Section62NonSpelledFlow.star_better
+#print axioms AssemblyP1.Section62NonSpelledFlow.lik_star_over_truth
+#print axioms AssemblyP1.Section62NonSpelledFlow.lik_le_star
+#print axioms AssemblyP1.Section62NonSpelledFlow.star_argmax
+#print axioms AssemblyP1.Section62NonSpelledFlow.half_integral_strictly_better
+#print axioms AssemblyP1.Section62NonSpelledFlow.half_integral_ratio
+#print axioms AssemblyP1.Section62NonSpelledFlow.sum_spectrum
+#print axioms AssemblyP1.Section62NonSpelledFlow.no_sequence_has_star_spectrum
+#print axioms AssemblyP1.Section62NonSpelledFlow.spelled_subset_general
+#print axioms AssemblyP1.Section62NonSpelledFlow.reducedList_eq
+#print axioms AssemblyP1.Section62NonSpelledFlow.graph_reduction_vacuous_literal
+#print axioms AssemblyP1.Section62NonSpelledFlow.nonspelled_se62_flow_domain_countermodel

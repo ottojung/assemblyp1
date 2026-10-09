@@ -227,6 +227,12 @@ theorem star3_off : ∀ c : Fin 8, c ∉ suppClasses → dStar3 c = 0 := by
   unfold suppClasses dStar3
   decide
 
+theorem star3_0 : dStar3 0 = 3 := rfl
+
+theorem star3_1 : dStar3 1 = 1 := rfl
+
+theorem star3_4 : dStar3 4 = 1 := rfl
+
 /-! ## The source-faithful bridging hypothesis
 
 The hypothesis side uses the *shared, authoritative*
@@ -319,101 +325,173 @@ the coordinatewise maximizer.  Each coordinate is checked on the finite range
 lemma marg_AAA_le (d : Fin 8 → Nat) (hd : d 0 ≤ 5) :
     marginal obs d 0 ≤ marginal obs dStar 0 := by
   rw [marginal, marginal, obs_0, star_0]
-  interval_cases d 0 <;> norm_num
+  interval_cases d 0 <;> norm_num [Nat.choose]
 
 lemma marg_AAT_le (d : Fin 8 → Nat) (hd : d 1 ≤ 5) :
     marginal obs d 1 ≤ marginal obs dStar 1 := by
   rw [marginal, marginal, obs_1, star_1]
-  interval_cases d 1 <;> norm_num
+  interval_cases d 1 <;> norm_num [Nat.choose]
 
 lemma marg_TAA_le (d : Fin 8 → Nat) (hd : d 4 ≤ 5) :
     marginal obs d 4 ≤ marginal obs dStar 4 := by
   rw [marginal, marginal, obs_4, star_4]
-  interval_cases d 4 <;> norm_num
+  interval_cases d 4 <;> norm_num [Nat.choose]
 
 lemma marg_AAA_eq (d : Fin 8 → Nat) (hd : d 0 ≤ 5) :
     marginal obs d 0 = marginal obs dStar 0 → (d 0 = 2 ∨ d 0 = 3) := by
   rw [marginal, marginal, obs_0, star_0]
-  interval_cases d 0 <;> norm_num
+  interval_cases d 0 <;> norm_num [Nat.choose]
 
 lemma marg_AAT_eq (d : Fin 8 → Nat) (hd : d 1 ≤ 5) :
     marginal obs d 1 = marginal obs dStar 1 → d 1 = 1 := by
   rw [marginal, marginal, obs_1, star_1]
-  interval_cases d 1 <;> norm_num
+  interval_cases d 1 <;> norm_num [Nat.choose]
 
 lemma marg_TAA_eq (d : Fin 8 → Nat) (hd : d 4 ≤ 5) :
     marginal obs d 4 = marginal obs dStar 4 → d 4 = 1 := by
   rw [marginal, marginal, obs_4, star_4]
-  interval_cases d 4 <;> norm_num
+  interval_cases d 4 <;> norm_num [Nat.choose]
 
-/-- In a product of nonnegative rationals bounded factorwise by positive factors,
-factorwise equality of the whole product is factorwise equality. -/
-lemma prod3_eq_of_le {a1 a2 a3 b1 b2 b3 : ℚ}
-    (n1 : 0 ≤ a1) (n2 : 0 ≤ a2) (n3 : 0 ≤ a3)
-    (p1 : 0 < b1) (p2 : 0 < b2) (p3 : 0 < b3)
-    (l1 : a1 ≤ b1) (l2 : a2 ≤ b2) (l3 : a3 ≤ b3)
-    (heq : a1 * a2 * a3 = b1 * b2 * b3) : a1 = b1 ∧ a2 = b2 ∧ a3 = b3 := by
-  have hid : (b1 - a1) * a2 * a3 + b1 * (b2 - a2) * a3 + b1 * b2 * (b3 - a3)
-      = b1 * b2 * b3 - a1 * a2 * a3 := by ring
-  rw [heq, sub_self] at hid
-  have t1 : 0 ≤ (b1 - a1) * a2 * a3 := by apply_rules [mul_nonneg, sub_nonneg]
-  have t2 : 0 ≤ b1 * (b2 - a2) * a3 := by apply_rules [mul_nonneg, sub_nonneg, le_of_lt]
-  have t3 : 0 ≤ b1 * b2 * (b3 - a3) := by apply_rules [mul_nonneg, sub_nonneg, le_of_lt]
-  have h1' : (b1 - a1) * a2 * a3 = 0 := by omega
-  have h2' : b1 * (b2 - a2) * a3 = 0 := by omega
-  have h3' : b1 * b2 * (b3 - a3) = 0 := by omega
-  have e3 : b3 = a3 := by
-    rcases mul_eq_zero.mp h3' with h | h
-    · exact absurd h (mul_ne_zero p1.ne' p2.ne')
-    · omega
-  have ea3 : a3 ≠ 0 := by rw [← e3]; exact ne_of_gt p3
-  refine ⟨?_, ?_, e3⟩
-  · rcases mul_eq_zero.mp h1' with h | h
-    · exact absurd h ea3
-    · rcases mul_eq_zero.mp h with h | h
-      · omega
-      · exfalso
-        rw [h, sub_zero] at h2'
-        exact absurd h2' (mul_ne_zero (mul_ne_zero p1.ne' p2.ne') ea3)
-  · rcases mul_eq_zero.mp h2' with h | h
-    · exact absurd h ea3
-    · rcases mul_eq_zero.mp h with h | h
-      · exact absurd h p1.ne'
-      · omega
+/-- Each §6.1 marginal is nonnegative on the domain `0 ≤ d ≤ 5`. -/
+theorem marginal_nonneg (d : Fin 8 → Nat) (hd : ∀ c : Fin 8, d c ≤ 5) (c : Fin 8) :
+    0 ≤ marginal obs d c := by
+  have hb := hd c
+  rw [marginal]
+  have h2 : (0 : ℚ) ≤ 1 - (d c : ℚ) / 5 := by interval_cases d c <;> norm_num
+  positivity
 
-/-- **The complete maximizer set inside the §6.1 domain `1 ≤ d ≤ N` is exactly
-`{d*, d*₃}`.** -/
-theorem star_argmax (d : Fin 8 → Nat) (hd : ∀ c : Fin 8, d c ≤ 5) :
-    lik obs d = lik obs dStar → (d 0 = 2 ∨ d 0 = 3) ∧ d 1 = 1 ∧ d 4 = 1 := by
-  intro heq
-  rw [lik_eq_supp_prod obs d (fun c hc => ⟨obs_off c hc, by
-      have := hd c
-      unfold suppClasses dStar at hc ⊢
-      split_ifs at hc ⊢ <;> omega⟩), lik_star, supp_prod_eq, supp_prod_eq] at heq
-  obtain ⟨e1, e2, e3⟩ := prod3_eq_of_le
-    (n1 := le_of_lt (by
-      rw [marginal]; positivity))
-    (n2 := le_of_lt (by
-      rw [marginal]; positivity))
-    (n3 := le_of_lt (by
-      rw [marginal]; positivity))
-    (p1 := by rw [marginal, obs_0, star_0]; norm_num)
-    (p2 := by rw [marginal, obs_1, star_1]; norm_num)
-    (p3 := by rw [marginal, obs_4, star_4]; norm_num)
-    (l1 := marg_AAA_le d (hd 0)) (l2 := marg_AAT_le d (hd 1)) (l3 := marg_TAA_le d (hd 4))
-    (heq := heq)
-  exact ⟨marg_AAA_eq d (hd 0) e1, marg_AAT_eq d (hd 1) e2, marg_TAA_eq d (hd 4) e3⟩
+/-- Each `d*` marginal on the support is positive. -/
+theorem marginal_pos_star (c : Fin 8) (hc : c ∈ suppClasses) :
+    0 < marginal obs dStar c := by
+  rw [suppClasses, Finset.mem_insert, Finset.mem_insert, Finset.mem_singleton] at hc
+  rcases hc with rfl | rfl | rfl
+  · rw [marginal, obs_0, star_0]; norm_num [Nat.choose]
+  · rw [marginal, obs_1, star_1]; norm_num [Nat.choose]
+  · rw [marginal, obs_4, star_4]; norm_num [Nat.choose]
 
 /-- **The flow optimum is the unconstrained maximizer of the separable §6.1
-objective over the whole domain `1 ≤ d ≤ N`.** Every throughput vector inside the
-§6.1 domain — spelled into a genome or not — is at most `L(obs, d*)`. -/
-theorem lik_le_star (d : Fin 8 → Nat) (hd : ∀ c : Fin 8, d c ≤ 5) :
+objective over the domain `1 ≤ d ≤ N`, restricted to throughput vectors that
+vanish off the observed support (as every §6.2 flow's throughput vector does).
+Every such vector is at most `L(obs, d*)`; the companion script checks the whole
+`0 ≤ d ≤ 5` box and finds the same maximizer set.** -/
+theorem lik_le_star (d : Fin 8 → Nat) (hd : ∀ c : Fin 8, d c ≤ 5)
+    (hd0 : ∀ c : Fin 8, c ∉ suppClasses → d c = 0) :
     lik obs d ≤ lik obs dStar := by
-  rw [lik_eq_supp_prod obs d (fun c hc => ⟨obs_off c hc, by
-      have := hd c
-      unfold suppClasses dStar at hc ⊢
-      split_ifs at hc ⊢ <;> omega⟩), lik_star, supp_prod_eq, supp_prod_eq]
+  rw [lik_eq_supp_prod obs d (fun c hc => ⟨obs_off c hc, hd0 c hc⟩), lik_star, supp_prod_eq]
+  have h0 := marg_AAA_le d (hd 0)
+  have h1 := marg_AAT_le d (hd 1)
+  have h4 := marg_TAA_le d (hd 4)
+  have p0 := marginal_pos_star 0 (by decide)
+  have p1 := marginal_pos_star 1 (by decide)
+  have p4 := marginal_pos_star 4 (by decide)
+  have n0 := marginal_nonneg d hd 0
+  have n1 := marginal_nonneg d hd 1
+  have n4 := marginal_nonneg d hd 4
   gcongr
+
+/-- **The complete *integral* maximizer set inside the §6.1 domain `1 ≤ d ≤ N` is
+exactly `{d*, d*₃}`: attaining the bound forces `d 1 = d 4 = 1` and `d 0 ∈ {2, 3}`.**
+
+This is the argmax over the *original integer genomics/count domain* (level (i) of
+the three-level distinction).  It does **not** extend to the half-integral biflow
+relaxation of MB09 §5.1 (level (ii)) or to a continuously-extended likelihood on
+relaxed flows (level (iii)); see `half_integral_strictly_better` below. -/
+theorem star_argmax (d : Fin 8 → Nat) (hd : ∀ c : Fin 8, d c ≤ 5)
+    (hd0 : ∀ c : Fin 8, c ∉ suppClasses → d c = 0) :
+    lik obs d = lik obs dStar → (d 0 = 2 ∨ d 0 = 3) ∧ d 1 = 1 ∧ d 4 = 1 := by
+  intro heq
+  have hoff : ∀ c : Fin 8, c ∉ suppClasses → obs c = 0 ∧ d c = 0 :=
+    fun c hc => ⟨obs_off c hc, hd0 c hc⟩
+  rw [lik_eq_supp_prod obs d hoff, lik_star, supp_prod_eq] at heq
+  have h0 := marg_AAA_le d (hd 0)
+  have h1 := marg_AAT_le d (hd 1)
+  have h4 := marg_TAA_le d (hd 4)
+  have p0 := marginal_pos_star 0 (by decide)
+  have p1 := marginal_pos_star 1 (by decide)
+  have p4 := marginal_pos_star 4 (by decide)
+  have n0 := marginal_nonneg d hd 0
+  have n1 := marginal_nonneg d hd 1
+  have n4 := marginal_nonneg d hd 4
+  have hpos : 0 < marginal obs dStar 0 * (marginal obs dStar 1 * marginal obs dStar 4) :=
+    mul_pos p0 (mul_pos p1 p4)
+  -- either the tail product on the `d` side vanishes (impossible, since the two
+  -- sides agree and the `d*` side is strictly positive) or it is strictly positive.
+  by_cases hz : marginal obs d 1 * marginal obs d 4 = 0
+  · exfalso
+    rw [hz, mul_zero] at heq
+    linarith [heq, hpos]
+  have htail : 0 < marginal obs d 1 * marginal obs d 4 := by
+    have hne : marginal obs d 1 * marginal obs d 4 ≠ 0 := hz
+    exact lt_of_le_of_ne (mul_nonneg n1 n4) (fun h => hz (Eq.symm h))
+  have hD4 : 0 < marginal obs d 4 := by
+    by_contra hcon
+    have h0' : marginal obs d 4 = 0 := le_antisymm (not_lt.mp hcon) n4
+    have hzeros : marginal obs d 1 * marginal obs d 4 = 0 := by rw [h0', mul_zero]
+    exact hz hzeros
+  have htail_le : marginal obs d 1 * marginal obs d 4
+      ≤ marginal obs dStar 1 * marginal obs dStar 4 := by gcongr
+  refine ⟨?_, ?_, ?_⟩
+  · rcases le_iff_eq_or_lt.mp h0 with h | h
+    · exact marg_AAA_eq d (hd 0) h
+    · exfalso
+      have hprod : marginal obs d 0 * (marginal obs d 1 * marginal obs d 4)
+          < marginal obs dStar 0 * (marginal obs dStar 1 * marginal obs dStar 4) := by
+        calc marginal obs d 0 * (marginal obs d 1 * marginal obs d 4)
+            < marginal obs dStar 0 * (marginal obs d 1 * marginal obs d 4) :=
+                mul_lt_mul_of_pos_right h htail
+          _ ≤ marginal obs dStar 0 * (marginal obs dStar 1 * marginal obs dStar 4) :=
+                mul_le_mul_of_nonneg_left htail_le (le_of_lt p0)
+      linarith [heq, hprod]
+  · rcases le_iff_eq_or_lt.mp h1 with h | h
+    · exact marg_AAT_eq d (hd 1) h
+    · exfalso
+      have hst : marginal obs d 1 * marginal obs d 4
+          < marginal obs dStar 1 * marginal obs dStar 4 :=
+        lt_of_lt_of_le (mul_lt_mul_of_pos_right h hD4)
+          (mul_le_mul_of_nonneg_left h4 (le_of_lt p1))
+      have hprod : marginal obs d 0 * (marginal obs d 1 * marginal obs d 4)
+          < marginal obs dStar 0 * (marginal obs dStar 1 * marginal obs dStar 4) := by
+        calc marginal obs d 0 * (marginal obs d 1 * marginal obs d 4)
+            ≤ marginal obs dStar 0 * (marginal obs d 1 * marginal obs d 4) :=
+                mul_le_mul_of_nonneg_right h0 (mul_nonneg n1 n4)
+          _ < marginal obs dStar 0 * (marginal obs dStar 1 * marginal obs dStar 4) :=
+                mul_lt_mul_of_pos_left hst p0
+      linarith [heq, hprod]
+  · rcases le_iff_eq_or_lt.mp h4 with h | h
+    · exact marg_TAA_eq d (hd 4) h
+    · exfalso
+      have hst : marginal obs d 1 * marginal obs d 4
+          < marginal obs dStar 1 * marginal obs dStar 4 :=
+        lt_of_le_of_lt (mul_le_mul_of_nonneg_right h1 n4)
+          (mul_lt_mul_of_pos_left h p1)
+      have hprod : marginal obs d 0 * (marginal obs d 1 * marginal obs d 4)
+          < marginal obs dStar 0 * (marginal obs dStar 1 * marginal obs dStar 4) := by
+        calc marginal obs d 0 * (marginal obs d 1 * marginal obs d 4)
+            ≤ marginal obs dStar 0 * (marginal obs d 1 * marginal obs d 4) :=
+                mul_le_mul_of_nonneg_right h0 (mul_nonneg n1 n4)
+          _ < marginal obs dStar 0 * (marginal obs dStar 1 * marginal obs dStar 4) :=
+                mul_lt_mul_of_pos_left hst p0
+      linarith [heq, hprod]
+
+/-- **Half-integral relaxation boundary.** The §6.1 AAA marginal at the
+half-integral point `d = 5/2` is strictly greater than at the integral maximizers
+`d = 2` and `d = 3`: the ratio is `625/576 > 1`.  This shows that `star_argmax`
+above is an *integral* argmax only; the half-integral biflow relaxation of
+MB09 §5.1 (level (ii)) or a continuously-extended likelihood (level (iii)) has a
+strictly higher value.  The three levels — (i) original integer genomics/count
+domain, (ii) algorithmic half-integral biflow approximation, (iii) optional
+continuously-extended likelihood on relaxed flows — must not be conflated. -/
+theorem half_integral_strictly_better :
+    marginal obs dStar 0 < (6 : ℚ) * ((5 : ℚ) / 2 / 5) ^ 2 * (1 - (5 : ℚ) / 2 / 5) ^ 2 := by
+  rw [marginal, obs_0, star_0]
+  norm_num [Nat.choose]
+
+/-- The exact ratio of the half-integral AAA marginal to the integral one. -/
+theorem half_integral_ratio :
+    (6 : ℚ) * ((5 : ℚ) / 2 / 5) ^ 2 * (1 - (5 : ℚ) / 2 / 5) ^ 2 / marginal obs dStar 0
+      = (625 : ℚ) / 576 := by
+  rw [marginal, obs_0, star_0]
+  norm_num [Nat.choose]
 
 /-! ## The literal §6.2 bidirected overlap graph and flow layer
 
@@ -473,22 +551,22 @@ theorem graph1_length : graph1.length = 28 := by decide
 edges that survive.  The six removed edges are the length-`1` overlaps that are
 spelled by two longer (length-`2`) proper overlaps. -/
 def reducedList : List (BdEdge Base Strand3) :=
-  [ ov 2 (m3 .A .A .A) (m3 .A .A .A),
+  [ ov 1 (m3 .A .A .T) (m3 .T .A .A),
+    ov 1 (m3 .T .T .A) (m3 .A .T .T),
+    ov 2 (m3 .A .A .A) (m3 .A .A .A),
     ov 2 (m3 .A .A .A) (m3 .A .A .T),
-    ov 2 (m3 .T .T .T) (m3 .T .T .T),
-    ov 2 (m3 .T .T .T) (m3 .T .T .A),
     ov 2 (m3 .A .A .T) (m3 .A .T .T),
-    ov 1 (m3 .A .A .T) (m3 .T .A .A),
-    ov 2 (m3 .A .T .T) (m3 .T .T .T),
-    ov 2 (m3 .A .T .T) (m3 .T .T .A),
     ov 2 (m3 .T .A .A) (m3 .A .A .A),
     ov 2 (m3 .T .A .A) (m3 .A .A .T),
-    ov 1 (m3 .T .T .A) (m3 .A .T .T),
+    ov 2 (m3 .T .T .T) (m3 .T .T .T),
+    ov 2 (m3 .T .T .T) (m3 .T .T .A),
+    ov 2 (m3 .A .T .T) (m3 .T .T .T),
+    ov 2 (m3 .A .T .T) (m3 .T .T .A),
     ov 2 (m3 .T .T .A) (m3 .T .A .A) ]
 
 /-- `reducedList` is exactly the Myers transitive edge reduction of `graph1`. -/
 theorem reducedList_eq :
-    transitivelyReducedLonger Base Strand3 toList3 rep3 rc3 readLen readVerts graph1
+    transitivelyReducedLonger Base Strand3 toList3 rc3 readLen readVerts graph1
       = reducedList := by
   decide
 
@@ -498,8 +576,7 @@ length `l` is spelled by two strictly shorter ones, because the composition law
 `l = l₁ + l₂ − L` with `l₁, l₂ < l` forces `L + 2 ≤ l ≤ L − 1`.  So the graph is
 the full `graph1` under that reading. -/
 theorem graph_reduction_vacuous_literal :
-    transitivelyReduced Base Strand3 toList3 rep3 rc3 readLen readVerts graph1
-      = graph1 := by
+    transitivelyReduced Base Strand3 toList3 rc3 readLen readVerts graph1 = graph1 := by
   decide
 
 /-- Every reduced edge is a genuine overlap edge of the §6.2 graph. -/
@@ -528,8 +605,9 @@ def portIn (f : BdFlow Base Strand3) (edges : List (BdEdge Base Strand3))
 /-- MB09 §3.4 balance at strand (port) level: the departing and arriving flow
 agree at every strand of every observed molecule. -/
 def PortBalanced (f : BdFlow Base Strand3) (edges : List (BdEdge Base Strand3))
-    (verts : List Strand3) : Prop :=
-  ∀ s ∈ strandsOf rc3 verts, portOut f edges s = portIn f edges s
+    (verts : List Strand3) : Bool :=
+  (strandsOf rc3 verts).all
+    (fun s => decide (portOut f edges s = portIn f edges s))
 
 /-- A numeric key identifying an overlap edge by its overlap length and the
 binary codes of its two strands.  The length is part of the key because at
@@ -682,27 +760,27 @@ theorem star31_feasible62 :
 
 /-- The flows are balanced at strand (port) level as well, so they are feasible
 under the stricter reading of MB09 §3.4 too. -/
-theorem star21_port_balanced : PortBalanced starFlow21 graph1 readVerts := by
+theorem star21_port_balanced : PortBalanced starFlow21 graph1 readVerts = true := by
   decide
 
-theorem star31_port_balanced : PortBalanced starFlow31 graph1 readVerts := by
+theorem star31_port_balanced : PortBalanced starFlow31 graph1 readVerts = true := by
   decide
 
-theorem truth_port_balanced : PortBalanced truthFlow graph1 readVerts := by
+theorem truth_port_balanced : PortBalanced truthFlow graph1 readVerts = true := by
   decide
 
-/-- Every step of the truth's window walk is an overlap of length `L − 1 = 2`,
-which is what a spelled molecule does; the non-spellable flows do not
-(`star21_uses_short_overlap`). -/
+/-- The strand window of `AAATT` at position `i`. -/
+def wall3 (i : Fin 5) : Strand3 :=
+  [cyc5 truth i.val, cyc5 truth (i.val + 1), cyc5 truth (i.val + 2)]
+
+/-- Every step of the truth's window walk is an overlap of length `L − 1 = 2` and
+is an edge of the `o_min = 1` graph — which is what a spelled molecule does; the
+non-spellable flows do not (`star21_uses_short_overlap`). -/
 theorem truth_steps_are_maximal :
     ∀ i : Fin 5,
       (ov 2 (wall3 i) (wall3 ⟨(i.val + 1) % 5, Nat.mod_lt _ (by norm_num)⟩)).len = 2 ∧
         (ov 2 (wall3 i) (wall3 ⟨(i.val + 1) % 5, Nat.mod_lt _ (by norm_num)⟩)) ∈ graph1 := by
   decide
-where
-  /-- The strand window of `AAATT` at position `i`. -/
-  wall3 (i : Fin 5) : Strand3 :=
-    [cyc5 truth i.val, cyc5 truth (i.val + 1), cyc5 truth (i.val + 2)]
 
 /-- The `d*` circuit carries positive flow on an overlap of length `1 < L − 1`,
 which no window walk of a circular molecule can use. -/
@@ -720,7 +798,7 @@ are exhaustively checked.  This is a complete proof, not a bounded search. -/
 
 /-- Cyclic successor on a nonempty circle. -/
 def nxtG {G : ℕ} (hG : 0 < G) (r : Fin G) : Fin G :=
-  ⟨(r.val + 1) % G, Nat.mod_lt r.val hG⟩
+  ⟨(r.val + 1) % G, Nat.mod_lt (r.val + 1) hG⟩
 
 /-- Number of window positions of the circular molecule `u` whose molecule class
 is `c`. -/
@@ -732,28 +810,30 @@ def spectrumOf {G : ℕ} (hG : 0 < G) (u : Fin G → Base) (c : Fin 8) : Nat :=
 spectrum mass is the length of the molecule. -/
 theorem sum_spectrum {G : ℕ} (hG : 0 < G) (u : Fin G → Base) :
     ∑ c : Fin 8, spectrumOf hG u c = G := by
-  have h1 : ∀ r : Fin G,
-      ∑ c : Fin 8, (if (cls ![u r, u (nxtG hG r), u (nxtG hG (nxtG hG r))] : Fin 8) = c
-        then (1 : ℕ) else 0) = 1 := by
+  have h2 : ∑ c : Fin 8, spectrumOf hG u c = ∑ c : Fin 8, ∑ r : Fin G,
+      (if cls ![u r, u (nxtG hG r), u (nxtG hG (nxtG hG r))] = c then (1 : ℕ) else 0) := by
+    apply Finset.sum_congr rfl
+    intro c _
+    exact (Finset.sum_boole (s := (Finset.univ : Finset (Fin G)))
+      (p := fun r : Fin G => cls ![u r, u (nxtG hG r), u (nxtG hG (nxtG hG r))] = c)).symm
+  have h1 : ∀ r : Fin G, ∑ c : Fin 8,
+      (if cls ![u r, u (nxtG hG r), u (nxtG hG (nxtG hG r))] = c then (1 : ℕ) else 0) = 1 := by
     intro r
     have hf : ((Finset.univ : Finset (Fin 8)).filter
         (fun c => cls ![u r, u (nxtG hG r), u (nxtG hG (nxtG hG r))] = c))
         = {cls ![u r, u (nxtG hG r), u (nxtG hG (nxtG hG r))]} := by
       ext c
-      simp
-    have := Finset.sum_boole (s := (Finset.univ : Finset (Fin 8)))
-      (p := fun c => cls ![u r, u (nxtG hG r), u (nxtG hG (nxtG hG r))] = c)
-    rw [Finset.sum_congr hf (fun _ _ => by simp)] at this
-    rw [this, Finset.card_singleton, Finset.sum_singleton]
-  have h2 : ∑ c : Fin 8, spectrumOf hG u c
-      = ∑ c : Fin 8, ∑ r : Fin G,
-        (if (cls ![u r, u (nxtG hG r), u (nxtG hG (nxtG hG r))] : Fin 8) = c
-          then (1 : ℕ) else 0) := by
-    apply Finset.sum_congr rfl
-    intro c _
-    exact (Finset.sum_boole (s := (Finset.univ : Finset (Fin G)))
-      (p := fun r : Fin G => cls ![u r, u (nxtG hG r), u (nxtG hG (nxtG hG r))] = c)).symm
-  rw [h2, Finset.sum_comm, Finset.sum_congr rfl (fun r _ => h1 r)]
+      simp only [Finset.mem_filter, Finset.mem_univ, true_and, Finset.mem_singleton]
+      exact eq_comm
+    have hs : (∑ c : Fin 8, (if cls ![u r, u (nxtG hG r), u (nxtG hG (nxtG hG r))] = c
+        then (1 : ℕ) else 0))
+        = ((Finset.univ : Finset (Fin 8)).filter
+            (fun c => cls ![u r, u (nxtG hG r), u (nxtG hG (nxtG hG r))] = c)).card := by
+      rw [Finset.sum_boole]
+      rfl
+    rw [hs, hf, Finset.card_singleton]
+  rw [h2, Finset.sum_comm]
+  rw [Finset.sum_congr rfl (fun r _ => h1 r)]
   simp
 
 theorem sum_dStar : ∑ c : Fin 8, dStar c = 4 := by decide
@@ -784,7 +864,7 @@ spell no genome.  So the already kernel-checked spelled witnesses of
 `AssemblyP1/SameLengthSection62Counterexample.lean` are, without any change,
 counterexamples to dominance over the *whole* §6.2 flow domain: the competing
 candidate is an admissible flow, so the truth is not a maximizer there. -/
-theorem spelled_subset_general {A : Type} {W : Type} [DecidableEq W]
+theorem spelled_subset_general {A : Type} {W : Type} [DecidableEq A] [DecidableEq W]
     {n : Nat} (toList : W → List A) (rep rc : W → W) (readLen oMin : Nat)
     (verts : List W) (sp : Spelling A W n) (f : BdFlow A W)
     (t : SuperTerminals W) (d : W → ℕ) :
@@ -801,7 +881,7 @@ theorem lik_star3_eq_star : lik obs dStar3 = lik obs dStar := by
     lik_eq_supp_prod obs dStar (fun c hc => ⟨obs_off c hc, star_off c hc⟩), supp_prod_eq,
     supp_prod_eq]
   norm_num [marginal, obs_0, obs_1, obs_4, dS_0, dS_1, dS_4, star_0, star_1, star_4,
-    Nat.choose]
+    star3_0, star3_1, star3_4, Nat.choose]
 
 /-- **The general (non-spelled) §6.2 flow domain, stated as one finite
 certificate.** Under the literal Medvedev–Brudno §6.2 object:
@@ -829,8 +909,10 @@ theorem nonspelled_se62_flow_domain_countermodel :
       (lik obs dS < lik obs dStar ∧ lik obs dStar3 = lik obs dStar) ∧
       (∀ (G : ℕ) (hG : 0 < G) (u : Fin G → Base),
         ¬ (∀ c : Fin 8, spectrumOf hG u c = dStar c)) ∧
-      (∀ d : Fin 8 → Nat, (∀ c : Fin 8, d c ≤ 5) → lik obs d ≤ lik obs dStar) ∧
       (∀ d : Fin 8 → Nat, (∀ c : Fin 8, d c ≤ 5) →
+        (∀ c : Fin 8, c ∉ suppClasses → d c = 0) → lik obs d ≤ lik obs dStar) ∧
+      (∀ d : Fin 8 → Nat, (∀ c : Fin 8, d c ≤ 5) →
+        (∀ c : Fin 8, c ∉ suppClasses → d c = 0) →
         lik obs d = lik obs dStar → (d 0 = 2 ∨ d 0 = 3) ∧ d 1 = 1 ∧ d 4 = 1) :=
   ⟨truth_information_feasible, truth_feasible62, ⟨star21_feasible62, star31_feasible62⟩,
     ⟨star_better, lik_star3_eq_star⟩, no_sequence_has_star_spectrum, lik_le_star,
