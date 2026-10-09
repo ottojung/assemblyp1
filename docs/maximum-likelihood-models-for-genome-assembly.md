@@ -45,13 +45,52 @@ Accordingly, finite results below are stated with their assumption surface rathe
 
 ## 3. Finite results
 
-### 3.1 A strong positive slice: oriented, spelled, same length
+### 3.1 Oriented same-length candidates: exact hypothesis boundary
 
-Under strict oriented single-strand read types, Shomorony `I_s`, the §6.2 spelled-candidate support condition, and the additional candidate restriction `|D|=G`, the truth spectrum is rigid: `spec_L(S)` is the unique positive circulation of total `G` on the relevant de Bruijn support.
+Under Shomorony information feasibility, **shared complete length-L window
+support** between a truth S and a same-length candidate D forces equality
+of their complete spectra by the oriented rigidity theorem. They then
+tie under an objective depending only on the spectrum and observed counts.
 
-Consequently every feasible same-length spelled candidate has exactly the same length-`L` spectrum as the truth. Any objective depending only on that spectrum and the observed read counts therefore gives every such candidate the same score as the truth.
+However, being a genuine Medvedev–Brudno section 6.2 candidate by itself
+does **not** imply shared support with the truth. A genuine candidate
+spells exactly the observed read types, which may be a strict subset of
+the truth's complete window support. The kernel-checked ACGT witness
+(merged PR #125, AssemblyP1.AcgtWitness211) establishes that information
+feasibility does not imply a genuine section 6.2 certificate for the truth.
 
-This is a genuine positive finite theorem for the **maximizer** conclusion. It does not by itself establish uniqueness of the maximizing circular sequence. That uniqueness reading — can distinct tied maximizing circular genomes exist under the same oriented same-length `I_s` assumptions? — is the #211 question, and it remains externally conditional on the Bresler–Bresler–Tse complete-spectrum theorem (see §6.1). The positive slice also depends essentially on the same-length candidate restriction; that restriction is not supplied merely by Medvedev–Brudno's known-`N` parameter.
+Theorem AssemblyP1.SameLength62Uniqueness.unique_62_maximizer_up_to_rotation
+(PR #124) is a **conditional rotation result**: source information
+feasibility PLUS both the truth and the competitor possessing genuine
+same-length section 6.2 certificates for the same observed vertex list.
+Its primitive proof uses the repository's #94 route and its nonprimitive
+proof uses periodic simple-cycle rigidity; no external BBT obstruction
+axiom is needed. Without the truth certificate, its conclusion cannot
+simply be carried over.
+
+The separately checked nonprimitive theorem
+AssemblyP1.SameLength62NonprimitiveRotation.candidate_isCyclicShift_of_nonprimitive_I_s
+(merged PR #126) drops truth candidacy: real read provenance gives
+support(D) contained in support(S), sufficient for the deterministic
+simple-cycle rotation theorem from merged PR #123.
+
+For **primitive** truths the corresponding no-truth-candidacy claim is
+**false**. In AssemblyP1.Primitive62Uniqueness (PR #127), the primitive
+truth AABB (G=4, L=2) is information-feasible for observed starts 1
+and 3, and ABAB is a genuinely feasible same-length section 6.2 flow
+candidate, not a rotation of the truth. The truth itself does not have
+the necessary section 6.2 certificate for this sparse observation.
+The same AABB/ABAB witness was *already* proven in
+AssemblyP1.SameLengthExactMLCounterexample to prefer ABAB under
+exact multinomial likelihood (1/4 versus 1/16). PR #127 adds
+the genuine section 6.2 flow admissibility certificate; it is not a
+new discovery of that exact-ML failure.
+
+Hence candidate rotation, candidate existence, maximization of the
+section 6.2 approximate count objective, and maximization of the
+unrestricted exact multinomial likelihood must be kept distinct.
+The source's externally supplied N does not imply a fixed candidate
+genome length.
 
 ### 3.2 Remove the candidate-length restriction: finite ML fails
 
@@ -183,7 +222,7 @@ The source-faithful historical question and the repaired models must remain visi
 
 - Shomorony et al. supply the single-strand shotgun model, bridging/information-feasibility condition, and the published open-question sentence.
 - Medvedev–Brudno supply the ML formulations and graph/flow machinery whose exact referent must be stated for each result.
-- Bresler–Bresler–Tse supply the complete-spectrum/Ukkonen uniqueness theorem. In the repaired oriented population result this input is now discharged by the repository's own kernel-checked proof (`concrete_p2LongUnique`); in the finite same-length `I_s` uniqueness question it remains an explicit external premise. The two statuses must not be conflated.
+- Bresler–Bresler–Tse supply the complete-spectrum/Ukkonen uniqueness theorem. The repository now checks the relevant oriented primitive and nonprimitive candidate-rotation routes internally, but the finite conditional theorem requires truth candidacy, which information feasibility alone does not guarantee. The primitive no-truth-candidacy reading has a checked counterexample. These facts do not assert unrestricted finite ML success.
 - The fixed-candidate-length theorem is a mathematical result under an extra candidate restriction, not a consequence of MB09's known-`N` parameter.
 - P1/P2 candidate-intrinsic admissibility, primitiveness, and the population objective are project-level repaired formulations motivated by the finite analysis, not assumptions retrofitted into the literature.
 - Counterexamples and proofs should continue to be labeled according to whether they are mathematical proofs, computational evidence, source interpretations, or kernel-checked Lean results.
