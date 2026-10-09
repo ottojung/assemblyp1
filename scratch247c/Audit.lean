@@ -17,3 +17,7 @@ open AssemblyP1.HistoricalCoverageSameLength
 #print axioms AssemblyP1.HistoricalCoverageSameLength.W2.w2_historical_information_feasible
 #print axioms AssemblyP1.HistoricalCoverageSameLength.W2.w2_historical_full_se62_flow_counterexample
 #print axioms AssemblyP1.HistoricalCoverageSameLength.W2.w2_historical_maximality_refuted
+#print axioms AssemblyP1.HistoricalCoverageSameLength.W1.all_source_triples_are_maximal
+#print axioms AssemblyP1.HistoricalCoverageSameLength.W1.source_all_triples_are_bridged
+#print axioms AssemblyP1.HistoricalCoverageSameLength.W2.all_source_triples_are_maximal
+#print axioms AssemblyP1.HistoricalCoverageSameLength.W2.source_all_triples_are_bridged

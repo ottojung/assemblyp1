@@ -257,6 +257,39 @@ theorem matchStarts_eq :
     MatchStarts truthGenome 3 (observedWords truthGenome 3 readStarts.toFinset) = {0, 1, 3, 5} := by
   decide
 
+/-- For this concrete primitive circular truth, every repeated substring at
+three distinct starts is already a two-sided maximal triple repeat.
+The historical §6.4 definition quantifies all triple occurrences; the shared
+project predicate adds maximality. This finite regression closes that gap
+without claiming a general equivalence of the definitions. -/
+theorem all_source_triples_are_maximal :
+    ∀ (e : Fin 6) (a b c : Fin 6),
+      (1 ≤ e.val ∧ a ≠ b ∧ a ≠ c ∧ b ≠ c ∧
+        truthGenome.Agree e.val a b ∧
+        truthGenome.Agree e.val a c ∧
+        truthGenome.Agree e.val b c) →
+      truthGenome.IsTripleRepeat e.val a b c := by
+  unfold SourceFaithfulIs.Genome.Agree SourceFaithfulIs.Genome.window SourceFaithfulIs.Genome.cycl
+  decide
+
+/-- Literal §6.4 triple-repeat check: every copy of EVERY triple substring
+(including ones not assumed maximal) is bridged by an observed-string match.
+This specializes the old maximal-triple certificate using the finite
+maximality lemma above and saturated matching starts. -/
+theorem source_all_triples_are_bridged :
+    ∀ (e : Fin 6) (a b c : Fin 6),
+      (1 ≤ e.val ∧ a ≠ b ∧ a ≠ c ∧ b ≠ c ∧
+        truthGenome.Agree e.val a b ∧
+        truthGenome.Agree e.val a c ∧
+        truthGenome.Agree e.val b c) →
+      IsTripleRepeatAllBridged truthGenome 3
+        (MatchStarts truthGenome 3 (observedWords truthGenome 3 readStarts.toFinset))
+        e.val a b c := by
+  intro e a b c h
+  rw [matchStarts_eq]
+  exact truth_information_feasible.2.1 e a b c
+    (all_source_triples_are_maximal e a b c h)
+
 /-- **The full historical `I_s` holds for `W1`.**  Historical coverage (above)
 and historical bridging: because the matching start set is saturated, the
 bridging over `MatchStarts` is exactly the bridging over the sampled starts,
@@ -362,6 +395,37 @@ the sampled starts.  (The windows are `ATA,TAT,ATA,TAC,ACA,CAC,ACA,CAT`; only
 theorem matchStarts_eq :
     MatchStarts truthGenome 3 (observedWords truthGenome 3 readStarts.toFinset) = {1, 3, 4, 5, 6, 7} := by
   decide
+
+/-- The analogous no-extra-nonmaximal-triples certificate for W2.
+All literal historical triple occurrences are covered by the maximal triple
+hypothesis already discharged in the existing information-feasible proof. -/
+theorem all_source_triples_are_maximal :
+    ∀ (e : Fin 8) (a b c : Fin 8),
+      (1 ≤ e.val ∧ a ≠ b ∧ a ≠ c ∧ b ≠ c ∧
+        truthGenome.Agree e.val a b ∧
+        truthGenome.Agree e.val a c ∧
+        truthGenome.Agree e.val b c) →
+      truthGenome.IsTripleRepeat e.val a b c := by
+  unfold SourceFaithfulIs.Genome.Agree SourceFaithfulIs.Genome.window SourceFaithfulIs.Genome.cycl
+  decide
+
+/-- Literal §6.4 triple-repeat check: every copy of EVERY triple substring
+(including ones not assumed maximal) is bridged by an observed-string match.
+This specializes the old maximal-triple certificate using the finite
+maximality lemma above and saturated matching starts. -/
+theorem source_all_triples_are_bridged :
+    ∀ (e : Fin 8) (a b c : Fin 8),
+      (1 ≤ e.val ∧ a ≠ b ∧ a ≠ c ∧ b ≠ c ∧
+        truthGenome.Agree e.val a b ∧
+        truthGenome.Agree e.val a c ∧
+        truthGenome.Agree e.val b c) →
+      IsTripleRepeatAllBridged truthGenome 3
+        (MatchStarts truthGenome 3 (observedWords truthGenome 3 readStarts.toFinset))
+        e.val a b c := by
+  intro e a b c h
+  rw [matchStarts_eq]
+  exact truth_information_feasible.2.1 e a b c
+    (all_source_triples_are_maximal e a b c h)
 
 /-- **The full historical `I_s` holds for `W2`.**  Historical coverage (above)
 and historical bridging, the latter discharged by the existing full
