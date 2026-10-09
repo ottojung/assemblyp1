@@ -415,6 +415,14 @@ Refuted repairs (all project-level hypotheses, none from the sources):
 | every `L`-mer class `≤ 2` | 90 | 44 (`AAATATT` …) |
 | truth spectrum class-symmetric (`d_u = d_{ρ(u)}`) | 48 | 16 (`AAATATTT` …) |
 | every `L`-mer class multiplicity even | 60 | 16 |
+
+**Scope discipline for this table.** Every cell above is the *quick* scope
+`4 ≤ G ≤ 8`. The audit found the shipped cell `64` for "every `L`-mer class
+multiplicity even" was the *`--full`* number (`4 ≤ G ≤ 10`, where the scope is
+`174` genomes, `92` molecule-non-rigid, `h1 = 54`, `h2 = 90`, `h3 = 50`,
+`h5 = 64`, `h6 = 78`, `h7 = 30`) pasted into an otherwise quick-scope row; the
+quick-scope value is `60`, which is what the cell now says. The `h7` row is `30`
+in *both* scopes, and it is the only row not refuted in either.
 | every `(L - 1)`-mer class multiplicity even | 76 | 44 |
 | **every `(L - 1)`-mer class and every `L`-mer class `≤ 2`** | 30 | **0** (not refuted in scope) |
 
@@ -556,10 +564,14 @@ makes an *audited* witness list unusable, and none of them changes a verdict.
    `G + t`, not occurrence anywhere. The two numbers are different (`380` vs
    `936`), and `80` wrapping windows occur nowhere in the doubled genome. §3.1
    now states all three.
-4. **One cell of the §4.4 repair table was stale.** "every `L`-mer class
-   multiplicity even" was printed as `64 | 16`; the shipped script itself
-   computes `60 | 16`. Corrected to `60 | 16`. All other cells and the
-   `162 / 86 / 30 / 0` totals were reproduced exactly.
+4. **One cell of the §4.4 repair table was scope-mixed.** "every `L`-mer class
+   multiplicity even" was printed as `64 | 16`; the shipped script computes
+   `60 | 16` in the table's declared quick scope (`4 ≤ G ≤ 8`) and `64 | 16` in
+   the `--full` scope (`4 ≤ G ≤ 10`), so the `64` was a full-scope number sitting
+   in an otherwise quick-scope row. Corrected to `60 | 16`, with the full-scope
+   figure recorded so the row is no longer ambiguous. All other cells and the
+   `162 / 86 / 30 / 0` totals were reproduced exactly in both scopes by the
+   independent audit (which reports `174 / 92` for `--full`).
 5. **The kernel-checked partner statement covered fewer components than its
    docstring claimed.** `partner_placements` compared `window 3 b 0` with
    `comp (window 3 b' 2)`, i.e. **4 of the 12** symbol components of the four

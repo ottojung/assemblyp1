@@ -523,7 +523,7 @@ def molecule_spectrum_from_vector(B):
 
 
 def sectionD():
-    section("D. Census of the chromosome: recompute the appendix §4.4 repair table")
+    section("D. Census: recompute the appendix §4.4 repair table")
     rows = []
     for G in range(4, 9):
         for gw in product("AT", repeat=G):
@@ -553,9 +553,13 @@ def sectionD():
     h5 = [r for r in rows if r[5]]
     h5bad = [r for r in h5 if r[1]]
     print(f"  appendix §4.4 row 'every L-mer class multiplicity even' prints "
-          f"64 / 16; recomputed {len(h5)} / {len(h5bad)}")
+          f"64 / 16; recomputed {len(h5)} / {len(h5bad)} in the declared quick scope")
     check(len(h5) == 60, "the correct count is 60, so the appendix table cell 64 is stale")
     check(len(h5bad) == 16, "the 'still non-rigid' cell 16 is correct")
+    print("  note: the shipped script's --full scope (4<=G<=10) gives 64 / 16 for")
+    print("  this row (and 174 genomes, 92 molecule-non-rigid, h1=54, h2=90,")
+    print("  h3=50, h6=78, h7=30), so the printed 64 was a full-scope number in an")
+    print("  otherwise quick-scope row; the appendix now records both figures.")
     nr = sum(1 for r in rows if r[1])
     check(nr == 86, f"86 molecule-non-rigid genomes in scope (got {nr})")
     h7 = [r for r in rows if r[7]]
