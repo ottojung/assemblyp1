@@ -54,9 +54,7 @@ strings are the corresponding windows $W_t(S)$. It \emph{covers} $S$ if every
 position of $S$ lies in at least one read interval. The observable data are the
 read \emph{multiplicities} $x(w) = \#\{t \in R : W_t(S)=w\}$, not merely the set
 of distinct read strings.
-\statusline{\srcfact{} for uniform independent error-free sampling and coverage
-\cite[\S2]{shomorony2016}; retaining multiplicity is required for likelihood
-evaluation.}
+\statusline{\srcfact{} for independent error-free sampling;\n\projchoice{} for defining coverage using latent sampled placements.\nThe original 2016 read-string coverage is distinguished below.}
 \end{definition}
 
 We now record the repeat and bridging vocabulary. The source-faithful reading is
@@ -94,10 +92,36 @@ A read realization $R$ of $S$ is \emph{information-feasible}, written $R \in
   \item every triple repeat of $S$ is all-bridged;
   \item every interleaved repeat pair of $S$ is bridged.
 \end{enumerate}
-\statusline{\srcfact{} \cite[Eq.~(1)]{shomorony2016}, inheriting
-\cite{bresler2013}. The triplet is the hypothesis side of the published
-open-question sentence.}
+\statusline{\projchoice{} for the placement-based realization predicate;\n\srcfact{} for the analogous historical three-clause structure, whose coverage\nand bridging quantify matching observed read strings rather than latent starts.}
 \end{definition}
+
+\\begin{remark}[Observed read strings versus sampled placements]
+\\label{rem:historical-coverage}
+The original coverage condition of Shomorony et al.\\
+\\cite[Supplement, \\S6.4, Definition~1]{shomorony2016} is stated in terms
+of observed \\emph{read strings}, not their hidden sampled starts. For every
+circular start position $t$, some observed length-$L$ string must match a
+window beginning at one of $t,t+1,\\ldots,t+L-2$. The same observed string may
+match many positions when repeats occur. Definition~2 similarly counts any
+\\emph{matching occurrence} of an observed read that strictly straddles a
+selected repeat copy as a bridge. All-bridged triples and bridged
+interleavings in the historical condition use these matching occurrences.
+
+We write $I_s^{\\mathrm{match}}$ for this historical three-clause predicate and
+reserve $\\Is$ in the original placement-based theorem statements of this
+manuscript for the repository normalization defined above. They are not
+identical. For example, on circular $AAAA$ with $L=3$, one observed $AAA$
+matches everywhere and meets historical coverage even though its single
+realized placement at start $0$ does not cover base $3$. Conversely, on
+circular $ACGT$ with $L=2$, reads sampled at starts $0$ and $2$ cover every
+base, but fail the historical length-$(L-1)$ matching-start condition.
+The finite formalization audit treats both notions separately; any passage
+from a placement-based theorem to the historical question requires an explicit
+adapter proof.
+\\statusline{\\srcfact{} for the historical matching-string definitions;
+\\projchoice{} for the placement-based variant used by the existing Lean
+library.}
+\\end{remark}
 
 A length-$L$ read can bridge a copy of a repeat of length $\ell$ only if
 $\ell \le L-2$: strict extension on both sides requires the repeat to fit
@@ -141,15 +165,24 @@ and Brudno explicitly adopt for their algorithm. The two are not
 definitionally equal.}
 \end{definition}
 
-A \emph{candidate class} is a set $\cands$ of circular words to which the
-objective is restricted. The following classes occur below:
+An \emph{admissible candidate class} specifies the objects over which an
+objective is optimized. For exact genome likelihood these are circular words;
+in Medvedev--Brudno's Section~6.2 they may instead be bidirected flows that
+are not single sequences. The following distinct classes occur below:
 \begin{itemize}[leftmargin=*]
   \item all nonempty circular words (where the exact objective is defined);
   \item the same-length class $\{\,D : |D|=|S|\,\}$;
-  \item Section~6.2 \emph{spelled candidates}: circular words $D$ whose window
-        support equals the observed support, $\supp\spec_L(D)=\supp x$, reflecting
-        the source's per-vertex lower bound of $1$ on each read molecule
-        \cite[\S6.2, Observation 7]{medvedev2009};
+  \item the project-level \emph{full-overlap support proxy}: circular words
+        $D$ for which $\supp\spec_L(D)=\supp x$ with oriented length-$L$
+        read types. This is a restricted model, not a definition of every
+        historical Section~6.2 flow;
+  \item the source's Section~6.2 \emph{bidirected DNA-molecule flows}:
+        each graph vertex is an observed read molecule (a strand together
+        with its reverse complement), edges represent overlaps of length
+        at least $o_{\min}$, and the transitively reduced graph has
+        vertex-flow lower bound $1$. Such a feasible flow may decompose
+        into multiple walks rather than spell one circular genome
+        \cite[\S6.2]{medvedev2009};
   \item the project-level classes P1 and P2 defined in
         Section~\ref{sec:population}.
 \end{itemize}
