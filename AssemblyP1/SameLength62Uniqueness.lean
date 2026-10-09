@@ -5,7 +5,7 @@ import AssemblyP1.RepeatAdapter
 import AssemblyP1.BridgingBridge
 
 /-!
-# #211: same-length §6.2 uniqueness up to rotation, closed without BBT
+# #211: conditional same-length §6.2 candidate uniqueness without BBT
 
 This module closes the uniqueness reading of the oriented same-length §6.2
 maximizer statement under the source-faithful `I_s` assumptions, with **no**

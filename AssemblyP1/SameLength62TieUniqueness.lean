@@ -8,8 +8,14 @@ import AssemblyP1.Issue94LongWindowSplit
 /-!
 # #211: the §6.2 same-length maximizer versus uniqueness up to rotation
 
-This module audits, and then closes as far as the repository's own machinery
-allows, the second conclusion schema of the oriented same-length §6.2 model:
+This module is the **historical audit** of the second conclusion schema.
+The later \`SameLength62Uniqueness\` module proves candidate rotation
+conditionally on truth and competitor possessing genuine §6.2 certificates.
+The truth certificate does not follow from \`I_s\` (see \`AcgtWitness211\`).
+The standalone spectrum-fibre statement remains a different question.
+
+This audit originally treated the second conclusion schema of the
+oriented same-length §6.2 model:
 **when the maximum-likelihood sequence is tied, is it the truth?**
 
 The maximizer half of the question is already settled elsewhere and is *not*

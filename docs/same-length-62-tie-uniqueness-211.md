@@ -7,6 +7,32 @@ remaining open residue. Every claim is tagged **[fact]** (kernel-checked or
 computationally verified), **[inference]** (mathematical argument, not Lean),
 or **[choice]** (a modeling or scoping decision).
 
+
+## Current status (9 October 2026): historical audit, not an open theorem list
+
+The statements called *open* in §§4 and 8 below preserve the historical
+exploration. The later Lean theorem
+\`SameLength62Uniqueness.unique_62_maximizer_up_to_rotation\` proves rotation
+uniqueness when \`I_s\` holds **and the true genome and the competitor are both
+genuine, same-length §6.2 candidates for the same observed vertex list**.
+Its primitive branch uses #94; the nonprimitive branch uses periodic
+factor distinctness, simple-cycle support, and the merged #243 rotation lemma.
+No external BBT obstruction axiom is used.
+
+Importantly, \`hStruth\` (the true genome's §6.2 certificate) is a genuine
+additional assumption, *not* a consequence of \`I_s\`: the Lean-checked
+\`AcgtWitness211.acgt4_not_candidate\` exhibits sparse observations on the
+circular word \`ACGT\` where \`I_s\` holds but truth candidacy fails.
+Do not infer unrestricted maximum-likelihood uniqueness from the conditional
+candidate-rotation theorem.
+
+A stronger nonprimitive result without \`hStruth\` is developed in
+\`SameLength62NonprimitiveRotation\` (board #245, PR #126 as of this audit).
+The corresponding primitive case is board #246. Whether candidates exist and
+whether the §6.2 approximate objective represents exact multinomial ML are
+distinct model questions.
+
+
 ## 1. The question
 
 The oriented same-length §6.2 model asks: when the maximum-likelihood sequence
@@ -206,10 +232,12 @@ as such in `docs/same-length-62-maximizer.md`. **[fact]**
   refuted at two concrete instances (`0011^3` and `(abcab)^2`), and 1188
   `(T, k, L)` combinations with `P2` and `k ≥ 3`. **[fact]** (evidence.)
 
-## 8. The exact remaining open residue
+## 8. Historical open residue (superseded for conditional uniqueness)
 
-The uniqueness reading of the §6.2 maximizer statement needs one proposition
-that this repository does not have. Two forms, both open:
+At the time of the initial audit, the following were two proposed, unproved
+routes to the general spectrum-fibre theorem. They remain independently
+interesting, but the later *conditional candidate-rotation theorem* no
+longer requires either one:
 
 1. **`FibreFreedomForcesLongRepeat`** (combinatorial, source-independent): if
    the fibre of a circular word's complete length-`L` spectrum contains a word
@@ -225,13 +253,11 @@ that this repository does not have. Two forms, both open:
    hypothesis it is in `fibre_singleton_of_Iss_and_obstruction`. **[fact]**
    (status).
 
-The nonprimitive simple-cycle argument of §4 would close the nonprimitive
-subcase without either hypothesis, but it is not formalized. For a nonprimitive
-truth the argument reduces to the single predicate `NoBranching` of
-`SameLength62Nonprimitive` (every `(L-1)`-mer has a unique follower): `P2` plus
-nonprimitivity is expected to force `NoBranching`, and `NoBranching` then gives
-a deterministic successor, a single-cycle successor graph, and a unique
-Eulerian circuit up to rotation. `NoBranching` is the exact residue. **[choice]**
+**Subsequent proof.** The conditional nonprimitive result is now proved
+in \`SameLength62Uniqueness\` by the minimal-period
+\`IsSimpleCycle\` route, without a separate \`NoBranching\` conjecture.
+This does not establish the unrestricted ML implication or the global
+\`FibreFreedomForcesLongRepeat\` statement.
 
 ## 9. What this front does not claim
 
@@ -241,4 +267,7 @@ Eulerian circuit up to rotation. `NoBranching` is the exact residue. **[choice]*
 * It does not re-prove the maximizer theorem.
 * It does not settle the 2016 paper's reconstruction theorem, although that
   theorem would imply the residue.
-* It does not formalize the nonprimitive simple-cycle argument.
+* The historical audit did not formalize the nonprimitive simple-cycle
+  argument; \`SameLength62Uniqueness\` now does so for the conditional model.
+* It does not remove the extra \`hStruth\` premise or equate candidate
+  rotation with every maximizer of an unrestricted likelihood model.
