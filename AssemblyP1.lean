@@ -144,6 +144,7 @@ import AssemblyP1.Issue94TW5Single
 import AssemblyP1.Issue94TW6Lemma1
 import AssemblyP1.Issue94TW7AltF
 import AssemblyP1.Issue94TW8Contraction
+import AssemblyP1.Issue94KShort
 import AssemblyP1.Issue94P2Iff
 import AssemblyP1.Issue94TruthTraversal
 import AssemblyP1.AAABConverse
