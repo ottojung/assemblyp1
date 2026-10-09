@@ -1,6 +1,13 @@
 # Interpretation matrix for the 2016 finite bridging ⇒ ML question (issue #217)
 
-_Status: META front #217, 2026-10-09, built on `origin/main` at `cc0aa8a`.
+_Status: META front #217, 2026-10-09. The matrix was built on `origin/main`
+at `cc0aa8a`; the board branch `agent/board-217-978a0a` now also carries the
+merged Lean CI repair PR #117 (`e9fcf01`, "Repair full-library CI compilation
+blockers (initial fixes)") on top of that base. The #217 content is unchanged
+by the rebase — `git diff origin/agent/board-217-978a0a HEAD` over `docs/`,
+`paper/`, and `AssemblyP1.lean` is empty; only the four PR #117 Lean files
+(`BBTTripleBridge`, `Issue94ComponentAlignedSwaps`, `Issue94KShortGeneral`,
+`Issue94LongWindowSplit`) differ.
 This document is the source-backed classification matrix for the finite
 (finite-sample) reading of the 2016 sentence
 
@@ -152,6 +159,60 @@ Legend for the resolution column: **FALSE** (a strict counterexample refutes
   proposition) — neither is determinate, and neither is a source-supported
   reading of the 2016 sentence.
 
+### 2.2 Front states, coordination, and the general-flow upgrade (this round)
+
+The board coordinates six active leaves. None of their uncommitted work was
+harvested or disturbed; the board tracks their status here so another invocation
+can recover the research graph.
+
+| leaf | branch / worktree | state this round | board action |
+|---|---|---|---|
+| #208 | `agent/board-208-0c8fcf` / `assemblyp1-finite-208` | source census committed; untracked `scratch-208/` preserved | tracked; referent/2G-2N source audit, no matrix row change |
+| #210 | `agent/board-210-e8b6b2` / `assemblyp1-finite-210` | untracked `OrientedVariableLengthSe62.lean` + script preserved | tracked; R14 classification owned by this leaf |
+| #211 | `agent/board-211-8d5103` / `assemblyp1-finite-211` | `SameLength62TieUniqueness` committed; uncommitted umbrella wiring + 2 scripts preserved | tracked; uniqueness half of the same-length §6.2 tie |
+| #212 | `agent/board-212-37b45b` / `assemblyp1-finite-212` | clean; module + script already harvested | **harvested** — R13 resolved FALSE (see §7.1) |
+| #214 | `agent/board-214-d0e372` / `assemblyp1-finite-214` | `Section62NonSpelledFlow` committed (`6f024ba`); uncommitted refinements preserved | tracked below; **not** harvested (active leaf) |
+| #216 | `agent/board-216-eb3281` / `assemblyp1-finite-216` | `ImplicationLattice` committed | tracked; conclusion-schema lattice, no matrix row change |
+
+**PR #117 (merged Lean CI repair).** The board branch carries `e9fcf01`, the
+merge of PR #117 ("Repair full-library CI compilation blockers (initial
+fixes)"), which touches only `BBTTripleBridge`, `Issue94ComponentAlignedSwaps`,
+`Issue94KShortGeneral`, `Issue94LongWindowSplit`. It is a CI/build repair, not
+a mathematical result: it changes no matrix row, no witness, and no theorem
+statement. It is recorded here so the board’s base is auditable.
+
+**R9 stays Lean-conditional.** The 2013 BBT Theorem 3 input is *not* formalized
+in this repository. `BBTEulerian.bbtCompleteSpec_of_obstruction` consumes it
+as the explicit premise `hObs : EulerianCycleObstruction`, and
+`OrientedSameLengthML.same_length_unique_up_to_rotation_of_bbt` /
+`…maximality_and_rotation_uniqueness_of_bbt` consume it as the explicit premise
+`hBBT`. Both are axiom-clean (`[propext, Classical.choice, Quot.sound]`) and
+both keep the hypothesis as a premise — the uniqueness conclusion is **not**
+kernel-checked unconditionally. This round did not discharge, weaken, or
+re-state that hypothesis.
+
+**The #214 general-flow upgrade, and the separation to keep.** Leaf #214
+kernel-checks that the §6.2 refutation is not confined to spelled circuits:
+over the *whole* `Feasible62` flow domain the truth is not a maximizer, and the
+flow optimum `d* = (AAA:2, AAT:1, TAA:1)` (with `d*₃ = (AAA:3, AAT:1, TAA:1)`)
+spells no circular molecule of any length. This upgrades R10–R12 from the
+spelled sub-case to the general flow domain. Two objects must **stay separate**
+in any tracking of this result:
+
+* the **integer flow optimum** — the argmax of the §6.1 objective over the
+  integer throughput vectors `1 ≤ d ≤ N` that are genuine §6.2 flows (the
+  kernel-checked `d*`, `d*₃`); this is the §6.2 object the source defines;
+* the **half-integral relaxation** — the argmax of the same objective when `d`
+  is allowed to range over half-integers (the per-coordinate maximizer of
+  `(d/N)^x((N−d)/N)^(n−x)` is `d = xN/n`, e.g. `5/2` for the `AAA` coordinate
+  here, which is not an integer and not a §6.2 flow throughput).
+
+The relaxation is a different, larger upper bound; conflating it with the
+integer flow optimum would overstate what the §6.2 domain refutes. The board
+records the integer optimum as the §6.2 result and does not substitute the
+relaxation. #214 remains an active leaf with uncommitted refinements; the board
+tracks its committed result here rather than harvesting the module.
+
 ---
 
 ## 3. Source-fidelity column: what the source says vs. what we chose
@@ -275,6 +336,10 @@ resolved in the same sense as the negative rows.
 | the leaf-#212 census is bounded evidence, not a proof of absence | **V** bounded |
 | no determinate row remains open on `main` | repository fact |
 | which MB object the 2016 sentence denotes | **source gap, unchanged** |
+| the accepted supplementary ZIP (could hold a likelihood/tie definition) | **uninspected, unchanged** — HTTP 403 on both recorded retrieval paths; not reachable from this host |
+| the #214 general-flow upgrade (§6.2 refutation over the whole `Feasible62` domain; optimum spells no genome) | **K** (committed `6f024ba`, active leaf) — tracked in §2.2, module not harvested |
+| the integer flow optimum vs. the half-integral relaxation | **kept separate** in §2.2; the relaxation is not the §6.2 object |
+| R9’s BBT complete-spectrum input | **O** (external) — carried as explicit `hObs`/`hBBT` premise, not discharged |
 
 ---
 
@@ -370,3 +435,23 @@ One source gap is unchanged: the publisher's supplementary ZIP remains
 inspected during this round either — it is not reachable from this host — and it
 remains the last unexamined accepted artifact that could contain a likelihood or
 tie definition. No matrix row was decided by anything in it, and none can be.
+
+### 7.2 This round’s scoped checks (board coordination pass)
+
+The board branch `agent/board-217-978a0a` carries PR #117 (`e9fcf01`) on top of
+`cc0aa8a`. The following scoped checks were re-executed in this worktree for the
+coordination pass (the full-library build and whole-library kernel replay remain
+CI’s job, as recorded in §7):
+
+| check | command | result |
+|---|---|---|
+| scoped build | `LEAN_NUM_THREADS=8 lake build AssemblyP1.PerOccurrenceSameLengthCounterexample AssemblyP1.BBTEulerian AssemblyP1.OrientedSameLengthML AssemblyP1.OrientedFinalRigidity` | **Build completed successfully (8936 jobs)**, exit 0 |
+| R9 conditional axioms | `#print axioms` on `same_length_unique_up_to_rotation_of_bbt`, `same_length_maximality_and_rotation_uniqueness_of_bbt`, `bbtCompleteSpec_of_obstruction` | all three `[propext, Classical.choice, Quot.sound]` — conditional structure intact (`hBBT`/`hObs` are premises) |
+| #212 harvest axioms | `#print axioms` on `peroccurrence_samelength_se62_bidirected_flow_counterexample`, `peroccurrence_samelength_maximality_refuted` | `[propext, Classical.choice, Quot.sound]` |
+| #212 witness script | `python3 scripts/verify_peroccurrence_dna_samelength_212.py` | **ALL CHECKS PASS** (exact ratios `3/2` and `9/5` reconfirmed) |
+| branch divergence | `git diff --name-only origin/agent/board-217-978a0a HEAD` | only the four PR #117 Lean files; `docs/`, `paper/`, `AssemblyP1.lean` identical — a clean rebase |
+
+The six active leaves were consulted read-only; their uncommitted work
+(#208 `scratch-208/`, #210 `OrientedVariableLengthSe62.lean` + script, #211
+umbrella wiring + 2 scripts, #214 `Section62NonSpelledFlow` refinements) was
+preserved in place and not harvested, merged, or deleted.

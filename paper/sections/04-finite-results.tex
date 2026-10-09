@@ -532,6 +532,33 @@ source-supported inference, or modelling choice, is
 \texttt{docs/source-notes/interpretation-matrix-217.md}.
 \end{remark}
 
+\begin{remark}[The general §6.2 flow domain, and two optima that must not be
+conflated]
+\label{rem:flow-domain}
+The §6.2 refutations above are stated for \emph{spelled} bidirected circuits.
+Leaf~\#214 upgrades them to the \emph{whole} §6.2 flow domain: over the general
+\texttt{Feasible62} predicate the truth is still not a maximizer, and the flow optimum
+$d^*=(AAA{:}2,AAT{:}1,TAA{:}1)$ (with $d^*_3=(AAA{:}3,AAT{:}1,TAA{:}1)$) spells
+no circular molecule of any length, so the maximum-likelihood \emph{object} of the
+flow domain is a non-sequence and the maximum-likelihood \emph{sequence} does not
+exist there. Two optima must be kept separate:
+\begin{itemize}
+  \item the \textbf{integer flow optimum} --- the argmax of the §6.1 objective
+        over integer throughput vectors $1\le d\le N$ that are genuine §6.2 flows
+        (the kernel-checked $d^*$, $d^*_3$); this is the §6.2 object the source
+        defines;
+  \item the \textbf{half-integral relaxation} --- the argmax when $d$ ranges over
+        half-integers (the per-coordinate maximizer of
+        $(d/N)^x((N-d)/N)^{n-x}$ is $d=xN/n$, e.g.\ $5/2$ for the $AAA$ coordinate
+        here, which is neither an integer nor a §6.2 flow throughput).
+\end{itemize}
+The relaxation is a different, larger upper bound; substituting it for the
+integer flow optimum would overstate what the §6.2 domain refutes. The board
+records the integer optimum as the §6.2 result and keeps the relaxation distinct.
+Leaf~\#214 is active; its committed result is tracked in the matrix (§2.2) and
+its module is not harvested while its refinements are in progress.
+\end{remark}
+
 \subsection{The candidate-length boundary}
 \label{sec:finite:length}
 

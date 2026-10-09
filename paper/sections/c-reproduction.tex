@@ -73,6 +73,18 @@ builds them under the pinned toolchain. Where a claim is kernel-checked, the
 corresponding module is named in Appendix~\ref{app:ledger}; where a claim is
 only computationally verified, it is labeled accordingly.
 
+\subsection{Continuous-integration repair (PR \#117)}
+
+The full-library Lean build is checked in CI (workflow \texttt{ci.yml}, 360-minute
+timeout, \texttt{LEAN_NUM_THREADS=1}). PR \#117 (merged as \texttt{e9fcf01},
+``Repair full-library CI compilation blockers (initial fixes)'') repaired
+compile-level blockers in four modules so the whole-library build and the
+per-module kernel replay and axiom audit pass cleanly. PR \#117 is a build/CI
+repair, not a mathematical result: it changes no theorem statement, witness,
+candidate class, or matrix row. The board branch \texttt{agent/board-217-978a0a}
+carries it; the interpretation matrix records it so the verification base is
+auditable.
+
 \subsection{Epistemic boundary of reproduction}
 
 Reproduction verifies the \emph{finite mathematics}: spectra, likelihood ratios,
