@@ -3,13 +3,17 @@
 
 This section reports what is known about the question when the observation model
 is a finite sample and the objective is one of the Medvedev--Brudno objects of
-Section~\ref{sec:model}. The results are of two kinds. First a \emph{positive}
+Section~\ref{sec:model}. The results are of three kinds. First a \emph{positive}
 rigidity theorem for same-length oriented Section~6.2 candidates under
-Shomorony's $\Is$; the same complete-spectrum uniqueness input used by the
-population model upgrades its conclusion from a tie to uniqueness up to cyclic
-rotation. Then a sequence of \emph{negative} witnesses, each refuting a
-named, precisely scoped statement. We begin with the logical device that makes
-the negatives robust.
+Shomorony's $\Is$, which makes the truth's spectrum the only positive
+circulation of total $G$; the maximizer statement on that slice, and the
+uniqueness statement obtained from the same complete-spectrum uniqueness input
+used by the population model, come next. Then a sequence of \emph{negative}
+witnesses, each refuting a named, precisely scoped statement. Finally, the row
+that stays open is identified precisely, together with the two rows that are not
+readings of the 2016 sentence at all
+(Remark~\ref{rem:surfaces}, Table~\ref{tab:finite}). We begin with the logical
+device that makes the negatives robust.
 
 \subsection{Negative results transfer; positive results do not}
 
@@ -174,9 +178,71 @@ observation is common, so the scores coincide.
 
 Only the triple-repeat clause of $\Is$ is used for the spectrum-rigidity and
 no-strict-counterexample conclusions; the interleaved-repeat and coverage clauses
-are not needed there. The next corollary does use the interleaved clause, because
+are not needed there. Corollary~\ref{cor:same-length-rotation} at the end of this
+subsection does use the interleaved clause, because
 it invokes the complete-spectrum uniqueness input of
 Section~\ref{sec:population}, whose hypothesis is Ukkonen's full condition.
+
+\subsubsection{The maximizer theorem on this slice}
+
+The rigidity theorem proves \emph{spectrum} equality, and equal spectra give an
+exact \emph{tie} for every objective that factors through the spectrum. The
+maximizer statement itself is proved separately, and is stronger than the
+hypothesis surface used above: the theorem below takes the full source $\Is$
+at the realized read placement set and \emph{derives} §6.2 candidate membership
+rather than assuming it.
+
+\begin{theorem}[Same-length maximizer, oriented read types, full $\Is$]
+\label{thm:maximizer}
+Let $S$ be a circular word of length $G$, and let the realized read placement
+set $R$ (the set of starts at which reads were actually drawn) be information
+feasible, $R\in\Is$. Suppose the truth is a genuine §6.2 candidate for the
+observed read set, and let $D$ be any same-length genuine §6.2 candidate for the
+same observation. Then, for both the exact
+Medvedev--Brudno multinomial and the §6.1 binomial approximation at $N=G$,
+\[
+  \Lik(D;x) \le \Lik(S;x).
+\]
+\end{theorem}
+
+The hypothesis set is exactly the source's: $2 \le L \le G$, full $\Is$, and the
+§6.2 data. There is no long-triple-repeat premise, no primitivity or period
+premise, and no ``escape'' or culprit hypothesis; $\Is \Rightarrow \neg
+\textsc{LongTripleRepeat}$ is a consequence proved inside the chain. The start
+set is the \emph{range} of the realization, not a superset: because every clause
+of $\Is$ is a ``some $r \in R$ does \dots'' or a coverage condition, a start set
+$R \supseteq \range\rho$ that contains starts at which no read was drawn is a
+strictly weaker hypothesis, and the theorem is stated at the faithful one.
+Uniqueness up to cyclic rotation is then obtained by adding the external BBT
+complete-spectrum input, exactly as in
+Corollary~\ref{cor:same-length-rotation}.
+
+\statusline{\kernelcheck{} in \texttt{AssemblyP1/MLEscape.lean}
+(\texttt{informationFeasible\_62\_spelledML}) and
+\texttt{AssemblyP1/SameLength62Maximizer.lean}
+(\texttt{informationFeasible\_62\_maximizer}); the conditional core is
+\texttt{OrientedSameLengthML.same\_length\_exactLik\_maximizer} and
+\texttt{same\_length\_binomialLik\_maximizer}; the $\Is$-to-no-long-triple-repeat
+step is \texttt{BridgingBridge.informationFeasible\_no\_long\_triple\_repeat};
+rotation-uniqueness adds the \srcfact{} external input \cite{bresler2013}.}
+
+\subsubsection{The §6.2 acceptance boundary is a separate question}
+
+Theorem~\ref{thm:maximizer} requires \emph{both} the truth and the competitor to
+be genuine §6.2 candidates. Dropping the conjunct on the truth is a different
+statement, and it is false at equal length: with $S=AABB$ ($G=4$, $L=2$) and the
+realized reads $AB,BA$ at starts $1,3$, full $\Is$ holds, while the same-length
+genome $ABAB$ is a literal §6.2 \texttt{SpelledFeasible62} candidate whose exact
+likelihood is $1/4$ against the truth's $1/16$. So the §6.2 candidate
+restriction does not rescue the maximum-likelihood claim unless the truth is
+itself admissible, which is precisely what distinguishes the molecule-class
+witnesses below from this positive row.
+
+\statusline{\kernelcheck{} in
+\texttt{AssemblyP1/SameLengthExactMLCounterexample.lean}
+(\texttt{same\_length\_exact\_ML\_refutation\_62}), which also refutes the
+unrestricted ``$\Is \Rightarrow$ same-length ML'' statement for the same
+instance.}
 
 \begin{corollary}[Uniqueness up to rotation on the truth-admissible same-length row]
 \label{cor:same-length-rotation}
@@ -290,7 +356,21 @@ same-length.
 
 Repeating the start-$0$ read $k$ times gives the observed multiset
 $\{AAA^k,AAB,BAA\}$ and ratio $2^k$, so the failure is a one-parameter family,
-not a coincidental tie.
+not a coincidental tie. A second, independent same-length instance with a
+larger separation is $S=AAABCBC$, $D=AAAAABC$ ($G=7$, $L=3$), realized starts
+$(0,0,0,1,2,5,6)$ and observed $x=\{AAA:3,AAB:1,ABC:1,BCA:1,CAA:1\}$, for which
+$\Lik_{\mathrm{ex}}(D;x)/\Lik_{\mathrm{ex}}(S;x)=27$ and $\Is$ holds
+non-vacuously (coverage, the all-bridged maximal length-$1$ triple repeat at
+$(0,1,2)$, and no interleaved pair).
+\statusline{The $AAABB\to AAAAB$ witness is \kernelcheck{}
+(\texttt{FixedLengthExactCounterexample}); the read-tiled $AAABCBC\to AAAAABC$
+witness is \computed{} by
+\texttt{scripts/verify\_readtiled\_exact\_counterexample.py}, which checks every
+clause of $\Is$ on the instance and shares the bridging predicate
+implementation with the repository's other verification scripts. It was cited
+without an observation or artifact until issue~\#217; the refutation it supports
+does not depend on it, since $AAABB\to AAAAB$ and the unrestricted-length
+variant $ACGT\to ACACGT$ already settle the row.}
 
 \begin{theorem}[Fixed-length binomial counterexample]
 \label{thm:cex-binomial}
@@ -358,13 +438,40 @@ smallest same-length witness is $S=AAATAT$, $D=AAAAAT$ ($G=6$), for which the
 exact ratio is $3$ and the binomial ratio is $5$, with both genomes
 Section~6.2-feasible under the source's per-vertex lower bound.
 
-\begin{remark}[A strengthening is open]
-The witnesses above use the source's per-vertex lower bound, i.e.\ support
-equality. Under the strictly stronger per-occurrence requirement
-$d_D(w)\ge x(w)$ for every observed type, the same-length Section~6.2 statement
-is \openstatus{} in the searched scope; the witnesses' truths are not candidates
-under that strengthening. We flag this because it is the kind of
-assumption-surface change that separates a refuted statement from an open one.
+\begin{remark}[Which assumption surfaces are still open, and which are not the
+source's]
+\label{rem:surfaces}
+The molecule witnesses above use the source's per-vertex lower bound, i.e.\
+support equality. Medvedev--Brudno §6.2 states only ``Each vertex has a lower
+bound of $1$ since it represents a read that must be present in the genome at
+least once''; the strictly stronger per-occurrence requirement $d_D(w)\ge x(w)$
+for every observed type is a \emph{repository-added} assumption surface, not a
+source definition. That distinction matters for what may be reported as
+settled:
+
+\begin{itemize}
+  \item \textbf{Open.} Same-length §6.2 candidate class, molecule read types,
+    per-occurrence strengthening. The witnesses' truths are not candidates under
+    that strengthening, and the repository has bounded zeros only. This is the
+    single determinate row of the interpretation matrix that is unresolved on
+    \texttt{main}; it is issue~\#212's object.
+  \item \textbf{Open, and not a reading of the 2016 sentence at all.} The
+    doubled-strand $2G$ convention of \cite{bresler2013}, under which the
+    repository has zero exact-multinomial beats in its searched scopes, with
+    two of those scopes vacuous because the remapped $\Is$ is unsatisfiable
+    there.
+  \item \textbf{Not a determinate proposition.} The reading of the sentence as an
+    unspecified general ML principle: the 2016 text fixes no objective, so no
+    finite witness settles it as stated. Its three source-nameable members (the
+    exact multinomial, the fixed-$N$ binomial, and the §6.2 flow with §6.1
+    costs) are each refuted above.
+\end{itemize}
+We flag these because they are exactly the kind of assumption-surface change
+that separates a refuted statement from an open one, and because a claim that
+``all source-supported interpretations are resolved'' must not silently absorb
+them. The full row-by-row matrix, with every axis value tagged as source fact,
+source-supported inference, or modelling choice, is
+\texttt{docs/source-notes/interpretation-matrix-217.md}.
 \end{remark}
 
 \subsection{The candidate-length boundary}
@@ -410,15 +517,26 @@ same-length oriented Section~6.2, $R\in\Is$, truth §6.2-admissible
   & exact / binomial
   & same-length spelled
   & \textbf{true}, unique up to rotation (Thm.~\ref{thm:rigidity}, Cor.~\ref{cor:same-length-rotation}) \\
+\addlinespace
+same-length oriented, $R\in\Is$ at the realized placements, truth a genuine §6.2 candidate
+  & exact / binomial
+  & same-length genuine §6.2
+  & \textbf{true}, maximizer (Thm.~\ref{thm:maximizer}) \\
+\addlinespace
+same-length, no §6.2 admissibility on either side
+  & exact
+  & all circular of length $G$
+  & \textbf{false} ($AABB\to ABAB$, ratio $4$) \\
+\addlinespace
 exact ML maximizer
   & exact multinomial
   & all circular
-  & \textbf{false} (Thm.~\ref{thm:cex-exact}) \\
+  & \textbf{false} (Thm.~\ref{thm:cex-exact}; also $AAABCBC\to AAAAABC$, ratio $27$) \\
 binomial ML maximizer
   & fixed-$N$ binomial
   & all circular (on its domain)
   & \textbf{false} (Thm.~\ref{thm:cex-binomial}) \\
-Section~6.2 flow, molecule reads
+Section~6.2 flow, molecule reads, variable length
   & Section~6.1 product
   & §6.2 circuits
   & \textbf{false} (Thm.~\ref{thm:cex-molecule}) \\
@@ -426,18 +544,32 @@ Section~6.2 flow, molecule, same length, per-vertex
   & exact / binomial
   & §6.2 spelled
   & \textbf{false} ($AAATAT\to AAAAAT$) \\
-Section~6.2, per-occurrence strengthening
+Section~6.2 flow, molecule, variable length, per-occurrence strengthening
+  & exact / binomial
+  & §6.2 circuits
+  & \textbf{false} (the same $AAATT\to AAAATT$ witness satisfies it) \\
+Section~6.2, molecule, same length, per-occurrence strengthening
   & exact / binomial
   & §6.2 spelled
-  & \openstatus \\
+  & \openstatus{} (bounded zeros only; \emph{not} the source's §6.2 rule) \\
+doubled-strand $2G$ convention of \cite{bresler2013}
+  & exact multinomial
+  & $2G$-doubled candidates
+  & \openstatus{} (bounded zeros, two scopes vacuous) \\
 \bottomrule
 \end{tabular}
 \caption{The finite landscape. ``False'' means a strict counterexample over the
 stated class; the evidence level (kernel-checked, exact computation, or script)
 is recorded in the corresponding theorem or status line. The positive
-same-length row asserts uniqueness up to cyclic rotation, not merely that the
-truth ties. By Lemma~\ref{lem:negative-transfer} each same-length falsity
-transfers to all circular candidates for that objective.}
+same-length rows assert maximizer and, with the external BBT input, uniqueness
+up to cyclic rotation, not merely that the truth ties. By Lemma~\ref{lem:negative-transfer} each same-length falsity
+transfers to all circular candidates for that objective. The last two rows are
+\emph{not} readings of the 2016 sentence: the per-occurrence strengthening is a
+repository-added assumption surface rather than Medvedev--Brudno's §6.2 rule, and
+the $2G$ convention belongs to a different paper. They are listed so that the
+claim of exhaustion is not overstated. See
+\texttt{docs/source-notes/interpretation-matrix-217.md} for the row-by-row
+matrix with every axis value tagged.}
 \label{tab:finite}
 \end{table}
 

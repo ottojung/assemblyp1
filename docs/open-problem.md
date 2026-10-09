@@ -39,6 +39,25 @@ For the current positive oriented theorem, the project keeps the source-supporte
 
 Two candidate conclusion schemas live in `AssemblyP1/Model.lean`: truth is an ML maximizer, and truth is the unique ML maximizer up to genome equivalence. Neither is designated as *the* published conjecture while the source ambiguity above remains unresolved.
 
+## Finite-sample landscape
+
+The finite (finite-sample) reading of the sentence has been classified
+interpretation-by-interpretation in
+[`docs/source-notes/interpretation-matrix-217.md`](source-notes/interpretation-matrix-217.md),
+which is the row-by-row record behind issue #217. Its summary: every
+interpretation of the finite question that is both determinate and
+source-supported is resolved — ten negative rows (seven sharing five
+kernel-checked witness modules, three exact-arithmetic reproductions) and four
+positive rows, of which three are kernel-checked — the
+oriented/same-length/genuine-§6.2 slice carries a kernel-checked maximizer
+theorem plus kernel-checked rotation-uniqueness conditional on the external BBT
+input. The residue is stated there explicitly: one determinate but
+**non-source-supported** row (molecule read types, same length, under the
+per-occurrence strengthening `d_D(w) ≥ x(w)`, which Medvedev–Brudno §6.2 does not
+state), one bounded-evidence row under a different paper's doubled-strand
+convention, and one non-determinate row (the unspecified general principle).
+The referent question itself is untouched.
+
 ## What would count as settlement
 
 A positive settlement is a Lean proof of a formally justified version of the published implication. A negative settlement is a mathematically valid counterexample satisfying the faithfully formalized bridging hypotheses while violating the faithfully formalized maximum-likelihood conclusion.

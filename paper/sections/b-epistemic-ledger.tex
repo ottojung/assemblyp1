@@ -115,14 +115,24 @@ Claim & Status & Artifact \\
 \midrule
 $AAABB\to AAAAB$, exact ratio $2$, $\Is$ certificate
   & kernel-checked & \texttt{FixedLengthExactCounterexample} \\
+$AAABCBC\to AAAAABC$, same length, exact ratio $27$, $\Is$ non-vacuous
+  & verified computation (recorded without an artifact until issue \#217) &
+  \texttt{verify\_readtiled\_exact\_counterexample.py} \\
 $AAACC\to AAAAC$, binomial ratio $1125/512$
   & kernel-checked & \texttt{FixedLengthBinomialCounterexample} \\
-$AAATT\to AAAATT$, §6.1 ratio $9/8$; $\Is$; §6.2 circuits
-  & kernel-checked (+ script for the graph) &
+$AAATT\to AAAATT$, §6.1 ratio $9/8$; $\Is$; literal §6.2 feasibility of both
+genomes (graph, transitive reduction, vertex LB 1, signed-incidence balance,
+no supersource/sink)
+  & kernel-checked (incl. the §6.2 graph certificate) &
   \texttt{Section62BridgingCounterexample} \\
-$AAATAT\to AAAAAT$, same length, exact $3$, binomial $5$
-  & kernel-checked (+ script) &
+$AAATAT\to AAAAAT$, same length, exact $3$, binomial $5$, literal §6.2
+feasibility of both genomes
+  & kernel-checked (incl. the §6.2 graph certificate) &
   \texttt{SameLengthSection62Counterexample} \\
+$AABB\to ABAB$, same length, exact ratio $4$; full $\Is$; the competitor is a
+literal §6.2 candidate while the truth is not — the §6.2 acceptance boundary is
+a separate, false, statement
+  & kernel-checked & \texttt{SameLengthExactMLCounterexample} \\
 $AAATT\to AAAATT$ variable-length oriented boundary
   & verified computation & rigidity script \\
 Minimum same-length non-rigid pair $AAAAB/AABAB$
@@ -133,6 +143,12 @@ $AABBC\to AABC$ sampling failure, ratio $25/16$
 Conditional same-length oriented spectrum rigidity (no-long-triple-repeat
 boundary + primitive/periodic case split; $\Is$ implication and BBT external)
   & kernel-checked (conditional) & \texttt{OrientedFinalRigidity} \\
+Same-length maximizer over same-length genuine §6.2 candidates, oriented read
+types, full $\Is$ at the realized placements, both objectives
+  & kernel-checked (source $\Is$ and the $\Is\to\neg$long-triple step included;
+  rotation-uniqueness adds the external BBT premise) &
+  \texttt{MLEscape}, \texttt{SameLength62Maximizer},
+  \texttt{OrientedSameLengthML} \\
 Direct P2 matching proof's maximal-extension step is invalid
   & counterexample to a proof step, not the theorem & audit note \\
 \bottomrule
@@ -149,6 +165,20 @@ explicit: (1) the referent of the 2016 sentence; (2) the read-type convention an
 hence the equivalence; (3) the candidate-length convention; (4) the
 maximizer-vs-uniqueness reading; (5) the $4^k$ vs.\ molecule-class index count in
 MB09 Section~6.1; (6) the unretrieved publisher supplement; (7) the
-per-occurrence same-length Section~6.2 statement; (8) the single-strand
-variable-length Section~6.2 statement; and (9) the population model for
+per-occurrence same-length Section~6.2 statement; and (9) the population model for
 molecule read types.
+
+Two items that used to appear on this list have been resolved and are recorded
+in Table~\ref{tab:finite} instead. Item (8), the *single-strand variable-length*
+Section~6.2 statement, is **false**: the oriented variable-length boundary
+witness beats the truth as soon as $n>G$, under both objectives. Item (7), the
+per-occurrence same-length statement, is still open, but it is **not a reading of
+the 2016 sentence**: Medvedev--Brudno \S6.2 states a per-vertex lower bound of
+$1$ and nothing stronger, so `$d_D(w)\ge x(w)$` is a repository-added assumption
+surface (issue \#212).
+
+The consolidated row-by-row matrix, with every axis value tagged as source fact,
+source-supported inference, or project modeling choice, is
+\texttt{docs/source-notes/interpretation-matrix-217.md}; the record of the
+follow-up material collected from the protected \#94 worktrees in this same
+round is \texttt{docs/issue-217-followup-collection.md}.
