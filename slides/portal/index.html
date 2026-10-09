@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>AssemblyP1 — choose your path</title>
+    <meta
+      name="description"
+      content="Two presentations from AssemblyP1: one for programmers, one for biologists."
+    />
+    <style>
+      :root {
+        color-scheme: light dark;
+        --bg: #0b1020;
+        --fg: #f8fafc;
+        --muted: #94a3b8;
+        --left: #38bdf8;
+        --right: #34d399;
+        --card: rgba(255, 255, 255, 0.06);
+        --border: rgba(255, 255, 255, 0.16);
+      }
+      * {
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0;
+        min-height: 100%;
+      }
+      body {
+        background: radial-gradient(circle at 50% -10%, #1e293b, var(--bg) 60%);
+        color: var(--fg);
+        font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
+          Helvetica, Arial, sans-serif;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        min-height: 100vh;
+        padding: 2rem 1.25rem;
+        text-align: center;
+      }
+      header {
+        max-width: 40rem;
+      }
+      h1 {
+        font-size: clamp(1.9rem, 5vw, 3rem);
+        margin: 0 0 0.5rem;
+        letter-spacing: -0.02em;
+      }
+      header p {
+        color: var(--muted);
+        font-size: clamp(1rem, 2.4vw, 1.2rem);
+        line-height: 1.5;
+        margin: 0;
+      }
+      main {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.25rem;
+        width: min(60rem, 100%);
+        margin-top: 2.5rem;
+      }
+      a.path {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+        padding: 1.75rem 1.5rem;
+        border-radius: 1rem;
+        background: var(--card);
+        border: 1px solid var(--border);
+        color: inherit;
+        text-decoration: none;
+        transition: transform 0.15s ease, border-color 0.15s ease,
+          background 0.15s ease;
+      }
+      a.path:hover,
+      a.path:focus-visible {
+        transform: translateY(-3px);
+        background: rgba(255, 255, 255, 0.1);
+        outline: none;
+      }
+      a.left {
+        border-top: 4px solid var(--left);
+      }
+      a.right {
+        border-top: 4px solid var(--right);
+      }
+      a.left:hover,
+      a.left:focus-visible {
+        border-color: var(--left);
+      }
+      a.right:hover,
+      a.right:focus-visible {
+        border-color: var(--right);
+      }
+      .dir {
+        font-size: 0.8rem;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+      .name {
+        font-size: 1.5rem;
+        font-weight: 650;
+      }
+      .blurb {
+        color: var(--muted);
+        line-height: 1.5;
+      }
+      footer {
+        margin-top: 2.5rem;
+        color: var(--muted);
+        font-size: 0.85rem;
+      }
+      @media (max-width: 640px) {
+        main {
+          grid-template-columns: 1fr;
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        a.path {
+          transition: none;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Scaffold provided by issue #249; the experience/QA owner (#252) owns the final landing page. -->
+    <header>
+      <h1>AssemblyP1</h1>
+      <p>
+        When does reconstructing a genome from its reads agree with maximum
+        likelihood? Choose the presentation that fits you.
+      </p>
+    </header>
+    <main>
+      <a class="path left" href="./programmers/">
+        <span class="dir">Left</span>
+        <span class="name">For programmers</span>
+        <span class="blurb">
+          The mathematics of reconstruction versus likelihood, plus how a
+          multi-agent research system produced kernel-checked proofs.
+        </span>
+      </a>
+      <a class="path right" href="./biologists/">
+        <span class="dir">Right</span>
+        <span class="name">For biologists</span>
+        <span class="blurb">
+          What short-read sequencing can reveal, why repeats create ambiguity,
+          and what has been proved about population likelihood.
+        </span>
+      </a>
+    </main>
+    <footer>Static site built from Slidev decks · AssemblyP1</footer>
+  </body>
+</html>
