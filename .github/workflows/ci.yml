@@ -113,7 +113,7 @@ jobs:
       # not be repeated at the end of every long proof pass.
       - name: Restore pinned axiom audit
         id: audit-cache
-        uses: actions/cache/restore$v4
+        uses: actions/cache/restore@v4
         with:
           path: .ci-cache/axiom-audit
           key: axiom-audit-v1-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('lean-toolchain') }}-46024e005996495c65ef609368e11ab39c4222e3
@@ -130,7 +130,7 @@ jobs:
 
       - name: Persist pinned axiom audit
         if: steps.audit-cache.outputs.cache-hit != 'true'
-        uses: actions/cache/save$v4
+        uses: actions/cache/save@v4
         with:
           path: .ci-cache/axiom-audit
           key: axiom-audit-v1-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('lean-toolchain') }}-46024e005996495c65ef609368e11ab39c4222e3
@@ -149,7 +149,7 @@ jobs:
 
       - name: Checkpoint compiled expensive theorem
         if: steps.compiled-cache.outputs.cache-hit != 'true'
-        uses: actions/cache/save$v4
+        uses: actions/cache/save@v4
         with:
           path: .lake/build
           key: lean-project-v2-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('lean-toolchain', 'lake-manifest.json') }}-orbit-${{ github.run_id }}-${{ github.run_attempt }}
@@ -183,7 +183,7 @@ jobs:
       - name: Checkpoint compiled Lean objects after failure
         if: failure()
         continue-on-error: true
-        uses: actions/cache/save$v4
+        uses: actions/cache/save@v4
         with:
           path: .lake/build
           key: lean-project-v2-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('lean-toolchain', 'lake-manifest.json') }}-checkpoint-${{ github.run_id }}-${{ github.run_attempt }}
