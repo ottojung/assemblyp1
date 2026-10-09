@@ -69,6 +69,15 @@ The finite and computational claims correspond to artifacts in the repository:
         and \texttt{AssemblyP1/Section62VarlenPerOccurrence.lean} (per-vertex
         and per-occurrence feasibility, and the unique-optimizer lift over the
         whole §6.1 domain and the general flow universe);
+  \item general §6.2 flow domain (non-spelled optima and full-overlap
+        disconnectedness):
+        \path{scripts/verify_se62_nonspelled_flow_domain.py} with
+        \path{AssemblyP1/Section62NonSpelledFlow.lean} (the $o_{\min}=1$
+        non-spellable integer optimum), and
+        \path{scripts/verify_se62_full_overlap_disconnected_optimum.py}
+        with \path{AssemblyP1/Section62FullOverlapDisconnected.lean} (the
+        $o_{\min}=L-1$ disconnected optimum whose spellable throughput beats the
+        truth, ratio $1280/243$);
   \item conclusion-schema transfer table: \texttt{AssemblyP1/ImplicationLattice.lean}
         and \texttt{scripts/verify\_implication\_lattice\_216.py}
         (\texttt{docs/implication-lattice-216.md}). Its sample-multiplicity

@@ -178,6 +178,7 @@ import AssemblyP1.Issue94Complete
 -- is deliberately not imported.)
 import AssemblyP1.SameLength62TieUniqueness
 import AssemblyP1.Section62NonSpelledFlow
+import AssemblyP1.Section62FullOverlapDisconnected
 import AssemblyP1.DoubleStrandBridgingTransfer
 import AssemblyP1.TwoDisjointCirclesDuplex
 import AssemblyP1.ImplicationLattice
@@ -917,6 +918,10 @@ totient rearrangement); the BEST/Matrix-Tree graph content remains external. -/
 #print axioms AssemblyP1.Section62NonSpelledFlow.half_integral_strictly_better
 #print axioms AssemblyP1.Section62NonSpelledFlow.no_sequence_has_star_spectrum
 #print axioms AssemblyP1.Section62NonSpelledFlow.spelled_subset_general
+#print axioms AssemblyP1.Section62FullOverlapDisconnected.full_overlap_disconnected_optimum
+#print axioms AssemblyP1.Section62FullOverlapDisconnected.disc_support_disconnected
+#print axioms AssemblyP1.Section62FullOverlapDisconnected.dStar_argmax
+#print axioms AssemblyP1.Section62FullOverlapDisconnected.star_better
 #print axioms AssemblyP1.DoubleStrandBridgingTransfer.doubled_not_information_feasible
 #print axioms AssemblyP1.TwoDisjointCirclesDuplex.partner_window_rc
 #print axioms AssemblyP1.TwoDisjointCirclesDuplex.rcS_information_feasible
