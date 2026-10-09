@@ -134,8 +134,14 @@ $AABB\to ABAB$, same length, exact ratio $4$; full $\Is$; the competitor is a
 literal §6.2 candidate while the truth is not — the §6.2 acceptance boundary is
 a separate, false, statement
   & kernel-checked & \texttt{SameLengthExactMLCounterexample} \\
-$AAATT\to AAAATT$ variable-length oriented boundary
-  & verified computation & rigidity script \\
+$AAATT\to AAAATT$ variable-length oriented boundary, in infinite strict families
+(strict for every sample multiplicity $M\ge1$, exact and fixed-$N$ binomial)
+  & kernel-checked at $M=1,2$ + general proof &
+  \texttt{OrientedVariableLengthSe62} \\
+$AAATT\to AAAATT$ variable-length per-occurrence audit: both genomes satisfy the
+per-vertex \emph{and} per-occurrence rules; competitor the unique §6.1 optimizer
+over the whole domain and the general flow universe
+  & kernel-checked & \texttt{Section62VarlenPerOccurrence} \\
 Minimum same-length non-rigid pair $AAAAB/AABAB$
   & verified computation (bounded, exhaustive in scope) &
   rigidity script \\
@@ -177,7 +183,9 @@ strictly better same-length competitor, and it needs the real four-letter DNA
 alphabet — with a self-complementary base the searched scope has no same-length
 beat at all. Item (8), the \emph{single-strand variable-length} Section~6.2
 statement, is also \emph{false}: the oriented variable-length boundary witness beats
-the truth as soon as $n>G$, under both objectives.
+the truth as soon as $n>G$, under both objectives, and it is now kernel-checked
+(\texttt{OrientedVariableLengthSe62}) in infinite strict families, not merely
+computed.
 
 Two further items are explicitly \emph{not} settled and must not be absorbed into
 the resolved class. The doubled-strand $2G$ convention of
@@ -186,6 +194,15 @@ paper's convention. The reading of the 2016 sentence as an unspecified general
 ML principle is not a determinate proposition, because the source fixes no
 objective; its three source-nameable members are each refuted, but the family
 reading itself cannot be settled by a finite witness.
+
+Two leaf artifacts are pending rather than resolved, and neither is a matrix
+row. Issue~\#216's general sample-multiplicity amplification formalization is
+uncommitted and does not compile; the amplification result itself is already
+kernel-checked through \texttt{OrientedVariableLengthSe62} and the
+$AAATT\to AAAATT$ families. Issue~\#219's same-length complete-spectrum
+fibre-count theorem is proved in a note and audited by an exact-arithmetic
+script, but its Lean core does not yet compile; it is a population-level
+counting result, not a finite-data reading of the 2016 sentence.
 
 Item (7) deserves a label rather than a silent reclassification: the
 per-occurrence requirement $d_D(w)\ge x(w)$ is \emph{not} Medvedev--Brudno's §6.2

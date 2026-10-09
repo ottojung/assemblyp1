@@ -613,13 +613,50 @@ choice is a \projchoice{} and the historical strand convention stays open.}
 \label{sec:finite:length}
 
 The same-length restriction in the positive theorem is not cosmetic. On the next
-slice, where $|D|>G$ is allowed, the truth need not be optimal even under $\Is$.
+slice, where $|D|>G$ is allowed, the truth need not be optimal even under $\Is$,
+and this is an infinite-family phenomenon rather than a bounded search.
 
-\begin{example}[Variable-length oriented boundary]
-\label{ex:variable-length}
-Take truth $S=AAATT$ ($G=5$), $L=3$, and competitor $D=AAAATT$ ($|D|=6$). The
-supports agree and $\Is$ holds. With the observed counts
-$x=\spec_3(S)+M e_{AAA}$,
+\begin{theorem}[Oriented variable-length Section~6.2 classification]
+\label{thm:cex-variable-length}
+Let $\Alphabet=\{A,T\}$, $L=3$, truth $S=AAATT$ ($G=5$), realized starts
+$R=\{0,1,2,3,4\}$, so $R\in\Is$ holds at full strength (coverage, the unique
+maximal length-$1$ triple repeat all-bridged, the interleaved clause vacuous).
+Write $x^{(M)}=\spec_3(S)+M e_{AAA}$ ($n=5+M$). For the growing competitor
+$D_M=A^{3+M}TT$ ($|D_M|=5+M$),
+\[
+  \frac{\Lik_E(D_M;x^{(M)})}{\Lik_E(S;x^{(M)})}
+    = \Bigl(\tfrac{5}{5+M}\Bigr)^{5+M}(1+M)^{1+M} > 1
+  \qquad\text{for every } M\ge 1 ;
+\]
+for the fixed competitor $D=AAAATT$ ($|D|=6$) the exact ratio is
+$(\tfrac{3125}{3888})(\tfrac53)^M>1$ and the fixed-$N$ binomial ratio
+($N=5$) is $(\tfrac{81}{128})2^M>1$, for every $M\ge 1$. Every candidate is a
+genuine Section~6.2 candidate under the per-vertex, spelled-support and
+single-circuit readings. The truth wins exactly at $n=G$; a single extra
+observation of the over-represented $AAA$ type overturns it.
+\end{theorem}
+
+\begin{proof}[Sketch]
+For the exact objective the observation-only coefficient is common, so the
+competitor with $d_{D_M}=x^{(M)}$ and $|D_M|=n$ attains the AM--GM upper bound
+$\Lik^*(x^{(M)})=\binom{n}{x}\prod_w(x_w/n)^{x_w}$, while the truth's normalized
+spectrum differs at the $AAA$ coordinate for every $M\ge1$. The fixed-competitor
+families are the amplification lemma made concrete: each additional observation
+of an observed type $w$ multiplies the exact odds by
+$p_D(w)/p_S(w)$ and the fixed-$N$ binomial odds by
+$Q_w=(p_D(w)/p_S(w))\prod_{i\ne w}(1-p_D(i))/(1-p_S(i))$; here
+$p_D(AAA)/p_S(AAA)=5/3>1$ and $Q_{AAA}=2>1$.
+\statusline{\kernelcheck{} at $M=1,2$ in
+\texttt{AssemblyP1/OrientedVariableLengthSe62.lean}
+(\texttt{oriented\_variable\_length\_se62\_counterexample}, exact
+$15625/11664$, $2109375/823543$; binomial $81/64$, $27/16$), which also
+discharges $\Is$ by \texttt{decide} on the shared predicate. The general
+families are \mathfact{} (the note
+\texttt{docs/source-notes/oriented-variable-length-se62.md}); the identities are
+\computed{} for $M=0..200$ by
+\texttt{scripts/verify\_oriented\_variable\_length\_se62*.py}.}
+\end{proof}
+
 \begin{center}
 \begin{tabular}{@{}lll@{}}
 \toprule
@@ -631,13 +668,22 @@ $2$ & $78125/34992>1$ & $81/32>1$ \\
 \bottomrule
 \end{tabular}
 \end{center}
-The boundary is exactly $n>G$: at $n=G$ the truth wins, and a single extra
-observation of an over-represented type overturns it.
-\statusline{\computed{}. The same word pair also appears as a
-reverse-complement variable-length witness; here the orientation is fixed by
-observing every truth type plus an extra $AAA$, so the mechanism is
-observed-multiplicity skew rather than strand collapse.}
-\end{example}
+
+\begin{remark}[Sampling instability is the mechanism]
+\label{rem:amplification}
+The variable-length failure is not a coincidence of one word pair. The
+amplification lemmas show that whenever a competitor over-weights an observed
+type ($p_D(w)>p_S(w)$), repeating that type in the sample drives the odds in the
+competitor's favour without bound; symmetrically, a tie ($Q_w=1$) stays a tie
+and a multiplier below one drives the odds to zero. The
+exact-vs-fixed-$N$ distinction matters: the two multipliers differ because the
+fixed-$N$ product moves the $(n-x_i)$ exponents at every other type. The same
+word pair also appears as a reverse-complement variable-length witness; here the
+orientation is fixed by observing every truth type plus an extra $AAA$, so the
+mechanism is observed-multiplicity skew rather than strand collapse. The
+general sample-multiplicity formalization (issue~\#216) is still pending; the
+result is already kernel-checked through the instances above.
+\end{remark}
 
 \subsection{Summary of the finite landscape}
 
@@ -674,7 +720,7 @@ binomial ML maximizer
 Section~6.2 flow, molecule reads, variable length
   & Section~6.1 product
   & §6.2 circuits
-  & \textbf{false} (Thm.~\ref{thm:cex-molecule}) \\
+  & \textbf{false} (Thm.~\ref{thm:cex-molecule}); competitor the \emph{unique} optimizer over the whole §6.1 domain (issue~\#213, \texttt{Section62VarlenPerOccurrence}) \\
 Section~6.2 flow, molecule, same length, per-vertex
   & exact / binomial
   & §6.2 spelled
@@ -687,6 +733,10 @@ Section~6.2, molecule, same length, per-occurrence strengthening
   & exact / binomial
   & §6.2 spelled
   & \textbf{false} ($ATATACAC\to ATACACAC$, ratios $3/2$ and $9/5$; \emph{not} the source's §6.2 rule) \\
+oriented single-strand, Section~6.2, variable length
+  & exact / binomial
+  & §6.2 circuits
+  & \textbf{false} in infinite families (Thm.~\ref{thm:cex-variable-length}; amplification of an over-represented type, strict for every $M\ge1$) \\
 doubled-strand $2G$ \emph{concatenation} of \cite{bresler2013}
   & exact multinomial
   & $2G$-doubled candidates

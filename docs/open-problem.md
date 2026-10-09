@@ -46,13 +46,16 @@ interpretation-by-interpretation in
 [`docs/source-notes/interpretation-matrix-217.md`](source-notes/interpretation-matrix-217.md),
 which is the row-by-row record behind issue #217. Its summary: every
 interpretation of the finite question that is both determinate and
-source-supported is resolved — eleven negative rows (eight sharing six
-kernel-checked witness modules, three exact-arithmetic reproductions) and four
+source-supported is resolved — eleven negative rows (nine kernel-checked,
+sharing eight witness modules, and two exact-arithmetic reproductions) and four
 positive rows, of which three are kernel-checked — the
 oriented/same-length/genuine-§6.2 slice carries a kernel-checked maximizer
 theorem plus kernel-checked rotation-uniqueness conditional on the external BBT
-input. **No determinate row remains open.** The last determinate row to close was
-the same-length §6.2 question under the per-occurrence strengthening
+input, and the oriented **variable-length** slice is refuted in infinite
+families (`AssemblyP1/OrientedVariableLengthSe62.lean`, the #210
+classification, with the amplification mechanism kernel-checked at `M = 1, 2`).
+**No determinate source-supported row remains open.** The last determinate row to
+close was the same-length §6.2 question under the per-occurrence strengthening
 `d_D(w) ≥ x(w)`, which Medvedev–Brudno §6.2 does not state: it is refuted by
 `ATATACAC → ATACACAC` (exact ratio `3/2`, binomial `9/5`), kernel-checked in
 `AssemblyP1/PerOccurrenceSameLengthCounterexample.lean`; see
@@ -67,10 +70,14 @@ sentence, and neither is extended to. A third non-source entry (R18) records the
 disclosed two-disjoint-circles duplex model `(S, rc(S))`: circle-by-circle `I_s`
 is exactly equivalent to `I_s(S)`, while duplex-as-a-whole is ill-defined and
 strictly stronger, and when orientation is unobserved its normalized class
-likelihood equals the Medvedev–Brudno molecule distribution. The positive
-same-length *rotation-uniqueness* half stays conditional on the external
-complete-spectrum input; only the population theorem is now kernel-checked
-without it.
+likelihood equals the Medvedev–Brudno molecule distribution. Two further leaf
+artifacts are **pending, not integrated, and not matrix rows**: #216's general
+sample-multiplicity `Part 6` formalization (its result is already kernel-checked
+via #210) and #219's same-length complete-spectrum fibre-count Lean core (a
+population counting result proved in a note and audited by a script, but whose
+Lean does not yet compile). The positive same-length *rotation-uniqueness* half
+stays conditional on the external complete-spectrum input; only the population
+theorem is now kernel-checked without it.
 The referent question itself is untouched.
 
 ## What would count as settlement

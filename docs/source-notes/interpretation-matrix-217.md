@@ -1,20 +1,29 @@
 # Interpretation matrix for the 2016 finite bridging ⇒ ML question (issue #217)
 
-_Status: META front #217, 2026-10-09 (integration round). The matrix was built
-on `origin/main` at `cc0aa8a`; the board branch `agent/board-217-978a0a` now
-carries, in order, the merged Lean CI repair PR #117 (`e9fcf01`), the #217
+_Status: META front #217, 2026-10-09 (final synthesis round). The matrix was
+built on `origin/main` at `cc0aa8a`; the board branch `agent/board-217-978a0a`
+now carries, in order, the merged Lean CI repair PR #117 (`e9fcf01`), the #217
 matrix commits, and the #221 white-paper correction `729f50c` (population
 uniqueness is fully kernel-checked with no external BBT premise; LaTeX
 `\range`/underscore/emphasis defects fixed; the finite same-length rotation
-corollary kept distinct and still Lean-conditional). On top of that base this
-integration round added the novel artifacts of the live finite leaves
-#208 (provenance docs/scripts), #211 (`SameLength62TieUniqueness`), #214
+corollary kept distinct and still Lean-conditional). The previous integration
+round added the novel artifacts of the live finite leaves #208 (provenance
+docs/scripts), #211 (`SameLength62TieUniqueness`), #214
 (`Section62NonSpelledFlow`), #215 (`TwoDisjointCirclesDuplex`,
-`DoubleStrandBridgingTransfer`) and #216 (`ImplicationLattice`). The
-cc0aa8a-based **paper** edits on those leaf branches were deliberately **not**
-merged, because they would have reverted the #217/#221 paper state; only their
-new, self-contained files were taken. All five integrated Lean modules build and
-are axiom-audited at `[propext, Classical.choice, Quot.sound]`.
+`DoubleStrandBridgingTransfer`) and #216 (`ImplicationLattice`). **This final
+round** adds the two verified leaf modules the earlier round tracked but did not
+integrate: #210 (`OrientedVariableLengthSe62`, the oriented unrestricted-length
+classification, now kernel-checked and upgrading row R14) and #213
+(`Section62VarlenPerOccurrence`, the variable-length per-occurrence audit that
+hardens rows R10/R12). The cc0aa8a-based **paper** edits on the leaf branches
+were deliberately **not** merged, because they would have reverted the
+#217/#221 paper state; only their new, self-contained files were taken. All
+seven integrated Lean modules build and are axiom-audited at `[propext,
+Classical.choice, Quot.sound]`. Two further leaf items remain **pending, not
+integrated**, because their Lean does not compile: #216's uncommitted
+sample-multiplicity `Part 6` (its *result* is already kernel-checked via #210)
+and #219's `FibreCountArithmetic` (its count theorems are proved in a note and
+audited by a script, but not yet kernel-checked).
 This document is the source-backed classification matrix for the finite
 (finite-sample) reading of the 2016 sentence
 
@@ -137,11 +146,11 @@ Legend for the resolution column: **FALSE** (a strict counterexample refutes
 | R7 | `E`/`A` | `U2` **and** `Fgen` on *both* truth and competitor | `Fgen` | `or` | `Is` | `W` **true**; `S` true up to cyclic shift | **TRUE** | `informationFeasible_62_spelledML` / `informationFeasible_62_maximizer`: full `I_s` at the realized range, `2 ≤ L ≤ G`, truth a genuine §6.2 candidate ⇒ every same-length genuine §6.2 candidate scores at most the truth | **[K]** `AssemblyP1/MLEscape.lean`, `AssemblyP1/SameLength62Maximizer.lean` |
 | R8 | `E`/`A` | `U2` ∩ `Fgen` | `Fgen` | `or` | `¬LTR` only | `W` true | **TRUE** | `same_length_exactLik_maximizer`, `same_length_binomialLik_maximizer` under `hno : ¬ HasLongTripleRepeat` — the kernel-checked conditional core, with no `I_s`, no primitivity, no period premise | **[K]** `AssemblyP1/OrientedSameLengthML.lean`, `AssemblyP1/OrientedFinalRigidity.lean` |
 | R9 | `E` | `U2` ∩ `Fgen` | `Fgen` | `or` | `¬LTR` + external BBT input | `S` true, `≈` = cyclic shift | **TRUE, conditional** | `same_length_unique_up_to_rotation_of_bbt`, `same_length_maximality_and_rotation_uniqueness_of_bbt`; the complete-spectrum uniqueness input is an explicit premise `hBBT`, not formalized here | **[K]** conditional, `AssemblyP1/OrientedSameLengthML.lean` |
-| R10 | `A` | `U3` flows, length free | `Fgen`/`Fspell` | `mol` | `Is` | `W` and `S` both false | **FALSE** | `AAATT → AAAATT`, `|D|=6 ≠ N=5`, external `N=5`, ratio `9/8`; literal §6.2 feasibility of **both** genomes, incl. the explicit graph, transitive reduction, vertex LB 1, signed-incidence balance | **[K]** `AssemblyP1/Section62BridgingCounterexample.lean` (`se62_bridging_bidirected_flow_counterexample`) |
+| R10 | `A` | `U3` flows, length free | `Fgen`/`Fspell` | `mol` | `Is` | `W` and `S` both false | **FALSE** | `AAATT → AAAATT`, `|D|=6 ≠ N=5`, external `N=5`, ratio `9/8`; literal §6.2 feasibility of **both** genomes, incl. the explicit graph, transitive reduction, vertex LB 1, signed-incidence balance. Leaf #213 hardens the cell: both throughput vectors lie in the §6.1 domain `0 ≤ dᵢ ≤ N` and in the terminal-allowed general flow universe, and the competitor is the **unique** maximizer of the literal §6.1 objective over the **entire** domain, so the refutation is not an artifact of a restricted candidate class | **[K]** `AssemblyP1/Section62BridgingCounterexample.lean` (`se62_bridging_bidirected_flow_counterexample`); **[K]** `AssemblyP1/Section62VarlenPerOccurrence.lean` (`truth_not_maximizer_in_general_flow_universe`, `competitor_is_unique_optimizer`) |
 | R11 | `E`/`A` | `U3` flows, **same length** | `Fgen`/`Fspell` | `mol` | `Is` | `W` and `S` both false | **FALSE** | `AAATAT → AAAAAT`, `G=6`, `L=3`, starts `(0,0,1,3,5)`, `n=5`, external `N=6`; exact ratio `3`, §6.1 binomial ratio `5`; **the interleaving clause of `I_s` is non-vacuous here** | **[K]** `AssemblyP1/SameLengthSection62Counterexample.lean` |
-| R12 | `E`/`A` | `U3` flows, length free | `Fgen` + `Focc` (per-occurrence) | `mol` | `Is` | `W` and `S` both false | **FALSE** | the same `AAATT → AAAATT` instance: `d_S = (AAA:1, AAT:2, TAA:2) ≥ x`, `d_D = (AAA:2, AAT:2, TAA:2) ≥ x`, so it satisfies the strengthening, and it is a spelled circuit, hence a general §6.2 flow | **[K]** same modules as R10 (`SeqSupportLB` conjuncts) |
+| R12 | `E`/`A` | `U3` flows, length free | `Fgen` + `Focc` (per-occurrence) | `mol` | `Is` | `W` and `S` both false | **FALSE** | the same `AAATT → AAAATT` instance: `d_S = (AAA:1, AAT:2, TAA:2) ≥ x`, `d_D = (AAA:2, AAT:2, TAA:2) ≥ x`, so it satisfies the strengthening, and it is a spelled circuit, hence a general §6.2 flow. Leaf #213's audit kernel-checks both the per-vertex **and** the strictly stronger per-occurrence rule for truth and competitor, and the unique-optimizer lift of R10, so the cell is refuted without appealing to the weaker source bound; the audit also records that the witness sums to `6 ≠ 5 = N` and therefore does **not** reach the same-length cell | **[K]** same modules as R10 (`SeqSupportLB` conjuncts) plus `AssemblyP1/Section62VarlenPerOccurrence.lean` (`truth_per_occurrence`, `competitor_per_occurrence`, `competitor_is_unique_optimizer`, `competitor_outside_length_constrained_domain`); record `docs/section62-varlen-per-occurrence-audit-213.md`; **[V]** `scripts/verify_se62_varlen_per_occurrence_audit_213.py` |
 | R13 | `E`/`A` | `U3` flows, **same length** | `Fgen` + `Focc` | `mol` | `Is` | `W` and `S` both false | **FALSE** | Strict witness `ATATACAC → ATACACAC`, `G=8`, `L=3`, o_min `2`, realized starts `(1,3,4,5,6,7)`, `n=6`, external `N=8`; `x = {ATA/TAT:1, TAC/GTA:1, ACA/TGT:2, CAC/GTG:1, CAT/ATG:1}`, `d_S = {…, ATA/TAT:3, ACA/TGT:2, …}`, `d_D = {…, ATA/TAT:1, ACA/TGT:3, CAC/GTG:2, …}`; both spectra support-equal to `x` **and** per-occurrence feasible (tight coordinate `ACA/TGT`, `x = d_S = 2`), `n = 6 < G = 8` so not read-tiled; exact ratio `3/2`, §6.1 binomial ratio `9/5`; both literal §6.2 bidirected circuits on the 16-edge graph, reduction vacuous under both readings. Census: 4 distinct beats at `(G,L,sigma)=(8,3,4)`, bounded evidence only. Harvested read-only from leaf #212 | **[K]** `AssemblyP1/PerOccurrenceSameLengthCounterexample.lean` (`peroccurrence_samelength_se62_bidirected_flow_counterexample`, `peroccurrence_samelength_maximality_refuted`), **V** `scripts/verify_peroccurrence_dna_samelength_212.py`, record `docs/peroccurrence-samelength-dna-counterexample-212.md` |
-| R14 | `E`/`A` | `U1`/`U2` | `F0` | `or` | `Is` | `W` false as soon as `n > G` | **FALSE** | oriented variable-length boundary `AAATT → AAAATT` with `x = spec₃(S) + M·e_AAA`: exact ratio `3125/3888, 15625/11664, 78125/34992` at `M = 0,1,2` and binomial `81/128, 81/64, 81/32`; the truth wins exactly at `n = G` | **[V]** `scripts/verify_oriented_se62_rigidity.py` (leaf #210 owns the classification) |
+| R14 | `E`/`A` | `U1`/`U2` | `F0`; `Fgen`/`Fspell` (the certificate discharges the stronger reading too) | `or` | `Is` | `W` false as soon as `n > G` | **FALSE** | oriented single-strand variable-length §6.2, **infinite families** and not a bounded search. Truth `S = AAATT` (`G=5`), `L=3`, `R={0,1,2,3,4} ∈ I_s` at full strength (kernel-checked by `decide` on `SourceFaithfulIs.InformationFeasible`), all candidates genuinely §6.2-feasible under the per-vertex, spelled-support and single-circuit readings. Family A (growing `D_M = A^{3+M}TT`, exact objective) is strict for every `M ≥ 1` with closed form `(5/(5+M))^{5+M}(1+M)^{1+M}`; Family B (fixed `D = AAAATT`, exact) strict for every `M ≥ 1` with `(3125/3888)(5/3)^M`; Family C (fixed `D`, fixed-`N` binomial, `N=5`) strict for every `M ≥ 1` with `(81/128)2^M`. Kernel-checked instances at `M=1,2`: exact `15625/11664`, `2109375/823543`; binomial `81/64`, `27/16`. The truth wins exactly at `n=G`; a single extra observation of the over-represented `AAA` type overturns it (sampling instability). This is the amplification mechanism: each extra `AAA` multiplies the exact odds by `p_D(AAA)/p_S(AAA) = 5/3` and the binomial odds by `Q_AAA = 2` | **[K]** `AssemblyP1/OrientedVariableLengthSe62.lean` (`oriented_variable_length_se62_counterexample`, `…counterexample'`), integrated and axiom-audited; general proof + families in `docs/source-notes/oriented-variable-length-se62.md`; **[V]** `scripts/verify_oriented_variable_length_se62.py`, `scripts/verify_oriented_variable_length_se62_amplification.py` (families `M=0..200`) |
 | R15 | `E`/`A` | `U2` ∩ `Fgen` | `Fgen` + `Focc` | `or` | `Is` | `W` true | **TRUE, inherited** | a per-occurrence-restricted candidate class is a *subclass* of the genuine §6.2 class quantified over by R7 — for a spelled circuit of length `G` whose window support is `supp(x)`, the walk flow is a feasible §6.2 flow with every vertex throughput `≥ 1` — so R7’s maximizer conclusion applies unchanged. No general theorem on `main` states the subclass containment as a lemma; it is the argument used case-by-case by the same-length §6.2 modules | **[K]** inherited from R7; containment is a **M** fact for spelled circuits, **O** as a named lemma |
 | R16 | `E` | `U1`/`U2` | `F0` | `2G` (Bresler doubled-strand concatenation) | remapped `Is` on the length-`2G` circle | — | **OPEN** | zero exact-multinomial beats in the seven searched scopes; at `G=3,5` the remapped `Is` is unsatisfiable, so those rows are vacuous rather than positive. The known `AAATAT → AAAAAT` witness is **inadmissible** under the remap: the doubled circle `AAATATATATTT` (length `12`) carries the maximal length-`4` triple repeat `ATAT` at starts `2,4,6`, which no length-`3` read can bridge, kernel-checked for **every** read set (`doubled_not_information_feasible`). The row is therefore open in **both** directions, not refuted | **[K]** `AssemblyP1/DoubleStrandBridgingTransfer.lean` (`doubled_not_information_feasible`); **[O]** `docs/source-notes/uniform-strand-convention-search-2026-09-20.md` |
 | R17 | `U` | — | — | — | `Is` | — | **not a determinate proposition** | the 2016 text names no objective, so no finite witness can settle “the” ML formulation. Decomposed into its three source-nameable members (`E`, `A`, the `Fgen` flow with `A` costs = R1/R5/R10/R11/R12), all of which are refuted | **[I]** |
@@ -151,6 +160,13 @@ Legend for the resolution column: **FALSE** (a strict counterexample refutes
 
 * Rows R1–R6, R10–R12, R14 are **strict** counterexamples, so they refute `W`
   and `S` simultaneously and for every `≈` and every tie convention. **[M]**
+* Row R14 is the **variable-length** strict counterexample, and this round it is
+  upgraded from an exact-arithmetic reproduction (`[V]`) to a kernel-checked
+  certificate (`[K]`): `AssemblyP1/OrientedVariableLengthSe62.lean` checks the
+  full-strength `I_s` certificate and the `M = 1, 2` instances, while the #210
+  note proves the growing- and fixed-competitor families strict for every
+  `M ≥ 1`. The mechanism is the sample-multiplicity **amplification** of an
+  over-represented observed type.
 * Rows R7–R9 are the only positive rows, and they are positive only on the
   `U2 ∩ Fgen ∩ or` slice. R9’s uniqueness needs `≈` = cyclic shift (forced)
   and the external BBT complete-spectrum input (not formalized). Leaf #211’s
@@ -178,23 +194,27 @@ Legend for the resolution column: **FALSE** (a strict counterexample refutes
   known witness kernel-checked **inadmissible**) and R17 (not a determinate
   proposition) — neither is determinate, and neither is a source-supported
   reading of the 2016 sentence. R18 is a disclosed new model, not a source row.
+  Two leaf artifacts are pending rather than open rows: #216’s `Part 6`
+  amplification (result already `[K]` via R14/R10–R12) and #219’s fibre-count
+  Lean core (a population counting result, proved in a note).
 
-### 2.2 Front states, coordination, and the general-flow upgrade (this round)
+### 2.2 Front states, coordination, and the general-flow upgrade (final round)
 
-The board coordinates six active leaves. None of their uncommitted work was
+The board coordinates the active leaves. None of their uncommitted work was
 harvested or disturbed; the board tracks their status here so another invocation
 can recover the research graph.
 
 | leaf | branch / worktree | state this round | board action |
 |---|---|---|---|
 | #208 | `agent/board-208-0c8fcf` / `assemblyp1-finite-208` | source census + provenance audit committed (`3f532c5`); untracked `scratch-208/` preserved | **integrated** (novel docs/scripts only; its stale cc0aa8a-based paper edits were *not* merged); no matrix row change |
-| #210 | `agent/board-210-e8b6b2` / `assemblyp1-finite-210` | untracked `OrientedVariableLengthSe62.lean` + script preserved | tracked; R14 classification owned by this leaf |
+| #210 | `agent/board-210-e8b6b2` / `assemblyp1-finite-210` | `OrientedVariableLengthSe62` + doc + 2 scripts committed (`7d48eab`); worktree clean | **module integrated** — R14 upgraded from `[V]` to `[K]`; the amplification families are the landed form of the sample-multiplicity axis |
 | #211 | `agent/board-211-8d5103` / `assemblyp1-finite-211` | `SameLength62TieUniqueness` committed (`8bef1f6`); uncommitted umbrella wiring + 2 scripts preserved | **module integrated**; finite same-length uniqueness stays Lean-conditional on the complete-spectrum input |
 | #212 | `agent/board-212-37b45b` / `assemblyp1-finite-212` | clean; module + script already harvested | **harvested** — R13 resolved FALSE (see §7.1) |
+| #213 | `agent/board-213-5fff16` / `assemblyp1-finite-213` | `Section62VarlenPerOccurrence` + doc + script committed (`a47107c`); worktree clean | **module integrated** — R10/R12 hardened (per-occurrence + unique-optimizer over the whole §6.1 domain and the general flow universe); no new row |
 | #214 | `agent/board-214-d0e372` / `assemblyp1-finite-214` | `Section62NonSpelledFlow` committed through `d2163b8`; worktree clean | **module integrated**; R10–R12 upgrade to the general `Feasible62` flow domain |
 | #215 | `agent/board-215-745214` / `assemblyp1-finite-215` | `TwoDisjointCirclesDuplex` + `DoubleStrandBridgingTransfer` committed (`a852879`); worktree clean | **modules integrated**; new row R18, R16 refined |
-| #216 | `agent/board-216-eb3281` / `assemblyp1-finite-216` | `ImplicationLattice` committed (`486d60f`); uncommitted refinement preserved | **module integrated**; conclusion-schema lattice, no matrix row change |
-| #219 | `agent/board-219-547404` / `assemblyp1-finite-219` | uncommitted `FibreCountArithmetic.lean` + doc + script | **not integrated** — the Lean module does not compile (WIP reindexing proofs); recorded as pending, no matrix row change |
+| #216 | `agent/board-216-eb3281` / `assemblyp1-finite-216` | `ImplicationLattice` committed (`486d60f`); **uncommitted `Part 6` sample-multiplicity refinement does not compile** | base **module integrated** (conclusion-schema lattice, no matrix row change); `Part 6` **pending, not integrated** — its result is already `[K]` via #210 |
+| #219 | `agent/board-219-547404` / `assemblyp1-finite-219` | uncommitted `FibreCountArithmetic.lean` + doc + script; **the Lean module still does not compile** (Finset-reindexing and `omega` failures at lines 155/178/188/190) | **note + audit integrated** (`docs/exact-fibre-count-theorem-219.md`, `scripts/audit_fibre_count_219.py`, and the superseded-in-part note in `docs/exact-same-length-spectrum-fibre-count.md`; audit passes); **Lean core pending**; no matrix row change |
 
 **PR #117 (merged Lean CI repair).** The board branch carries `e9fcf01`, the
 merge of PR #117 ("Repair full-library CI compilation blockers (initial
@@ -266,10 +286,10 @@ never substituted for the integer flow optimum.
 
 ## 4. The claim, stated precisely
 
-Counting rows: R1–R6, R10–R13, R14 are the **eleven** negative rows, of which
-the kernel-checked ones are R1, R2, R5, R6, R10, R11, R12, R13 (eight, sharing
-six modules) and the exact-arithmetic ones are R3, R4, R14 (three). R7, R8, R9,
-R15 are the four positive rows (R9 conditional on the external BBT input, R15
+Counting rows: R1–R6, R10–R14 are the **eleven** negative rows, of which the
+kernel-checked ones are R1, R2, R5, R6, R10, R11, R12, R13, R14 (nine, sharing
+eight modules) and the exact-arithmetic ones are R3, R4 (two). R7, R8, R9, R15
+are the four positive rows (R9 conditional on the external BBT input, R15
 inherited from R7). R9 and R8 are two views of one argument, and R10 and R12 are
 one witness, so the row count overstates the number of distinct results and
 underrates nothing. R18 is a **disclosed new model** (the two-disjoint-circles
@@ -280,14 +300,20 @@ likelihood coincides with the MB09 molecule distribution.
 **Resolved (with a reviewed proof or an exact counterexample):**
 
 * every reading that selects the **exact** multinomial `E` over a circular
-  candidate universe `U1`/`U2` without §6.2 feasibility (R1–R4, R6, R14) —
-  refuted by strict kernel-checked or exact-arithmetic witnesses;
+  candidate universe `U1`/`U2` without §6.2 feasibility (R1–R4, R6) — refuted by
+  strict kernel-checked or exact-arithmetic witnesses;
 * every reading that selects the **fixed-`N` binomial** `A` over `U1` on its
   domain (R5) — refuted by a strict kernel-checked witness;
 * every reading that selects the **§6.2 bidirected flow** with the source’s
   per-vertex lower bound, under molecule read types, at either variable
   (R10, R12) or equal (R11) candidate length — refuted by strict
   kernel-checked witnesses, each of which certifies literal §6.2 feasibility;
+* the oriented single-strand **variable-length** §6.2 reading (R14) — refuted in
+  **infinite families** (growing and fixed competitor, exact and fixed-`N`
+  binomial objectives), strict for every sample multiplicity `M ≥ 1`, with the
+  kernel-checked instances `M = 1, 2` and the general proof + `M = 0..200`
+  arithmetic in the #210 note/scripts. The mechanism is the amplification of an
+  over-represented observed type; the truth wins exactly at `n = G`;
 * the same-length §6.2 question under the **per-occurrence strengthening**
   `Focc` (R13) — refuted by a strict kernel-checked witness whose truth *is*
   per-occurrence feasible, on the real four-letter DNA alphabet
@@ -330,18 +356,40 @@ likelihood coincides with the MB09 molecule distribution.
    reading is exactly `I_s(S)`; its duplex-as-a-whole reading is ill-defined and
    strictly stronger. It is recorded so that the exhaustiveness claim is not
    overstated by silently folding a new representation into a source reading.
+8. **#216 `Part 6` (sample-multiplicity amplification) is pending, not
+   integrated.** The general formalization in the uncommitted `Part 6` of
+   `AssemblyP1/ImplicationLattice.lean` does not compile and is not claimed. It
+   is **not** a matrix row and its absence does not open any row, because the
+   amplification result is already kernel-checked via #210 (R14) and #213
+   (R10/R12). It is recorded so the schema lattice is not read as carrying a
+   general amplification theorem it does not.
+9. **#219 (same-length complete-spectrum fibre count): note + audit
+   integrated, Lean core pending.** Its Theorems 1–3 are mathematical proofs in
+   `docs/exact-fibre-count-theorem-219.md` (integrated), with an independent
+   exact-arithmetic audit (`scripts/audit_fibre_count_219.py`, integrated, all
+   claims verified against brute force on binary words of length `1..9`), but
+   the Lean core `AssemblyP1/FibreCountArithmetic.lean` still does not compile
+   (Finset reindexing / `omega`). It is a **population-level counting** result,
+   not a finite-data matrix row; it is the identifiability core several positive
+   rows condition on, and its pending Lean status does not change any row's
+   resolution. It is recorded so that no kernel-checked count theorem is
+   claimed.
 
 So: **every interpretation of the 2016 finite question that is both
-determinate and source-supported is resolved — nine negatively and one
-positively — and the residue is one bounded-evidence row using a different
-paper’s convention (R16, open in both directions) and one non-determinate row
-(R17).** No determinate row remains open. The claim “all source-supported
-interpretations are resolved” is therefore justified for the source-supported
-class, and explicitly **not** extended to R16, R17, or the disclosed model R18;
-R13, which was determinate but not source-supported, is now resolved in the same
-sense as the negative rows. The finite same-length rotation-uniqueness half of
-the positive row (R9) remains Lean-conditional on the external complete-spectrum
-input; only the *population* theorem is now kernel-checked without it.
+determinate and source-supported is resolved — nine distinct results
+negatively and one positively — and the residue is one bounded-evidence row
+using a different paper’s convention (R16, open in both directions), one
+non-determinate row (R17), one disclosed new model (R18), and two pending
+leaf artifacts that are not matrix rows (#216 `Part 6`, whose result is already
+kernel-checked via #210; #219’s count theorem, a population result whose Lean
+core is WIP).** No determinate source-supported row remains open. The claim
+“all source-supported interpretations are resolved” is therefore justified for
+the source-supported class, and explicitly **not** extended to R16, R17, R18,
+or the pending leaf artifacts; R13, which was determinate but not
+source-supported, is now resolved in the same sense as the negative rows. The
+finite same-length rotation-uniqueness half of the positive row (R9) remains
+Lean-conditional on the external complete-spectrum input; only the *population*
+theorem is now kernel-checked without it.
 
 ---
 
@@ -352,6 +400,10 @@ input; only the *population* theorem is now kernel-checked without it.
 * [`equivalence-and-tie-wellposedness.md`](equivalence-and-tie-wellposedness.md) — the invariance lemmas and the cyclic-shift/reverse-complement coupling.
 * [`conclusion-semantics-strict-witness-robustness.md`](conclusion-semantics-strict-witness-robustness.md) — why a strict witness is equivalence- and tie-proof.
 * [`oriented-se62-rigidity-theorem.md`](oriented-se62-rigidity-theorem.md) — the oriented same-length rigidity theorem (rows R7–R9).
+* [`oriented-variable-length-se62.md`](oriented-variable-length-se62.md) — row R14, the oriented unrestricted-length §6.2 classification (infinite families + amplification), with the kernel-checked certificate `AssemblyP1/OrientedVariableLengthSe62.lean`.
+* [`../section62-varlen-per-occurrence-audit-213.md`](../section62-varlen-per-occurrence-audit-213.md) — rows R10/R12, the #213 audit hardening the variable-length per-occurrence witness (per-occurrence rule + unique optimizer over the whole §6.1 domain).
+* [`../implication-lattice-216.md`](../implication-lattice-216.md) — the #216 conclusion-schema transfer table (module `AssemblyP1/ImplicationLattice.lean`, script `verify_implication_lattice_216.py`), with the sample-multiplicity `Part 6` recorded as pending.
+* [`../exact-fibre-count-theorem-219.md`](../exact-fibre-count-theorem-219.md) — the #219 same-length complete-spectrum fibre count (Theorems 1–3), with the exact-arithmetic audit `scripts/audit_fibre_count_219.py`; a population counting result whose Lean core is pending.
 * [`../bridging-se62-flow-ml-counterexample.md`](../bridging-se62-flow-ml-counterexample.md), [`../section62-same-length-bidirected-counterexample.md`](../section62-same-length-bidirected-counterexample.md) — rows R10–R12.
 * [`../peroccurrence-samelength-dna-counterexample-212.md`](../peroccurrence-samelength-dna-counterexample-212.md) — row R13, the per-occurrence same-length refutation, with the leaf-#212 provenance record.
 * [`oriented-to-double-strand-bridging-transfer-2026-10-09.md`](oriented-to-double-strand-bridging-transfer-2026-10-09.md) — rows R16/R18, the three oriented↔double-strand bridging versions (V1/V2, V3, V5) and the two-disjoint-circles duplex model, with the kernel-checked V3 non-equivalence and the six mixed cross-strand triples.
@@ -375,7 +427,11 @@ input; only the *population* theorem is now kernel-checked without it.
 | Row R9 is proved conditional on an external BBT premise | **K** conditional |
 | Rows R10, R11, R12 are refuted by kernel-checked strict witnesses certifying literal §6.2 feasibility | **K** |
 | Row R13 is refuted by a kernel-checked strict witness certifying literal §6.2 feasibility on both sides under the per-occurrence strengthening (`ATATACAC → ATACACAC`, ratios `3/2` and `9/5`) | **K** |
-| Rows R3, R4, R14 are refuted by exact-arithmetic reproductions | **V** |
+| Rows R3, R4 are refuted by exact-arithmetic reproductions | **V** |
+| Row R14 (oriented single-strand variable-length §6.2) is refuted by a kernel-checked certificate plus infinite strict families (`M ≥ 1`), exact `15625/11664`, `2109375/823543` and binomial `81/64`, `27/16` at `M=1,2` | **K** (`AssemblyP1/OrientedVariableLengthSe62.lean`) + **M** (families) + **V** (scripts) |
+| Row R10/R12 is hardened by #213: both throughput vectors in the §6.1 domain and general flow universe, competitor the unique optimizer over the whole domain | **K** (`AssemblyP1/Section62VarlenPerOccurrence.lean`) |
+| the #216 sample-multiplicity amplification `Part 6` | **O** (uncommitted, does not compile); its result is **K** via R14 |
+| the #219 same-length complete-spectrum fibre count (Theorems 1–3) | **M** (note proof) + **V** (audit script); the Lean core `FibreCountArithmetic.lean` is **O** (does not compile) |
 | Row R16 is open in both directions, under a non-source convention; the known witness is kernel-checked inadmissible under the `2G` remap | **O** + **K** (inadmissibility) |
 | Row R17 is not a determinate proposition | **I** |
 | Row R18 (two-disjoint-circles duplex) is a disclosed new model; circle-by-circle `I_s` exactly equals `I_s(S)`, duplex-as-a-whole is ill-defined/strictly stronger, and the unobserved-orientation class likelihood equals the MB09 molecule distribution | **K** + **C** |
@@ -387,7 +443,7 @@ input; only the *population* theorem is now kernel-checked without it.
 | the integer flow optimum vs. the half-integral relaxation | **kept separate** in §2.2; the relaxation is not the §6.2 object |
 | R9’s BBT complete-spectrum input (finite same-length rotation uniqueness) | **O** (external) — carried as explicit `hObs`/`hBBT` premise, not discharged; the **population** theorem is now kernel-checked without it |
 | leaf #211’s `I_s ⇒ ¬ interleaved long repeats` adapter and its `G=6, L=2` refutation of the BBT premise | **K** — `AssemblyP1/SameLength62TieUniqueness.lean`, integrated and axiom-audited |
-| leaf #219’s exact fibre-count arithmetic | **pending** — `FibreCountArithmetic.lean` does not compile (WIP); not integrated |
+| leaf #219’s exact fibre-count theorem | **M** + **V** — note `docs/exact-fibre-count-theorem-219.md` and audit `scripts/audit_fibre_count_219.py` integrated and passing; the Lean core `FibreCountArithmetic.lean` is **O** (does not compile) |
 
 ---
 
@@ -557,3 +613,65 @@ unselected (no primary source fixes `E`, `A`, the §6.2 flow, or the general
 principle), and the publisher's supplementary ZIP remains uninspected (HTTP
 403). The population theorem's being kernel-checked does **not** settle the
 finite 2016 sentence: it answers the project's own population model.
+
+### 7.4 Final synthesis round (this pass), 2026-10-09
+
+Base: `a4dbd0a` (the previous integration round on top of `729f50c`). The two
+**verified** leaf modules the previous round tracked but did not integrate were
+taken by `git checkout <head> -- <new-path>` (again never their paper or shared
+`AssemblyP1.lean` edits):
+
+| leaf | files integrated | why |
+|---|---|---|
+| #210 | `AssemblyP1/OrientedVariableLengthSe62.lean`, `docs/source-notes/oriented-variable-length-se62.md`, `scripts/verify_oriented_variable_length_se62.py`, `scripts/verify_oriented_variable_length_se62_amplification.py` | the module **builds**; it upgrades R14 to `[K]` and supplies the landed amplification families |
+| #213 | `AssemblyP1/Section62VarlenPerOccurrence.lean`, `docs/section62-varlen-per-occurrence-audit-213.md`, `scripts/verify_se62_varlen_per_occurrence_audit_213.py` | the module **builds**; it hardens R10/R12 |
+
+The two modules were root-imported in `AssemblyP1.lean` (after
+`ImplicationLattice`) and checked here:
+
+| check | command | result |
+|---|---|---|
+| integrated module build | `LEAN_NUM_THREADS=4 lake build AssemblyP1.OrientedVariableLengthSe62 AssemblyP1.Section62VarlenPerOccurrence` | **Build completed successfully (8928 jobs)**; both modules built (22s, 11s) |
+| axiom audit | `#print axioms` on `oriented_variable_length_se62_counterexample`, `…counterexample'`, `truth_information_feasible`, `truth_not_maximizer_in_general_flow_universe`, `truth_not_maximizer_in_flow_universe`, `competitor_is_unique_optimizer`, `truth_per_occurrence`, `competitor_per_occurrence` | every one `[propext, Classical.choice, Quot.sound]` |
+| #210 script | `python3 scripts/verify_oriented_variable_length_se62.py` | **ALL ASSERTIONS PASSED** (bound attained, closed form `M=0..4`) |
+| #210 amplification script | `python3 scripts/verify_oriented_variable_length_se62_amplification.py` | **ALL ASSERTIONS PASSED** (families `M=0..200`) |
+| #213 script | `python3 scripts/verify_se62_varlen_per_occurrence_audit_213.py` | **ALL AUDIT CHECKS PASS** (60 checks; ratio `9/8`, exact `125/108`) |
+| #219 audit | `python3 scripts/audit_fibre_count_219.py` | **AUDIT PASSED** (all claims verified against brute force on binary words length `1..9`) |
+| paper build | `latexmk -pdf -halt-on-error main.tex` with the pinned Guix profile | **`main.pdf`, 35 pages, 0 undefined references** |
+| documentation integrity | `python3 scripts/check-research-docs.py` | **passed** |
+
+**Pending, deliberately not integrated (recorded, not claimed):**
+
+* #216’s uncommitted sample-multiplicity `Part 6` in `AssemblyP1/ImplicationLattice.lean`
+  **does not compile** (~40 errors: `unfold addRead`, `Finset` reindexing,
+  `omega`, `Real.exp_inj`); it is left in its worktree. Its *result* is already
+  `[K]` via R14 (#210). See [`../implication-lattice-216.md`](../implication-lattice-216.md) §7.
+* #219’s uncommitted `AssemblyP1/FibreCountArithmetic.lean` **does not compile**
+  (Finset-reindexing / `omega` failures at lines 155/178/188/190), so the Lean
+  core is left in its worktree. Its Theorems 1–3 are proved in
+  `docs/exact-fibre-count-theorem-219.md` (integrated) and audited by
+  `scripts/audit_fibre_count_219.py` (integrated; **AUDIT PASSED**, all claims
+  verified against brute force on binary words of length `1..9`). It is a
+  population counting result, not a matrix row.
+
+**Host limitation, unchanged.** The full-library `lake build --wfail` remains
+CI’s job (`Issue94Transposition` OOM-kills on this host). The two new modules
+are each built and axiom-audited above.
+
+**Qualification (the gate’s requirement 5).** No **determinate source-supported**
+row remains open. The claim “all source-supported interpretations of the 2016
+finite bridging⇒ML question are resolved” is asserted for the source-supported
+class only, and is explicitly **not** extended to: (i) R16, the Bresler
+doubled-strand **concatenation** convention — a different paper’s convention,
+bounded evidence only, open in **both** directions because the known witness is
+kernel-checked inadmissible there; (ii) R17, the unspecified general ML
+principle — not a determinate proposition; (iii) R18, the disclosed
+two-disjoint-circles duplex model — a modelling choice, not a source reading;
+(iv) the two pending leaf artifacts (#216 `Part 6`, #219’s count theorem),
+neither of which is a matrix row. R13 is resolved although it is **not**
+source-supported (the per-occurrence strengthening is a repository-added
+surface). The positive same-length **rotation-uniqueness** half (R9) remains
+Lean-conditional on the external BBT complete-spectrum input; only the
+*population* theorem is kernel-checked without it. The referent question
+(which MB09 object the 2016 sentence denotes) remains an unselected source gap,
+and the publisher’s supplementary ZIP remains uninspected.

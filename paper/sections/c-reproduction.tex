@@ -57,6 +57,28 @@ The finite and computational claims correspond to artifacts in the repository:
         with the primitive/periodic split discharged internally by the
         kernel-checked dichotomy; the $\Is$ bridging implication
         and the rotation-uniqueness (BBT) input remain external;
+  \item oriented single-strand variable-length Section~6.2 classification:
+        \texttt{scripts/verify\_oriented\_variable\_length\_se62.py} and
+        \texttt{scripts/verify\_oriented\_variable\_length\_se62\_amplification.py}
+        (exact families $M=0..200$), plus the kernel-checked certificate
+        \texttt{AssemblyP1/OrientedVariableLengthSe62.lean} (full-strength
+        $\Is$ by \texttt{decide}, both objectives, $M=1,2$) and the general
+        proof in \texttt{docs/source-notes/oriented-variable-length-se62.md};
+  \item variable-length per-occurrence audit of the $AAATT\to AAAATT$ witness:
+        \texttt{scripts/verify\_se62\_varlen\_per\_occurrence\_audit\_213.py}
+        and \texttt{AssemblyP1/Section62VarlenPerOccurrence.lean} (per-vertex
+        and per-occurrence feasibility, and the unique-optimizer lift over the
+        whole §6.1 domain and the general flow universe);
+  \item conclusion-schema transfer table: \texttt{AssemblyP1/ImplicationLattice.lean}
+        and \texttt{scripts/verify\_implication\_lattice\_216.py}
+        (\texttt{docs/implication-lattice-216.md}). Its sample-multiplicity
+        refinement is pending; the result is kernel-checked through the
+        variable-length module above;
+  \item same-length complete-spectrum fibre count (population): the note
+        \texttt{docs/exact-fibre-count-theorem-219.md} and the exact-arithmetic
+        audit \texttt{scripts/audit\_fibre\_count\_219.py}. The Lean core is
+        pending (it does not compile), so this is \emph{not} a kernel-checked
+        matrix row;
   \item population uniqueness (oriented primitive P2, every positive length):
         the end-to-end kernel-checked theorem
         \popml{}, built from
