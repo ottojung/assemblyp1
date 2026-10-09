@@ -49,6 +49,7 @@ jobs:
           key: lean-project-v2-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('lean-toolchain', 'lake-manifest.json') }}-full-${{ github.sha }}
           restore-keys: |
             lean-project-v2-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('lean-toolchain', 'lake-manifest.json') }}-checkpoint-
+            lean-project-v2-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('lean-toolchain', 'lake-manifest.json') }}-orbit-
             lean-project-v2-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('lean-toolchain', 'lake-manifest.json') }}-full-
             lean-project-v2-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('lean-toolchain', 'lake-manifest.json') }}-seed-
 
@@ -133,6 +134,19 @@ jobs:
         with:
           path: .ci-cache/axiom-audit
           key: axiom-audit-v1-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('lean-toolchain') }}-46024e005996495c65ef609368e11ab39c4222e3
+
+      # Previously this one theorem module took ~2,207 s. Persist its compiled
+      # object and transitive deps BEFORE attempting any other theorem module.
+      # Lake's source fingerprints still rebuild stale oleans on later commits.
+      - name: Build expensive orbit-search proof first
+        run: lake build AssemblyP1.Issue94OrbitSearch --wfail
+
+      - name: Checkpoint compiled expensive theorem
+        if: steps.compiled-cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save$v4
+        with:
+          path: .lake/build
+          key: lean-project-v2-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('lean-toolchain', 'lake-manifest.json') }}-orbit-${{ github.run_id }}-${{ github.run_attempt }}
 
       # The endpoint module imports only a subset of the project. The default
       # Lake library target compiles every AssemblyP1/*.lean module, including
