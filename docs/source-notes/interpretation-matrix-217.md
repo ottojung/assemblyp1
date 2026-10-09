@@ -45,7 +45,7 @@ their state **at the time**, not the final theorem frontier. Merged PR #124
 kernel-checks rotation for genuine same-length Section 6.2 candidates when
 BOTH truth and competitor have certificates. Merged PR #125 proves information
 feasibility alone does not give truth candidacy. Merged PR #126 proves the
-nonprimitive no-truth-certificate case. PR #127 proves the corresponding
+nonprimitive no-truth-certificate case. Merged PR #127 proves the corresponding
 primitive case FALSE with a genuine AABB/ABAB flow candidate at G=4, L=2,
 observed starts {1,3}. The same example's exact multinomial ML preference
 was separately established. None of these facts licenses an unrestricted
