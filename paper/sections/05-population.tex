@@ -72,7 +72,10 @@ no repeat condition required.
 
 \begin{proof}
 $\ellpop_S(S)=\sum_w p_S(w)\log p_S(w)$, so
-$\ellpop_S(D)-\ellpop_S(S)=\sum_w p_S(w)\log(p_D(w)/p_S(w))=-\KL(p_S\|p_D)$,
+\begin{align*}
+  \ellpop_S(D)-\ellpop_S(S)
+    &=\sum_w p_S(w)\log(p_D(w)/p_S(w))=-\KL(p_S\|p_D),
+\end{align*}
 where the right side is $+\infty$ precisely when $\ellpop_S(D)=-\infty$. Gibbs'
 inequality \cite{cover2006} gives $\KL\ge0$ with equality iff the distributions
 agree. The last claim is immediate since $S$ is in the class.

@@ -176,11 +176,10 @@ objectives depend on the candidate only through its spectrum, and the
 observation is common, so the scores coincide.
 \end{proof}
 
-Only the triple-repeat clause of $\Is$ is used for the spectrum-rigidity and
+Only the triple-repeat clause of $\Is$ feeds the spectrum-rigidity and
 no-strict-counterexample conclusions; the interleaved-repeat and coverage clauses
-are not needed there. Corollary~\ref{cor:same-length-rotation} at the end of this
-subsection does use the interleaved clause, because
-it invokes the complete-spectrum uniqueness input of
+are not needed there. Corollary~\ref{cor:same-length-rotation} below does use the
+interleaved clause, since it invokes the complete-spectrum uniqueness input of
 Section~\ref{sec:population}, whose hypothesis is Ukkonen's full condition.
 
 \subsubsection{The maximizer theorem on this slice}
@@ -466,9 +465,9 @@ the competitor is strictly better:
 \end{theorem}
 
 \begin{proof}[Sketch]
-The molecule classes are $x=(ATA/TAT:1,TAC/GTA:1,ACA/TGT:2,CAC/GTG:1,CAT/ATG:1)$,
-$d_S=(ATA/TAT:3,TAC/GTA:1,ACA/TGT:2,CAC/GTG:1,CAT/ATG:1)$ and
-$d_D=(ATA/TAT:1,TAC/GTA:1,ACA/TGT:3,CAC/GTG:2,CAT/ATG:1)$; all three have the
+The molecule classes are $x=(ATA/TAT{:}1,\allowbreak TAC/GTA{:}1,\allowbreak ACA/TGT{:}2,\allowbreak CAC/GTG{:}1,\allowbreak CAT/ATG{:}1)$,
+$d_S=(ATA/TAT{:}3,\allowbreak TAC/GTA{:}1,\allowbreak ACA/TGT{:}2,\allowbreak CAC/GTG{:}1,\allowbreak CAT/ATG{:}1)$ and
+$d_D=(ATA/TAT{:}1,\allowbreak TAC/GTA{:}1,\allowbreak ACA/TGT{:}3,\allowbreak CAC/GTG{:}2,\allowbreak CAT/ATG{:}1)$; all three have the
 same support, and $d_S,d_D\ge x$ coordinate-wise. Since $|D|=|S|$, the exact
 factors are $3\cdot2$ against $1\cdot3$ on the redistributed coordinates, giving
 $3/2$, and the binomial marginals give $9/5$. The $\Is$ certificate, the explicit
@@ -621,13 +620,13 @@ Both general-flow results are kernel-checked:
 \texttt{no\_\allowbreak{}sequence\_\allowbreak{}has\_\allowbreak{}star\_\allowbreak{}spectrum},
 \texttt{nonspelled\_\allowbreak{}se62\_\allowbreak{}flow\_\allowbreak{}domain\_\allowbreak{}countermodel}) for $o_{\min}=1$, which
 certifies that a spelled candidate is a genuine §6.2 flow and proves no circular
-molecule realizes $d^*$; and
-\texttt{Assembly\allowbreak{}P1/\allowbreak{}Section62Full\allowbreak{}Overlap\allowbreak{}Disconnected.\allowbreak{}lean}
+molecule realizes $d^*$. The second,
+\texttt{Assembly\allowbreak{}P1/\allowbreak{}Section62Full\allowbreak{}Overlap\allowbreak{}Disconnected.\allowbreak{}lean},
+for $o_{\min}=L-1$, proves the disconnected full-overlap optimum and its
+strict beat
 (\texttt{full\_\allowbreak{}overlap\_\allowbreak{}disconnected\_\allowbreak{}optimum},
 \texttt{disc\_\allowbreak{}support\_\allowbreak{}disconnected}, \texttt{dStar\_argmax},
-\texttt{star\_better}) for $o_{\min}=L-1$, which proves the disconnected
-full-overlap optimum and its strict beat. Both audit to the three standard
-axioms.
+\texttt{star\_better}). Both audit to the three standard axioms.
 \end{remark}
 
 \begin{remark}[The physical duplex is two disjoint circles, not a concatenation]
@@ -742,13 +741,42 @@ result is already kernel-checked through the instances above, whose module
 
 \subsection{Summary of the finite landscape}
 
-\begin{table}[t]
-\centering
-\small
-\begin{tabular}{@{}p{0.30\textwidth}p{0.24\textwidth}p{0.16\textwidth}p{0.20\textwidth}@{}}
+{\small
+\begin{longtable}{@{}p{0.30\textwidth}p{0.24\textwidth}p{0.16\textwidth}p{0.20\textwidth}@{}}
 \toprule
 Statement & objective & candidate class & result \\
 \midrule
+\endfirsthead
+\multicolumn{4}{@{}l@{}}{\small Table~\thetable, continued from previous page}\\
+\addlinespace
+\toprule
+Statement & objective & candidate class & result \\
+\midrule
+\endhead
+\midrule
+\multicolumn{4}{@{}r@{}}{\small Continued on next page}\\
+\endfoot
+\bottomrule
+\caption{The finite landscape. ``False'' means a strict counterexample over the
+stated class; the evidence level (kernel-checked, exact computation, or script)
+is recorded in the corresponding theorem or status line. The positive
+same-length rows assert maximizer and, on the truth-admissible genuine
+candidate class, internally kernel-checked uniqueness up to cyclic rotation,
+not merely that the truth ties. By Lemma~\ref{lem:negative-transfer} each same-length falsity
+transfers to all circular candidates for that objective. The last two rows are
+\emph{not} readings of the 2016 sentence: the $2G$ doubled-strand concatenation
+belongs to a different paper and is the only determinate-looking row left open
+(and it is open in both directions), while the disjoint-duplex row is a
+repository modelling choice whose circle-by-circle reading is exactly $\Is(S)$.
+The
+per-occurrence strengthening in the row above them is likewise a repository-added
+assumption surface rather than Medvedev--Brudno's §6.2 rule; that row is a
+\emph{determinate} question and is now refuted rather than left open. All
+non-source rows are listed so that the claim of exhaustion is not overstated. See
+\texttt{docs/\allowbreak{}source-notes/\allowbreak{}interpretation-matrix-217.\allowbreak{}md} for the row-by-row
+matrix with every axis value tagged.}
+\label{tab:finite}
+\endlastfoot
 same-length oriented Section~6.2, $R\in\Is$, truth §6.2-admissible
   & exact / binomial
   & same-length spelled
@@ -811,28 +839,7 @@ duplex as \emph{two disjoint} circles $(S,\rc(S))$
   & exact / binomial
   & disjoint-duplex candidates
   & \projchoice{}: circle-by-circle $\Is\equiv\Is(S)$, witness survives; duplex-as-a-whole ill-defined; unobserved-orientation likelihood $=$ MB09 molecule (Rem.~\ref{rem:duplex}) \\
-\bottomrule
-\end{tabular}
-\caption{The finite landscape. ``False'' means a strict counterexample over the
-stated class; the evidence level (kernel-checked, exact computation, or script)
-is recorded in the corresponding theorem or status line. The positive
-same-length rows assert maximizer and, on the truth-admissible genuine
-candidate class, internally kernel-checked uniqueness up to cyclic rotation,
-not merely that the truth ties. By Lemma~\ref{lem:negative-transfer} each same-length falsity
-transfers to all circular candidates for that objective. The last two rows are
-\emph{not} readings of the 2016 sentence: the $2G$ doubled-strand concatenation
-belongs to a different paper and is the only determinate-looking row left open
-(and it is open in both directions), while the disjoint-duplex row is a
-repository modelling choice whose circle-by-circle reading is exactly $\Is(S)$.
-The
-per-occurrence strengthening in the row above them is likewise a repository-added
-assumption surface rather than Medvedev--Brudno's §6.2 rule; that row is a
-\emph{determinate} question and is now refuted rather than left open. All
-non-source rows are listed so that the claim of exhaustion is not overstated. See
-\texttt{docs/\allowbreak{}source-notes/\allowbreak{}interpretation-matrix-217.\allowbreak{}md} for the row-by-row
-matrix with every axis value tagged.}
-\label{tab:finite}
-\end{table}
+\end{longtable}
 
 Table~\ref{tab:finite} makes the shape of the answer visible. The 2016 question
 is not one theorem awaiting one proof: it is a family of statements indexed by

@@ -65,7 +65,10 @@ statistical assumptions under which the source's likelihood has the stated form.
 The likelihood is a function of the observed read-type \emph{counts}
 $x(w)$, not of the set of distinct read strings. This is source-mandated: the
 exact objective is the multinomial
-$\frac{n!}{\prod_w x(w)!}\prod_w(d_w/N(D))^{x(w)}$. Collapsing reads to a set
+\[
+  \frac{n!}{\prod_w x(w)!}\prod_w(d_w/N(D))^{x(w)}.
+\]
+Collapsing reads to a set
 would discard the frequencies that the objective scores and would make the
 finite-sampling failure of Example~\ref{ex:frequencies} invisible. Keeping the
 latent true placements separate from the observable counts is equally important:
