@@ -183,6 +183,7 @@ import AssemblyP1.ImplicationLattice
 import AssemblyP1.OrientedVariableLengthSe62
 import AssemblyP1.Section62VarlenPerOccurrence
 import AssemblyP1.BreslerRemapCompatibility
+import AssemblyP1.Issue209EAudit
 
 /-! ## `Issue94Transposition`: the Kotzig/Ukkonen/Pevzner descent, and an obstruction
 

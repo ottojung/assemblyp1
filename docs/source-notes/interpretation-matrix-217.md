@@ -19,9 +19,14 @@ audit that hardens rows R10/R12). **This V3-settle round** adds leaf #215's
 `BreslerRemapCompatibility` module, script and appendix §11, which kernel-check
 the exact V3↔V1/V2 compatibility locus (R1∧R2∧R3) and both incomparability
 witnesses, sharpening R16's residue statement without closing its maximizer
-question. The cc0aa8a-based **paper** edits on the leaf branches were
+question. **This #209 round** adds leaf #209's `Issue209EAudit` module, three
+scripts and its audit ledger/terminal report: the same `AAABB → AAAAB` witness
+is kernel-checked to refute the fixed-`N` binomial objective `A` as well as the
+exact multinomial (ratio `1125/512`), and the external-`N` domain boundary
+(`d_w ≤ N(D)`; the literal marginal is a probability only on `|D| ≤ N`) is
+kernel-checked. The cc0aa8a-based **paper** edits on the leaf branches were
 deliberately **not** merged, because they would have reverted the #217/#221
-paper state; only their new, self-contained files were taken. All eight
+paper state; only their new, self-contained files were taken. All nine
 integrated Lean modules build and are axiom-audited at `[propext,
 Classical.choice, Quot.sound]`. Two further leaf items remain **pending, not
 integrated**, because their Lean does not compile: #216's uncommitted
@@ -73,7 +78,13 @@ selection remains a source gap; see
 | `U` | an unspecified general ML principle | **F** (that the 2016 text names no formula) + **I** (that the sentence may denote a family) |
 
 `E` and `A` are **not** the same objective: `A` drops `N(D)` from the objective
-and is only defined on `0 < dᵢ < N`. **[M]**
+and is only defined on `0 < dᵢ < N`. **[M]** The external `N` is a *domain
+restriction*, not a scoring license: the occurrence multiplicity satisfies
+`d_w ≤ N(D)` for every read type and candidate (`Issue209EAudit.winCount_le_len`),
+so the literal marginal is a product of probabilities only on the class
+`|D| ≤ N`; a length-`6` candidate scored at external `N = 5` has a *negative*
+marginal factor for an unobserved type (`external_N_domain_boundary`). **[K]**
+`AssemblyP1/Issue209EAudit.lean`
 
 ### 1.2 Candidate universe and length convention
 
@@ -141,7 +152,7 @@ Legend for the resolution column: **FALSE** (a strict counterexample refutes
 
 | # | Objective | Universe / length | §6.2 membership | Strand | Bridging | Conclusion | Resolution | Evidence |
 |---|---|---|---|---|---|---|---|---|
-| R1 | `E` | `U1` (free) | `F0` | `or` | `Is` | `W` and `S` both false | **FALSE** | Strict witness `AAABB → AAAAB`, ratio `2`; same-length, so negative transfer gives `U1` | **[K]** `AssemblyP1/FixedLengthExactCounterexample.lean` |
+| R1 | `E` | `U1` (free) | `F0` | `or` | `Is` | `W` and `S` both false | **FALSE** | Strict witness `AAABB → AAAAB`, ratio `2`; same-length, so negative transfer gives `U1`. **This round** adds (leaf #209, `Issue209EAudit`): the *same* witness also refutes the fixed-`N` binomial objective `A` with ratio `1125/512` (the two witnesses differ only by a renaming of one unused symbol), so R1 is negative under **both** source-nameable objectives | **[K]** `AssemblyP1/FixedLengthExactCounterexample.lean`; **[K]** `AssemblyP1/Issue209EAudit.lean` (`aaab_refutes_fixed_N_binomial`) |
 | R2 | `E` | `U1` (free) | `F0` | `or` | `Is` | as above | **FALSE** | Unrestricted-length witness `ACGT → ACACGT`, `1/18 > 3/64` | **[K]** `AssemblyP1/ExactVariantECounterexample.lean` |
 | R3 | `E` | `U1` (free) | `F0` | `mol` | `Is` | as above | **FALSE** | Molecule-class witness `AAATT → AAAAT`, ratio `2` under `or`; under `mol` the truth is not `Fgen`, see R7 | **[V]** `scripts/uniform_strand_semantics_search.py --witness` |
 | R4 | `E` | `U1` (free) | `F0` | `or` | `Is` | as above | **FALSE** | Read-tiled witness `AAABCBC → AAAAABC`, `G=7`, `L=3`, realized starts `(0,0,0,1,2,5,6)`, `n=7`, ratio `27`; `Is` non-vacuous (coverage + the all-bridged maximal length-1 triple repeat at `(0,1,2)`; interleaving vacuous) | **[V]** `scripts/verify_readtiled_exact_counterexample.py` |
@@ -212,6 +223,7 @@ can recover the research graph.
 | leaf | branch / worktree | state this round | board action |
 |---|---|---|---|
 | #208 | `agent/board-208-0c8fcf` / `assemblyp1-finite-208` | source census + provenance audit committed (`3f532c5`); untracked `scratch-208/` preserved | **integrated** (novel docs/scripts only; its stale cc0aa8a-based paper edits were *not* merged); no matrix row change |
+| #209 | `agent/board-209-6cf9bd` / `assemblyp1-finite-209` | **closed/terminal** (03:18): `Issue209EAudit` + 3 scripts + ledger + terminal report committed (`cf92561`…`5b18b1a`, pushed); `scratch-209/` preserved | **this round** integrates the module + scripts + ledger/report: R1 strengthened (same `AAABB` witness refutes `A` too, ratio `1125/512`); objective-`A` domain boundary kernel-checked (`d_w ≤ N(D)`, negative marginal off `|D| ≤ N`) |
 | #210 | `agent/board-210-e8b6b2` / `assemblyp1-finite-210` | `OrientedVariableLengthSe62` + doc + 2 scripts committed (`7d48eab`); worktree clean | **module integrated** — R14 upgraded from `[V]` to `[K]`; the amplification families are the landed form of the sample-multiplicity axis |
 | #211 | `agent/board-211-8d5103` / `assemblyp1-finite-211` | `SameLength62TieUniqueness` committed (`8bef1f6`); uncommitted umbrella wiring + 2 scripts preserved | **module integrated**; finite same-length uniqueness stays Lean-conditional on the complete-spectrum input |
 | #212 | `agent/board-212-37b45b` / `assemblyp1-finite-212` | clean; module + script already harvested | **harvested** — R13 resolved FALSE (see §7.1) |
@@ -423,6 +435,7 @@ theorem is now kernel-checked without it.
 * [`oriented-to-double-strand-bridging-transfer-2026-10-09.md`](oriented-to-double-strand-bridging-transfer-2026-10-09.md) — rows R16/R18, the three oriented↔double-strand bridging versions (V1/V2, V3, V5) and the two-disjoint-circles duplex model, with the kernel-checked V3 non-equivalence and the six mixed cross-strand triples.
 * [`../section62-nonspelled-flow-domain.md`](../section62-nonspelled-flow-domain.md) — the #214 general `Feasible62` flow-domain countermodel and the integer/half-integral separation.
 * [`finite-interpretation-universe-audit.md`](finite-interpretation-universe-audit.md) — the #208 source-exhaustiveness census behind the “source-supported” class.
+* [`../issue-209-ea-audit-ledger.md`](../issue-209-ea-audit-ledger.md), [`../issue-209-terminal-report.md`](../issue-209-terminal-report.md) — the #209 E/A witness audit ledger and terminal report (module `AssemblyP1/Issue209EAudit.lean`, scripts `verify_issue209_ea_witnesses*.py`, `audit_issue209_axioms_full.py`).
 * [`same-length-witnesses-candidate-set-inclusion.md`](same-length-witnesses-candidate-set-inclusion.md) — the negative-transfer lemma.
 * [`../ml-formalization-contract.md`](../ml-formalization-contract.md) — Variants `E`/`A`/`F` and the two conclusion schemas.
 
@@ -437,6 +450,8 @@ theorem is now kernel-checked without it.
 | MB09 models reads as reverse-complement molecules, each represented once | **F** |
 | `Focc` (per-occurrence) is not the §6.2 definition | **M** + **C** |
 | Rows R1, R2, R5, R6 are refuted by kernel-checked strict witnesses | **K** |
+| Row R1's `AAABB → AAAAB` witness also refutes the fixed-`N` binomial objective `A` (ratio `1125/512`), not only the exact multinomial | **K** — `AssemblyP1/Issue209EAudit.lean` (`aaab_refutes_fixed_N_binomial`), integrated and axiom-audited |
+| objective `A`'s external `N` restricts the candidate class to `|D| ≤ N` (`d_w ≤ N(D)`); the literal marginal is negative off that class | **K** — `AssemblyP1/Issue209EAudit.lean` (`winCount_le_len`, `external_N_domain_boundary`) |
 | Rows R7, R8 are proved (maximizer) | **K** |
 | Row R9 is proved conditional on an external BBT premise | **K** conditional |
 | Rows R10, R11, R12 are refuted by kernel-checked strict witnesses certifying literal §6.2 feasibility | **K** |
@@ -732,3 +747,39 @@ general soundness remains a **conjecture** (verified in scope only).
 **Host limitation, unchanged.** The full-library `lake build --wfail` remains
 CI’s job (`Issue94Transposition` OOM-kills on this host). The new module is
 built, kernel-replayed and axiom-audited above.
+
+### 7.6 #209 integration round (this pass), 2026-10-09
+
+Base: `9627f18` (the V3-settle round). Leaf #209 is **closed/terminal** (board
+comment 03:18) at commits `cf92561`…`5b18b1a` on `agent/board-209-6cf9bd`
+(pushed). Its novel, self-contained artifacts were taken by
+`git show <head> -- <path>` (never the leaf's `AssemblyP1.lean` or paper
+edits; `scratch-209/` deliberately not taken):
+
+| leaf | files integrated | why |
+|---|---|---|
+| #209 | `AssemblyP1/Issue209EAudit.lean`, `scripts/verify_issue209_ea_witnesses.py`, `scripts/verify_issue209_ea_witnesses_third_pass.py`, `scripts/audit_issue209_axioms_full.py`, `docs/issue-209-ea-audit-ledger.md`, `docs/issue-209-terminal-report.md` | the module **builds**; it strengthens R1 (the `AAABB` witness refutes `A` too) and kernel-checks the external-`N` domain boundary |
+
+The module was root-imported in `AssemblyP1.lean` (after
+`BreslerRemapCompatibility`) and checked here:
+
+| check | command | result |
+|---|---|---|
+| integrated module build | `LEAN_NUM_THREADS=4 lake build AssemblyP1.Issue209EAudit` | **Build completed successfully (8925 jobs)**; module built (5.7s) |
+| kernel replay | `LEAN_NUM_THREADS=1 lake env leanchecker AssemblyP1.Issue209EAudit` | **exit 0** |
+| axiom audit | `#print axioms` on `aaab_refutes_fixed_N_binomial`, `truth_information_feasible`, `truth_not_maximum_likelihood`, `likelihood_ratio`, `winCount_le_len`, `binomial_marginal_probability_on_le_len`, `external_N_domain_boundary` | every one `[propext, Classical.choice, Quot.sound]` |
+| module-level axiom audit | CI-pinned `axiom-audit --allow propext,Classical.choice,Quot.sound --root AssemblyP1 --modules AssemblyP1.Issue209EAudit` | **audited 174 declaration(s); all within the allowlist**, exit 0 |
+| forbidden-token scan | `grep -E '\b(sorry\|axiom\|admit\|native_decide)\b'` on the module | **no matches** outside the docstring |
+| #209 witness script | `python3 scripts/verify_issue209_ea_witnesses.py` | **all checks passed** |
+| #209 third-pass script | `python3 scripts/verify_issue209_ea_witnesses_third_pass.py` | **all checks passed** (91 checks) |
+| #209 full axiom sweep | `python3 scripts/audit_issue209_axioms_full.py --write` | **116/116 theorems reported; 105 on exactly the permitted three, 11 axiom-free, 0 outside** |
+| documentation integrity | `python3 scripts/check-research-docs.py` | **passed** |
+
+**What this round changes, and what it does not.** R1 is strengthened: the
+`AAABB → AAAAB` witness refutes **both** source-nameable objectives (`E` ratio
+`2`, `A` ratio `1125/512`), so the row's negativity does not depend on which
+of the two the 2016 sentence denotes. The objective-`A` axis gains the
+domain-boundary fact: the external `N` restricts the admissible class to
+`|D| ≤ N` (kernel-checked), which is why R5's witness is chosen with every
+`dᵢ ≤ 2 < N`. No other row changes; R16/R17/R18 and the two pending leaf
+artifacts are untouched.
