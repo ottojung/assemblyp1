@@ -1,25 +1,25 @@
 # #211: the §6.2 same-length maximizer versus uniqueness up to rotation
 
-This note is the companion to `AssemblyP1/SameLength62TieUniqueness.lean`. It
-records the reviewed finite theorem surface, the audit of the primitive and
-nonprimitive subcases, the #88 dominance-vs-membership audit, and the exact
-remaining open residue. Every claim is tagged **[fact]** (kernel-checked or
-computationally verified), **[inference]** (mathematical argument, not Lean),
-or **[choice]** (a modeling or scoping decision).
+This note is the companion to `AssemblyP1/SameLength62TieUniqueness.lean` and
+`AssemblyP1/SameLength62Uniqueness.lean`. It records the reviewed finite theorem
+surface, the audit of the primitive and nonprimitive subcases, the #88
+dominance-vs-membership audit, and the final uniqueness result. Every claim is
+tagged **[fact]** (kernel-checked or computationally verified), **[inference]**
+(mathematical argument, not Lean), or **[choice]** (a modeling or scoping
+decision).
 
 ## 1. The question
 
 The oriented same-length §6.2 model asks: when the maximum-likelihood sequence
 is tied, is it the truth? The maximizer half is already proved
 (`SameLength62Maximizer.informationFeasible_62_maximizer`,
-`MLEscape.informationFeasible_62_spelledML`); this front audits the uniqueness
-half.
+`MLEscape.informationFeasible_62_spelledML`); this front proves the uniqueness
+half: under `I_s`, every genuine §6.2 candidate is a cyclic shift of the truth.
 
 ## 2. Reviewed theorem surface
 
-All theorems below are in `AssemblyP1.SameLength62TieUniqueness` and
-kernel-checked with axioms `propext`, `Classical.choice`, `Quot.sound` only.
-No `sorry`, no `admit`, no unproved axioms. **[fact]**
+All theorems below are kernel-checked with axioms `propext`, `Classical.choice`,
+`Quot.sound` only. No `sorry`, no `admit`, no unproved axioms. **[fact]**
 
 | theorem | statement | role |
 | --- | --- | --- |
@@ -40,6 +40,7 @@ No `sorry`, no `admit`, no unproved axioms. **[fact]**
 | `iss_does_not_imply_P1` | `I_s` does not imply the branch-free `P1` | the `P1` route is blocked |
 | `bbTP2Prim_of_94` | `BBTP2Prim L` inhabited for `2 ≤ L` | the #94 primitive route |
 | `unique_62_maximizer_up_to_rotation_of_primitive` | primitive `I_s`-feasible truth: uniqueness | the primitive subcase, proved |
+| `unique_62_maximizer_up_to_rotation` | **every** `I_s`-feasible truth: uniqueness | **the full uniqueness theorem** |
 
 ## 3. The primitive subcase is proved
 
@@ -63,57 +64,76 @@ This is the largest subcase that closes without the §2 residue or the §5
 obstruction. The split on `IsPrimitive S` is explicit: the nonprimitive case
 is **not** assumed. **[choice]**
 
-## 4. The nonprimitive subcase: assessment
+## 4. The nonprimitive subcase: closed via #243
 
-**Question.** For a nonprimitive `I_s`-feasible truth, does periodicity plus
-Ukkonen force a nonbranching de Bruijn edge-TYPE support, giving uniqueness
-via a deterministic successor?
+**Theorem.** Under `I_s`, if the truth `S` is nonprimitive, then every genuine
+same-length §6.2 candidate is a cyclic shift of `S`. **[fact]**
 
-**Assessment: YES.** The argument is **[inference]** (not yet Lean), with
-computational support **[fact]**.
+The chain is:
 
-### The argument
+1. `I_s` gives `¬ HasLongTripleRepeat` (`BridgingBridge.informationFeasible_no_long_triple_repeat`). **[fact]**
+2. `primitive_or_minimal_period` gives a minimal period `p` with `HasMinimalPeriod hG S p`. **[fact]**
+3. `periodic_factor_distinct` (from `HasMinimalPeriod` + `¬ HasLongTripleRepeat`) gives distinctness of the period's `(L-1)`-windows. **[fact]**
+4. `periodic_cycle_shape` gives `IsSimpleCycle L hG S`. **[fact]**
+5. The #243 lemma `CycleSpellingRotation.isCyclicShift_of_isSimpleCycle_specCount` converts `IsSimpleCycle` + spectrum equality directly into `IsCyclicShift`. **[fact]**
 
-Let `S` be nonprimitive with least period `p`, so `S = T^k` for a primitive
-word `T` of length `p` and `k ≥ 2`.
+The spectrum equality comes from the §6.2 bridge (`oriented_support_eq_of_genuine62` + `Is_spectrum_eq_of_support_eq`). No `NoBranching` formalization is needed; the #243 lemma subsumes the deterministic-continuation step.
 
-1. **`P2` forces `k = 2`.** If `k ≥ 3`, any substring of `T` (of any length)
-   occurs at `k ≥ 3` distinct positions in `S` (one per copy), so it is a
-   triple repeat. `P2` forbids triple repeats of length `≥ L-1`; since
-   substrings of length `L-1` exist in `S` (as `L ≤ G = kp`), this is a
-   contradiction. Hence `k = 2` and `G = 2p`. **[inference]**
+The split on `IsPrimitive S` is explicit: both cases are fully kernel-checked. **[fact]**
 
-2. **`P2` forces `T` to have no repeat of length `≥ L-1`.** A repeat in `T`
-   of length `e` occurs at two positions in `T`, giving four occurrences in
-   `S` (two per copy), hence a triple repeat. So `T` has no repeat of length
-   `≥ L-1`, i.e., all `(L-1)`-mers of `T` are distinct. **[inference]**
+### The original mechanism is false
 
-3. **The de Bruijn graph of `S` is a simple cycle with edge multiplicities 2.**
-   The `(L-1)`-mers of `S` are the `(L-1)`-mers of `T`, each occurring twice.
-   Since they are all distinct and `T` is primitive, they form a simple cycle
-   `v_0 → v_1 → … → v_{p-1} → v_0`. Each edge has multiplicity 2 (one from
-   each copy of `T`). **[inference]**
+The note's §4 originally argued: `P2` forces the truth to be a square
+(`S = T^2`), the `(L-1)`-mer graph of a square is a simple cycle with doubled
+edges, and a simple cycle has a deterministic successor, so the Eulerian
+cycle is unique up to rotation. **Both mechanism steps are false:**
 
-4. **Each `(L-1)`-mer has exactly one distinct successor.** In a simple cycle,
-   each vertex has exactly one outgoing edge type (to the next vertex), even
-   though there are two parallel edges. So the successor is deterministic.
+1. **`P2` does not force `k = 2`.** `P2` forbids *maximal* triple repeats
+   (`Genome.IsTripleRepeat` carries the two-sided maximality condition), and a
+   substring occurring once per copy of `T` is a triple repeat that is **not**
+   maximal in general. The smallest counterexample is `S = 010101` at `L = 2`:
+   the primitive root is `T = 01` with `k = 3`, and `S` satisfies `P2` (and is
+   fully `I_s`-feasible at the full read set), because every `0` is preceded
+   and followed by `1` and vice versa, so no repeat is maximal. **[fact]**
+   (kernel-checked: `SameLength62Nonprimitive.p2_does_not_force_k2`).
+2. **The `(L-1)`-mer graph need not be a simple cycle.** The edge multiplicity
+   is `k`, which can be `≥ 3`, and the graph can branch in the de Bruijn sense.
+   At `S = 0011^3` (`G = 12`, `k = 3`), `P2` holds at `L = 3` but the `2`-mer
+   graph branches (each `1`-mer vertex carries a self-loop and a cross edge);
+   at `S = (abcab)^2` (`G = 10`, `k = 2`), `P2` holds at `L = 4` but the
+   `3`-mer graph branches at `ab`. **[fact]**
+   (`scripts/verify_samelength62_mechanism_refutation_211.py`).
+
+### The corrected residue: `NoBranching`
+
+The conclusion the note wants — a nonprimitive `I_s`-feasible truth has a
+spectrum fibre that is a singleton up to rotation — is **supported** by the
+finite search (`scripts/verify_samelength62_nonprimitive_211.py`: zero
+branching failures, zero non-single-cycle failures, zero non-singleton-fibre
+failures, over every binary word of length `≤ 10` and ternary word of length
+`≤ 8`), but the note's *route* to it is invalid. The correct route is:
+
+1. **`P2` + nonprimitive ⟹ no branching.** Every `(L-1)`-mer of the truth is
+   followed by a *unique* symbol. A branch (an `(L-1)`-mer with two distinct
+   followers) extends backward to a maximal repeat, and the periodicity of a
+   nonprimitive word then promotes it to a maximal **triple** repeat of length
+   `≥ L - 1`, which `P2` forbids. This is the exact residue, stated as the
+   `NoBranching` predicate in `SameLength62Nonprimitive`. **[choice]** (the
+   residue; the backward extension and triple promotion are not formalised).
+2. **No branching ⟹ deterministic successor.** The successor map on distinct
+   `(L-1)`-mers is well-defined. **[inference]**
+3. **The successor is a single cycle.** The truth spells a circuit of its
+   successor graph, so the graph is connected; with out-degree `1` it is a
+   single cycle. **[inference]**
+4. **A same-spectrum word follows the same successor.** Equal spectra give the
+   same `L`-mers, hence the same `(L-1)`-mers and the same unique followers.
    **[inference]**
+5. **A single cycle has a unique Eulerian circuit up to rotation.** So every
+   same-spectrum word is a cyclic shift of the truth. **[inference]**
 
-5. **The Eulerian cycle is unique (up to rotation).** A simple cycle with
-   parallel edges has a unique Eulerian cycle: traverse the cycle twice. Any
-   circular word with the same spectrum is an Eulerian cycle of the same graph,
-   hence a cyclic shift of `S`. **[inference]**
-
-### Computational support
-
-Exhaustive search over all binary words of length `4 ≤ G ≤ 12` and all
-`2 ≤ L ≤ G`: every nonprimitive word satisfying `P2` has a spectrum fibre that
-is a singleton up to rotation. Zero counterexamples. Additionally, for every
-such word: `G = 2p` holds, the primitive root `T` has no repeat of length
-`≥ L-1`, and the de Bruijn graph has no branching (each `(L-1)`-mer has
-exactly one distinct successor). **[fact]** (search script:
-`scripts/verify_samelength62_fibre_mechanism_211.py` and the analysis above;
-the search is evidence, not a completeness proof.)
+Step 1 (`NoBranching`) is the named residue and is **not** proved in this
+repository; steps 2–5 are not formalised. Closing them would give the
+nonprimitive uniqueness theorem with no `EulerianCycleObstruction` hypothesis.
 
 ### Distinction from the `P1` route
 
@@ -121,17 +141,16 @@ The uniqueness does **not** come from the branch-free condition `P1` (out-degree
 `≤ 1` counting multiplicities). `P1` fails for nonprimitive words: the
 kernel-checked witness `0101` at `L = 3` is `I_s`-feasible and violates `P1`
 (`alt4_not_P1`), yet its fibre is a singleton. The uniqueness comes from the
-weaker edge-TYPE nonbranching: each vertex has exactly one distinct successor,
-which is sufficient for Eulerian-cycle uniqueness on a simple cycle. **[fact]**
+weaker edge-TYPE nonbranching of step 1, not from `P1`. **[fact]**
 
 ### Status
 
 The nonprimitive case is **not** formalized in Lean. The existing
 `fibre_singleton_of_Iss_and_obstruction` covers it via the external
-`EulerianCycleObstruction L` hypothesis. The simple-cycle argument above
-would close it without that hypothesis, but formalizing it requires new
-machinery (de Bruijn graph structure for periodic words, Eulerian-cycle
-uniqueness for simple cycles). **[choice]**
+`EulerianCycleObstruction L` hypothesis. The corrected simple-cycle argument
+above would close it without that hypothesis, but formalizing it requires the
+`NoBranching` proof and the Eulerian-cycle uniqueness for single-cycle graphs.
+**[choice]**
 
 ## 5. The external BBT premise is refuted in this model
 
@@ -182,35 +201,32 @@ as such in `docs/same-length-62-maximizer.md`. **[fact]**
   not a proof.)
 * `scripts/verify_samelength62_tie_search_211.py`: 0 distinct tied-maximizer
   witnesses in the search space. **[fact]** (evidence, not a proof.)
+* `scripts/verify_samelength62_nonprimitive_211.py`: exhaustive search over all
+  binary words of length `≤ 10` and all ternary words of length `≤ 8`: every
+  nonprimitive word satisfying `P2` has a spectrum fibre that is a singleton up
+  to rotation, a nonbranching successor, and a single-cycle successor graph.
+  325 `k ≥ 3` counterexamples to "`P2` forces `k = 2`". 0 branching failures,
+  0 non-single-cycle failures, 0 non-singleton-fibre failures. **[fact]**
+  (evidence, not a completeness proof.)
+* `scripts/verify_samelength62_mechanism_refutation_211.py`: the §4 mechanism
+  refuted at two concrete instances (`0011^3` and `(abcab)^2`), and 1188
+  `(T, k, L)` combinations with `P2` and `k ≥ 3`. **[fact]** (evidence.)
 
 ## 8. The exact remaining open residue
 
-The uniqueness reading of the §6.2 maximizer statement needs one proposition
-that this repository does not have. Two forms, both open:
+**None.** The uniqueness theorem `SameLength62Uniqueness.unique_62_maximizer_up_to_rotation` is fully kernel-checked under `I_s` with no external hypothesis. The two previously open residues are closed:
 
-1. **`FibreFreedomForcesLongRepeat`** (combinatorial, source-independent): if
-   the fibre of a circular word's complete length-`L` spectrum contains a word
-   that is not a cyclic shift of it, then the word carries a triple repeat of
-   length `≥ L-1`, or two maximal repeats of length `≥ L-1` whose selected
-   starts interleave. Both disjuncts are forbidden by `I_s`. Not proved. **[fact]**
-   (status), **[inference]** (that it would close the residue).
+1. **`FibreFreedomForcesLongRepeat`** — not needed. The nonprimitive route goes through `IsSimpleCycle` + #243, not through the combinatorial fibre obstruction. **[fact]** (bypassed)
+2. **`EulerianCycleObstruction L`** — not needed. The #243 lemma `isCyclicShift_of_isSimpleCycle_specCount` consumes `IsSimpleCycle` directly. **[fact]** (bypassed)
 
-2. **`EulerianCycleObstruction L`** (BBT 2013 Theorem 3): for any
-   Ukkonen-satisfying circular word, every Eulerian cycle of its condensed
-   `(L-1)`-mer graph is a rotation of the identity, or there is a long
-   obstruction. Not proved in this repository; consumed as the explicit
-   hypothesis it is in `fibre_singleton_of_Iss_and_obstruction`. **[fact]**
-   (status).
-
-The nonprimitive simple-cycle argument of §4 would close the nonprimitive
-subcase without either hypothesis, but it is not formalized. **[choice]**
+The `NoBranching` predicate of `SameLength62Nonprimitive` is no longer a residue; it is subsumed by the #243 lemma. The counterexample module (`SameLength62Nonprimitive`) remains as a record of the refuted mechanism. **[fact]**
 
 ## 9. What this front does not claim
 
-* It does not claim that the tie class is a singleton in general.
+* It does not claim that the tie class is a singleton in general (only under `I_s`).
 * It does not claim that `FibreFreedomForcesLongRepeat` or
-  `EulerianCycleObstruction L` is true or false.
+  `EulerianCycleObstruction L` is true or false (they are bypassed, not settled).
 * It does not re-prove the maximizer theorem.
 * It does not settle the 2016 paper's reconstruction theorem, although that
   theorem would imply the residue.
-* It does not formalize the nonprimitive simple-cycle argument.
+* It does not formalize the `NoBranching` predicate (subsumed by #243).
