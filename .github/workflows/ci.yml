@@ -48,6 +48,7 @@ jobs:
           path: .lake/build
           key: lean-project-v2-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('lean-toolchain', 'lake-manifest.json') }}-full-${{ github.sha }}
           restore-keys: |
+            lean-project-v2-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('lean-toolchain', 'lake-manifest.json') }}-checkpoint-
             lean-project-v2-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('lean-toolchain', 'lake-manifest.json') }}-full-
             lean-project-v2-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('lean-toolchain', 'lake-manifest.json') }}-seed-
 
@@ -107,10 +108,37 @@ jobs:
           path: .lake/packages
           key: mathlib-v1-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('lean-toolchain', 'lake-manifest.json') }}
 
+      # Cache the fixed toolchain + commit audit binary. Building it should
+      # not be repeated at the end of every long proof pass.
+      - name: Restore pinned axiom audit
+        id: audit-cache
+        uses: actions/cache/restore$v4
+        with:
+          path: .ci-cache/axiom-audit
+          key: axiom-audit-v1-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('lean-toolchain') }}-46024e005996495c65ef609368e11ab39c4222e3
+
+      - name: Build pinned axiom audit
+        if: steps.audit-cache.outputs.cache-hit != 'true'
+        run: |
+          set -euo pipefail
+          mkdir -p .ci-cache
+          git clone --quiet --depth 1 --branch v0.1.2             https://github.com/leanprover-community/axiom-audit.git .ci-cache/axiom-audit
+          test "$(git -C .ci-cache/axiom-audit rev-parse HEAD)" =             46024e005996495c65ef609368e11ab39c4222e3
+          cp lean-toolchain .ci-cache/axiom-audit/
+          (cd .ci-cache/axiom-audit && lake build)
+
+      - name: Persist pinned axiom audit
+        if: steps.audit-cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save$v4
+        with:
+          path: .ci-cache/axiom-audit
+          key: axiom-audit-v1-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('lean-toolchain') }}-46024e005996495c65ef609368e11ab39c4222e3
+
       # The endpoint module imports only a subset of the project. The default
       # Lake library target compiles every AssemblyP1/*.lean module, including
       # independent results not imported by Issue94Complete.
       - name: Build every Lean theorem module with live memory diagnostics
+        id: all-proofs
         shell: bash
         run: |
           set -euo pipefail
@@ -129,6 +157,16 @@ jobs:
           # Lake 4.34 does not support -j; LEAN_NUM_THREADS (set at the
           # job level) is the supported way to limit its worker threads.
           lake build --wfail
+
+      # A failed near-complete proof build must not throw away its successful
+      # oleans. Lake traces still invalidate every source changed on retry.
+      - name: Checkpoint compiled Lean objects after failure
+        if: failure()
+        continue-on-error: true
+        uses: actions/cache/save$v4
+        with:
+          path: .lake/build
+          key: lean-project-v2-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('lean-toolchain', 'lake-manifest.json') }}-checkpoint-${{ github.run_id }}-${{ github.run_attempt }}
 
       - name: Save full compiled Lean cache
         uses: actions/cache/save@v4
@@ -150,15 +188,9 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          workdir="$(mktemp -d "${RUNNER_TEMP:-/tmp}/axiom-audit.XXXXXX")"
-          trap 'rm -rf "$workdir"' EXIT
-          audit_dir="$workdir/axiom-audit"
-          git clone --quiet --depth 1 --branch v0.1.2 \
-            https://github.com/leanprover-community/axiom-audit.git "$audit_dir"
-          test "$(git -C "$audit_dir" rev-parse HEAD)" = \
-            46024e005996495c65ef609368e11ab39c4222e3
-          cp lean-toolchain "$audit_dir/"
-          (cd "$audit_dir" && lake build)
+          audit_dir="$PWD/.ci-cache/axiom-audit"
+          test "$(git -C "$audit_dir" rev-parse HEAD)" =             46024e005996495c65ef609368e11ab39c4222e3
+          test -x "$audit_dir/.lake/build/bin/axiom-audit"
           lake env "$audit_dir/.lake/build/bin/axiom-audit" \
             --allow propext,Classical.choice,Quot.sound \
             --root AssemblyP1 --modules-from AssemblyP1
