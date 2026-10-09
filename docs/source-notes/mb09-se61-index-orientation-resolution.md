@@ -278,7 +278,8 @@ fact + verified computation]
 | Witness class support equality for `S` and `D`; ratios binomial `5`, same-length exact `3` | **verified computation**; matches kernel-checked certificate |
 | Strict oriented reading inverts the witness (`D` oriented likelihood `0`) | **verified computation** |
 | Prior symmetry premise `d_w = d_{rc(w)}` is false (`d_S(ATA)=2`, `d_S(TAT)=1`) | **mathematical fact**, verified |
-| Which MB09 layer the 2016 sentence denotes; per-occurrence strengthening; tie semantics | **open** |
+| Which MB09 layer the 2016 sentence denotes; tie semantics | **open** |
+| The per-occurrence strengthening `d ≥ x` | resolved **negatively** for the same-length question, independently of the index-orientation fork settled above (row R13, `ATATACAC → ATACACAC`); this note's own subject, the oriented vs molecular index fork, is unaffected |
 
 ---
 

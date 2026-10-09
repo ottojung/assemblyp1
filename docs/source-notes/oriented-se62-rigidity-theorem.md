@@ -14,6 +14,25 @@ _Reproduce: `python3 scripts/verify_oriented_se62_rigidity.py` (quick) and
 scopes). Self-contained, exact `fractions.Fraction`, deterministic, exits
 non-zero on any failed assertion._
 
+_Kernel-checked status (added by issue #217). The abstract core of Theorem A is
+no longer only a script result: it is kernel-checked in
+`AssemblyP1/OrientedRigidity.lean` (`unique_positive_circulation`,
+`rigidity_same_spectrum`) and wired to circular words in
+`AssemblyP1/OrientedFinalRigidity.lean`
+(`AssemblyP1.OrientedFinal.oriented_same_length_spectrum_rigidity`, conditional
+on the explicit `hno : ¬ HasLongTripleRepeat` premise). The maximizer
+conclusion over same-length genuine §6.2 candidates is kernel-checked in
+`AssemblyP1/OrientedSameLengthML.lean` (`same_length_exactLik_maximizer`,
+`same_length_binomialLik_maximizer`) and, with the full `I_s` hypothesis and
+§6.2 candidate membership derived rather than assumed, in
+`AssemblyP1/SameLength62Maximizer.lean` and `AssemblyP1/MLEscape.lean`
+(`informationFeasible_62_spelledML`). Rotation-uniqueness is kernel-checked
+conditional on the external BBT complete-spectrum premise
+(`same_length_unique_up_to_rotation_of_bbt`). The `I_s → ¬ HasLongTripleRepeat`
+transfer is kernel-checked in
+`AssemblyP1/BridgingBridge.lean`. This note's own reproduce block remains
+Python-only, which understates the repository's verification level._
+
 _Independence. The same theorem is proved, independently and earlier, on the
 unmerged branches `research/oriented-se62-rigidity-audit`
 (`docs/source-notes/oriented-se62-rigidity-audit-2026-09-20.md`, branch tip
@@ -364,11 +383,13 @@ correctness. [verified computation, exhaustive in scope]
 | Theorem A: all `(L-1)`-windows `<= 2` implies unique positive circulation of total `G` | mathematical proof |
 | Lemmas B, C: primitive/periodic repetition implies a long Bresler triple repeat | mathematical proof |
 | Main theorem: `I_s` implies unique positive circulation of total `G` | mathematical proof |
-| Corollary: no strict same-length oriented Section 6.2 counterexample, any `G, L, Sigma`, both objectives | mathematical proof |
+| Corollary: no strict same-length oriented Section 6.2 counterexample, any `G, L, Sigma`, both objectives | mathematical proof, with a kernel-checked conditional core (`OrientedFinalRigidity`, `OrientedSameLengthML`, `MLEscape`, `SameLength62Maximizer`) |
 | Same-length beatability criterion; non-rigidity is exactly the obstruction | mathematical proof |
 | Minimum non-rigid pairs `AAAAB`/`AABAB` (`L=2`) and `AAAAAAB`/`AAABAAB` (`L=3`, min with `L>=3`) | verified computation, exhaustive in searched scope |
 | Variable-length boundary `AAATT -> AAAATT` | verified computation |
 | Which MB09 layer the 2016 sentence intends; tie/equivalence semantics | open |
+| Same-length maximizer theorem over same-length genuine §6.2 candidates, oriented read types, full `I_s` | **proved, kernel-checked** (`AssemblyP1.MLEscape.informationFeasible_62_spelledML`) |
+| Rotation-uniqueness on that slice | **proved conditional on the external BBT premise**, kernel-checked (`AssemblyP1.OrientedSameLengthML.same_length_unique_up_to_rotation_of_bbt`); BBT itself is not formalized |
 
 ---
 
