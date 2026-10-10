@@ -1,6 +1,7 @@
 import Mathlib
 import AssemblyP1.SourceFaithfulIs
 import AssemblyP1.Section62BidirectedFlow
+import AssemblyP1.HistoricalCovers
 
 /-!
 # A finite SAME-LENGTH Section 6.2 bridging counterexample
@@ -51,11 +52,21 @@ What is kernel-checked here.  This file proves the **literal Medvedev–Brudno
   because `Covers` and `BridgesCopy` quantify over placements, and the sampled
   multiplicity is recorded separately by the read-type counts `obs`.  The
   module-local `SourceCertificate` is retained as supporting evidence only;
-* the exact candidate-length equality `genomeLength truth = genomeLength
-  competitor`, so this remains the fixed-length sub-case `|D| = |S| = G`;
-* the strict improvement under both same-length objectives:
-  the literal §6.1 product-of-binomial-marginals ratio `L(D)/L(S) = 5`, and the
-  candidate-intrinsic exact multinomial ratio `exact(D)/exact(S) = 3`.
+ * the exact candidate-length equality `genomeLength truth = genomeLength
+   competitor`, so this remains the fixed-length sub-case `|D| = |S| = G`;
+ * the strict improvement under both same-length objectives:
+   the literal §6.1 product-of-binomial-marginals ratio `L(D)/L(S) = 5`, and the
+   candidate-intrinsic exact multinomial ratio `exact(D)/exact(S) = 3`.
+
+The same instance is also kernel-checked under the **full historical `I_s`**
+of Shomorony et al. (2016) supplement §6.4 (Definitions 1–2, read-string
+coverage and bridging): `matchStarts_eq_realizedStarts` proves that the
+observed read strings match at exactly the sampled starts, so the old
+placement-based `I_s` transfers to `HistoricalInformationFeasible`
+(`historical_information_feasible`), and
+`samelength_historical_se62_bidirected_flow_counterexample` composes that
+with the genuine MB09 §6.2 flow and the exact ratio `3` / binomial ratio `5`
+below.
 
 The endpoint theorem is `samelength_se62_bidirected_flow_counterexample`, whose
 feasibility clauses are `SpelledFeasible62`, not the `SeqSupport` proxy.
@@ -924,5 +935,67 @@ theorem samelength_se62_counterexample :
       lik obs dS < lik obs dD ∧ exactLik dD obs / exactLik dS obs = 3 :=
   ⟨truth_source_certificate, truth_support, competitor_support,
     competitor_strictly_better, exactLik_over_truth⟩
+
+/-! ## Historical (§6.4) `I_s` for the same-length witness
+
+The full historical `I_s` of Shomorony et al. (2016) supplement §6.4 for this
+instance: historical read-string coverage plus the triple/interleaved bridging
+clauses quantified over the saturated `MatchStarts` set.  For this witness the
+observed read strings match at exactly the sampled starts, so the old
+placement-based `I_s` transfers. -/
+
+open AssemblyP1.HistoricalCovers
+
+/-- The observed read strings of this realization match at exactly the sampled
+starts: the saturated `MatchStarts` set equals `realizedStarts`.  The observed
+oriented types are `AAA`, `AAT`, `TAT`, `TAA`; the windows `ATA` at starts `2`
+and `4` are unobserved, so no unsampled position matches. -/
+theorem matchStarts_eq_realizedStarts :
+    MatchStarts truthGenome 3 (observedTypes_ofFinset truthGenome 3 realizedStarts) =
+      realizedStarts := by
+  decide
+
+/-- Historical §6.4 Definition 1 read-string coverage holds for this
+realization: every length-`2` interval of starts contains a position at which
+some observed read string matches. -/
+theorem historicalCovers_truth :
+    HistoricalCovers truthGenome 3 (observedTypes_ofFinset truthGenome 3 realizedStarts) := by
+  decide
+
+/-- The full historical `I_s` of §6.4 holds for this realization: historical
+coverage plus every triple repeat all-bridged and every interleaved pair of
+repeats bridged, each quantified over the saturated `MatchStarts` set.  Since
+`MatchStarts` equals the sampled start set here, the bridging clauses transfer
+from the already kernel-checked placement-based `I_s`. -/
+theorem historical_information_feasible :
+    HistoricalInformationFeasible truthGenome 3 realizedStarts :=
+  historicalInformationFeasible_of_matchStarts_eq matchStarts_eq_realizedStarts
+    historicalCovers_truth truth_information_feasible
+
+/-- Kernel-checked finite same-length counterexample under the **full
+historical `I_s`** of §6.4, composed with the genuine MB09 §6.2 flow and the
+strict objectives above: the instance satisfies historical read-string
+coverage and historical triple/interleaved bridging; the competing candidate
+is a single spelled molecule of exactly the same length as the truth; both
+candidates are genuine §6.2 spelled candidates (bidirected circuits in the
+transitively reduced bidirected overlap graph on the four observed read
+molecules, every step a real graph edge surviving the transitive reduction,
+every position an observed read molecule, edge lower bounds `0`, the §6.2
+vertex lower bound `1`, signed-incidence balance `0`, no supersource/supersink
+usage, vertex throughput equal to the candidate's own molecule spectrum); and
+the competitor strictly beats the truth under both the literal §6.1 binomial
+objective (ratio `5`) and the exact same-length multinomial objective
+(ratio `3`). -/
+theorem samelength_historical_se62_bidirected_flow_counterexample :
+    HistoricalInformationFeasible truthGenome 3 realizedStarts ∧
+      (genomeLength truth = genomeLength competitor) ∧
+      (SpelledFeasible62 Base Strand3 toList3 rep3 rc3 readLen oMin readVerts spellTruth
+          truthCircuitFlow noTerm dS' ∧
+        (SpelledFeasible62 Base Strand3 toList3 rep3 rc3 readLen oMin readVerts
+            spellCompetitor competitorCircuitFlow noTerm dD' ∧
+          (lik obs dS < lik obs dD ∧ exactLik dD obs / exactLik dS obs = 3))) :=
+  ⟨historical_information_feasible, ⟨same_candidate_length,
+    ⟨truth_spelled_feasible62, ⟨competitor_spelled_feasible62,
+      ⟨competitor_strictly_better, exactLik_over_truth⟩⟩⟩⟩⟩
 
 end AssemblyP1.SameLengthSection62Counterexample
