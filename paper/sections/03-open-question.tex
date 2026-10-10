@@ -1,80 +1,163 @@
-\section{The mathematical question}
+\section{The question, mathematically}
 \label{sec:open}
 
-\subsection{The published sentence}
+The published sentence asks whether bridging conditions can be used to
+guarantee that the maximum-likelihood sequence is the true sequence
+\cite[Discussion, p.~i501]{shomorony2016}. The sentence fixes no objective, no
+read-type convention, no candidate class, and no tie rule, so we read it not as
+one theorem awaiting one proof but as a family of precise mathematical
+questions --- one per objective, read-type convention, and candidate universe ---
+and we answer each member. Throughout, likelihood is a \emph{scoring function}
+on candidate genomes: a counterexample is a wrong genome with a strictly higher
+score, not a failed execution of an assembler. What the cited sources do and do
+not determine about the sentence is audited in Appendix~\ref{app:referents}.
 
-The target sentence is \cite[Discussion, p.~i501]{shomorony2016}:
+\subsection{The bridging hypothesis}
 
-\begin{quote}
-``The maximum-likelihood formulation of the AP (Medvedev and Brudno, 2009), on
-the contrary, seems to be robust to these issues, and thus a good candidate for
-the `correct' formulation. Understanding whether bridging conditions can be used
-to guarantee that the maximum-likelihood sequence is the true sequence is
-currently an open question.''
-\end{quote}
+The hypothesis side of the question is the source's own coverage-and-bridging
+predicate, quantified over observed read \emph{strings} matched at any genomic
+position rather than over hidden sampled placements
+\cite[Supplement, \S6.4, Definitions~1--2]{shomorony2016}.
 
-The sentence combines two named ingredients. The first is the family of
-repeat-bridging conditions under which the reads determine the genome. The
-second is the maximum-likelihood formulation of Medvedev and Brudno
-(\cite{medvedev2009}). This manuscript studies the implication the sentence
-asks about, for precise versions of both ingredients.
+\begin{definition}[Historical coverage and matched-string bridging]
+\label{def:historical-match}
+Let $S$ be a circular genome of length $G$, let $2\le L\le G$ be a read
+length, and let $\mathcal{W}$ be the set of distinct observed read strings. The
+predicate $I_s^{\mathrm{match}}$ holds if and only if
+\begin{enumerate}[label=(H\arabic*),leftmargin=*]
+  \item \emph{(coverage, Definition~1)} for every start $t$ there is a string
+        $w\in\mathcal{W}$ with $w=W_{(t+\delta)\bmod G}(S)$ for some
+        $\delta\in\{0,1,\dots,L-2\}$;
+  \item \emph{(bridging, Definition~2)} every triple repeat of $S$ has
+        \emph{every} copy strictly straddled by some observed string matched at
+        a position in the source's straddling interval, and every interleaved
+        repeat pair has a copy so straddled.
+\end{enumerate}
+\end{definition}
 
-\subsection{The bridging ingredient: the source's own predicate}
+The placement-based predicate $\Is$ of Definition~\ref{def:Is} formalizes the
+same three-clause shape at the latent sampled starts. The two predicates are
+incomparable, and no theorem is stated for one and silently attributed to the
+other (Proposition~\ref{prop:historical-source}).
 
-The historical bridging conditions are stated on observed read
-\emph{strings}, not on their hidden sampled starts. We record the source
-predicate exactly as the author-hosted supplement defines it
-(\cite[Supplement, \S6.4, Definitions~1--2]{shomorony2016}): in every circular
-interval of $L-1$ possible starts, some observed read string matches a genomic
-window (coverage); and every triple repeat has every copy, and every
-interleaved repeat pair has a copy, strictly straddled by an observed string
-matched at a suitable position (bridging). The project also uses a
-placement-based variant, $\Is$, defined in Section~\ref{sec:model}; the two
-predicates are not identical, and results are stated for each separately. Both
-are in force in the positive theorem and in the historical witnesses of
-Section~\ref{sec:finite}.
+\subsection{The objectives}
 
-\subsection{The likelihood ingredient: three objectives, one flow}
+The conclusion side of the question is a likelihood score. Medvedev and Brudno
+name two sequence-level objectives \cite[\S6.1]{medvedev2009}. The
+\emph{exact multinomial} scores a circular candidate $D$ by its
+candidate-intrinsic length,
+\[
+  \Lik_{\mathrm{ex}}(D;x)
+  = \frac{n!}{\prod_w x(w)!}
+    \prod_{w\,:\,\spec_L(D)(w)>0}
+    \Bigl(\frac{\spec_L(D)(w)}{|D|}\Bigr)^{x(w)},
+\]
+with value $0$ if some observed word has zero multiplicity in $D$. The
+\emph{fixed-$N$ binomial} replaces the candidate length by an external genome
+size $N$, assumed known, and scores a separable product of per-type marginals
+(Definition~\ref{def:likelihoods}); it is defined only where every type count
+lies strictly between $0$ and $N$. Their algorithm's feasible set is a third
+object, the \emph{Section~6.2 read-overlap flow}: vertices are observed DNA
+molecules (a strand together with its reverse complement), edges are overlaps
+of length at least $o_{\min}$, the transitively reduced graph imposes
+vertex-flow lower bound $1$, and a feasible flow may decompose into several
+walks rather than spell one circular genome \cite[\S6.2]{medvedev2009}. On this
+object the phrase ``the maximum-likelihood sequence'' can fail to denote
+anything, because the score-maximizing object may be a non-sequence flow. The
+read-type convention and the genome equivalence are coupled
+(Appendix~\ref{app:referents}, Table~\ref{tab:axes}): molecule read types force
+dihedral equivalence, oriented read types force only cyclic shift.
 
-Medvedev and Brudno's formulation contains three materially different objects:
-the \emph{exact multinomial} over read-type counts with candidate-intrinsic
-length $N(D)$ (\S6.1), the \emph{product-of-binomial-marginals} approximation
-that replaces $N(D)$ by an external genome size $N$ (\S6.1), and the
-\emph{Section~6.2 bidirected flow} over DNA-molecule read overlaps, whose
-feasible objects are flows and need not be sequences. The paper never identifies
-which object the 2016 sentence denotes; we therefore state every theorem for a
-named objective, and keep oriented read strings separate from
-reverse-complement molecule classes.
+\subsection{The finite answer}
 
-\subsection{What this paper proves}
+At finite sample the answer is negative on every same-length slice we have been
+able to formalize --- including under the source's own predicate --- and
+positive only on a conditional oriented slice whose extra premises we state
+openly.
 
-For each ingredient we ask two questions: is the truth \emph{a} maximizer, and
-is it the \emph{unique} maximizer up to a stated genome equivalence? The
-answers, proved in Sections~\ref{sec:finite} and~\ref{sec:population}, are:
+\begin{counterexample}[Strict historical counterexamples $W_1$ and $W_2$]
+\label{ex:W1W2}
+Let $L=3$ and let the alphabet carry the DNA involution. Under the source
+predicate $I_s^{\mathrm{match}}$ of Definition~\ref{def:historical-match}:
+\begin{enumerate}[label=(\roman*),leftmargin=*]
+  \item $S=AAATAT$ against $D=AAAAAT$ ($G=6$): $I_s^{\mathrm{match}}$ holds at
+        full strength --- historical coverage, every literal three-occurrence
+        triple repeat all-bridged, every interleaved pair bridged --- and $S$
+        and $D$ are genuine Section~6.2 bidirected molecule flows of equal
+        length at the full overlap $o_{\min}=L-1=2$; the competitor strictly
+        wins,
+        \[
+          \Lik_{\mathrm{ex}}(D)/\Lik_{\mathrm{ex}}(S)=3,\qquad
+          \Lik_{\mathrm{bin}}(D)/\Lik_{\mathrm{bin}}(S)=5,
+        \]
+        at external $N=6$ with the zero-count factors retained;
+  \item $S=ATATACAC$ against $D=ATACACAC$ ($G=8$): the same scope, additionally
+        per-occurrence feasible, with exact ratio $3/2$ and binomial ratio
+        $9/5$ at $N=8$.
+\end{enumerate}
+Both inequalities are strict, so both the maximizer and uniqueness schemas fail
+under every equivalence and tie convention.
+\end{counterexample}
 
-\begin{itemize}[leftmargin=*]
-  \item \textbf{Positive, finite sample.} Under bridging, the truth's spectrum
-        is the unique positive circulation of its window-support graph; on the
-        same-length oriented slice the truth is the unique maximizer up to
-        cyclic rotation. The extra restrictions (oriented reads, equal length,
-        full-overlap support, truth candidature) are project-level assumptions,
-        labelled where they are used.
-  \item \textbf{Negative, finite sample.} Once candidate length is allowed to
-        grow, or read types are molecule classes, explicit finite observations
-        make a competitor strictly more likely than the truth under the exact
-        multinomial, its binomial approximation, and the Section~6.2 flow; the
-        same-length failure survives under the source's own read-string
-        predicate.
-  \item \textbf{Positive, population.} With the read distribution known
-        exactly, the truth is always a maximizer, and among primitive P2
-        genomes it is the unique maximizer up to cyclic rotation.
-\end{itemize}
+Coordinate-level spectra, the flow certificates, and the kernel-checked Lean
+endpoints are in Section~\ref{sec:finite:historical}
+(Theorems~\ref{thm:cex-historical-W1}--\ref{thm:cex-historical-W2}). The failure is not an artifact of
+the flow restriction: $AAABB\to AAAAB$ beats the exact multinomial by $2$ and
+$AAACC\to AAAAC$ beats the fixed-$N$ binomial by $1125/512$, both under full
+$\Is$ at the realized placements
+(Theorems~\ref{thm:cex-exact}--\ref{thm:cex-binomial}), and each same-length
+witness transfers to every superclass of candidates
+(Lemma~\ref{lem:negative-transfer}).
 
-Two framing points govern everything that follows. First, likelihood is a
-scoring function on candidate genomes, not a procedure for reconstructing one:
-our counterexamples are failed rankings, not failed executions of an
-assembler. Second, the published sentence does not fix the objective, the
-read-type convention, the candidate class, or the maximizer-versus-uniqueness
-reading; we resolve each explicitly rather than presenting any single theorem
-as ``the'' answer to it. The detailed audit of the sentence's referents is
-Appendix~\ref{app:audit}.
+The positive statement is conditional, and its premises are strict and
+project-level rather than the source's.
+
+\begin{theorem}[Conditional same-length rigidity and uniqueness]
+\label{thm:open-rigidity}
+Let $S$ be a circular truth of length $G$, let the realized read placement set
+satisfy the project's sampled-placement $\Is$, and suppose the truth is a genuine
+Section~6.2 candidate of the observed reads. Among same-length genuine
+Section~6.2 candidates with \emph{oriented} read types, the truth is the unique
+maximizer of both the exact multinomial and the fixed-$N$ binomial at $N=G$, up
+to cyclic rotation.
+\end{theorem}
+
+Full statement, proof, and kernel-checked status: Section~\ref{sec:finite}
+(Theorems~\ref{thm:maximizer} and~\ref{thm:rigidity},
+Corollary~\ref{cor:same-length-rotation}). The premises are exactly: oriented (not
+molecule) read types, the placement-based $\Is$ (not $I_s^{\mathrm{match}}$),
+equal candidate length, and truth admissibility. Dropping truth candidacy makes
+the statement false at equal length ($AABB\to ABAB$); dropping equal length
+restores strict counterexamples in infinite families
+(Theorem~\ref{thm:cex-variable-length}). No strict same-length counterexample
+exists for any $G$, $L$, or alphabet on this row.
+
+\subsection{The population answer}
+
+Replacing empirical read frequencies by the exact population read distribution
+removes the sampling mechanism. A Gibbs/KL identity then makes the truth a
+population maximizer over \emph{every} candidate class with no repeat hypothesis,
+and uniqueness reduces to spectrum identifiability.
+
+\begin{theorem}[Population uniqueness]
+\label{thm:open-population}
+For $L\ge2$, the true genome $S$ is a population maximum-likelihood genome over
+every candidate class containing it (Lemma~\ref{lem:gibbs}); among
+primitive P2-admissible oriented circular candidates it is the unique such
+maximizer up to cyclic rotation (Theorem~\ref{thm:population}).
+\end{theorem}
+
+\sloppy
+Both directions are kernel-checked with no external premise:
+\popml. This repaired population model does not settle the finite 2016
+question; it isolates the identifiability content that the finite
+counterexamples show is not automatic.
+
+\subsection{What remains open}
+
+Three items stay open and are settled by no theorem above: which of the three
+objectives --- or which broader maximum-likelihood principle --- the sentence
+denotes (Appendix~\ref{app:referents}); the general-$o_{\min}$ Section~6.2 flow
+domain below full overlap, where the score-maximizing object can be a
+non-sequence flow (Remark~\ref{rem:flow-domain}); and the population model
+for molecule read types.

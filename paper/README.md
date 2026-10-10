@@ -52,7 +52,7 @@ paper/
     a-modeling-choices.tex deliberate explanations of modeling decisions
     b-epistemic-ledger.tex consolidated status of every claim
     c-reproduction.tex     build and verification instructions
-    d-source-audit.tex      source-referent audit behind Section 3
+    d-referents-audit.tex      source-referent audit behind Section 3
   manifest.scm             pinned Guix TeX dependencies
   build.sh                 reproducible PDF build
 ```

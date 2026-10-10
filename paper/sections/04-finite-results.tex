@@ -606,36 +606,25 @@ occur at many positions
 \cite[Supplement, \S6.4, Definitions~1--2]{shomorony2016}. The two predicates are
 not the same, and the source's is the one the published question inherits from
 the reconstruction theory. We record the source predicate, then show that the
-same-length molecule failure survives under it.
+same-length molecule failure survives under it. The compact form of the two
+witnesses below is Counterexample~\ref{ex:W1W2} of Section~\ref{sec:open}.
 
-\begin{proposition}[Source historical coverage and bridging; supplement \S6.4]
+\begin{proposition}[The two feasibility predicates are incomparable]
 \label{prop:historical-source}
-Let $S$ be a circular genome of length $G$, let $L$ be a read length with
-$2\le L\le G$, and let $R$ be a multiset of sampled starts with observed read
-strings $\{W_r(S):r\in R\}$; write $\mathcal{W}$ for the set of distinct observed
-strings. The \emph{historical} information-feasibility predicate
-$\Is^{\mathrm{match}}$ holds iff
-\begin{enumerate}[label=(H\arabic*),leftmargin=*]
-  \item \emph{(historical coverage, Definition~1)} for every start $t$ there is
-        a string $w\in\mathcal{W}$ with $w=W_{(t+\delta)\bmod G}(S)$ for some
-        $\delta\in\{0,1,\dots,L-2\}$;
-  \item \emph{(historical bridging, Definition~2)} every triple repeat of $S$
-        has every copy strictly straddled by some observed string
-        $w\in\mathcal{W}$ matched at a position in the source's interval
-        $[\tau_1+\ell+1-L,\ \tau_1-1]$ (and symmetrically at the other copies),
-        and every interleaved repeat pair has a copy so straddled.
-\end{enumerate}
-The quantified object is the observed read \emph{string}, matched at \emph{any}
-position where it occurs, not a base covered by a read at a sampled placement.
-Consequently $\Is^{\mathrm{match}}$ and the placement-based $\Is$ of
-Definition~\ref{def:Is} are \emph{incomparable}. On circular $AAAA$ with $L=3$
-the single observed string $AAA$ matches at every position and satisfies
-historical coverage, while its one placement at start $0$ leaves base $3$
-uncovered; conversely, on circular $ACGT$ with $L=2$ the placements $0,2$ cover
-every base, yet historical coverage fails because $CG$ and $TA$ were never
-observed. The two finite models are therefore first-class alternatives, and a
-result stated for one is not silently a result for the other.
-\statusline{\srcfact{} for (H1)--(H2) \cite[Supplement, \S6.4, Definitions~1--2]{shomorony2016}; \kernelcheck{} (Appendix~\ref{app:ledger}).}
+Let $I_s^{\mathrm{match}}$ be the source predicate of
+Definition~\ref{def:historical-match} and let $\Is$ be the placement-based
+predicate of Definition~\ref{def:Is}. Then neither implies the other. On
+circular $AAAA$ with $L=3$ the single observed string $AAA$ matches at every
+position and satisfies historical coverage, while its one realized placement at
+start $0$ does not cover base $3$; conversely, on circular $ACGT$ with $L=2$ the
+placements $0,2$ cover every base, yet historical coverage fails because $CG$
+and $TA$ were never observed. The two finite models are therefore first-class
+alternatives, and a result stated for one is not silently a result for the
+other.
+\statusline{\srcfact{} for the historical matching-string definitions
+(Definition~\ref{def:historical-match})
+\cite[Supplement, \S6.4, Definitions~1--2]{shomorony2016}; the two
+incomparability instances are \kernelcheck{} (Appendix~\ref{app:ledger}).}
 \end{proposition}
 
 \begin{theorem}[Historical same-length molecule counterexample $W_1$]
