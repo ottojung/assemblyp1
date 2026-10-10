@@ -45,24 +45,30 @@ starts(k) = (0 repeated 2 + k times, 1, 3, 5)     n = 5 + k
 x(k)      = { AAA:2 + k, AAT:1, ATA:1, TAA:1 }
 ```
 
-The set of realized *placements* is still `{0, 1, 3, 5}`, so
-
-* the observed read support,
-* the historical `I_s` coverage/bridging hypothesis, and
-* the full MB09 §6.2 spelled-flow feasibility of both `S` and `D`
-
-are **literally unchanged** from the `k = 0` module. Concretely:
+The set of realized *placements* (distinct sampled starts) is still
+`{0, 1, 3, 5}` and the observed read *types* are unchanged, so the inputs of
+every coverage/bridging hypothesis are **literally unchanged** from the `k = 0`
+module:
 
 * `readStartsK_toFinset` proves `(readStartsK k).toFinset = {0,1,3,5}` and
   `obsK_support` proves the observed support is `{AAA, AAT, ATA, TAA}` for every
   `k`; on this witness the historical matching-position set `MatchStarts`
   (Shomorony et al. 2016 supplement §6.4) is *exactly* the sampled placement
   set, so it too is unchanged;
-* `truth_information_feasible_k` is the shared `SourceFaithfulIs.InformationFeasible`
-  predicate on the parameterized placement set — on `origin/main` this is the
-  base-coverage model; the companion historical module on branch `#137`
-  (`AssemblyP1.HistoricalCoverageSameLengthWitnesses`) consumes exactly the
-  observed support and matching-position inputs proven invariant here;
+* `truth_information_feasible_k` is the old placement-based project `I_s`
+  (`SourceFaithfulIs.InformationFeasible`, the base-coverage model — **not** the
+  canonical literal historical `I_s` of §6.4) on the parameterized placement
+  set;
+* `readStartsK_toFinset_eq` restates the placement-set invariance against the
+  `k = 0` distinct-start set `readStarts.toFinset`, and
+  `truth_historical_literal_information_feasible_k` transfers the **canonical
+  literal §6.4 historical `I_s`**
+  (`AssemblyP1.HistoricalCovers.HistoricalInformationFeasibleLiteral`, all
+  three-occurrence repeats bridged) to every `k` from the `k = 0` certificate
+  `AssemblyP1.HistoricalCoverageSameLength.W1.w1_historical_literal_information_feasible`
+  (module `AssemblyP1.HistoricalCoverageSameLengthWitnesses`);
+  the literal predicate consumes only the distinct sampled start set, so no new
+  historical model is introduced;
 * the §6.2 feasibility theorems of the base module (`truth_spelled_feasible62`,
   `competitor_spelled_feasible62`) are reused verbatim, since neither the read
   molecules, the overlap graph, nor the spectra `d_S`, `d_D` depend on `k`.
@@ -90,12 +96,15 @@ All in `AssemblyP1.SameLengthSection62Parametric`:
 | `obsK_eq_countP` | `obsK k` is the genuine observed class count of `readStartsK k` |
 | `obsK_support` | the observed support is independent of `k` |
 | `readStartsK_toFinset` | `(readStartsK k).toFinset = realizedStarts = {0,1,3,5}` |
-| `truth_information_feasible_k` | the shared `I_s` holds for the parameterized placement set |
+| `readStartsK_toFinset_eq` | `(readStartsK k).toFinset = readStarts.toFinset` (the `k = 0` distinct-start set) |
+| `truth_information_feasible_k` | the old placement-based project `I_s` (`SourceFaithfulIs.InformationFeasible`, base-coverage model) holds for the parameterized placement set |
+| `truth_historical_literal_information_feasible_k` | the canonical literal §6.4 historical `I_s` (`HistoricalInformationFeasibleLiteral`) holds for every `k`, transferred from the `k = 0` W1 certificate |
 | `exactLik_ratio` | `exactLik dD (obsK k) / exactLik dS (obsK k) = 3 ^ (k + 1)` |
 | `likN_ratio` | `likN (5+k) (obsK k) dD / likN (5+k) (obsK k) dS = 5 ^ (k + 1)` |
 | `exactLik_competitor_strictly_better` | `exactLik dS (obsK k) < exactLik dD (obsK k)` |
 | `likN_competitor_strictly_better` | `likN (5+k) (obsK k) dS < likN (5+k) (obsK k) dD` |
-| `parametric_se62_counterexample` | combined endpoint: `I_s` + same length + both §6.2 flows + both strict ratios |
+| `parametric_se62_historical_literal_counterexample` | combined endpoint under the canonical literal historical `I_s`: literal `I_s` + same length + both §6.2 flows + both strict ratios |
+| `parametric_se62_counterexample` | combined endpoint, old placement-based project `I_s` variant: `InformationFeasible` + same length + both §6.2 flows + both strict ratios |
 
 The §6.1 product `likN n x d = ∏_{c : Fin 8} marginalN n x d c` is over **all
 eight** molecule-class codes, so the zero-count factors are present (each equals
@@ -144,4 +153,8 @@ Equivalently, the increment `k → k + 1` multiplies the exact ratio by `3`
 This is a statement about one finite instance family. It does **not** settle
 which Medvedev–Brudno (2009) object the Shomorony et al. (2016) sentence
 intends, nor the per-occurrence strengthening or the single-strand reading.
-It is independent of the `#247c` / `#247f` worktrees and does not touch them.
+The §6.2 flow certificates are in the strict whole-genome full-overlap
+subcase `oMin = L − 1 = 2` (every consecutive read pair overlaps in `L − 1`
+bases); no claim is made about the general variable-overlap graph domain, nor
+about the single-strand reading. It is independent of the `#247c` / `#247f`
+worktrees and does not touch them.

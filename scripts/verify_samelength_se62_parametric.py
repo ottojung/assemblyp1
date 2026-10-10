@@ -25,9 +25,12 @@ reads at start 0, so the sampling is
     starts(k) = (0 repeated 2+k times, 1, 3, 5)      n = 5 + k
     x(k)      = { AAA:2+k, AAT:1, ATA:1, TAA:1 }
 
-The set of realized *placements* is still {0,1,3,5}, so the observed read
-support, the historical I_s coverage/bridging hypothesis and the full MB09
-Section 6.2 spelled-flow feasibility of both S and D are literally unchanged.
+The set of realized *placements* (distinct sampled starts) is still
+{0,1,3,5} and the observed read types are unchanged, so the inputs of the
+historical I_s coverage/bridging hypothesis (which consumes only the distinct
+start set) and the full MB09 Section 6.2 spelled-flow feasibility of both S and
+D are literally unchanged; the canonical literal Section 6.4 historical I_s
+transfers to every k from the k = 0 certificate (see the Lean module).
 
 Claims checked here, exactly and deterministically with ``fractions.Fraction``
 (exits non-zero on any failed assertion):
