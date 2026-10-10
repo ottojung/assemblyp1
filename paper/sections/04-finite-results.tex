@@ -189,7 +189,7 @@ Section~\ref{sec:population}, whose hypothesis is Ukkonen's full condition.
 The rigidity theorem proves \emph{spectrum} equality, and equal spectra give an
 exact \emph{tie} for every objective that factors through the spectrum. The
 maximizer statement itself is proved separately, and is stronger than the
-hypothesis surface used above: the theorem below takes the full source $\Is$
+hypothesis surface used above: the theorem below takes the project's sampled-placement $\Is$
 at the realized read placement set and \emph{derives} §6.2 candidate membership
 rather than assuming it.
 
@@ -206,14 +206,17 @@ Medvedev--Brudno multinomial and the §6.1 binomial approximation at $N=G$,
 \]
 \end{theorem}
 
-The hypothesis set is exactly the source's: $2 \le L \le G$, full $\Is$, and the
-§6.2 data. There is no long-triple-repeat premise, no primitivity or period
+The hypotheses deliberately go beyond the historical source: $2 \le L \le G$,
+the project's sampled-placement $\Is$, oriented reads, equal-length genomes,
+and genuine \S6.2 spelled candidacy of both truth and competitor. This theorem
+does not claim that the historical matching-string predicate
+$\Is^{\mathrm{match}}$ implies these project-specific assumptions. There is no long-triple-repeat premise, no primitivity or period
 premise, and no ``escape'' or culprit hypothesis; $\Is \Rightarrow \neg
 \textsc{LongTripleRepeat}$ is a consequence proved inside the chain. The start
 set is the \emph{range} of the realization, not a superset: because every clause
 of $\Is$ is a ``some $r \in R$ does \dots'' or a coverage condition, a start set
 $R \supseteq \range\rho$ that contains starts at which no read was drawn is a
-strictly weaker hypothesis, and the theorem is stated at the faithful one.
+strictly weaker hypothesis, and the theorem is stated using only the actually realized starts.
 For genuine same-length candidates with truth candidacy, cyclic-rotation
 uniqueness is now proved directly in the Lean kernel, without an external
 BBT obstruction premise (Corollary~\ref{cor:same-length-rotation}).
@@ -273,7 +276,7 @@ exactly the rotation class of $S$.
 candidate-rotation theorem are \kernelcheck{}: see
 \texttt{Assembly\allowbreak{}P1/\allowbreak{}Oriented\allowbreak{}Final\allowbreak{}Rigidity.\allowbreak{}lean} and
 \texttt{Assembly\allowbreak{}P1/\allowbreak{}Same\allowbreak{}Length62Uniqueness.\allowbreak{}lean} (merged PR~\#124).
-The candidate theorem consumes source-faithful $\Is$ and explicit
+The candidate theorem consumes the project's sampled-placement $\Is$ and explicit
 genuine Section~6.2 certificates for BOTH the truth and the competitor;
 it requires no external BBT obstruction axiom. The older citation
 \cite{bresler2013} remains an alternative published mathematical

@@ -23,15 +23,17 @@ Claim & Status & Basis \\
 \midrule
 Circular oriented length-$L$ read model; independent uniform starts
   & source fact & \cite[\S2]{shomorony2016} \\
-$\Is$ = coverage $\wedge$ all triple repeats all-bridged $\wedge$ interleaved
-pairs bridged & source fact & \cite[Eq.~1]{shomorony2016} \\
+Project sampled-placement $\Is$: base coverage and maximal-triple/interleaved
+bridging at realized starts & project modeling choice & Def.~\ref{def:Is};
+compare historical $\Is^{\mathrm{match}}$ \\
 Historical read-string coverage (Def.~1) and matched-string bridging (Def.~2)
   & source fact & \cite[Supplement, \S6.4]{shomorony2016} \\
 Placement-based $\Is$ and source $\Is^{\mathrm{match}}$ are incomparable
   & kernel-checked project fact & \S\ref{sec:finite:historical},
   \texttt{Historical\allowbreak{}Covers} \\
-Repeat/triple-repeat maximality; bridging strict on both sides
-  & source fact & \cite{bresler2013} \\
+Maximality of paired repeats; historical triple occurrences need not be maximal;
+bridging is strict on both sides
+  & source fact & \cite{bresler2013,shomorony2016} \\
 Exact multinomial with candidate-intrinsic $N(D)$
   & source fact & \cite[\S6.1]{medvedev2009} \\
 Fixed-$N$ binomial approximation; ``genome size known''
