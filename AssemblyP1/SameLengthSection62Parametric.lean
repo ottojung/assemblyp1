@@ -1,4 +1,5 @@
 import AssemblyP1.SameLengthSection62Counterexample
+import AssemblyP1.HistoricalCoverageSameLengthWitnesses
 
 /-!
 # Parametric strengthening of the same-length §6.2 counterexample
@@ -20,18 +21,34 @@ The realized sampling then has `n = 5 + k` reads and observed molecule counts
 
 * `x AAA = 2 + k`, `x AAT = 1`, `x ATA = 1`, `x TAA = 1`, all others `0`.
 
-The set of realized *placements* is unchanged (`{0, 1, 3, 5}`), so the observed
-read support, the historical `I_s` coverage/bridging hypothesis and the full
-§6.2 spelled-flow feasibility of both `S` and `D` are *literally unchanged* from
-the `k = 0` module.  (`readStartsK_toFinset` and `obsK_support` prove the
-placement set and observed support invariant; on this witness the historical
-matching-position set `MatchStarts` is exactly the sampled placement set, and
-the companion historical module on branch `#137` consumes exactly these inputs.
-On `origin/main` the shared predicate used here is the base-coverage
-`SourceFaithfulIs.InformationFeasible`.)  The §6.2 feasibility theorems are
-reused verbatim, since neither the read molecules, the overlap graph, nor the
-spectra `d_S`, `d_D` depend on `k`.  What changes is only the multiplicity
-entering the two likelihood objectives.
+The set of realized *placements* (distinct sampled starts) is unchanged
+(`{0, 1, 3, 5}`) and the observed read *types* are unchanged, so the inputs of
+every coverage/bridging hypothesis are literally unchanged from the `k = 0`
+module:
+
+* `readStartsK_toFinset` proves `(readStartsK k).toFinset = realizedStarts`, and
+  `readStartsK_toFinset_eq` restates this against the `k = 0` distinct-start set
+  `readStarts.toFinset` (by `decide` on `Fin 6`);
+* `obsK_eq_countP` and `obsK_support` prove the observed type counts and their
+  support are invariant;
+* on this witness the historical matching-position set `MatchStarts` is exactly
+  the sampled placement set, so the old placement-based project `I_s`
+  (`SourceFaithfulIs.InformationFeasible`, the base-coverage model — **not** the
+  canonical literal historical `I_s` of §6.4) holds unchanged
+  (`truth_information_feasible_k`);
+* the **canonical literal §6.4 historical `I_s`**
+  (`AssemblyP1.HistoricalCovers.HistoricalInformationFeasibleLiteral`, all
+  three-occurrence repeats bridged) also holds for every `k`
+  (`truth_historical_literal_information_feasible_k`): it is transferred
+  unchanged from the `k = 0` certificate
+  `AssemblyP1.HistoricalCoverageSameLength.W1.w1_historical_literal_information_feasible`
+  by the distinct-start-set equality above.  No new historical model is
+  introduced; the observed-read matching-start and bridging predicate is the
+  canonical shared one.
+
+The §6.2 feasibility theorems are reused verbatim, since neither the read
+molecules, the overlap graph, nor the spectra `d_S`, `d_D` depend on `k`.  What
+changes is only the multiplicity entering the two likelihood objectives.
 
 The main results are the candidate-intrinsic exact multinomial ratio
 
@@ -49,7 +66,10 @@ MB09 §6.1: the increment `x AAA + 1` multiplies the exact ratio by `3` (because
 
 Scope.  As with the `k = 0` module, this is a statement about this one finite
 instance family, not a settlement of which Medvedev–Brudno object the
-Shomorony et al. (2016) sentence intends.
+Shomorony et al. (2016) sentence intends.  The §6.2 flow certificates are in
+the strict whole-genome full-overlap subcase `oMin = L − 1 = 2` (every
+consecutive read pair overlaps in `L − 1` bases); no claim is made about the
+general variable-overlap graph domain, nor about the single-strand reading.
 -/
 
 set_option maxHeartbeats 2000000
@@ -147,12 +167,36 @@ theorem readStartsK_toFinset (k : Nat) :
     · subst hr; exact Or.inr (Or.inr (Or.inl rfl))
     · subst hr; exact Or.inr (Or.inr (Or.inr rfl))
 
-/-- The historical source-faithful `I_s` hypothesis holds unchanged for the
-parameterized placement set. -/
+/-- The old placement-based project `I_s`
+(`SourceFaithfulIs.InformationFeasible`, the base-coverage model — **not** the
+canonical literal historical `I_s` of §6.4) holds unchanged for the parameterized
+placement set. -/
 theorem truth_information_feasible_k (k : Nat) :
     SourceFaithfulIs.InformationFeasible truthGenome 3 (readStartsK k).toFinset := by
   rw [readStartsK_toFinset]
   exact truth_information_feasible
+
+/-! ## Transfer of the canonical literal §6.4 historical `I_s` to every `k` -/
+
+/-- The parameterized distinct-start set is exactly the `k = 0` distinct-start
+set: the extra `AAA` reads are duplicates at start `0`, so neither the sampled
+starts nor the observed read types change. -/
+theorem readStartsK_toFinset_eq (k : Nat) :
+    (readStartsK k).toFinset = readStarts.toFinset := by
+  rw [readStartsK_toFinset]
+  decide
+
+/-- **The canonical literal §6.4 historical `I_s` holds for every `k`.**
+`AssemblyP1.HistoricalCovers.HistoricalInformationFeasibleLiteral` consumes only
+the distinct sampled start set (the observed read types are its image), so the
+distinct-start-set equality above transfers the `k = 0` certificate
+`AssemblyP1.HistoricalCoverageSameLength.W1.w1_historical_literal_information_feasible`
+unchanged.  No new historical model is introduced. -/
+theorem truth_historical_literal_information_feasible_k (k : Nat) :
+    AssemblyP1.HistoricalCovers.HistoricalInformationFeasibleLiteral
+      truthGenome 3 (readStartsK k).toFinset := by
+  rw [readStartsK_toFinset_eq]
+  exact AssemblyP1.HistoricalCoverageSameLength.W1.w1_historical_literal_information_feasible
 
 /-! ## A generalized §6.1 objective with `n` reads -/
 
@@ -387,13 +431,45 @@ theorem likN_competitor_strictly_better (k : Nat) :
     nlinarith
   nlinarith
 
-/-! ## The parametric endpoint theorem -/
+/-! ## The parametric endpoint theorems -/
 
-/-- **Parametric strengthening.**  For every `k : ℕ`, adding `k` extra genuine
-`AAA` reads at start `0` leaves the observed read support, the historical
-source-faithful `I_s` hypothesis and the full MB09 §6.2 spelled-flow feasibility
-of both candidates unchanged, while the competitor beats the truth under both
-same-length objectives with ratios `5 ^ (k + 1)` and `3 ^ (k + 1)`. -/
+/-- **Parametric strengthening under the canonical literal §6.4 historical
+`I_s`.**  For every `k : ℕ`, adding `k` extra genuine `AAA` reads at start `0`
+leaves the observed read types and the distinct sampled starts unchanged, so the
+canonical literal historical `I_s`
+(`AssemblyP1.HistoricalCovers.HistoricalInformationFeasibleLiteral`, all
+three-occurrence repeats bridged) holds unchanged (first conjunct, transferred
+from the `k = 0` W1 certificate); the competing candidate is a single spelled
+molecule of the same length as the truth; both candidates are genuine MB09 §6.2
+spelled candidates (certificates reused verbatim, full-overlap subcase
+`oMin = L − 1 = 2`); and the competitor beats the truth under both same-length
+objectives with ratios `5 ^ (k + 1)` and `3 ^ (k + 1)`. -/
+theorem parametric_se62_historical_literal_counterexample (k : Nat) :
+    AssemblyP1.HistoricalCovers.HistoricalInformationFeasibleLiteral
+      truthGenome 3 (readStartsK k).toFinset ∧
+      (genomeLength truth = genomeLength competitor) ∧
+      (SpelledFeasible62 Base Strand3 toList3 rep3 rc3 readLen oMin readVerts
+          spellTruth truthCircuitFlow noTerm dS' ∧
+        (SpelledFeasible62 Base Strand3 toList3 rep3 rc3 readLen oMin readVerts
+            spellCompetitor competitorCircuitFlow noTerm dD' ∧
+          (likN (5 + k) (obsK k) dS < likN (5 + k) (obsK k) dD ∧
+            (likN (5 + k) (obsK k) dD / likN (5 + k) (obsK k) dS = 5 ^ (k + 1) ∧
+              (exactLik dD (obsK k) / exactLik dS (obsK k) = 3 ^ (k + 1) ∧
+                exactLik dS (obsK k) < exactLik dD (obsK k)))))) :=
+  ⟨truth_historical_literal_information_feasible_k k, ⟨same_candidate_length,
+    ⟨truth_spelled_feasible62, ⟨competitor_spelled_feasible62,
+      ⟨likN_competitor_strictly_better k, ⟨likN_ratio k,
+        ⟨exactLik_ratio k, exactLik_competitor_strictly_better k⟩⟩⟩⟩⟩⟩⟩
+
+/-- **Parametric strengthening, old placement-based project variant.**  For every
+`k : ℕ`, adding `k` extra genuine `AAA` reads at start `0` leaves the observed
+read support, the old placement-based project `I_s`
+(`SourceFaithfulIs.InformationFeasible`, the base-coverage model — **not** the
+canonical literal historical `I_s` of §6.4; see
+`parametric_se62_historical_literal_counterexample` for that endpoint) and the
+full MB09 §6.2 spelled-flow feasibility of both candidates unchanged, while the
+competitor beats the truth under both same-length objectives with ratios
+`5 ^ (k + 1)` and `3 ^ (k + 1)`. -/
 theorem parametric_se62_counterexample (k : Nat) :
     SourceFaithfulIs.InformationFeasible truthGenome 3 (readStartsK k).toFinset ∧
       (genomeLength truth = genomeLength competitor) ∧
