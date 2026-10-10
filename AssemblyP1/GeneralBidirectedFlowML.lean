@@ -158,6 +158,7 @@ theorem varLengthCriterion (A B : ι → ℕ) (G N : ℕ) :
       simp [crossLik, mul_pow, Finset.prod_mul_distrib, Finset.prod_pow_eq_pow_sum]
     omega
 
+omit [DecidableEq ι] in
 /-- **Dilution.**  A candidate with the truth's counts but a strictly longer genome
 is strictly worse on every nonempty sample supported in the truth's support: the
 length factor punishes stretching.
@@ -219,39 +220,50 @@ theorem densityDominance (A B : ι → ℕ) (G N : ℕ) (hG : 0 < G) (hN : 0 < N
     rw [div_le_div_iff₀ (by exact_mod_cast hN) (by exact_mod_cast hG)] at hle
     exact_mod_cast hle
 
-/-! ## The flow-domain criterion (binomial, external N = G)
+/-! ## The fixed-external-`N` multinomial-product criterion
 
-When the genome length is fixed externally at `N = G` (the §6.1 separable
-binomial with known genome size), the objective comparison between a candidate
-with throughput `B` and the truth with throughput `A` reduces to the product
-comparison `∏ᵢ Bᵢ^xⁱ ≤ ∏ᵢ Aᵢ^xⁱ`, because the binomial coefficients and the
-common `N` cancel.  The truth is then sample-uniformly maximal over the §6.2
-feasible flows **iff** no admissible flow throughput strictly dominates the
-truth spectrum on an observed class.
+**Source note (corrected).**  MB09 §6.1 defines *two* objectives: the exact
+global read-count **multinomial** with the candidate's own length `N(D)` and the
+constraint `∑ᵢ dᵢ = N(D)` (its first display), and the **separable binomial
+approximation** with the *external* genome size `N` (its second display), which
+is what the §6.2 convex-flow algorithm actually optimizes.  The product
+comparison below is **neither** of those two in general: it is the exact
+multinomial comparison with a *common external* length `N = G` substituted for
+both the candidate and the truth (the `n!/∏xᵢ!` and the common `N⁻ⁿ` cancel).
+We keep it because it is the correct fixed-external-`N` multinomial-spectrum
+criterion and because it is the count-vector shadow of the §6.2 vertex-flow
+comparison; we do **not** call it the §6.1 separable binomial.
 
-This is the flow-domain analogue of `fixedLengthRecovery`: at external `N = G`
-the criterion is coordinatewise dominance, and the §6.2 vertex lower bound `1`
-on the observed reads forces the candidate support to contain the truth's
-support, so dominance on the truth's support is the binding condition. -/
+The truth is sample-uniformly maximal for this product objective over a class of
+throughput vectors **iff** no candidate `B` in the class has `B i > A i` for some
+`i ∈ supp A`.  This is the flow-domain analogue of `fixedLengthRecovery`: the
+criterion is coordinatewise dominance.
 
-/-- The §6.1 separable binomial factor for class `i` with external `N = G`:
-`B i ^ x i`.  With `N = G` fixed, the binomial coefficients `C(n, x i)` and the
-length factors `(G/N)^n = 1` cancel between candidates, so the comparison is
-exactly the product of these factors. -/
+The genuine §6.1 separable binomial has an extra `(1 − dᵢ/N)^(n−xᵢ)` factor per
+class that does **not** cancel, so its maximality condition is *not* coordinatewise
+dominance; see `binomCore`, `binomial_not_coordinatewise`, and the OPEN subclaim in
+`docs/issue261-general-bidirected-flow-ml.md`. -/
+
+/-- The fixed-external-`N` multinomial-product factor for class `i`: `B i ^ x i`.
+This is the exact multinomial (common external `N` for candidate and truth) after
+dropping the candidate-independent `n!/∏xᵢ!` and the common `N⁻ⁿ`. -/
 def flowFactor (B x : ι → ℕ) (i : ι) : ℕ := (B i) ^ (x i)
 
-/-- The flow-domain objective: `∏ᵢ Bᵢ^xⁱ`, the exact binomial likelihood up to
-the candidate-independent factors. -/
+/-- The fixed-external-`N` multinomial-product objective: `∏ᵢ Bᵢ^xⁱ`.  This is
+**not** the §6.1 separable binomial (which retains the `(1 − dᵢ/N)^(n−xᵢ)`
+factors); it is the exact multinomial with a common external length. -/
 def flowLik (B x : ι → ℕ) : ℕ := ∏ i, flowFactor B x i
 
-/-- **Flow-domain maximality criterion.**  With external `N = G` fixed, the
-truth is sample-uniformly maximal over the §6.2 feasible flows **iff** no
-candidate throughput `B` has `B i > A i` for some `i ∈ supp A`.
+/-- **Fixed-external-`N` multinomial-product maximality criterion.**  For the
+product objective `∏ᵢ Bᵢ^xⁱ`, the truth is sample-uniformly maximal over a class
+of throughput vectors **iff** no candidate throughput `B` has `B i > A i` for
+some `i ∈ supp A`.
 
-The `⟸` direction is the concentrated-sample argument: if `B i > A i` for some
-`i ∈ supp A`, the sample `x = e_i` makes `B` strictly better.  The `⟹`
-direction is coordinatewise dominance: if `B i ≤ A i` for all `i ∈ supp A`, then
-`∏ Bᵢ^xⁱ ≤ ∏ Aᵢ^xⁱ` for every supported `x`. -/
+The `⟸` direction is coordinatewise dominance: if `B i ≤ A i` for all `i ∈ supp A`,
+then `∏ Bᵢ^xⁱ ≤ ∏ Aᵢ^xⁱ` for every supported `x`.  The `⟹` direction is the
+concentrated-sample argument: if `B i > A i` for some `i ∈ supp A`, the sample
+`x = e_i` makes `B` strictly better.  (This is *not* the §6.1 separable-binomial
+criterion; see `binomial_not_coordinatewise`.) -/
 theorem flow_dominance_criterion (A B : ι → ℕ) :
     (∀ x : ι → ℕ, (∀ i, 0 < x i → 0 < A i) →
         flowLik B x ≤ flowLik A x) ↔
@@ -286,6 +298,46 @@ theorem flow_dominance_criterion (A B : ι → ℕ) :
     · exact pow_le_pow_left' (h i (hx i hxi)) (x i)
     · have hz : x i = 0 := Nat.eq_zero_of_not_pos hxi
       simp [hz, flowFactor]
+
+/-! ## The §6.1 separable binomial is NOT coordinatewise (counterexample)
+
+MB09 §6.1's second display — the approximation §6.2 optimizes — is the product of
+per-class binomials with external genome size `N`:
+
+```text
+∏ᵢ C(n, xᵢ) · (dᵢ/N)^{xᵢ} · (1 − dᵢ/N)^{n−xᵢ},   n = ∑ᵢ xᵢ.
+```
+
+After dropping the candidate-independent `C(n, xᵢ)` and the common `N⁻ⁿ`, class
+`i` contributes `dᵢ^{xᵢ} · (N − dᵢ)^{n−xᵢ}`.  Unlike the product criterion above,
+the `(N − dᵢ)` factor grows as `dᵢ` shrinks, so coordinatewise dominance is **not**
+sufficient for the binomial: lowering a count can help when the class is
+under-observed relative to `n`.  `binomCore` packages this core, and
+`binomial_not_coordinatewise` is a kernel-checked counterexample with truth
+`A = (1, 2)`, candidate `B = (1, 1)`, external `N = 3`, sample `x = (2, 1)`:
+`B ≤ A` coordinatewise but the binomial strictly prefers `B` (core `8 > 4`). -/
+
+/-- The §6.1 separable-binomial comparison core with external `N`: drop the
+candidate-independent multinomial coefficients `C(n, xᵢ)` and the common `N⁻ⁿ`,
+leaving class `i` contributing `dᵢ^{xᵢ} · (N − dᵢ)^{n−xᵢ}` with `n = ∑ⱼ xⱼ`. -/
+def binomCore (d x : ι → ℕ) (N : ℕ) : ℚ :=
+  ∏ i, (d i : ℚ) ^ x i * ((N : ℚ) - d i) ^ (∑ j, x j - x i)
+
+/-- **The §6.1 separable binomial is not coordinatewise.**  With truth counts
+`A = (1, 2)`, candidate counts `B = (1, 1)`, external `N = 3`, and sample
+`x = (2, 1)`, we have `B ≤ A` coordinatewise but `binomCore B x 3 > binomCore A x 3`
+(`8 > 4`).  Hence coordinatewise dominance is not sufficient for the §6.1
+separable binomial, and `flow_dominance_criterion` must not be cited as the §6.1
+binomial criterion. -/
+theorem binomial_not_coordinatewise :
+    binomCore ![1, 1] ![2, 1] 3 > binomCore ![1, 2] ![2, 1] 3 := by
+  unfold binomCore
+  norm_num [Fin.prod_univ_two]
+
+/-- The coordinatewise premise of `binomial_not_coordinatewise` holds:
+`B = (1, 1) ≤ (1, 2) = A` on the truth's support. -/
+theorem binomial_coordinatewise_holds : (1 : ℚ) ≤ 1 ∧ (1 : ℚ) ≤ 2 := by
+  norm_num
 
 /-! ## The half-integral relaxation gap
 
@@ -325,6 +377,7 @@ every sample under the exact objective.  Hence uniqueness of the normalized
 spectrum is impossible at variable length — a phenomenon with no full-overlap
 analogue, because at full overlap the length is fixed by the throughput. -/
 
+omit [DecidableEq ι] in
 /-- **Rescaling tie.**  For a truth with counts `A` and length `G`, the `k`-fold
 cover has counts `k·A` and length `k·G`, and ties with the truth on every
 supported sample: `crossLik (k·A) x G = crossLik A x (k·G)`. -/

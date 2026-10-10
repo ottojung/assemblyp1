@@ -17,9 +17,13 @@ trust in the Lean output, the finite facts behind
   * the rescaling tie: at variable length the k-fold cover S^k of a truth S ties
     with S under the exact objective, so uniqueness of the normalized spectrum is
     impossible at variable length (a phenomenon with no full-overlap analogue);
-  * the flow-domain (binomial, external N = G) maximality criterion: the truth is
-    sample-uniformly maximal over the section 6.2 feasible flows iff no admissible
-    flow throughput strictly dominates the truth spectrum on an observed class;
+  * the flow-domain (fixed-external-N multinomial-product) maximality criterion:
+    the truth is sample-uniformly maximal over a class of throughput vectors iff
+    no admissible throughput strictly dominates the truth spectrum on an observed
+    class;
+  * the refutation of the claim that the genuine section 6.1 separable binomial
+    is coordinatewise: truth A=(1,2), candidate B=(1,1), N=3, x=(2,1) has B<=A
+    coordinatewise but the binomial strictly prefers B (core 8 > 4);
   * the failure of that criterion at o_min < L-1: the AAATT instance at o_min = 1
     has non-spelling flow maximizers that beat the truth (ratio 256/81), recomputed
     independently here;
@@ -277,13 +281,46 @@ def check_half_integral_gap():
     print(f"[ok] half-integral gap  L(h)/L(f2) = 625/576 > 1")
 
 
-def check_flow_dominance_criterion():
-    """Flow-domain (binomial, external N=G) maximality iff no flow dominates.
+def check_binomial_not_coordinatewise():
+    """The genuine §6.1 separable binomial is NOT coordinatewise.
 
-    With external N = G fixed, the binomial comparison reduces to the exactLik
-    product  prod_c B[c]**x[c] <= prod_c A[c]**x[c].  By the concentrated-sample
-    argument this holds for every supported x iff no candidate throughput B has
-    B[i] > A[i] for some i in supp A.  We verify the equivalence on a finite grid.
+    Truth A=(1,2), candidate B=(1,1), external N=3, sample x=(2,1), n=3.  The
+    binomial comparison core (dropping the candidate-independent C(n,x_i) and the
+    common N^-n) is  prod_i d_i^{x_i} (N-d_i)^{n-x_i}:
+      A: 1^2 (3-1)^1 * 2^1 (3-2)^2 = 2 * 2 = 4
+      B: 1^2 (3-1)^1 * 1^1 (3-1)^2 = 2 * 4 = 8
+    so B strictly beats A although B<=A coordinatewise on the truth's support.
+    Hence coordinatewise dominance is not sufficient for the §6.1 binomial, and
+    the Lean `flow_dominance_criterion` (a product-objective criterion) must not be
+    cited as the §6.1 binomial criterion.
+    """
+    A = {0: 1, 1: 2}
+    B = {0: 1, 1: 1}
+    N = 3
+    x = {0: 2, 1: 1}
+    assert all(B[c] <= A[c] for c in A)  # coordinatewise dominance holds
+    core_A = 1
+    core_B = 1
+    n = sum(x.values())
+    for c, e in x.items():
+        core_A *= A[c] ** e * (N - A[c]) ** (n - e)
+        core_B *= B[c] ** e * (N - B[c]) ** (n - e)
+    assert (core_A, core_B) == (4, 8), (core_A, core_B)
+    assert core_B > core_A
+    # same conclusion through the full binomial likelihood (coefficients common)
+    assert binomial_lik(B, x, N) > binomial_lik(A, x, N)
+    print("[ok] §6.1 binomial is not coordinatewise  "
+          "A=(1,2) B=(1,1) N=3 x=(2,1)  core 8 > 4")
+
+
+def check_flow_dominance_criterion():
+    """Fixed-external-N multinomial-product maximality iff no flow dominates.
+
+    For the product objective  prod_c B[c]**x[c]  (NOT the §6.1 binomial), with
+    external N = G fixed, the comparison holds for every supported x iff no
+    candidate throughput B has B[i] > A[i] for some i in supp A.  We verify the
+    equivalence on a finite grid.  This is a criterion for the product objective,
+    not for the §6.1 separable binomial (see check_binomial_not_coordinatewise).
     """
     checked = 0
     for alphabet in ("AT",):
@@ -323,6 +360,7 @@ def main():
     check_rescaling_tie()
     check_flow_domain_counterexample()
     check_half_integral_gap()
+    check_binomial_not_coordinatewise()
     check_flow_dominance_criterion()
     print("\nALL CHECKS PASSED")
 
