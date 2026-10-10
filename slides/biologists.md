@@ -166,7 +166,7 @@ if the reads contain enough structural information to reconstruct the genome,
 
 <div class="text-4xl py-4">⇓ ?</div>
 
-does maximum likelihood recover the true genome?
+is the true genome necessarily the most likely?
 
 </div>
 

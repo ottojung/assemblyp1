@@ -97,7 +97,7 @@ slides/
   programmers.md        programmers' deck entry
   biologists.md         biologists' deck entry
   components/           shared Slidev/Vue components
-  portal/index.html     landing page (scaffold; owned by #252)
+  portal/index.html     landing page (finished left/right portal)
   scripts/              portal assembly, validation, static preview
   dist/                 generated site (git-ignored)
 ```
