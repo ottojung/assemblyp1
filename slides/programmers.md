@@ -67,6 +67,10 @@ layout: default
 The two halves meet at one point: the mathematical claims are exactly the ones the machine is built to falsify.
 </div>
 
+<!--
+Two halves, roughly ten minutes each. The science half ends with two episodes about definitions: one where a wrong definition manufactured a fake result, and one where a definition weaker than the paper's was caught and fixed additively. The machine half starts from zero — what an agent is — and builds up to the proof checker. If time is short, slides 7–8 (agent + orchestrator) can be compressed, but do not cut the kernel-trust and caveat slides: they are the point.
+-->
+
 ---
 layout: default
 ---
