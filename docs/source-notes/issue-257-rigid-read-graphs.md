@@ -316,6 +316,13 @@ exhaustive zeros are a sanity check on the proofs, not a substitute for them.
   occur in the `n = 3` scope alone (all verified by exact vertex enumeration of
   `P`). [mathematical proof + verified computation; the exact classification
   is open]
+* **Genome witness (the gap occurs for actual circular DNA).** `S = ACACAGT`,
+  `L = 2`, `G = 7`: spectrum `AC:2, CA:2, AG:1, GT:1, TA:1`. Positive
+  circulations of total `7` satisfy `2·B(AC) + 3·B(AG) = 7` with `B ≥ 1`;
+  the only positive **integer** solution is `(2,1)`, so `S` is rigid. But over
+  the reals `B(AC) = 3/2, B(AG) = 4/3` works (e.g. the positive real
+  circulation `(3/2, 3/2, 4/3, 4/3, 4/3)` of total `7`): the LP relaxation
+  reports non-rigidity for a rigid genome. [verified computation]
 
 ---
 
