@@ -191,6 +191,7 @@ import AssemblyP1.Section62VarlenPerOccurrence
 import AssemblyP1.BreslerRemapCompatibility
 import AssemblyP1.Issue209EAudit
 import AssemblyP1.FibreCountArithmetic
+import AssemblyP1.Section62SpelledReduction
 
 /-! ## `Issue94Transposition`: the Kotzig/Ukkonen/Pevzner descent, and an obstruction
 
@@ -1001,3 +1002,19 @@ reading. Two finite checks anchor it: the refuted BBT premise's witness is not
 #print axioms AssemblyP1.SameLength62TieUniqueness.bbTP2Prim_of_94
 #print axioms AssemblyP1.SameLength62TieUniqueness.unique_62_maximizer_up_to_rotation_of_primitive
 #print axioms AssemblyP1.SameLength62TieUniqueness.fibre_singleton_of_Iss_and_obstruction
+
+/-!
+## Axiom audit for the #247 spelled transitive-reduction front
+
+`AssemblyP1.Section62BidirectedFlow` gains the additive Myers-style spelled
+reduction `isReducibleSpelledB`/`isReducibleSpelled` and the vacuity theorems
+for the literal "two shorter overlaps" predicate `isReducibleB`; the finite
+regressions live in `AssemblyP1.Section62SpelledReduction` (L3 positive, L4
+negative, L4 positive control).  The vacuity theorems are proved by `omega`
+from the composition law `len₁ + len₂ − readLen = e.len` with
+`len₁, len₂ < e.len < readLen`; the regressions are finite `decide` checks.
+None of the new statements depends on any axiom beyond the standard three. -/
+
+#print axioms AssemblyP1.Section62Flow.isReducibleB_arith_vacuous
+#print axioms AssemblyP1.Section62Flow.isReducibleB_true_impossible
+#print axioms AssemblyP1.Section62Flow.isReducibleB_eq_false

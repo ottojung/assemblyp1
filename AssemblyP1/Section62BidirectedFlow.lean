@@ -25,13 +25,22 @@ Primary source: MB09 §3.1–§3.4, §5.2, §6.1–§6.2
 (<https://pmc.ncbi.nlm.nih.gov/articles/PMC3154397/>), as quoted in
 `docs/section62-mb09-bidirected-graph-audit.md` §1.
 
+The spelled transitive-reduction reading of `isReducibleSpelledB` follows Myers
+(2005), *The fragment assembly string graph*, Bioinformatics 21(Suppl.
+2):ii79–ii85 (<https://www.cs.utoronto.ca/~brudno/csc2427/myers.pdf>): an edge
+is removed when a two-edge path through an intermediate read spells the *same*
+string, the two intermediate overlaps being strictly longer than the removed
+edge.
+
 | Lean object | MB09 clause |
 |---|---|
 | `Strand`, a single-stranded word, together with `rc` and `toList` | §3.1: a DNA molecule is an unordered reverse-complement strand pair |
 | `rep : W → W`, the molecule-class representative of a strand; `verts` | §6.2: "the vertices of this graph are the reads"; §4.1: "each k-molecule is represented only once" |
 | `overlapEdges`, `BdEdge`, `BdEdge.sgnX` / `.sgnY` | §6.2: "the edges are all possible bidirected overlaps of length at least `o_min`"; §3.3: a bidirected edge carries a positive/negative incidence at each endpoint |
 | `isReducible`, `transitivelyReduced`, `ReductionVacuous` | §6.2: "we then perform transitive edge reduction, where we remove any overlap that is spelled by two shorter overlaps" |
+| `isReducibleB_arith_vacuous`, `isReducibleB_eq_false` | the literal "two shorter overlaps" reading is arithmetically vacuous on every proper edge: `len₁ + len₂ − readLen = e.len` with `len₁, len₂ < e.len < readLen` is impossible |
 | `isReducibleLonger`, `transitivelyReducedLonger`, `ReductionVacuousLonger` | the alternative "two-step path of strictly *longer* proper overlaps" reading discussed in `docs/section62-mb09-bidirected-graph-audit.md` §2.1 |
+| `isReducibleSpelledB`, `isReducibleSpelled` | the Myers (2005) string-graph reading: "remove an edge when a two-edge path of strictly longer proper overlaps spells the same string" |
 | `BdFlow`, `Admissible` clause 1 | §6.2: "All other lower bounds are 0 and all upper bounds are infinity" |
 | `Admissible` clause 2, `throughput` | §6.2: "Each vertex has a lower bound of 1"; §5.2: the vertex split `v⁻ → v⁺` carries the vertex bounds, so `d_i` is the flow through vertex `i` |
 | `balance`, `Admissible` clause 3 | §3.4: a flow satisfies `pos(f)(v) − neg(f)(v) = b(v)` |
@@ -199,6 +208,49 @@ def isReducible (A : Type) (W : Type) [DecidableEq A] [DecidableEq W]
     (e : BdEdge A W) : Prop :=
   isReducibleB A W toList rc readLen verts e = true
 
+/-- The arithmetic core of the literal "two shorter overlaps" reading is
+impossible for a proper edge: `len₁`, `len₂` both `< e.len < readLen` force
+`len₁ + len₂ − readLen < e.len`, contradicting the composition law
+`len₁ + len₂ − readLen = e.len`.  (Positivity of the two overlap lengths is not
+even needed.) -/
+theorem isReducibleB_arith_vacuous {readLen eLen len₁ len₂ : Nat}
+    (h3 : len₁ < eLen) (h4 : len₂ < eLen) (h5 : eLen < readLen)
+    (h6 : len₁ + len₂ - readLen = eLen) : False := by
+  omega
+
+/-- If the literal "two shorter overlaps" predicate holds of a proper edge, the
+composition law forces the arithmetic contradiction above. -/
+theorem isReducibleB_true_impossible (A : Type) (W : Type) [DecidableEq A] [DecidableEq W]
+    (toList : W → List A) (rc : W → W) (readLen : Nat) (verts : List W)
+    (e : BdEdge A W) (hproper : e.len < readLen)
+    (h : isReducibleB A W toList rc readLen verts e = true) : False := by
+  simp only [isReducibleB, List.any_eq_true, Bool.and_eq_true, decide_eq_true_eq] at h
+  obtain ⟨my, hmy, m, hm, len₁, hlen₁, len₂, hlen₂, hrest⟩ := h
+  cases hrest with
+  | intro h1 h7 =>
+    cases h1 with
+    | intro h2 h6 =>
+      cases h2 with
+      | intro h3 h5 =>
+        cases h3 with
+        | intro h4 h4' =>
+          cases h4 with
+          | intro hmax1 hmax2 =>
+            exact isReducibleB_arith_vacuous h5 h6 hproper h7
+
+/-- The literal MB09 §6.2 "spelled by two shorter overlaps" predicate
+`isReducibleB` is vacuous on every proper edge: the composition law
+`len₁ + len₂ − readLen = e.len` with `len₁, len₂ < e.len < readLen` is
+arithmetically impossible, so no edge is ever removed under the literal
+reading. -/
+theorem isReducibleB_eq_false (A : Type) (W : Type) [DecidableEq A] [DecidableEq W]
+    (toList : W → List A) (rc : W → W) (readLen : Nat) (verts : List W)
+    (e : BdEdge A W) (hproper : e.len < readLen) :
+    isReducibleB A W toList rc readLen verts e = false := by
+  rw [Bool.eq_false_iff]
+  intro h
+  exact isReducibleB_true_impossible A W toList rc readLen verts e hproper h
+
 /-- Whether the direct overlap of length `e.len` is removed under the alternative
 (Myers-style) reading of transitive edge reduction: a two-edge path through an
 intermediate molecule class exists whose two proper overlaps are both strictly
@@ -217,6 +269,45 @@ def isReducibleLonger (A : Type) (W : Type) [DecidableEq A] [DecidableEq W]
     (toList : W → List A) (rc : W → W) (readLen : Nat) (verts : List W)
     (e : BdEdge A W) : Prop :=
   isReducibleLongerB A W toList rc readLen verts e = true
+
+/-- Whether the edge `e : sx → sy` of length `e.len` is removed under the
+*spelled* (Myers-style) reading of transitive edge reduction: there is an
+observed intermediate strand `m` and proper overlap lengths `len₁`, `len₂`, both
+strictly **longer** than `e.len`, such that
+
+* `m` overlaps `sx` by `len₁` and overlaps `sy` by `len₂` (the longest such
+  overlaps, since a shorter one is always available);
+* the two-step path spells exactly the direct overlap, i.e.
+  `sx ++ sy.drop e.len = sx ++ m.drop len₁ ++ sy.drop len₂`.
+
+The string equality is the Myers (2005) string-graph condition: an edge is
+removable when a two-edge path through an intermediate read spells the *same*
+string, and the two intermediate overlaps are strictly longer than the removed
+edge.  Unlike `isReducibleLongerB`, which compares only overlap lengths, the
+spelling equality forbids removing an edge whose two-step path spells a
+*different* string.  MB09 §6.2: "we remove any overlap that is spelled by two
+shorter overlaps".  The intermediate strand ranges over `strandsOf rc verts`,
+so both orientations of every observed molecule class are tried, exactly as
+`overlapEdges` enumerates both orientations of every read. -/
+def isReducibleSpelledB (A : Type) (W : Type) [DecidableEq A] [DecidableEq W]
+    (toList : W → List A) (rc : W → W) (readLen : Nat) (verts : List W)
+    (e : BdEdge A W) : Bool :=
+  verts.any fun _my =>
+    (strandsOf rc verts).any fun m =>
+      (List.range readLen).any fun len₁ =>
+        (List.range readLen).any fun len₂ =>
+          decide (maxOverlap A W toList readLen e.sx m = len₁) &&
+            decide (maxOverlap A W toList readLen m e.sy = len₂) &&
+            decide (e.len < len₁) && decide (e.len < len₂) &&
+            decide ((toList e.sx ++ (toList e.sy).drop e.len) =
+                    (toList e.sx ++ (toList m).drop len₁ ++ (toList e.sy).drop len₂))
+
+/-- The spelled (Myers-style) reading of transitive edge reduction, as a
+proposition. -/
+def isReducibleSpelled (A : Type) (W : Type) [DecidableEq A] [DecidableEq W]
+    (toList : W → List A) (rc : W → W) (readLen : Nat) (verts : List W)
+    (e : BdEdge A W) : Prop :=
+  isReducibleSpelledB A W toList rc readLen verts e = true
 
 /-- The transitively reduced bidirected overlap graph: those edges of `edges`
 that are not spelled by two shorter overlaps. -/
