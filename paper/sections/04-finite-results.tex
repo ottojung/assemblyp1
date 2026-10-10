@@ -5,11 +5,13 @@ This section reports what is known about the question when the observation model
 is a finite sample and the objective is one of the Medvedev--Brudno objects of
 Section~\ref{sec:model}. The results are of three kinds. First a \emph{positive}
 rigidity theorem for same-length oriented Section~6.2 candidates under
-Shomorony's $\Is$, which makes the truth's spectrum the only positive
+the project's sampled-placement $\Is$, which makes the truth's spectrum the only positive
 circulation of total $G$; the maximizer statement on that slice, and the
-uniqueness statement obtained by adding the external complete-spectrum
-uniqueness input, come next. Then a sequence of \emph{negative}
-witnesses, each refuting a named, precisely scoped statement. Finally, the row
+uniqueness statement obtained using the internally formalized complete-spectrum
+uniqueness theorem, come next. Then a sequence of \emph{negative}
+witnesses, each refuting a named, precisely scoped statement, including the
+source's own read-string predicate of supplement \S6.4
+(\S\ref{sec:finite:historical}). Finally, the row
 that stays open is identified precisely, together with the two rows that are not
 readings of the 2016 sentence at all
 (Remark~\ref{rem:surfaces}, Table~\ref{tab:finite}). We begin with the logical
@@ -187,7 +189,7 @@ Section~\ref{sec:population}, whose hypothesis is Ukkonen's full condition.
 The rigidity theorem proves \emph{spectrum} equality, and equal spectra give an
 exact \emph{tie} for every objective that factors through the spectrum. The
 maximizer statement itself is proved separately, and is stronger than the
-hypothesis surface used above: the theorem below takes the full source $\Is$
+hypothesis surface used above: the theorem below takes the project's sampled-placement $\Is$
 at the realized read placement set and \emph{derives} §6.2 candidate membership
 rather than assuming it.
 
@@ -204,14 +206,17 @@ Medvedev--Brudno multinomial and the §6.1 binomial approximation at $N=G$,
 \]
 \end{theorem}
 
-The hypothesis set is exactly the source's: $2 \le L \le G$, full $\Is$, and the
-§6.2 data. There is no long-triple-repeat premise, no primitivity or period
+The hypotheses deliberately go beyond the historical source: $2 \le L \le G$,
+the project's sampled-placement $\Is$, oriented reads, equal-length genomes,
+and genuine \S6.2 spelled candidacy of both truth and competitor. This theorem
+does not claim that the historical matching-string predicate
+$\Is^{\mathrm{match}}$ implies these project-specific assumptions. There is no long-triple-repeat premise, no primitivity or period
 premise, and no ``escape'' or culprit hypothesis; $\Is \Rightarrow \neg
 \textsc{LongTripleRepeat}$ is a consequence proved inside the chain. The start
 set is the \emph{range} of the realization, not a superset: because every clause
 of $\Is$ is a ``some $r \in R$ does \dots'' or a coverage condition, a start set
 $R \supseteq \range\rho$ that contains starts at which no read was drawn is a
-strictly weaker hypothesis, and the theorem is stated at the faithful one.
+strictly weaker hypothesis, and the theorem is stated using only the actually realized starts.
 For genuine same-length candidates with truth candidacy, cyclic-rotation
 uniqueness is now proved directly in the Lean kernel, without an external
 BBT obstruction premise (Corollary~\ref{cor:same-length-rotation}).
@@ -271,7 +276,7 @@ exactly the rotation class of $S$.
 candidate-rotation theorem are \kernelcheck{}: see
 \texttt{Assembly\allowbreak{}P1/\allowbreak{}Oriented\allowbreak{}Final\allowbreak{}Rigidity.\allowbreak{}lean} and
 \texttt{Assembly\allowbreak{}P1/\allowbreak{}Same\allowbreak{}Length62Uniqueness.\allowbreak{}lean} (merged PR~\#124).
-The candidate theorem consumes source-faithful $\Is$ and explicit
+The candidate theorem consumes the project's sampled-placement $\Is$ and explicit
 genuine Section~6.2 certificates for BOTH the truth and the competitor;
 it requires no external BBT obstruction axiom. The older citation
 \cite{bresler2013} remains an alternative published mathematical
@@ -556,7 +561,7 @@ that separates a refuted statement from an open one, and because a claim that
 them. On the positive, truth-admissible same-length candidate surface, the
 finite rotation-uniqueness theorem is now kernel-checked directly in
 \texttt{Same\allowbreak{}Length62Uniqueness}, with explicit truth candidacy.
-It is not a general finite ML theorem; the source-faithful primitive
+It is not a general finite ML theorem; the project-level primitive
 no-truth-candidacy alternative has a genuine candidate counterexample. The full row-by-row matrix, with every axis
 value tagged as source fact, source-supported inference, or modelling choice, is
 \texttt{docs/\allowbreak{}source-notes/\allowbreak{}interpretation-matrix-217.\allowbreak{}md}.
@@ -660,6 +665,182 @@ and the witness ratios are \computed{} by
 \texttt{scripts/\allowbreak{}verify\_\allowbreak{}oriented\_\allowbreak{}molecule\_\allowbreak{}bridging.\allowbreak{}py}. The representation
 choice is a \projchoice{} and the historical strand convention stays open.}
 \end{remark}
+
+\subsection{The source-faithful historical predicate, and two same-length witnesses}
+\label{sec:finite:historical}
+
+The finite witnesses above are stated for the placement-based realization
+predicate $\Is$ of Definition~\ref{def:Is}, in which coverage and bridging are
+evaluated at the latent sampled starts. Shomorony et al.'s own coverage and
+bridging conditions are instead stated on the observed read \emph{strings},
+matched at any genomic position, precisely because repeats let one read string
+occur at many positions
+\cite[Supplement, \S6.4, Definitions~1--2]{shomorony2016}. The two predicates are
+not the same, and the source's is the one the published question inherits from
+the reconstruction theory. We record the source predicate, then show that the
+same-length molecule failure survives under it.
+
+\begin{proposition}[Source historical coverage and bridging; supplement \S6.4]
+\label{prop:historical-source}
+Let $S$ be a circular genome of length $G$, let $L$ be a read length with
+$2\le L\le G$, and let $R$ be a multiset of sampled starts with observed read
+strings $\{W_r(S):r\in R\}$; write $\mathcal{W}$ for the set of distinct observed
+strings. The \emph{historical} information-feasibility predicate
+$\Is^{\mathrm{match}}$ holds iff
+\begin{enumerate}[label=(H\arabic*),leftmargin=*]
+  \item \emph{(historical coverage, Definition~1)} for every start $t$ there is
+        a string $w\in\mathcal{W}$ with $w=W_{(t+\delta)\bmod G}(S)$ for some
+        $\delta\in\{0,1,\dots,L-2\}$;
+  \item \emph{(historical bridging, Definition~2)} every triple repeat of $S$
+        has every copy strictly straddled by some observed string
+        $w\in\mathcal{W}$ matched at a position in the source's interval
+        $[\tau_1+\ell+1-L,\ \tau_1-1]$ (and symmetrically at the other copies),
+        and every interleaved repeat pair has a copy so straddled.
+\end{enumerate}
+The quantified object is the observed read \emph{string}, matched at \emph{any}
+position where it occurs, not a base covered by a read at a sampled placement.
+Consequently $\Is^{\mathrm{match}}$ and the placement-based $\Is$ of
+Definition~\ref{def:Is} are \emph{incomparable}. On circular $AAAA$ with $L=3$
+the single observed string $AAA$ matches at every position and satisfies
+historical coverage, while its one placement at start $0$ leaves base $3$
+uncovered; conversely, on circular $ACGT$ with $L=2$ the placements $0,2$ cover
+every base, yet historical coverage fails because $CG$ and $TA$ were never
+observed. The two finite models are therefore first-class alternatives, and a
+result stated for one is not silently a result for the other.
+\statusline{\srcfact{} for (H1)--(H2)
+\cite[Supplement, \S6.4, Definitions~1--2]{shomorony2016}; the two
+incomparability instances are \kernelcheck{} in the historical layer
+\texttt{Historical\allowbreak{}Covers} (merged PR~\#142).}
+\end{proposition}
+
+\begin{theorem}[Historical same-length molecule counterexample $W_1$]
+\label{thm:cex-historical-W1}
+Let $\Alphabet=\{A,T\}$ with the DNA involution $A\leftrightarrow T$, $L=3$,
+truth $S=AAATAT$ ($G=6$) sampled at the starts $(0,0,1,3,5)$, and competitor
+$D=AAAAAT$ ($|D|=|S|=6$). Then
+\begin{enumerate}[label=(\roman*),leftmargin=*]
+  \item the source-faithful predicate holds at full strength,
+        $S\in\Is^{\mathrm{match}}$: historical coverage, every literal
+        three-occurrence triple repeat all-bridged, and every interleaved pair
+        bridged;
+  \item $S$ and $D$ are genuine Section~6.2 bidirected DNA-molecule
+        \emph{full-overlap} flows of the same length; and
+  \item the competitor strictly wins under both source-named objectives, with
+        external $N=6$ and the zero-count factors retained:
+        \[
+          \frac{\Lik_{\mathrm{ex}}(D;x)}{\Lik_{\mathrm{ex}}(S;x)}=3>1,
+          \qquad
+          \frac{\Lik_{\mathrm{bin}}(D;x)}{\Lik_{\mathrm{bin}}(S;x)}=5>1 .
+        \]
+\end{enumerate}
+Concretely the molecule classes are
+$x=(AAA{:}2,\ AAT{:}1,\ ATA/TAT{:}1,\ TAA{:}1)$,
+$d_S=(AAA{:}1,\ AAT{:}1,\ ATA/TAT{:}3,\ TAA{:}1)$ and
+$d_D=(AAA{:}3,\ AAT{:}1,\ ATA/TAT{:}1,\ TAA{:}1)$; all three share the same
+support, so both candidates satisfy the source's per-vertex lower bound of $1$.
+Hence, on the same-length molecule slice, the source's own read-string
+bridging hypotheses do not make the truth a likelihood maximizer, and both the
+maximizer and uniqueness schemas fail.
+\end{theorem}
+
+\begin{theorem}[Historical same-length molecule counterexample $W_2$, per-occurrence]
+\label{thm:cex-historical-W2}
+Let $\Alphabet=\{A,C,G,T\}$ with $A\leftrightarrow T$, $C\leftrightarrow G$
+(no self-complementary base), $L=3$, truth $S=ATATACAC$ ($G=8$) sampled at the
+starts $(1,3,4,5,6,7)$, and competitor $D=ATACACAC$ ($|D|=|S|=8$). Then
+$S\in\Is^{\mathrm{match}}$ at full strength; both $S$ and $D$ are genuine
+Section~6.2 bidirected full-overlap flows of the same length; \emph{and} both
+satisfy the repository-added per-occurrence strengthening
+$x(w)\le d_S(w)$, $x(w)\le d_D(w)$ for every observed molecule class $w$. With
+external $N=8$,
+\[
+  \frac{\Lik_{\mathrm{ex}}(D;x)}{\Lik_{\mathrm{ex}}(S;x)}=\frac{3}{2}>1,
+  \qquad
+  \frac{\Lik_{\mathrm{bin}}(D;x)}{\Lik_{\mathrm{bin}}(S;x)}=\frac{9}{5}>1 .
+\]
+Thus the historical read-string predicate refutes the same-length molecule row
+even under the strictly stronger per-occurrence surface, on the real
+four-letter DNA alphabet.
+\statusline{The per-occurrence strengthening is \emph{not} the source's
+\S6.2 rule, which states only the per-vertex lower bound of $1$
+(Remark~\ref{rem:surfaces}); the theorem reports a determinate mathematical
+question, not a reading of the 2016 sentence.}
+\end{theorem}
+
+\paragraph{Merged Lean verification.}
+The canonical historical predicate is
+\texttt{A\allowbreak{}s\allowbreak{}s\allowbreak{}e\allowbreak{}m\allowbreak{}b\allowbreak{}l\allowbreak{}y\allowbreak{}P\allowbreak{}1\allowbreak{}.\allowbreak{}H\allowbreak{}i\allowbreak{}s\allowbreak{}t\allowbreak{}o\allowbreak{}r\allowbreak{}i\allowbreak{}c\allowbreak{}a\allowbreak{}l\allowbreak{}C\allowbreak{}o\allowbreak{}v\allowbreak{}e\allowbreak{}r\allowbreak{}s\allowbreak{}.\allowbreak{}H\allowbreak{}i\allowbreak{}s\allowbreak{}t\allowbreak{}o\allowbreak{}r\allowbreak{}i\allowbreak{}c\allowbreak{}a\allowbreak{}l\allowbreak{}I\allowbreak{}n\allowbreak{}f\allowbreak{}o\allowbreak{}r\allowbreak{}m\allowbreak{}a\allowbreak{}t\allowbreak{}i\allowbreak{}o\allowbreak{}n\allowbreak{}F\allowbreak{}e\allowbreak{}a\allowbreak{}s\allowbreak{}i\allowbreak{}b\allowbreak{}l\allowbreak{}e\allowbreak{}L\allowbreak{}i\allowbreak{}t\allowbreak{}e\allowbreak{}r\allowbreak{}a\allowbreak{}l\allowbreak{}},
+which requires literal all-triple and interleaved matching-string bridging.
+The fully composed Lean endpoints on \texttt{main} (merged PR~\#142) are
+\texttt{W\allowbreak{}1\allowbreak{}.\allowbreak{}w\allowbreak{}1\allowbreak{}\_\allowbreak{}h\allowbreak{}i\allowbreak{}s\allowbreak{}t\allowbreak{}o\allowbreak{}r\allowbreak{}i\allowbreak{}c\allowbreak{}a\allowbreak{}l\allowbreak{}\_\allowbreak{}l\allowbreak{}i\allowbreak{}t\allowbreak{}e\allowbreak{}r\allowbreak{}a\allowbreak{}l\allowbreak{}\_\allowbreak{}s\allowbreak{}e\allowbreak{}6\allowbreak{}2\allowbreak{}\_\allowbreak{}f\allowbreak{}l\allowbreak{}o\allowbreak{}w\allowbreak{}\_\allowbreak{}c\allowbreak{}o\allowbreak{}u\allowbreak{}n\allowbreak{}t\allowbreak{}e\allowbreak{}r\allowbreak{}e\allowbreak{}x\allowbreak{}a\allowbreak{}m\allowbreak{}p\allowbreak{}l\allowbreak{}e\allowbreak{}} and
+\texttt{W\allowbreak{}2\allowbreak{}.\allowbreak{}w\allowbreak{}2\allowbreak{}\_\allowbreak{}h\allowbreak{}i\allowbreak{}s\allowbreak{}t\allowbreak{}o\allowbreak{}r\allowbreak{}i\allowbreak{}c\allowbreak{}a\allowbreak{}l\allowbreak{}\_\allowbreak{}l\allowbreak{}i\allowbreak{}t\allowbreak{}e\allowbreak{}r\allowbreak{}a\allowbreak{}l\allowbreak{}\_\allowbreak{}s\allowbreak{}e\allowbreak{}6\allowbreak{}2\allowbreak{}\_\allowbreak{}f\allowbreak{}l\allowbreak{}o\allowbreak{}w\allowbreak{}\_\allowbreak{}c\allowbreak{}o\allowbreak{}u\allowbreak{}n\allowbreak{}t\allowbreak{}e\allowbreak{}r\allowbreak{}e\allowbreak{}x\allowbreak{}a\allowbreak{}m\allowbreak{}p\allowbreak{}l\allowbreak{}e\allowbreak{}} in
+\texttt{A\allowbreak{}s\allowbreak{}s\allowbreak{}e\allowbreak{}m\allowbreak{}b\allowbreak{}l\allowbreak{}y\allowbreak{}P\allowbreak{}1\allowbreak{}.\allowbreak{}H\allowbreak{}i\allowbreak{}s\allowbreak{}t\allowbreak{}o\allowbreak{}r\allowbreak{}i\allowbreak{}c\allowbreak{}a\allowbreak{}l\allowbreak{}C\allowbreak{}o\allowbreak{}v\allowbreak{}e\allowbreak{}r\allowbreak{}a\allowbreak{}g\allowbreak{}e\allowbreak{}S\allowbreak{}a\allowbreak{}m\allowbreak{}e\allowbreak{}L\allowbreak{}e\allowbreak{}n\allowbreak{}g\allowbreak{}t\allowbreak{}h\allowbreak{}W\allowbreak{}i\allowbreak{}t\allowbreak{}n\allowbreak{}e\allowbreak{}s\allowbreak{}s\allowbreak{}e\allowbreak{}s\allowbreak{}}.
+Each endpoint includes the historical predicate, both same-length molecule-flow
+certificates, strict likelihood comparison, and exact and binomial ratios.
+The kernel-checked \texttt{l\allowbreak{}i\allowbreak{}t\allowbreak{}e\allowbreak{}r\allowbreak{}a\allowbreak{}l\allowbreak{}\_\allowbreak{}s\allowbreak{}t\allowbreak{}r\allowbreak{}i\allowbreak{}c\allowbreak{}t\allowbreak{}l\allowbreak{}y\allowbreak{}\_\allowbreak{}s\allowbreak{}t\allowbreak{}r\allowbreak{}o\allowbreak{}n\allowbreak{}g\allowbreak{}e\allowbreak{}r\allowbreak{}\_\allowbreak{}A\allowbreak{}A\allowbreak{}A\allowbreak{}A\allowbreak{}} regression
+separates this predicate from the earlier maximal-triple project variant.
+The independent rational check is
+\texttt{s\allowbreak{}c\allowbreak{}r\allowbreak{}i\allowbreak{}p\allowbreak{}t\allowbreak{}s\allowbreak{}/\allowbreak{}v\allowbreak{}e\allowbreak{}r\allowbreak{}i\allowbreak{}f\allowbreak{}y\allowbreak{}\_\allowbreak{}2\allowbreak{}4\allowbreak{}7\allowbreak{}c\allowbreak{}\_\allowbreak{}h\allowbreak{}i\allowbreak{}s\allowbreak{}t\allowbreak{}o\allowbreak{}r\allowbreak{}i\allowbreak{}c\allowbreak{}a\allowbreak{}l\allowbreak{}\_\allowbreak{}w\allowbreak{}i\allowbreak{}t\allowbreak{}n\allowbreak{}e\allowbreak{}s\allowbreak{}s\allowbreak{}e\allowbreak{}s\allowbreak{}.\allowbreak{}p\allowbreak{}y\allowbreak{}}.
+
+\begin{remark}[Five distinctions the historical witnesses turn on]
+\label{rem:historical-distinctions}
+The result above is easy to overstate, so we separate five pairs of notions that
+the witnesses keep apart.
+\begin{enumerate}[label=(\alph*),leftmargin=*]
+  \item \textbf{Observed string matching versus latent placements.} The source
+        predicate $\Is^{\mathrm{match}}$ asks that an observed read
+        \emph{string} match somewhere in a window; the placement-based $\Is$
+        asks that a read placed at a sampled start do so. A placement certifies
+        a match, never the converse, and the two are incomparable
+        (Proposition~\ref{prop:historical-source}). Both models are retained;
+        neither replaces the other.
+  \item \textbf{Reverse-complement molecules versus oriented strings.} MB09
+        reads are unordered reverse-complement \emph{molecule} classes
+        \cite[\S3.1,\S4.1]{medvedev2009}; Shomorony's windows are oriented
+        \cite[\S2]{shomorony2016}. The historical witnesses are molecular; the
+        positive rigidity theorem is oriented, and the two read-type spaces must
+        not be exchanged.
+  \item \textbf{Full-overlap proxy versus literal bidirected graph.} The
+        positive same-length theorem lives on the project's oriented
+        full-overlap \emph{support proxy}; the historical witnesses are genuine
+        literal \S6.2 bidirected molecule flows at the threshold
+        $o_{\min}=L-1=2$, where circuits and consecutive-window spellings
+        coincide. General-$o_{\min}<L-1$ flows, whose spelled words need not be
+        consecutive windows, are not represented by either (Remark~\ref{rem:flow-domain}).
+  \item \textbf{Exact multinomial versus fixed-$N$ binomial.} The exact
+        objective uses the candidate-intrinsic length $N(D)$; the approximation
+        uses an external genome size $N$ and per-type marginals. They are
+        different objectives, and the witnesses report both: $(3,5)$ for $W_1$
+        and $(3/2,9/5)$ for $W_2$.
+  \item \textbf{Truth is a maximizer versus the maximizer is unique.} The
+        historical witnesses are \emph{strict}, so they refute both schemas at
+        once. The positive same-length row asserts more than a tie --- it makes
+        the truth the unique maximizer up to cyclic rotation --- and the
+        population theorem is the corresponding uniqueness statement at the
+        population level.
+\end{enumerate}
+\end{remark}
+
+\begin{remark}[A parametric strengthening, stated but not used]
+\label{rem:historical-param}
+Adding $k$ further copies of the observed read $AAA$ at truth start $0$ leaves
+historical coverage, matched-string bridging and both \S6.2 flow certificates
+unchanged, and multiplies the two ratios of Theorem~\ref{thm:cex-historical-W1}
+by $3^{k}$ and $5^{k}$, giving exact $3^{k+1}$ and binomial $5^{k+1}$ for every
+$k\ge0$. This family is drafted on the open branch for PR~\#139 and, like the
+base instance, requires the same explicit historical-predicate bridge; because
+it is neither merged nor needed, we record it only to fix the mechanism and do
+not use it as evidence. The base instance $k=0$ already settles the row.
+\end{remark}
+
+\paragraph{Reader-facing verdict.} Under the source's own \S6.4 read-string
+predicate, the same-length molecule slice
+is \emph{refuted}: the truth need not be a maximizer and the maximizer is not
+unique. The positive rigidity theorem survives only on the oriented,
+true-admissible, same-length, full-overlap slice, where it asserts uniqueness up
+to rotation. What remains genuinely open is the referent of the 2016 sentence
+and the general-$o_{\min}$ Section~6.2 flow domain --- not the same-length
+molecule row.
 
 \subsection{The candidate-length boundary}
 \label{sec:finite:length}
@@ -809,6 +990,14 @@ Section~6.2, molecule, same length, per-occurrence strengthening
   & exact / binomial
   & §6.2 spelled
   & \textbf{false} ($ATATACAC\to ATACACAC$, ratios $3/2$ and $9/5$; \emph{not} the source's §6.2 rule) \\
+same-length molecule, \emph{source historical} $I_s^{\mathrm{match}}$, per-vertex
+  & exact / binomial
+  & §6.2 spelled
+  & \textbf{false} ($AAATAT\to AAAAAT$, ratios $3$ and $5$; Thm.~\ref{thm:cex-historical-W1}; kernel-checked, merged PR~\#142) \\
+same-length molecule, \emph{source historical} $I_s^{\mathrm{match}}$, per-occurrence
+  & exact / binomial
+  & §6.2 spelled
+  & \textbf{false} ($ATATACAC\to ATACACAC$, ratios $3/2$ and $9/5$; Thm.~\ref{thm:cex-historical-W2}; kernel-checked, merged PR~\#142) \\
 oriented single-strand, Section~6.2, variable length
   & exact / binomial
   & §6.2 circuits
@@ -823,6 +1012,7 @@ duplex as \emph{two disjoint} circles $(S,\rc(S))$
   & disjoint-duplex candidates
   & \projchoice{}: circle-by-circle $\Is\equiv\Is(S)$, witness survives; duplex-as-a-whole ill-defined; unobserved-orientation likelihood $=$ MB09 molecule (Rem.~\ref{rem:duplex}) \\
 \end{longtable}
+}
 
 The finite landscape. ``False'' means a strict counterexample over the
 stated class; the evidence level (kernel-checked, exact computation, or script)
@@ -838,7 +1028,12 @@ repository modelling choice whose circle-by-circle reading is exactly $\Is(S)$.
 The
 per-occurrence strengthening in the row above them is likewise a repository-added
 assumption surface rather than Medvedev--Brudno's §6.2 rule; that row is a
-\emph{determinate} question and is now refuted rather than left open. All
+\emph{determinate} question and is now refuted rather than left open. The two
+\emph{source-historical} $I_s^{\mathrm{match}}$ rows use the source's own
+read-string predicate of supplement \S6.4 rather than the placement-based $\Is$;
+their historical coverage, literal all-triple and interleaved bridging,
+\S6.2 bidirected-flow certificates and strict likelihood ratios are now
+composed in kernel-checked endpoints on \texttt{main} (merged PR~\#142). All
 non-source rows are listed so that the claim of exhaustion is not overstated. See
 \texttt{docs/\allowbreak{}source-notes/\allowbreak{}interpretation-matrix-217.\allowbreak{}md} for the row-by-row
 matrix with every axis value tagged.
