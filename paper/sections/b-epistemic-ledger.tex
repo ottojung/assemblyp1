@@ -288,3 +288,31 @@ with every axis value tagged as source fact, source-supported inference, or
 project modeling choice; the record of the
 follow-up material collected from the protected \#94 worktrees in this same
 round is \texttt{docs/\allowbreak{}issue-217-followup-collection.\allowbreak{}}md.
+
+\subsection{Duplex bridging certificates}
+
+The non-equivalence of the concatenation and disjoint-duplex readings, their
+circle-by-circle equivalence, and the mixed-repeat obstruction are
+\kernelcheck{} in
+\texttt{Assembly\allowbreak{}P1/\allowbreak{}Double\allowbreak{}Strand\allowbreak{}Bridging\allowbreak{}Transfer.\allowbreak{}lean} and
+\texttt{Assembly\allowbreak{}P1/\allowbreak{}Two\allowbreak{}Disjoint\allowbreak{}Circles\allowbreak{}Duplex.\allowbreak{}lean};
+the spectrum/seam arithmetic and the witness ratios are \computed{} by
+\texttt{scripts/\allowbreak{}verify\_\allowbreak{}two\_\allowbreak{}disjoint\_\allowbreak{}circles\_\allowbreak{}duplex.\allowbreak{}py} and
+\texttt{scripts/\allowbreak{}verify\_\allowbreak{}oriented\_\allowbreak{}molecule\_\allowbreak{}bridging.\allowbreak{}py}. The representation
+choice is a \projchoice{} and the historical strand convention stays open.
+
+\subsection{A failed proof route for population uniqueness}
+
+The internally proved complete-spectrum uniqueness step that
+Theorem~\ref{thm:population} uses was not the route first attempted. A
+stronger statement was attempted directly within the project, via a matching
+argument on the transition involution of the length-$(L-1)$ de Bruijn
+structure. That route has a genuine gap: a crossing between two raw occurrence
+pairs need not survive maximal extension as two interleaved \emph{maximal}
+repeats, and an explicit primitive example with the same length-$3$ spectrum and
+no cyclic relation exhibits the failure (it nevertheless fails P2 for a
+different interleaved pair, so it refutes the proof step, not the theorem). The
+internally proved complete-spectrum step (in its Bresler--Bresler--Tse source
+form) bypasses this gap; the failed route is recorded because it shows that
+``the same spectrum is unique'' is not automatic from short local repeat
+structure.

@@ -13,3 +13,4 @@
 *.pdf
 .guix-profile
 .guix-profile*
+*.bbl-SAVE-ERROR
