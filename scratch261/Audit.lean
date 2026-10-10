@@ -1,0 +1,13 @@
+import AssemblyP1.GeneralBidirectedFlowML
+
+#print axioms AssemblyP1.GeneralBidirectedFlowML.varLengthCriterion
+#print axioms AssemblyP1.GeneralBidirectedFlowML.dilution
+#print axioms AssemblyP1.GeneralBidirectedFlowML.fixedLengthRecovery
+#print axioms AssemblyP1.GeneralBidirectedFlowML.densityDominance
+#print axioms AssemblyP1.GeneralBidirectedFlowML.flow_dominance_criterion
+#print axioms AssemblyP1.GeneralBidirectedFlowML.binomial_not_coordinatewise
+#print axioms AssemblyP1.GeneralBidirectedFlowML.binomial_coordinatewise_holds
+#print axioms AssemblyP1.GeneralBidirectedFlowML.rescaling_tie
+#print axioms AssemblyP1.GeneralBidirectedFlowML.stretch_beats
+#print axioms AssemblyP1.GeneralBidirectedFlowML.dilution_witness
+#print axioms AssemblyP1.GeneralBidirectedFlowML.half_integral_gap
