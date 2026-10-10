@@ -17,6 +17,15 @@ _Reproduce: `python3 scratch257/rigidity.py`, `python3 scratch257/two_cycle.py`
 `python3 scratch257/verify_counterexample.py` (the §4 counterexample).
 Self-contained, exact integer arithmetic, deterministic._
 
+_Blocking-review repair (2026-10-10, branch `research/257-graver-lean-repair`):
+§2's false "primitive = Graver basis" equivalence is corrected (Graver =
+conformally indecomposable in `ker_ℤ[M; 1ᵀ]`; `(1,1) ∈ ℤ²` is gcd-one but
+decomposable), the salvaged Graver criterion is proved via conformal
+decomposition, and the §9 status row no longer claims Graver enumeration is
+verified. The Lean criterion is restated on the support domain (equality and
+nonzero-`δ` restricted to `edges`), fixing the off-support equality gap;
+`nonrigid_iff_exists_delta` is re-kernel-checked._
+
 _Lean: the exact criterion (Theorem 1) is kernel-checked as
 `AssemblyP1/ExactRigidityCriterion.lean` (`nonrigid_iff_exists_delta`), with
 only the standard axioms `[propext, Classical.choice, Quot.sound]`. Build with
@@ -152,7 +161,9 @@ flow of the same total. [mathematical proof]
 `L_0 ∩ box = {0}`. The same graph (same `L_0`) is rigid or non-rigid
 depending on `s`; e.g. the figure-eight `0→1→0`, `0→2→0` is rigid at
 `A = (1,1,1,1)` (`s = 0` everywhere) and non-rigid at `A = (2,2,1,1)`
-(`s = (1,1,0,0)`; witness `δ = (1,1,-1,-1) = χ_{C1} - χ_{C2}`).
+(`s = (1,1,0,0)`; witness `δ = (-1,-1,1,1) = χ_{C2} - χ_{C1}`, giving the
+alternative circulation `B = (1,1,2,2)`; note `δ = χ_{C1} - χ_{C2}` is *not*
+in the box here, since it would force `B = (3,3,0,0) ≱ 1`).
 [mathematical proof + verified computation]
 
 **Graver primitive-trade reformulation (conformal certificate form).** A
@@ -160,16 +171,39 @@ nonzero `δ ∈ L_0 ∩ box` exists iff a **primitive** one does: if `δ = k·δ
 with `δ' ∈ L_0` and `k ≥ 1`, then `δ' = δ/k ≥ -s/k ≥ -s`, so `δ' ∈ box`.
 For `L_0 = ker[M; 1ᵀ] ∩ ℤ^E`, primitive ⟺ the coordinates of `δ` have
 gcd `1` (if `g = gcd(δ) ≥ 2` then `δ/g ∈ L_0`; conversely `k | δ` for all
-`k | gcd`). The primitive elements of a lattice are exactly its **Graver
-basis**, which is finite for fixed rank. Hence:
+`k | gcd`).
 
-> **`A` is rigid iff no Graver basis element of `L_0 = ker[M; 1ᵀ] ∩ ℤ^E` lies
-> in the box `∏_e [1 - A(e), ∞)`.**
+**Graver ≠ primitive (blocking-review correction, 2026-10-10).** The
+**Graver basis** `Gr(M)` of `L_0 = ker_ℤ[M; 1ᵀ]` is the set of
+**conformally indecomposable** nonzero elements of the lattice: `g ∈ Gr(M)`
+iff `g ≠ 0` and whenever `g = g1 + g2` with `g1, g2 ∈ L_0` sign-compatible
+with `g` (`g1⁻ ≤ g⁻` and `g1⁺ ≤ g⁺` coordinatewise, likewise for `g2`),
+then `g1 = 0` or `g2 = 0`. Every Graver element is primitive, but **not
+conversely**: in `ker_ℤ(0) = ℤ²`, the vector `(1,1)` has gcd `1` yet
+decomposes sign-compatibly as `(1,0) + (0,1)`, so it is primitive but not
+Graver. The earlier claim "the primitive elements of a lattice are exactly
+its Graver basis" is **false** and is removed. (The `n = 3` exhaustive check
+that every non-rigid instance admits a **primitive** (`gcd`-`1`) element of
+`L_0` inside the box — 389/389, 0 failures — remains valid **as a statement
+about primitive elements**; it is **not** a verification of Graver
+enumeration, which ranges over a strictly smaller set.)
 
-This is the exact criterion in primitive-trade form: a finite (for fixed
-`|E| - |V| + c - 1`) certificate set, conformal to the algebraic starting
-point. [mathematical proof; verified computation: all 389 non-rigid `n = 3`
-instances admit a primitive (gcd-1) element of `L_0` inside the box, 0 failures]
+**Correct Graver criterion (salvaged form).** `A` is rigid iff **no Graver
+element** `g ∈ Gr(M)` satisfies `g ≥ 1 - A` coordinatewise (equivalently
+`g⁻ ≤ s`).
+
+_Proof._ (⟸) A Graver `g` with `g ≥ 1 - A` is itself a nonzero feasible `δ`,
+so Theorem 1 gives non-rigidity. (⟹) By the Graver conformal-decomposition
+theorem — every `δ ∈ ker_ℤ M` is a sign-compatible sum `δ = Σ_i g_i` of
+Graver elements (Springer 2026, Def. 4 + Prop. 3; De Loera–Hemmecke–Onn,
+Lemma 2.3) — a nonzero feasible `δ` has a Graver summand `g_i` with
+`g_i⁻ ≤ δ⁻ ≤ s`, i.e. `g_i ≥ 1 - A`; so a Graver obstruction exists. ∎
+
+`Gr(M)` is **finite** for any fixed integer matrix `M` (Dickson's lemma:
+Graver elements are the ≼-minimal elements of `L_0 ∩ ℤ^E ∖ {0}` under the
+conformal order, and minimal elements of a subset of `ℕ^E × ℕ^E` are
+finite), **not** merely "of fixed rank"; its size can be exponential in
+`|E|`, and no polynomial bound is claimed here.
 
 ---
 
@@ -358,7 +392,7 @@ exhaustive zeros are a sanity check on the proofs, not a substitute for them.
 |---|---|
 | Theorem 1: exact rigidity criterion (no nonzero zero-sum circulation in the box) | mathematical proof |
 | Theorem 1 Lean kernel-check (`nonrigid_iff_exists_delta`, `ExactRigidityCriterion.lean`) | kernel-checked (axioms: `propext`, `Classical.choice`, `Quot.sound`) |
-| Graver primitive-trade reformulation (no Graver basis element of `L_0` in the box) | mathematical proof + verified computation |
+| Graver primitive-trade reformulation (no Graver basis element of `L_0` in the box) | mathematical proof (corrected statement; Graver enumeration **not** verified — independent audit pending) |
 | Topological vs. multiplicity split (`L_0 ∩ box = {0}`) | mathematical proof |
 | Theorem 2: two-cycle non-rigidity certificate | mathematical proof |
 | Theorem 3 / §4: two-cycle certificate not necessary (4-vertex counterexample) | verified computation |
