@@ -1,6 +1,6 @@
 # Maximum-likelihood models for genome assembly
 
-This note synthesizes the current AssemblyP1 research state. It deliberately separates the published Shomorony–Medvedev/Brudno question from two later repaired models introduced by this project. It is the repository-oriented companion to the LaTeX white paper (GitHub issue #51) and the Beamer talk (GitHub issue #56).
+This note synthesizes the current AssemblyP1 research state. It deliberately separates the published Shomorony–Medvedev/Brudno question from two later repaired models introduced by this project. It is the repository-oriented companion to the LaTeX white paper (GitHub issue #51) and the audience-specific Slidev presentations under [`slides/`](../slides/) (board issues #248–#251).
 
 ## 1. Why maximum likelihood is not enough by itself
 

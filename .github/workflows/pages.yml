@@ -1,0 +1,72 @@
+name: Slides and Pages
+
+# Builds the two Slidev decks (programmers, biologists) and the portal, then
+# publishes the combined static site to GitHub Pages.
+#
+# - pull_request: build + validate the static site only (no deployment).
+# - push to main / workflow_dispatch: build + validate + deploy.
+#
+# Deployment requires GitHub Pages to be enabled with "GitHub Actions" as the
+# source (Settings -> Pages -> Build and deployment -> Source). The
+# configure-pages step attempts to enable it automatically; a repository admin
+# may still need to confirm the setting the first time.
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: slides-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: slides/package-lock.json
+
+      - name: Install Slidev dependencies (npm ci)
+        working-directory: slides
+        run: npm ci
+
+      - name: Build both decks and the portal, then validate the output
+        working-directory: slides
+        run: npm run build
+
+      - name: Configure Pages
+        if: github.event_name != 'pull_request'
+        uses: actions/configure-pages@v5
+        with:
+          enablement: true
+
+      - name: Upload combined Pages artifact
+        if: github.event_name != 'pull_request'
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: slides/dist
+
+  deploy:
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
