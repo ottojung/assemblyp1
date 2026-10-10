@@ -53,16 +53,17 @@ the historical papers. They repair weaknesses exposed in sequence.
 Which Medvedev--Brudno object the 2016 sentence denotes; which read-type
 convention (and hence which equivalence) it intends; whether candidate length is
 restricted; whether the conclusion is maximizer or uniqueness; and whether the
-unretrieved publisher-hosted supplement archive contains a definition that narrows any of
-these. These are not bookkeeping: each changes which formal statement the
-published sentence asserts.
+unretrieved publisher-hosted supplement archive contains a definition that
+narrows any of these. These are not bookkeeping: each changes which formal
+statement the published sentence asserts. The full audit is
+Appendix~\ref{app:referents}.
 
 \paragraph{The source's own read-string predicate.}
 The finite witnesses of Section~\ref{sec:finite} were first stated for the
 placement-based $\Is$. Under the source's own supplement-\S6.4 read-string
 predicate $\Is^{\mathrm{match}}$, the same-length molecule slice is likewise
 \emph{false}, with all historical predicates and both likelihood ratios
-kernel-checked on \texttt{main} (merged PR~\#142; \S\ref{sec:finite:historical}): $W_1$ ($AAATAT\to AAAAAT$) and $W_2$
+kernel-checked on \texttt{main} (\S\ref{sec:finite:historical}): $W_1$ ($AAATAT\to AAAAAT$) and $W_2$
 ($ATATACAC\to ATACACAC$) satisfy historical coverage and matched-string bridging
 at full strength, are genuine Section~6.2 molecule flows of equal length, and
 beat the truth under both the exact multinomial and the fixed-$N$ binomial. This
@@ -80,13 +81,14 @@ the alphabet. It remains true that the strengthening is \emph{not}
 Medvedev--Brudno's §6.2 rule, which states only a per-vertex lower bound of $1$,
 so this is an added assumption surface rather than a reading of the 2016
 sentence; it is refuted because the question is determinate, not because a source
-asks it. With it, no determinate row of the interpretation matrix remains open:
+asks it. With it, no determinate row of the finite landscape remains open:
 what is left is the doubled-strand $2G$ convention of a different paper, which
 is open in \emph{both} directions under a convention the 2016 text does not
 state (the only proved facts are the known witness's inadmissibility and the
 compatibility classification; no bounded search is offered as evidence), and the
-unspecified-principle reading, which is not a determinate proposition. The single-strand reading of the variable-length
-Section~6.2 statement is \emph{no longer open}: it is false, by the oriented
+unspecified-principle reading, which is not a determinate proposition. The
+single-strand reading of the variable-length Section~6.2 statement is
+\emph{no longer open}: it is false, by the oriented
 variable-length boundary witness, which beats the truth as soon as $n>G$ under
 both objectives. The
 population uniqueness theorem is now a \emph{fully kernel-checked} Lean theorem
@@ -98,10 +100,10 @@ classical Bresler--Bresler--Tse complete-spectrum uniqueness theorem remains a
 source-faithful mathematical explanation of the identifiability step, but it
 is no longer a required external premise of either the population theorem or
 the \emph{truth-candidate-conditional} finite rotation theorem
-(Corollary~\ref{cor:same-length-rotation}; merged PR~\#124). Without
-truth candidacy the nonprimitive candidate case is positive (PR~\#126),
+(Corollary~\ref{cor:same-length-rotation}). Without
+truth candidacy the nonprimitive candidate case is positive,
 whereas the primitive candidate case is refuted by a certified
-nonrotation competitor (PR~\#127). Neither is an unrestricted
+nonrotation competitor. Neither is an unrestricted
 finite likelihood result. The historical referent
 of the 2016 sentence remains a source gap. The population model for
 \emph{molecule} read types --- as opposed to oriented types --- is not addressed
@@ -110,7 +112,8 @@ here.
 \paragraph{What would count as settlement.}
 A positive settlement of the published question is a Lean proof of a formally
 justified version of the published implication after an argument fixes the axes
-of Table~\ref{tab:axes}. A negative settlement is a mathematically valid
+audited in Appendix~\ref{app:referents} (Table~\ref{tab:axes}).
+A negative settlement is a mathematically valid
 counterexample satisfying the faithfully formalized bridging hypotheses while
 violating the faithfully formalized likelihood conclusion. A computational
 discovery is useful but not a settlement until the finite instance is
@@ -134,10 +137,16 @@ same-length and population results show where the intuition does survive.
 \subsection{Conclusion}
 
 Our central subject is the likelihood ranking of candidate genomes, not
-an algorithm for reconstructing one. We prove same-length rigidity results
-under structural assumptions, exhibit finite observations where an alternative
-genome has strictly higher likelihood, and establish uniqueness of the
-population likelihood maximizer under primitivity and P2. These results
-depend on clearly stated read models and candidate classes. The original
-2016 question provides historical motivation, while the theorems identify
-the precise circumstances in which the true genome is most likely.
+an algorithm for reconstructing one. Under the bridging conditions that make
+reads information-feasible, the truth's spectrum is the unique positive
+circulation of its window-support graph, and on the same-length oriented slice
+the truth is the unique likelihood maximizer up to cyclic rotation. Once
+candidate length or strand convention is relaxed, this guarantee fails: finite
+observations exist in which a competitor is strictly more likely, because the
+exact objective scores empirical frequencies and a competitor can reweight an
+unrepresentative sample. At the population level the fluctuation disappears,
+the truth is always a maximizer, and among primitive P2 genomes it is the
+unique one --- the nontrivial combinatorial heart of the paper. Each result is
+stated for an explicit objective, read-type convention, and candidate class;
+together they map the precise circumstances in which the true genome is most
+likely, and the equally precise circumstances in which it is not.
