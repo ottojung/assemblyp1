@@ -43,15 +43,16 @@ paper/
   preamble.tex             packages, theorem environments, status macros
   references.bib           bibliography
   sections/
-    01-introduction.tex
-    02-model.tex            notation, sequencing model, I_s, likelihoods, schemas
-    03-open-question.tex    the published sentence and its source gaps
-    04-finite-results.tex   rigidity theorem and strict counterexamples
-    05-population.tex       population ML and the repaired uniqueness theorem
+    01-introduction.tex    genomes, reads, bridging, the ML question, contributions
+    02-model.tex           notation, sequencing model, I_s, likelihoods, schemas
+    03-open-question.tex   the mathematical question and its ingredients
+    04-finite-results.tex  rigidity theorem and finite reweighting counterexamples
+    05-population.tex      population ML and the uniqueness theorem
     06-discussion.tex       failure modes, open problems, conclusion
-    a-modeling-choices.tex  deliberate explanations of modeling decisions
-    b-epistemic-ledger.tex  consolidated status of every claim
-    c-reproduction.tex      build and verification instructions
+    a-modeling-choices.tex deliberate explanations of modeling decisions
+    b-epistemic-ledger.tex consolidated status of every claim
+    c-reproduction.tex     build and verification instructions
+    d-source-audit.tex      source-referent audit behind Section 3
   manifest.scm             pinned Guix TeX dependencies
   build.sh                 reproducible PDF build
 ```
