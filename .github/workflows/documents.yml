@@ -28,19 +28,9 @@ jobs:
       - name: Build white paper
         run: bash ./paper/build.sh
 
-      - name: Build presentation
-        run: bash ./talk/build.sh
-
       - name: Upload white paper
         uses: actions/upload-artifact@v4
         with:
           name: assemblyp1-white-paper-${{ github.sha }}
           path: paper/main.pdf
-          if-no-files-found: error
-
-      - name: Upload presentation
-        uses: actions/upload-artifact@v4
-        with:
-          name: assemblyp1-presentation-${{ github.sha }}
-          path: talk/main.pdf
           if-no-files-found: error

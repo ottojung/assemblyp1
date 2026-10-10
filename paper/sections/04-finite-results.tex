@@ -710,7 +710,7 @@ result stated for one is not silently a result for the other.
 \statusline{\srcfact{} for (H1)--(H2)
 \cite[Supplement, \S6.4, Definitions~1--2]{shomorony2016}; the two
 incomparability instances are \kernelcheck{} in the historical layer
-\texttt{Historical\allowbreak{}Covers} (proof-dependency note below).}
+\texttt{Historical\allowbreak{}Covers} (merged PR~\#142).}
 \end{proposition}
 
 \begin{theorem}[Historical same-length molecule counterexample $W_1$]
@@ -767,23 +767,20 @@ four-letter DNA alphabet.
 question, not a reading of the 2016 sentence.}
 \end{theorem}
 
-\paragraph{Proof dependency (draft).}
-The historical certificates and both endpoints are \kernelcheck{} in the
-\emph{currently open} pull request~\#137 (head \texttt{2a94b9d}), module
-\texttt{Assembly\allowbreak{}P1/\allowbreak{}Historical\allowbreak{}Coverage\allowbreak{}Same\allowbreak{}Length\allowbreak{}Witnesses}, which imports the
-open canonical historical layer \texttt{Historical\allowbreak{}Covers} of
-PR~\#135. Neither pull request is merged to \texttt{main} at the time of
-writing, so Theorems~\ref{thm:cex-historical-W1} and~\ref{thm:cex-historical-W2}
-are stated here as a draft with an explicit proof dependency. The pieces already
-\kernelcheck{} on \texttt{main} are the Section~6.2 flow certificates and both
-rational ratios (\texttt{Same\allowbreak{}Length\allowbreak{}Section62Counterexample} and
-\texttt{Per\allowbreak{}Occurrence\allowbreak{}Same\allowbreak{}Length\allowbreak{}Counterexample}); the new conjunct is the historical
-coverage and matched-string bridging supplied by PR~\#137. An independent
-exact-rational recomputation from the paper definitions,
-\texttt{scripts/\allowbreak{}verify\_\allowbreak{}247c\_\allowbreak{}historical\_\allowbreak{}witnesses.\allowbreak{}py}, reports
-$\Is^{\mathrm{match}}$ true and both ratios for each witness. No claim of
-kernel-verification on \texttt{main} is made until PR~\#135 and PR~\#137 are
-merged and their proofs survive CI.
+\paragraph{Merged Lean verification.}
+The canonical historical predicate is
+\texttt{AssemblyP1.HistoricalCovers.HistoricalInformationFeasibleLiteral},
+which requires literal all-triple and interleaved matching-string bridging.
+The fully composed Lean endpoints on \texttt{main} (merged PR~\#142) are
+\texttt{W1.w1\_historical\_literal\_se62\_flow\_counterexample} and
+\texttt{W2.w2\_historical\_literal\_se62\_flow\_counterexample} in
+\texttt{AssemblyP1.HistoricalCoverageSameLengthWitnesses}.
+Each endpoint includes the historical predicate, both same-length molecule-flow
+certificates, strict likelihood comparison, and exact and binomial ratios.
+The kernel-checked \texttt{literal\_strictly\_stronger\_AAAA} regression
+separates this predicate from the earlier maximal-triple project variant.
+The independent rational check is
+\texttt{scripts/verify\_247c\_historical\_witnesses.py}.
 
 \begin{remark}[Five distinctions the historical witnesses turn on]
 \label{rem:historical-distinctions}
@@ -837,7 +834,7 @@ not use it as evidence. The base instance $k=0$ already settles the row.
 \end{remark}
 
 \paragraph{Reader-facing verdict.} Under the source's own \S6.4 read-string
-predicate, and conditional on the open PR~\#137, the same-length molecule slice
+predicate, the same-length molecule slice
 is \emph{refuted}: the truth need not be a maximizer and the maximizer is not
 unique. The positive rigidity theorem survives only on the oriented,
 true-admissible, same-length, full-overlap slice, where it asserts uniqueness up
@@ -996,11 +993,11 @@ Section~6.2, molecule, same length, per-occurrence strengthening
 same-length molecule, \emph{source historical} $I_s^{\mathrm{match}}$, per-vertex
   & exact / binomial
   & §6.2 spelled
-  & \textbf{false} ($AAATAT\to AAAAAT$, ratios $3$ and $5$; Thm.~\ref{thm:cex-historical-W1}; draft, proof dep.\ PR~\#137) \\
+  & \textbf{false} ($AAATAT\to AAAAAT$, ratios $3$ and $5$; Thm.~\ref{thm:cex-historical-W1}; kernel-checked, merged PR~\#142) \\
 same-length molecule, \emph{source historical} $I_s^{\mathrm{match}}$, per-occurrence
   & exact / binomial
   & §6.2 spelled
-  & \textbf{false} ($ATATACAC\to ATACACAC$, ratios $3/2$ and $9/5$; Thm.~\ref{thm:cex-historical-W2}; draft, proof dep.\ PR~\#137) \\
+  & \textbf{false} ($ATATACAC\to ATACACAC$, ratios $3/2$ and $9/5$; Thm.~\ref{thm:cex-historical-W2}; kernel-checked, merged PR~\#142) \\
 oriented single-strand, Section~6.2, variable length
   & exact / binomial
   & §6.2 circuits
@@ -1034,10 +1031,9 @@ assumption surface rather than Medvedev--Brudno's §6.2 rule; that row is a
 \emph{determinate} question and is now refuted rather than left open. The two
 \emph{source-historical} $I_s^{\mathrm{match}}$ rows use the source's own
 read-string predicate of supplement \S6.4 rather than the placement-based $\Is$;
-their \S6.2 flow certificates and rational ratios are already kernel-checked on
-\texttt{main}, while the historical coverage and matched-string bridging
-conjunct is supplied by the open PR~\#137, so the rows are labelled draft with
-an explicit proof dependency (\S\ref{sec:finite:historical}). All
+their historical coverage, literal all-triple and interleaved bridging,
+\S6.2 bidirected-flow certificates and strict likelihood ratios are now
+composed in kernel-checked endpoints on \texttt{main} (merged PR~\#142). All
 non-source rows are listed so that the claim of exhaustion is not overstated. See
 \texttt{docs/\allowbreak{}source-notes/\allowbreak{}interpretation-matrix-217.\allowbreak{}md} for the row-by-row
 matrix with every axis value tagged.

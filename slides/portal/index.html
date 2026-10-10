@@ -1,0 +1,499 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>AssemblyP1 — choose your path</title>
+    <meta
+      name="description"
+      content="AssemblyP1 proved results about genome assembly and maximum likelihood. Choose the presentation that fits you: one for programmers, one for biologists."
+    />
+    <meta name="theme-color" content="#0b1020" />
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 150'%3E%3Ccircle cx='200' cy='34' r='9' fill='none' stroke='%23b6c2d4' stroke-width='6'/%3E%3Cpath d='M 192 40 C 150 78 128 96 96 128' fill='none' stroke='%2338bdf8' stroke-width='7' stroke-linecap='round'/%3E%3Cpath d='M 208 40 C 250 78 272 96 304 128' fill='none' stroke='%2334d399' stroke-width='7' stroke-linecap='round'/%3E%3C/svg%3E"
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="AssemblyP1 — choose your path" />
+    <meta
+      property="og:description"
+      content="Two presentations of the same research on genome assembly and maximum likelihood: one for programmers, one for biologists."
+    />
+    <style>
+      :root {
+        color-scheme: dark;
+        --bg: #0b1020;
+        --bg-soft: #111a30;
+        --fg: #f1f5f9;
+        --muted: #b6c2d4;
+        --faint: #8fa0b8;
+        --left: #38bdf8;
+        --left-soft: rgba(56, 189, 248, 0.14);
+        --right: #34d399;
+        --right-soft: rgba(52, 211, 153, 0.14);
+        --card: rgba(148, 163, 184, 0.07);
+        --border: rgba(148, 163, 184, 0.22);
+        --focus: #fbbf24;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html {
+        -webkit-text-size-adjust: 100%;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        color: var(--fg);
+        background:
+          radial-gradient(1100px 500px at 50% -12%, rgba(56, 189, 248, 0.1), transparent 60%),
+          radial-gradient(1100px 500px at 50% 112%, rgba(52, 211, 153, 0.1), transparent 60%),
+          var(--bg);
+        font-family:
+          ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
+          Helvetica, Arial, sans-serif;
+        line-height: 1.55;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: clamp(1.2rem, 3vw, 2.5rem) clamp(1rem, 4vw, 2rem) 2rem;
+      }
+
+      .skip-link {
+        position: absolute;
+        left: 0.75rem;
+        top: -4rem;
+        z-index: 100;
+        padding: 0.6rem 1rem;
+        border-radius: 0.5rem;
+        background: var(--fg);
+        color: #0b1020;
+        font-weight: 600;
+        text-decoration: none;
+        transition: top 0.15s ease;
+      }
+
+      .skip-link:focus-visible {
+        top: 0.75rem;
+      }
+
+      header {
+        max-width: 46rem;
+        text-align: center;
+      }
+
+      .kicker {
+        margin: 0 0 0.9rem;
+        font-size: 0.78rem;
+        font-weight: 700;
+        letter-spacing: 0.22em;
+        text-transform: uppercase;
+        color: var(--faint);
+      }
+
+      h1 {
+        margin: 0;
+        font-size: clamp(1.6rem, 4vw, 2.5rem);
+        line-height: 1.15;
+        letter-spacing: -0.02em;
+        font-weight: 700;
+      }
+
+      .lede {
+        margin: 0.8rem auto 0;
+        max-width: 38rem;
+        color: var(--muted);
+        font-size: clamp(0.95rem, 2vw, 1.08rem);
+      }
+
+      .fork {
+        margin: clamp(1rem, 2vw, 1.6rem) auto 0;
+        width: min(20rem, 70vw);
+        display: block;
+        overflow: visible;
+      }
+
+      .fork .branch {
+        stroke-dasharray: 240;
+        stroke-dashoffset: 240;
+        animation: draw 0.9s ease-out 0.15s forwards;
+      }
+
+      .fork .branch.right {
+        animation-delay: 0.3s;
+      }
+
+      .fork .node {
+        transform-origin: 200px 34px;
+        animation: pop 0.5s ease-out both;
+      }
+
+      .fork .head {
+        opacity: 0;
+        animation: fade-in 0.4s ease-out 0.75s forwards;
+      }
+
+      .fork .head.right {
+        animation-delay: 0.9s;
+      }
+
+      @keyframes draw {
+        to {
+          stroke-dashoffset: 0;
+        }
+      }
+
+      @keyframes pop {
+        from {
+          transform: scale(0.4);
+          opacity: 0;
+        }
+        to {
+          transform: scale(1);
+          opacity: 1;
+        }
+      }
+
+      @keyframes fade-in {
+        to {
+          opacity: 1;
+        }
+      }
+
+      main {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: clamp(1rem, 2.4vw, 1.75rem);
+        width: min(70rem, 100%);
+        margin-top: clamp(1.2rem, 2.4vw, 1.8rem);
+      }
+
+      a.path {
+        --accent: var(--left);
+        --accent-soft: var(--left-soft);
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        gap: 0.7rem;
+        padding: clamp(1.2rem, 2.4vw, 1.75rem);
+        border-radius: 1.1rem;
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-top: 3px solid var(--accent);
+        color: inherit;
+        text-decoration: none;
+        transition:
+          transform 0.16s ease,
+          border-color 0.16s ease,
+          background 0.16s ease,
+          box-shadow 0.16s ease;
+      }
+
+      a.path::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        border-radius: inherit;
+        background: var(--accent-soft);
+        opacity: 0;
+        transition: opacity 0.16s ease;
+        pointer-events: none;
+      }
+
+      a.path.right {
+        --accent: var(--right);
+        --accent-soft: var(--right-soft);
+      }
+
+      a.path:hover,
+      a.path:focus-visible {
+        transform: translateY(-4px);
+        border-color: var(--accent);
+        box-shadow: 0 14px 34px rgba(2, 6, 23, 0.55);
+        outline: none;
+      }
+
+      a.path:hover::before,
+      a.path:focus-visible::before {
+        opacity: 1;
+      }
+
+      a.path:focus-visible {
+        outline: 3px solid var(--focus);
+        outline-offset: 3px;
+      }
+
+      .dir {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.45rem;
+        align-self: flex-start;
+        padding: 0.28rem 0.7rem;
+        border-radius: 999px;
+        border: 1px solid var(--accent);
+        color: var(--accent);
+        background: var(--accent-soft);
+        font-size: 0.72rem;
+        font-weight: 700;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+      }
+
+      .dir .arrow {
+        font-size: 0.85em;
+        line-height: 1;
+      }
+
+      h2 {
+        margin: 0;
+        font-size: clamp(1.35rem, 3vw, 1.7rem);
+        letter-spacing: -0.01em;
+      }
+
+      .blurb {
+        margin: 0;
+        color: var(--muted);
+        font-size: clamp(0.95rem, 2vw, 1.02rem);
+      }
+
+      .inside {
+        margin: 0;
+        padding: 0;
+        list-style: none;
+        display: flex;
+        flex-direction: column;
+        gap: 0.4rem;
+        font-size: 0.9rem;
+        color: var(--faint);
+      }
+
+      .inside li {
+        display: flex;
+        align-items: baseline;
+        gap: 0.55rem;
+      }
+
+      .inside li::before {
+        content: "";
+        flex: none;
+        width: 0.45rem;
+        height: 0.45rem;
+        border-radius: 999px;
+        background: var(--accent);
+        transform: translateY(-1px);
+      }
+
+      .cta {
+        margin-top: auto;
+        padding-top: 0.7rem;
+      }
+
+      .cta span {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.65rem 1.15rem;
+        border-radius: 0.7rem;
+        background: var(--accent);
+        color: #071018;
+        font-weight: 700;
+        font-size: 0.95rem;
+      }
+
+      footer {
+        max-width: 64rem;
+        width: 100%;
+        margin-top: clamp(1.8rem, 4vw, 3rem);
+        padding-top: 1.4rem;
+        border-top: 1px solid var(--border);
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.6rem 1.6rem;
+        justify-content: space-between;
+        align-items: baseline;
+        color: var(--faint);
+        font-size: 0.82rem;
+      }
+
+      footer p {
+        margin: 0;
+      }
+
+      kbd {
+        padding: 0.1rem 0.4rem;
+        border-radius: 0.35rem;
+        border: 1px solid var(--border);
+        background: var(--card);
+        font-family: inherit;
+        font-size: 0.78rem;
+        color: var(--muted);
+      }
+
+      .visually-hidden {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        margin: -1px;
+        padding: 0;
+        overflow: hidden;
+        clip: rect(0 0 0 0);
+        white-space: nowrap;
+        border: 0;
+      }
+
+      @media (max-width: 700px) {
+        main {
+          grid-template-columns: 1fr;
+        }
+
+        a.path {
+          border-top-width: 3px;
+        }
+
+        a.path.left {
+          border-left: 3px solid var(--left);
+        }
+
+        a.path.right {
+          border-left: 3px solid var(--right);
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .fork .branch,
+        .fork .node,
+        .fork .head {
+          animation: none;
+          stroke-dashoffset: 0;
+          opacity: 1;
+        }
+
+        a.path,
+        a.path::before,
+        .skip-link {
+          transition: none;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <a class="skip-link" href="#paths">Skip to the two paths</a>
+
+    <header>
+      <p class="kicker">AssemblyP1 · genome assembly from short reads</p>
+      <h1>When does reconstructing a genome from its reads agree with maximum likelihood?</h1>
+      <p class="lede">
+        One research project, two presentations of the same proved results.
+        Choose the path that fits you.
+      </p>
+
+      <svg
+        class="fork"
+        viewBox="0 0 400 150"
+        role="img"
+        aria-label="One question branching into two paths: programmers on the left, biologists on the right."
+      >
+        <circle class="node" cx="200" cy="34" r="9" fill="none" stroke="#b6c2d4" stroke-width="2" />
+        <circle class="node" cx="200" cy="34" r="3.5" fill="#b6c2d4" />
+        <path
+          class="branch left"
+          d="M 192 40 C 150 78 128 96 96 128"
+          fill="none"
+          stroke="#38bdf8"
+          stroke-width="2.5"
+          stroke-linecap="round"
+        />
+        <path
+          class="branch right"
+          d="M 208 40 C 250 78 272 96 304 128"
+          fill="none"
+          stroke="#34d399"
+          stroke-width="2.5"
+          stroke-linecap="round"
+        />
+        <g class="head" transform="translate(96 128)">
+          <path d="M -7 -9 L 0 0 L 7 -9" fill="none" stroke="#38bdf8" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
+        </g>
+        <g class="head right" transform="translate(304 128)">
+          <path d="M -7 -9 L 0 0 L 7 -9" fill="none" stroke="#34d399" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
+        </g>
+      </svg>
+    </header>
+
+    <main id="paths">
+      <a
+        class="path left"
+        href="./programmers/"
+        aria-label="Left path: open the presentation for programmers. Mathematics of reconstruction versus likelihood, plus how a multi-agent research system produced kernel-checked proofs."
+      >
+        <span class="dir"><span class="arrow" aria-hidden="true">←</span> Left</span>
+        <h2>For programmers</h2>
+        <p class="blurb">
+          The mathematics of reconstruction versus maximum likelihood — finite
+          counterexamples, rigidity, uniqueness — and how a multi-agent
+          research system found, checked, and integrated the results.
+        </p>
+        <ul class="inside" aria-label="Inside the programmers' deck">
+          <li>Kernel-checked Lean proofs</li>
+          <li>Agents, orchestration &amp; CI</li>
+          <li>Issue-by-issue engineering case studies</li>
+        </ul>
+        <span class="cta"><span>Start the programmers' deck <span aria-hidden="true">→</span></span></span>
+      </a>
+
+      <a
+        class="path right"
+        href="./biologists/"
+        aria-label="Right path: open the presentation for biologists. What short-read sequencing reveals about genome assembly, and what has been proved about when reconstruction and likelihood agree."
+      >
+        <span class="dir">Right <span class="arrow" aria-hidden="true">→</span></span>
+        <h2>For biologists</h2>
+        <p class="blurb">
+          What short-read sequencing can reveal about a genome, why repeats
+          create ambiguity, and what has been proved about when reconstruction
+          and likelihood agree — with the model's limits stated honestly.
+        </p>
+        <ul class="inside" aria-label="Inside the biologists' deck">
+          <li>Repeats, reads &amp; reconstruction</li>
+          <li>Proved finite results &amp; structural rigidity</li>
+          <li>Population likelihood &amp; uniqueness</li>
+        </ul>
+        <span class="cta"><span>Start the biologists' deck <span aria-hidden="true">→</span></span></span>
+      </a>
+    </main>
+
+    <footer>
+      <p>
+        AssemblyP1 is a mathematical research project with a Lean verification
+        boundary. These are two independent presentations of the same results.
+      </p>
+      <p>
+        Keyboard: <kbd>←</kbd> left path · <kbd>→</kbd> right path.
+        Static page — no trackers, no cookies.
+      </p>
+    </footer>
+
+    <script>
+      // Progressive enhancement: Left/Right arrow keys move between the two
+      // paths. Pointer, Tab and normal link behaviour are untouched.
+      const paths = Array.from(document.querySelectorAll("a.path"));
+      if (paths.length === 2) {
+        document.addEventListener("keydown", (event) => {
+          if (event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) return;
+          const tag = (event.target && event.target.tagName) || "";
+          if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT") return;
+          if (event.key === "ArrowLeft") {
+            event.preventDefault();
+            paths[0].focus();
+          } else if (event.key === "ArrowRight") {
+            event.preventDefault();
+            paths[1].focus();
+          }
+        });
+      }
+    </script>
+  </body>
+</html>

@@ -49,13 +49,11 @@ The finite and computational claims correspond to artifacts in the repository:
         \texttt{Same\allowbreak{}Length\allowbreak{}Section62Counterexample.\allowbreak{}lean};
   \item source-faithful historical read-string coverage and same-length
         witnesses (issue~\#247): the canonical predicate layer
-        \path{AssemblyP1/HistoricalCovers.lean} (open PR~\#135) and the witness
-        module \path{AssemblyP1/HistoricalCoverageSameLengthWitnesses.lean}
-        (open PR~\#137, head \texttt{2a94b9d}), together with the independent
-        exact-rational verifier \path{scripts/verify_247c_historical_witnesses.py}.
-        Neither module is merged to \texttt{main} at the time of writing, so the
-        historical results of \S\ref{sec:finite:historical} are stated as a
-        draft with an explicit proof dependency on them;
+        \path{AssemblyP1/HistoricalCovers.lean} and the literal-witness module
+        \path{AssemblyP1/HistoricalCoverageSameLengthWitnesses.lean},
+        kernel-checked on \texttt{main} (merged PR~\#142), together with
+        the independent exact-rational verifier
+        \path{scripts/verify_247c_historical_witnesses.py};
   \item same-length oriented rigidity:
         \texttt{scripts/\allowbreak{}verify\_\allowbreak{}oriented\_\allowbreak{}se62\_\allowbreak{}rigidity.\allowbreak{}py}, plus the
         kernel-checked abstract circulation core and circular-spectrum adapter in
