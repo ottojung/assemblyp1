@@ -1,12 +1,14 @@
 import Mathlib
 
 /-!
-# General bidirected-flow ML maximality at arbitrary overlap (issue #261)
+# Abstract count-vector likelihood criteria for the general-flow program (issue #261)
 
-This module is the lane **#261** deliverable of the AssemblyP1 research program
-#255: the extension of #260's full-overlap **fixed-length** characterization to the
-**general MB09 §6.2 bidirected overlap graph at arbitrary `o_min ≤ L − 1`**, where
-the candidate genome length is **variable**.
+This module is a **partial, abstract count-vector deliverable** for #261 of the
+AssemblyP1 research program #255. It extends exact-multinomial comparisons to
+variable candidate length and separates them from the genuine §6.1
+product-binomial cost. It does **not** establish an adapter from arbitrary
+bidirected §6.2 flows to the count vectors and spelled-genome lengths below;
+therefore it does not solve the general overlap-graph classification.
 
 ## The new phenomenon
 
@@ -14,9 +16,11 @@ At full overlap (`o_min = L − 1`) every edge overlap is exactly `L − 1`, so 
 that visits `k` reads spells a genome of length exactly `k`: the length is fixed by
 the throughput.  At arbitrary `o_min ≤ L − 1` an edge may carry any overlap length in
 `[o_min, L − 1]`, so a flow that visits `k` reads with overlap lengths `o₁,…,o_k`
-spells a genome of length `∑ (L − o_j)`, which is **not** determined by the
-throughput.  The candidate genome length `N` is therefore a *variable*, and the
-exact-multinomial likelihood comparison between a candidate (counts `d`, length `N`)
+spells a genome of length `∑ (L − o_j)`, which is **not** determined by
+its visit count alone. At full overlap, *if* candidates are restricted to the
+truth's length then the total throughput is fixed; full overlap by itself does
+not prohibit a longer circuit. For variable-length genome candidates, the
+exact-multinomial comparison between a candidate (counts `d`, length `N`)
 and the truth (counts `A`, length `G`) acquires a length factor:
 
 ```text
@@ -241,8 +245,10 @@ criterion is coordinatewise dominance.
 
 The genuine §6.1 separable binomial has an extra `(1 − dᵢ/N)^(n−xᵢ)` factor per
 class that does **not** cancel, so its maximality condition is *not* coordinatewise
-dominance; see `binomCore`, `binomial_not_coordinatewise`, and the OPEN subclaim in
-`docs/issue261-general-bidirected-flow-ml.md`. -/
+dominance; see `binomCore`, `binomial_not_coordinatewise`, and the exact
+count-vector criteria **derived but not yet formalized in Lean** in
+`docs/issue261-general-bidirected-flow-ml.md`. The missing source flow adapter
+and probability-domain restrictions are independent obligations. -/
 
 /-- The fixed-external-`N` multinomial-product factor for class `i`: `B i ^ x i`.
 This is the exact multinomial (common external `N` for candidate and truth) after
@@ -342,7 +348,7 @@ theorem binomial_coordinatewise_holds : (1 : ℚ) ≤ 1 ∧ (1 : ℚ) ≤ 2 := b
 /-! ## The half-integral relaxation gap
 
 The §6.2 flow domain admits half-integral flows (the LP relaxation of the
-integer flow problem).  At `o_min < L − 1` the half-integral optimum can
+integer flow problem).  In the audited finite instance at `o_min < L − 1`, the half-integral optimum can
 strictly beat every integral maximizer, so the integer flow constraint is
 binding.  The witness is the `AAATT` instance at `o_min = 1`: with external
 `N = 5` and observed counts `x = (AAA:2, AAT:1, TAA:1)`, the AAA binomial
@@ -375,7 +381,8 @@ At variable length the `k`-fold cover `S^k` of a truth `S` has spectrum `k·A`
 and length `k·G`, so its normalized spectrum equals the truth's and it ties on
 every sample under the exact objective.  Hence uniqueness of the normalized
 spectrum is impossible at variable length — a phenomenon with no full-overlap
-analogue, because at full overlap the length is fixed by the throughput. -/
+analogue **under a same-length restriction**. Full overlap alone does not
+preclude a repeated candidate genome of length `k·G`. -/
 
 omit [DecidableEq ι] in
 /-- **Rescaling tie.**  For a truth with counts `A` and length `G`, the `k`-fold
