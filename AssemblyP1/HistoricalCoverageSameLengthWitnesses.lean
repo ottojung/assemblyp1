@@ -358,10 +358,11 @@ theorem w1_historical_literal_se62_flow_counterexample :
           spellTruth truthCircuitFlow noTerm dS' ∧
         (SpelledFeasible62 Base Strand3 toList3 rep3 rc3 readLen oMin readVerts
             spellCompetitor competitorCircuitFlow noTerm dD' ∧
-          (lik obs dS < lik obs dD ∧ exactLik dD obs / exactLik dS obs = 3))) :=
+          (lik obs dS < lik obs dD ∧ exactLik dD obs / exactLik dS obs = 3 ∧
+            lik obs dD / lik obs dS = 5))) :=
   ⟨w1_historical_literal_information_feasible, ⟨same_candidate_length,
     ⟨truth_spelled_feasible62, ⟨competitor_spelled_feasible62,
-      ⟨competitor_strictly_better, exactLik_over_truth⟩⟩⟩⟩⟩
+      ⟨competitor_strictly_better, exactLik_over_truth, lik_competitor_over_truth⟩⟩⟩⟩⟩
 
 /-- The historical same-length maximality sentence: **full historical `I_s`**
 (historical coverage *and* historical bridging) + same candidate length +
@@ -541,11 +542,12 @@ theorem w2_historical_literal_se62_flow_counterexample :
         spellTruth truthCircuitFlow noTerm dS' ∧
       (SpelledFeasible62 Base W3 toList3 rep3 rc3 readLen oMin readVerts
           spellCompetitor competitorCircuitFlow noTerm dD' ∧
-        (lik obs dS < lik obs dD ∧ exactLik dD obs / exactLik dS obs = 3 / 2)) :=
+        (lik obs dS < lik obs dD ∧ exactLik dD obs / exactLik dS obs = 3 / 2 ∧
+          lik obs dD / lik obs dS = 9 / 5)) :=
   ⟨w2_historical_literal_information_feasible, ⟨same_candidate_length,
     ⟨truth_peroccurrence, competitor_peroccurrence⟩, truth_spelled_feasible62,
     ⟨competitor_spelled_feasible62, ⟨competitor_strictly_better,
-      exactLik_over_truth⟩⟩⟩⟩
+      exactLik_over_truth, lik_competitor_over_truth⟩⟩⟩⟩
 
 /-- The per-occurrence same-length maximality sentence under the **full
 historical `I_s`**. -/

@@ -314,6 +314,10 @@ instance (S : Genome α) (L : ℕ) (R : Finset (Fin S.len)) :
     Decidable (HistoricalInformationFeasibleLiteral S L R) := by
   unfold HistoricalInformationFeasibleLiteral; infer_instance
 
+instance (S : Genome α) (L : ℕ) (R : Finset (Fin S.len)) :
+    Decidable (HistoricalInformationFeasible S L R) := by
+  unfold HistoricalInformationFeasible; infer_instance
+
 /-! ## Circular-wrap regressions
 
 The blocking corrections on #247, kernel-checked: the old draft's
@@ -361,6 +365,27 @@ because `τ = 0` satisfied the truncated interval `0 ≤ τ ≤ 0`. -/
 theorem not_historicallyBridged_wrap_false :
     ¬ HistoricallyBridged genomeW 3 {wordACG} 1 ⟨0, genomeW.len_pos⟩ := by
   decide
+
+/-- The all-`A` circular genome `AAAA` of length `4`. -/
+abbrev genomeAAAA : Genome Nuc where
+  len := 4
+  len_pos := by norm_num
+  sym := ![Nuc.A, Nuc.A, Nuc.A, Nuc.A]
+
+/-- **Literal vs maximal-triple separation (non-vacuity).**  On the all-`A`
+circle `AAAA` with `L = 2` and the single sampled start `{0}`, the generic
+maximal-triple historical `I_s` holds: historical coverage holds and there is no
+maximal triple repeat (every preceding symbol is `A`, so no three-copy
+maximality condition is met).  But the **literal** §6.4 predicate fails: the
+length-`1` three-occurrence repeat `A` at starts `{0,1,2}` must be bridged, and
+no length-`2` read can bridge a length-`1` copy (`bridgesCopy_length` gives
+`e + 2 ≤ L`, i.e. `3 ≤ 2`).  This kernel-checks that the additive literal
+predicate is strictly stronger than the maximal-triple one, so the finite
+literal proofs are not vacuous. -/
+theorem literal_strictly_stronger_AAAA :
+    HistoricalInformationFeasible genomeAAAA 2 ({0} : Finset (Fin 4)) ∧
+      ¬ HistoricalInformationFeasibleLiteral genomeAAAA 2 ({0} : Finset (Fin 4)) := by
+  constructor <;> decide
 
 end Regression
 
