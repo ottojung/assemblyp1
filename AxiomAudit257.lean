@@ -1,0 +1,3 @@
+import AssemblyP1.ExactRigidityCriterion
+open AssemblyP1.ExactRigidityCriterion
+#print axioms AssemblyP1.ExactRigidityCriterion.nonrigid_iff_exists_delta

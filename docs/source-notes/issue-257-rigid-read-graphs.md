@@ -17,6 +17,12 @@ _Reproduce: `python3 scratch257/rigidity.py`, `python3 scratch257/two_cycle.py`
 `python3 scratch257/verify_counterexample.py` (the §4 counterexample).
 Self-contained, exact integer arithmetic, deterministic._
 
+_Lean: the exact criterion (Theorem 1) is kernel-checked as
+`AssemblyP1/ExactRigidityCriterion.lean` (`nonrigid_iff_exists_delta`), with
+only the standard axioms `[propext, Classical.choice, Quot.sound]`. Build with
+`lake build AssemblyP1.ExactRigidityCriterion`; audit with
+`lake env lean AxiomAudit257.lean`._
+
 ---
 
 ## 0. Answer at a glance
@@ -56,8 +62,12 @@ map `B : E → ℤ` with `B ≥ 1` on every edge, balanced at every node, and
 4. **The two-cycle certificate is NOT necessary.** There are non-rigid
    supports whose every non-rigidity witness needs **three or more** directed
    cycles; no two-cycle obstruction exists. Minimum such example on `4`
-   vertices (§4). So no "two-cycle" (or, a fortiori, "no triple repeat")
-   condition is iff. [verified computation]
+   vertices (§4). So the "two-cycle obstruction" condition is not iff.
+   This counterexample does **not** rule out conditions allowing a fixed
+   finite number `k > 2` of cycles, nor any fixed repeat bound (see §8.4 and
+   §5.1); the non-necessity of "no triple repeat" is established separately
+   by the `ATATAT` example (§5.1), not by this counterexample. [verified
+   computation]
 
 5. **Rigid despite triples.** `S = ATATAT`, `L = 3` is a single directed
    `2`-cycle with `A = (3,3)`; it is rigid even though the `(L-1)`-mers
@@ -230,7 +240,7 @@ inside the support, so `δ` cannot be a two-(simple)-cycle combination. It is,
 however, a two-**closed-walk** combination `δ = 2·χ_{0→1→2→0} - χ_{W}` for the
 length-`6` closed walk `W = 1→2→0→2→0→2→1`. [verified computation]
 
-**Consequence.** The example rules out every condition stated purely in terms of **two** cycles (and a fortiori every "no triple repeat" style repeat bound, since the witness `δ` above is supported on a single `2`-cycle plus two non-cycle edges). What it does **not** rule out is a condition allowing an arbitrary but fixed finite number `k` of cycles: whether, for every `k`, there is a non-rigid instance whose every witness needs `≥ k` cycles is **open** (no such family is known). The exact criterion of Theorem 1 is genuinely an integer feasibility problem — real and integer non-rigidity provably differ (§7 witness). [mathematical proof + verified computation; the finite-k question is open]
+**Consequence.** The example rules out every condition stated purely in terms of **two** simple directed cycles. It does **not** rule out a condition allowing an arbitrary but fixed finite number `k` of cycles, nor any fixed repeat bound: whether, for every `k`, there is a non-rigid instance whose every witness needs `≥ k` simple cycles is **open** (no such family is known), and the non-necessity of repeat bounds such as "no triple repeat" is a separate matter established by the `ATATAT` example (§5.1), not by this counterexample. The exact criterion of Theorem 1 is genuinely an integer feasibility problem — real and integer non-rigidity provably differ (§7 witness). [mathematical proof + verified computation; the finite-k question is open]
 
 ---
 
@@ -347,6 +357,7 @@ exhaustive zeros are a sanity check on the proofs, not a substitute for them.
 | claim | status |
 |---|---|
 | Theorem 1: exact rigidity criterion (no nonzero zero-sum circulation in the box) | mathematical proof |
+| Theorem 1 Lean kernel-check (`nonrigid_iff_exists_delta`, `ExactRigidityCriterion.lean`) | kernel-checked (axioms: `propext`, `Classical.choice`, `Quot.sound`) |
 | Graver primitive-trade reformulation (no Graver basis element of `L_0` in the box) | mathematical proof + verified computation |
 | Topological vs. multiplicity split (`L_0 ∩ box = {0}`) | mathematical proof |
 | Theorem 2: two-cycle non-rigidity certificate | mathematical proof |
