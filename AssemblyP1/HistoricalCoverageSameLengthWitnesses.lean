@@ -61,6 +61,18 @@ local definitions. Similarly, the local `HistoricalInformationFeasible`
 is phrased in terms of observed words, while the shared one accepts sampled
 starts, so the observed-word mapping must be supplied in the adapter.
 
+The canonical shared layer now also provides the **additive literal** predicate
+`AssemblyP1.HistoricalCovers.HistoricalInformationFeasibleLiteral`, whose triple
+clause quantifies over **all** three-occurrence repeats
+(`AssemblyP1.HistoricalCovers.IsTripleOccurrence`) rather than only the
+maximality-restricted `Genome.IsTripleRepeat`.  The endpoints
+`w1_historical_literal_information_feasible` /
+`w1_historical_literal_se62_flow_counterexample` and their `W2` analogues below
+restate the two finite counterexamples against that literal predicate, so paper
+#253 can cite the literal finite §6.4 reading instead of the maximal-triple
+generic predicate.  The old local definitions and all existing theorems are
+retained unchanged.
+
 The observed word set is derived from the **sampled read multiset** by
 `observedWords`: the distinct strands `S.window L r` over the sampled starts
 `r`.  Sampled multiplicities are deliberately not part of coverage (they are
@@ -302,6 +314,55 @@ theorem w1_historical_information_feasible :
     rw [matchStarts_eq]
     exact truth_information_feasible⟩
 
+/-- Every **literal** three-occurrence repeat of `W1` (canonical
+`AssemblyP1.HistoricalCovers.IsTripleOccurrence`, with no maximality assumed) is
+in fact a maximal triple repeat, by the per-witness certificate
+`all_source_triples_are_maximal`.  This is the finite bridge that lets the
+additive literal predicate reuse the old maximal-triple `I_s`. -/
+theorem w1_literal_triples_maximal :
+    ∀ (e : Fin 6) (a b c : Fin 6),
+      AssemblyP1.HistoricalCovers.IsTripleOccurrence truthGenome e.val a b c →
+      truthGenome.IsTripleRepeat e.val a b c := by
+  intro e a b c hocc
+  obtain ⟨he1, -, hab, hac, hbc, hag1, hag2, hag3⟩ := hocc
+  exact all_source_triples_are_maximal e a b c ⟨he1, hab, hac, hbc, hag1, hag2, hag3⟩
+
+/-- **The canonical literal §6.4 historical `I_s` holds for `W1`.**  Stated with
+the shared additive predicate
+`AssemblyP1.HistoricalCovers.HistoricalInformationFeasibleLiteral`, whose triple
+clause quantifies over **all** three-occurrence repeats.  Discharged by the
+canonical transfer from the saturated `MatchStarts`, the per-witness literal
+maximality lemma, and the reused full `InformationFeasible` certificate. -/
+theorem w1_historical_literal_information_feasible :
+    AssemblyP1.HistoricalCovers.HistoricalInformationFeasibleLiteral
+      truthGenome 3 readStarts.toFinset := by
+  refine AssemblyP1.HistoricalCovers.historicalInformationFeasibleLiteral_of_matchStarts_eq_triples_maximal
+    ?_ ?_ w1_literal_triples_maximal ?_
+  · decide
+  · decide
+  · rw [← starts_eq_readStarts]
+    exact truth_information_feasible
+
+/-- **Kernel-checked finite counterexample for `W1` under the literal §6.4
+predicate `HistoricalInformationFeasibleLiteral`** (all three-occurrence repeats
+bridged): the competitor is a single spelled molecule of the same length as the
+truth, both are genuine §6.2 spelled candidates (certificates reused unchanged),
+and the competitor strictly beats the truth under both the literal §6.1 binomial
+objective (ratio `5`) and the exact same-length multinomial objective (ratio
+`3`).  This is the endpoint paper #253 should cite for the literal reading. -/
+theorem w1_historical_literal_se62_flow_counterexample :
+    AssemblyP1.HistoricalCovers.HistoricalInformationFeasibleLiteral
+        truthGenome 3 readStarts.toFinset ∧
+      (genomeLength truth = genomeLength competitor) ∧
+      (SpelledFeasible62 Base Strand3 toList3 rep3 rc3 readLen oMin readVerts
+          spellTruth truthCircuitFlow noTerm dS' ∧
+        (SpelledFeasible62 Base Strand3 toList3 rep3 rc3 readLen oMin readVerts
+            spellCompetitor competitorCircuitFlow noTerm dD' ∧
+          (lik obs dS < lik obs dD ∧ exactLik dD obs / exactLik dS obs = 3))) :=
+  ⟨w1_historical_literal_information_feasible, ⟨same_candidate_length,
+    ⟨truth_spelled_feasible62, ⟨competitor_spelled_feasible62,
+      ⟨competitor_strictly_better, exactLik_over_truth⟩⟩⟩⟩⟩
+
 /-- The historical same-length maximality sentence: **full historical `I_s`**
 (historical coverage *and* historical bridging) + same candidate length +
 genuine §6.2 spelled feasibility of both candidates ⇒ the truth's likelihood is
@@ -437,6 +498,54 @@ theorem w2_historical_information_feasible :
   ⟨historicalCovers, by
     rw [matchStarts_eq]
     exact truth_information_feasible⟩
+
+/-- Every **literal** three-occurrence repeat of `W2` (canonical
+`AssemblyP1.HistoricalCovers.IsTripleOccurrence`, no maximality assumed) is in
+fact a maximal triple repeat, by the per-witness certificate
+`all_source_triples_are_maximal`. -/
+theorem w2_literal_triples_maximal :
+    ∀ (e : Fin 8) (a b c : Fin 8),
+      AssemblyP1.HistoricalCovers.IsTripleOccurrence truthGenome e.val a b c →
+      truthGenome.IsTripleRepeat e.val a b c := by
+  intro e a b c hocc
+  obtain ⟨he1, -, hab, hac, hbc, hag1, hag2, hag3⟩ := hocc
+  exact all_source_triples_are_maximal e a b c ⟨he1, hab, hac, hbc, hag1, hag2, hag3⟩
+
+/-- **The canonical literal §6.4 historical `I_s` holds for `W2`.**  Stated with
+the shared additive predicate
+`AssemblyP1.HistoricalCovers.HistoricalInformationFeasibleLiteral`, whose triple
+clause quantifies over **all** three-occurrence repeats. -/
+theorem w2_historical_literal_information_feasible :
+    AssemblyP1.HistoricalCovers.HistoricalInformationFeasibleLiteral
+      truthGenome 3 readStarts.toFinset := by
+  refine AssemblyP1.HistoricalCovers.historicalInformationFeasibleLiteral_of_matchStarts_eq_triples_maximal
+    ?_ ?_ w2_literal_triples_maximal ?_
+  · decide
+  · decide
+  · rw [← starts_eq_readStarts]
+    exact truth_information_feasible
+
+/-- **Kernel-checked finite counterexample for `W2` under the literal §6.4
+predicate `HistoricalInformationFeasibleLiteral`** (all three-occurrence repeats
+bridged), with both candidates per-occurrence feasible and genuine §6.2 spelled
+candidates, and the competitor strictly beating the truth under both the literal
+§6.1 binomial objective (ratio `9/5`) and the exact same-length multinomial
+objective (ratio `3/2`).  This is the endpoint paper #253 should cite for the
+literal reading. -/
+theorem w2_historical_literal_se62_flow_counterexample :
+    AssemblyP1.HistoricalCovers.HistoricalInformationFeasibleLiteral
+        truthGenome 3 readStarts.toFinset ∧
+      (genomeLength truth = genomeLength competitor) ∧
+      (PerOccurrenceFeasible dS obs ∧ PerOccurrenceFeasible dD obs) ∧
+      SpelledFeasible62 Base W3 toList3 rep3 rc3 readLen oMin readVerts
+        spellTruth truthCircuitFlow noTerm dS' ∧
+      (SpelledFeasible62 Base W3 toList3 rep3 rc3 readLen oMin readVerts
+          spellCompetitor competitorCircuitFlow noTerm dD' ∧
+        (lik obs dS < lik obs dD ∧ exactLik dD obs / exactLik dS obs = 3 / 2)) :=
+  ⟨w2_historical_literal_information_feasible, ⟨same_candidate_length,
+    ⟨truth_peroccurrence, competitor_peroccurrence⟩, truth_spelled_feasible62,
+    ⟨competitor_spelled_feasible62, ⟨competitor_strictly_better,
+      exactLik_over_truth⟩⟩⟩⟩
 
 /-- The per-occurrence same-length maximality sentence under the **full
 historical `I_s`**. -/

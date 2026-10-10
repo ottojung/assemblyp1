@@ -66,10 +66,23 @@ module).
 * `HistoricalInformationFeasible S L R` — full historical `I_s`: historical
   coverage plus the triple/interleaved bridging clauses of the old
   `InformationFeasible`, each quantified over the saturated `MatchStarts` set
-  rather than the sampled placements.
+  rather than the sampled placements.  Its triple clause is guarded by the
+  maximality-restricted `Genome.IsTripleRepeat`.
+* `IsTripleOccurrence S e a b c` — the **literal** §6.4 three-occurrence
+  repeat: three pairwise distinct agreeing windows, with no maximality
+  requirement.  `Genome.IsTripleRepeat` implies it; the converse fails.
+* `HistoricalInformationFeasibleLiteral S L R` — additive literal historical
+  `I_s`: identical to `HistoricalInformationFeasible` except the triple clause
+  quantifies over **all** `IsTripleOccurrence` triples.  It implies
+  `HistoricalInformationFeasible` (`historicalInformationFeasible_of_literal`)
+  and is the predicate the finite §6.2 witnesses are restated against.
 * `historicalInformationFeasible_of_matchStarts_eq` — transfer: when
   `MatchStarts` equals the sampled start set, the old placement-based
   `InformationFeasible` implies the historical one.
+* `historicalInformationFeasibleLiteral_of_matchStarts_eq_triples_maximal` —
+  transfer to the literal predicate: saturated `MatchStarts` plus a per-witness
+  "every literal triple is maximal" fact plus the old `InformationFeasible`
+  gives the literal historical `I_s`.
 -/
 
 set_option linter.dupNamespace false
@@ -155,13 +168,42 @@ def HistoricallyBridged (S : Genome α) (L : ℕ) (observedWords : Finset (Fin L
     (e : ℕ) (t : Fin S.len) : Prop :=
   BridgesCopy S L (MatchStarts S L observedWords) e t
 
+/-- The **literal three-occurrence repeat** of Shomorony et al. (2016)
+supplement §6.4: three pairwise distinct starts at which the length-`e` windows
+agree, with **no** maximality requirement.  This is the source's "any substring
+occurring at three distinct positions" reading.  It is the literal weakening of
+`SourceFaithfulIs.Genome.IsTripleRepeat`, which additionally demands that the
+preceding symbols are not all equal and the following symbols are not all equal.
+
+The outer quantifier `e : Fin S.len` of every predicate below already bounds the
+repeat length by `S.len`; the explicit `e < S.len` conjunct keeps this predicate
+a faithful stand-alone rendering of the project's repeat notion. -/
+def IsTripleOccurrence (S : Genome α) (e : ℕ) (a b c : Fin S.len) : Prop :=
+  1 ≤ e ∧ e < S.len ∧
+    a ≠ b ∧ a ≠ c ∧ b ≠ c ∧
+    S.Agree e a b ∧ S.Agree e a c ∧ S.Agree e b c
+
+/-- A maximal triple repeat is in particular a literal three-occurrence repeat:
+`IsTripleOccurrence` is exactly `Genome.IsTripleRepeat` with the two maximality
+conjuncts dropped.  This is the only direction that holds in general, and it is
+why the literal clause below is *stronger* than the maximal-triple clause. -/
+theorem IsTripleOccurrence.of_isTripleRepeat {S : Genome α} {e : ℕ} {a b c : Fin S.len}
+    (h : S.IsTripleRepeat e a b c) : IsTripleOccurrence S e a b c := by
+  obtain ⟨h1, h2, h3, h4, h5, h6, h7, h8, -, -⟩ := h
+  exact ⟨h1, h2, h3, h4, h5, h6, h7, h8⟩
+
 /-- **Historical `I_s`**: §6.4 Definition 1 historical coverage of the
 observed read types derived from the sampled start set, plus the triple and
 interleaved bridging clauses of the old `InformationFeasible` — every triple
 repeat all-bridged, every interleaved pair of repeats bridged — with **each
 bridge quantified over the saturated `MatchStarts` set** rather than the
 sampled placements.  This is the full historical `I_s` of §6.4, not a
-hybrid of historical coverage with placement-based bridging. -/
+hybrid of historical coverage with placement-based bridging.
+
+The triple clause is guarded by the project's maximality-restricted
+`Genome.IsTripleRepeat`; the literal source reading that quantifies over **all**
+three-occurrence repeats is the additive `HistoricalInformationFeasibleLiteral`
+below. -/
 def HistoricalInformationFeasible (S : Genome α) (L : ℕ) (R : Finset (Fin S.len)) :
     Prop :=
   HistoricalCovers S L (observedTypes_ofFinset S L R) ∧
@@ -193,6 +235,63 @@ theorem historicalInformationFeasible_of_matchStarts_eq {S : Genome α} {L : ℕ
     rw [hms]
     exact hIs.2.2 e₁ e₂ a b c d h₁ h₂ h₃
 
+/-- **Historical `I_s` with the literal §6.4 triple quantifier.**  Exactly
+`HistoricalInformationFeasible`, except the triple-repeat clause quantifies over
+**all** three-occurrence repeats (`IsTripleOccurrence`) instead of only the
+maximality-restricted `Genome.IsTripleRepeat`.  The coverage clause and the
+interleaved-pair clause are unchanged; §6.4's interleaved pairs are maximal
+repeats, so that clause keeps using `Genome.IsRepeat`.
+
+This predicate is **additive**: it neither replaces nor alters
+`HistoricalInformationFeasible`, `Genome.IsTripleRepeat`, or any existing
+max-repeat theorem.  Because `IsTripleRepeat` implies `IsTripleOccurrence`, the
+literal clause is strictly stronger, so the literal predicate implies the
+maximal-triple predicate (`historicalInformationFeasible_of_literal`); the
+converse fails in general and is not asserted. -/
+def HistoricalInformationFeasibleLiteral (S : Genome α) (L : ℕ) (R : Finset (Fin S.len)) :
+    Prop :=
+  HistoricalCovers S L (observedTypes_ofFinset S L R) ∧
+    (∀ (e : Fin S.len) (a b c : Fin S.len), IsTripleOccurrence S e.val a b c →
+      IsTripleRepeatAllBridged S L (MatchStarts S L (observedTypes_ofFinset S L R))
+        e.val a b c) ∧
+    (∀ (e₁ e₂ : Fin S.len) (a b c d : Fin S.len),
+      S.IsRepeat e₁.val a b → S.IsRepeat e₂.val c d → Interleaved S a b c d →
+        IsInterleavedPairBridged S L (MatchStarts S L (observedTypes_ofFinset S L R))
+          e₁.val e₂.val a b c d)
+
+/-- **The literal predicate implies the maximal-triple predicate.**  Restricting
+the literal triple clause to maximal triple repeats — which are three-occurrence
+repeats by `IsTripleOccurrence.of_isTripleRepeat` — recovers exactly
+`HistoricalInformationFeasible`.  This is the precise sense in which the
+additive literal predicate is the stronger, source-literal reading. -/
+theorem historicalInformationFeasible_of_literal {S : Genome α} {L : ℕ}
+    {R : Finset (Fin S.len)} (h : HistoricalInformationFeasibleLiteral S L R) :
+    HistoricalInformationFeasible S L R :=
+  ⟨h.1, fun e a b c ht => h.2.1 e a b c (IsTripleOccurrence.of_isTripleRepeat ht), h.2.2⟩
+
+/-- **Transfer to the literal predicate.**  When the saturated `MatchStarts` set
+equals the sampled start set, historical coverage holds, every literal
+three-occurrence repeat of the witness is in fact a maximal triple repeat, and
+the old placement-based `InformationFeasible` holds, then the full literal
+historical `I_s` holds.  The bridging clauses transfer because the bridge
+positions are the same set; the triple clause uses the per-witness maximality
+fact to discharge the literal quantifier. -/
+theorem historicalInformationFeasibleLiteral_of_matchStarts_eq_triples_maximal
+    {S : Genome α} {L : ℕ} {R : Finset (Fin S.len)}
+    (hms : MatchStarts S L (observedTypes_ofFinset S L R) = R)
+    (hcov : HistoricalCovers S L (observedTypes_ofFinset S L R))
+    (hmax : ∀ (e : Fin S.len) (a b c : Fin S.len),
+      IsTripleOccurrence S e.val a b c → S.IsTripleRepeat e.val a b c)
+    (hIs : InformationFeasible S L R) :
+    HistoricalInformationFeasibleLiteral S L R := by
+  refine ⟨hcov, ?_, ?_⟩
+  · intro e a b c hocc
+    rw [hms]
+    exact hIs.2.1 e a b c (hmax e a b c hocc)
+  · intro e₁ e₂ a b c d h₁ h₂ h₃
+    rw [hms]
+    exact hIs.2.2 e₁ e₂ a b c d h₁ h₂ h₃
+
 /-! ## Decidability
 
 The historical layer is finite for concrete `S` and `observedWords`, so
@@ -205,6 +304,15 @@ instance (S : Genome α) (L : ℕ) (observedWords : Finset (Fin L → α)) :
 instance (S : Genome α) (L : ℕ) (observedWords : Finset (Fin L → α)) (e : ℕ)
     (t : Fin S.len) : Decidable (HistoricallyBridged S L observedWords e t) := by
   unfold HistoricallyBridged; infer_instance
+
+instance (S : Genome α) (e : ℕ) (a b c : Fin S.len) :
+    Decidable (IsTripleOccurrence S e a b c) := by
+  unfold IsTripleOccurrence Genome.Agree Genome.window Genome.cycl
+  infer_instance
+
+instance (S : Genome α) (L : ℕ) (R : Finset (Fin S.len)) :
+    Decidable (HistoricalInformationFeasibleLiteral S L R) := by
+  unfold HistoricalInformationFeasibleLiteral; infer_instance
 
 /-! ## Circular-wrap regressions
 
