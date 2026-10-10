@@ -31,6 +31,7 @@ import AssemblyP1.FixedLengthExactCounterexample
 import AssemblyP1.FixedLengthBinomialCounterexample
 import AssemblyP1.Section62BridgingCounterexample
 import AssemblyP1.SameLengthSection62Counterexample
+import AssemblyP1.SameLengthSection62Parametric
 import AssemblyP1.PerOccurrenceSameLengthCounterexample
 import AssemblyP1.HistoricalCoverageSameLengthWitnesses
 import AssemblyP1.Section62BidirectedFlow
@@ -365,6 +366,11 @@ than assumed. -/
 #print axioms AssemblyP1.FixedLengthExactCounterexample.truth_information_feasible
 #print axioms AssemblyP1.SameLengthExactMLCounterexample.truth_information_feasible
 #print axioms AssemblyP1.SameLengthSection62Counterexample.truth_information_feasible
+#print axioms AssemblyP1.SameLengthSection62Parametric.exactLik_ratio
+#print axioms AssemblyP1.SameLengthSection62Parametric.likN_ratio
+#print axioms AssemblyP1.SameLengthSection62Parametric.truth_historical_literal_information_feasible_k
+#print axioms AssemblyP1.SameLengthSection62Parametric.parametric_se62_counterexample
+#print axioms AssemblyP1.SameLengthSection62Parametric.parametric_se62_historical_literal_counterexample
 #print axioms AssemblyP1.Section62BridgingCounterexample.truth_information_feasible
 
 /-! ## Axiom audit for the `#89` fibre/period lemma
