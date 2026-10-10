@@ -63,7 +63,7 @@ module).
   read-string coverage.
 * `HistoricallyBridged S L observedWords e t` — §6.4 Definition 2, historical
   read-string bridging of the length-`e` copy at `t`.
-* `HistoricalInformationFeasible S L R` — full historical `I_s`: historical
+* `HistoricalInformationFeasible S L R` — maximal-triple historical PROJECT VARIANT (not source-literal) `I_s`: historical
   coverage plus the triple/interleaved bridging clauses of the old
   `InformationFeasible`, each quantified over the saturated `MatchStarts` set
   rather than the sampled placements.  Its triple clause is guarded by the
@@ -197,7 +197,7 @@ observed read types derived from the sampled start set, plus the triple and
 interleaved bridging clauses of the old `InformationFeasible` — every triple
 repeat all-bridged, every interleaved pair of repeats bridged — with **each
 bridge quantified over the saturated `MatchStarts` set** rather than the
-sampled placements.  This is the full historical `I_s` of §6.4, not a
+sampled placements.  This is a maximal-triple project variant of the historical `I_s` of §6.4, not a
 hybrid of historical coverage with placement-based bridging.
 
 The triple clause is guarded by the project's maximality-restricted
@@ -218,7 +218,7 @@ def HistoricalInformationFeasible (S : Genome α) (L : ℕ) (R : Finset (Fin S.l
 /-- **Transfer from the old placement-based `I_s`.**  When the saturated
 `MatchStarts` set equals the sampled start set — in particular when every
 observed read string matches only at its sampled start — the old
-`InformationFeasible` implies the full historical `I_s`: the coverage clause
+`InformationFeasible` implies the maximal-triple project variant of the historical `I_s`: the coverage clause
 is the historical one by hypothesis, and the bridging clauses transfer
 because the bridge positions are the same set. -/
 theorem historicalInformationFeasible_of_matchStarts_eq {S : Genome α} {L : ℕ}
