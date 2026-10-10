@@ -10,8 +10,12 @@ J. Comput. Biol. 16(8) (2009) 1101–1116 (PMC3154397), §3.1–§3.4, §5.2, §
 as quoted in `docs/section62-mb09-bidirected-graph-audit.md` and read directly
 from the PMC full text on 2026-10-10.
 
-The §6.2 feasibility object (Variant F of `docs/ml-formalization-contract.md`) is
-encoded in `AssemblyP1/Section62BidirectedFlow.lean`: vertices are observed read
+A project implementation of parts of the §6.2 feasibility object (Variant F
+of `docs/ml-formalization-contract.md`) is provided in
+`AssemblyP1/Section62BidirectedFlow.lean`. **It is not yet an established
+source-faithful equivalence**, owing to the reduction, throughput, terminal and
+spelling-flow adapter gaps detailed below. In the intended historical model,
+vertices are observed read
 molecule classes (§3.1, §4.1), edges are all proper bidirected overlaps of length
 `≥ o_min` (§3.3, §6.2), transitive edge reduction removes overlaps spelled by two
 shorter overlaps (§6.2), each vertex has lower bound 1 (§6.2), edge lower bounds
@@ -83,33 +87,72 @@ length `N` is therefore a variable and the comparison acquires a length factor.
   binomCore A x 3`. So coordinatewise dominance is **not sufficient** for the
   §6.1 binomial, and `flow_dominance_criterion` must not be cited as its criterion.
 
-### Class 2′: The genuine §6.1 separable binomial (OPEN)
+### Class 2′: Genuine §6.1 product-binomial likelihood (count-vector theorem derived; flow-level OPEN)
 
-- **Candidates**: §6.2 feasible flows with throughput `B`, external `N = G`.
-- **Truth**: admitted.
-- **Likelihood**: §6.1 separable binomial
-  `∏ᵢ C(n, xᵢ) (Bᵢ/N)^(xᵢ) (1 − Bᵢ/N)^(n−xᵢ)`.
-- **Length universe**: fixed `N = G`.
-- **Maximality condition**: **OPEN.** Coordinatewise dominance is necessary
-  (concentrated samples) but not sufficient (`binomial_not_coordinatewise`). A
-  necessary-and-sufficient condition at the count-vector layer is the
-  homogeneous linear-log condition derived in the note below, but its
-  specialization to the §6.2 feasible flow set (including vertex lower bound `1`
-  and the non-spelled-flow phenomenon) is not established here.
-- **Partial implication (count-vector layer).** Taking logarithms of the
-  candidate/truth binomial ratio gives, for `uᵢ = log(Bᵢ/Aᵢ) ≤ 0` and
-  `vᵢ = log((N−Bᵢ)/(N−Aᵢ)) ≥ 0`, the condition
-  `n·∑ᵢ vᵢ + ∑ᵢ xᵢ (uᵢ − vᵢ) ≤ 0` for all supported `x` with `∑xᵢ = n`; by
-  homogeneity the extremal samples `x = eᵢ` suffice, so the condition is
-  `∀ i ∈ supp A : uᵢ + ∑_{j≠i} vⱼ ≤ 0`. This is *project-derived*, not a source
-  fact, and is not claimed as the §6.2 flow-level criterion.
-- **Flow-level refutation of maximality in a concrete instance**: the `AAATT`
-  instance at `o_min = 1` has non-spelled flow maximizers that beat the truth
-  (ratio `256/81`); see Class 4 and
-  `AssemblyP1.Section62NonSpelledFlow` (`nonspelled_se62_flow_domain_countermodel`,
-  `half_integral_strictly_better`), independently recomputed by
-  `scripts/verify_issue261_general_bidirected_flow_ml.py` and
-  `scripts/verify_se62_nonspelled_flow_domain.py`.
+- **Source model**: The §6.1 approximation is the product of binomials over all
+  read-molecule classes (including classes with observed count zero). Its
+  *external* denominator `N=G` is fixed from the true genome. This does
+  **not** impose candidate genome length `G`, nor does it bound an otherwise
+  unbounded flow's throughput by itself.
+- **Probability domain**: for each candidate throughput `d_j`, require
+  `0 ≤ d_j ≤ N` before assigning a binomial probability. §6.2 graph edge
+  capacities are infinite; the reconciliation of that graph domain with the
+  binomial probability domain (restriction or extended cost) remains **OPEN**.
+- **Exact factorization** (mathematical identity; Lean theorem **OPEN**):
+  for the full class universe `T`, let `n=∑_{j∈T}x_j` and
+  `K(d;x)=∏_{j∈T} d_j^{x_j}(N-d_j)^{n-x_j}`.
+  For each `i∈T`, define
+  `q_i(d)=d_i·∏_{j∈T,j≠i}(N-d_j)`.
+  Then **`K(d;x)=∏_{i∈T}q_i(d)^{x_i}`** exactly, including
+  integer endpoints with `0^0=1`. The omitted binomial coefficients and
+  the common `N` powers do not depend on `d`.
+- **Exactly fixed read count `n), observed support fixed**:
+  take the set `I={i:x_i>0}` to be the *same* set of observed read types
+  for all samples compared, put `m=|I|` and assume `n≥m≥1`.
+  A supported observation has `x_i≥1` for each `i∈I`,
+  `x_j=0` outside `I`, and total `n`.
+  Let `P_A=∏_{i∈I}q_i(A)`, `P_B=∏_{i∈I}q_i(B)` and `t=n-m`.
+  If the true spectrum has `q_i(A)>0` on `I`, **B never strictly beats A
+  for any such observation iff**
+  `∀i∈I: P_B·q_i(B)^t ≤ P_A·q_i(A)^t`.
+  Proof: distribute one count to every `i∈I`, then concentrate the remaining
+  `t` observations at the type with greatest `q_i(B)/q_i(A)`.
+  If any candidate `q_i(B)=0`, its likelihood is zero for every
+  positive-full-support observation, and these inequalities still hold.
+  This is an exact `m`-check equivalence for a **fixed candidate B**;
+  quantifying over a source-faithful feasible-flow universe is a further step.
+- **Uniformly over every `n≥m)**: for a fixed candidate B, non-defeat is
+  equivalent to `P_B=0` **or**
+  `∀i∈I: q_i(B)≤q_i(A)`. Unlike the interior-only version,
+  this correctly handles zero-likelihood candidate boundaries.
+- **Neither direction of coordinatewise dominance on the original `d_i`
+  is valid as a general binomial criterion**:
+  `binomial_not_coordinatewise` shows it is **not sufficient**
+  (`A=(1,2)`, `B=(1,1)`, `N=3`, `x=(2,1)`, core 8 versus 4).
+  It is **not necessary** even for genuine circular spellings of different
+  lengths: `S=ACA` has length 3 and molecule counts `A=(1,1,1)`
+  on `{AA,AC,CA}` at read length 2; `D=ACAACA` has
+  `B=(2,2,2)`. Under the fixed external `N=3`, the candidate/truth
+  product-binomial ratio is `2^(−n)<1` for every nonempty observation
+  on those classes, although every candidate throughput is greater.
+  This is a **pairwise** counterexample, not a theorem that S globally
+  maximizes likelihood over all admissible flows. A source-model Lean
+  adapter for this example remains open.
+- **Flow-level structural characterization (program, not yet a proof)**:
+  For the *actual* source-faithful finite integer-flow fiber, the fixed-n
+  criterion reduces sample-uniform ML to the `m` extreme observations.
+  On a correctly bounded split-vertex flow representation, the negative
+  log-binomial cost for each extreme is separable convex. Standard Graver
+  optimality theory would then give a finite structural certificate via
+  absence of a feasible improving Graver augmentation. The **bidirected
+  flow-to-matrix**, transitive reduction, terminal treatment, probability
+  boundaries and valid throughput adapter are **not formalized here**.
+  Pure likelihood maximization must also be distinguished from the
+  terminal-penalized algorithm's optimization problem.
+- **Counterexample already formalized**: the `AAATT` instance at
+  `o_min=1` has nonspelled optimizing flows that beat truth by `256/81`
+  under the project's existing flow predicate; see Class 4. Its fidelity
+  to every detail of the original reduced graph remains to be audited.
 
 ### Class 3: Integer flows vs half-integral relaxation
 
@@ -157,7 +200,7 @@ length `N` is therefore a variable and the comparison acquires a length factor.
 |---|---|
 | Variable-length exact-multinomial criterion (§6.1 exact display) | **RESOLVED** (`varLengthCriterion`), project-defined objective |
 | Fixed-external-`N` multinomial-product criterion | **RESOLVED** (`flow_dominance_criterion`), correctly labelled |
-| Genuine §6.1 separable-binomial count-vector criterion | **OPEN** (`binomial_not_coordinatewise` rules out coordinatewise; linear-log form derived, not proved at flow level) |
+| Genuine §6.1 separable-binomial count-vector criterion | **Mathematically derived**: exact q-factorization; fixed-n extreme-sample iff and boundary-complete all-n iff. Lean general theorem **OPEN** |
 | §6.1 binomial over the §6.2 feasible flow set | **OPEN** |
 | Half-integral relaxation gap | **RESOLVED** (flow level: `Section62NonSpelledFlow`; arithmetic: `half_integral_gap`) |
 | Rescaling ties at variable length | **RESOLVED** (`rescaling_tie`) |
@@ -165,6 +208,56 @@ length `N` is therefore a variable and the comparison acquires a length factor.
 | Transitive reduction interaction with ML | **OPEN** |
 | Orientation/RC class interaction | **OPEN** |
 | Sample realizability at arbitrary overlap | **OPEN** |
+
+## Source-faithfulness and remaining proof blockers (explicit)
+
+The existing abstract count-vector theorems are useful and kernel-checked, but
+**they do not, by themselves, solve the full MB09 §6.2 flow classification**.
+
+1. **Transitive reduction.** `isReducibleB` requires both two-leg proper
+   overlap lengths to be smaller than the direct overlap `l<L`, while imposing
+   `l1+l2-L=l`; these inequalities cannot hold simultaneously. Hence the
+   literal predicate cannot delete any proper overlap. The alternative
+   `isReducibleLongerB` only checks that each leg is longer; it does *not*
+   require equal spelled sequence, signed-endpoint compatibility, or even
+   that both legs survive the overlap threshold. With `L=4`,
+   `AAAC→ACCA→CAAA` using overlaps 2 and 2 spells `AAACCAAA`,
+   whereas direct `AAAC→CAAA` at overlap 1 spells `AAACAAA`.
+   Blindly reducing the latter edge changes the language of spelled molecules.
+   Myers (2005) and the MB09 §6.2 citation require spelling-preserving
+   transitive reduction, not either current approximation.
+2. **Flow attached to spelling.** The project predicate `SpelledFeasible62`
+   checks a spelling alongside a feasible flow, but does not prove equality
+   `f = Spelling.flow sp` or `d = Spelling.visits sp`; the flow admissibility
+   conjunct is checked against the unreduced edge graph even when the spelling
+   checks a reduced graph. Do not infer that `d` is the spectrum of `sp`
+   without the missing alignment theorem.
+3. **Signed bidirected throughput.** The current `throughput` counts
+   departures using the stored `sx` end of edges. A general bidirected
+   traversal may use the reversed orientation; show its equality to the
+   split-vertex visit count under all allowed traversals, or explicitly
+   restrict the candidate domain.
+4. **Terminal modeling.** The zero-terminal `Feasible62` circuit subdomain
+   is not all augmented flows: MB09 uses expensive supersource/sink arcs
+   rather than forbidding them. The *pure binomial ML* objective and the
+   *binomial-plus-terminal-penalty* solver objective are different.
+5. **Probability feasibility.** Original §6.2 edge upper bounds are
+   infinite, but the §6.1 binomial is probabilistic only when `0≤d_i≤N`.
+   An explicit restriction or extended-cost convention is required.
+6. **Fixed observed support vs missing types.** The fixed-n extremal theorem
+   varies read multiplicities while holding the set `I` of *observed types*
+   and hence the constructed overlap graph fixed. Omitting a true-positive
+   molecule changes that graph and may remove the truth's flow. It needs
+   separate classification.
+7. **Integer optimization adapter.** A useful future endpoint is a
+   precise integer matrix for the faithfully reduced signed bidirected
+   graph, explicit throughput and terminal variables, then a verified
+   Graver augmentation optimality theorem for each fixed-support extreme
+   sample. Any constraints requiring candidates to be spelled by a
+   *single primitive genome* must be treated separately from all flows.
+
+Source reading: [Medvedev–Brudno 2009, §§6.1–6.2](https://pmc.ncbi.nlm.nih.gov/articles/PMC3154397/);
+[Myers 2005 string-graph reduction](https://pubmed.ncbi.nlm.nih.gov/16204131/).
 
 ## Artifacts
 
