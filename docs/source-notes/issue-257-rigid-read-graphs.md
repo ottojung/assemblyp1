@@ -100,8 +100,10 @@ Two facts about the support graph of a circular word (proved in
 abstractly; they are consequences of the circular-word structure. Every edge
 of a positive circulation's support lies on a directed cycle (flow
 decomposition), so the support has no bridges and every component satisfies
-`|E_i| ≥ |V_i|`; in particular `r ≥ c - 1 ≥ 0`, and `r = 0` iff `D` is a
-single directed cycle (the `ATATAT` case), which is automatically rigid.
+`|E_i| ≥ |V_i|`; in particular `r ≥ c - 1 ≥ 0`, and `r = 0` iff every weak
+component of `D` is a single directed cycle — for the strongly connected
+support graphs of circular truths (§1), `r = 0` iff `D` is a single directed
+cycle (the `ATATAT` case), which is automatically rigid.
 
 ---
 
@@ -138,9 +140,26 @@ flow of the same total. [mathematical proof]
 `L_0 ∩ box` where `L_0 = ker[M; 1ᵀ] ∩ ℤ^E` (topology only) and
 `box = {δ : δ ≥ -s}` (multiplicity only). Rigidity is the statement
 `L_0 ∩ box = {0}`. The same graph (same `L_0`) is rigid or non-rigid
-depending on `s`; e.g. two disjoint `3`-cycles are rigid at total `6`
-(`s = 0` everywhere) and non-rigid at total `9` (`s = (1,1,1,0,0,0)`).
+depending on `s`; e.g. the figure-eight `0→1→0`, `0→2→0` is rigid at
+`A = (1,1,1,1)` (`s = 0` everywhere) and non-rigid at `A = (2,2,1,1)`
+(`s = (1,1,0,0)`; witness `δ = (1,1,-1,-1) = χ_{C1} - χ_{C2}`).
 [mathematical proof + verified computation]
+
+**Graver primitive-trade reformulation (conformal certificate form).** A
+nonzero `δ ∈ L_0 ∩ box` exists iff a **primitive** one does: if `δ = k·δ'`
+with `δ' ∈ L_0` and `k ≥ 1`, then `δ' = δ/k ≥ -s/k ≥ -s`, so `δ' ∈ box`.
+For `L_0 = ker[M; 1ᵀ] ∩ ℤ^E`, primitive ⟺ the coordinates of `δ` have
+gcd `1` (if `g = gcd(δ) ≥ 2` then `δ/g ∈ L_0`; conversely `k | δ` for all
+`k | gcd`). The primitive elements of a lattice are exactly its **Graver
+basis**, which is finite for fixed rank. Hence:
+
+> **`A` is rigid iff no Graver basis element of `L_0 = ker[M; 1ᵀ] ∩ ℤ^E` lies
+> in the box `∏_e [1 - A(e), ∞)`.**
+
+This is the exact criterion in primitive-trade form: a finite (for fixed
+`|E| - |V| + c - 1`) certificate set, conformal to the algebraic starting
+point. [mathematical proof; verified computation: all 389 non-rigid `n = 3`
+instances admit a primitive (gcd-1) element of `L_0` inside the box, 0 failures]
 
 ---
 
@@ -174,9 +193,15 @@ _Proof of the simplification._ With `a = 1`, `w1 = |C2|/g > 0`,
 it is `-|C1|/g ≥ -s(e)`, i.e. `s(e) ≥ |C1|/g`. The `a = -1` case is the
 symmetric statement with `C1, C2` swapped. ∎
 
-**Rank-1 special case.** If `L_0` has rank `1` (e.g. a figure-eight: two
-cycles sharing one vertex), `L_0 = ℤ·g` for a primitive `g`, and non-rigidity
-is exactly `∃ e : s(e) ≥ |g(e)|` — a single-edge check. [mathematical proof]
+**Rank-1 special case.** If `L_0` has rank `1` (e.g. a figure-eight: two cycles sharing one vertex), `L_0 = ℤ·g` for a primitive `g`, and `δ = k·g` fits the box iff `k·g(e) ≥ -s(e)` for all `e`. For `k > 0` the edges with `g(e) ≥ 0` are automatic and the edges with `g(e) < 0` need `k ≤ s(e)/|g(e)|`; so non-rigidity is exactly
+
+```
+min_{e : g(e) < 0} floor(s(e)/|g(e)|) ≥ 1   OR   min_{e : g(e) > 0} floor(s(e)/g(e)) ≥ 1
+```
+
+(equivalently, after replacing `g` by `-g` if needed: `s(e) ≥ |g(e)|` for **every** edge of one sign class — an all-edges check on one side of `g`, not a single-edge check). [mathematical proof; verified computation: exact on all 93 rank-1 instances of the `n = 3` scope]
+
+**Failed simpler hypothesis (rank-1).** "`∃ e : s(e) ≥ |g(e)|`" (a single-edge check) is **not even sufficient**: the figure-eight `0→1→0`, `0→2→0` with `A = (2,1,1,1)` is rigid (verified: `L_0 = ℤ·(1,1,-1,-1)`; `k = 1` needs `s ≥ 1` on both `C_2` edges, `k = -1` needs `s ≥ 1` on both `C_1` edges), yet `s(0→1) = 1 ≥ |g(0→1)|`. [verified computation]
 
 ---
 
@@ -205,10 +230,7 @@ inside the support, so `δ` cannot be a two-(simple)-cycle combination. It is,
 however, a two-**closed-walk** combination `δ = 2·χ_{0→1→2→0} - χ_{W}` for the
 length-`6` closed walk `W = 1→2→0→2→0→2→1`. [verified computation]
 
-**Consequence.** No condition stated purely in terms of "two cycles" (or any
-fixed finite number of cycles, or any fixed repeat bound) is necessary and
-sufficient. The exact criterion of Theorem 1 is genuinely an integer
-feasibility problem. [mathematical proof + verified computation]
+**Consequence.** The example rules out every condition stated purely in terms of **two** cycles (and a fortiori every "no triple repeat" style repeat bound, since the witness `δ` above is supported on a single `2`-cycle plus two non-cycle edges). What it does **not** rule out is a condition allowing an arbitrary but fixed finite number `k` of cycles: whether, for every `k`, there is a non-rigid instance whose every witness needs `≥ k` cycles is **open** (no such family is known). The exact criterion of Theorem 1 is genuinely an integer feasibility problem — real and integer non-rigidity provably differ (§7 witness). [mathematical proof + verified computation; the finite-k question is open]
 
 ---
 
@@ -227,9 +249,18 @@ feasibility problem. [mathematical proof + verified computation]
    `oriented-se62-rigidity-theorem.md` §3]
 
 3. **Rigid graphs with `≥ 2` independent cycles.** A single directed cycle is
-   not the only rigid shape. E.g. two disjoint `3`-cycles at total `6`
-   (`A = 1` everywhere) are rigid (§2), and more generally any support with
-   `r = |E| - |V| + c - 1 = 0` is rigid regardless of `A`. [mathematical proof]
+   not the only rigid shape. E.g. the complete digraph `K_3^*` (all `6` arcs on
+   `3` vertices, cycle rank `4`) at total `6` (`A = 1` everywhere) is rigid: the
+   balance equations plus `∑ B = 6` with `B ≥ 1` on `6` edges force `B = 1`
+   everywhere (verified by brute force). More generally, any support with
+   `r = |E| - |V| + c - 1 = 0` is rigid regardless of `A` — for the strongly
+   connected supports of circular truths `r = 0` iff the support is a single
+   directed cycle, so every genuinely multi-cycle rigid example needs slack
+   coordination, not just topology. (Abstract-graph caveat: disconnected
+   supports such as two disjoint `3`-cycles are rigid at total `6` but are
+   **not** valid circular-word read-support graphs, which are strongly
+   connected; they are omitted here as genome examples.) [mathematical proof +
+   verified computation]
 
 4. **Non-rigid witnesses (for contrast).** The minimum same-length non-rigid
    pair is `S = AAAAB`, `D = AABAB` (`G = 5`, `L = 2`), spectra
@@ -246,15 +277,16 @@ counterexample from scratch (no repository import).
 
 | scope | result |
 |---|---|
-| `n = 3` vertices, all strongly connected digraphs, all `A` with `G ≤ 3|E|` | two-cycle obstruction ⟺ non-rigid on **all 389** non-rigid cases, **0** mismatches |
-| `n = 3`, two-**closed-walk** obstruction (walks `≤ 6`) | matches non-rigid on **all 447** cases, **0** mismatches |
-| `n = 4` vertices, sample (`G ≤ 2|E|`) | two-cycle obstruction ⟺ non-rigid except the §4 counterexample family (needs `≥ 3` cycles) |
+| `n = 3` vertices, all strongly connected digraphs, all `A` with `G ≤ 3|E|` | two-cycle obstruction ⟺ non-rigid on **all 389** non-rigid cases (**447** pairs tested: 58 rigid + 389 non-rigid), **0** mismatches |
+| `n = 3`, two-**closed-walk** obstruction (walks `≤ 6`) | agrees with brute-force rigidity on **all 447** pairs (389 non-rigid all detected, 58 rigid all clear), **0** mismatches |
+| `n = 4` vertices, exhaustive in scope: all 1606 strongly connected digraphs, all `A` with `G ≤ 2|E|` (83532 pairs) | two-cycle obstruction ⟺ non-rigid except **96** instances forming **4 isomorphism families** (24 labelings each), one of which is the §4 counterexample; every exception needs `≥ 3` simple cycles |
 | §4 counterexample | `A, B` positive circulations of total `13`, `A ≠ B`, no two-simple-cycle obstruction (verified) |
 
-The `n = 3` agreement is exact and complete in scope; the `n = 4` run is a
-cross-check, not an exhaustive classification. The exhaustive zeros are a
-sanity check on the proofs, not a substitute for them. [verified
-computation]
+The `n = 3` agreement is exact and complete in scope; the `n = 4` run is
+exhaustive in its own scope (every strongly connected `4`-vertex digraph, every
+`A` with `G ≤ 2|E|`), not an exhaustive classification of all supports. The
+exhaustive zeros are a sanity check on the proofs, not a substitute for them.
+[verified computation]
 
 ---
 
@@ -269,11 +301,21 @@ computation]
   but each check is polynomial). [mathematical proof]
 * The **precise complexity classification** of the exact criterion (whether
   it is polynomial via a flow reduction, or NP-hard in general) is **open**;
-  this note does not claim it. The LP relaxation
-  `P = {δ : Mδ = 0, ∑δ = 0, δ ≥ -s}` is **not** an exact proxy: `P ≠ {0}`
-  (real) does not imply a nonzero integer point (the constraint matrix
-  `[M; 1ᵀ]` is not totally unimodular), so real and integer non-rigidity can
-  differ. [mathematical proof of the TU failure; the exact classification is open]
+  this note does not claim it.
+* The LP relaxation `P = {δ : Mδ = 0, ∑δ = 0, δ ≥ -s}` is **not** an exact proxy:
+  `P ≠ {0}` (real) does not imply a nonzero integer point, so real and integer
+  non-rigidity can differ. **Justification (the non-TU remark alone is not
+  enough):** it is true that `[M; 1ᵀ]` is not totally unimodular (the `2`-cycle
+  submatrix `[[1,-1],[1,1]]` has determinant `2`), but non-TU of the constraint
+  matrix does not by itself establish a real-vs-integer gap for this fiber; the
+  gap is instead witnessed concretely. Smallest witness: on the `4`-arc graph
+  `0→1, 0→2, 1→2, 2→0` with `A = (1,2,1,3)`, `P` contains the real point
+  `(1/3, -1/2, 1/3, -1/6)` (take `δ = t·(1, -3/2, 1, -1/2)`, `0 ≤ t ≤ 2/3`)
+  but `P ∩ ℤ^E = {0}` (integrality forces `δ_1 = 0`), so the instance is rigid
+  while its LP relaxation reports non-rigidity. `36` such real-vs-integer gaps
+  occur in the `n = 3` scope alone (all verified by exact vertex enumeration of
+  `P`). [mathematical proof + verified computation; the exact classification
+  is open]
 
 ---
 
@@ -281,12 +323,15 @@ computation]
 
 1. **A closed-form graph-theoretic iff** for rigidity, beyond the algebraic
    criterion of Theorem 1 (e.g. a min-cut / max-flow characterization of
-   `L_0 ∩ box ≠ {0}`). None is known; the §4 counterexample rules out every
-   fixed-finite-cycle and fixed-repeat-bound condition. [open]
+   `L_0 ∩ box ≠ {0}`). None is known; the §4 counterexample rules out the
+   two-cycle condition specifically, but see also item 4. [open]
 2. **The exact complexity** of the exact criterion (§7). [open]
 3. **The two-closed-walk certificate** (§4): whether it is necessary and
    sufficient when walks of unbounded length are allowed. The `n = 3` evidence
    is consistent with it, but no proof or counterexample is known. [open]
+4. **The finite-`k` cycle question** (§4): whether for every fixed `k` there is
+   a non-rigid instance whose every witness needs `≥ k` simple cycles. The
+   §4 example gives `k = 3`; no family for general `k` is known. [open]
 
 ---
 
@@ -295,6 +340,7 @@ computation]
 | claim | status |
 |---|---|
 | Theorem 1: exact rigidity criterion (no nonzero zero-sum circulation in the box) | mathematical proof |
+| Graver primitive-trade reformulation (no Graver basis element of `L_0` in the box) | mathematical proof + verified computation |
 | Topological vs. multiplicity split (`L_0 ∩ box = {0}`) | mathematical proof |
 | Theorem 2: two-cycle non-rigidity certificate | mathematical proof |
 | Theorem 3 / §4: two-cycle certificate not necessary (4-vertex counterexample) | verified computation |
@@ -302,10 +348,11 @@ computation]
 | §5.3 rigid graphs with `≥ 2` independent cycles (`r = 0`) | mathematical proof |
 | §6 exhaustive `n = 3` two-cycle agreement | verified computation, exhaustive in scope |
 | §7 exact criterion is a finite integer feasibility problem | mathematical proof |
-| §7 LP relaxation not exact (`[M; 1ᵀ]` not TU) | mathematical proof |
+| §7 LP relaxation not exact (real/integer gap witnessed, §7) | mathematical proof + verified computation |
 | §8.1 closed-form graph-theoretic iff | open |
 | §8.2 exact complexity | open |
 | §8.3 two-closed-walk certificate iff | open |
+| §8.4 finite-`k` cycle question | open |
 
 ---
 
