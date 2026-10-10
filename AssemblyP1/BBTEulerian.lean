@@ -92,10 +92,13 @@ this module.
   anti-vacuity instance.
 * **Not proved.**  `EulerianCycleObstruction` itself, i.e. uniqueness of
   the Eulerian cycle of the condensed graph.  **ATTRIBUTION (board 94, front
-  94e7; see `docs/best-tw1-attribution-94.md`):** this is a **board
-  construction**, not a result imported from Pevzner 1995 or from BBT.  This
-  text formerly read "This is the Pevzner 1995 Lemma 9 / `thm:BBT` input"; the
-  attribution is withdrawn, because a two-sided retrieval established that
+  94e7; see `docs/best-tw1-attribution-94.md`):** the *statement* is
+  Bresler--Bresler--Tse's Theorem 3 --- `thm:BBT` cites it as a source fact
+  for that statement --- but the *conditional Eulerian-uniqueness reduction
+  formalized here* is a **board construction**, not a lemma imported from
+  Pevzner 1995 or from BBT.  This text formerly read "This is the Pevzner 1995
+  Lemma 9 / `thm:BBT` input"; the attribution of *this reduction* to Pevzner
+  1995 Lemma 9 is withdrawn, because a two-sided retrieval established that
   Pevzner 1995 (Algorithmica 13:77-105) has no counting statement of any kind
   and no `BEST` / `arboresc` / `spanning` / `matrix-tree` / `determinant` /
   out-degree vocabulary at all, and because Pevzner 1995 Lemma 9 is about

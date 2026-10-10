@@ -165,8 +165,8 @@ uses P2 essentially, via the complete-spectrum uniqueness step.
 
 The remaining step is a complete-spectrum uniqueness statement. Historically it
 is the classical theorem of Bresler, Bresler, and Tse, which we record below as
-a source fact; the project's formal proof now discharges the step internally, so
-the theorem below is no longer an external premise of
+a source fact \emph{for its statement}; the project's formal proof now discharges
+the step internally, so the theorem below is no longer an external premise of
 Theorem~\ref{thm:population}.
 
 \begin{theorem}[Bresler--Bresler--Tse complete-spectrum uniqueness]
@@ -192,7 +192,12 @@ long-window uniqueness for primitive P2 truths directly, by a support-descent
 argument whose local step is an explicit component antiderivative on the
 condensed length-$(L-1)$-mer graph; its axiom audit reports only the three
 standard axioms and it names no BBT premise. Theorem~\ref{thm:BBT} is retained
-because it is the source-faithful classical statement of the same step.
+because it is the source-faithful classical statement of the same step: it is
+cited for its \emph{statement}, and the project does not import its published
+proof, whose argument itself invokes a Pevzner--Ukkonen step that the project
+discharges internally instead. The earlier attribution of the project's own
+conditional Eulerian-uniqueness reduction to a Pevzner (1995) input is
+withdrawn: that reduction is a project construction, not an imported lemma.
 The finite truth-and-competitor-certified same-length rotation theorem
 (Corollary~\ref{cor:same-length-rotation}, merged PR~\#124)
 now also has its own kernel-checked proof; the historical finite BBT
