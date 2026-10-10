@@ -1,7 +1,7 @@
 \section{The sequencing and bridging model}
 \label{sec:model}
 
-This section fixes notation and records the source-faithful model. We separate
+This section fixes notation for both the cited model and our explicit variants. We separate
 the parts that come from the literature from the project's normalizations; the
 former are tagged \srcfact{} and the latter \projchoice. The de Bruijn/Eulerian
 view of assembly that underlies both the repeat theory and the Section~6.2 graph
@@ -59,9 +59,9 @@ of distinct read strings.
 The original 2016 read-string coverage is distinguished below.}
 \end{definition}
 
-We now record the repeat and bridging vocabulary. The source-faithful reading is
-that Shomorony et al.\ inherit these definitions from Bresler, Bresler, and Tse
-\cite{bresler2013}; we follow that attribution.
+We distinguish the project's maximal-repeat vocabulary, following
+Bresler, Bresler, and Tse \cite{bresler2013}, from the 2016 supplement's
+literal all-three-occurrence condition in Section~\ref{sec:finite:historical}.
 
 \begin{definition}[Repeat objects with maximality]
 \label{def:repeats}
@@ -123,7 +123,7 @@ The finite formalization audit treats both notions separately; any passage
 from a placement-based theorem to the historical question requires an explicit
 adapter proof. Section~\ref{sec:finite:historical} states the historical
 predicate as a proposition, exhibits the two same-length molecule witnesses that
-satisfy it, and records the exact proof dependency of that result.
+satisfy it, and identifies its kernel-checked proof on \texttt{main} (PR~\#142).
 \statusline{\srcfact{} for the historical matching-string definitions;
 \projchoice{} for the placement-based variant used by the existing Lean
 library.}
