@@ -25,12 +25,14 @@ import AssemblyP1.WordPeriodicity
 import AssemblyP1.Model
 import AssemblyP1.OpenProblem
 import AssemblyP1.SourceFaithfulIs
+import AssemblyP1.HistoricalCovers
 import AssemblyP1.ExactVariantECounterexample
 import AssemblyP1.FixedLengthExactCounterexample
 import AssemblyP1.FixedLengthBinomialCounterexample
 import AssemblyP1.Section62BridgingCounterexample
 import AssemblyP1.SameLengthSection62Counterexample
 import AssemblyP1.PerOccurrenceSameLengthCounterexample
+import AssemblyP1.HistoricalCoverageSameLengthWitnesses
 import AssemblyP1.Section62BidirectedFlow
 import AssemblyP1.Section62VariableOverlap247e
 import AssemblyP1.FiniteSamplingCounterexample
