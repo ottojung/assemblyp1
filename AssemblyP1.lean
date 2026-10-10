@@ -194,6 +194,7 @@ import AssemblyP1.Section62VarlenPerOccurrence
 import AssemblyP1.BreslerRemapCompatibility
 import AssemblyP1.Issue209EAudit
 import AssemblyP1.FibreCountArithmetic
+import AssemblyP1.RobustSameLengthIff
 
 /-! ## `Issue94Transposition`: the Kotzig/Ukkonen/Pevzner descent, and an obstruction
 
@@ -1004,3 +1005,9 @@ reading. Two finite checks anchor it: the refuted BBT premise's witness is not
 #print axioms AssemblyP1.SameLength62TieUniqueness.bbTP2Prim_of_94
 #print axioms AssemblyP1.SameLength62TieUniqueness.unique_62_maximizer_up_to_rotation_of_primitive
 #print axioms AssemblyP1.SameLength62TieUniqueness.fibre_singleton_of_Iss_and_obstruction
+
+#print axioms AssemblyP1.RobustSameLengthIff.robust_iff_unique
+#print axioms AssemblyP1.RobustSameLengthIff.exists_beating_sample
+#print axioms AssemblyP1.RobustSameLengthIff.robust_iff_unique_spectrum
+#print axioms AssemblyP1.RobustSameLengthIff.F_eq_singleton_of_rigidity
+#print axioms AssemblyP1.RobustSameLengthIff.robust_of_rigidity
