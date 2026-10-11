@@ -1,0 +1,10 @@
+import AssemblyP1.FixedXExactML
+
+open AssemblyP1.FixedXExactML
+
+#print axioms AssemblyP1.FixedXExactML.spectrumLikFactor_eq_likProduct_div
+#print axioms AssemblyP1.FixedXExactML.exactLik_eq_spectrumLikFactor
+#print axioms AssemblyP1.FixedXExactML.specLik_le_iff_likProduct
+#print axioms AssemblyP1.FixedXExactML.fixedX_classification_iff
+#print axioms AssemblyP1.FixedXExactML.fixedX_classification_iff_of_realizable
+#print axioms AssemblyP1.FixedXExactML.FixedXExample

@@ -247,4 +247,104 @@ theorem fixedX_classification_iff_of_realizable {G L : ℕ} (hG : 0 < G)
     exact OrientedSameLengthML.observedOf_mem_support hG S ρ w (by rw [hρ]; exact hw)
   exact fixedX_classification_iff hG S x hx
 
+/-! ## The AAABBB instance (deliverable 3)
+
+The concrete instance exhibiting all three chamber types at realizable
+complete-support observations. Genome `S = AAABBB` (binary alphabet `{A,B}`,
+`G = 6`, `L = 2`). The truth spectrum is `A = (AA:2, AB:1, BB:2, BA:1)`.
+The feasible set consists of exactly four spectra:
+
+| Spectrum | AA | AB | BB | BA |
+|----------|----|----|----|----|
+| B1 (= A) | 2  | 1  | 2  | 1  |
+| B2       | 1  | 1  | 3  | 1  |
+| B3       | 3  | 1  | 1  | 1  |
+| B4       | 1  | 2  | 1  | 2  |
+
+At `x1 = (2,1,2,1)`: products are `16, 9, 9, 4` — truth wins uniquely.
+At `x2 = (1,2,1,2)`: products are `4, 3, 3, 16` — truth strictly loses to B4.
+
+Both observations are realizable under iid replacement (explicit realizations
+below). All instance facts are kernel-checked by `decide`. -/
+
+/-- The AAABBB genome: `A=0, B=1`, length 6. -/
+def S255 : Fin 6 → Fin 2 := ![0, 0, 0, 1, 1, 1]
+
+/-- The four oriented length-2 read types. -/
+def wAA : Fin 2 → Fin 2 := fun _ => 0
+def wAB : Fin 2 → Fin 2 := fun i => if i = 0 then 0 else 1
+def wBB : Fin 2 → Fin 2 := fun _ => 1
+def wBA : Fin 2 → Fin 2 := fun i => if i = 0 then 1 else 0
+
+/-- The window support of AAABBB at L=2. -/
+def E255 : Finset (Fin 2 → Fin 2) := {wAA, wAB, wBB, wBA}
+
+/-- The four feasible spectra. -/
+def B1 : (Fin 2 → Fin 2) → ℕ := fun w => if w = wAA then 2 else if w = wAB then 1 else if w = wBB then 2 else if w = wBA then 1 else 0
+def B2 : (Fin 2 → Fin 2) → ℕ := fun w => if w = wAA then 1 else if w = wAB then 1 else if w = wBB then 3 else if w = wBA then 1 else 0
+def B3 : (Fin 2 → Fin 2) → ℕ := fun w => if w = wAA then 3 else if w = wAB then 1 else if w = wBB then 1 else if w = wBA then 1 else 0
+def B4 : (Fin 2 → Fin 2) → ℕ := fun w => if w = wAA then 1 else if w = wAB then 2 else if w = wBB then 1 else if w = wBA then 2 else 0
+
+/-- The two realizable complete-support observations. -/
+def x1 : (Fin 2 → Fin 2) → ℕ := fun w => if w = wAA then 2 else if w = wAB then 1 else if w = wBB then 2 else if w = wBA then 1 else 0
+def x2 : (Fin 2 → Fin 2) → ℕ := fun w => if w = wAA then 1 else if w = wAB then 2 else if w = wBB then 1 else if w = wBA then 2 else 0
+
+/-- The window support of AAABBB at L=2 equals E255. -/
+theorem hsup255_258 : (OrientedRigidity.support (L := 2) (by decide) S255) = E255 := by
+  decide
+
+/-- Likelihood products at x1: truth wins uniquely (16 > 9, 9, 4). -/
+theorem likProduct_x1_B1_258 : likProduct E255 B1 x1 = 16 := by decide
+theorem likProduct_x1_B2_258 : likProduct E255 B2 x1 = 9 := by decide
+theorem likProduct_x1_B3_258 : likProduct E255 B3 x1 = 9 := by decide
+theorem likProduct_x1_B4_258 : likProduct E255 B4 x1 = 4 := by decide
+
+/-- Likelihood products at x2: truth strictly loses to B4 (4 < 16). -/
+theorem likProduct_x2_B1_258 : likProduct E255 B1 x2 = 4 := by decide
+theorem likProduct_x2_B2_258 : likProduct E255 B2 x2 = 3 := by decide
+theorem likProduct_x2_B3_258 : likProduct E255 B3 x2 = 3 := by decide
+theorem likProduct_x2_B4_258 : likProduct E255 B4 x2 = 16 := by decide
+
+/-- Realization producing x1: all six starts. -/
+def rho1 : OrientedSameLengthML.Realization 6 6 := ![0, 1, 2, 3, 4, 5]
+
+/-- Realization producing x2: starts 0, 2, 2, 3, 5, 5. -/
+def rho2 : OrientedSameLengthML.Realization 6 6 := ![0, 2, 2, 3, 5, 5]
+
+/-- x1 is realizable from AAABBB. -/
+theorem realizable_x1_258 : ∃ ρ : OrientedSameLengthML.Realization 6 6,
+    OrientedSameLengthML.observedOf (L := 2) (by decide) S255 ρ = x1 := by
+  refine ⟨rho1, ?_⟩
+  funext w
+  simp only [OrientedSameLengthML.observedOf, rho1]
+  fin_cases w <;> decide
+
+/-- x2 is realizable from AAABBB. -/
+theorem realizable_x2_258 : ∃ ρ : OrientedSameLengthML.Realization 6 6,
+    OrientedSameLengthML.observedOf (L := 2) (by decide) S255 ρ = x2 := by
+  refine ⟨rho2, ?_⟩
+  funext w
+  simp only [OrientedSameLengthML.observedOf, rho2]
+  fin_cases w <;> decide
+
+/-- **The AAABBB instance: truth wins uniquely at x1 and strictly loses at x2.**
+
+This is the concrete exhibition of deliverable 3: the same genome and candidate
+class produce different fixed-`x` outcomes at different realizable observations.
+The truth wins uniquely at `x1` (products 16, 9, 9, 4) and strictly loses at
+`x2` (products 4, 3, 3, 16), with exact ratio 4. Both observations are
+realizable under iid replacement. -/
+theorem FixedXExample :
+    (likProduct E255 B1 x1 = 16 ∧ likProduct E255 B2 x1 = 9 ∧
+     likProduct E255 B3 x1 = 9 ∧ likProduct E255 B4 x1 = 4) ∧
+    (likProduct E255 B1 x2 = 4 ∧ likProduct E255 B2 x2 = 3 ∧
+     likProduct E255 B3 x2 = 3 ∧ likProduct E255 B4 x2 = 16) ∧
+    (∃ ρ : OrientedSameLengthML.Realization 6 6,
+      OrientedSameLengthML.observedOf (L := 2) (by decide) S255 ρ = x1) ∧
+    (∃ ρ : OrientedSameLengthML.Realization 6 6,
+      OrientedSameLengthML.observedOf (L := 2) (by decide) S255 ρ = x2) := by
+  refine ⟨⟨likProduct_x1_B1_258, likProduct_x1_B2_258, likProduct_x1_B3_258, likProduct_x1_B4_258⟩,
+          ⟨likProduct_x2_B1_258, likProduct_x2_B2_258, likProduct_x2_B3_258, likProduct_x2_B4_258⟩,
+          realizable_x1_258, realizable_x2_258⟩
+
 end AssemblyP1.FixedXExactML
