@@ -480,4 +480,58 @@ theorem fixedX_classification_iff_of_realizable {G L : ℕ} (hG : 0 < G)
     exact OrientedSameLengthML.observedOf_mem_support hG S ρ w (by rw [hρ]; exact hw)
   exact fixedX_classification_iff hG S x hx
 
+
+/-! ## Genuine global fixed-sample chambers for the AAABBB instance
+
+These theorems quantify over `IsFeasibleSpectrum`, not a stipulated
+four-element candidate list. Exhaustiveness is supplied by
+`feasibleSpectrum_iff_258` above. All comparisons are exact integers. -/
+
+def xTie258 : (Fin 2 → Fin 2) → ℕ := fun _ => 1
+
+theorem truth_spec_B1_258 :
+    OrientedRigidity.specCount (L := 2) (by decide : 0 < 6) S255 = B1 := by
+  funext w
+  rcases word_cases_258 w with h | h | h | h <;> subst w <;> decide
+
+/-- Under observation x=B1, the truth strictly beats every distinct
+positive balanced same-length spectrum; this is an ALL-candidates theorem. -/
+theorem fixedX_unique_at_xWin258 :
+    ∀ B : (Fin 2 → Fin 2) → ℕ,
+      IsFeasibleSpectrum (by decide : 0 < 6) S255 B →
+      B ≠ B1 →
+      likProduct E255 B B1 < likProduct E255 B1 B1 := by
+  intro B hB hne
+  rcases (feasibleSpectrum_iff_258 B).mp hB with h | h | h | h
+  · exact False.elim (hne h)
+  · rw [h]; decide
+  · rw [h]; decide
+  · rw [h]; decide
+
+/-- For one read of each of AA, AB, BB, BA, the truth ties B4 at the
+global maximum, with all other feasible spectra no better. -/
+theorem fixedX_top_tie_at_xTie258 :
+    likProduct E255 B1 xTie258 = likProduct E255 B4 xTie258 ∧
+    ∀ B : (Fin 2 → Fin 2) → ℕ,
+      IsFeasibleSpectrum (by decide : 0 < 6) S255 B →
+      likProduct E255 B xTie258 ≤ likProduct E255 B1 xTie258 := by
+  constructor
+  · decide
+  · intro B hB
+    rcases (feasibleSpectrum_iff_258 B).mp hB with h | h | h | h
+    · rw [h]
+    · rw [h]; decide
+    · rw [h]; decide
+    · rw [h]; decide
+
+/-- At sample x=B4 (still supported entirely on the truth's windows),
+B4 strictly beats the true genome's spectrum. -/
+theorem fixedX_strict_loss_at_xLose258 :
+    likProduct E255 B1 B4 < likProduct E255 B4 B4 := by
+  decide
+
+#print axioms fixedX_unique_at_xWin258
+#print axioms fixedX_top_tie_at_xTie258
+#print axioms fixedX_strict_loss_at_xLose258
+
 end AssemblyP1.FixedXExactML
