@@ -2,8 +2,9 @@
 
 _Status: 2026-10-11. Source-fidelity / whitepaper-theorem-matrix integration
 front. Base: `main` @ `02406aa26239eab1d224f2d434df7628f04be8d1` (green).
-This matrix is the authoritative status record for the #255 research umbrella.
-It is updated only when a scoped claim is proved, refuted, or explicitly
+This matrix is a proposed, reviewable status record for the #255 research
+umbrella, not a declaration that the remaining proofs are finished. It is
+updated only when a scoped claim is proved, refuted, or explicitly
 re-scoped with evidence. Conjectures remain OPEN until proved or refuted._
 
 ## Epistemic classes
@@ -63,6 +64,11 @@ Every material result is classified as one of:
 - **Status:** Count-vector and exact binomial partial results integrated.
   General §6.2 bidirected flow classification remains OPEN.
 
+### Population maximality without repeats: PROVED
+
+- `PopulationGibbs.truth_is_population_maximizer`; equality iff normalized spectra
+  agree. Population-level only; does NOT settle finite sampling.
+
 ---
 
 ## REFUTED — specific conjectures, NOT classifications
@@ -76,15 +82,10 @@ Every material result is classified as one of:
 - This refutes a sufficiency claim only; it does not classify any genome set or
   overlap floor.
 
-### Population maximality without repeats: PROVED
-
-- `PopulationGibbs.truth_is_population_maximizer`; equality iff normalized spectra
-  agree. Population-level only; does NOT settle finite sampling.
-
 ### #259 recovered WIP's fixed-x iff continuous KKT: FALSE for integer flows
 
 - **Witness:** `S=AAABBB`, `G=N=6`, `x=[3,1,2,1]`.
-- The continuous KKT condition is necessary but NOT sufficient for integer flows.
+- Continuous KKT optimality is **sufficient**, but **NOT necessary**, for maximizing a differentiable concave likelihood over a discrete integer-feasible subset of its continuous convex relaxation. At an interior point, the stationary-gradient condition suffices; with active box boundaries, the correct KKT inequality/multiplier conditions suffice. The stated AAABBB discrete winner violates stationarity on a feasible real direction, so necessity fails.
 - **Status:** REFUTED as a classification criterion. The exact integer witness is
   recorded on the issue board.
 
@@ -94,7 +95,7 @@ Every material result is classified as one of:
 
 ### #258 (fixed-x sample classification)
 
-- **PR:** #151, signed head `32ef867` on branch `agent/board-255-matrix-b6aa4ea0dce8-20261010`
+- **PR:** #151, signed head `ce011d5` (parent `32ef867`) on branch `agent/board-255-matrix-b6aa4ea0dce8-20261010`
 - **Has:** Local kernel-checkable AAABBB 4 numerical candidate likelihoods.
 - **Does NOT yet prove:** Exhaustion/global truth winner.
 - **Still needs:** Final CI.
@@ -125,6 +126,12 @@ Every material result is classified as one of:
 
 - **Status:** IN PROGRESS. Separable convex discrete Graver criterion.
 
+### #264 (integer-kernel conformal Graver decomposition)
+
+- **Status:** OPEN. A separate agent is formalizing a finite conformal Graver
+  basis obstruction and decomposition, distinct from the already-merged
+  bounded zero-sum-delta rigidity iff in #257.
+
 ---
 
 ## AXIS MATRIX (PROVED / REFUTED / OPEN)
@@ -134,7 +141,7 @@ Every material result is classified as one of:
 | Oriented vs RC molecule types | PROVED (landed scopes) | Oriented + same-length + exact multinomial + sample-uniform PROVED (#256); RC + full-overlap + fixed-length + exact multinomial + sample-uniform PROVED (#260); oriented arbitrary-overlap and RC arbitrary-overlap OPEN (#261) |
 | Exact multinomial vs fixed-N binomial | PROVED (exact) / OPEN (binomial) | Exact multinomial PROVED in the two landed scopes; fixed-N binomial (MB09 §6.1) OPEN (#259) |
 | Same vs variable length | PROVED (same) / OPEN (variable) | Same-length PROVED where landed; variable length OPEN (fenced to #261) |
-| Spelled genomes vs MB09 §6.2 bidirected flows / overlap floor | PROVED (full-overlap) / OPEN (arbitrary) | Full-overlap source-faithful spelled-flow domain PROVED (#260); arbitrary overlap floor OPEN (#261); historical bridging sufficiency at full overlap REFUTED (W1/W2, PR #142) |
+| Spelled genomes vs MB09 §6.2 bidirected flows / overlap floor | PROVED (full-overlap) / OPEN (arbitrary) | Equal-support full-overlap RC molecule-spectrum ML PROVED (#260); unrestricted source-faithful MB09 §6.2 nonspelled flow candidate domain and arbitrary overlap floor OPEN (#261); historical bridging sufficiency at full overlap REFUTED (W1/W2, PR #142) |
 | Truth candidacy | PROVED (landed scopes) / OPEN (extended) | Truth genuinely admissible over spelled candidate universes PROVED in the landed scopes; extended candidate sets OPEN (#261) |
 | Literal historical read-string `I_s` vs project placement `I_s` | PROVED (placement) / REFUTED (literal) / OPEN (remaining) | Project-placement reading PROVED (#256 iff needs no `I_s`); literal historical `I_s` full-overlap bridging sufficiency REFUTED (W1/W2); remaining historical-referent questions OPEN |
 
@@ -158,7 +165,7 @@ original Medvedev-Brudno 2009 source:
 
 ## #255 umbrella status
 
-**#255 remains OPEN.** Scoped claims on the #258, #259, #261, #262, and #263
+**#255 remains OPEN.** Scoped claims on the #258, #259, #261, #262, #263, and #264
 fronts are unresolved; no conjecture is promoted to fact. #255 closes only when
 every scoped claim is proved or refuted to the issue's evidence standard
 (audited proof, direct Lean theorem where feasible, green CI/merge) and this
