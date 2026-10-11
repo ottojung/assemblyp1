@@ -189,6 +189,91 @@ these classes. A theorem proved over a restricted class is a restricted result;
 but a \emph{negative} result over a subclass transfers to every superclass
 (Lemma~\ref{lem:negative-transfer}).
 
+\subsection{Random read generation and the exact candidate likelihood}
+\label{sec:sampling}
+
+The objectives of Definition~\ref{def:likelihoods} score observed read
+multiplicities; the sampling process that generates them deserves an explicit
+definition, because several guarantees in Section~\ref{sec:open} are
+statements about that process.
+
+\begin{definition}[Read-sampling distribution and likelihood]
+\label{def:sampling}
+Fix a circular genome $G$ with $L \le |G|$. The \emph{read-sampling
+distribution} of $G$ is the categorical distribution
+\[
+  P_G(w) \;=\; \frac{\spec_L(G)(w)}{|G|}
+\]
+on length-$L$ words $w$: each of the $|G|$ start positions is equally likely,
+and the read $w$ is observed exactly when the sampled start falls on one of its
+$\spec_L(G)(w)$ occurrences. For an observed sample $R_1,\dots,R_n$ of
+independent reads from $P_G$, the \emph{likelihood} of a candidate $D$ is
+\[
+  L_n(D) \;=\; \prod_{i=1}^{n} P_D(R_i).
+\]
+\statusline{\srcfact{} for independent uniform-start error-free sampling
+ \cite[\S2]{shomorony2016}; \projchoice{} for the categorical form, which is
+ the same process written as a distribution over read types.}
+\end{definition}
+
+\begin{remark}[Uniform starts are not uniform read-type probabilities]
+\label{rem:not-uniform}
+Each start position is equally likely, so a distinct read string receives
+probability proportional to its multiplicity $\spec_L(G)(w)$, not to
+$1/(\#\text{distinct strings})$. For $G=AAABB$ and $L=2$ the windows are
+$AA,AA,AB,BB,BA$, hence $P_G(AA)=2/5$ while
+$P_G(AB)=P_G(BB)=P_G(BA)=1/5$ --- not the uniform $1/4$ over the four
+distinct strings. Conversely, two genomes with equal spectra
+(Example~\ref{ex:ABAB}) induce the \emph{same} read distribution, which is
+exactly why no likelihood objective can separate them.
+\end{remark}
+
+\begin{remark}[Three objects that must not be conflated]
+\label{rem:three-objects}
+$L_n(D)=L(\text{data}\mid D)$ is the \emph{likelihood}: a function of the
+observed read multiset for each fixed candidate, not a probability
+distribution over genomes. The \emph{posterior}
+$P(D\mid\text{data})\propto L_n(D)\,\pi(D)$ is a distribution over candidates
+and exists only after a prior $\pi$ is supplied; the cited sources supply none.
+The \emph{sampling process} is the random-start mechanism that generates data
+from the true genome: statements about ``the probability that the true genome
+wins'' are statements about this process at a fixed truth, unless a prior is
+explicitly introduced.
+\end{remark}
+
+\begin{remark}[Rotations are observationally equivalent]
+\label{rem:rotations-equiv}
+$P_G$ depends only on $\spec_L(G)$, which is invariant under cyclic rotation
+(Remark~\ref{rem:cyclic}). Any two rotations of a genome are indistinguishable
+by \emph{any} likelihood objective, so every conclusion below is stated modulo
+cyclic rotation --- the paper's strong schema (Definition~\ref{def:schemas}).
+\end{remark}
+
+\begin{proposition}\label{prop:multinomial-iid}
+For observed multiplicities $x$ with $n=\sum_w x(w)$,
+\[
+  \Lik_{\mathrm{ex}}(D;x)
+  \;=\; \frac{n!}{\prod_w x(w)!}\; L_n(D),
+\]
+so the exact multinomial and the i.i.d.\ likelihood $L_n$ have the same
+maximizers over any candidate class. The fixed-$N$ binomial objective is the
+\S6.1 separable approximation: it replaces the candidate length $|D|$ by an
+external $N$ and is \emph{not} the likelihood of the sampling model above, so
+``MB09 maximum likelihood'' under the binomial is not exact Bayes ML under
+uniform-start sampling.
+\claimP
+\end{proposition}
+
+\begin{proof}
+$L_n(D)=\prod_i P_D(R_i)=\prod_w P_D(w)^{x(w)}=
+\prod_w(\spec_L(D)(w)/|D|)^{x(w)}$ depends on $x$ only through the
+multiplicities, and the multinomial coefficient $n!/\prod_w x(w)!$ is
+independent of $D$. The binomial objective of Definition~\ref{def:likelihoods}
+replaces $|D|$ by $N$ in every factor and adds the $(1-\cdot)$ complement
+factors; it coincides with $L_n(D)$ only when $N=|D|$ and the complement
+factors are constant across candidates, which they are not.
+\end{proof}
+
 \subsection{The two conclusion schemas}
 
 The English phrase ``the maximum-likelihood sequence is the true sequence'' has

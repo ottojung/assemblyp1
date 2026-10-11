@@ -104,13 +104,13 @@ No strict same-length Section~6.2 counterexample, any $G,L,\Alphabet$
   Corollary~\ref{cor:same-length-zero} \\
 Uniqueness up to cyclic rotation on the truth-admissible same-length row
   & source-supported mathematical theorem &
-  Corollary~\ref{cor:same-length-rotation}, \cite{bresler2013} \\
+  Corollary~\ref{rem:same-length-rotation}, \cite{bresler2013} \\
 Beatability criterion; non-rigidity is the same-length obstruction
   & mathematical fact & Prop.~\ref{prop:beatability} \\
 Gibbs/KL: truth is a population maximizer over any class, with equality iff
 the read distributions agree
   & kernel-checked project formalization of \cite{cover2006} &
-  Lemma~\ref{lem:gibbs}, \texttt{PopulationGibbs}, issue \#89 \\
+  Lemma~\ref{rem:gibbs}, \texttt{PopulationGibbs}, issue \#89 \\
 Primitivity plus P2 gives gcd-one spectra (division + Eulerian + complete-spectrum
 step), reducing normalized to ordinary spectra
   & kernel-checked project reduction &
@@ -121,11 +121,49 @@ P1/P2 implies Ukkonen's condition at $K=L-1$
 Population uniqueness, oriented primitive P2, every positive-length candidate
   & kernel-checked project theorem, no external premise (objective, P2 condition,
   gcd-one reduction and complete-spectrum uniqueness all in the kernel) &
-  Thm.~\ref{thm:population},
+  Thm.~\ref{rem:population},
   \texttt{Issue94Complete.\allowbreak{}population\_\allowbreak{}unique\_\allowbreak{}ML} (issues \#89, \#94) \\
 P1/P2 intrinsic admissibility; population objective
   & project modeling choice & this paper, Defs.~\ref{def:P1P2},
   \ref{def:population} \\
+\midrule
+\multicolumn{3}{@{}l@{}}{\small Issue~\#268 statistical-frame rows} \\
+\midrule
+MAP minimizes prior-averaged risk; finite exact evaluator &
+  kernel-checked finite evaluator (arbitrary prior, deterministic rules) &
+  \texttt{AssemblyP1.FiniteMapOptimality.bayes\_optimality}
+  (issue \#267 worktree, verified building on the \#268 branch) \\
+MAP $\ne$ ML under a nonuniform prior &
+  kernel-checked $2\times2$ family &
+  \texttt{map\_ne\_ml\_nonuniform} \\
+Fiber-perfect rule loses to unconstrained MAP &
+  kernel-checked $2\times2$ family; accuracy $1/4 < 3/4$ &
+  \texttt{map\_beats\_infallible\_on\_E} \\
+ML maximizes prior-averaged success at every $n$ &
+  textbook external theorem; uniform-prior specialization &
+  Thm.~\ref{rem:bayes}, \cite{berger1985} \\
+Prior-averaged success nondecreasing in $n$ &
+  textbook external theorem &
+  Thm.~\ref{rem:mono-avg}, \cite{berger1985,durrett2019} \\
+99\% finite bound via Hellinger affinity; $\rho_{\max}$ for project classes &
+  textbook bound (cited); constants open &
+  Rem.~\ref{rem:sample-complexity}, \cite{cover2006,tsybakov2009} \\
+Not-So-Greedy exact reconstruction under $\Is^{\mathrm{match}}$ &
+  published 2016 result used as external premise &
+  Thm.~\ref{rem:notso-greedy}, \cite[Supplement]{shomorony2016} \\
+Two-question distinction; conditional fiber singleton &
+  proof in paper; corollary of the reconstruction theorem &
+  \S\ref{sec:two-questions} \\
+Exact multinomial $=$ i.i.d.\ likelihood up to constant;
+  fixed-$N$ binomial is not exact Bayes ML &
+  proof in paper &
+  Prop.~\ref{prop:multinomial-iid} \\
+Population maximality (KL/Gibbs, any class) vs.\ uniqueness (P2) &
+  distinction; kernel-checked &
+  Rem.~\ref{rem:max-vs-unique}, \texttt{PopulationGibbs}, \popml \\
+Finite-space consistency vs.\ population theorem &
+  distinction; external theorem cited &
+  Rem.~\ref{rem:consistency-distinction} \\
 \end{longtable}
 }
 
@@ -238,7 +276,7 @@ Three items that used to appear on this list have been resolved and are recorded
 in Table~\ref{tab:finite} instead. Item (7), the \emph{per-occurrence
 same-length} Section~6.2 statement, is \emph{false}: the
 $ATATACAC\to ATACACAC$ witness
-(Theorem~\ref{thm:cex-peroccurrence}) has a per-occurrence-feasible truth and a
+(Theorem~\ref{rem:cex-peroccurrence}) has a per-occurrence-feasible truth and a
 strictly better same-length competitor, and it needs the real four-letter DNA
 alphabet — with a self-complementary base the searched scope has no same-length
 beat at all. Item (8), the \emph{single-strand variable-length} Section~6.2
@@ -304,7 +342,7 @@ choice is a \projchoice{} and the historical strand convention stays open.
 \subsection{A failed proof route for population uniqueness}
 
 The internally proved complete-spectrum uniqueness step that
-Theorem~\ref{thm:population} uses was not the route first attempted. A
+Theorem~\ref{rem:population} uses was not the route first attempted. A
 stronger statement was attempted directly within the project, via a matching
 argument on the transition involution of the length-$(L-1)$ de Bruijn
 structure. That route has a genuine gap: a crossing between two raw occurrence

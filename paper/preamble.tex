@@ -52,10 +52,21 @@
 \newcommand{\statusline}[1]{\par\smallskip\noindent{\small\raggedright\textit{Status.}~#1\par}}
 \newcommand{\provenance}[1]{\par\smallskip\noindent\textit{Provenance.}~#1}
 
+% ---------- Proof-to-claim labels (issue #268 policy) ----------
+% Every headline claim carries exactly one of these five labels.
+\newcommand{\claimK}{\statustag{(i) kernel-checked Lean theorem}}
+\newcommand{\claimP}{\statustag{(ii) proof in paper, not yet Lean}}
+\newcommand{\claimT}{\statustag{(iii) textbook external theorem}}
+\newcommand{\claimS}{\statustag{(iv) published 2016 external premise}}
+\newcommand{\claimO}{\statustag{(v) open}}
+
 % A small legend used in several places.
 \newcommand{\statuslegend}{%
   \srcfact, \srcinf, \projchoice, \mathfact, \kernelcheck, \computed,
   \boundedev, \srcgap, and \openstatus.}
+
+\newcommand{\claimlegend}{%
+  \claimK, \claimP, \claimT, \claimS, and \claimO.}
 
 % ---------- Notation ----------
 \newcommand{\Alphabet}{\Sigma}

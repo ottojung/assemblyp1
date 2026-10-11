@@ -19,31 +19,36 @@
 \begin{abstract}
 \noindent
 Genome assembly seeks to reconstruct the genome from which a collection of
-short DNA reads originated. Because sequencing involves random sampling, we can
-ask how likely we would have been to observe those same reads if they had come
-from a different genome. Is the true genome necessarily the one that makes the
-observed reads most likely?
+short DNA reads originated. Because sequencing involves random sampling, every
+candidate genome induces a probability distribution over datasets, and the
+maximum-likelihood (ML) rule --- score each candidate by the probability it
+assigns to the observed reads, output the highest scorer --- is the
+conceptually simplest principled statistical benchmark for this task: it has
+no tuning parameters, and under a uniform prior over genome equivalence
+classes with zero-one loss it maximizes the prior-averaged chance of correct
+classification at every sample size. The 2016 question of Shomorony, Kim,
+Courtade, and Tse asks whether their repeat-bridging conditions, which suffice
+for exact structural reconstruction, also make the true genome the ML genome.
 
-We establish both positive and negative results. First, we prove a
-combinatorial rigidity theorem showing that restrictions on repeated DNA
-sequences can uniquely determine the frequencies of genomic fragments
-consistent with an assembly graph. Under suitable conditions, this implies that
-the true genome maximizes likelihood among the relevant same-length candidates,
-uniquely up to circular rotation. We then demonstrate the limits of these
-guarantees through explicit counterexamples in which an incorrect genome has
-greater likelihood. These examples reveal how candidate length, the
-representation of DNA strands, and random sampling of reads affect likelihood
-rankings.
-
-Finally, we study maximum likelihood when the read distribution is known
-exactly, without sampling fluctuations. In this setting, the true genome always
-maximizes likelihood, but uniqueness remains a nontrivial mathematical
-question. We prove that uniqueness holds for a class of primitive genomes
-satisfying a structural condition on repeats.
+We show that this question splits into two. If the candidate set is
+constrained to the genomes that are themselves feasible for the observation,
+then --- knowing the truth is feasible --- the conditional problem has a
+unique answer, the truth; this is a corollary of the reconstruction theorem,
+not a new ML result. If instead the original likelihood is maximized over
+its original candidate universe, assuming only that the truth is feasible,
+the implication fails: we exhibit finite observations in which an incorrect
+genome is strictly more likely, under the exact multinomial, under the
+fixed-length binomial approximation, and under the source's own read-string
+bridging predicate. These failures are pointwise finite-sample events, not
+paradoxes: they coexist with prior-average Bayes optimality and with
+consistency, and they leave the positive results intact --- same-length
+circular rigidity with uniqueness up to rotation, and, at the population
+level, truth-maximality for every candidate class plus uniqueness for
+primitive P2 genomes, both kernel-checked with no external premise.
 
 Together, these results clarify when the true genome has the greatest
-likelihood, when another genome can be more likely, and when the maximizer is
-unique.
+likelihood, when another genome can be more likely, and why the answer turns on
+a truth-dependent conditioning choice the published sentence does not make.
 \end{abstract}
 
 \clearpage

@@ -1,12 +1,26 @@
 \section{Population maximum likelihood and a repaired uniqueness theorem}
 \label{sec:population}
 
+This section states the paper's two most prominent positive results, and the
+distinction between them is the point. The first is \emph{maximality}: at the
+population level the truth always maximizes expected log-likelihood, for
+\emph{any} candidate class containing it --- a Gibbs/KL identity with no
+repeat hypothesis, no finiteness, and no sampling. The second is
+\emph{uniqueness}: the truth is the \emph{unique} maximizer, up to rotation,
+for the oriented primitive P2 class --- a special identifiability theorem
+proved in full in the kernel. The first holds for potentially unbounded
+genome candidates; the second is where the structural work of this project
+enters. Neither theorem is a statement about finite samples, and neither is
+replaced by conditioning on information feasibility: the conditional
+guaranteed reconstruction of Section~\ref{sec:two-questions} is a different
+statement, and it implies neither.
+
 The finite failures of Section~\ref{sec:finite} have two different causes, and
 separating them is what motivates the model of this section.
 
 \emph{Structural non-identifiability} (Example~\ref{ex:ABAB}) is the failure to
 determine the genome from the read distribution at all. Bridging conditions
-address it, and Theorem~\ref{thm:rigidity} shows how far they go on the
+address it, and Theorem~\ref{rem:rigidity} shows how far they go on the
 same-length slice.
 
 \emph{Finite-sampling fluctuation} is a different phenomenon. Even a candidate
@@ -60,7 +74,7 @@ the finite analysis, not an assumption of either historical paper.}
 \end{definition}
 
 \begin{lemma}[Gibbs/KL identity; the truth is always a population maximizer]
-\label{lem:gibbs}
+\label{rem:gibbs}
 For any candidate $D$,
 \[
   \ellpop_S(D)-\ellpop_S(S) = -\KL(p_S\,\|\,p_D) \;\le\; 0,
@@ -81,10 +95,35 @@ inequality \cite{cover2006} gives $\KL\ge0$ with equality iff the distributions
 agree. The last claim is immediate since $S$ is in the class.
 \end{proof}
 
-Lemma~\ref{lem:gibbs} is the conceptual heart of the repair. At the population
+Lemma~\ref{rem:gibbs} is the conceptual heart of the repair. At the population
 level the maximizer statement is free; the entire content of a uniqueness theorem
 is then \emph{spectrum identifiability}: for which candidate classes is
 $p_D=p_S$ equivalent to $D\approx S$?
+
+\begin{remark}[Maximality is universal; uniqueness is the theorem]
+\label{rem:max-vs-unique}
+The Gibbs/KL identity quantifies over \emph{every} candidate $D$ --- the class
+may be finite or a proper class, the genomes arbitrarily long --- and needs
+no repeat, primitivity, or feasibility hypothesis. Uniqueness is the opposite
+kind of statement: it says the equality case $p_D=p_S$ forces $D\approx S$,
+and that is false in general (Example~\ref{ex:ABAB}: distinct genomes with
+identical read distributions). Proving it for the oriented primitive P2 class
+is the content of Theorem~\ref{rem:population}, and it is the special
+identifiability result this project contributes; the maximizer statement is
+textbook, the uniqueness theorem is ours.
+\statusline{\claimK{} for both directions as formalized: \texttt{PopulationGibbs}
+and \popml.}
+\end{remark}
+
+\begin remark}[Finite-space consistency is a different theorem]
+\label{rem:consistency-distinction}
+Asymptotic recovery for a \emph{finite} candidate space --- per-truth success
+tending to $1$ as $n\to\infty$ when candidates are pairwise distinguishable ---
+is an external theorem about finite families (Remark~\ref{rem:sample-complexity};
+\claimT). It is not the population theorem: the population theorem involves no
+sampling and no finiteness, and the consistency theorem says nothing about
+uniqueness within a tie class. The two are related only through
+identifiability, which both need in their own way.
 
 \subsection{P2 plus primitivity remove spectrum scaling}
 
@@ -167,7 +206,7 @@ The remaining step is a complete-spectrum uniqueness statement. Historically it
 is the classical theorem of Bresler, Bresler, and Tse, which we record below as
 a source fact; the project's formal proof now discharges the step internally, so
 the theorem below is no longer an external premise of
-Theorem~\ref{thm:population}.
+Theorem~\ref{rem:population}.
 
 \begin{theorem}[Bresler--Bresler--Tse complete-spectrum uniqueness]
 \label{thm:BBT}
@@ -194,7 +233,7 @@ condensed length-$(L-1)$-mer graph; its axiom audit reports only the three
 standard axioms and it names no BBT premise. Theorem~\ref{thm:BBT} is retained
 because it is the source-faithful classical statement of the same step.
 The finite truth-and-competitor-certified same-length rotation theorem
-(Corollary~\ref{cor:same-length-rotation}, merged PR~\#124)
+(Corollary~\ref{rem:same-length-rotation}, merged PR~\#124)
 now also has its own kernel-checked proof; the historical finite BBT
 interface remains an optional conditional route under weaker hypotheses.
 \end{remark}
@@ -202,7 +241,7 @@ interface remains an optional conditional route under weaker hypotheses.
 \subsection{Population uniqueness for the oriented primitive P2 class}
 
 \begin{theorem}[Population uniqueness, oriented primitive P2]
-\label{thm:population}
+\label{rem:population}
 Let $L\ge2$. Among primitive P2-admissible oriented circular candidates, the
 true genome $S$ is the unique population maximum-likelihood genome up to cyclic
 rotation.
@@ -210,19 +249,19 @@ rotation.
 
 \begin{proof}
 Let $D$ be primitive and P2-admissible with $\ellpop_S(D)=\ellpop_S(S)$. By
-Lemma~\ref{lem:gibbs}, $p_D=p_S$; by Lemma~\ref{lem:scaling} both spectra
+Lemma~\ref{rem:gibbs}, $p_D=p_S$; by Lemma~\ref{lem:scaling} both spectra
 have gcd one, hence the corollary gives
 $\spec_L(D)=\spec_L(S)$. Both $S$ and $D$ satisfy P2, hence Ukkonen's condition
 at $K=L-1$, so the complete-spectrum uniqueness step applied to the complete
 $(L)$-spectrum gives a unique Eulerian cycle and therefore $D\sim S$. The truth
-is a maximizer by Lemma~\ref{lem:gibbs}. The complete-spectrum step is
+is a maximizer by Lemma~\ref{rem:gibbs}. The complete-spectrum step is
 supplied by Theorem~\ref{thm:BBT} in the source-faithful presentation, and is
 proved internally in the kernel (Remark~\ref{rem:internal-bbt}); either route
 proves the same conclusion.
 \end{proof}
 
 \statusline{The whole chain is \kernelcheck{} with \emph{no external premise}.
-The Gibbs/KL layer of Lemma~\ref{lem:gibbs} (issue \#89, in
+The Gibbs/KL layer of Lemma~\ref{rem:gibbs} (issue \#89, in
 \texttt{PopulationGibbs}), the definitions P1/P2 of
 Definition~\ref{def:P1P2} and their alignment with Ukkonen's condition at
 $K=L-1$ (issue \#89, in \texttt{P2}), the division/Eulerian gcd-one

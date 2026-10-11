@@ -13,12 +13,12 @@ that the mathematically clean content lives in two distinct failure modes.
 \paragraph{Structural/model failure.}
 Without a repeat/read-length boundary the genome need not be identifiable at all
 (Example~\ref{ex:ABAB}). Bridging conditions repair the structural ambiguity, and
-Theorem~\ref{thm:rigidity} shows that on the same-length oriented Section~6.2
+Theorem~\ref{rem:rigidity} shows that on the same-length oriented Section~6.2
 slice they are strong enough to make the truth's spectrum the only positive
 circulation --- an exact rigidity, not just a reconstruction claim. Requiring
 candidate length equal to the true length is, however, a strong extra axiom. It
 is not supplied by Medvedev and Brudno's known-size parameter, and
-Theorem~\ref{thm:cex-variable-length} shows the conclusion fails as soon as it is
+Theorem~\ref{rem:cex-variable-length} shows the conclusion fails as soon as it is
 dropped.
 
 \paragraph{Finite-sampling failure.}
@@ -26,26 +26,30 @@ Even structurally admissible genomes can lose to the truth's competitors because
 empirical read frequencies fluctuate (Example~\ref{ex:frequencies}). This is a
 different mechanism and needs a different repair. Population maximum likelihood
 removes it at the maximizer level by construction
-(Lemma~\ref{lem:gibbs}), and for the oriented primitive P2 class it also yields
-uniqueness (Theorem~\ref{thm:population}).
+(Lemma~\ref{rem:gibbs}), and for the oriented primitive P2 class it also yields
+uniqueness (Theorem~\ref{rem:population}).
 
 The resulting conceptual progression is:
 
 \begin{quote}
-naive ML intuition
-$\to$ structural repeat obstruction
-$\to$ the literature's repeat/bridging boundary
-$\to$ boundary-conditioned finite ML
-$\to$ a positive same-length slice but negative variable-length neighbors
-$\to$ replacing privileged true-length knowledge by intrinsic candidate checks
+random reads make likelihood a decision rule
+$\to$ ML is the simplest principled benchmark, Bayes-optimal on average
+$\to$ the 2016 question: does a structural feasibility predicate imply it?
+$\to$ the question splits: conditional fiber vs.\ unrestricted ranking
+$\to$ conditional: a corollary of the reconstruction theorem
+$\to$ unrestricted: strict finite counterexamples, pointwise not paradoxical
+$\to$ positive same-length rigidity, but negative variable-length neighbors
 $\to$ finite failure surviving as sampling fluctuation
-$\to$ population ML removing the fluctuation
+$\to$ population ML removing the fluctuation (KL/Gibbs, any class)
 $\to$ P2 plus primitivity restoring oriented circular uniqueness.
 \end{quote}
 
 This ordering matters: population data is not introduced to patch repeat
-ambiguity, and intrinsic candidate checks are not introduced as assumptions of
-the historical papers. They repair weaknesses exposed in sequence.
+ambiguity, intrinsic candidate checks are not introduced as assumptions of
+the historical papers, and the conditional guarantee is not introduced as an
+unconditional ML theorem. Each repair addresses exactly the weakness exposed
+in sequence, and the five notions of Section~\ref{sec:five-notions} stay
+distinguishable throughout.
 
 \subsection{What remains open}
 
@@ -73,7 +77,7 @@ $o_{\min}$ Section~6.2 flow domain.
 \paragraph{Mathematical questions.}
 The same-length Section~6.2 statement under the per-occurrence strengthening
 ($d_D\ge x$) is \emph{no longer open}: it is false, by the same-length witness
-$ATATACAC\to ATACACAC$ (Theorem~\ref{thm:cex-peroccurrence}) whose truth is
+$ATATACAC\to ATACACAC$ (Theorem~\ref{rem:cex-peroccurrence}) whose truth is
 itself per-occurrence feasible. That this needed the real four-letter DNA
 alphabet, where no base is its own reverse complement, is a reminder that the
 small-counterexample search space for a modeling choice can be non-monotone in
@@ -100,7 +104,7 @@ classical Bresler--Bresler--Tse complete-spectrum uniqueness theorem remains a
 source-faithful mathematical explanation of the identifiability step, but it
 is no longer a required external premise of either the population theorem or
 the \emph{truth-candidate-conditional} finite rotation theorem
-(Corollary~\ref{cor:same-length-rotation}). Without
+(Corollary~\ref{rem:same-length-rotation}). Without
 truth candidacy the nonprimitive candidate case is positive,
 whereas the primitive candidate case is refuted by a certified
 nonrotation competitor. Neither is an unrestricted
@@ -136,17 +140,27 @@ same-length and population results show where the intuition does survive.
 
 \subsection{Conclusion}
 
-Our central subject is the likelihood ranking of candidate genomes, not
-an algorithm for reconstructing one. Under the bridging conditions that make
-reads information-feasible, the truth's spectrum is the unique positive
-circulation of its window-support graph, and on the same-length oriented slice
-the truth is the unique likelihood maximizer up to cyclic rotation. Once
-candidate length or strand convention is relaxed, this guarantee fails: finite
-observations exist in which a competitor is strictly more likely, because the
-exact objective scores empirical frequencies and a competitor can reweight an
-unrepresentative sample. At the population level the fluctuation disappears,
-the truth is always a maximizer, and among primitive P2 genomes it is the
-unique one --- the nontrivial combinatorial heart of the paper. Each result is
-stated for an explicit objective, read-type convention, and candidate class;
-together they map the precise circumstances in which the true genome is most
-likely, and the equally precise circumstances in which it is not.
+Our central subject is the likelihood ranking of candidate genomes as a
+statistical decision problem, not an algorithm for reconstructing one. Reads
+are random, so the ML rule is a decision rule, and with a uniform prior over
+equivalence classes and zero-one loss it is Bayes-optimal on average at every
+sample size --- the conceptually simplest principled benchmark. The 2016
+question asks whether the literature's structural feasibility predicate makes
+the true genome the ML genome, and the answer is twofold. Conditionally, with
+the candidate set constrained to the feasible fiber, the truth is the unique
+conditional maximizer --- a corollary of the reconstruction theorem, not a new
+ML result. Unconditionally, the implication fails: finite observations exist
+in which a competitor is strictly more likely, because the exact objective
+scores empirical frequencies and a competitor can reweight an unrepresentative
+sample. These failures are pointwise and consistent with prior-average
+optimality; they are not paradoxes. The positive content survives where the
+structure is strong enough: under bridging, the truth's spectrum is the unique
+positive circulation of its window-support graph, and on the same-length
+oriented slice the truth is the unique likelihood maximizer up to cyclic
+rotation; at the population level the fluctuation disappears, the truth is
+always a maximizer for any candidate class, and among primitive P2 genomes it
+is the unique one --- the nontrivial combinatorial heart of the paper. Each
+result is stated for an explicit objective, read-type convention, and candidate
+class, and carries one of the five proof-to-claim labels; together they map
+the precise circumstances in which the true genome is most likely, and the
+equally precise circumstances in which it is not.
