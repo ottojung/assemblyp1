@@ -16,17 +16,42 @@ concurrency:
 
 jobs:
   pdfs:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install GNU Guix
-        uses: PromyLOPh/guix-install-action@v1
-        with:
-          pullAfterInstall: false
+      # The archived guix-install-action@v1 downloaded a floating nightly from
+      # ci.guix.gnu.org/search/latest, which repeatedly returned HTTP 502.
+      # The version and checksum below are independently pinned; the matching
+      # installer is fetched from a specific Git commit, not a moving branch.
+      # See https://github.com/monero-project/monero/blob/master/.github/workflows/guix.yml
+      - name: Install verified GNU Guix binary
+        shell: bash
+        run: |
+          set -euo pipefail
+          archive="guix-binary-1.5.0.x86_64-linux.tar.xz"
+          expected_sha256="aa41025489c5061543e9c48873eaa829b900b2da75d40f9648913622f5f47817"
+          wget --tries=5 --waitretry=10 --no-verbose \
+            "https://mirrors.ocf.berkeley.edu/gnu/guix/${archive}" \
+            -O "/tmp/${archive}"
+          echo "${expected_sha256}  /tmp/${archive}" | sha256sum -c -
+          curl --fail --location --silent --show-error --retry 5 \
+            "https://raw.githubusercontent.com/monero-project/guix/7fd75725c5daf9d3bdfd9122dcdb37f650493d18/etc/guix-install.sh" \
+            -o /tmp/guix-install.sh
+          chmod +x /tmp/guix-install.sh
+          { yes "" 2>/dev/null || true; } |
+            sudo env GUIX_BINARY_FILE_NAME="/tmp/${archive}" /tmp/guix-install.sh
+          if [[ -f /etc/profile.d/zzz-guix.sh ]]; then
+            source /etc/profile.d/zzz-guix.sh
+          fi
+          /usr/local/bin/guix --version
 
       - name: Build white paper
-        run: bash ./paper/build.sh
+        shell: bash
+        run: |
+          set -euo pipefail
+          export PATH="/usr/local/bin:/var/guix/profiles/per-user/root/current-guix/bin:${PATH}"
+          bash ./paper/build.sh
 
       - name: Upload white paper
         uses: actions/upload-artifact@v4
