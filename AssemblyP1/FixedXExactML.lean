@@ -93,7 +93,7 @@ fixed observation `x`: `∏ w ∈ E, (B w / G)^(x w)`. This is the oriented
 same-length exact Medvedev–Brudno multinomial objective
 (`docs/ml-formalization-contract.md` Variant E) with the observation-only
 multinomial coefficient divided out, evaluated at a spectrum. -/
-def spectrumLikFactor {G L : ℕ} (hG : 0 < G) (E : Finset (Fin L → α))
+def spectrumLikFactor {G L : ℕ} (_hG : 0 < G) (E : Finset (Fin L → α))
     (B : (Fin L → α) → ℕ) (x : (Fin L → α) → ℕ) : ℚ :=
   ∏ w ∈ E, ((B w : ℚ) / (G : ℚ)) ^ (x w)
 
@@ -117,7 +117,7 @@ theorem spectrumLikFactor_eq_likProduct_div {G L : ℕ} (hG : 0 < G)
     unfold OrientedSameLengthML.totalReads
     exact Finset.sum_subset (Finset.subset_univ E) hoff
   rw [hsum]
-  simp [Rat.cast_pow, Rat.cast_prod]
+  simp
 
 /-! ## The genome-level objective is the spectrum-level factor -/
 
@@ -126,7 +126,7 @@ theorem spectrumLikFactor_eq_likProduct_div {G L : ℕ} (hG : 0 < G)
 `Rat.cast_pow` plus the double-cast `Rat.cast_natCast`. -/
 theorem factor_cast {G : ℕ} (k : ℕ) (n : ℕ) :
     ((k : ℝ) / (G : ℝ)) ^ n = (((k : ℚ) / (G : ℚ)) ^ n : ℝ) := by
-  simp [div_pow, Rat.cast_pow, Rat.cast_natCast]
+  simp [div_pow, Rat.cast_natCast]
 
 /-- **The genome-level `exactLik` equals the exact rational likelihood factor
 of the candidate's spectrum** (observation-only multinomial coefficient
@@ -228,7 +228,7 @@ theorem fixedX_classification_iff_of_realizable {G L : ℕ} (hG : 0 < G)
     (S : Fin G → α) (x : (Fin L → α) → ℕ)
     (hreal : ∃ ρ : OrientedSameLengthML.Realization G (OrientedSameLengthML.totalReads x),
       OrientedSameLengthML.observedOf (L := L) hG S ρ = x)
-    (hcov : ∀ ρ : OrientedSameLengthML.Realization G (OrientedSameLengthML.totalReads x),
+    (_hcov : ∀ ρ : OrientedSameLengthML.Realization G (OrientedSameLengthML.totalReads x),
       OrientedSameLengthML.observedOf (L := L) hG S ρ = x →
         SourceFaithfulIs.Covers (OrientedSameLengthML.asGenome hG S) L
           (OrientedSameLengthML.realizedStarts ρ)) :
