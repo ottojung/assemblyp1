@@ -487,6 +487,26 @@ These theorems quantify over `IsFeasibleSpectrum`, not a stipulated
 four-element candidate list. Exhaustiveness is supplied by
 `feasibleSpectrum_iff_258` above. All comparisons are exact integers. -/
 
+/-- The structural census reduces maximum likelihood for any fixed x
+to three exact integer comparisons, with no preselected candidate restriction. -/
+theorem fixedX_four_chamber_iff_258 (x : (Fin 2 → Fin 2) → ℕ) :
+    (∀ B : (Fin 2 → Fin 2) → ℕ, IsFeasibleSpectrum (by decide : 0 < 6) S255 B →
+      likProduct E255 B x ≤ likProduct E255 B1 x) ↔
+    (likProduct E255 B2 x ≤ likProduct E255 B1 x ∧
+     likProduct E255 B3 x ≤ likProduct E255 B1 x ∧
+     likProduct E255 B4 x ≤ likProduct E255 B1 x) := by
+  constructor
+  · intro h
+    exact ⟨h B2 feasible_B2_258, h B3 feasible_B3_258, h B4 feasible_B4_258⟩
+  · rintro ⟨h2, h3, h4⟩ B hB
+    rcases (feasibleSpectrum_iff_258 B).mp hB with h | h | h | h
+    · rw [h]
+    · rw [h]; exact h2
+    · rw [h]; exact h3
+    · rw [h]; exact h4
+
+#print axioms fixedX_four_chamber_iff_258
+
 def xTie258 : (Fin 2 → Fin 2) → ℕ := fun _ => 1
 
 theorem truth_spec_B1_258 :
