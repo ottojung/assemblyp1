@@ -1,7 +1,7 @@
 # AssemblyP1 umbrella #255 — remaining-open matrix
 
 _Status: 2026-10-11. Source-fidelity / whitepaper-theorem-matrix integration
-front. Base: `main` @ `02406aa26239eab1d224f2d434df7628f04be8d1` (green).
+front. Base: `main` @ `f2a6a607d4833aac7220be19d9bde1604f5b19cd` (green).
 This matrix is a proposed, reviewable status record for the #255 research
 umbrella, not a declaration that the remaining proofs are finished. It is
 updated only when a scoped claim is proved, refuted, or explicitly
@@ -107,6 +107,32 @@ Every material result is classified as one of:
 - **Status:** OPEN. No binomial-specific classification (extra `(1−d(w)/N)^{n−x(w)}`
   factors, zero-count coordinates, boundary 0/1 probabilities) is established.
 - **Note:** The recovered WIP's continuous KKT iff is FALSE (see REFUTED above).
+- **Primary-source record (MB09 §6.1, page 11):** the original Medvedev–Brudno
+  2009 PDF literally states: "However, as the number of trials goes to
+  infinity, the X_i random variables become independent." (verified directly
+  against <https://www.cs.toronto.edu/~brudno/medvedev_MLA.pdf>, page 11,
+  §6.1; the sentence sits between "When taken together, their joint
+  distribution is exactly the multinomial distribution" and "Because the
+  number of trials (sampled k-molecules) is typically large, we can
+  approximate the multinomial distribution as the product of the individual
+  binomial distributions of each X_i."). Three things are explicitly separate:
+  - **(a) Literal asymptotic statement:** the quotation is what the authors
+    wrote, as an asymptotic motivation for replacing the exact multinomial by
+    the product of binomial marginals. It is a source fact about the paper's
+    wording, now recorded verbatim with page.
+  - **(b) No finite-sample license:** the sentence licenses NO finite-sample
+    claim. For a multinomial with fixed category probabilities `p_i`,
+    `Cov(X_i,X_j) = −n·p_i·p_j` and the standardized correlation
+    `−sqrt(p_i·p_j/((1−p_i)(1−p_j)))` is independent of `n`; only the
+    normalized frequencies `X_i/n` have covariance `−p_i·p_j/n → 0`. The
+    product-of-binomials objective is therefore a deliberate approximate
+    pseudo-likelihood — not the exact joint likelihood, and not a generally
+    asymptotically exact factorization — and no finite-`n` maximality
+    classification for (A) or (B) follows from it.
+  - **(c) Status unchanged:** #259 (A)/(B) remains OPEN; the landed
+    exact-multinomial scopes (#256, #260), the refuted bridging/KKT claims,
+    and every other OPEN entry are unaffected. No status is flipped by this
+    source-fidelity correction.
 
 ### #261 (general MB09 §6.2 bidirected flows at arbitrary `o_min ≤ L−1`)
 
@@ -155,6 +181,7 @@ original Medvedev-Brudno 2009 source:
 | Audit point | Status |
 |---|---|
 | §6.1 true joint multinomial vs approximate product-binomial pseudo-likelihood | Correctly distinguished in paper Def. 1.2 and Appendix A.5 |
+| §6.1 asymptotic independence sentence | Literal statement present in the MB09 PDF, p. 11: "However, as the number of trials goes to infinity, the X_i random variables become independent." — recorded verbatim in the #259 primary-source record; licenses no finite-sample claim |
 | §6.2 signed bidirected flow vs actual circular genomes | Correctly distinguished in paper §2.3, §4, and Appendix D |
 | Infinite graph capacities vs external N probability bound | Correctly distinguished: §6.2 has `u = ∞` on overlap edges; §6.1 binomial uses external `N` |
 | Terminal arcs high cost vs forbidden | Correctly stated: supersource/sink edges have "prohibitively large costs", not forbidden |

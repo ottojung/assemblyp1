@@ -17,7 +17,7 @@ For observed read counts `x_i`, total number of reads `n`, candidate read-type m
 
 The approximate likelihood is the product of these marginals over the read-type space. In particular, types with `x_i = 0` retain their `(1-d_i/N)^n` factors. Dropping those factors defines a different objective.
 
-The paper motivates this approximation by saying that the multinomial count variables become independent as the number of trials tends to infinity. That motivation should not itself be treated as a theorem used by this repository. For a multinomial with fixed category probabilities `p_i`, distinct nondegenerate counts satisfy
+The paper motivates this approximation by saying that the multinomial count variables become independent as the number of trials tends to infinity — MB09 §6.1, page 11: "However, as the number of trials goes to infinity, the X_i random variables become independent." (verified against the original authors' PDF, <https://www.cs.toronto.edu/~brudno/medvedev_MLA.pdf>). That motivation should not itself be treated as a theorem used by this repository. For a multinomial with fixed category probabilities `p_i`, distinct nondegenerate counts satisfy
 
 `Corr(X_i, X_j) = -sqrt(p_i p_j / ((1-p_i)(1-p_j)))`,
 
