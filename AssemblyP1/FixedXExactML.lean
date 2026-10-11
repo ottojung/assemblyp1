@@ -1,6 +1,9 @@
 import Mathlib
 import AssemblyP1.OrientedSameLengthML
 import AssemblyP1.SourceFaithfulIs
+import AssemblyP1.HistoricalCovers
+
+open AssemblyP1.HistoricalCovers
 
 /-!
 # Fixed-`x` exact ML classification (issue #258)
@@ -30,17 +33,19 @@ reverse-complement molecule flows or to the §6.1 binomial approximation. See
   integer likelihood-product inequality for every feasible spectrum.
 * `fixedX_classification_iff_of_realizable`: the directly stated theorem of
   deliverable 5, with explicit quantifiers for sampling realizability
-  (`hreal`), historical coverage (`hcov`), the objective (exact multinomial,
-  Variant E) and the candidate universe (same-length oriented feasible
-  spectra).
+  (`hreal`), historical coverage (`hcov` — §6.4 Definition 1 read-string
+  matching via `HistoricalCovers`, not placement-based `Covers`), the
+  objective (exact multinomial, Variant E) and the candidate universe
+  (same-length oriented feasible spectra).
 * `exactLik_eq_spectrumLikFactor`: the genome-level `exactLik` equals the
   exact rational likelihood factor of the candidate's spectrum, so the
   spectrum-level iff applies to the genome-level objective.
 * `FixedXExample`: the concrete instance of deliverable 3 — genome
-  `S = AAABBB`, `L = 2`, with four feasible spectra; the truth wins at the
-  realizable complete-support sample `x1` and loses at the realizable
-  complete-support sample `x2` (exact ratio `4`). All instance facts are
-  kernel-checked by `decide`/`norm_num`.
+  `S = AAABBB`, `L = 2`, with four feasible spectra; the truth wins for one
+  realizable complete-support sample and loses for another.
+* `fixedX_unique_at_x1`, `fixedX_tie_at_xT`, `fixedX_loss_at_x2`: the
+  explicit chamber endpoints of deliverable 2 — unique maximizer, tie at top,
+  and strict loss, each as a universal theorem over the feasible set.
 
 ## What is deliberately not proved here
 
@@ -52,9 +57,10 @@ reverse-complement molecule flows or to the §6.1 binomial approximation. See
   its decision content is the finite certificate, which is kernel-checked at
   the instance.
 * Full `I_s` is not assumed anywhere; the coverage hypothesis is the source's
-  `Covers` clause only. The concrete instance does not satisfy full `I_s`
-  (bridging a length-`1` triple repeat needs a read of length `≥ 3`), which is
-  exactly why its feasible set is not a singleton.
+  §6.4 historical coverage (`HistoricalCovers`) only. The concrete instance
+  does not satisfy full `I_s` (bridging a length-`1` triple repeat needs a
+  read of length `≥ 3`), which is exactly why its feasible set is not a
+  singleton.
 -/
 
 namespace AssemblyP1.FixedXExactML
@@ -118,6 +124,13 @@ theorem spectrumLikFactor_eq_likProduct_div {G L : ℕ} (hG : 0 < G)
     exact Finset.sum_subset (Finset.subset_univ E) hoff
   rw [hsum]
   simp
+
+/-! ## Observed words from a count vector -/
+
+/-- The set of observed read types: the words with positive count. This is the
+`Finset` form of the observation consumed by `HistoricalCovers`. -/
+def observedWords {L : ℕ} (x : (Fin L → α) → ℕ) : Finset (Fin L → α) :=
+  Finset.univ.filter (fun w => 0 < x w)
 
 /-! ## The genome-level objective is the spectrum-level factor -/
 
@@ -214,8 +227,10 @@ theorem fixedX_classification_iff {G L : ℕ} (hG : 0 < G) (S : Fin G → α)
 
 /-- **The directly stated Lean theorem (deliverable 5).** For a fixed
 observation `x` that is realizable from the truth (sampling realizability,
-`hreal`) by a realization whose starts cover the genome (historical coverage,
-`hcov`), the truth spectrum maximizes the exact multinomial likelihood factor
+`hreal`) by a realization whose observed read types historically cover the
+genome (historical coverage, `hcov` — §6.4 Definition 1: for every position
+`t` there is an observed read string matching at a position in `[t, t+L−2]`),
+the truth spectrum maximizes the exact multinomial likelihood factor
 (objective: Variant E, coefficient divided out) over the same-length oriented
 feasible spectra (candidate universe) if and only if the exact integer
 likelihood product of the truth dominates that of every feasible spectrum.
@@ -223,15 +238,17 @@ likelihood product of the truth dominates that of every feasible spectrum.
 The realizability hypothesis implies the support hypothesis of
 `fixedX_classification_iff` via `observedOf_mem_support`. The coverage
 hypothesis is stated for every realization producing `x` (coverage is a
-property of the realization, not of the likelihood). -/
+property of the realization, not of the likelihood). Historical coverage
+(`HistoricalCovers`) is the source's §6.4 read-string matching condition,
+not the old placement-based `SourceFaithfulIs.Covers`. -/
 theorem fixedX_classification_iff_of_realizable {G L : ℕ} (hG : 0 < G)
     (S : Fin G → α) (x : (Fin L → α) → ℕ)
     (hreal : ∃ ρ : OrientedSameLengthML.Realization G (OrientedSameLengthML.totalReads x),
       OrientedSameLengthML.observedOf (L := L) hG S ρ = x)
     (_hcov : ∀ ρ : OrientedSameLengthML.Realization G (OrientedSameLengthML.totalReads x),
       OrientedSameLengthML.observedOf (L := L) hG S ρ = x →
-        SourceFaithfulIs.Covers (OrientedSameLengthML.asGenome hG S) L
-          (OrientedSameLengthML.realizedStarts ρ)) :
+        HistoricalCovers (OrientedSameLengthML.asGenome hG S) L
+          (observedWords x)) :
     (∀ B : (Fin L → α) → ℕ, IsFeasibleSpectrum hG S B →
         spectrumLikFactor hG (OrientedRigidity.support (L := L) hG S) B x
           ≤ spectrumLikFactor hG (OrientedRigidity.support (L := L) hG S)
@@ -336,9 +353,9 @@ The truth wins uniquely at `x1` (products 16, 9, 9, 4) and strictly loses at
 realizable under iid replacement. -/
 theorem FixedXExample :
     (likProduct E255 B1 x1 = 16 ∧ likProduct E255 B2 x1 = 9 ∧
-     likProduct E255 B3 x1 = 9 ∧ likProduct E255 B4 x1 = 4) ∧
+      likProduct E255 B3 x1 = 9 ∧ likProduct E255 B4 x1 = 4) ∧
     (likProduct E255 B1 x2 = 4 ∧ likProduct E255 B2 x2 = 3 ∧
-     likProduct E255 B3 x2 = 3 ∧ likProduct E255 B4 x2 = 16) ∧
+      likProduct E255 B3 x2 = 3 ∧ likProduct E255 B4 x2 = 16) ∧
     (∃ ρ : OrientedSameLengthML.Realization 6 6,
       OrientedSameLengthML.observedOf (L := 2) (by decide) S255 ρ = x1) ∧
     (∃ ρ : OrientedSameLengthML.Realization 6 6,
@@ -346,5 +363,105 @@ theorem FixedXExample :
   refine ⟨⟨likProduct_x1_B1_258, likProduct_x1_B2_258, likProduct_x1_B3_258, likProduct_x1_B4_258⟩,
           ⟨likProduct_x2_B1_258, likProduct_x2_B2_258, likProduct_x2_B3_258, likProduct_x2_B4_258⟩,
           realizable_x1_258, realizable_x2_258⟩
+
+/-! ## The tie sample xT and explicit chamber endpoints
+
+The three observations x1, xT, x2 realize the three chamber types: unique
+maximizer, tie at top, and strict loss. This section makes each endpoint an
+explicit universal theorem over the feasible set. -/
+
+/-- The tie sample: xT = (1,1,1,1), realizable by starts {0,1,2,3,4,5}. -/
+def xT : (Fin 2 → Fin 2) → ℕ := fun w => if w = wAA then 1 else if w = wAB then 1 else if w = wBB then 1 else if w = wBA then 1 else 0
+
+/-- Likelihood products at xT: truth ties at top with B4 (4 = 4 > 3, 3). -/
+theorem likProduct_xT_B1_258 : likProduct E255 B1 xT = 4 := by decide
+theorem likProduct_xT_B2_258 : likProduct E255 B2 xT = 3 := by decide
+theorem likProduct_xT_B3_258 : likProduct E255 B3 xT = 3 := by decide
+theorem likProduct_xT_B4_258 : likProduct E255 B4 xT = 4 := by decide
+
+/-- Realization producing xT: starts 0, 2, 3, 5 (one of each word). -/
+def rhoT : OrientedSameLengthML.Realization 6 4 := ![0, 2, 3, 5]
+
+/-- xT is realizable from AAABBB. -/
+theorem realizable_xT_258 : ∃ ρ : OrientedSameLengthML.Realization 6 4,
+    OrientedSameLengthML.observedOf (L := 2) (by decide) S255 ρ = xT := by
+  refine ⟨rhoT, ?_⟩
+  funext w
+  simp only [OrientedSameLengthML.observedOf, rhoT]
+  fin_cases w <;> decide
+
+/-! ## Likelihood chambers (deliverable 2)
+
+The feasible count vectors `x` are partitioned into *likelihood chambers* by
+the comparisons of candidate spectra. For each pair `(A, B)` of feasible
+spectra, the exact integer likelihood products divide `x`-space into three
+regions: A wins (`likProduct B x < likProduct A x`), ties (`=`), or loses
+(`>`). The chambers are the atoms of the σ-algebra generated by these
+comparisons — the finest partition consistent with all pairwise orderings. -/
+
+/-- The chamber status of the truth `A` against one feasible competitor `B` at
+observation `x`: `A` wins or ties iff `likProduct B x ≤ likProduct A x`. -/
+def chamberStatus {L : ℕ} (E : Finset (Fin L → α)) (A B : (Fin L → α) → ℕ)
+    (x : (Fin L → α) → ℕ) : Prop :=
+  likProduct E B x ≤ likProduct E A x
+
+/-- The truth `A` uniquely maximizes over the feasible set at `x`: every
+feasible `B` satisfies `likProduct B x ≤ likProduct A x`, and every feasible
+`B ≠ A` satisfies the strict inequality. -/
+def uniqueMaximizer {L : ℕ} (E : Finset (Fin L → α)) (A : (Fin L → α) → ℕ)
+    (x : (Fin L → α) → ℕ) (feasible : ((Fin L → α) → ℕ) → Prop) : Prop :=
+    (∀ B, feasible B → likProduct E B x ≤ likProduct E A x) ∧
+    (∀ B, feasible B → B ≠ A → likProduct E B x < likProduct E A x)
+
+/-- The truth `A` ties at the top with some other feasible spectrum at `x`:
+every feasible `B` satisfies `likProduct B x ≤ likProduct A x`, and there
+exist feasible `B ≠ A` with equality. -/
+def tieAtTop {L : ℕ} (E : Finset (Fin L → α)) (A : (Fin L → α) → ℕ)
+    (x : (Fin L → α) → ℕ) (feasible : ((Fin L → α) → ℕ) → Prop) : Prop :=
+    (∀ B, feasible B → likProduct E B x ≤ likProduct E A x) ∧
+    (∃ B, feasible B ∧ B ≠ A ∧ likProduct E B x = likProduct E A x)
+
+/-- The truth `A` strictly loses to some feasible `B` at `x`. -/
+def strictLoss {L : ℕ} (E : Finset (Fin L → α)) (A : (Fin L → α) → ℕ)
+    (x : (Fin L → α) → ℕ) (feasible : ((Fin L → α) → ℕ) → Prop) : Prop :=
+    ∃ B, feasible B ∧ likProduct E A x < likProduct E B x
+
+/-- **Explicit endpoint: truth uniquely maximizes at x1.** -/
+theorem fixedX_unique_at_x1 : uniqueMaximizer E255 B1 x1
+    (fun B => B = B1 ∨ B = B2 ∨ B = B3 ∨ B = B4) := by
+  refine ⟨?_, ?_⟩
+  · intro B hB
+    rcases hB with rfl | rfl | rfl | rfl
+    · simp [likProduct_x1_B1_258]
+    · simp [likProduct_x1_B2_258, likProduct_x1_B1_258]
+    · simp [likProduct_x1_B3_258, likProduct_x1_B1_258]
+    · simp [likProduct_x1_B4_258, likProduct_x1_B1_258]
+  · intro B hB hne
+    rcases hB with rfl | rfl | rfl | rfl
+    · exact absurd rfl hne
+    · simp [likProduct_x1_B2_258, likProduct_x1_B1_258]
+    · simp [likProduct_x1_B3_258, likProduct_x1_B1_258]
+    · simp [likProduct_x1_B4_258, likProduct_x1_B1_258]
+
+/-- **Explicit endpoint: truth ties at top with B4 at xT.** -/
+theorem fixedX_tie_at_xT : tieAtTop E255 B1 xT
+    (fun B => B = B1 ∨ B = B2 ∨ B = B3 ∨ B = B4) := by
+  refine ⟨?_, ?_⟩
+  · intro B hB
+    rcases hB with rfl | rfl | rfl | rfl
+    · simp [likProduct_xT_B1_258]
+    · simp [likProduct_xT_B2_258, likProduct_xT_B1_258]
+    · simp [likProduct_xT_B3_258, likProduct_xT_B1_258]
+    · simp [likProduct_xT_B4_258, likProduct_xT_B1_258]
+  · refine ⟨B4, Or.inr (Or.inr (Or.inr rfl)), ?_, likProduct_xT_B4_258⟩
+    intro h
+    have hcongr : B4 wAA = B1 wAA := congrArg (fun f => f wAA) h
+    simp [B4, B1] at hcongr
+
+/-- **Explicit endpoint: truth strictly loses to B4 at x2.** -/
+theorem fixedX_loss_at_x2 : strictLoss E255 B1 x2
+    (fun B => B = B1 ∨ B = B2 ∨ B = B3 ∨ B = B4) :=
+  ⟨B4, Or.inr (Or.inr (Or.inr rfl)), by
+    simp [likProduct_x2_B1_258, likProduct_x2_B4_258]⟩
 
 end AssemblyP1.FixedXExactML

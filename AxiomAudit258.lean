@@ -8,3 +8,6 @@ open AssemblyP1.FixedXExactML
 #print axioms AssemblyP1.FixedXExactML.fixedX_classification_iff
 #print axioms AssemblyP1.FixedXExactML.fixedX_classification_iff_of_realizable
 #print axioms AssemblyP1.FixedXExactML.FixedXExample
+#print axioms AssemblyP1.FixedXExactML.fixedX_unique_at_x1
+#print axioms AssemblyP1.FixedXExactML.fixedX_tie_at_xT
+#print axioms AssemblyP1.FixedXExactML.fixedX_loss_at_x2

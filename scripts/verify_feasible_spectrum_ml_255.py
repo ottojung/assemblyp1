@@ -68,9 +68,27 @@ def observedOf(S, L, rho):
 
 
 def covers(S, L, R):
-    """Historical coverage: every position lies in at least one realized read."""
+    """Placement-based coverage: every position lies in at least one realized read.
+    This is the old `SourceFaithfulIs.Covers`, NOT §6.4 historical coverage."""
     G = len(S)
     return all(any((r + d) % G == p for r in R for d in range(L)) for p in range(G))
+
+
+def historicalCovers(S, L, observedWords):
+    """§6.4 Definition 1 historical coverage: for every position t, there is an
+    observed read string matching at a position in [t, t+L-2]."""
+    G = len(S)
+    for t in range(G):
+        found = False
+        for d in range(L - 1):
+            tau = (t + d) % G
+            w = tuple(S[(tau + i) % G] for i in range(L))
+            if w in observedWords:
+                found = True
+                break
+        if not found:
+            return False
+    return True
 
 
 def realizedStarts(rho):
@@ -211,7 +229,9 @@ def test_instance():
     for name, x, rho in [("x1", X1, R1), ("xT", XT, RT), ("x2", X2, R2)]:
         check(observedOf(S255, L255, rho) == x, f"realization rho_{name} produces {name}")
         check(covers(S255, L255, realizedStarts(rho)),
-              f"distinct starts of rho_{name} cover the genome (historical coverage)")
+              f"distinct starts of rho_{name} cover the genome (placement-based coverage)")
+        check(historicalCovers(S255, L255, set(x)),
+              f"observed words of {name} historically cover the genome (§6.4 Def. 1)")
         check(set(x) <= set(E), f"{name} is supported on E (sampling realizability)")
 
     # Statuses and exact products.
