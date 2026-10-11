@@ -418,7 +418,7 @@ theorem coverage_implies_observed_cover {G L : ℕ} (hG : 0 < G) (S : Fin G → 
     obtain ⟨i, hi⟩ := (OrientedSameLengthML.mem_realizedStarts ρ r).mp hr
     have hterm : (if OrientedRigidity.window (L := L) hG S (ρ i) = OrientedRigidity.window (L := L) hG S r then 1 else 0) = 1 := by
       rw [hi]
-      rfl
+      simp
     have hpos : ∀ j : Fin (OrientedSameLengthML.totalReads x),
         0 ≤ (if OrientedRigidity.window (L := L) hG S (ρ j) = OrientedRigidity.window (L := L) hG S r then 1 else 0) := by
       intro j
@@ -430,12 +430,16 @@ theorem coverage_implies_observed_cover {G L : ℕ} (hG : 0 < G) (S : Fin G → 
       calc 1 = (if OrientedRigidity.window (L := L) hG S (ρ i) = OrientedRigidity.window (L := L) hG S r then 1 else 0) := by rw [hterm]
         _ ≤ ∑ j : Fin (OrientedSameLengthML.totalReads x),
             if OrientedRigidity.window (L := L) hG S (ρ j) = OrientedRigidity.window (L := L) hG S r then 1 else 0 :=
-          Finset.single_le_sum hpos (Finset.mem_univ i)
+          Finset.single_le_sum (s := Finset.univ)
+            (f := fun j : Fin (OrientedSameLengthML.totalReads x) =>
+              if OrientedRigidity.window (L := L) hG S (ρ j) =
+                  OrientedRigidity.window (L := L) hG S r then (1 : ℕ) else 0)
+            (by intro j _; exact hpos j) (Finset.mem_univ i)
     omega
   · unfold OrientedRigidity.window OrientedRigidity.cyc
     have hmod : (r.val + d.val) % G = p.val := hd.symm
-    rw [hmod]
-    exact congrArg S (Fin.ext rfl)
+    change S (⟨(r.val + d.val) % G, Nat.mod_lt _ hG⟩ : Fin G) = S p
+    exact congrArg S (Fin.ext hmod)
 
 /-- **The directly stated Lean theorem (deliverable 5).** For a fixed
 observation `x` that is realizable from the truth (sampling realizability,
