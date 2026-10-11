@@ -23,10 +23,9 @@ literally and proving the published consequences in the kernel:
   maximizer, proved for **every** candidate distribution — no repeat
   condition and no candidate-class membership is required, exactly as
   the paper states;
-* `popTie_of_eq` / `popTie_iff`: the equality characterization in
-  `lem:gibbs`, proved in the strict form (a tie at a point where the two
-  distributions differ is impossible), so a population tie forces
-  `p_D = p_S`;
+* `popTie_iff`: the equality characterization in `lem:gibbs`, proved in
+  the strict form (a tie at a point where the two distributions differ is
+  impossible), so a population tie forces `p_D = p_S`;
 * `popProb_eq_iff`: `p_D = p_S` is exactly the proportional
   (normalized) equality of the two integer spectra.
 
@@ -79,9 +78,23 @@ theorem popProb_isProb (c : W → ℕ) (hsum : (∑ w, c w) = n) (hn : 0 < n) :
   exact popProb_sum_eq_one c hsum hn
 
 /-- Two read distributions have the same support (the same set of read
-types actually observed). -/
+types actually observed). Retained as a helper; the likelihood uses
+`SuppSub` below. -/
 def SuppEq (pS pD : W → ℝ) : Prop :=
   ∀ w, (0 < pS w ↔ 0 < pD w)
+
+/-- Support inclusion: every word read by `p` is read by `q`,
+`supp p ⊆ supp q`. -/
+def SuppSub (p q : W → ℝ) : Prop :=
+  ∀ w, 0 < p w → 0 < q w
+
+omit [Fintype W] in
+theorem suppEq_refl (p : W → ℝ) : SuppEq p p := fun _ => Iff.rfl
+
+omit [Fintype W] in
+/-- Equal supports imply support inclusion (either direction). -/
+theorem suppSub_of_suppEq {pS pD : W → ℝ} (h : SuppEq pS pD) : SuppSub pS pD :=
+  fun w hw => (h w).mp hw
 
 /-- The finite part of the population log-likelihood:
 `∑_w p_S(w) log p_D(w)`. -/
@@ -91,41 +104,42 @@ noncomputable def PopLogLikValue (pS pD : W → ℝ) : ℝ :=
 /-- **The population log-likelihood of `def:population`**, with the
 published convention that it is `-∞` (here `⊥` of `WithBot ℝ`, the linear
 order in which `-∞` is the least element) when a word read by the truth
-is not read at all by the candidate. -/
+is not read at all by the candidate. A candidate with extra positive read
+support still has a finite log-likelihood: `⊥` holds exactly when
+`supp pS ⊄ supp pD`. -/
 noncomputable def PopLogLik (pS pD : W → ℝ) : WithBot ℝ := by
   classical
-  exact if SuppEq pS pD then (PopLogLikValue pS pD : WithBot ℝ) else ⊥
+  exact if SuppSub pS pD then (PopLogLikValue pS pD : WithBot ℝ) else ⊥
 
-omit [Fintype W] in
-theorem suppEq_refl (p : W → ℝ) : SuppEq p p := fun _ => Iff.rfl
-
-/-- The likelihood is finite as soon as the supports agree. -/
-theorem popLogLik_of {pS pD : W → ℝ} (h : SuppEq pS pD) :
+/-- The likelihood is finite as soon as the truth's support is included in
+the candidate's. -/
+theorem popLogLik_of {pS pD : W → ℝ} (h : SuppSub pS pD) :
     PopLogLik pS pD = (PopLogLikValue pS pD : WithBot ℝ) := by
   rw [PopLogLik, ite_eq_left h]
 
 /-- `ℓpop_S(S)`, which is always finite. -/
 theorem popLogLik_self (pS : W → ℝ) :
     PopLogLik pS pS = (PopLogLikValue pS pS : WithBot ℝ) :=
-  popLogLik_of (suppEq_refl pS)
+  popLogLik_of (suppSub_of_suppEq (suppEq_refl pS))
 
 /-- `ℓpop_S(S)` is never `-∞`: the truth reads every word it reads. -/
 theorem popLogLik_self_ne_bot (pS : W → ℝ) : PopLogLik pS pS ≠ (⊥ : WithBot ℝ) := by
   rw [popLogLik_self]
   exact WithBot.coe_ne_bot
 
-/-- `ℓpop_S(D) = -∞` as soon as the supports disagree. -/
-theorem popLogLik_bot_of {pS pD : W → ℝ} (h : ¬ SuppEq pS pD) :
+/-- `ℓpop_S(D) = -∞` as soon as some word read by the truth is not read by
+the candidate, i.e. when `supp pS ⊄ supp pD`. -/
+theorem popLogLik_bot_of {pS pD : W → ℝ} (h : ¬ SuppSub pS pD) :
     PopLogLik pS pD = (⊥ : WithBot ℝ) := by
   rw [PopLogLik, ite_eq_right h]
 
-/-- The population log-likelihood is finite exactly when the supports
-agree, i.e. it is `-∞` exactly in the published
-`ℓpop_S(D) = -∞` case. -/
+/-- The population log-likelihood is finite exactly when the truth's
+support is included in the candidate's, i.e. it is `-∞` exactly in the
+published `ℓpop_S(D) = -∞` case. -/
 theorem popLogLik_ne_bot_iff {pS pD : W → ℝ} :
-    PopLogLik pS pD ≠ (⊥ : WithBot ℝ) ↔ SuppEq pS pD := by
+    PopLogLik pS pD ≠ (⊥ : WithBot ℝ) ↔ SuppSub pS pD := by
   classical
-  by_cases h : SuppEq pS pD
+  by_cases h : SuppSub pS pD
   · constructor
     · intro hc
       exact h
@@ -139,12 +153,13 @@ theorem popLogLik_ne_bot_iff {pS pD : W → ℝ} :
       exact fun e => False.elim
         (WithBot.coe_ne_bot ((popLogLik_of hn).symm.trans e))
 
-/-- The population log-likelihood is `-∞` exactly when the supports
-disagree, i.e. exactly in the published `ℓpop_S(D) = -∞` case. -/
+/-- The population log-likelihood is `-∞` exactly when the truth's support
+is not included in the candidate's, i.e. exactly in the published
+`ℓpop_S(D) = -∞` case. -/
 theorem popLogLik_eq_bot {pS pD : W → ℝ} :
-    PopLogLik pS pD = (⊥ : WithBot ℝ) ↔ ¬ SuppEq pS pD := by
+    PopLogLik pS pD = (⊥ : WithBot ℝ) ↔ ¬ SuppSub pS pD := by
   classical
-  by_cases h : SuppEq pS pD
+  by_cases h : SuppSub pS pD
   · constructor
     · intro hc
       rw [popLogLik_of h] at hc
@@ -157,9 +172,9 @@ theorem popLogLik_eq_bot {pS pD : W → ℝ} :
     · intro hc
       exact popLogLik_bot_of hc
 
-/-- Recover the support clause from a finite likelihood. -/
+/-- Recover the support-inclusion clause from a finite likelihood. -/
 theorem popLogLik_ne_bot_imp {pS pD : W → ℝ} (h : PopLogLik pS pD ≠ (⊥ : WithBot ℝ)) :
-    SuppEq pS pD :=
+    SuppSub pS pD :=
   (popLogLik_ne_bot_iff (pD := pD)).mp h
 
 /-! ## The Gibbs inequality, proved pointwise -/
@@ -182,20 +197,23 @@ theorem one_sub_inv_lt_log_of_ne_one {x : ℝ} (hx : 0 < x) (h1 : x ≠ 1) :
   linarith
 
 omit [Fintype W] in
-/-- The Gibbs pointwise bound `p_S log p_S - p_S log p_D ≥ p_S - p_D`. -/
-theorem term_ge {pS pD : W → ℝ} (hSupp : SuppEq pS pD) (hS0 : ∀ w, 0 ≤ pS w)
+/-- The Gibbs pointwise bound `p_S log p_S - p_S log p_D ≥ p_S - p_D`, for
+**all** pairs of distributions satisfying only the support inclusion
+`supp pS ⊆ supp pD`. When `p_S w = 0` the bound is `0 ≥ -p_D w`, which
+needs no condition on `p_D w` beyond nonnegativity (the candidate may have
+extra positive support here); when `p_S w > 0` the inclusion gives
+`p_D w > 0` and the tangent argument applies. -/
+theorem term_ge {pS pD : W → ℝ} (hSupp : SuppSub pS pD) (hS0 : ∀ w, 0 ≤ pS w)
     (hD0 : ∀ w, 0 ≤ pD w) (w : W) :
     pS w * Real.log (pS w) - pS w * Real.log (pD w) ≥ pS w - pD w := by
   by_cases hs : pS w = 0
-  · have hz : pD w = 0 := by
-      by_contra hcon
-      have hpos : 0 < pS w :=
-        (hSupp w).mpr (lt_of_le_of_ne (hD0 w) (Ne.symm hcon))
-      rw [hs] at hpos
-      exact lt_irrefl 0 hpos
-    simp [hs, hz, Real.log_zero]
+  · -- `0 * log 0 - 0 * log (pD w) = 0 ≥ -pD w = 0 - pD w`
+    have hz1 : pS w * Real.log (pS w) = 0 := by simp [hs]
+    have hz2 : pS w * Real.log (pD w) = 0 := by simp [hs]
+    rw [hz1, hz2, hs]
+    linarith [hD0 w]
   · have hs0 : 0 < pS w := lt_of_le_of_ne (hS0 w) (Ne.symm hs)
-    have hd0 : 0 < pD w := (hSupp w).mp hs0
+    have hd0 : 0 < pD w := hSupp w hs0
     have hneS : pS w ≠ 0 := hs0.ne'
     have hneD : pD w ≠ 0 := hd0.ne'
     have hlb := Real.one_sub_inv_le_log_of_pos (div_pos hs0 hd0)
@@ -215,7 +233,7 @@ noncomputable def KLExcess (pS pD : W → ℝ) (w : W) : ℝ :=
   (pS w * Real.log (pS w) - pS w * Real.log (pD w)) - (pS w - pD w)
 
 omit [Fintype W] in
-theorem klExcess_nonneg {pS pD : W → ℝ} (hSupp : SuppEq pS pD) (hS0 : ∀ w, 0 ≤ pS w)
+theorem klExcess_nonneg {pS pD : W → ℝ} (hSupp : SuppSub pS pD) (hS0 : ∀ w, 0 ≤ pS w)
     (hD0 : ∀ w, 0 ≤ pD w) (w : W) : 0 ≤ KLExcess pS pD w :=
   sub_nonneg.mpr (term_ge hSupp hS0 hD0 w)
 
@@ -239,7 +257,7 @@ theorem sum_first_eq (pS pD : W → ℝ) :
     ring
   rw [h, Finset.sum_add_distrib, add_comm]
 
-theorem sum_first_nonneg {pS pD : W → ℝ} (hSupp : SuppEq pS pD) (hS : IsProb pS)
+theorem sum_first_nonneg {pS pD : W → ℝ} (hSupp : SuppSub pS pD) (hS : IsProb pS)
     (hD : IsProb pD) :
     0 ≤ ∑ w, (pS w * Real.log (pS w) - pS w * Real.log (pD w)) := by
   have h1 : 0 ≤ (∑ w, KLExcess pS pD w) :=
@@ -247,11 +265,12 @@ theorem sum_first_nonneg {pS pD : W → ℝ} (hSupp : SuppEq pS pD) (hS : IsProb
   rw [sum_first_eq, sum_second_eq_zero hS hD]
   linarith
 
-/-- **Gibbs inequality (Cover--Thomas), population form.** For read
-distributions `p_S`, `p_D` with equal support, the truth maximizes the
-population log-likelihood. -/
+/-- **Gibbs inequality (Cover--Thomas), population form.** For **all**
+read distributions `p_S`, `p_D` with `supp pS ⊆ supp pD`, the truth
+maximizes the population log-likelihood. A candidate with extra positive
+read support is allowed and still loses (weakly). -/
 theorem popLogLik_le_self {pS pD : W → ℝ} (hS : IsProb pS) (hD : IsProb pD)
-    (hSupp : SuppEq pS pD) :
+    (hSupp : SuppSub pS pD) :
     PopLogLik pS pD ≤ PopLogLik pS pS := by
   rw [popLogLik_of hSupp, popLogLik_self]
   have h1 := sum_first_nonneg hSupp hS hD
@@ -265,11 +284,12 @@ theorem popLogLik_le_self {pS pD : W → ℝ} (hS : IsProb pS) (hD : IsProb pD)
 /-- **`lem:gibbs`, full form.** The truth is a population maximizer over
 *any* candidate class, with no repeat condition required: the only
 hypotheses are that the truth and the candidate induce read
-distributions. Support mismatch makes `ℓpop_S(D) = -∞`, which is the
-`≤` case. -/
+distributions. If some word read by the truth is not read by the candidate
+(`supp pS ⊄ supp pD`) then `ℓpop_S(D) = -∞`, which is the `≤` case;
+otherwise the Gibbs inequality applies and the truth still maximizes. -/
 theorem popLogLik_le_self' {pS pD : W → ℝ} (hS : IsProb pS) (hD : IsProb pD) :
     PopLogLik pS pD ≤ PopLogLik pS pS := by
-  by_cases hSupp : SuppEq pS pD
+  by_cases hSupp : SuppSub pS pD
   · exact popLogLik_le_self hS hD hSupp
   · rw [PopLogLik, ite_eq_right hSupp]
     exact bot_le
@@ -283,7 +303,7 @@ theorem popTie_iff {pS pD : W → ℝ} (hS : IsProb pS) (hD : IsProb pD) :
     have hbot : PopLogLik pS pD ≠ (⊥ : WithBot ℝ) := by
       intro hz
       exact (popLogLik_self_ne_bot pS) (h.symm.trans hz)
-    have hSupp : SuppEq pS pD := popLogLik_ne_bot_imp hbot
+    have hSupp : SuppSub pS pD := popLogLik_ne_bot_imp hbot
     have hsum : PopLogLikValue pS pS = PopLogLikValue pS pD := by
       rw [popLogLik_of hSupp] at h
       exact (WithBot.coe_injective (h.trans (popLogLik_self pS))).symm
@@ -304,13 +324,16 @@ theorem popTie_iff {pS pD : W → ℝ} (hS : IsProb pS) (hD : IsProb pD) :
       linarith
     funext w
     by_cases hs : pS w = 0
-    · have hpos : ¬ 0 < pS w := by rw [hs]; exact lt_irrefl 0
-      have hz : pD w = 0 := by
-        by_contra hcon
-        exact hpos ((hSupp w).mpr (lt_of_le_of_ne (hD.1 w) (Ne.symm hcon)))
-      rw [hs, hz]
+    · -- KLExcess w = pD w when pS w = 0, so the tie forces pD w = 0
+      have hz : KLExcess pS pD w = pD w := by
+        unfold KLExcess
+        rw [hs, Real.log_zero]
+        simp
+      have h0 : pD w = 0 := by rw [← hz, hex w]
+      rw [hs]
+      exact h0
     · have hs0 : 0 < pS w := lt_of_le_of_ne (hS.1 w) (Ne.symm hs)
-      have hd0 : 0 < pD w := (hSupp w).mp hs0
+      have hd0 : 0 < pD w := hSupp w hs0
       have hz : KLExcess pS pD w = 0 := hex w
       by_cases hne : pS w / pD w = 1
       · have hself : pS w = (pS w / pD w) * pD w := by field_simp
@@ -337,9 +360,7 @@ theorem popTie_iff {pS pD : W → ℝ} (hS : IsProb pS) (hD : IsProb pD) :
           linarith
         linarith
   · intro h
-    have hSupp : SuppEq pS pD := by
-      intro w
-      rw [h]
+    have hSupp : SuppSub pS pD := fun w hw => by rw [h]; exact hw
     rw [popLogLik_of hSupp, popLogLik_self]
     simp [PopLogLikValue, h]
 

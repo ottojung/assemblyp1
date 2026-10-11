@@ -38,6 +38,7 @@ import AssemblyP1.Section62BidirectedFlow
 import AssemblyP1.Section62VariableOverlap247e
 import AssemblyP1.FiniteSamplingCounterexample
 import AssemblyP1.PopulationReduction
+import AssemblyP1.PopulationGibbsTest
 import AssemblyP1.OrientedRigidity
 import AssemblyP1.RepeatAdapter
 import AssemblyP1.OrientedFinalRigidity
