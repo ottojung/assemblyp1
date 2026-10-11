@@ -1,8 +1,14 @@
 import AssemblyP1.PopulationUniqueness
 
 /-! Direct oriented genome endpoints for Antonina #273.
-    This file must be audited again against #274 support-inclusion repair
-    before the theorem is called a fully source-faithful result. -/
+
+    Audited against the #274 support-inclusion repair (PR156, merged as
+    c2a8f6c): both endpoints are stated for the corrected `PopLogLik`,
+    whose `⊥` boundary is `supp pS ⊄ supp pD` exactly as in
+    `def:population` of `paper/sections/05-population.tex`. The proofs
+    reuse `popLogLik_le_self'` and `popTie_iff`, whose statements are
+    unchanged by the repair, so the results are fully source-faithful
+    under the corrected definition. -/
 
 namespace AssemblyP1.PopulationUniqueness
 
