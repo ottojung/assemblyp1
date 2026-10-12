@@ -80,10 +80,60 @@ the read-type convention, the candidate class, and whether the conclusion
 asserts that the truth is \emph{a} maximizer or the \emph{unique} one. We
 separate those choices explicitly rather than absorbing them into notation.
 
+\subsection{Three noninterchangeable claims}
+
+The central conceptual point of this paper is that three statements about
+genome recovery are easy to conflate but are logically distinct. They differ in
+what evidence is assumed, what the algorithm observes, and what guarantee is
+claimed.
+
+\begin{table}[h]
+\centering
+\small
+\begin{tabular}{@{}p{0.22\textwidth}p{0.20\textwidth}p{0.24\textwidth}p{0.24\textwidth}@{}}
+\toprule
+Claim & Observed data & Side information & Guarantee \\
+\midrule
+(1) Deterministic reconstruction (Not-So-Greedy, 2016)
+  & observed read strings (starts latent)
+  & none (algorithm uses graph structure)
+  & true genome recovered, conditional on $R \in \Is$ \\
+\addlinespace
+(2) Conditional Bayesian certainty
+  & reads $R$
+  & external promise that $(S,R)$ satisfies event $E$
+  & posterior certain up to equivalence only for singleton positive-weight fibre \\
+\addlinespace
+(3) Ordinary maximum likelihood
+  & observed reads or read-count vector
+  & none
+  & truth is a maximizer (population) or unique maximizer (restricted class); no finite pointwise guarantee \\
+\bottomrule
+\end{tabular}
+\caption{The three noninterchangeable claims. Each row is a different
+statement with different assumptions and a different guarantee. Row (1) is a
+deterministic graph-theoretic theorem; row (2) is a conditional posterior
+statement; row (3) is an unconditional optimization objective. The finite
+counterexamples of Section~\ref{sec:finite} show that (1) does not imply (3);
+the conditional Bayesian claim (2) is not a special case of (3) because it
+uses side information unavailable to the ordinary ML decoder.}
+\label{tab:three-claims}
+\end{table}
+
+In plain terms: a deterministic algorithm can be guaranteed to succeed when
+the reads satisfy a structural condition --- but that guarantee is about the
+algorithm's graph, not about a likelihood ranking. A Bayesian decoder that is
+told ``the truth satisfies $E$'' can concentrate on the truth --- but that
+concentration is conditional on the promise and on the fibre being singleton.
+An ordinary maximum-likelihood decoder, given only the reads, has no such
+guarantee: the observation sample and the optimization space matter, and
+finite counterexamples show the truth need not be the maximizer.
+
 \subsection{Contributions}
 
 This manuscript proves positive and negative results about when the true
-genome is a likelihood maximizer.
+genome is a likelihood maximizer, and clarifies how those results relate to the
+deterministic reconstruction guarantee of Shomorony et al.\ (2016).
 
 \paragraph{Positive: circulation rigidity.}
 Under the bridging condition of Definition~\ref{def:Is}, the truth's length-$L$

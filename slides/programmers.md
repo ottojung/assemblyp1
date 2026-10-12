@@ -100,21 +100,30 @@ Set the stage. The genome is a circular string over the alphabet A, C, G, T. A s
 layout: default
 ---
 
-# Two different questions
+# Three different questions
 
-<div class="grid grid-cols-2 gap-10 pt-6">
+<div class="grid grid-cols-3 gap-6 pt-6 text-sm">
 <div>
 
-### Reconstruction
+### (1) Deterministic reconstruction
 
-Can a candidate genome explain **every observed read**?
+Can a graph algorithm **provably recover** the genome under structural conditions?
 
-Structural: *which assemblies can spell the reads?*
+Not a likelihood ranking.
 
 </div>
 <div>
 
-### Maximum likelihood
+### (2) Conditional Bayesian
+
+Given an external promise about the truth, does the **posterior concentrate** on it?
+
+Uses side information the decoder is told.
+
+</div>
+<div>
+
+### (3) Ordinary maximum likelihood
 
 Which candidate best explains the **observed read counts**?
 
@@ -122,24 +131,24 @@ $$
 \arg\max_{W}\ \Pr(\text{reads} \mid W)
 $$
 
-Optimization: *which candidate scores highest on this sample?*
+No side information; no finite pointwise guarantee.
 
 </div>
 </div>
 
 <div class="pt-8 text-lg text-amber-600">
-A genome can be structurally consistent with the reads — and still not be the most likely explanation of their frequencies.
+These are logically distinct claims. A deterministic guarantee does not transfer to the likelihood ranking; a conditional posterior statement is not an unconditional optimization result.
 </div>
 
 <!--
-This distinction — structure versus frequency — is the central insight of the project. A 2016 paper (Shomorony, Kim, Courtade & Tse) gave conditions under which the reads contain enough structural information to reconstruct the genome, and left open whether those same conditions guarantee that the maximum-likelihood genome is the true genome. AssemblyP1 is what happens when you make that question precise and then check the answer in a proof kernel.
+Three logically distinct claims. (1) The 2016 Not-So-Greedy theorem: a graph built from observed reads has a unique Eulerian spelling = truth, under bridging conditions. (2) A conditional Bayesian statement: given a promise that the truth satisfies event E, the posterior concentrates on truth iff the fibre is singleton. (3) Ordinary ML: maximize P(reads | candidate) with no side information. The project's contribution is showing (1) does not imply (3), and mapping exactly where each claim holds.
 -->
 
 ---
 layout: default
 ---
 
-# The historical counterexample
+# The historical boundary
 
 The 2016 question, answered the hard way: with a concrete witness.
 

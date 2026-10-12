@@ -2,6 +2,34 @@
 
 This note synthesizes the current AssemblyP1 research state. It deliberately separates the published Shomorony–Medvedev/Brudno question from two later repaired models introduced by this project. It is the repository-oriented companion to the LaTeX white paper (GitHub issue #51) and the audience-specific Slidev presentations under [`slides/`](../slides/) (board issues #248–#251).
 
+## 0. Three noninterchangeable claims
+
+Three statements about genome recovery are easy to conflate but are logically distinct:
+
+1. **Deterministic reconstruction (Not-So-Greedy, 2016).** Shomorony et al. prove that a specific graph constructed from the *observed reads* (with edge-multiplicity modification) has a unique Eulerian spelling equal to the true genome, under truth-relative information-feasibility conditions. This is a deterministic graph-theoretic theorem about a graph built from the observed read set — not a statement about likelihood rankings, and not a statement about the graph of all length-L true windows.
+
+2. **Conditional Bayesian certainty.** Given an external promise that the true genome-and-reads pair satisfies a specified event E, and only if the resulting supported truth fibre is singleton up to genome equivalence, the posterior concentrates on the truth. This is a conditional posterior/MAP statement that uses P(E | candidate, observed reads) and a correctly updated prior — not unrestricted likelihood.
+
+3. **Ordinary maximum likelihood.** Maximizing P_D(R) over a stated candidate universe without access to E as side information. This is a principled probability-based baseline; it does not promise finite pointwise correctness.
+
+The finite counterexamples in §3 show that (1) does not imply (3). The conditional Bayesian claim (2) is not a special case of (3) because it uses side information unavailable to the ordinary ML decoder. The circulation rigidity theorem (§3.1) is a project-level result about the graph of the truth's complete spectrum — it is not a restatement of the 2016 result, which concerns a different graph (observed reads with modified multiplicities).
+
+### How the external event changes the Bayesian likelihood
+
+If the bridging/information-feasibility event E is defined on latent read-start
+placements T, it is not generally observable from the strings Y alone. The
+correct joint mass with E disclosed is
+
+    pi(g) * sum_{T : observed(g,T)=Y and E(g,T)} P_g(T).
+
+It is generally **not** `pi(g) * P_g(Y)` times an indicator that *some*
+feasible placement exists: feasible and infeasible placements can yield the
+same observed strings. The posterior is certain up to the chosen genome
+equivalence only if the resulting **positive joint-mass** candidate fibre
+is one equivalence class. In particular, the true candidate must receive
+positive prior and event-conditioned likelihood; otherwise conditioning
+may be undefined or will not recover it.
+
 ## 1. Why maximum likelihood is not enough by itself
 
 A tempting starting point is simple: noiseless reads were sampled from the true circular genome, so the true genome ought to maximize their likelihood.

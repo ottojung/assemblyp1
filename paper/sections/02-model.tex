@@ -124,6 +124,26 @@ A length-$L$ read can bridge a copy of a repeat of length $\ell$ only if
 $\ell \le L-2$: strict extension on both sides requires the repeat to fit
 strictly inside the read. We use this repeatedly.
 
+\begin{remark}[The 2016 graph-uniqueness result is not the circulation rigidity theorem]
+\label{rem:2016-vs-rigidity}
+Shomorony et al.\ \cite{shomorony2016} prove that, under information-feasibility,
+a \emph{particular graph constructed from the observed reads} --- with edge
+multiplicities modified by the read counts --- has a unique Eulerian spelling,
+which equals the true genome. That is a statement about a graph built from the
+\emph{observed} read set $R$. The circulation rigidity theorem of
+Section~\ref{sec:finite} (Theorem~\ref{thm:rigidity}) is a different statement:
+it concerns the graph $X_S$ built from the \emph{complete} length-$L$ spectrum
+of the truth $S$ (all windows, not just observed ones), and asserts that the
+truth's spectrum is the unique \emph{positive circulation} of total $G$ on that
+graph. The two results share the bridging hypothesis but differ in the graph,
+the candidate universe, and the conclusion. Neither is a restatement or automatic corollary of the other; the
+circulation rigidity theorem is a project-level contribution with its own proof,
+not a restatement or corollary of the 2016 result.
+\statusline{\srcfact{} for the 2016 graph-uniqueness statement
+  \cite[Corollary~1]{shomorony2016}; \projchoice{} for the circulation
+  rigidity theorem of Section~\ref{sec:finite}.}
+\end{remark}
+
 \subsection{Observation models and candidate classes}
 
 The likelihood layer must consume only observable read multiplicities plus a

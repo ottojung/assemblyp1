@@ -137,16 +137,25 @@ same-length and population results show where the intuition does survive.
 \subsection{Conclusion}
 
 Our central subject is the likelihood ranking of candidate genomes, not
-an algorithm for reconstructing one. Under the bridging conditions that make
-reads information-feasible, the truth's spectrum is the unique positive
-circulation of its window-support graph, and on the same-length oriented slice
-the truth is the unique likelihood maximizer up to cyclic rotation. Once
-candidate length or strand convention is relaxed, this guarantee fails: finite
-observations exist in which a competitor is strictly more likely, because the
-exact objective scores empirical frequencies and a competitor can reweight an
-unrepresentative sample. At the population level the fluctuation disappears,
-the truth is always a maximizer, and among primitive P2 genomes it is the
-unique one --- the nontrivial combinatorial heart of the paper. Each result is
-stated for an explicit objective, read-type convention, and candidate class;
-together they map the precise circumstances in which the true genome is most
-likely, and the equally precise circumstances in which it is not.
+an algorithm for reconstructing one. Three claims must be kept distinct.
+First, the 2016 Not-So-Greedy theorem guarantees recovery of the true genome
+from a graph built under the observed reads, conditional on
+information-feasibility --- a deterministic graph-theoretic statement, not a
+likelihood ranking. Second, a conditional Bayesian decoder that receives an
+external promise about the true genome-and-reads pair can concentrate on the
+truth, but only when the supported truth fibre is singleton; this is a
+conditional posterior statement, not an unconditional optimization result.
+Third, ordinary maximum likelihood from observed reads has no such guarantee:
+under the bridging conditions, the truth's spectrum is the unique positive
+circulation of its window-support graph (a project-level result, not a
+restatement of 2016), and on the same-length oriented slice the truth is the
+unique likelihood maximizer up to cyclic rotation. Once candidate length or
+strand convention is relaxed, this guarantee fails: finite observations exist
+in which a competitor is strictly more likely, because the exact objective
+scores empirical frequencies and a competitor can reweight an unrepresentative
+sample. At the population level the fluctuation disappears, the truth is always
+a maximizer, and among primitive P2 genomes it is the unique one --- the
+nontrivial combinatorial heart of the paper. Each result is stated for an
+explicit objective, read-type convention, and candidate class; together they
+map the precise circumstances in which the true genome is most likely, and
+the equally precise circumstances in which it is not.
