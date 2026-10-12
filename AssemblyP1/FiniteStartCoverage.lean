@@ -115,3 +115,132 @@ theorem strict_covered_witness_for_positive_spectra
     hscore G hGpos
 
 end AssemblyP1.FiniteStartCoverage
+
+namespace AssemblyP1.FiniteStartCoverage
+
+variable {S E : Type*} [Fintype S] [Fintype E] [DecidableEq E]
+
+/-- Read count of each observed type from a multiplicity-valued start sample. -/
+def typeCounts (f : S → E) (m : S → ℕ) (e : E) : ℕ :=
+  ∑ s ∈ Finset.univ.filter (fun s => f s = e), m s
+
+/-- Sum of type counts is the total number of sampled starts with multiplicity. -/
+theorem total_typeCounts (f : S → E) (m : S → ℕ) :
+    (∑ e, typeCounts f m e) = (∑ s, m s) := by
+  classical
+  unfold typeCounts
+  simp_rw [Finset.sum_filter]
+  rw [Finset.sum_comm]
+  apply Finset.sum_congr rfl
+  intro s _
+  simp
+
+end AssemblyP1.FiniteStartCoverage
+
+
+namespace AssemblyP1.FiniteStartCoverage
+
+variable {S E : Type*} [Fintype S] [Fintype E] [DecidableEq E]
+
+open AssemblyP1.FixedNConstructiveWitness
+
+/-- Log score of the truth-relative-to-B ratio from a multiset of positive
+start multiplicities, represented by its type-count vector. -/
+noncomputable def truthLogRatio (f : S → E) (m : S → ℕ)
+    (N : ℕ) (B : E → ℕ) : ℝ :=
+  ∑ e, logRatioTerm (N : ℝ) (((∑ i, typeCounts f m i) : ℕ) : ℝ)
+    (fun i => (startSpectrum f i : ℝ))
+    (fun i => (B i : ℝ))
+    (fun i => (typeCounts f m i : ℝ)) e
+
+/-- Truth is a log-score maximizer for every covered finite start sample,
+among the specified modeled candidate spectra. -/
+def UniformCoveredMaximizer (f : S → E)
+    (C : Finset (E → ℕ)) (N : ℕ) : Prop :=
+  ∀ m : S → ℕ, (∀ s, 0 < m s) →
+    ∀ B ∈ C, 0 ≤ truthLogRatio f m N B
+
+/-- Every candidate within the chosen class has the same read-type spectrum
+as truth. This is spectrum rigidity, not genome uniqueness up to rotation. -/
+def SpectrumRigid (f : S → E) (C : Finset (E → ℕ)) : Prop :=
+  ∀ B ∈ C, B = startSpectrum f
+
+/-- Necessary-and-sufficient finite fixed-N spectrum criterion.
+Under positive same-supported interior read-type spectra with total G,
+the truth maximizes the product-binomial log score for every sampled-start
+coverage observation iff the candidate class has no distinct spectrum.
+
+This is a scoped theorem about oriented positive spectrum candidates, NOT the
+arbitrary molecule-type/bidirected flow domain of MB09 Section 6.2. -/
+theorem uniform_covered_maximizer_iff_spectrum_rigid
+    (f : S → E) (C : Finset (E → ℕ)) (G N : ℕ)
+    (hGpos : 0 < G) (hGN : G ≤ N)
+    (hApos : ∀ e, 0 < startSpectrum f e)
+    (hAltG : ∀ e, startSpectrum f e < G)
+    (hAtotal : (∑ e, startSpectrum f e) = G)
+    (hC : ∀ B ∈ C,
+      (∀ e, 0 < B e ∧ B e < G) ∧ (∑ e, B e) = G) :
+    UniformCoveredMaximizer f C N ↔ SpectrumRigid f C := by
+  classical
+  constructor
+  · intro hmax B hBC
+    by_contra hne
+    obtain ⟨hBounds, hBtotal⟩ := hC B hBC
+    have hmass : (∑ e, startSpectrum f e) = (∑ e, B e) := by
+      rw [hAtotal, hBtotal]
+    obtain ⟨m, hmpos, hmcounts, hscore⟩ :=
+      strict_covered_witness_for_positive_spectra f G N B
+        hGpos hGN hApos (fun e => (hBounds e).1)
+        hAltG (fun e => (hBounds e).2)
+        hBtotal hmass (Ne.symm hne)
+    have hn : (∑ e, typeCounts f m e) =
+        G * (N * auxiliaryT N B) := by
+      calc
+        (∑ e, typeCounts f m e) =
+            (∑ e, G * auxiliaryX G N B e) :=
+          Finset.sum_congr rfl (fun e _ => hmcounts e)
+        _ = G * (∑ e, auxiliaryX G N B e) := by
+          rw [Finset.mul_sum]
+        _ = G * (N * auxiliaryT N B) := by
+          rw [auxiliaryX_sum G N B hBtotal hGN]
+    have hscore_eq :
+        truthLogRatio f m N B =
+          ∑ e, logRatioTerm (N : ℝ)
+            ((G : ℝ) * ((N * auxiliaryT N B : ℕ) : ℝ))
+            (fun e => (startSpectrum f e : ℝ))
+            (fun e => (B e : ℝ))
+            (fun e => (G : ℝ) * (auxiliaryX G N B e : ℝ)) e := by
+      unfold truthLogRatio
+      have hnR : (((∑ e, typeCounts f m e) : ℕ) : ℝ) =
+          (G : ℝ) * ((N * auxiliaryT N B : ℕ) : ℝ) := by
+        rw [hn]; norm_cast
+      rw [hnR]
+      apply Finset.sum_congr rfl
+      intro e _
+      have hxe : typeCounts f m e = G * auxiliaryX G N B e := hmcounts e
+      simp only [logRatioTerm, hxe, Nat.cast_mul]
+    have hnonneg := hmax m hmpos B hBC
+    rw [hscore_eq] at hnonneg
+    exact (not_lt_of_ge hnonneg) hscore
+  · intro hrig m hmpos B hBC
+    have hB : B = startSpectrum f := hrig B hBC
+    subst B
+    unfold truthLogRatio
+    have hz : ∀ e,
+        logRatioTerm (N : ℝ) (((∑ i, typeCounts f m i) : ℕ) : ℝ)
+          (fun i => (startSpectrum f i : ℝ))
+          (fun i => (startSpectrum f i : ℝ))
+          (fun i => (typeCounts f m i : ℝ)) e = 0 := by
+      intro e
+      have hAne : (startSpectrum f e : ℝ) ≠ 0 := by
+        exact_mod_cast (ne_of_gt (hApos e))
+      have hNAne : (N : ℝ) - (startSpectrum f e : ℝ) ≠ 0 := by
+        have he : startSpectrum f e < N := lt_of_lt_of_le (hAltG e) hGN
+        have hh : (startSpectrum f e : ℝ) < (N : ℝ) := by exact_mod_cast he
+        linarith
+      unfold logRatioTerm
+      simp [div_self hAne, div_self hNAne]
+    simp_rw [hz]
+    simp
+
+end AssemblyP1.FiniteStartCoverage

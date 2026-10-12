@@ -4,3 +4,6 @@ import AssemblyP1.FiniteStartCoverage
 #print axioms AssemblyP1.FiniteStartCoverage.strict_covered_witness_for_positive_spectra
 
 #print axioms AssemblyP1.FiniteStartCoverage.surjective_of_positive_start_spectrum
+
+#print axioms AssemblyP1.FiniteStartCoverage.total_typeCounts
+#print axioms AssemblyP1.FiniteStartCoverage.uniform_covered_maximizer_iff_spectrum_rigid
