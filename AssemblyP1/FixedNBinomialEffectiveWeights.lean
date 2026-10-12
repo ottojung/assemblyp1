@@ -1,3 +1,4 @@
+import Mathlib.Algebra.Order.BigOperators.Group.Finset
 import Mathlib.Algebra.BigOperators.Group.Finset.Sigma
 import Mathlib.Algebra.BigOperators.Group.Finset.Piecewise
 
@@ -91,5 +92,39 @@ theorem binomialNumerator_le_iff_effectiveProduct_le
       effectiveProduct N A x ≤ effectiveProduct N B x := by
   rw [← effectiveProduct_eq_binomialNumerator N n A x hn,
       ← effectiveProduct_eq_binomialNumerator N n B x hn]
+
+
+
+/-- Scoring a single observed type recovers its effective weight. -/
+private theorem product_of_single_observation (q : E → ℕ) (i : E) :
+    (∏ j : E, q j ^ (if j = i then 1 else 0)) = q i := by
+  simp
+
+/-- An exact finite necessary-and-sufficient criterion for a pairwise
+product score comparison **over all nonnegative observation count vectors**.
+This is not the narrower question restricted to genome-covering samples:
+those observations contain mandatory reads from every truth genome start. -/
+theorem all_observations_order_iff_pointwise (qA qB : E → ℕ) :
+    (∀ x : E → ℕ, (∏ i : E, qB i ^ x i) ≤ (∏ i : E, qA i ^ x i)) ↔
+      ∀ i, qB i ≤ qA i := by
+  constructor
+  · intro h i
+    simpa only [product_of_single_observation] using
+      h (fun j => if j = i then 1 else 0)
+  · intro h x
+    apply Finset.prod_le_prod
+    intro i _
+    exact Nat.pow_le_pow_left (h i) (x i)
+
+/-- Exact uniform pairwise score criterion for the fixed-external-N
+product-binomial surrogate, over *arbitrary nonnegative sample vectors*.
+All the modeled types must be fixed across the candidates. No genome-start
+coverage or historical information-feasibility condition is presumed. -/
+theorem every_observation_effectiveProduct_le_iff
+    (N : ℕ) (A B : E → ℕ) :
+    (∀ x : E → ℕ, effectiveProduct N B x ≤ effectiveProduct N A x) ↔
+      ∀ i, effectiveWeight N B i ≤ effectiveWeight N A i := by
+  exact all_observations_order_iff_pointwise
+    (effectiveWeight N A) (effectiveWeight N B)
 
 end AssemblyP1.FixedNBinomialEffectiveWeights
