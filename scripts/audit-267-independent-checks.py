@@ -10,6 +10,7 @@ Labels: standard statistics, mathematical proof, kernel-checked, source fact, op
 
 from fractions import Fraction
 from itertools import product
+from math import comb
 
 PASS = 0
 FAIL = 0
@@ -225,38 +226,58 @@ check("W4 ratio", lik_c4 / lik_t4, Fraction(32, 27))
 
 # ============================================================
 # Witness 5: SameLengthSection62Counterexample (AAATAT vs AAAAAT)
+# §6.2 molecule model: reads are unoriented molecule classes (RC-collapsed)
 # ============================================================
-print("\n=== Witness 5: SameLengthSection62 (AAATAT -> AAAAAT) ===")
+print("\n=== Witness 5: SameLengthSection62 (AAATAT -> AAAAAT, molecule model) ===")
 
 truth5 = "AAATAT"
 comp5 = "AAAAAT"
 L5 = 3
 starts5 = [0, 0, 1, 3, 5]
 
-tw5 = circular_windows(truth5, L5)
-cw5 = circular_windows(comp5, L5)
-print(f"  Truth windows: {tw5}")
-print(f"  Competitor windows: {cw5}")
+comp_map5 = {'A': 'T', 'T': 'A', 'C': 'G', 'G': 'C'}
+
+def rc5(w):
+    return ''.join(comp_map5[c] for c in reversed(w))
+
+def mol_class5(w):
+    r = rc5(w)
+    return min(w, r)
+
+def mol_windows(genome, L):
+    G = len(genome)
+    counts = {}
+    for start in range(G):
+        w = ''.join(genome[(start + d) % G] for d in range(L))
+        mc = mol_class5(w)
+        counts[mc] = counts.get(mc, 0) + 1
+    return counts
+
+tw5 = mol_windows(truth5, L5)
+cw5 = mol_windows(comp5, L5)
+print(f"  Truth molecule windows: {tw5}")
+print(f"  Competitor molecule windows: {cw5}")
 
 check("truth covers", covers(truth5, L5, set(starts5)), True)
 check("comp covers", covers(comp5, L5, set(starts5)), True)
 
 obs5 = {}
 for s in starts5:
-    w = tuple(truth5[(s + d) % len(truth5)] for d in range(L5))
-    obs5[w] = obs5.get(w, 0) + 1
-print(f"  Observed: {obs5}")
+    w = ''.join(truth5[(s + d) % len(truth5)] for d in range(L5))
+    mc = mol_class5(w)
+    obs5[mc] = obs5.get(mc, 0) + 1
+print(f"  Observed (molecule): {obs5}")
 
 n5 = 5
 N5 = 6
 
-# Exact multinomial (candidate-intrinsic length)
+# Exact multinomial (candidate-intrinsic length, molecule model)
 exact_coeff5 = 120  # 5!
 lik_t5 = Fraction(exact_coeff5, 1)
 lik_c5 = Fraction(exact_coeff5, 1)
-for w, x in obs5.items():
-    d_t = tw5.get(w, 0)
-    d_c = cw5.get(w, 0)
+for mc, x in obs5.items():
+    d_t = tw5.get(mc, 0)
+    d_c = cw5.get(mc, 0)
     lik_t5 *= Fraction(d_t, len(truth5)) ** x
     lik_c5 *= Fraction(d_c, len(comp5)) ** x
 
@@ -264,14 +285,14 @@ print(f"  L_exact(truth) = {lik_t5} = {float(lik_t5)}")
 print(f"  L_exact(comp)  = {lik_c5} = {float(lik_c5)}")
 check("W5 exact ratio", lik_c5 / lik_t5, Fraction(3))
 
-# Binomial approximation
+# Binomial approximation (molecule model)
 lik_t5b = Fraction(1, 1)
 lik_c5b = Fraction(1, 1)
 all_types5 = set(tw5.keys()) | set(cw5.keys()) | set(obs5.keys())
-for w in all_types5:
-    x = obs5.get(w, 0)
-    d_t = tw5.get(w, 0)
-    d_c = cw5.get(w, 0)
+for mc in all_types5:
+    x = obs5.get(mc, 0)
+    d_t = tw5.get(mc, 0)
+    d_c = cw5.get(mc, 0)
     coeff = comb(n5, x)
     lik_t5b *= Fraction(coeff, 1) * Fraction(d_t, N5) ** x * (1 - Fraction(d_t, N5)) ** (n5 - x)
     lik_c5b *= Fraction(coeff, 1) * Fraction(d_c, N5) ** x * (1 - Fraction(d_c, N5)) ** (n5 - x)
@@ -279,6 +300,63 @@ for w in all_types5:
 print(f"  L_binom(truth) = {lik_t5b} = {float(lik_t5b)}")
 print(f"  L_binom(comp)  = {lik_c5b} = {float(lik_c5b)}")
 check("W5 binomial ratio", lik_c5b / lik_t5b, Fraction(5))
+
+# ============================================================
+# Witness 6: P1 finite case (AABBC -> AABC), variable length
+# Both candidates primitive and P1; shorter wrong candidate wins
+# ============================================================
+print("\n=== Witness 6: P1 finite case (AABBC -> AABC) ===")
+
+truth6 = "AABBC"
+comp6 = "AABC"
+L6 = 3
+starts6 = [0, 3]
+
+tw6 = circular_windows(truth6, L6)
+cw6 = circular_windows(comp6, L6)
+print(f"  Truth windows: {tw6}")
+print(f"  Competitor windows: {cw6}")
+
+check("truth covers", covers(truth6, L6, set(starts6)), True)
+
+obs6 = {}
+for s in starts6:
+    w = tuple(truth6[(s + d) % len(truth6)] for d in range(L6))
+    obs6[w] = obs6.get(w, 0) + 1
+print(f"  Observed: {obs6}")
+
+n6 = 2
+
+# Exact multinomial with candidate-intrinsic length
+exact_coeff6 = 2  # 2!
+lik_t6 = Fraction(exact_coeff6, 1)
+lik_c6 = Fraction(exact_coeff6, 1)
+for w, x in obs6.items():
+    d_t = tw6.get(w, 0)
+    d_c = cw6.get(w, 0)
+    lik_t6 *= Fraction(d_t, len(truth6)) ** x
+    lik_c6 *= Fraction(d_c, len(comp6)) ** x
+
+print(f"  L(truth) = {lik_t6} = {float(lik_t6)}")
+print(f"  L(comp)  = {lik_c6} = {float(lik_c6)}")
+check("W6 truth lik", lik_t6, Fraction(2, 25))
+check("W6 comp lik", lik_c6, Fraction(1, 8))
+check("W6 ratio", lik_c6 / lik_t6, Fraction(25, 16))
+check("W6 comp strictly better", lik_c6 > lik_t6, True)
+
+# P1 check: circular (L-1)-mers are pairwise distinct
+def p1_check(genome, L):
+    G = len(genome)
+    kmers = set()
+    for start in range(G):
+        kmer = tuple(genome[(start + d) % G] for d in range(L - 1))
+        if kmer in kmers:
+            return False
+        kmers.add(kmer)
+    return True
+
+check("W6 truth P1", p1_check(truth6, L6), True)
+check("W6 comp P1", p1_check(comp6, L6), True)
 
 # ============================================================
 # 2x2 Bayes example from FiniteMapOptimality
@@ -447,6 +525,12 @@ for name, genome, L, starts in [
     result, reason = info_feasible(genome, L, starts)
     print(f"    {name}: I_s = {result} ({reason})")
 
+# P1 competitor (AABC): check I_s with reads placed on competitor's own circle
+# Observed reads {AAB, BCA} placed at starts {0, 2} on AABC (len 4)
+print("\n  P1 competitor I_s check (AABC, reads at starts {0,2}):")
+result_p1, reason_p1 = info_feasible(comp6, L6, {0, 2})
+print(f"    AABC (W6 comp): I_s = {result_p1} ({reason_p1})")
+
 # Also check truth I_s
 print("\n  Truth I_s checks:")
 for name, genome, L, starts in [
@@ -455,6 +539,7 @@ for name, genome, L, starts in [
     ("AABB (W3 truth)", truth3, L3, starts3),
     ("ACGT (W4 truth)", truth4, L4, starts4),
     ("AAATAT (W5 truth)", truth5, L5, starts5),
+    ("AABBC (W6 truth)", truth6, L6, starts6),
 ]:
     result, reason = info_feasible(genome, L, starts)
     print(f"    {name}: I_s = {result} ({reason})")
