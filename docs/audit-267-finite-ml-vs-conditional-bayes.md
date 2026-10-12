@@ -1,12 +1,17 @@
 # Audit: finite exact ML and approximate binomial witnesses versus externally conditioned `I_s` Bayesian certainty (issue #267)
 
-_Status: independent audit, 2026-10-11. Every claim is labelled **standard
+_Status: independent audit, 2026-10-12 (updated). Every claim is labelled **standard
 statistics**, **mathematical proof**, **kernel-checked**, **source fact**, or
 **open**. This note audits the finite counterexample witnesses against the
 conditional-on-`E` Bayesian analysis of `docs/bayes-optimality-conditional-feasibility-267.md`.
 It does not re-prove the Bayes/MAP optimality theorem (that is
 `AssemblyP1.FiniteMapOptimality`) and does not duplicate the Lean proof of the
 conditional-fibre issue (#271)._
+
+_Update 2026-10-12: added W6 (P1 finite case, AABBC → AABC), fixed W5
+verification (molecule model vs spelled model), and updated I_s membership
+matrix. Python script now passes 30/31 checks (1 expected failure: W4
+competitor coverage, different genome length)._
 
 _Reproduction:_
 
@@ -33,10 +38,11 @@ conflict dissolves once the experiment is held fixed:
   conditional risk, not for the original prior-averaged risk.
 - For most witnesses, the competitor **fails** `I_s`, so the conditional-on-`E`
   MAP would correctly exclude it and recover the truth. But for the `AABB/ABAB`
-  witness (W3), the competitor **satisfies** `I_s`, so conditional-on-`E` MAP
-  would **also** fail on that instance. This is the precise sense in which
-  "conditional `I_s` Bayesian certainty" is **not universal**: it holds only
-  when the truth is the unique feasible candidate.
+  witness (W3) and the `AABBC/AABC` witness (W6), the competitor **satisfies**
+  `I_s`, so conditional-on-`E` MAP would **also** fail on those instances.
+  This is the precise sense in which "conditional `I_s` Bayesian certainty" is
+  **not universal**: it holds only when the truth is the unique feasible
+  candidate.
 
 ---
 
@@ -88,12 +94,28 @@ All arithmetic below is independently verified by
 ### W5: `SameLengthSection62Counterexample` (AAATAT → AAAAAT)
 
 - **Objective**: §6.2 bidirected flow + exact multinomial / binomial approximation
-- **Truth**: `AAATAT` (length 6), reads at starts `{0,0,1,3,5}`
+- **Truth**: `AAATAT` (length 6), reads at starts `{0,0,1,3,5}`, observed `{AAA:2, AAT:1, TAT:1, TAA:1}` (molecule classes)
 - **Competitor**: `AAAAAT` (length 6)
-- **Ratios**: exact `3`, binomial `5` (kernel-checked in Lean; §6.2 flow complexity
-  prevents independent Python verification)
+- **Ratios**: exact `3`, binomial `5` (kernel-checked in Lean; **now also independently verified** with molecule model in Python)
 - **`I_s` for truth**: ✓ (kernel-checked, all clauses)
 - **`I_s` for competitor**: ✗ (triple repeat at `e=1, starts={0,3,4}` not all-bridged)
+
+**W5 model note**: The original Python script used spelled-genome windows, which gave `d(TAT)=0` for the competitor and `L=0`. This was a **model mismatch**, not a verification failure: the §6.2 flow model uses reverse-complement-collapsed molecule classes, where `ATA` and `TAT` are the same molecule. The updated Python script implements the molecule model and confirms both ratios exactly.
+
+### W6: `FiniteSamplingCounterexample` (AABBC → AABC)
+
+- **Objective**: variable-length exact multinomial, candidate-intrinsic length
+- **Truth**: `AABBC` (length 5), reads at starts `{0,3}`, observed `{AAB:1, BCA:1}`
+- **Competitor**: `AABC` (length 4)
+- **Likelihoods**: `L(truth) = 2/25`, `L(comp) = 1/8`
+- **Ratio**: `25/16` ✓
+- **P1/primitivity**: both candidates are primitive and satisfy P1 (kernel-checked in Lean)
+- **`I_s` for truth**: ✓ (kernel-checked, all clauses)
+- **`I_s` for competitor**: ✓ (reads `{AAB, BCA}` placed at starts `{0,2}` on AABC's circle cover all positions; no triple repeats; no interleaved pairs)
+
+**Critical finding**: W6 is a second witness (alongside W3) whose competitor satisfies `I_s`. The conditional-on-`E` MAP would **also** select the wrong genome (`AABC`, likelihood `1/8 > 2/25`). This is a variable-length counterexample where the shorter genome wins by concentrating the same read mass into fewer positions. Both candidates are P1 and primitive, so this is not a structural obstruction but a finite-frequency fluctuation.
+
+**W6 mechanism**: The observed reads `{AAB, BCA}` have the same multiplicity in both candidates (`d(AAB)=1, d(BCA)=1`), but the candidate lengths differ (5 vs 4). The exact multinomial `n! · ∏(d_w/G)^x_w` divides by `G^n`, so the shorter genome has higher likelihood. This is a pure length effect, independent of read content.
 
 ---
 
@@ -123,12 +145,13 @@ the original prior-averaged risk. The key question for this audit is:
 | W3 (AABB→ABAB) | ABAB | **passes** (all clauses hold) | **also fails** |
 | W4 (ACGT→ACACGT) | ACACGT | **fails** (coverage) | recovers truth |
 | W5 (AAATAT→AAAAAT) | AAAAAT | **fails** (triple repeat not all-bridged) | recovers truth |
+| W6 (AABBC→AABC) | AABC | **passes** (all clauses hold) | **also fails** |
 
-**Critical finding**: W3 is the unique witness whose competitor satisfies
+**Critical finding**: W3 and W6 are the witnesses whose competitors satisfy
 `I_s`. This means the conditional-on-`E` MAP rule — the rule that is "Bayes
-certain" on `E` — would **also** select the wrong genome (`ABAB`) on the `AABB`
-instance. The conditional `I_s` Bayesian certainty is therefore **not
-universal**: it holds only when the truth is the unique feasible candidate.
+certain" on `E` — would **also** select the wrong genome on these instances.
+The conditional `I_s` Bayesian certainty is therefore **not universal**: it
+holds only when the truth is the unique feasible candidate.
 
 ---
 
@@ -154,9 +177,10 @@ universal**: it holds only when the truth is the unique feasible candidate.
 | W2: AAACC not fixed-length binomial ML maximizer | **true** | kernel-checked + independently verified |
 | W3: AABB not same-length exact ML maximizer | **true** | kernel-checked + independently verified |
 | W4: ACGT not unrestricted-length exact ML maximizer | **true** | kernel-checked + independently verified |
-| W5: AAATAT not same-length §6.2 ML maximizer | **true** | kernel-checked (§6.2 flow) |
-| W1-W5: truth satisfies full `I_s` | **true** | kernel-checked (`InformationFeasible`) |
-| W1-W5: competitor fails `I_s` | **refuted** for W3, **true** for W1/W2/W4/W5 | independent Python check |
+| W5: AAATAT not same-length §6.2 ML maximizer | **true** | kernel-checked + independently verified (molecule model) |
+| W6: AABBC not variable-length exact ML maximizer | **true** | kernel-checked + independently verified |
+| W1-W6: truth satisfies full `I_s` | **true** | kernel-checked (`InformationFeasible`) |
+| W1-W6: competitor fails `I_s` | **refuted** for W3 and W6, **true** for W1/W2/W4/W5 | independent Python check |
 
 ### Conditional-on-`E` claims
 
@@ -164,8 +188,8 @@ universal**: it holds only when the truth is the unique feasible candidate.
 |---|---|---|
 | Conditional-on-`E` MAP is optimal for conditional risk | **true** | mathematical proof |
 | Conditional-on-`E` MAP recovers truth when truth is unique feasible candidate | **true** | mathematical proof |
-| Conditional-on-`E` MAP recovers truth for **all** witnesses | **refuted** | W3 counterexample (competitor satisfies `I_s`) |
-| Conditional `I_s` Bayesian certainty is universal | **refuted** | W3 counterexample |
+| Conditional-on-`E` MAP recovers truth for **all** witnesses | **refuted** | W3 and W6 counterexamples (competitors satisfy `I_s`) |
+| Conditional `I_s` Bayesian certainty is universal | **refuted** | W3 and W6 counterexamples |
 | Finite ML failures contradict Bayes optimality | **refuted** | different experiments (per-sample vs prior-averaged) |
 
 ### Source fidelity claims
@@ -182,17 +206,17 @@ universal**: it holds only when the truth is the unique feasible candidate.
 
 ---
 
-## 4. The W3 critical finding: conditional-on-`E` MAP also fails
+## 4. The W3 and W6 critical findings: conditional-on-`E` MAP also fails
 
-The `AABB/ABAB` witness (W3) is the unique case where the competitor satisfies
-`I_s`. This has a precise interpretation:
+The `AABB/ABAB` witness (W3) and the `AABBC/AABC` witness (W6) are the cases
+where the competitor satisfies `I_s`. This has a precise interpretation:
 
-- **Original experiment**: unconstrained MAP selects `ABAB` (likelihood `1/4`
-  vs `1/16`). This is Bayes-optimal for the prior-averaged risk.
+- **Original experiment**: unconstrained MAP selects the competitor (higher
+  likelihood). This is Bayes-optimal for the prior-averaged risk.
 - **Conditional-on-`E` experiment**: the feasible set is `{g : F(g,r)}`. Both
-  `AABB` and `ABAB` satisfy `I_s`, so the conditional MAP selects `ABAB`
-  (higher likelihood). The conditional-on-`E` MAP **also fails** on this
-  instance.
+  truth and competitor satisfy `I_s`, so the conditional MAP selects the
+  competitor (higher likelihood). The conditional-on-`E` MAP **also fails** on
+  these instances.
 
 This does **not** contradict Bayes optimality. The conditional-on-`E` MAP is
 optimal for the **conditional** risk, not the original prior-averaged risk.
@@ -200,8 +224,14 @@ But it shows that "conditional `I_s` Bayesian certainty" — the claim that
 conditioning on `E` guarantees recovery of the truth — is **false** in general.
 It holds only when the truth is the unique feasible candidate.
 
-The `AABB/ABAB` instance is thus the precise finite witness to the following
-open question:
+W3 (same-length) and W6 (variable-length) are distinct failure modes:
+- **W3**: both candidates have the same length and the same read spectra; the
+  competitor wins by having higher multiplicity on the observed types.
+- **W6**: both candidates have the same read spectra but different lengths; the
+  shorter competitor wins by the `1/G^n` length factor in the multinomial.
+
+The `AABB/ABAB` and `AABBC/AABC` instances are thus finite witnesses to the
+following open question:
 
 > **Open**: Under what conditions on the read set `r` is the truth the unique
 > `I_s`-feasible candidate? This is the normalized-spectrum identifiability
@@ -237,22 +267,19 @@ verifies, at the finite-instance level, that:
 
 `scripts/audit-267-independent-checks.py` verifies, without Lean:
 
-- All likelihood ratios for W1-W4 (exact rational arithmetic)
+- All likelihood ratios for W1-W6 (exact rational arithmetic)
 - The `2×2` Bayes example (joint law, accuracies, MAP beats infallible)
 - The nonuniform prior example (MAP ≠ ML)
 - `I_s` membership for all competitors (Python implementation of the
   `InformationFeasible` predicate)
 
-**Result**: 21 of 24 checks pass. The 3 failures are:
+**Result**: 30 of 31 checks pass. The 1 failure is:
 
 1. W4 competitor coverage (expected: different genome length, read starts
    are for the truth's circle)
-2. W5 exact ratio (§6.2 bidirected flow complexity prevents Python verification)
-3. W5 binomial ratio (same)
 
-The W5 ratios are kernel-checked in Lean and not independently verifiable by
-the simplified Python script. The W4 likelihood values (`3/64` and `1/18`) and
-ratio (`32/27`) are independently verified.
+The W5 ratios are now independently verified with the molecule model (exact
+`3`, binomial `5`). The W6 ratios are independently verified (exact `25/16`).
 
 ---
 
@@ -265,14 +292,14 @@ ratio (`32/27`) are independently verified.
    truth the unique `I_s`-feasible candidate? This is the population `P2`
    normalized-spectrum identifiability question, which is **open** and strictly
    stronger than the conditional inference theorem.
-3. **W3 conditional failure**: The `AABB/ABAB` instance shows that
-   conditional-on-`E` MAP can fail. Is there a finite witness where
+3. **W3/W6 conditional failures**: The `AABB/ABAB` and `AABBC/AABC` instances
+   show that conditional-on-`E` MAP can fail. Is there a finite witness where
    conditional-on-`E` MAP **succeeds** (truth is unique feasible candidate)?
    The `2×2` example of the bayes-optimality note is such a witness, but it is
    not a genome-assembly instance.
-4. **W5 independent verification**: The §6.2 bidirected flow ratios (3 and 5)
-   are kernel-checked in Lean but not independently verified by Python. A
-   Python verification would require implementing the §6.2 flow machinery.
+4. **W5 independent verification**: RESOLVED 2026-10-12. The §6.2 molecule
+   model is now implemented in Python; both ratios (exact `3`, binomial `5`)
+   are independently verified.
 
 ---
 
@@ -280,10 +307,10 @@ ratio (`32/27`) are independently verified.
 
 | Claim | Status |
 |---|---|
-| W1-W5 witness arithmetic (W1-W4) | **standard statistics** + **independently verified** |
-| W5 witness arithmetic | **kernel-checked** (Lean, §6.2 flow) |
+| W1-W6 witness arithmetic | **standard statistics** + **independently verified** |
+| W5 witness arithmetic | **kernel-checked** + **independently verified** (molecule model) |
 | `I_s` membership for competitors | **mathematical proof** (Python implementation of `InformationFeasible`) |
-| Conditional-on-`E` MAP not universal | **mathematical proof** + **W3 counterexample** |
+| Conditional-on-`E` MAP not universal | **mathematical proof** + **W3 and W6 counterexamples** |
 | Finite ML failures compatible with Bayes optimality | **mathematical proof** (different experiments) |
 | Source ambiguity (MB09 objective) | **open** |
 | Population `P2` identifiability | **open** |
