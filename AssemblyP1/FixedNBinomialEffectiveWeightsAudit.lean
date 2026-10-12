@@ -1,0 +1,5 @@
+import AssemblyP1.FixedNBinomialEffectiveWeights
+
+#print axioms AssemblyP1.FixedNBinomialEffectiveWeights.product_factor
+#print axioms AssemblyP1.FixedNBinomialEffectiveWeights.effectiveProduct_eq_binomialNumerator
+#print axioms AssemblyP1.FixedNBinomialEffectiveWeights.binomialNumerator_le_iff_effectiveProduct_le
