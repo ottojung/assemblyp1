@@ -554,4 +554,42 @@ theorem fixedX_strict_loss_at_xLose258 :
 #print axioms fixedX_top_tie_at_xTie258
 #print axioms fixedX_strict_loss_at_xLose258
 
+
+/-! ### Genome realization of every feasible spectrum in this example
+
+For the all-four-support binary length-six graph, every positive balanced
+mass-six spectrum above is actually spelled by a circular genome, so the
+abstract circulation enumeration is also complete for genome candidates. -/
+
+def S2_258 : Fin 6 → Fin 2 := ![0, 0, 1, 1, 1, 1]
+def S3_258 : Fin 6 → Fin 2 := ![0, 0, 0, 0, 1, 1]
+def S4_258 : Fin 6 → Fin 2 := ![0, 0, 1, 0, 1, 1]
+
+theorem S2_spec_258 :
+    OrientedRigidity.specCount (L := 2) (by decide : 0 < 6) S2_258 = B2 := by
+  funext w
+  rcases word_cases_258 w with h | h | h | h <;> subst w <;> decide
+
+theorem S3_spec_258 :
+    OrientedRigidity.specCount (L := 2) (by decide : 0 < 6) S3_258 = B3 := by
+  funext w
+  rcases word_cases_258 w with h | h | h | h <;> subst w <;> decide
+
+theorem S4_spec_258 :
+    OrientedRigidity.specCount (L := 2) (by decide : 0 < 6) S4_258 = B4 := by
+  funext w
+  rcases word_cases_258 w with h | h | h | h <;> subst w <;> decide
+
+theorem feasibleSpectrum_realizable_258 (B : (Fin 2 → Fin 2) → ℕ)
+    (hB : IsFeasibleSpectrum (by decide : 0 < 6) S255 B) :
+    ∃ S : Fin 6 → Fin 2,
+      OrientedRigidity.specCount (L := 2) (by decide : 0 < 6) S = B := by
+  rcases (feasibleSpectrum_iff_258 B).mp hB with h | h | h | h
+  · exact ⟨S255, by rw [h]; exact truth_spec_B1_258⟩
+  · exact ⟨S2_258, by rw [h]; exact S2_spec_258⟩
+  · exact ⟨S3_258, by rw [h]; exact S3_spec_258⟩
+  · exact ⟨S4_258, by rw [h]; exact S4_spec_258⟩
+
+#print axioms feasibleSpectrum_realizable_258
+
 end AssemblyP1.FixedXExactML
