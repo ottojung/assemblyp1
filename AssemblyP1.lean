@@ -199,6 +199,7 @@ import AssemblyP1.BreslerRemapCompatibility
 import AssemblyP1.Issue209EAudit
 import AssemblyP1.FibreCountArithmetic
 import AssemblyP1.RobustSameLengthIff
+import AssemblyP1.FixedXExactML
 
 /-! ## `Issue94Transposition`: the Kotzig/Ukkonen/Pevzner descent, and an obstruction
 
