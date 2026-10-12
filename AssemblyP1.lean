@@ -38,7 +38,9 @@ import AssemblyP1.Section62BidirectedFlow
 import AssemblyP1.Section62VariableOverlap247e
 import AssemblyP1.FiniteSamplingCounterexample
 import AssemblyP1.PopulationReduction
+import AssemblyP1.PopulationGibbsTest
 import AssemblyP1.OrientedRigidity
+import AssemblyP1.GraverRigidityAudit
 import AssemblyP1.RepeatAdapter
 import AssemblyP1.OrientedFinalRigidity
 import AssemblyP1.BridgingBridge
@@ -51,6 +53,7 @@ import AssemblyP1.WraparoundTripleRepeat
 import AssemblyP1.MLEscape
 import AssemblyP1.SameLength62TieUniqueness
 import AssemblyP1.PopulationUniqueness
+import AssemblyP1.PopulationMaximizerUnrestricted
 import AssemblyP1.Issue94GcdOneP2
 import AssemblyP1.P2GcdOne
 import AssemblyP1.Issue94R1LongWindow

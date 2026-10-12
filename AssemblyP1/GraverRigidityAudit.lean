@@ -1,0 +1,8 @@
+import AssemblyP1.GraverRigidity
+
+open AssemblyP1.GraverRigidity
+
+#print axioms AssemblyP1.GraverRigidity.exists_graver_conformal
+#print axioms AssemblyP1.GraverRigidity.graver_decomposition
+#print axioms AssemblyP1.GraverRigidity.rigid_iff_forall_graver_not_feasible
+#print axioms AssemblyP1.GraverRigidity.rigid_iff_forall_graver_not_inbox
