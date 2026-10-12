@@ -1,0 +1,6 @@
+import AssemblyP1.FiniteStartCoverage
+
+#print axioms AssemblyP1.FiniteStartCoverage.coverage_of_type_budget
+#print axioms AssemblyP1.FiniteStartCoverage.strict_covered_witness_for_positive_spectra
+
+#print axioms AssemblyP1.FiniteStartCoverage.surjective_of_positive_start_spectrum
