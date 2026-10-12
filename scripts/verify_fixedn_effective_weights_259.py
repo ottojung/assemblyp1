@@ -7,9 +7,8 @@ joint multinomial likelihood. The modeled type universe stays fixed, including
 types with zero observations. All values are arbitrary-precision integers.
 """
 
-from itertools import product
-from math import comb, prod
 from fractions import Fraction
+from math import comb, prod
 
 
 def compositions(total, count):

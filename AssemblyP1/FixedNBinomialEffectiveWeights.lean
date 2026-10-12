@@ -49,7 +49,6 @@ theorem product_factor (A C x : E → ℕ) :
   simp_rw [inner_product_factor]
   rw [← Finset.prod_mul_distrib]
 
-
 /-- Product-binomial surrogate read-type weight. The second product ranges
 over ALL modeled types, including zero-observed ones. -/
 def effectiveWeight (N : ℕ) (B : E → ℕ) (i : E) : ℕ :=
