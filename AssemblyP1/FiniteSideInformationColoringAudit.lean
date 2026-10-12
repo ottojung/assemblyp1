@@ -1,0 +1,9 @@
+import AssemblyP1.FiniteSideInformationColoring
+
+#print axioms AssemblyP1.FiniteSideInformationColoring.certain_iff_proper
+#print axioms AssemblyP1.FiniteSideInformationColoring.FourCandidates.labelA_certain
+#print axioms AssemblyP1.FiniteSideInformationColoring.FourCandidates.labelB_certain
+#print axioms AssemblyP1.FiniteSideInformationColoring.FourCandidates.no_subsingleton_label
+#print axioms AssemblyP1.FiniteSideInformationColoring.FourCandidates.labelA_not_refines_labelB
+#print axioms AssemblyP1.FiniteSideInformationColoring.FourCandidates.labelB_not_refines_labelA
+#print axioms AssemblyP1.FiniteSideInformationColoring.FourCandidates.no_common_coarsest
