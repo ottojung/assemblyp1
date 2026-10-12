@@ -61,9 +61,12 @@ zero-sum, `Feasible (A + g)` is exactly the box condition `g ≥ 1 - A`;
 
 * Eisenbrand, Weismantel, et al., *Proximity results and faster algorithms
   for integer programming*, arXiv:1904.01361.
-* De Loera, Hemmecke, Onn, *Graver bases and convex geometry*,
-  arXiv:0710.3003 (Hemmecke–Onn–Weismantel).
-* Mathematical Programming (2026), Proposition 3 (Positive Sum Property),
+* Hemmecke, Onn, Weismantel, *A polynomial oracle-time algorithm for convex
+  integer minimization*, arXiv:0710.3003; Mathematical Programming 126 (2011),
+  97–117.
+* Hunkenschröder, Koutecký, Levin, Vu, *(Near)-Optimal algorithms for sparse
+  separable convex integer programs*, Mathematical Programming (2026),
+  Proposition 3 (Positive Sum Property),
   https://link.springer.com/article/10.1007/s10107-026-02341-5.
 
 ## Open
