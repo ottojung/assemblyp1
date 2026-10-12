@@ -1,6 +1,6 @@
 # Fixed-`x` exact ML classification (board issue #258, child of #255)
 
-_Status: kernel-checked Lean theorem + independent exact-rational Python verification, 2026-10-11. The module is `AssemblyP1/FixedXExactML.lean`, imported by `AssemblyP1.lean`, so every theorem below is checked by `lake build` and free of `sorry`/`admit`/`axiom` (`#print axioms` reports only `propext`, `Classical.choice`, `Quot_sound`). The `FixedXExample` theorem provides the concrete AAABBB instance with four feasible spectra, two realizable complete-support observations, and kernel-checked likelihood products. All instance facts are checked by `decide`. All four feasible spectra are realized by explicit circular genomes (`allFourSpectra_genomeRealized`: AAABBB/AABBBB/AAAABB/AABABB), upgrading the feasible-set claim from existential to constructive._
+_Status: kernel-checked Lean theorem + independent exact-rational Python verification, 2026-10-11. The module is `AssemblyP1/FixedXExactML.lean`, imported by `AssemblyP1.lean`, so every theorem below is checked by `lake build` and free of `sorry`/`admit`/`axiom` (`#print axioms` reports only `propext`, `Classical.choice`, `Quot_sound`). The `fixedX_four_chamber_iff_258` theorem provides the concrete AAABBB instance with four feasible spectra, two realizable complete-support observations, and kernel-checked likelihood products. All instance facts are checked by `decide`. All four feasible spectra are realized by explicit circular genomes (`feasibleSpectrum_realizable_258`: AAABBB/AABBBB/AAAABB/AABABB), upgrading the feasible-set claim from existential to constructive._
 
 This note records the **fixed-`x`** exact multinomial ML classification requested by issue #258. It contrasts with #256 (sample-uniform robustness): here the observed count vector `x` is fixed, and we ask when the truth spectrum maximizes the exact likelihood at that specific `x`. The sample-uniform question (#256) asks whether the truth wins for *every* admissible `x`; the fixed-`x` question is pointwise and does not imply robustness.
 
@@ -21,7 +21,7 @@ The exact multinomial factor is `Lik(B;x) = ∏_{e∈E} (B e / G)^{x e}` (the ob
 In Lean: `fixedX_classification_iff`. The integer product is the exact likelihood factor with the candidate-independent positive denominator `G^n` divided out; the iff holds because `G^n > 0` cancels in every comparison.
 
 > **Theorem (issue #258, deliverable 5).**
-> For fixed `x` that is realizable from the truth by a realization whose starts cover the genome (historical coverage), the same iff holds with explicit quantifiers for sampling realizability and coverage.
+> For fixed `x` that is realizable from the truth by a realization whose starts cover the genome (sampled-start base coverage (not historical read-string matching)), the same iff holds with explicit quantifiers for sampling realizability and coverage.
 
 In Lean: `fixedX_classification_iff_of_realizable`.
 
@@ -47,8 +47,8 @@ Genome `S = AAABBB` (binary alphabet `{A,B}`, `G = 6`, `L = 2`). The truth spect
 | B4       | 1  | 2  | 1  | 2  | AABABB |
 
 All four feasible spectra are realized by explicit circular words (theorem
-`allFourSpectra_genomeRealized`): `B1` by `S255 = AAABBB`, `B2` by
-`D258b = AABBBB`, `B3` by `D258c = AAAABB`, `B4` by `D258 = AABABB`, with the
+`feasibleSpectrum_realizable_258`): `B1` by `S255 = AAABBB`, `B2` by
+`S2_258 = AABBBB`, `B3` by `S3_258 = AAAABB`, `B4` by `S4_258 = AABABB`, with the
 four `specCount` equalities kernel-checked by `word_cases_258`/`decide`.
 
 Three realizable complete-support samples exhibit all three truth statuses:
@@ -59,11 +59,10 @@ Three realizable complete-support samples exhibit all three truth statuses:
 | xT       | 1  | 1  | 1  | 1  | **tie at top** with B4 | 4, 3, 3, 4 |
 | x2       | 1  | 2  | 1  | 2  | **strict loss** to B4 (ratio 4) | 4, 3, 3, 16 |
 
-All instance facts are kernel-checked by `decide`/`norm_num` in `AssemblyP1/FixedXExactML.lean` (via `scratch255/Scratch.lean`). The Python script independently verifies:
+All instance facts are kernel-checked by `decide`/`norm_num` in `AssemblyP1/FixedXExactML.lean`. The reproducible `python3 scripts/verify_fixedx_258.py` check independently verifies:
 - the feasible set is exactly `{B1,B2,B3,B4}`, each realized by an explicit circular genome;
 - the realizations really produce the samples and their distinct starts cover the genome;
 - a brute-force scan over all `2^6 = 64` circular genomes confirms that the genome-level exact-likelihood ranking agrees with the spectrum-level classification at `x1`, `xT`, `x2` (at this instance every feasible spectrum is genome-realizable, so the two candidate universes coincide);
-- a census over all binary truths of length `G = 5` and `G = 6` at `L = 2` confirms the trichotomy (unique maximizer / tie at top / strict loss) is exhaustive and mutually exclusive over a grid of realizable samples, and the status computed from the feasible-spectrum certificate always matches the status computed by brute force over all genomes.
 
 ## 4. Zero-count edges
 
@@ -86,3 +85,9 @@ Issue #256 proves the **sample-uniform** iff: `(∀ x, ∀ B ∈ F, Lik(B;x) ≤
 * The fixed-`x` classification for general MB09 §6.2 bidirected flows at arbitrary overlap floor `o_min ≤ L-1` (issue #261) is open.
 * The fixed-`x` classification for reverse-complement molecule types at arbitrary overlap is open.
 - The fixed-`x` classification for variable read lengths is open.
+
+## 8. Exact chamber and scope
+
+For x=(u,r,v,s) ordered (AA,AB,BB,BA), B1 maximizes over IsFeasibleSpectrum exactly when 3^u <= 2^(u+v), 3^v <= 2^(u+v), and r+s <= u+v. All three strict means a unique maximizing spectrum; all weak with an equality means a tie; any failure means strict loss. The Lean theorem compares integer products.
+
+IsFeasibleSpectrum requires positive multiplicities on exact truth-window support, balance, and mass six. Complete-support observations allow comparison to every same-length binary genome, but zero-count types permit other genomes with smaller support and nonzero likelihood.
