@@ -1,7 +1,8 @@
 # AssemblyP1 umbrella #255 — remaining-open matrix
 
-_Status: 2026-10-11. Source-fidelity / whitepaper-theorem-matrix integration
-front. Base: `main` @ `f17a1739cb8568bf4cff552bafb58f5fed1dd026` (green).
+_Status: 2026-10-12. Source-fidelity / whitepaper-theorem-matrix integration
+front. Verified base: `main` @ `a8200738db63001b299058b07600b39791a8c7e1`
+(PR #161 merged after all exact-head CI checks passed).
 This matrix is a proposed, reviewable status record for the #255 research
 umbrella, not a declaration that the remaining proofs are finished. It is
 updated only when a scoped claim is proved, refuted, or explicitly
@@ -45,17 +46,51 @@ Every material result is classified as one of:
   `W1 AAATAT→AAAAAT` is the non-uniqueness witness.
 - **Axioms:** `{propext, Classical.choice, Quot.sound}`
 
-### #257 (PARTIAL) — exact support-domain rigidity theorem landed; Graver structural iff NOT merged
+### #257 (PARTIAL) — support rigidity and Graver structural iff LANDED; broader taxonomy OPEN
 
-- **Merged artifact:** `AssemblyP1/ExactRigidityCriterion.lean`
-- **Branch:** `research/257-rigid-read-graphs`; merged `c28aec7`/`b0ce311`
-- **Merged statement:** Exact support-domain rigidity theorem for positive
-  circulations on the oriented `L`-mer support graph.
-- **NOT merged:** `AssemblyP1/GraverRigidity.lean` (Graver structural iff) —
-  this file is untracked on the agent working directory and has NOT been merged
-  to main. The Graver criterion (`A` rigid IFF no Graver element `g ∈ Gr(M)`
-  satisfies `g ≥ 1 − A` coordinatewise) remains OPEN.
-- **Axioms (merged):** `{propext, Classical.choice, Quot.sound}`
+- **Merged artifacts:** `AssemblyP1/ExactRigidityCriterion.lean`,
+  `AssemblyP1/GraverRigidity.lean`, and `AssemblyP1/GraverRigidityAudit.lean`.
+- **Graver theorem:** `rigid_iff_forall_graver_not_feasible` and the
+  equivalent coordinate-box obstruction `rigid_iff_forall_graver_not_inbox`
+  are proved in Lean for a finite oriented support-edge set, positive balanced
+  **integer** circulations with **fixed total**. `graver_decomposition`
+  supplies a conformal integer-kernel decomposition.
+- The module was integrated to main via the already-merged Graver work;
+  the previous statement that it was *untracked and not merged* is obsolete.
+- **Still OPEN:** broader read-graph structural classification outside this
+  positive, same-length, oriented integer-circulation universe; no transfer
+  to general bidirected, half-integral, or arbitrary-overlap flow candidates.
+
+### #258 (CLOSED) — exact multinomial, oriented same-length, fixed observation x
+
+- **Artifact:** imported `AssemblyP1/FixedXExactML.lean`.
+- **PR:** #159, merged `080b1b3829e015b6499486363167665c21a55bc1`.
+- **Statement:** `fixedX_classification_iff` is the exact product-inequality
+  certificate over positive balanced, mass-G, *truth-support* spectra.
+  `feasibleSpectrum_iff_258` exhausts the four possible AAABBB spectra;
+  `fixedX_four_chamber_iff_258` gives all three exact integer-product chamber
+  comparisons, with explicit unique-win, top-tie, and strict-loss samples.
+  `feasibleSpectrum_realizable_258` constructs circular genomes for all four.
+- **Verification:** all three exact-head CI workflows green, including Lean
+  compilation, kernel replay and full axiom audit; independently checked all
+  64 binary length-six genomes with `scripts/verify_fixedx_258.py`.
+- **Additional:** PR #161 merged as `a8200738db63001b299058b07600b39791a8c7e1`
+  preserving `scripts/verify_feasible_spectrum_ml_255.py` from obsolete PR #151.
+  This exact-rational script passed 974 (truth,sample) cases with G=5,6,L=2
+  and recorded 158 out-of-spelled-class higher-likelihood cases.
+- **Scope:** fixed-x same-length oriented spectra; not fixed-N product-binomial,
+  RC molecule flows, variable genome length, or arbitrary-overlap graph
+  reconstruction. Positive maximizer is over *spectra*, not unique genome
+  strings when cyclic rotations tie.
+
+### #264 (CLOSED) — integer-lattice Graver basis obstruction/decomposition
+
+- **Artifact:** `AssemblyP1/GraverRigidity.lean`, imported and audited on main.
+- **Proof:** conformal extraction of a Graver element by l1 strong induction;
+  direct oriented fixed-support circulation rigidity iff absence of a feasible
+  unit Graver augmentation, plus `graver_decomposition` for #263.
+- **Not implied:** full finite-basis enumeration or convex optimization
+  certificate in #263, still OPEN.
 
 ### #261 (PARTIAL) — count-vector and exact binomial partial results
 
@@ -92,14 +127,6 @@ Every material result is classified as one of:
 ---
 
 ## OPEN — explicitly unresolved
-
-### #258 (fixed-x sample classification)
-
-- **PR:** #151, signed head `ce011d5` (parent `32ef867`) on branch `agent/board-255-matrix-b6aa4ea0dce8-20261010`
-- **Has:** Local kernel-checkable AAABBB 4 numerical candidate likelihoods.
-- **Does NOT yet prove:** Exhaustion/global truth winner.
-- **Still needs:** Final CI.
-- **Status:** OPEN. All dependent results remain open.
 
 ### #259 (MB09 §6.1 fixed-external-N product-binomial)
 
@@ -152,12 +179,6 @@ Every material result is classified as one of:
 
 - **Status:** IN PROGRESS. Separable convex discrete Graver criterion.
 
-### #264 (integer-kernel conformal Graver decomposition)
-
-- **Status:** OPEN. A separate agent is formalizing a finite conformal Graver
-  basis obstruction and decomposition, distinct from the already-merged
-  bounded zero-sum-delta rigidity iff in #257.
-
 ---
 
 ## AXIS MATRIX (PROVED / REFUTED / OPEN)
@@ -192,8 +213,9 @@ original Medvedev-Brudno 2009 source:
 
 ## #255 umbrella status
 
-**#255 remains OPEN.** Scoped claims on the #258, #259, #261, #262, #263, and #264
-fronts are unresolved; no conjecture is promoted to fact. #255 closes only when
+**#255 remains OPEN.** #258 and #264 are CLOSED after scoped Lean results
+landed; #259, #261, #262 and #263, plus the broader #257 taxonomy, remain
+unresolved; no conjecture is promoted to fact. #255 closes only when
 every scoped claim is proved or refuted to the issue's evidence standard
 (audited proof, direct Lean theorem where feasible, green CI/merge) and this
 matrix is updated to match.
