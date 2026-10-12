@@ -19,31 +19,37 @@
 \begin{abstract}
 \noindent
 Genome assembly seeks to reconstruct the genome from which a collection of
-short DNA reads originated. Because sequencing involves random sampling, we can
-ask how likely we would have been to observe those same reads if they had come
-from a different genome. Is the true genome necessarily the one that makes the
-observed reads most likely?
+short DNA reads originated. What does the observed evidence justify us in
+concluding about the true genome, and what extra premises alter that
+conclusion?
 
-We establish both positive and negative results. First, we prove a
-combinatorial rigidity theorem showing that restrictions on repeated DNA
-sequences can uniquely determine the frequencies of genomic fragments
-consistent with an assembly graph. Under suitable conditions, this implies that
-the true genome maximizes likelihood among the relevant same-length candidates,
-uniquely up to circular rotation. We then demonstrate the limits of these
-guarantees through explicit counterexamples in which an incorrect genome has
-greater likelihood. These examples reveal how candidate length, the
-representation of DNA strands, and random sampling of reads affect likelihood
-rankings.
+This paper distinguishes three claims that are easy to conflate but are not
+interchangeable. \emph{(i) Deterministic reconstruction}: Shomorony et al.\
+(2016) prove that a Not-So-Greedy algorithm recovers the true circular genome
+under truth-relative information-feasibility conditions --- a statement about
+what the reads contain, not about any likelihood ranking. \emph{(ii) Conditional
+Bayesian certainty}: given an external promise that the true genome-and-reads
+pair satisfies a specified event $E$, and only if the resulting supported
+truth fibre is singleton up to genome equivalence, the posterior concentrates
+on the truth --- a conditional statement that uses $P(E \mid \text{candidate},
+\text{observed reads})$ and a correctly updated prior, not unrestricted
+likelihood. \emph{(iii) Ordinary maximum likelihood}: maximizing
+$P_D(R)$ over a stated candidate universe without access to $E$ as side
+information --- a principled probability-based baseline that does not promise
+finite pointwise correctness.
 
-Finally, we study maximum likelihood when the read distribution is known
-exactly, without sampling fluctuations. In this setting, the true genome always
-maximizes likelihood, but uniqueness remains a nontrivial mathematical
-question. We prove that uniqueness holds for a class of primitive genomes
-satisfying a structural condition on repeats.
+We prove a combinatorial rigidity theorem showing that, under bridging
+conditions, the truth's spectrum is the unique positive circulation of its
+window-support graph; on the same-length oriented slice this makes the truth
+the unique likelihood maximizer up to circular rotation. We exhibit finite
+counterexamples in which a competitor is strictly more likely --- informative
+boundaries, not paradoxes --- showing that the deterministic guarantee does not
+transfer to the unconditional likelihood-ranking objective. At the population
+level, the truth is always a maximizer (a Gibbs/KL identity), and among
+primitive P2 genomes it is the unique one.
 
-Together, these results clarify when the true genome has the greatest
-likelihood, when another genome can be more likely, and when the maximizer is
-unique.
+Together, these results clarify what each type of evidence justifies, and what
+additional premises are needed to strengthen the conclusion.
 \end{abstract}
 
 \clearpage

@@ -23,7 +23,7 @@ mdc: true
   3. Bridging: how some repeats can be resolved
   4. The open question: does structural sufficiency imply ML recovery?
   5. The key distinction: reconstruction (structure) vs. likelihood (frequency)
-  6. A finite counterexample: the wrong genome can win
+  6. A finite boundary: the decoy can score higher when the sample is unrepresentative
   7. Positive results: structural rigidity and population uniqueness
   8. Honest limitations: what the model does and does not capture
 
@@ -226,7 +226,7 @@ A useful analogy: structural ambiguity is like having two maps that both fit the
 layout: default
 ---
 
-# A surprising finite example
+# A finite boundary: when the decoy scores higher
 
 Oriented reads of length `L = 3`, comparing:
 
@@ -468,10 +468,11 @@ layout: default
 <div class="text-lg">
 
 1. Assembly is reconstruction from fragments; repeats create real ambiguity.
-2. Maximum likelihood is a distinct, frequency-based test.
-3. Finite samples can reverse the comparison; idealized population models remove that accident.
-4. Under explicit structural conditions, the population-likelihood genome is unique up to rotation.
-5. These are exact, machine-checked results about a simple model — with clear limits.
+2. Maximum likelihood is a distinct, frequency-based test — not the same as structural reconstruction.
+3. A deterministic algorithm can be guaranteed to succeed under structural conditions, but that guarantee does not transfer to the likelihood ranking.
+4. Finite samples can reverse the comparison; idealized population models remove that accident.
+5. Under explicit structural conditions, the population-likelihood genome is unique up to rotation.
+6. These are exact, machine-checked results about a simple model — with clear limits.
 
 </div>
 
