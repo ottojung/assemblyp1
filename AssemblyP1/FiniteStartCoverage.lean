@@ -244,3 +244,151 @@ theorem uniform_covered_maximizer_iff_spectrum_rigid
     simp
 
 end AssemblyP1.FiniteStartCoverage
+
+namespace AssemblyP1.FiniteStartCoverage
+
+variable {E : Type*} [Fintype E]
+
+open AssemblyP1.FixedNConstructiveWitness
+
+/-- Actual normalized fixed-N product-binomial (composite) log score, with
+binomial-coefficient terms omitted because they do not depend on the candidate
+spectrum. The N denominator is kept visible here. -/
+noncomputable def normalizedBinomialLogScore
+    (N n : ℝ) (C x : E → ℝ) : ℝ :=
+  ∑ e, (x e * Real.log (C e / N) +
+    (n - x e) * Real.log ((N - C e) / N))
+
+/-- The relative log-ratio used by the iff proof is EXACTLY the difference of
+the two candidate log scores; the external-N normalizers cancel. -/
+theorem log_ratio_eq_normalized_score_difference
+    (N n : ℝ) (A B x : E → ℝ)
+    (hN : 0 < N)
+    (hA : ∀ e, 0 < A e) (hB : ∀ e, 0 < B e)
+    (hNA : ∀ e, 0 < N - A e) (hNB : ∀ e, 0 < N - B e) :
+    (∑ e, logRatioTerm N n A B x e) =
+      normalizedBinomialLogScore N n A x -
+        normalizedBinomialLogScore N n B x := by
+  have hterm (e : E) :
+      logRatioTerm N n A B x e =
+        (x e * Real.log (A e / N) +
+          (n - x e) * Real.log ((N - A e) / N)) -
+        (x e * Real.log (B e / N) +
+          (n - x e) * Real.log ((N - B e) / N)) := by
+    unfold logRatioTerm
+    have hAB := Real.log_div (ne_of_gt (hA e)) (ne_of_gt (hB e))
+    have hNBAB := Real.log_div (ne_of_gt (hNA e)) (ne_of_gt (hNB e))
+    have hAN := Real.log_div (ne_of_gt (hA e)) (ne_of_gt hN)
+    have hBN := Real.log_div (ne_of_gt (hB e)) (ne_of_gt hN)
+    have hNAN := Real.log_div (ne_of_gt (hNA e)) (ne_of_gt hN)
+    have hNBN := Real.log_div (ne_of_gt (hNB e)) (ne_of_gt hN)
+    rw [hAB, hNBAB, hAN, hBN, hNAN, hNBN]
+    ring
+  unfold normalizedBinomialLogScore
+  rw [← Finset.sum_sub_distrib]
+  exact Finset.sum_congr rfl (fun e _ => hterm e)
+
+end AssemblyP1.FiniteStartCoverage
+
+
+namespace AssemblyP1.FiniteStartCoverage
+
+variable {S E : Type*} [Fintype S] [Fintype E] [DecidableEq E]
+
+/-- The sample-relative log ratio is the exact difference of the normalized
+fixed-external-N binomial composite log scores on strict interior candidates. -/
+theorem truthLogRatio_eq_normalized_scores
+    (f : S → E) (m : S → ℕ) (N : ℕ) (B : E → ℕ)
+    (hN : 0 < N)
+    (hApos : ∀ e, 0 < startSpectrum f e)
+    (hBpos : ∀ e, 0 < B e)
+    (hAltN : ∀ e, startSpectrum f e < N)
+    (hBltN : ∀ e, B e < N) :
+    truthLogRatio f m N B =
+      normalizedBinomialLogScore (N : ℝ)
+        (((∑ e, typeCounts f m e) : ℕ) : ℝ)
+        (fun e => (startSpectrum f e : ℝ))
+        (fun e => (typeCounts f m e : ℝ)) -
+      normalizedBinomialLogScore (N : ℝ)
+        (((∑ e, typeCounts f m e) : ℕ) : ℝ)
+        (fun e => (B e : ℝ))
+        (fun e => (typeCounts f m e : ℝ)) := by
+  unfold truthLogRatio
+  apply log_ratio_eq_normalized_score_difference
+  · exact_mod_cast hN
+  · intro e
+    exact_mod_cast hApos e
+  · intro e
+    exact_mod_cast hBpos e
+  · intro e
+    have he : (startSpectrum f e : ℝ) < (N : ℝ) := by
+      exact_mod_cast hAltN e
+    linarith
+  · intro e
+    have he : (B e : ℝ) < (N : ℝ) := by exact_mod_cast hBltN e
+    linarith
+
+/-- Literal candidate-normalized log-score maximality for every *fully
+covered* finite start sample. -/
+def UniformCoveredNormalizedMaximizer
+    (f : S → E) (C : Finset (E → ℕ)) (N : ℕ) : Prop :=
+  ∀ m : S → ℕ, (∀ s, 0 < m s) →
+    ∀ B ∈ C,
+      normalizedBinomialLogScore (N : ℝ)
+        (((∑ e, typeCounts f m e) : ℕ) : ℝ)
+        (fun e => (B e : ℝ))
+        (fun e => (typeCounts f m e : ℝ)) ≤
+      normalizedBinomialLogScore (N : ℝ)
+        (((∑ e, typeCounts f m e) : ℕ) : ℝ)
+        (fun e => (startSpectrum f e : ℝ))
+        (fun e => (typeCounts f m e : ℝ))
+
+/-- Final finite, positive oriented-spectrum **IFF**, now stated directly
+for the normalized product-binomial log likelihood. The normalization is
+candidate-independent for fixed N and observed sample size; the theorem does
+not assert anything about multinomial joint probabilities, boundary support,
+or non-spelled bidirected flow competitors. -/
+theorem uniform_normalized_score_iff_rigidity
+    (f : S → E) (C : Finset (E → ℕ)) (G N : ℕ)
+    (hGpos : 0 < G) (hGN : G ≤ N)
+    (hApos : ∀ e, 0 < startSpectrum f e)
+    (hAltG : ∀ e, startSpectrum f e < G)
+    (hAtotal : (∑ e, startSpectrum f e) = G)
+    (hC : ∀ B ∈ C,
+      (∀ e, 0 < B e ∧ B e < G) ∧ (∑ e, B e) = G) :
+    UniformCoveredNormalizedMaximizer f C N ↔ SpectrumRigid f C := by
+  have hNpos : 0 < N := lt_of_lt_of_le hGpos hGN
+  have hAltN : ∀ e, startSpectrum f e < N :=
+    fun e => lt_of_lt_of_le (hAltG e) hGN
+  have heq (m : S → ℕ) (B : E → ℕ) (hBC : B ∈ C) :
+      truthLogRatio f m N B =
+        normalizedBinomialLogScore (N : ℝ)
+          (((∑ e, typeCounts f m e) : ℕ) : ℝ)
+          (fun e => (startSpectrum f e : ℝ))
+          (fun e => (typeCounts f m e : ℝ)) -
+        normalizedBinomialLogScore (N : ℝ)
+          (((∑ e, typeCounts f m e) : ℕ) : ℝ)
+          (fun e => (B e : ℝ))
+          (fun e => (typeCounts f m e : ℝ)) := by
+    obtain ⟨hb, _⟩ := hC B hBC
+    exact truthLogRatio_eq_normalized_scores f m N B
+      hNpos hApos (fun e => (hb e).1) hAltN
+      (fun e => lt_of_lt_of_le (hb e).2 hGN)
+  have hiff :
+      UniformCoveredNormalizedMaximizer f C N ↔
+        UniformCoveredMaximizer f C N := by
+    constructor
+    · intro hmax m hm B hBC
+      have hh := hmax m hm B hBC
+      change 0 ≤ truthLogRatio f m N B
+      rw [heq m B hBC]
+      linarith
+    · intro hmax m hm B hBC
+      have hh := hmax m hm B hBC
+      rw [heq m B hBC] at hh
+      exact sub_nonneg.mp hh
+  exact hiff.trans
+    (uniform_covered_maximizer_iff_spectrum_rigid
+      f C G N hGpos hGN hApos hAltG hAtotal hC)
+
+end AssemblyP1.FiniteStartCoverage
