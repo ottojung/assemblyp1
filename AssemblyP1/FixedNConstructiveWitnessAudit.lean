@@ -1,0 +1,14 @@
+import AssemblyP1.FixedNConstructiveWitness
+
+#print axioms AssemblyP1.FixedNConstructiveWitness.auxiliaryX_sum
+#print axioms AssemblyP1.FixedNConstructiveWitness.tangent_identity
+#print axioms AssemblyP1.FixedNConstructiveWitness.auxiliaryT_pos
+#print axioms AssemblyP1.FixedNConstructiveWitness.auxiliaryX_pos
+#print axioms AssemblyP1.FixedNConstructiveWitness.auxiliaryT_gap
+#print axioms AssemblyP1.FixedNConstructiveWitness.auxiliaryX_plus_complement
+#print axioms AssemblyP1.FixedNConstructiveWitness.auxiliaryX_lt_sample
+#print axioms AssemblyP1.FixedNConstructiveWitness.strict_witness_log_ratio
+#print axioms AssemblyP1.FixedNConstructiveWitness.integer_witness_strict_log_ratio
+#print axioms AssemblyP1.FixedNConstructiveWitness.strict_log_ratio_scale
+#print axioms AssemblyP1.FixedNConstructiveWitness.positive_witness_scaled_covers_type_multiplicity
+#print axioms AssemblyP1.FixedNConstructiveWitness.integral_witness_certificate

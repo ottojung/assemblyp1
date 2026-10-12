@@ -201,6 +201,8 @@ import AssemblyP1.FibreCountArithmetic
 import AssemblyP1.RobustSameLengthIff
 import AssemblyP1.FixedXExactML
 import AssemblyP1.FixedNBinomialEffectiveWeights
+import AssemblyP1.FixedNConstructiveWitness
+import AssemblyP1.FixedNConstructiveWitnessAudit
 import AssemblyP1.FixedNBinomialEffectiveWeightsAudit
 import AssemblyP1.FiniteSideInformationColoring
 import AssemblyP1.FiniteSideInformationColoringAudit
