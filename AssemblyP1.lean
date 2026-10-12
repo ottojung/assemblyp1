@@ -202,6 +202,8 @@ import AssemblyP1.RobustSameLengthIff
 import AssemblyP1.FixedXExactML
 import AssemblyP1.FixedNBinomialEffectiveWeights
 import AssemblyP1.FixedNBinomialEffectiveWeightsAudit
+import AssemblyP1.FiniteSideInformationColoring
+import AssemblyP1.FiniteSideInformationColoringAudit
 
 /-! ## `Issue94Transposition`: the Kotzig/Ukkonen/Pevzner descent, and an obstruction
 
