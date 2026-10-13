@@ -314,13 +314,10 @@ For `L = 3`, each read `XYZ` is an **edge** from vertex `XY` to vertex `YZ`.
 </div>
 
 ```
-        AAA
-       ↙   ↘
-     AA ———— AT
-     ↓  ↘   ↓
-     AT ———— TT
-       ↘   ↙
-        TTA
+    AA ──AAA──→ AA  (self-loop)
+    AA ──AAT──→ AT
+    AT ──ATT──→ TT
+    TT ──TTA──→ AA
 ```
 
 <div class="pt-4 text-sm">
