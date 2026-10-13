@@ -9,9 +9,10 @@ This module instantiates the merged generic decision theorem
 (PR #174) to the concrete finite iid read model, with the (n+1)-read
 observation represented exactly as a pair `(x : Fin n → R, r : R)`.
 
-Model.  `Θ` is a finite candidate family with normalized prior `π : Θ → ℝ`
-and, for each candidate `θ`, a normalized read pmf `p θ : R → ℝ` over the
-finite read alphabet `R`.  Reads `x : Fin n → R` are independent under each
+Model.  `Θ` is a finite candidate family with arbitrary real weights
+`π : Θ → ℝ` and, for each candidate `θ`, a read score
+`p θ : R → ℝ` on the finite read alphabet `R`, with the explicit
+normalization condition `∑ r, p θ r = 1`.  Reads `x : Fin n → R` are independent under each
 candidate, so the joint mass of candidate `θ` and sample `x` is
 
     J θ x = π θ * ∏ i : Fin n, p θ (x i).
@@ -31,10 +32,13 @@ Explicit scope (no silent identifications):
 * This is PRIOR-AVERAGED success under the fixed iid observation model.  It
   is not a claim about the success probability for each fixed true candidate,
   and not a global "ML is the best algorithm" claim.
-* The prior `π` is an arbitrary normalized prior on the finite family `Θ`.
-  For the genome adapter the prior is taken over rotation/RC orbit
-  representatives, not over raw spellings; that adapter is developed
-  separately.  Here `π` is abstract and no orbit structure is assumed.
+* The proved inequality is actually algebraic for ANY real-valued `π`
+  and any `p` whose per-candidate sums equal one; positivity and
+  normalization of `π`, and nonnegativity of `p`, are only required
+  to interpret these numbers as genuine joint probability masses and
+  the sums as success probabilities. For the later genome adapter
+  the prior must be defined on rotation/RC orbit classes, not raw
+  spellings. This module does not construct that orbit quotient.
 * Ties are handled by the constructive `FiniteBayesDecision.chooseMAP`
   (a finite maximizing witness via `Finset.exists_max_image`); every
   maximizer is optimal, and no uniqueness of the maximizer is claimed.
@@ -51,7 +55,7 @@ open Finset BigOperators
 
 variable {Θ R : Type*} [Fintype Θ] [DecidableEq Θ] [Fintype R] [Nonempty Θ]
 
-/-- Joint mass of the normalized prior `π` and the iid read pmf `p` at sample
+/-- Algebraic joint weight of `π` and the iid read score `p` at sample
 size `n`: `π θ * ∏ i, p θ (x i)`. -/
 def iidJoint (π : Θ → ℝ) (p : Θ → R → ℝ) (n : ℕ) : Θ → (Fin n → R) → ℝ :=
   fun θ x => π θ * ∏ i : Fin n, p θ (x i)
@@ -87,8 +91,10 @@ noncomputable def mapSuccessSucc (π : Θ → ℝ) (p : Θ → R → ℝ) (n : �
 
 /-- **Exact iid n → n+1 MAP success monotonicity.**  For every sample size
 `n` (including `n = 0`), the constructed MAP policy's prior-averaged zero-one
-success under the normalized iid read model does not decrease when one more
-read is observed.  This is prior-averaged only; per-candidate success may
+success under a genuine finite iid read model does not decrease when one more
+read is observed. Interpreting the formula probabilistically requires a
+nonnegative normalized prior and nonnegative normalized per-candidate read pmfs;
+the algebraic inequality itself uses only per-candidate read-score sums = 1.  This is prior-averaged only; per-candidate success may
 drop (see Antonina #269 counterexample packet). -/
 theorem iid_map_success_monotone (π : Θ → ℝ) (p : Θ → R → ℝ) (n : ℕ)
     (hnorm : ∀ θ, ∑ r : R, p θ r = 1) :
