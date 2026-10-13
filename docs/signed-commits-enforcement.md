@@ -35,15 +35,23 @@ independently.
 
 ## Branch protection (admin step required)
 
-The CI gate enforces signatures on every push/PR, but GitHub's native
-**Require signed commits** branch protection ruleset is **not enabled** — a
-workflow can be bypassed by force-push or disabled by a admin. To make
-enforcement mandatory, a repository admin must:
+The CI gate enforces signatures on every push/PR, but a workflow alone is
+**advisory** — it can be bypassed by force-push or disabled by an admin.
+GitHub's native **Require signed commits** ruleset is also **not enabled**,
+and enabling it as the sole gate is **problematic**: agent commits are signed
+with GPG subkeys of the maintainer key that GitHub's REST API does not
+recognize (`verification.verified=false, reason=no_user`), so native
+verification would reject valid agent signatures.
+
+To make enforcement **mandatory**, a repository admin must:
 
 1. Go to **Settings → Branches → Add branch protection rule** for `main`.
-2. Enable **Require signed commits**.
-3. Optionally enable **Require status checks to pass** and add the
-   `Signed commits` CI job.
+2. Enable **Require status checks to pass** and add the `Signed commits` CI
+   job — this makes the cryptographic gate non-bypassable.
+3. Enable **Do not allow bypassing the above settings** and **Restrict who
+   can push** to prevent force-push and direct-push circumvention.
+4. Optionally enable **Require signed commits** as defense-in-depth, but be
+   aware it may reject agent GPG signatures that GitHub does not recognize.
 
 Until that admin step is completed, enforcement relies on the CI gate alone
 and should be considered **advisory, not mandatory**.
