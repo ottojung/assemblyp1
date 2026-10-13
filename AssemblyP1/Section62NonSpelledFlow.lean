@@ -84,7 +84,7 @@ search in the companion note §7 found no non-spellable maximizer in scope.  Bot
 | `Base`, `comp`, `rc`, `cls` | §3.1: a DNA molecule is an unordered reverse-complement strand pair |
 | `readVerts`, `rep3`, `graph1`, `overlapEdges` | §6.2: "the vertices of this graph are the reads"; §4.1: "each k-molecule is represented only once" |
 | `ov`, `bdEdge`, `sgnRep`/`sgnTgt` | §3.3: a bidirected edge carries a signed incidence at each endpoint |
-| `reducedList`, `transitivelyReducedLonger` | §6.2: "we remove any overlap that is spelled by two shorter overlaps", read as the Myers 2005 reduction; the literal shorter-overlaps reading is vacuous at `L = 3` (`reduction_vacuous_literal`) |
+| `reducedList`, `transitivelyReducedLonger` | §6.2: "we remove any overlap that is spelled by two shorter overlaps", implemented as a coarse longer-shared-overlap filter, not the full Myers spelling-preserving algorithm; the literal shorter-overlaps reading is vacuous at `L = 3` (`reduction_vacuous_literal`) |
 | `starFlow21`, `starFlow31` | §6.2: the flow is "a (non-contiguous) assembly"; §5.2: `dᵢ` is the flow through vertex `i` |
 | `Feasible62`, `noTerm` | §6.2: vertex lower bound `1`, other lower bounds `0`, upper bounds `∞`; §3.4: `pos(f)(v) − neg(f)(v) = b(v)`; supersource/supersink at prohibitive cost |
 | `portOut`, `portIn`, `PortBalanced` | §3.3/§3.4 read at strand (port) level: the departing and arriving flow agree at every strand |

@@ -120,14 +120,22 @@ For `L = 3` every proper overlap has length `1` or `2`.
   `l ≤ L − 1` for any proper overlap. **So the literal reading removes nothing,
   ever.** [mathematical proof; kernel-checked for this graph as
   `graph_reduction_vacuous_literal`]
-- **Myers 2005 reading** (remove the direct overlap when a two-step path of
-  strictly *longer* proper overlaps exists between the same endpoints). At
-  `o_min = 1` on `{AAA, AAT, TAA}` this removes 16 of the 28 edges, leaving 12.
+- **Coarse longer-overlap-only reading** (a repository test, **not** the full
+  Myers 2005 spelling-preserving algorithm). Remove the direct overlap when a
+  two-step path of strictly *longer* proper overlaps exists between the same
+  endpoints. At `o_min = 1` on `{AAA, AAT, TAA}` this removes 16 of the 28 edges, leaving 12.
   [kernel-checked: `reducedList_eq`]
 
-Because every closed flow is a multiset of circuits and every flow on a subgraph is
-a flow on any supergraph with zero flow elsewhere, the Myers-reduced graph gives
-the **smallest** feasible set and the full graph the **largest**. The certificates
+This comparison only tests the literal shorter-overlap and coarse longer-only filters;
+it does not establish equivalence to Myers or to the separate spelling-preserving
+`transitivelyReducedSpelling` predicate, which also demands the equality
+`l1 + l2 = L + ell`. A concrete counterexample separating the two tests is
+provided by `Section62ReductionMismatch` (PR #185).
+
+Because every closed flow is a multiset of circuits and every flow on a
+subgraph is a flow on any supergraph with zero flow elsewhere, the coarse
+longer-only graph yields the **smaller** feasible set of these two tested
+graphs, while the full graph yields the **larger**. The certificates
 in §2 are stated on *both*, so they are independent of the reduction reading.
 [kernel-checked: `star21_feasible62` and `star21_feasible62_reduced`]
 

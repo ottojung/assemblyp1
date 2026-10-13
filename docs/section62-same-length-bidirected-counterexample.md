@@ -142,8 +142,8 @@ with the repository's existing searches. It:
    `≥ 1`, all read-vertex balances are `0`, and no supersource/supersink edge is
    used;
 5. checks that neither the literal "spelled by two shorter overlaps" nor the
-   Myers longer-overlap transitive reduction removes any employed edge (every
-   employed edge has overlap `L−1 = 2`, irreducible);
+   coarse longer-overlap-only filter (not the full Myers reduction) removes
+   any employed edge (all employed edges have overlap `L−1 = 2`, irreducible);
 6. evaluates both same-length objectives exactly.
 
 The script exits non-zero on any failure.
