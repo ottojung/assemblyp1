@@ -200,7 +200,7 @@ def isReducible (A : Type) (W : Type) [DecidableEq A] [DecidableEq W]
   isReducibleB A W toList rc readLen verts e = true
 
 /-- Whether the direct overlap of length `e.len` is removed under the alternative
-(Myers-style) reading of transitive edge reduction: a two-edge path through an
+(coarse longer-overlap-only) reading of transitive edge reduction: a two-edge path through an
 intermediate molecule class exists whose two proper overlaps are both strictly
 *longer* than `e.len`.  The audit note
 `docs/section62-mb09-bidirected-graph-audit.md` §2.1 discusses both readings. -/
