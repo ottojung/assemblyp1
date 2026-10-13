@@ -3,8 +3,9 @@
 Two independent [Slidev](https://sli.dev) decks that share one GitHub Pages
 site:
 
-- **`programmers.md`** — a worked maximum-likelihood example, finite-sample reversal,
-  and population uniqueness theorem, with a short introduction to Lean.
+- **`programmers.md`** — genome-assembly context, why likelihood is natural,
+  the finite research question and qualified results, and first-person research
+  decisions and verification. Population likelihood is optional backup.
 - **`biologists.md`** — an accessible sequencing and likelihood story, using the same
   concrete read-frequency calculation.
 - **`portal/`** — the landing page that forks left to programmers and right to
