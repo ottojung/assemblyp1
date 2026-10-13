@@ -3,9 +3,15 @@
 Two independent [Slidev](https://sli.dev) decks that share one GitHub Pages
 site:
 
-- **`programmers.md`** — genome-assembly context, why likelihood is natural,
-  the finite research question and qualified results, and first-person research
-  decisions and verification. Population likelihood is optional backup.
+- **`programmers.md`** — preserve the opening genome-assembly context; explain
+  overlaps, the Not-So-Greedy guarantee, posterior genome probability, and
+  finite MAP/ML decision optimality before the research question. Then cover
+  the finite results and the human-directed, persistent-agent/Lean research loop.
+  Population ML appears only as a motivated backup slide.
+- **`programmers-research-notes.md`** — sourced conceptual thesis and
+  chronology behind the talk, including mathematical guarantees and guards
+  against conflating statistical, algorithmic, and proof-checking claims.
+
 - **`biologists.md`** — an accessible sequencing and likelihood story, using the same
   concrete read-frequency calculation.
 - **`portal/`** — the landing page that forks left to programmers and right to
