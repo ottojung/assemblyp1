@@ -96,7 +96,9 @@ conditional likelihood under the restricted prior --- returns the truth.
 \claimP: this is largely a corollary of the reconstruction theorem plus the
 definition of conditional probability. It is \emph{not} a new unconditional
 ML result, and it licenses no statement about the likelihood ranking outside
-the fiber.
+the fiber. Issue~\#266 tracks the conditional-reconstruction analysis that
+formalizes this fiber singleton result; the present paper adopts it as a
+corollary and does not claim it as a new ML theorem.
 
 \paragraph{Question B: the unconditional question.}
 Assume only $F(S,R)$ --- the truth is feasible --- and maximize the
@@ -249,7 +251,7 @@ Prior-average success is nondecreasing in $n$ --- the Bayes-optimal
 $S_{n+1}\ge S_n$ for every $n$, any prior --- because the rule that at $n+1$
 reads applies the optimal $n$-read rule to the first $n$ reads achieves
 $S_n$, so the optimum at $n+1$ is at least $S_n$ \claimT
-\citep{berger1985,durrett2019}. The companion statement for a \emph{fixed
+\parencite{berger1985,durrett2019}. The companion statement for a \emph{fixed
 truth} is false: per-truth success can drop as reads accumulate (a
 kernel-checked per-truth counterexample is owned by issue~\#269; a
 computed instance is recorded in the issue~\#265 worktree). This asymmetry is
@@ -263,7 +265,7 @@ For a finite family of $M$ candidates whose read distributions are pairwise
 distinct, the per-truth error probability of the ML rule decays
 exponentially: $P_S(\text{ML errs at } n)\le \sum_{G'\ne S}\rho(P_S,P_{G'})^n
 \le (M-1)\rho_{\max}^n$, where $\rho(P,Q)=\sum_w\sqrt{P(w)Q(w)}$ is the
-Hellinger affinity \citep{cover2006,tsybakov2009}. Hence
+Hellinger affinity \parencite{cover2006,tsybakov2009}. Hence
 $(M-1)\rho_{\max}^n\le 0.01$ holds once
 $n\ge \ln(100(M-1))/\ln(1/\rho_{\max})$: for example $M=10$, $\rho_{\max}=0.9$
 gives $n\ge 65$, and $M=100$, $\rho_{\max}=0.95$ gives $n\ge 180$. The bound
