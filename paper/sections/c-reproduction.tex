@@ -37,6 +37,26 @@ No absolute path appears in the sources.
 The finite and computational claims correspond to artifacts in the repository:
 
 \begin{itemize}[leftmargin=*]
+  \item finite decision-theoretic optimality and monotonicity:
+        \path{AssemblyP1/FiniteBayesDecision.lean},
+        in particular \texttt{chooseMAP\_optimal},
+        \texttt{chooseMAP\_optimal\_randomized},
+        \texttt{finite\_iid\_MAP\_optimal}, and
+        \texttt{chooseMAP\_success\_monotone\_under\_refinement};
+  \item general positive integral-flow rigidity certificate:
+        \path{AssemblyP1/GraverRigidity.lean},
+        \texttt{rigid\_iff\_forall\_graver\_not\_inbox};
+        the all-count surrogate ranking criterion:
+        \path{AssemblyP1/FixedNBinomialEffectiveWeights.lean},
+        \texttt{every\_observation\_effectiveProduct\_le\_iff};
+  \item reduction-spelling distinction:
+        \path{AssemblyP1/Section62ReductionMismatch.lean}
+        (finite mismatch certificate), and
+        \path{AssemblyP1/Section62GlobalSpellingPreservation.lean}
+        (general candidate-reduction walk-spelling preservation);
+        the separate oriented skipped-window combinatorics, not yet a
+        general Lean theorem, are in
+        \path{docs/section62-observation7-skipped-windows.md};
   \item exact and binomial same-length witnesses:
         \texttt{scripts/\allowbreak{}} exact-rational verifiers and the Lean modules
         \texttt{Assembly\allowbreak{}P1/\allowbreak{}Fixed\allowbreak{}Length\allowbreak{}Exact\allowbreak{}Counterexample.\allowbreak{}lean} and

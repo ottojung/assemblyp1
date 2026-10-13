@@ -90,9 +90,20 @@ A different tradition \cite{medvedev2009} scores candidates instead of
 reconstructing: the \emph{likelihood} of a candidate genome is the probability
 that uniform sampling from it would produce the observed reads, and the
 \emph{maximum-likelihood genome} is the candidate with the highest score.
-Likelihood is an objective function on candidate genomes, not a procedure for
-reconstructing one; everything in this paper is a statement about such
-rankings.
+Likelihood assigns a score to candidate genomes; selecting a maximizer
+turns that objective into a reconstruction rule. There is a compelling reason
+to study this rule. With a finite candidate class, a correct read-generation
+model, and a uniform prior on genomes, \emph{maximum likelihood has the
+highest prior-averaged probability of returning the true genome among all
+algorithms}, including randomized ones
+(Theorem~\ref{thm:bayes-optimal}). For nonuniform priors the corresponding
+optimal rule is maximum a posteriori (MAP). This standard Bayesian
+decision-theoretic result provides the motivation and benchmark for the paper,
+not its solution: the harder assembly question is what can be said about the
+truth's likelihood rank for \emph{particular} reads and structural conditions.
+In particular, the guarantee applies to the actual read distribution,
+not automatically to an approximate likelihood or to an optimizer over
+flows that fail to spell genomes.
 
 Shomorony et al.\ close their Discussion with a question that sits between the
 two lines \cite[Discussion]{shomorony2016}:
@@ -133,7 +144,20 @@ and~\ref{app:referents}.
 
 This manuscript proves positive and negative results about when the true
 genome is a likelihood maximizer, and clarifies how those results relate to the
-deterministic reconstruction guarantee of Shomorony et al.\ (2016).
+deterministic reconstruction guarantee of Shomorony et al.\ (2016). The
+results below have different proof content and deserve to be read on their own
+terms, rather than ranked by how closely they resemble a general optimality
+slogan.
+
+\paragraph{Motivation: optimal average reconstruction.}
+The finite Bayes/MAP theorem (Theorem~\ref{thm:bayes-optimal}) establishes the
+correctness-probability benchmark: MAP dominates every deterministic and
+randomized reconstruction rule on prior-average zero-one success, and ML
+coincides with MAP under a uniform prior. Its Lean formalization also proves
+that optimal average success cannot decrease when genuinely additional
+information is observed. These are general decision-theoretic facts, not
+novel assembly-specific identifiability results; they explain \emph{why}
+the likelihood question is worth asking.
 
 \paragraph{Positive: circulation rigidity.}
 Under the bridging condition of Definition~\ref{def:Is}, the truth's length-$L$
@@ -169,6 +193,18 @@ any genomic position: two same-length molecule witnesses
 and~\ref{thm:cex-historical-W2}) satisfy historical coverage and
 matched-string bridging at full strength while beating the truth under both
 source-named objectives.
+
+\paragraph{General exact certificates.}
+Beyond the special repeat-bridging regime, an internally proved Graver-basis
+criterion characterizes rigidity of \emph{any} finite positive integral-flow
+support by the absence of feasible elementary lattice perturbations
+(Theorem~\ref{thm:graver-rigidity}). On the statistical side, an exact
+effective-weight factorization of the fixed-$N$ product-binomial surrogate
+gives an if-and-only-if criterion for candidate score dominance over all
+nonnegative read-count vectors
+(Theorem~\ref{thm:binomial-weights}). These are positive structural
+classifications with their own proof content and explicitly restricted
+domains.
 
 \paragraph{Population uniqueness.}
 We then study maximum likelihood when the read distribution is known exactly,
