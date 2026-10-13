@@ -1,4 +1,4 @@
-\section{Discussion: two failure modes, two repairs, and what remains open}
+\section{Discussion: structure, sampling, and what is identifiable}
 \label{sec:discussion}
 
 \subsection{The shape of the answer}
@@ -29,23 +29,13 @@ removes it at the maximizer level by construction
 (Lemma~\ref{lem:gibbs}), and for the oriented primitive P2 class it also yields
 uniqueness (Theorem~\ref{thm:population}).
 
-The resulting conceptual progression is:
-
-\begin{quote}
-naive ML intuition
-$\to$ structural repeat obstruction
-$\to$ the literature's repeat/bridging boundary
-$\to$ boundary-conditioned finite ML
-$\to$ a positive same-length slice but negative variable-length neighbors
-$\to$ replacing privileged true-length knowledge by intrinsic candidate checks
-$\to$ finite failure surviving as sampling fluctuation
-$\to$ population ML removing the fluctuation
-$\to$ P2 plus primitivity restoring oriented circular uniqueness.
-\end{quote}
-
-This ordering matters: population data is not introduced to patch repeat
-ambiguity, and intrinsic candidate checks are not introduced as assumptions of
-the historical papers. They repair weaknesses exposed in sequence.
+The combined picture is mathematically direct: repeat structure determines
+which circular spellings are distinguishable from reads; a graph algorithm
+recovers the source when the reads are sufficiently informative; and a
+likelihood objective additionally depends on sampled frequencies.
+Positive spectrum rigidity identifies one finite regime where structure
+controls the ranking. Population likelihood removes frequency fluctuations,
+reducing uniqueness to complete-spectrum identifiability.
 
 \subsection{What remains open}
 
@@ -136,26 +126,21 @@ same-length and population results show where the intuition does survive.
 
 \subsection{Conclusion}
 
-Our central subject is the likelihood ranking of candidate genomes, not
-an algorithm for reconstructing one. Three claims must be kept distinct.
-First, the 2016 Not-So-Greedy theorem guarantees recovery of the true genome
-from a graph built under the observed reads, conditional on
-information-feasibility --- a deterministic graph-theoretic statement, not a
-likelihood ranking. Second, a conditional Bayesian decoder that receives an
-external promise about the true genome-and-reads pair can concentrate on the
-truth, but only when the supported truth fibre is singleton; this is a
-conditional posterior statement, not an unconditional optimization result.
-Third, ordinary maximum likelihood from observed reads has no such guarantee:
-under the bridging conditions, the truth's spectrum is the unique positive
-circulation of its window-support graph (a project-level result, not a
-restatement of 2016), and on the same-length oriented slice the truth is the
-unique likelihood maximizer up to cyclic rotation. Once candidate length or
-strand convention is relaxed, this guarantee fails: finite observations exist
-in which a competitor is strictly more likely, because the exact objective
-scores empirical frequencies and a competitor can reweight an unrepresentative
-sample. At the population level the fluctuation disappears, the truth is always
-a maximizer, and among primitive P2 genomes it is the unique one --- the
-nontrivial combinatorial heart of the paper. Each result is stated for an
-explicit objective, read-type convention, and candidate class; together they
-map the precise circumstances in which the true genome is most likely, and
-the equally precise circumstances in which it is not.
+A collection of short reads has two complementary mathematical structures.
+Their overlaps define a graph that can reconstruct a circular genome;
+their observed type counts define a statistical objective for comparing
+candidate genomes. The repeat-bridging theorem of Shomorony et al.\
+explains when graph reconstruction is information-feasible and efficient.
+Our positive rigidity theorem shows that these structural conditions can
+also force a unique complete-spectrum circulation on an explicitly defined
+same-length oriented slice.
+
+Finite likelihood introduces a new phenomenon: sampling can over-represent
+some read types, and a competitor can score higher even when the source is
+reconstructible. Exact counterexamples establish that boundary under
+several observation conventions. With the population distribution instead,
+the truth always maximizes expected likelihood; for primitive P2 genomes,
+complete-spectrum uniqueness makes that maximum unique up to rotation.
+The proofs and finite certificates are formalized in Lean. Together,
+these results explain what graph structure can determine, what read
+frequencies contribute, and how the two interact.

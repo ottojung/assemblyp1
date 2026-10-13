@@ -36,6 +36,38 @@ distribution is the same for both genomes, so \emph{no} likelihood objective
 \mathfact{} for the resulting tie.}
 \end{example}
 
+\subsection{From reads to a graph algorithm}
+\label{sec:intro:assembly-operations}
+
+The reconstruction step can be performed explicitly. Fix $L=3$ and consider
+the circular genome $\texttt{ACGTA}$. Its five circular windows are
+$\texttt{ACG}$, $\texttt{CGT}$, $\texttt{GTA}$, $\texttt{TAA}$, and
+$\texttt{AAC}$. In the associated \emph{de Bruijn graph}, an $L$-mer
+is an edge from its length-$(L-1)$ prefix to its length-$(L-1)$ suffix:
+\[
+\mathrm{AC}\xrightarrow{\mathrm{ACG}}\mathrm{CG}
+\xrightarrow{\mathrm{CGT}}\mathrm{GT}
+\xrightarrow{\mathrm{GTA}}\mathrm{TA}
+\xrightarrow{\mathrm{TAA}}\mathrm{AA}
+\xrightarrow{\mathrm{AAC}}\mathrm{AC}.
+\]
+An Eulerian traversal uses each edge with its multiplicity and spells
+$\texttt{ACGTA}$, up to rotation. Thus a family of reads becomes a finite
+graph and assembly becomes a question about compatible cyclic traversals.
+At repeated substrings, a vertex can branch and multiple traversals may
+spell different genomes.
+
+Shomorony et al.\ \cite{shomorony2016} use a distinct \emph{read-overlap
+graph}: vertices are observed reads, and weighted edges represent
+suffix-prefix overlaps. Their Not-So-Greedy construction retains the greedy
+successor and an additional genuinely disagreeing extension, constructs
+analogous predecessor edges, prunes spurious edges using effective overlaps,
+and modifies edge multiplicities to obtain an Eulerian multigraph. Under
+the coverage and repeat-bridging conditions described next, that multigraph
+has a unique Eulerian cycle spelling the truth. The construction takes
+$O(NL)$ time for $N$ reads of length $L$. The de Bruijn graph above is a
+teaching example, not the graph produced by Not-So-Greedy.
+
 \subsection{Bridging: the structural evidence inside overlapping reads}
 
 A read \emph{bridges} a copy of a repeat when it extends strictly beyond the
@@ -80,54 +112,22 @@ the read-type convention, the candidate class, and whether the conclusion
 asserts that the truth is \emph{a} maximizer or the \emph{unique} one. We
 separate those choices explicitly rather than absorbing them into notation.
 
-\subsection{Three noninterchangeable claims}
+\subsection{Reconstruction and likelihood ask different questions}
 
-The central conceptual point of this paper is that three statements about
-genome recovery are easy to conflate but are logically distinct. They differ in
-what evidence is assumed, what the algorithm observes, and what guarantee is
-claimed.
+The graph algorithm answers a question of \emph{information and computation}:
+when reads provide sufficient context, can we reconstruct the true circular
+word? Maximum likelihood instead asks which candidate $D$ assigns the
+largest probability to the \emph{observed read-type counts}. A finite sample
+can exhibit uneven frequencies even when its overlaps determine the source,
+so a reconstruction theorem does not automatically rank the source highest.
 
-\begin{table}[h]
-\centering
-\small
-\begin{tabular}{@{}p{0.22\textwidth}p{0.20\textwidth}p{0.24\textwidth}p{0.24\textwidth}@{}}
-\toprule
-Claim & Observed data & Side information & Guarantee \\
-\midrule
-(1) Deterministic reconstruction (Not-So-Greedy, 2016)
-  & observed read strings (starts latent)
-  & none (algorithm uses graph structure)
-  & true genome recovered, conditional on $R \in \Is$ \\
-\addlinespace
-(2) Conditional Bayesian certainty
-  & reads $R$
-  & external promise that $(S,R)$ satisfies event $E$
-  & posterior certain up to equivalence only for singleton positive-weight fibre \\
-\addlinespace
-(3) Ordinary maximum likelihood
-  & observed reads or read-count vector
-  & none
-  & truth is a maximizer (population) or unique maximizer (restricted class); no finite pointwise guarantee \\
-\bottomrule
-\end{tabular}
-\caption{The three noninterchangeable claims. Each row is a different
-statement with different assumptions and a different guarantee. Row (1) is a
-deterministic graph-theoretic theorem; row (2) is a conditional posterior
-statement; row (3) is an unconditional optimization objective. The finite
-counterexamples of Section~\ref{sec:finite} show that (1) does not imply (3);
-the conditional Bayesian claim (2) is not a special case of (3) because it
-uses side information unavailable to the ordinary ML decoder.}
-\label{tab:three-claims}
-\end{table}
-
-In plain terms: a deterministic algorithm can be guaranteed to succeed when
-the reads satisfy a structural condition --- but that guarantee is about the
-algorithm's graph, not about a likelihood ranking. A Bayesian decoder that is
-told ``the truth satisfies $E$'' can concentrate on the truth --- but that
-concentration is conditional on the promise and on the fibre being singleton.
-An ordinary maximum-likelihood decoder, given only the reads, has no such
-guarantee: the observation sample and the optimization space matter, and
-finite counterexamples show the truth need not be the maximizer.
+We also study population likelihood, where the exact read distribution
+replaces a particular finite sample. A Gibbs/KL identity then gives
+maximality, leaving spectrum uniqueness as the interesting combinatorial
+question. Bayesian inference supplied with an external promise about the
+truth is a distinct conditional model; detailed interpretation and
+source-referent questions belong in Appendices~\ref{app:modeling}
+and~\ref{app:referents}.
 
 \subsection{Contributions}
 

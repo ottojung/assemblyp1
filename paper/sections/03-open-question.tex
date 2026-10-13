@@ -1,25 +1,21 @@
 \section{The question, mathematically}
 \label{sec:open}
 
-The published sentence asks whether bridging conditions can be used to
-guarantee that the maximum-likelihood sequence is the true sequence
-\cite[Discussion, p.~i501]{shomorony2016}. The sentence fixes no objective, no
-read-type convention, no candidate class, and no tie rule, so we read it not as
-one theorem awaiting one proof but as a family of precise mathematical
-questions --- one per objective, read-type convention, and candidate universe ---
-and we answer each member. Throughout, likelihood is a \emph{scoring function}
-on candidate genomes: a counterexample is a wrong genome with a strictly higher
-score, not a failed execution of an assembler. What the cited sources do and do
-not determine about the sentence is audited in Appendix~\ref{app:referents}.
+The 2016 Not-So-Greedy theorem turns sufficiently informative reads into
+a unique Eulerian reconstruction of a circular genome. The likelihood
+question is what happens if, instead of following the reconstruction graph,
+we rank candidate genomes by the probability they assign to the
+\emph{observed counts} of each read type. In this section we give the
+bridging and likelihood definitions, state a positive same-length result,
+exhibit exact finite likelihood reversals, and show why the population
+version admits a stronger uniqueness theorem.
 
-This paper addresses the third of the three noninterchangeable claims of
-Section~\ref{sec:intro} (Table~\ref{tab:three-claims}): ordinary maximum
-likelihood from observed reads, without access to external side information.
-The deterministic reconstruction claim (1) is the 2016 Not-So-Greedy theorem;
-the conditional Bayesian claim (2) is a separate statement about posterior
-concentration given a promise. The finite counterexamples below show that the
-deterministic guarantee does not transfer to the unconditional
-likelihood-ranking objective.
+Shomorony et al.\ explicitly asked whether bridging can guarantee that
+the maximum-likelihood sequence is the true sequence
+\cite[Discussion, p.~i501]{shomorony2016}. The answer depends on the
+chosen likelihood objective and admissible candidate class; the precise
+source-to-model correspondence is retained in
+Appendix~\ref{app:referents}.
 
 \subsection{The bridging hypothesis}
 
