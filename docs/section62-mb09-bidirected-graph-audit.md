@@ -17,7 +17,7 @@ _Stacked on_ PR #39's branch; it concerns only that branch's witness and claims.
 
 ## 0. Verdict at a glance
 
-1. **The witness survives the exact §6.2 graph/flow check.** For the observed
+1. **The witness survives the specified finite §6.2-style graph/flow checks.** For the observed
    read molecules `{AAA, AAT, TAA}`, the truth `AAATT` and the competitor
    `AAAATT` each induce a genuine **bidirected circuit** in the transitively
    reduced read-overlap graph: every step is a real bidirected overlap edge of
@@ -49,10 +49,12 @@ _Stacked on_ PR #39's branch; it concerns only that branch's witness and claims.
    `L = 3`, every edge employed by the two witness walks has the maximal proper
    overlap `L−1 = 2`; a `2`-overlap cannot be spelled by two strictly shorter
    overlaps, nor lie on a two-step path of strictly longer proper overlaps.
-   Hence the reduction is vacuous on the employed subgraph under either reading
-   of "transitive reduction". [mathematical proof; §3]
+   Hence both tested predicates leave the employed maximal-overlap edges
+   untouched. This does not establish equivalence to Myers's full algorithm. [mathematical proof; §3]
 
-**Bottom line.** The witness is source-faithful at the level PR #39 claims; the
+**Bottom line.** The tested finite witness is compatible with the stated
+maximal-overlap graph/flow conditions; full equivalence between the tested
+reduction predicates and Myers 2005 has not been established. The historical
 defects are in the prose (a wrong `d_S` row) and in the *scope label* of the
 feasibility criterion. Both are corrected here and in the branch artifacts.
 
