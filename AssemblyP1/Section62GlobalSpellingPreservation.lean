@@ -89,7 +89,10 @@ edge arrives at `sy`, and whose consecutive edges are adjacent: the arrival
 strand of one edge is the departure strand of the next.  For `bdEdge`-
 constructed edges (all graph edges), adjacent edges also have opposite
 incidences at the common oriented strand (`bdEdge_step_signs_opposite`), which
-is the MB09 §3.2 signed-walk condition. -/
+is the MB09 §3.2 signed-walk condition.  Every graph edge carries exactly the
+incidences its endpoint molecule classes determine (`edge_signs_of_mem`), and
+the adjacency sign opposition holds directly for graph edges
+(`adjacent_edge_signs_opposite`). -/
 
 /-- Two edges are adjacent when the arrival strand of the first is the departure
 strand of the second. -/
@@ -113,6 +116,44 @@ theorem bdEdge_step_signs_opposite (rep : W → W) (sx m sy : W) (l1 l2 : Nat) :
     (@bdEdge A W _ rep sx m l1).sgnY = -(@bdEdge A W _ rep m sy l2).sgnX := by
   show sgnTgt m (rep m) = -sgnRep m (rep m)
   have h := sgnRep_neg_sgnTgt m rep
+  omega
+
+/-- Every edge of the complete `overlapEdges` graph carries exactly the
+incidences its endpoint molecule classes determine (MB09 §3.3): the departure
+incidence `sgnRep e.sx (rep e.sx)` at the class of `e.sx` and the arrival
+incidence `sgnTgt e.sy (rep e.sy)` at the class of `e.sy`. -/
+theorem edge_signs_of_mem {A : Type} {W : Type} [DecidableEq A] [DecidableEq W]
+    {toList : W → List A} {rep rc : W → W} {readLen oMin : Nat} {verts : List W}
+    {e : BdEdge A W} (he : e ∈ overlapEdges A W toList rep rc readLen oMin verts) :
+    e.sgnX = sgnRep e.sx (rep e.sx) ∧ e.sgnY = sgnTgt e.sy (rep e.sy) := by
+  unfold overlapEdges at he
+  rw [List.mem_flatMap] at he
+  obtain ⟨l, hl, he⟩ := he
+  rw [List.mem_flatMap] at he
+  obtain ⟨sx, hsx, he⟩ := he
+  rw [List.mem_flatMap] at he
+  obtain ⟨sy, hsy, he⟩ := he
+  split_ifs at he with hov
+  · simp at he
+    subst e
+    exact ⟨rfl, rfl⟩
+  · simp at he
+
+/-- Two edges of the complete `overlapEdges` graph that are adjacent at a common
+oriented strand have opposite incidences at that strand (MB09 §3.2): the arrival
+incidence of the first edge is the negative of the departure incidence of the
+second. -/
+theorem adjacent_edge_signs_opposite {A : Type} {W : Type} [DecidableEq A] [DecidableEq W]
+    {toList : W → List A} {rep rc : W → W} {readLen oMin : Nat} {verts : List W}
+    {f g : BdEdge A W}
+    (hf : f ∈ overlapEdges A W toList rep rc readLen oMin verts)
+    (hg : g ∈ overlapEdges A W toList rep rc readLen oMin verts)
+    (hadj : f.sy = g.sx) :
+    f.sgnY = -g.sgnX := by
+  have hfs := edge_signs_of_mem hf
+  have hgs := edge_signs_of_mem hg
+  have h := sgnRep_neg_sgnTgt g.sx rep
+  rw [hfs.2, hgs.1, hadj]
   omega
 
 theorem signedPath_single {sx sy : W} {e : BdEdge A W} :
