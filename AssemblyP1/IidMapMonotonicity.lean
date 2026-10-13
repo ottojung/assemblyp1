@@ -68,6 +68,7 @@ def iidJointSucc (π : Θ → ℝ) (p : Θ → R → ℝ) (n : ℕ) :
 
 /-- The n-read joint mass is the marginal of the (n+1)-read joint mass over
 the last read, because the read pmf is normalized: `∑ r, p θ r = 1`. -/
+omit [Fintype Θ] [DecidableEq Θ] [Nonempty Θ] in
 theorem iidJointSucc_marginal (π : Θ → ℝ) (p : Θ → R → ℝ) (n : ℕ)
     (hnorm : ∀ θ, ∑ r : R, p θ r = 1) :
     ∀ θ x, (∑ r : R, iidJointSucc π p n θ x r) = iidJoint π p n θ x := by
@@ -100,6 +101,7 @@ theorem iid_map_success_monotone (π : Θ → ℝ) (p : Θ → R → ℝ) (n : �
     (hnorm : ∀ θ, ∑ r : R, p θ r = 1) :
     mapSuccess π p n ≤ mapSuccessSucc π p n := by
   unfold mapSuccess mapSuccessSucc
+  rw [FiniteBayesDecision.success_eq_observation_sum]
   exact FiniteBayesDecision.chooseMAP_success_monotone_under_refinement
     (iidJoint π p n) (iidJointSucc π p n) (iidJointSucc_marginal π p n hnorm)
 
