@@ -63,6 +63,39 @@ theorem pointwise_MAP_optimal_randomized (J : Θ → X → ℝ)
     _ = (∑ θ : Θ, w x θ) * J (m x) x := by rw [Finset.sum_mul]
     _ = J (m x) x := by rw [hnorm]; ring
 
+/-! ## The pointwise MAP rule exists on any nonempty finite hypothesis space. -/
+
+/-- Choose a posterior joint-mass maximizer for each observed sample. -/
+noncomputable def chooseMAP [Nonempty Θ] (J : Θ → X → ℝ) (x : X) : Θ :=
+  Classical.choose
+    (Finset.exists_max_image (Finset.univ : Finset Θ)
+      (fun θ : Θ => J θ x) (Finset.univ_nonempty))
+
+omit [DecidableEq Θ] [Fintype X] in
+/-- The selected finite MAP rule genuinely maximizes every observation score. -/
+theorem chooseMAP_maximizes [Nonempty Θ] (J : Θ → X → ℝ)
+    (x : X) (θ : Θ) : J θ x ≤ J (chooseMAP J x) x := by
+  unfold chooseMAP
+  have h := Classical.choose_spec
+    (Finset.exists_max_image (Finset.univ : Finset Θ)
+      (fun a : Θ => J a x) (Finset.univ_nonempty))
+  exact h.2 θ (Finset.mem_univ θ)
+
+/-- The constructed MAP rule is optimal among all deterministic decisions. -/
+theorem chooseMAP_optimal [Nonempty Θ] (J : Θ → X → ℝ) (d : X → Θ) :
+    success J d ≤ success J (chooseMAP J) := by
+  exact pointwise_MAP_optimal J (chooseMAP J) d
+    (fun x θ => chooseMAP_maximizes J x θ)
+
+/-- The same MAP rule also dominates every normalized randomized decision. -/
+theorem chooseMAP_optimal_randomized [Nonempty Θ] (J : Θ → X → ℝ)
+    (w : X → Θ → ℝ)
+    (hw : ∀ x θ, 0 ≤ w x θ)
+    (hnorm : ∀ x, ∑ θ : Θ, w x θ = 1) :
+    randomizedSuccess J w ≤ success J (chooseMAP J) := by
+  exact pointwise_MAP_optimal_randomized J (chooseMAP J) w
+    (fun x θ => chooseMAP_maximizes J x θ) hw hnorm
+
 /-- For iid finite read observations, a pointwise posterior-mass maximizer is
 prior-average optimal for all deterministic policies, at every sample size n,
 including n = 0. The MAP maximizer's existence and normalization of prior/pmf
@@ -80,5 +113,8 @@ theorem finite_iid_MAP_optimal
 #print axioms pointwise_MAP_optimal
 #print axioms pointwise_MAP_optimal_randomized
 #print axioms finite_iid_MAP_optimal
+#print axioms chooseMAP_maximizes
+#print axioms chooseMAP_optimal
+#print axioms chooseMAP_optimal_randomized
 
 end AssemblyP1.FiniteBayesDecision
