@@ -1033,6 +1033,16 @@ truth modulo cyclic rotation or reverse complementation (both preserve
 the complete molecule-class spectrum). -/
 theorem dSpelled261_differs : dSpelled261 2 ≠ dS 2 := by decide
 
+/-- The candidate has an ATA read type outside the observed graph support. -/
+theorem spelledCandidate261_outside_observed_support :
+    ¬ (∀ c : Fin 8, c ∉ suppClasses → dSpelled261 c = 0) := by
+  intro h
+  have h2 := h 2 (by decide)
+  rw [dSpelled261_2] at h2
+  omega
+
+#print axioms spelledCandidate261_outside_observed_support
+
 private def suppSpelled261 : Finset (Fin 8) := {0, 1, 2, 4}
 
 private theorem suppSpelled261_prod_eq (f : Fin 8 → ℚ) :
