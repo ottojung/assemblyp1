@@ -14,6 +14,11 @@ for (const name of ['programmers', 'biologists']) {
     const line = lines[i]
     const opens = (line.match(/<div(?:\s|>)/g) || []).length
     const closes = (line.match(/<\/div>/g) || []).length
+    if (line.trim() === String.fromCharCode(36)) {
+      console.error(name + '.md:' + (i + 1) +
+        ': standalone single dollar marker is not valid display math; use two dollars')
+      problems++
+    }
     if (/\\[()[\]]/.test(line)) {
       console.error(name + '.md:' + (i + 1) +
         ': unsupported TeX math delimiters; use Markdown $...$ or $$...$$')
