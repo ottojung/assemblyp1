@@ -63,13 +63,13 @@ For read length $L$, turn every read into an edge:
 - edge = one observed length-$L$ read, from prefix to suffix;
 - retain multiplicities when the same read occurs more than once.
 
-$
+$$
 \texttt{ACG}: \quad \texttt{AC} \longrightarrow \texttt{CG}
-$
+$$
 
-$
+$$
 \texttt{CGT}: \quad \texttt{CG} \longrightarrow \texttt{GT}
-$
+$$
 
 <div class="pt-6 opacity-75 text-sm">
 This is a teaching example of spectrum-based reconstruction. Not-So-Greedy, introduced shortly, constructs a different graph: a read-overlap graph.
@@ -318,11 +318,11 @@ AssemblyP1 investigates a different question:
 
 > Does the **true** genome give the **highest probability** to the particular reads we observed?
 
-$
+$$
 \widehat D_{\rm ML}
   = \underset{D}{\operatorname{arg\,max}}\;
     \Pr(R\mid D)
-$
+$$
 
 <div class="pt-5 text-lg">
 Structural reconstruction uses **which overlaps fit**; likelihood also rewards **how frequently each read appears**.
@@ -358,10 +358,10 @@ For oriented reads with $L=3$, one verified example compares:
 |:---|:---|
 | $S=\texttt{AAATT}$ (length 5) | $D=\texttt{AAAATT}$ (length 6) |
 
-$
+$$
 \frac{\mathcal L(D;x)}{\mathcal L(S;x)}
 =\frac{15625}{11664}>1
-$
+$$
 
 <div class="pt-5 text-lg">
 The six observed reads are <code>AAA, AAA, AAT, ATT, TTA, TAA</code>. The competitor has two starts producing <code>AAA</code> instead of one, so the twice-observed read gets extra probability and wins this likelihood contest.
