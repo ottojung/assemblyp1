@@ -168,7 +168,7 @@ The 2016 method turns the observed reads into a sparse **read-overlap graph**:
 4. Choose edge multiplicities, then follow a unique Eulerian cycle.
 
 <div class="pt-6 text-lg">
-With coverage and bridging of all triple-repeat copies and interleaved repeat pairs, the cycle spells the true circular genome in \(O(NL)\) time.
+With coverage and bridging of all triple-repeat copies and interleaved repeat pairs, the cycle spells the true circular genome in $O(NL)$ time.
 </div>
 
 <div class="pt-3 text-sm opacity-70">
@@ -328,7 +328,7 @@ layout: default
 
 # An operational example of graph-based assembly
 
-For circular <code>ACGTA</code> and read length \(L=3\), the five windows
+For circular <code>ACGTA</code> and read length $L=3$, the five windows
 are <code>ACG</code>, <code>CGT</code>, <code>GTA</code>,
 <code>TAA</code> and <code>AAC</code>.
 

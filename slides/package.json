@@ -9,11 +9,12 @@
   "scripts": {
     "dev:programmers": "slidev programmers.md --open",
     "dev:biologists": "slidev biologists.md --open",
-    "build": "npm run clean && npm run build:programmers && npm run build:biologists && npm run build:portal && npm run validate",
+    "build": "npm run check:math && npm run clean && npm run build:programmers && npm run build:biologists && npm run build:portal && npm run validate",
     "build:programmers": "slidev build programmers.md --out dist/programmers --base /assemblyp1/programmers/ --without-notes",
     "build:biologists": "slidev build biologists.md --out dist/biologists --base /assemblyp1/biologists/ --without-notes",
     "build:portal": "node scripts/build-portal.mjs",
     "validate": "node scripts/validate-dist.mjs",
+    "check:math": "node scripts/check-math.mjs",
     "clean": "node -e \"require('node:fs').rmSync('dist', { recursive: true, force: true })\"",
     "preview": "node scripts/serve-dist.mjs"
   },
