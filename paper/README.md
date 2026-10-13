@@ -2,9 +2,17 @@
 
 **The Most Likely Genome** explains genome assembly as a graph reconstruction
 problem, then studies when the true circular genome maximizes the probability
-of short-read observations. Its central mathematical results are a positive
-same-length spectrum-rigidity theorem, exact finite-sample likelihood
-counterexamples, and a kernel-checked population uniqueness theorem.
+of short-read observations. The finite Bayes/MAP optimality theorem explains why likelihood is worth
+studying: for an exact sampling model and a uniform prior, ML is the best
+algorithm for prior-averaged correct reconstruction. This is the entrance
+to the investigation, not its main assembly-specific answer.
+
+The paper gives each substantial result its own mathematical recognition:
+positive same-length circulation rigidity and conditional uniqueness,
+historical and variable-length finite-sample likelihood counterexamples,
+kernel-checked population identifiability for primitive P2 genomes, and
+formal distinctions between graph-flow optimization and sequence-spelling
+preservation.
 
 The main text develops the algorithms, the repeat structure, the likelihood
 models, and the proofs. The appendices preserve detailed modeling choices,
