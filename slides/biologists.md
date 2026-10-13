@@ -120,12 +120,11 @@ Searching over all candidate genomes is a separate problem.
 
 # Two genomes make different predictions
 
-| Candidate | Genome | Length |
-|:---|:---|---:|
-| Truth $S$ | `AAATT` | 5 |
-| Decoy $D$ | `AAAATT` | 6 |
+**Truth:** `AAATT` — five equally likely start positions.
 
-With uniformly random starts:
+**Decoy:** `AAAATT` — six equally likely start positions.
+
+Each genome predicts these read frequencies:
 
 | Read type | Under $S$ | Under $D$ |
 |:---|---:|---:|

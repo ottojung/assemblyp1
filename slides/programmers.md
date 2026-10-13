@@ -92,14 +92,11 @@ We compare candidate scores for fixed data.
 
 # A genome is a loaded die
 
-Compare the truth with one competitor:
+**Truth:** `AAATT` — five equally likely start positions.
 
-| Candidate | Genome | Possible start positions |
-|:---|:---|---:|
-| Truth $S$ | `AAATT` | 5 |
-| Decoy $D$ | `AAAATT` | 6 |
+**Decoy:** `AAAATT` — six equally likely start positions.
 
-Each position is equally likely. Count how many produce each read:
+Count how often each read can be produced:
 
 | Read | Under $S$ | Under $D$ |
 |:---|---:|---:|
