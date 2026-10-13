@@ -93,32 +93,25 @@ ordinary correctness preconditions.
   those questions are solved. Repo modules and notes:
   AssemblyP1/FiniteBayesDecision.lean; project tasks #269–#281.
 
-The presentation must not mistake the background obligation to check a
+The research method was already agentic at the founding. The presentation must not mistake the background obligation to check a
 mathematical claim for the principal intellectual contribution. The
 story is about asking better questions.
 
-## Why agents, why orchestration, why Lean
+## Research method: present from the beginning
 
-**One tool-using chatbot** is useful but tied to one conversational trajectory.
-Multiple agents can pursue genuinely different hypotheses concurrently, use
-their own tools and worktrees, and leave durable traces. Their answers do not
-gain credibility from numerical consensus.
+The multi-agent method was part of AssemblyP1 **on September 17**, not a response to later difficulty. The original [intent records](../docs/intent-records/project.md) require both a faithful research target and cooperating AI agents, adaptive orchestration, durable research artifacts, and Lean formal verification.
 
-**Persistent orchestration** (Antonina board, Lubko, Git branches/worktrees,
-GitHub PRs and CI) turns those investigations into a loop: choose research
-frontier → dispatch independent packets → run experiments or proof attempts →
-reconcile outcomes → merge credible artifacts → generate the next frontier.
-A worker can stop or fail without erasing the state. The human research
-director changes the questions as evidence accumulates. The system's
-scheduling and recovery are engineering, not scientific guarantees.
+Two aims were intertwined from the outset: **solve a genuine mathematical question** and **conduct the investigation through human-directed AI research**. The user chiefly chose promising questions and changed the frontier when new discoveries suggested a better direction.
 
-**Lean** makes a theorem statement a formal type and a proof an object whose
-validity is checked by a small kernel. High-level tactics and AI may generate
-proof objects, but errors in their reasoning do not by themselves allow a
-false proof past the kernel. AssemblyP1 also audits axioms and replays Lean
-modules in CI. The kernel proves consequences of formal definitions; it
-does not validate by itself whether the definitions faithfully represent
-the biological/scientific question.
+Different agents explored literature interpretation, counterexample search, positive mathematical proofs, computation, and formal verification. They produced durable evidence in separate branches and worktrees. The value was independent *exploration* rather than agent consensus.
+
+The orchestrator was part of that research method from its founding. Antonina maintained questions and dependencies; Lubko ran work in isolated environments; the orchestrator dispatched parallelizable work and replenished tasks; pull requests and CI preserved reviewed outcomes. The loop continued across work sessions, while the user supplied and changed the intellectual direction.
+
+Lean provides the distinct **proof trust boundary**. A theorem is a formal statement; a proof term is checked by a small kernel, regardless of the source that generated it. CI also replays modules and audits axioms. Lean cannot determine whether a theorem statement reflects the intended biological model, so primary-source interpretation remains separate.
+
+**Original problem status:** The [finite interpretation matrix](../docs/source-notes/interpretation-matrix-217.md) records a resolved classification of all determinate source-supported readings of the 2016 bridging-to-ML question. Restricted positive theorems and broader negative counterexamples have been proved. The historical sentence did not select one likelihood objective, so resolution meant settling its concrete readings rather than pretending the original question remains unsolved. Unresolved newer problems should not be confused with the already settled finite question.
+
+This is not a story comparing AI tools. It is the story of a research method designed at founding, how mathematical discoveries repeatedly changed its direction, and what it accomplished.
 
 ## Sources for presenter notes
 
