@@ -3,10 +3,10 @@
 Two independent [Slidev](https://sli.dev) decks that share one GitHub Pages
 site:
 
-- **`programmers.md`** — mathematics plus the engineering story of how a
-  multi-agent research system produced kernel-checked results (board #251).
-- **`biologists.md`** — what short-read sequencing can reveal, and what has
-  been proved about population likelihood (board #250).
+- **`programmers.md`** — a worked maximum-likelihood example, finite-sample reversal,
+  and population uniqueness theorem, with a short introduction to Lean.
+- **`biologists.md`** — an accessible sequencing and likelihood story, using the same
+  concrete read-frequency calculation.
 - **`portal/`** — the landing page that forks left to programmers and right to
   biologists (board #252). The checked-in page is a scaffold provided by the
   infrastructure work; the experience owner replaces it.
@@ -43,16 +43,20 @@ npm run build
 
 `npm run build` cleans `dist/` once, then:
 
-1. builds `programmers.md` to `dist/programmers/` at base `/assemblyp1/programmers/`,
-2. builds `biologists.md` to `dist/biologists/` at base `/assemblyp1/biologists/`,
-3. copies `portal/` to `dist/` (the site root),
-4. runs `npm run validate` to check that the portal and both decks exist, use
+1. runs source-format and math-delimiter checks (`check:format`, `check:math`),
+2. builds `programmers.md` to `dist/programmers/` at base `/assemblyp1/programmers/`,
+3. builds `biologists.md` to `dist/biologists/` at base `/assemblyp1/biologists/`,
+4. copies `portal/` to `dist/` (the site root),
+5. runs `npm run validate` to check that the portal and both decks exist, use
    the expected base paths, and reference only assets that were actually
    produced.
 
 Individual steps are available as `npm run build:programmers`,
 `npm run build:biologists`, `npm run build:portal`, `npm run clean`, and
 `npm run validate`.
+
+Both decks use regular Markdown rather than raw HTML layout containers, so
+emphasis and KaTeX render correctly.
 
 Speaker notes are excluded from the public build with Slidev's
 `--without-notes` flag.
