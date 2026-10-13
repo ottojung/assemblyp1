@@ -73,6 +73,70 @@ read-type convention and the genome equivalence are coupled
 (Appendix~\ref{app:referents}, Table~\ref{tab:axes}): molecule read types force
 dihedral equivalence, oriented read types force only cyclic shift.
 
+\subsection{Why likelihood? Optimality as a decision rule}
+\label{sec:bayes-rationale}
+
+The attraction of maximum likelihood is not merely that it supplies a numerical
+score. Under a correct statistical model it is an optimal reconstruction rule
+for a precise and important notion of correctness probability.
+
+\begin{theorem}[Bayes-optimal reconstruction; ML under a uniform prior]
+\label{thm:bayes-optimal}
+Let $\Theta$ be a nonempty finite set of possible true genomes (with any
+appropriate rotation or reverse-complement equivalence already incorporated),
+and let $X$ be a finite set of possible read observations. Fix a prior
+$\pi(\theta)$ and a conditional sampling distribution
+$P(x\mid\theta)$. Let $\widehat\theta_{\mathrm{MAP}}(x)$ maximize
+$\pi(\theta)P(x\mid\theta)$. For every deterministic or randomized
+reconstruction algorithm $A$,
+\[
+  \Pr_{\theta\sim\pi,\;x\sim P(\cdot\mid\theta)}
+       [A(x)=\theta]
+  \ \le\
+  \Pr_{\theta\sim\pi,\;x\sim P(\cdot\mid\theta)}
+       [\widehat\theta_{\mathrm{MAP}}(x)=\theta].
+\]
+For a uniform prior, MAP is maximum likelihood, so ML is optimal by this
+same correctness-probability criterion. This holds for every finite sample
+size, without requiring coverage or repeat-bridging conditions.
+\end{theorem}
+
+\begin{proof}
+Put $J(\theta,x)=\pi(\theta)P(x\mid\theta)$. For a deterministic
+decision $d$, its total success probability is
+$\sum_x J(d(x),x)$, which is at most
+$\sum_x \max_\theta J(\theta,x)$ by pointwise maximization. For a
+randomized rule with output weights $q(\theta\mid x)\ge0$ summing to one,
+its success probability is
+\[
+  \sum_x\sum_\theta q(\theta\mid x)J(\theta,x)
+  \le \sum_x\max_\theta J(\theta,x).
+\]
+A MAP choice attains the right-hand side at every $x$. A uniform prior
+does not change the maximizers of $P(x\mid\theta)$.
+\end{proof}
+
+\statusline{\kernelcheck{} for the finite deterministic and randomized
+decision inequalities, the existence of a finite MAP maximizer, and the
+iid finite-observation specialization:
+\texttt{AssemblyP1/FiniteBayesDecision.lean}
+(\texttt{chooseMAP\_optimal},
+\texttt{chooseMAP\_optimal\_randomized},
+\texttt{finite\_iid\_MAP\_optimal}). This is a formalization of a
+standard decision-theoretic result, not a new assembly theorem.}
+
+The theorem compares \emph{average} recovery probabilities over the stated
+prior and the sampling experiment. It makes no claim that ML has the highest
+success probability separately for every fixed true genome, nor that any
+finite observation uniquely identifies its source. Nor does it confer this
+guarantee on the independent-binomial surrogate of
+Definition~\ref{def:likelihoods}: that surrogate need not rank genomes like
+the true joint distribution. Thus Bayes optimality is the \emph{entrance}
+to our investigation, not its central answer. The next sections study the
+substantial, assembly-specific questions of when the true genome is a
+maximizer for a realized read sample, when a counterexample exists, and when
+the read distribution determines the genome uniquely.
+
 \subsection{The finite answer}
 
 At finite sample the answer is negative on every same-length slice we have been
