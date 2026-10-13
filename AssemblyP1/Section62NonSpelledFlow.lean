@@ -552,8 +552,8 @@ def graph1 : List (BdEdge Base Strand3) :=
 
 theorem graph1_length : graph1.length = 28 := by decide
 
-/-- The transitively reduced graph (Myers 2005 reading) of `graph1`: the twelve
-edges that survive.  The six removed edges are the length-`1` overlaps that are
+/-- The longer-overlap-only reduced graph (not the full Myers algorithm) of `graph1`: the twelve
+edges that survive.  The sixteen removed edges are the length-`1` overlaps that are
 spelled by two longer (length-`2`) proper overlaps. -/
 def reducedList : List (BdEdge Base Strand3) :=
   [ ov 1 (m3 .A .A .T) (m3 .T .A .A),
@@ -569,7 +569,7 @@ def reducedList : List (BdEdge Base Strand3) :=
     ov 2 (m3 .A .T .T) (m3 .T .T .A),
     ov 2 (m3 .T .T .A) (m3 .T .A .A) ]
 
-/-- `reducedList` is exactly the Myers transitive edge reduction of `graph1`. -/
+/-- `reducedList` equals the repository longer-overlap-only reduction of `graph1`. -/
 theorem reducedList_eq :
     transitivelyReducedLonger Base Strand3 toList3 rc3 readLen readVerts graph1
       = reducedList := by
