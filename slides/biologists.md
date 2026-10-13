@@ -167,9 +167,7 @@ The 2016 method turns the observed reads into a sparse **read-overlap graph**:
 3. Prune spurious links using effective overlaps.
 4. Choose edge multiplicities, then follow a unique Eulerian cycle.
 
-<div class="pt-6 text-lg">
-With coverage and bridging of all triple-repeat copies and interleaved repeat pairs, the cycle spells the true circular genome in $O(NL)$ time.
-</div>
+With coverage and bridging of all triple-repeat copies and interleaved repeat pairs, the cycle spells the true circular genome in **$O(NL)$ time**.
 
 <div class="pt-3 text-sm opacity-70">
 Shomorony et al. (2016), Theorem 1 and Corollary 1.
@@ -252,30 +250,17 @@ Oriented reads of length `L = 3`, comparing:
 - truth `S = AAATT` (length 5)
 - decoy `D = AAAATT` (length 6)
 
-<div class="grid grid-cols-2 gap-8 pt-4">
-<div>
+**Six sampled reads — the competitor wins:**
 
-**Candidate-intrinsic likelihood** (n = 6 reads)
-
-$$
+$
 \frac{\mathcal{L}(D)}{\mathcal{L}(S)} = \frac{15625}{11664} > 1
-$$
+$
 
-the decoy scores higher
+**Five full-start reads — the truth wins:**
 
-</div>
-<div>
-
-**Full-start sample** (n = 5 reads)
-
-$$
+$
 \frac{\mathcal{L}(D)}{\mathcal{L}(S)} = \frac{3125}{3888} < 1
-$$
-
-the truth scores higher
-
-</div>
-</div>
+$
 
 <div class="pt-6 opacity-80">
 The winner depends on how we model the sampling — a caution for any finite-read claim.
