@@ -37,6 +37,57 @@ Positive spectrum rigidity identifies one finite regime where structure
 controls the ranking. Population likelihood removes frequency fluctuations,
 reducing uniqueness to complete-spectrum identifiability.
 
+\subsection{What the proved results contribute}
+\label{sec:discussion:proofs}
+
+The results form a collection of distinct mathematical advances,
+not a ranking in which a general theorem about ML eclipses the
+assembly work.
+
+The Bayes/MAP optimality theorem
+(Theorem~\ref{thm:bayes-optimal}) is the \emph{reason to enter} the
+likelihood investigation: with a correct model and uniform prior,
+ML attains the best prior-average reconstruction probability of
+any algorithm. That theorem does not tell us which particular
+read samples make the truth win, or whether a genome can be
+distinguished from another. Those are the paper's principal
+research questions.
+
+The finite rigidity theorem (Theorem~\ref{thm:rigidity}) is a
+\emph{combinatorial classification result}: bridging constrains
+the true support graph so strongly that it admits only one
+positive integer circulation of the prescribed total. The
+same-length maximizer and rotation-uniqueness results are
+genuine deductions from this structure, under explicit
+candidate and strand assumptions. They deserve attention for
+what is proved, not merely because they support ML.
+
+The strict historical counterexamples
+(Theorems~\ref{thm:cex-historical-W1} and
+\ref{thm:cex-historical-W2}) are equally decisive in a different
+direction: they establish exactly where a tempting universal
+implication fails, even under the source's own read-string
+bridging notion. The variable-length families
+(Theorem~\ref{thm:cex-variable-length}) establish a general
+sampling-reweighting mechanism rather than an isolated anomaly.
+
+The population uniqueness theorem
+(Theorem~\ref{thm:population}) is not just the elementary
+Gibbs inequality. The nontrivial proof removes possible scaling
+of normalized spectra and establishes complete-spectrum
+identifiability for primitive P2 genomes; the once-external
+uniqueness step has been discharged in Lean. Finally,
+Proposition~\ref{prop:reduction-mismatch} and
+Theorem~\ref{thm:global-spelling} distinguish unsound
+overlap deletion from a genuinely spelling-preserving graph
+reduction. That distinction determines whether the optimized
+object even represents a sequence.
+
+Each proof therefore has its own mathematical claim, scope,
+and consequence. The central investigation remains the
+relationship between read information, feasible assembly,
+and the likelihood of the \emph{realized} reads.
+
 \subsection{What remains open}
 
 \paragraph{Source questions.}
