@@ -831,6 +831,90 @@ orientation is fixed by observing every truth type plus an extra $AAA$, so the
 mechanism is observed-multiplicity skew rather than strand collapse.
 \end{remark}
 
+\subsection{General certificates for rigidity and finite-count rankings}
+\label{sec:finite:certificates}
+
+The bridge-based theorem above gives a strong sufficient condition for
+rigidity. A separate, general algebraic theorem describes \emph{exactly}
+what rigidity means for any finite support graph, independent of repeats.
+
+\begin{theorem}[Graver certificate for unique positive circulation]
+\label{thm:graver-rigidity}
+Fix a finite directed support graph, a positive integer balanced
+circulation $A$ with total mass $G$, and the lattice of integer
+circulations with total sum zero. Let $\mathcal G$ be its Graver basis
+(the nonzero conformally indecomposable lattice elements).
+Then $A$ is the \emph{unique} positive integer circulation of total
+$G$ if and only if
+\[
+  \forall g\in\mathcal G,\qquad
+  \neg\bigl(\forall e,\ g_e\ge 1-A_e\bigr).
+\]
+Equivalently, none of these elementary perturbations $A+g$
+is itself a feasible positive circulation of mass $G$.
+\end{theorem}
+
+The forward implication is immediate. The converse is a genuine
+integer-lattice argument: if another feasible circulation $B$ exists,
+the nonzero difference $B-A$ admits a sign-conformal Graver
+component $g$, and feasibility of $B$ ensures that $A+g$ is feasible.
+That decomposition, including its nontrivial existence proof, is
+formalized in Lean.
+\statusline{\kernelcheck{} in \texttt{AssemblyP1/GraverRigidity.lean},
+\texttt{rigid\_iff\_forall\_graver\_not\_inbox} and
+\texttt{exists\_graver\_conformal}. The theorem concerns positive
+\emph{integer flows}; it is not yet a theorem classifying every
+historical bidirected assembly candidate.}
+
+There is a parallel exact criterion on the statistical side for the
+fixed-external-$N$ independent-binomial \emph{surrogate}. This criterion
+is separate from the exact likelihood of the actual iid read sample.
+
+\begin{theorem}[Effective weights classify all-count surrogate dominance]
+\label{thm:binomial-weights}
+Fix a finite read-type universe $E$ and external size $N$. For a
+candidate spectrum $B$ put
+\[
+ q_i(B)=B_i\prod_{\substack{j\in E\\j\ne i}}(N-B_j).
+\]
+After removing factors independent of the candidate, the
+product-binomial score for any nonnegative count vector
+$x=(x_i)_{i\in E}$ is proportional to
+$\prod_{i\in E}q_i(B)^{x_i}$. Furthermore, for any two candidate
+spectra $A,B$, candidate $A$ has at least as large a surrogate
+score as $B$ for \emph{every} nonnegative count vector $x$ if and
+only if
+\[
+  \forall i\in E,\qquad q_i(B)\le q_i(A).
+\]
+\end{theorem}
+
+\begin{proof}
+Rearrange the numerator
+$\prod_i B_i^{x_i}(N-B_i)^{n-x_i}$ using
+$n=\sum_i x_i$. The factor multiplying each $x_i$ is exactly
+$q_i(B)$. Coordinatewise weight domination implies domination
+of every product of nonnegative integer powers. Conversely,
+take the count vector consisting of one observation of type
+$i$ to recover the $i$th inequality.
+\end{proof}
+
+\statusline{\kernelcheck{} for the exact integer numerator identity
+and the if-and-only-if in
+\texttt{AssemblyP1/FixedNBinomialEffectiveWeights.lean},
+\texttt{effectiveProduct\_eq\_binomialNumerator} and
+\texttt{every\_observation\_effectiveProduct\_le\_iff}. The
+criterion ranges over \emph{all} nonnegative count vectors,
+not only those satisfying coverage, read support, or the
+source's historical feasibility conditions. The fixed
+read-type universe, candidate-independent $N$, and the
+probabilistic domain $0\le B_i\le N$ must not be suppressed.}
+
+These two theorems provide complementary structural and
+statistical certificates. Neither replaces the source-faithful
+finite-sample investigation, but neither should be dismissed as
+a mere proof implementation detail.
+
 \subsection{What a reduced graph preserves: spelling versus flow}
 \label{sec:finite:spelling}
 
