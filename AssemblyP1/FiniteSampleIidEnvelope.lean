@@ -41,7 +41,7 @@ namespace AssemblyP1.FiniteSampleIidEnvelope
 
 open Finset BigOperators
 
-variable {E : Type*} [Fintype E] [DecidableEq E]
+variable {E : Type*} [Fintype E]
 
 /-- Core abstract bound: for nonnegative ratios r, baseline a, surplus y with
 sum m, the product ∏ r_i^{a_i+y_i} is bounded by (∏ r_i^{a_i}) · r_j^m where
@@ -66,10 +66,10 @@ theorem prod_pow_le_prod_pow_mul_rmax_pow
 
 /-- Equality witness: concentrating all surplus at the maximizer j attains the
 bound with equality. -/
-theorem prod_pow_eq_prod_pow_mul_rmax_pow_concentrated
+theorem prod_pow_eq_prod_pow_mul_rmax_pow_concentrated [DecidableEq E]
     (r : E → ℝ) (a : E → ℕ)
     (j : E) (m : ℕ)
-    (hr : ∀ i, 0 ≤ r i) :
+    (_hr : ∀ i, 0 ≤ r i) :
     (∏ i : E, (r i) ^ (a i + (if i = j then m else 0)))
       = (∏ i : E, (r i) ^ (a i)) * (r j) ^ m := by
   simp_rw [pow_add, Finset.prod_mul_distrib]
@@ -98,7 +98,7 @@ theorem likelihood_prior_ratio_eq
 theorem likelihood_prior_ratio_eq_zero_of_support_hole
     (p q : E → ℝ) (piP piQ : ℝ) (a y : E → ℕ)
     (hp : ∀ i, 0 < p i)
-    (hq : ∀ i, 0 ≤ q i)
+    (_hq : ∀ i, 0 ≤ q i)
     (j : E) (ha : 0 < a j) (hqj : q j = 0) :
     ((∏ i : E, (q i) ^ (a i + y i)) / (∏ i : E, (p i) ^ (a i + y i))) * (piQ / piP)
       = 0 := by
@@ -139,7 +139,7 @@ theorem likelihood_prior_ratio_le_envelope
     (by ring_nf; exact le_of_eq (by ring))
 
 /-- For every count vector x = a + y with sum y = m, truth is a MAP maximizer iff the scalar envelope is ≤ 1. If every a_i > 0 on the true read support, these vectors are the type-count vectors compatible with latent full start coverage; observed type counts alone do not certify actual latent start coverage. -/
-theorem truth_maximizer_iff_envelope_le_one
+theorem truth_maximizer_iff_envelope_le_one [DecidableEq E]
     (p q : E → ℝ) (piP piQ : ℝ) (a : E → ℕ)
     (hp : ∀ i, 0 < p i)
     (hq : ∀ i, 0 ≤ q i)
