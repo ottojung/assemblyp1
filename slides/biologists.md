@@ -252,15 +252,15 @@ Oriented reads of length `L = 3`, comparing:
 
 **Six sampled reads — the competitor wins:**
 
-$
+$$
 \frac{\mathcal{L}(D)}{\mathcal{L}(S)} = \frac{15625}{11664} > 1
-$
+$$
 
 **Five full-start reads — the truth wins:**
 
-$
+$$
 \frac{\mathcal{L}(D)}{\mathcal{L}(S)} = \frac{3125}{3888} < 1
-$
+$$
 
 <div class="pt-6 opacity-80">
 The winner depends on how we model the sampling — a caution for any finite-read claim.
