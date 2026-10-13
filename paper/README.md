@@ -11,8 +11,9 @@ The paper gives each substantial result its own mathematical recognition:
 positive same-length circulation rigidity and conditional uniqueness,
 historical and variable-length finite-sample likelihood counterexamples,
 kernel-checked population identifiability for primitive P2 genomes, and
-formal distinctions between graph-flow optimization and sequence-spelling
-preservation.
+general Graver-basis rigidity certificates, exact effective-weight
+criteria for the fixed-$N$ binomial surrogate, and formal distinctions
+between graph-flow optimization and sequence-spelling preservation.
 
 The main text develops the algorithms, the repeat structure, the likelihood
 models, and the proofs. The appendices preserve detailed modeling choices,
