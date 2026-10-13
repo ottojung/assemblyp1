@@ -265,32 +265,232 @@ theorem replacement_overlaps_longer
     directLen < l1 ∧ directLen < l2 := by
   omega
 
-/-! A concrete directed-orientation regression. This example is deliberately
-not yet a test of the full double-stranded MB09 semantics: its strand RC is
-identity. It tests that the candidate predicate can actually remove an edge. -/
+/-! ## A concrete bidirected regression on the complete `overlapEdges` graph
 
-private def regressionStrand : Fin 3 → List Nat := fun v =>
+This is the review gate the PR body set for itself: a positive finite example
+where a redundant edge is *really* deleted from the **complete** `overlapEdges`
+graph, with its replacement two-edge path present in that same graph.  The
+earlier draft filtered the singleton list `[regressionEdge]`, which removed the
+edge without its replacement path existing in the graph; that demonstrated only
+the predicate, not path-in-graph preservation.  Here the direct edge and both
+detour legs are all members of the generated graph, the direct edge is removed
+by the candidate reduction, and **both detour legs survive** it.
+
+The instance is genuinely double-stranded (MB09 §3.1, §3.3): the vertex set is
+three observed read *molecule* classes, each contributing its representative
+strand and its reverse complement.  The strand involution `regressionRc` is a
+non-trivial involution (`0↔3`, `1↔4`, `2↔5`) consistent with
+`regressionStrand`, so `strandsOf regressionRc regressionVerts` enumerates both
+strands of every class.  This exercises the reverse-complement semantics of
+`isReducibleSpellingB`, which quantifies the intermediate strand over
+`strandsOf rc verts`.  The three forward reads `[0,1,2]`, `[1,2,3]`, `[2,3,4]`
+chain by a proper `2`-overlap, so the direct `1`-overlap `0→2` is spelled by the
+two-edge path `0→1→2`.
+
+The claim is local, path-in-graph spelling preservation for this one removal.
+It is **not** global language preservation and **not** Observation 7 throughput
+equivalence; those remain open (see the module scope note above). -/
+
+/-- The DNA complement involution on the eight-symbol alphabet `{0,…,7}`. -/
+private def regressionComp : Nat → Nat := fun w => 7 - w
+
+/-- A strand, as the list of its symbols.  Strands `0,1,2` are the three forward
+reads; strands `3,4,5` are their reverse complements under `regressionComp`. -/
+private def regressionStrand : Fin 6 → List Nat := fun v =>
   if v = 0 then [0, 1, 2]
   else if v = 1 then [1, 2, 3]
-  else [2, 3, 4]
+  else if v = 2 then [2, 3, 4]
+  else if v = 3 then [5, 6, 7]
+  else if v = 4 then [4, 5, 6]
+  else [3, 4, 5]
 
-private def regressionVerts : List (Fin 3) := [0, 1, 2]
+/-- The strand-level reverse-complement involution (MB09 §3.1): a non-trivial
+involution pairing each forward strand with its reverse complement. -/
+private def regressionRc : Fin 6 → Fin 6 := fun w => (w + 3) % 6
 
-private def regressionEdge : BdEdge Nat (Fin 3) :=
-  bdEdge (fun w => w) (0 : Fin 3) (2 : Fin 3) 1
+/-- The molecule-class representative of a strand (MB09 §4.1): strands `w` and
+`regressionRc w` are one class, labelled by the forward strand. -/
+private def regressionRep : Fin 6 → Fin 6 := fun w => if w ≥ 3 then w - 3 else w
 
+/-- Involution and molecule-pair compatibility of the finite toy. -/
+theorem regression_rc_involution :
+    ∀ w : Fin 6, regressionRc (regressionRc w) = w := by decide
+
+theorem regression_representative_rc :
+    ∀ w : Fin 6, regressionRep (regressionRc w) = regressionRep w := by decide
+
+theorem regression_read_length :
+    ∀ w : Fin 6, (regressionStrand w).length = 3 := by decide
+
+/-- A complementary eight-symbol test alphabet, not yet the DNA four-base alphabet. -/
+theorem regression_reverse_complement :
+    ∀ w : Fin 6, regressionStrand (regressionRc w) =
+      (regressionStrand w).reverse.map (fun x : Nat => 7 - x) := by decide
+
+/-- The three observed read DNA molecules, the vertices of the §6.2 graph. -/
+private def regressionVerts : List (Fin 6) := [0, 1, 2]
+
+/-- The complete bidirected overlap graph of MB09 §6.2 on the observed read
+molecules, at read length `3` and overlap threshold `o_min = 1`. -/
+private def regressionGraph : List (BdEdge Nat (Fin 6)) :=
+  overlapEdges Nat (Fin 6) regressionStrand regressionRep regressionRc 3 1 regressionVerts
+
+/-- The direct `1`-overlap edge `0 → 2`: spelled by the two-edge path
+`0 → 1 → 2` of two proper `2`-overlaps. -/
+private def regressionEdge : BdEdge Nat (Fin 6) :=
+  bdEdge regressionRep (0 : Fin 6) (2 : Fin 6) 1
+
+/-- The first detour leg, the proper `2`-overlap `0 → 1`. -/
+private def regressionLeg1 : BdEdge Nat (Fin 6) :=
+  bdEdge regressionRep (0 : Fin 6) (1 : Fin 6) 2
+
+/-- The second detour leg, the proper `2`-overlap `1 → 2`. -/
+private def regressionLeg2 : BdEdge Nat (Fin 6) :=
+  bdEdge regressionRep (1 : Fin 6) (2 : Fin 6) 2
+
+/-- The candidate predicate recognizes the direct edge as spelling-preservingly
+reducible (witness: intermediate strand `1`, overlaps `2` and `2`). -/
 theorem regression_edge_is_reducible :
-    isReducibleSpellingB (Fin 3) regressionStrand (fun w => w)
+    isReducibleSpellingB (Fin 6) regressionStrand regressionRc
       3 1 regressionVerts regressionEdge = true := by
   decide
 
-theorem regression_edge_is_removed :
-    regressionEdge ∉ transitivelyReducedSpelling (Fin 3) regressionStrand
-      (fun w => w) 3 1 regressionVerts [regressionEdge] := by
+/-- The direct edge is a member of the complete `overlapEdges` graph. -/
+theorem regression_direct_edge_in_graph :
+    regressionEdge ∈ regressionGraph := by
   decide
+
+/-- Both detour legs are members of the complete `overlapEdges` graph. -/
+theorem regression_legs_in_graph :
+    regressionLeg1 ∈ regressionGraph ∧ regressionLeg2 ∈ regressionGraph := by
+  decide
+
+/-- The direct edge is removed by the candidate reduction of the **complete**
+graph. -/
+theorem regression_edge_is_removed :
+    regressionEdge ∉ transitivelyReducedSpelling (Fin 6) regressionStrand regressionRc
+      3 1 regressionVerts regressionGraph := by
+  decide
+
+/-- Both detour legs **survive** the candidate reduction of the complete graph:
+the replacement two-edge path is present after the removal. -/
+theorem regression_legs_survive :
+    regressionLeg1 ∈ transitivelyReducedSpelling (Fin 6) regressionStrand regressionRc
+      3 1 regressionVerts regressionGraph ∧
+    regressionLeg2 ∈ transitivelyReducedSpelling (Fin 6) regressionStrand regressionRc
+      3 1 regressionVerts regressionGraph := by
+  decide
+
+/-! ### Path-in-graph spelling preservation (justified strengthening)
+
+The source asserts that the transitive reduction leaves "the set of possible DNA
+molecules spelled by the graph" unchanged (§6.2) and that a bidirected walk spells
+a molecule "for any graph whose edges are bidirected overlaps" (§4.1).  The
+local content of that claim for a single removal — the removed edge's replacement
+path is *in the graph* and spells the same word — is provable from the lemmas
+above.  This is the strongest form of the review gate: not merely a concrete
+example, but the general fact that every candidate removal is spelling-preserving
+*relative to the graph*.
+
+Only the single-edge, path-in-graph statement is claimed.  Global language
+preservation of a simultaneous reduction (a well-founded substitution argument)
+and Observation 7 throughput equivalence are **not** proved here and remain
+open. -/
+
+/-- **(a) Membership extraction.**  If `e` is an edge of the complete
+`overlapEdges` graph, then its overlap length is proper (`o_min ≤ e.len <
+readLen`), both endpoint strands are strands of observed molecule classes, and
+the direct overlap is genuine. -/
+theorem overlapEdges_mem_iff {A : Type} {W : Type} [DecidableEq A] [DecidableEq W]
+    {toList : W → List A} {rep rc : W → W} {readLen oMin : Nat} {verts : List W}
+    {e : BdEdge A W} (he : e ∈ overlapEdges A W toList rep rc readLen oMin verts) :
+    oMin ≤ e.len ∧ e.len < readLen ∧ e.sx ∈ strandsOf rc verts ∧
+      e.sy ∈ strandsOf rc verts ∧
+      sufOf (toList e.sx) e.len = preOf (toList e.sy) e.len := by
+  unfold overlapEdges at he
+  rw [List.mem_flatMap] at he
+  obtain ⟨len, hlen, he⟩ := he
+  have hlen_lt : len < readLen := List.mem_range.mp (List.mem_filter.mp hlen).1
+  have hlen_ge : oMin ≤ len := of_decide_eq_true (List.mem_filter.mp hlen).2
+  rw [List.mem_flatMap] at he
+  obtain ⟨sx, hsx, he⟩ := he
+  rw [List.mem_flatMap] at he
+  obtain ⟨sy, hsy, he⟩ := he
+  by_cases h : sufOf (toList sx) len = preOf (toList sy) len
+  · simp [h] at he
+    have hlen_e : e.len = len := congrArg BdEdge.len he
+    have hsx_e : e.sx = sx := congrArg BdEdge.sx he
+    have hsy_e : e.sy = sy := congrArg BdEdge.sy he
+    have hov : sufOf (toList e.sx) e.len = preOf (toList e.sy) e.len := by
+      rw [hsx_e, hsy_e, hlen_e]
+      exact h
+    have hnum : oMin ≤ e.len ∧ e.len < readLen := by omega
+    exact ⟨hnum.1, hnum.2, by rw [hsx_e]; exact hsx, by rw [hsy_e]; exact hsy, hov⟩
+  · simp [h] at he
+
+/-- **(b) Detour membership.**  If `sx` and `m` are strands of observed molecule
+classes, `l` is a proper overlap length (`o_min ≤ l < readLen`), and the overlap
+is genuine, then the matching `bdEdge` is an edge of the complete `overlapEdges`
+graph. -/
+theorem bdEdge_mem_overlapEdges {A : Type} {W : Type} [DecidableEq A] [DecidableEq W]
+    {toList : W → List A} {rep rc : W → W} {readLen oMin : Nat} {verts : List W}
+    {sx m : W} {l : Nat}
+    (hsx : sx ∈ strandsOf rc verts) (hm : m ∈ strandsOf rc verts)
+    (hl : oMin ≤ l ∧ l < readLen)
+    (hov : sufOf (toList sx) l = preOf (toList m) l) :
+    bdEdge rep sx m l ∈ overlapEdges A W toList rep rc readLen oMin verts := by
+  refine List.mem_flatMap.mpr ⟨l, List.mem_filter.mpr ⟨List.mem_range.mpr hl.2, decide_eq_true hl.1⟩, ?_⟩
+  refine List.mem_flatMap.mpr ⟨sx, hsx, ?_⟩
+  refine List.mem_flatMap.mpr ⟨m, hm, ?_⟩
+  simp [hov]
+
+/-- **Path-in-graph spelling preservation.**  If `e` is an edge of the complete
+`overlapEdges` graph, every observed strand linearizes to a read of length
+`readLen`, and the candidate predicate reduces `e`, then the two detour edges
+are themselves edges of that graph (with the same `rep`) and the two-edge path
+spells exactly the word the direct edge spells.  So removing `e` preserves its
+spelled word *relative to the graph*. -/
+theorem removable_edge_detour_in_graph {W : Type} [DecidableEq A] [DecidableEq W]
+    (toList : W → List A) (rep rc : W → W) (readLen oMin : Nat) (verts : List W)
+    (hLen : ∀ s ∈ strandsOf rc verts, (toList s).length = readLen)
+    (e : BdEdge A W)
+    (he : e ∈ overlapEdges A W toList rep rc readLen oMin verts)
+    (hred : isReducibleSpelling W toList rc readLen oMin verts e) :
+    ∃ m l1 l2,
+      oMin ≤ l1 ∧ oMin ≤ l2 ∧ l1 < readLen ∧ l2 < readLen ∧
+        bdEdge rep e.sx m l1 ∈ overlapEdges A W toList rep rc readLen oMin verts ∧
+          bdEdge rep m e.sy l2 ∈ overlapEdges A W toList rep rc readLen oMin verts ∧
+          spellPath (toList e.sx) (toList m) (toList e.sy) l1 l2 =
+            spellDirect (toList e.sx) (toList e.sy) e.len := by
+  have hb := overlapEdges_mem_iff he
+  unfold isReducibleSpelling isReducibleSpellingB at hred
+  simp only [List.any_eq_true, Bool.and_eq_true, decide_eq_true_eq] at hred
+  obtain ⟨m, hm, l1, hl1, l2, hl2, hconds⟩ := hred
+  rcases hconds with ⟨⟨⟨⟨ho1, ho2⟩, hov1⟩, hov2⟩, hcomp⟩
+  have hsxLen : (toList e.sx).length = readLen := hLen e.sx hb.2.2.1
+  have hmLen : (toList m).length = readLen := hLen m hm
+  have hsyLen : (toList e.sy).length = readLen := hLen e.sy hb.2.2.2.1
+  refine ⟨m, l1, l2, ho1, ho2, List.mem_range.mp hl1, List.mem_range.mp hl2, ?_, ?_, ?_⟩
+  · exact bdEdge_mem_overlapEdges hb.2.2.1 hm ⟨ho1, List.mem_range.mp hl1⟩ hov1
+  · exact bdEdge_mem_overlapEdges hm hb.2.2.2.1 ⟨ho2, List.mem_range.mp hl2⟩ hov2
+  · exact spellPath_eq_spellDirect hsxLen hmLen hsyLen (List.mem_range.mp hl1)
+      (List.mem_range.mp hl2) hb.2.1 hov1 hov2 hcomp
 
 #print axioms spellPath_eq_spellDirect
 #print axioms fullOverlap_not_reducible
 #print axioms fullOverlap_survives
+/-- Complementary incidences make the two legs a signed bidirected path. -/
+theorem detour_signs_match {W : Type} [DecidableEq W]
+    (rep : W → W) (sx m sy : W) (l1 l2 : Nat) :
+    (bdEdge (A := A) rep sx m l1).sgnY =
+      -(bdEdge (A := A) rep m sy l2).sgnX := by
+  change (if m = rep m then (-1 : ℤ) else 1) =
+    - (if m = rep m then (1 : ℤ) else -1)
+  split_ifs <;> omega
+
+#print axioms detour_signs_match
+#print axioms removable_edge_detour_in_graph
+#print axioms regression_edge_is_removed
+#print axioms regression_legs_survive
 
 end AssemblyP1.Section62SpellingReductionCandidate
