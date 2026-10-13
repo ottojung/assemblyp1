@@ -1,4 +1,4 @@
-import Mathlib.Data.Real.Basic
+import Mathlib.Basic.Real.Basic
 import Mathlib.Tactic.Ring
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic
@@ -74,14 +74,9 @@ theorem prod_pow_eq_prod_pow_mul_rmax_pow_concentrated
       = (∏ i : E, (r i) ^ (a i)) * (r j) ^ m := by
   simp_rw [pow_add, Finset.prod_mul_distrib]
   have key : (∏ i : E, (r i) ^ (if i = j then m else 0)) = (r j) ^ m := by
-    simp only [pow_ite, pow_zero]
-    rw [Finset.prod_ite_eq' Finset.univ j (fun i => (r i) ^ m)]
-    · rw [ite_eq_left]
-      exact Finset.mem_univ j
-    · intro i _
-      rw [if_neg (by exact fun h => by simp at h)]
+    classical
+    simp
   rw [key]
-  ring_nf
 
 /-- Likelihood/prior ratio at sample x = a + y decomposed as
 (πQ/πP) · ∏ (q_i/p_i)^{x_i}. -/
@@ -95,10 +90,7 @@ theorem likelihood_prior_ratio_eq
     intro i _
     exact ne_of_gt (pow_pos (hp i) (x i))
   have hkey : ∏ i : E, (q i / p i) ^ (x i) = (∏ i : E, (q i) ^ (x i)) / (∏ i : E, (p i) ^ (x i)) := by
-    rw [← Finset.prod_div_distrib Finset.univ (fun i => q i ^ x i) (fun i => p i ^ x i)]
-    apply Finset.prod_congr
-    intro i _
-    exact (div_pow (q i) (p i) (x i)).symm
+    simp only [div_pow, Finset.prod_div_distrib]
   rw [hkey]
   ring
 
@@ -118,11 +110,11 @@ theorem likelihood_prior_ratio_eq_zero_of_support_hole
     exact ne_of_gt (pow_pos (hp i) (a i + y i))
   rw [likelihood_prior_ratio_eq p q piP piQ (fun i => a i + y i) hp]
   have hr0 : (q j / p j) ^ (a j + y j) = 0 := by
-    rw [hqj]
+    rw [hqj, zero_div]
     exact zero_pow (ne_of_gt hxj : (a j + y j : ℕ) ≠ 0)
   have hprod : (∏ i : E, (q i / p i) ^ (a i + y i)) = 0 := by
-    apply Finset.prod_eq_zero (Finset.mem_univ j)
-    exact hr0
+    apply Finset.prod_eq_zero_iff.mpr
+    exact ⟨j, Finset.mem_univ j, hr0⟩
   rw [hprod]
   ring
 
@@ -146,8 +138,7 @@ theorem likelihood_prior_ratio_le_envelope
   exact (mul_le_mul_of_nonneg_left hbound (div_nonneg (le_of_lt hpiQ) (le_of_lt hpiP))).trans
     (by ring_nf; exact le_of_eq (by ring))
 
-/-- Truth is the maximizer for all fully covered samples of size n = G + m
-iff the scalar envelope is ≤ 1 (or a support hole exists). -/
+/-- For every count vector x = a + y with sum y = m, truth is a MAP maximizer iff the scalar envelope is ≤ 1. If every a_i > 0 on the true read support, these vectors are the type-count vectors compatible with latent full start coverage; observed type counts alone do not certify actual latent start coverage. -/
 theorem truth_maximizer_iff_envelope_le_one
     (p q : E → ℝ) (piP piQ : ℝ) (a : E → ℕ)
     (hp : ∀ i, 0 < p i)
@@ -170,9 +161,13 @@ theorem truth_maximizer_iff_envelope_le_one
       exact div_nonneg (hq i) (le_of_lt (hp i))
     have hconc := prod_pow_eq_prod_pow_mul_rmax_pow_concentrated (fun i => q i / p i) a j m hr_nonneg
     rw [hconc] at hy'
-    exact hy'
+    simpa only [mul_assoc] using hy'
   · intro henvelope y hy
     have hle := likelihood_prior_ratio_le_envelope p q piP piQ a y hp hq hpiP hpiQ j hrmax m hy
     exact le_trans hle henvelope
+
+#print axioms prod_pow_le_prod_pow_mul_rmax_pow
+#print axioms likelihood_prior_ratio_le_envelope
+#print axioms truth_maximizer_iff_envelope_le_one
 
 end AssemblyP1.FiniteSampleIidEnvelope
