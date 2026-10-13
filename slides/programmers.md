@@ -286,7 +286,7 @@ Exact details and proofs belong in the whitepaper.
 
 # How I directed the investigation
 
-I did not just ask whether an agent could produce a proof.
+I did not treat producing a proof as the research goal.
 
 I kept making decisions about **which claim was worth proving**:
 
