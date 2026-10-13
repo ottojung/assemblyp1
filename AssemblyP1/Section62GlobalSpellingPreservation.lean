@@ -156,6 +156,19 @@ theorem adjacent_edge_signs_opposite {A : Type} {W : Type} [DecidableEq A] [Deci
   rw [hfs.2, hgs.1, hadj]
   omega
 
+/-- A chain of graph edges in the `Step` (adjacency) sense is automatically a
+chain in the signed-incidence sense (MB09 §3.2): every two consecutive edges
+of the chain are adjacent at a common oriented strand, so their incidences at
+that strand are opposite. -/
+theorem isChain_sign_incidence {A : Type} {W : Type} [DecidableEq A] [DecidableEq W]
+    {toList : W → List A} {rep rc : W → W} {readLen oMin : Nat} {verts : List W}
+    {p : List (BdEdge A W)}
+    (hmem : ∀ e ∈ p, e ∈ overlapEdges A W toList rep rc readLen oMin verts)
+    (hc : p.IsChain Step) :
+    p.IsChain (fun f g => f.sgnY = -g.sgnX) :=
+  hc.imp_of_mem_imp (fun f g hf hg hadj =>
+    adjacent_edge_signs_opposite (hmem f hf) (hmem g hg) hadj)
+
 theorem signedPath_single {sx sy : W} {e : BdEdge A W} :
     SignedPath sx sy [e] ↔ e.sx = sx ∧ e.sy = sy := by
   constructor
@@ -265,5 +278,29 @@ theorem exists_surviving_signed_path [DecidableEq A]
   exact key _ e rfl he
 
 #print axioms exists_surviving_signed_path
+
+/-- **Signed-incidence lift of the global expansion.**  Every edge `e` of the
+complete `overlapEdges` graph expands into a signed path `p` of edges of the
+*transitively reduced* graph such that `p` has the same endpoints as `e`,
+consecutive edges of `p` have opposite incidences at every common oriented
+strand (MB09 §3.2), and `p` spells the same tail: `pathTail p = edgeTail e`.
+The reduction membership of every member of `p` implies its full-graph
+membership, which feeds the signed-incidence chain. -/
+theorem exists_surviving_signed_path_signed [DecidableEq A]
+    (toList : W → List A) (rep rc : W → W) (readLen oMin : Nat) (verts : List W)
+    (hLen : ∀ s ∈ strandsOf rc verts, (toList s).length = readLen)
+    (e : BdEdge A W) (he : e ∈ overlapEdges A W toList rep rc readLen oMin verts) :
+    ∃ p : List (BdEdge A W),
+      SignedPath e.sx e.sy p ∧
+        p.IsChain (fun f g => f.sgnY = -g.sgnX) ∧
+        (∀ g ∈ p, g ∈ transitivelyReducedSpelling W toList rc readLen oMin verts
+          (overlapEdges A W toList rep rc readLen oMin verts)) ∧
+        pathTail toList p = edgeTail toList e := by
+  obtain ⟨p, hp, hsurv, htail⟩ := exists_surviving_signed_path toList rep rc readLen oMin verts hLen e he
+  refine ⟨p, hp, ?_, hsurv, htail⟩
+  exact isChain_sign_incidence (fun g hg => (List.mem_filter.mp (hsurv g hg)).1) hp.2.2
+
+#print axioms exists_surviving_signed_path_signed
+#print axioms isChain_sign_incidence
 
 end AssemblyP1.Section62GlobalSpellingPreservation
