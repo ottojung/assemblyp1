@@ -227,7 +227,7 @@ That rule is called **MAP** (maximum a posteriori).
 
 **When all candidates have equal prior probability, MAP becomes maximum likelihood (ML).**
 
-Under these assumptions, no competing decision rule has a higher *average probability of correctly identifying the genome*.
+Under these assumptions, **ML is at least as accurate on average as any other genome-reconstruction algorithm using the same reads**.
 
 <!--
 Optimality is for prior-averaged 0-1 recovery risk, given the same model,
@@ -305,7 +305,7 @@ $$
 S\in\operatorname*{arg\,max}_D P(R\mid D)
 $$
 
-The answer depends on the exact sampling model and which genomes are allowed as candidates.
+I chose this open question as the starting point for a human-directed, AI-assisted mathematical research project.
 
 <!--
 Paraphrase of Shomorony et al. 2016, Discussion, referring to Medvedev
@@ -397,265 +397,204 @@ MAP and ML can choose different answers.
 
 ---
 
-# From one example to a research program
+# We settled the finite question
 
-The tiny example establishes a mechanism — it does **not** settle every precise version of the 2016 question.
+The 2016 paper asked whether conditions that make **Not-So-Greedy reconstruct the truth** also make the truth a **maximum-likelihood genome**.
 
-The research therefore branched:
+**We resolved every determinate, source-supported formulation of that question.**
 
-- **Which finite models permit strict counterexamples?**
-- **Which restrictions restore a positive theorem?**
-- **What happens when read orientation or genome length changes?**
-- **How does Bayesian side information change the answer?**
+- **Unrestricted and historical molecule models:** the implication is **false**. We found strict counterexamples, including under the source's original read-string bridging conditions.
+- **A specific same-length, oriented, admissible model:** the implication is **true**. We proved maximality and, with the appropriate candidate certificates, uniqueness up to rotation.
 
-This was not a straight line from a conjecture to a proof. **The questions evolved as new results changed what was plausible.**
+The original papers did not fix just one likelihood model. We answered the concrete alternatives rather than guessing which was intended.
 
 <!--
-The historical paper has exact multinomial, fixed-size product-binomial
-approximation, and bidirected molecule/flow interpretations, with
-different candidate domains and latent read-start versus observed
-read-string conditions. The project records distinct proved rows in
-docs/source-notes/interpretation-matrix-217.md. Keep slide conceptual.
+Source: docs/source-notes/interpretation-matrix-217.md, Section 4;
+paper/sections/03-open-question.tex and 04-finite-results.tex.
+All determinate source-supported rows are resolved. Some *different*
+project-specific modeling questions remain open. Source referent itself
+was underdetermined; do not present this as the conjecture being unsettled.
 -->
 
 ---
 
-# What the finite investigation found
+# These are substantial mathematical results
 
-In a **restricted, same-length, oriented** assembly model with bridging and candidate-admissibility hypotheses, the true genome has a positive maximum-likelihood guarantee.
+**Negative:** even when repeat-bridging conditions hold, finite-sample likelihood can favor a different genome. For a historical, same-length molecule model, a certified example achieves a **threefold likelihood advantage**.
 
-In **broader candidate models**, strict finite-sample likelihood counterexamples exist — including variants faithful to the historical molecule/read-string conventions.
+**Positive:** under the oriented, same-length admissibility conditions, we proved a general result: the true genome cannot be beaten, and the reconstruction is unique up to circular rotation within the certified class.
 
-So the answer is not simply “yes” or “no” without a model.
+**Beyond individual examples:** we found whole families of finite counterexamples, not merely one unlucky dataset.
 
-**The interesting mathematical object became the boundary between the guarantees.**
+Many of these results have been **checked in Lean**, not just calculated experimentally.
 
 <!--
-See paper/sections/04-finite-results.tex and the interpretation matrix.
-Do not transfer the positive same-length theorem to unrestricted candidate
-lengths, or transfer one negative witness to an incompatible source model.
+Examples: AAATAT -> AAAAAT, G=6, L=3, exact ratio 3 under
+same-length §6.2 molecule/flow, module SameLengthSection62Counterexample;
+oriented variable-length infinite families in OrientedVariableLengthSe62;
+positive same-length §6.2 in SameLength62Maximizer and
+SameLength62Uniqueness. Exact limitations in issue #217 matrix.
 -->
 
 ---
 
-# The research changed direction several times
+# This research was agentic from day one
 
-**September 17:** I chose a specific open question from the literature and started a research project around it.
+On September 17, I began AssemblyP1 with **two things already in place**:
 
-**September 18–21:** Counterexamples and source-model differences turned a single conjecture into several precise, different mathematical questions.
+**The mathematical problem:** a real open question from the genome-assembly literature.
 
-**Late September:** I pursued positive structural results alongside the negative ones, and pushed for end-to-end theorems in Lean rather than isolated lemmas.
+**The research method:** cooperating AI research agents, durable work, adaptive orchestration, and Lean as a formal verification boundary.
 
-**October:** I broadened the program: Bayesian optimality, identifiability, necessary-and-sufficient conditions, and how many reads are needed for reliable recovery.
+The AI system wasn't added after the mathematics became complicated.
+
+**I designed the project from the outset to conduct mathematical research by directing that system.**
 
 <!--
-Provenance: repository history, issues #1, #5, #21, #22, #45,
-#82, #83, #87-#92, #269, #270 and #281; Sept-Oct project
-research conversations. The October extensions are directions in
-progress, not assertions they have all been solved.
-The presenter's own major contribution was directing and redirecting
-the agenda based on new mathematical evidence.
+Primary evidence: docs/intent-records/project.md, intent records dated
+2026/09/17. The initial repository commits already seed Lean, agent
+instructions, research orchestration and durable intent records.
+This was the methodology at founding, not a post-hoc workaround.
 -->
 
 ---
 
-# My central job was choosing the next question
+# The central work: choosing directions
 
-A counterexample is useful — but **what should we ask next?**
-
-When variable-length candidates fail, maybe equal length gives a theorem. If that works, ask whether equal length is necessary.
-
-When the finite-sample score fails, ask whether failure is caused by **sampling noise** or by **indistinguishable genomes**.
-
-When Bayesian optimality is proved, ask how fast recovery improves with more reads, and how its read requirements compare with Not-So-Greedy.
-
-**The valuable work was repeatedly finding these forks and deciding which were worth pursuing.**
-
-<!--
-This is intellectual direction and hypothesis generation, not the
-trivial requirement that a proof match its statement.
-User pushed especially for necessary/sufficient conditions and a
-like-for-like comparison of 99% recovery sample complexities.
--->
-
----
-
-# Why not simply use one chatbot?
-
-A tool-equipped chatbot can search papers, write code, and reason through a theorem.
-
-But **one conversational session is a poor structure for a large, branching research program**:
-
-- Only one line of work advances at a time.
-- Long searches consume and eventually exceed conversational context.
-- Failed attempts and partial results are easily lost.
-- Independent investigations and reviews compete for attention.
-
-I wanted **multiple persistent agents**, each able to work on a distinct question and leave inspectable evidence.
-
-<!--
-Multiple agents are not intrinsically more mathematically reliable.
-The gains are concurrency, specialization, independent falsification,
-durable memory and recovery, not "more votes" on whether a theorem is true.
--->
-
----
-
-# What an agent actually does
-
-An agent is an AI model **running a multi-step job with tools and a goal**.
-
-It can read papers and code, generate hypotheses, search for counterexamples, run tests, edit files, and revise its approach after feedback.
-
-For this project, agents worked on **different fronts**:
-
-**Literature and model** · **Counterexample search** · **Positive proofs** · **Lean formalization** · **Independent review**
-
-Each front produces durable artifacts — notes, issues, branches, commits, and proof results — rather than just an answer in a chat.
-
-<!--
-A workflow agent is not only a chat response. It maintains a sequence
-of tool-mediated actions and a work context. Its results remain
-uncertain until checked; different agents can disagree legitimately
-because of model assumptions.
--->
-
----
-
-# I built a continuous research loop
+The important decision was repeatedly **what mathematical question to pursue next**.
 
 ```text
- I choose and refine the research directions
-                    ↓
-       Antonina board: open questions
-                    ↓
-       Orchestrator selects ready work
-                    ↓
-   Parallel agents → isolated worktrees
-                    ↓
-   Experiments · Lean proofs · PRs · CI
-                    ↓
-     Review, reconcile, merge, update
-                    └───────────↻
+2016 open problem
+     ↓
+Several possible likelihood interpretations
+     ├── Counterexamples: where does it fail?
+     └── Positive theorems: what rescues it?
+                   ↓
+       Why do the failures happen?
+       ├── Finite sampling fluctuations
+       └── Structural non-identifiability
+                   ↓
+       Bayesian optimality and recovery rates
 ```
 
-The crucial feature is the **feedback loop**: completion or failure changes the research frontier, and further work can continue from durable state.
+Each result changed the next research question. I prioritized, redirected, and combined these lines of investigation instead of following a predetermined proof plan.
 
 <!--
-AssemblyP1 used Antonina for its evolving issue queue, Lubko hosts for
-remote commands and agents, Git branches/worktrees to isolate changes,
-and GitHub PR/CI for review and integration.
-The user steered through direct agent guidance and Antonina issue comments.
-The orchestrator schedules using dependency topology and available
-independent work, aiming to keep useful research parallel.
-This represents the design, not a guarantee the service never fails.
+Provenance: early Sept 17 source-faithful fork and adaptive portfolio
+intent; Sept 18-21 finite counterexamples; later positive same-length
+rigidity; Sept 20 population repair intent; Oct Bayesian optimality,
+identifiability, and sample complexity fronts.
+This slide is about intellectual direction and adapting the frontier.
 -->
 
 ---
 
-# Why use Lean?
+# Multiple lines of inquiry, pursued together
 
-Agents are useful at **inventing** arguments. They can also make subtle mistakes.
+Those directions became **parallel research work**.
 
-Lean is a programming language and theorem prover. A theorem is a **type**; a proof is a program whose type must match it.
+AI agents could investigate different ideas independently: reading papers, searching small examples, proposing arguments, running computations, and developing Lean proofs.
 
-```lean
-theorem sum_commutes (a b : Nat) : a + b = b + a := by
-  exact Nat.add_comm a b
+At one point, a source-interpretation investigation could run alongside a counterexample search and a positive proof attempt.
+
+The value wasn't that several agents agreed. It was that **different hypotheses could be tested simultaneously**, including ideas that turned out to be false.
+
+I used their findings to choose the next questions.
+
+<!--
+Agents are persistent, tool-using research workers with independent
+worktrees and evidence artifacts. Avoid a generic "what is an agent?"
+or a generic tool-comparison slide: agents are introduced through their
+actual research role.
+-->
+
+---
+
+# Keeping the investigation moving
+
+The research needed to continue beyond any individual work session.
+
+```text
+   I set and revise the research frontier
+                    ↓
+      Antonina: questions and dependencies
+                    ↓
+   Orchestrator: selects parallel work
+                    ↓
+       Lubko: agents in isolated worktrees
+                    ↓
+      Experiments, notes, proofs, PRs
+                    ↓
+      Reconcile results and update frontier
+                    └─────────────↻
 ```
 
-**Lean's small kernel checks the proof**, not the agent's confidence.
-
-The kernel does not have to trust the creativity, confidence, or correctness of the agent that proposed it.
+**The orchestrator kept the work continuous. I supplied the research direction.**
 
 <!--
-Lean reference: https://lean-lang.org/doc/reference/latest/
-Elaborators/tactics generate proof terms; the small trusted kernel
-checks them. The project additionally replays the library through
-lean4checker and audits axioms in CI.
-This is why the trust boundary is smaller than for free-form AI prose.
+The evolving queue is Antonina; Lubko provides remote work execution,
+isolated worker workspaces and agent runs; Git PRs preserve artifacts;
+independent review and CI support integration.
+Agent failures and completed packets feed the next dispatch.
+The orchestrator schedules useful independent work based on dependency
+topology, not as a substitute for the user's research judgment.
 -->
 
 ---
 
-# We proved a piece of the statistical story
+# How could I trust the proofs?
 
-AssemblyP1 includes a Lean-checked finite Bayesian theorem:
+Agents can discover clever arguments and make subtle mistakes.
 
-**For any finite hypothesis and observation spaces, a pointwise MAP decision rule has at least as high prior-averaged success as any other decision rule.**
+**Lean** is a programming language and theorem prover. A theorem is a formal statement, and its proof must pass a small, trusted **kernel checker**.
 
-The development also covers randomized decision rules and the fact that additional information cannot hurt optimal Bayesian recovery.
+An agent can propose or construct a proof; Lean does not trust the agent's explanation. It checks the actual formal proof.
 
-That is an example of how a **general claim about optimal decisions** can become a machine-checked theorem, not just an intuition.
+Our CI also replays the theorem library and audits which axioms the proofs use.
+
+**The source model determines what we are proving. Lean checks whether the proof follows from that model.**
 
 <!--
-AssemblyP1/FiniteBayesDecision.lean:
-pointwise_MAP_optimal; pointwise_MAP_optimal_randomized;
-finite_iid_MAP_optimal;
-chooseMAP_success_monotone_under_refinement.
-Distinguish this generic finite decision result from a complete
-assembly-specific ML theorem for every historical model.
+Source: AssemblyP1/FiniteBayesDecision.lean and the finite
+counterexample/maximality modules. Theorems depend on the allowed
+Lean logical axioms. Distinguish proof checking from scientific
+interpretation. No unverified "example" code required on the slide.
 -->
 
 ---
 
-# What do we actually need to trust?
+# The result is a growing research program
 
-**Agent-generated arguments:** useful ideas, **not** automatically reliable.
+We started with one open question and settled its concrete finite interpretations.
 
-**Lean-checked proof:** a result follows from its formal premises in the kernel's logic.
+The same investigation then opened new questions: which conditions characterize identifiability, how reliably does optimal inference recover the truth from a finite sample, and **how many reads are needed for a target success probability?**
 
-**Scientific interpretation:** those premises must still describe the intended sequencing model.
+Those questions can be pursued with the same structure:
 
-This gives a division of labor:
+**Human-directed research questions → parallel mathematical exploration → durable results → Lean-checked theorems → new questions.**
 
-**I guide the questions. Agents explore. The orchestrator sustains the work. Lean checks mathematical proofs.**
-
-None of these roles replaces the others.
+The system matters because it supports that continuing cycle of discovery.
 
 <!--
-Lean cannot detect a faithfully proved theorem about an unintended
-definition. The user directed source-model fidelity as scientific
-interpretation; that is different from reducing research to a checking
-workflow. Keep this slide human-centered.
--->
-
----
-
-# What I wanted to explore next
-
-The most interesting questions now go beyond a yes/no statement:
-
-- When does the read data **uniquely identify** the true genome?
-- Under what conditions does the optimal Bayesian or ML rule recover it **with high probability**?
-- How many random reads give, say, **99% success**?
-- Under the **same sampling assumptions**, how does this compare with Not-So-Greedy?
-
-Those are research directions, not claims that every theorem has already been proved.
-
-<!--
-The user elevated sample complexity, monotonic finite recovery,
-identifiability and necessary/sufficient characterizations in
-October 2026; AssemblyP1 issue #281 concerns exponential ML recovery
-bounds, and #269 concerns Bayesian decision optimality.
+The initial 2016 finite question is settled across determinate
+source-supported interpretations. General characterization and
+sample-complexity directions remain distinct new research questions;
+do not imply all are solved.
 -->
 
 ---
 
 # The Most Likely Genome
 
-We started with a deceptively simple question:
+We started with a question from 2016: **Do Not-So-Greedy's reconstruction conditions also make the true genome a maximum-likelihood maximizer?**
 
-**Does an assembly algorithm's success guarantee imply that the true genome also maximizes likelihood?**
+**We settled the concrete source-supported finite versions**, proving both strong positive theorems and strict counterexamples.
 
-The answer depends on the model. But the investigation revealed something broader:
+Along the way, we connected genome reconstruction with a remarkable general fact: **under a specified equal-prior decision model, ML maximizes average correctness over all algorithms using those observations** — yet it can still be wrong on a particular sample.
 
-**A method can be statistically optimal without being correct on every sample.**
-
-And difficult mathematical research can be advanced by combining **human direction, persistent agents, and machine-checked proofs**.
+And we did the research through a system designed from the outset for **human-directed, parallel AI exploration and Lean-checked proofs**.
 
 <HomeLink label="Choose another audience" />
-
 ---
 
 # Additional question: what if we had unlimited reads?
