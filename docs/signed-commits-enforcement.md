@@ -1,6 +1,6 @@
 # Signed commit enforcement
 
-Status: **deployed** (CI gate active on every push/PR to `main`).
+Status: **CI gate active on branch; branch-protection ruleset NOT enabled (admin step required).**
 
 ## Policy
 
@@ -17,7 +17,9 @@ verifies **each commit in the incoming range**, not merely the merge head:
   property.
 
 A signed merge commit (e.g. `git merge --no-ff -S`) is verified like any
-other commit, so the side-branch commits it introduces are all covered.
+other commit. A signed merge does **not** legalize unsigned commits on the
+side branches it introduces — every commit in the range is checked
+independently.
 
 ## Enforcement
 
@@ -28,8 +30,23 @@ other commit, so the side-branch commits it introduces are all covered.
   only newly introduced commits, never ancestors of the base.
 * Selftest: [`scripts/test_signed_commits.sh`](../scripts/test_signed_commits.sh)
   covers the unsigned-branch rejection, the `U` (unknown-local-trust) case, a
-  signed two-parent merge commit, and range isolation, all under a throwaway
-  `GNUPGHOME`.
+  signed two-parent merge commit, a signed merge with an **unsigned** side
+  branch (must fail), and range isolation, all under a throwaway `GNUPGHOME`.
+
+## Branch protection (admin step required)
+
+The CI gate enforces signatures on every push/PR, but GitHub's native
+**Require signed commits** branch protection ruleset is **not enabled** — a
+workflow can be bypassed by force-push or disabled by a admin. To make
+enforcement mandatory, a repository admin must:
+
+1. Go to **Settings → Branches → Add branch protection rule** for `main`.
+2. Enable **Require signed commits**.
+3. Optionally enable **Require status checks to pass** and add the
+   `Signed commits` CI job.
+
+Until that admin step is completed, enforcement relies on the CI gate alone
+and should be considered **advisory, not mandatory**.
 
 ## Trusted keys
 
@@ -50,32 +67,49 @@ signing keys are present and pinned.
 
 | Range | Total | `N` (unsigned) | `U`/`G` (signed, verified) |
 |-------|-------|----------------|-----------------------------|
-| All of `main` | 679 | 435 | 244 |
-| Since 2026-10-09 | 160 | 8 | 152 |
+| All of `main` | 737 | 455 | 282 |
+| Since 2026-10-09 | 172 | 25 | 147 |
 
 **Affected unsigned range:** from `1cce2a6` *Initialize assemblyp1 research
-repository* (2026-09-17) through `2b3011e` *#258: realize all four admissible
-spectra by explicit circular genomes* (2026-10-11, merged via PR #159 as
-`080b1b3`). The unsigned history predates PR #159 and includes kernel #256
-(`737cc9d`). The four PR #159 proof commits named in the issue are
+repository* (2026-09-17) through `abbe728` *paper: list proof-level
+reproduction anchors in main theorem inventory* (2026-10-13, merged via PR
+#189 as `9ca5c8`). The unsigned history predates PR #159 and includes kernel
+#256 (`737cc9d`). The four PR #159 proof commits named in the issue are
 `2b3011e`, `bd4ae52`, `d68dc6c`, `84daf85`.
 
-The 8 unsigned commits since 2026-10-09:
+The 25 unsigned commits since 2026-10-09:
 
 ```
-2b3011e  #258: realize all four admissible spectra by explicit circular genomes
-bd4ae52  #258: derive exact arbitrary-sample chamber iff from the genuine circulation census
-d68dc6c  #258: prove global unique, tie and loss spectra for three fixed read samples
-84daf85  #258: repair Lean coverage adapter dependent indices and sum proof
-737cc9d  256: kernel-check the exact robust same-length ML iff
-c8d228a  247e: refute AAABBABB->AAAABABB variable-overlap §6.2 walk (additive)
-11ac95c  Merge remote-tracking branch 'origin/main' into agent/board-211-8d5103
-76bafba  Integrate ACGT witness and clarify scope of Section 6.2 uniqueness
+abbe728  paper: list proof-level reproduction anchors in main theorem inventory   [PR #189]
+dd117d3  paper: recognize Graver rigidity and all-count likelihood certificates   [PR #189]
+c1f3fdb  paper: recognize Graver rigidity and all-count likelihood certificates   [PR #189]
+09da875  paper: recognize Graver rigidity and all-count likelihood certificates   [PR #189]
+9d8617c  paper: recognize Graver rigidity and all-count likelihood certificates   [PR #189]
+28e34a3  paper: recognize Graver rigidity and all-count likelihood certificates   [PR #189]
+08d685f  paper: recognize Graver rigidity and all-count likelihood certificates   [PR #189]
+332841c  paper: foreground the distinct structural, sampling, and spelling proofs [PR #189]
+4558957  paper: foreground the distinct structural, sampling, and spelling proofs [PR #189]
+b4ab037  paper: foreground the distinct structural, sampling, and spelling proofs [PR #189]
+1a2c7a5  paper: foreground the distinct structural, sampling, and spelling proofs [PR #189]
+5ce17cf  paper: frame ML optimality as motivation for assembly-specific results  [PR #189]
+1a11669  paper: frame ML optimality as motivation for assembly-specific results  [PR #189]
+ebbf36c  paper: frame ML optimality as motivation for assembly-specific results  [PR #189]
+fd64253  Prevent isolated single-dollar display math from silently compiling       [PR #177]
+be3d2f5  Correct display math markers to double-dollar KaTeX syntax              [PR #177]
+402ee90  Correct display math markers to double-dollar KaTeX syntax              [PR #177]
+a72d603  Reject both unsupported delimiters and math hidden in raw HTML           [PR #177]
+eb45c7c  Render biologists' equations in Markdown, outside raw HTML blocks       [PR #177]
+f082f20  Render programmers' equations in Markdown, outside raw HTML blocks      [PR #177]
+2b3011e  #258: realize all four admissible spectra by explicit circular genomes  [PR #159]
+bd4ae52  #258: derive exact arbitrary-sample chamber iff from the genuine circulation census [PR #159]
+d68dc6c  #258: prove global unique, tie and loss spectra for three fixed read samples       [PR #159]
+84daf85  #258: repair Lean coverage adapter dependent indices and sum proof     [PR #159]
+737cc9d  256: kernel-check the exact robust same-length ML iff                  [kernel #256]
 ```
 
 ## Historical exception (documented, no rewrite)
 
-The 435 unsigned commits already on `main` are **grandfathered**: the gate
+The 455 unsigned commits already on `main` are **grandfathered**: the gate
 applies only to commits newly introduced by a push or PR range, so existing
 history is not re-checked and `main` is never rewritten. Force-pushing or
 rewriting public `main` to retroactively sign history would invalidate every
