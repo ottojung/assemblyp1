@@ -100,6 +100,20 @@ echo "merge commit $MERGE status=$mst parents=$nparents"
 expect_exit "signed merge commit accepted" 0 \
   python3 "$SCRIPT" --repo "$TREPO" --base "$BASE" --head "$MERGE" --extra-key "$WORK/selftest.pub"
 
+echo "== 3b. signed merge with UNSIGNED side branch must FAIL (dangerous topology) =="
+git -C "$TREPO" checkout -q -b unsigned-side "$BASE"
+echo uside > "$TREPO/uside.txt"
+git -C "$TREPO" add uside.txt
+git -C "$TREPO" commit -q -m "UNSIGNED side commit"
+USIDE=$(git -C "$TREPO" rev-parse HEAD)
+git -C "$TREPO" checkout -q signed
+git -C "$TREPO" -c commit.gpgsign=true merge -q --no-ff -S -m "signed merge of unsigned side" "$USIDE"
+UMERGE=$(git -C "$TREPO" rev-parse HEAD)
+uparents=$(git -C "$TREPO" log -1 --format=%P "$UMERGE" | wc -w)
+[ "$uparents" -eq 2 ] || { bad "merge has $uparents parents, want 2"; echo "FAIL: selftest setup broken"; exit 1; }
+expect_exit "signed merge with unsigned side branch rejected" 1 \
+  python3 "$SCRIPT" --repo "$TREPO" --base "$BASE" --head "$UMERGE" --extra-key "$WORK/selftest.pub"
+
 echo "== 4. range isolation: unsigned ancestor of base must NOT be checked =="
 # UNSIGNED sits on master below a fresh base2; the signed range above base2
 # must pass even though an unsigned commit is an ancestor of the base ref.
