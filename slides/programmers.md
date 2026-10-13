@@ -2,8 +2,8 @@
 theme: default
 title: "AssemblyP1 for Programmers"
 info: |
-  How short reads become a graph, how Not-So-Greedy reconstructs a
-  genome, and what we proved about maximum likelihood with Lean.
+  A simple maximum-likelihood rule, surprising finite-sample behavior,
+  and machine-checked results about short-read genome assembly.
 class: text-center
 highlighter: shiki
 lineNumbers: false
@@ -14,547 +14,331 @@ routerMode: hash
 mdc: true
 ---
 
-# Assembling a genome is a graph problem
+# Could the wrong genome be more likely?
 
-### From short DNA reads to reconstruction, likelihood, and machine-checked theorems
+### A surprisingly simple idea with surprisingly deep consequences
 
-<div class="pt-10 text-lg opacity-80">
-A concrete algorithmic story · AssemblyP1
-</div>
+**AssemblyP1** · For programmers
 
 <HomeLink label="Choose another audience" />
 
 <!--
-The core question is how a collection of short strings can determine one circular string.
-We will build and traverse a tiny graph, then see how repeat information and likelihood change the question.
+Open with the question, not with an assembly algorithm.
+Everything on the next few slides can be checked by hand.
 -->
 
 ---
 
-# One circular genome, many short reads
+# We see fragments, not the genome
 
-Imagine a **circular** DNA word, with read length $L=3$.
+Suppose the true genome is the circular string **AAATT**.
 
-**Hidden source:** $S=\texttt{ACGTA}$.
+A sequencer takes a short read from a randomly chosen start position. For reads of length 3:
 
-Start at each position, take three letters, wrap around at the end.
-
-| Start | Observed read |
+| Start | Read |
 |---:|:---|
-| 0 | `ACG` |
-| 1 | `CGT` |
-| 2 | `GTA` |
-| 3 | `TAA` |
-| 4 | `AAC` |
+| 1 | `AAA` |
+| 2 | `AAT` |
+| 3 | `ATT` |
+| 4 | `TTA` |
+| 5 | `TAA` |
 
-<div class="pt-6 text-lg">
-The assembler sees the **reads**, not the source or their start positions.
-</div>
-
----
-
-# An operational assembly algorithm
-
-One useful construction is the **de Bruijn graph**.
-
-For read length $L$, turn every read into an edge:
-
-- vertex = its $(L-1)$-letter prefix or suffix;
-- edge = one observed length-$L$ read, from prefix to suffix;
-- retain multiplicities when the same read occurs more than once.
-
-$$
-\texttt{ACG}: \quad \texttt{AC} \longrightarrow \texttt{CG}
-$$
-
-$$
-\texttt{CGT}: \quad \texttt{CG} \longrightarrow \texttt{GT}
-$$
-
-<div class="pt-6 opacity-75 text-sm">
-This is a teaching example of spectrum-based reconstruction. Not-So-Greedy, introduced shortly, constructs a different graph: a read-overlap graph.
-</div>
-
----
-
-# Traverse the graph; spell the genome
-
-With all five circular windows, the graph is one directed cycle.
-
-```text
- AC --ACG--> CG --CGT--> GT
- ^                       |
- |                       GTA
- AAC                     |
- |                       v
- AA <--TAA-- TA <--------+
-```
-
-Start with `AC`, append the last character of each edge:
-
-```text
-AC → ACG → ACGT → ACGTA → ACGTAA → ACGTAAC
-```
-
-The two extra letters close the circle: **`ACGTA`**, up to rotation.
-
-<div class="pt-4 text-lg">
-Assembly becomes an **Eulerian traversal**: use every edge with its required multiplicity.
-</div>
+**We observe a sample of reads, not their starting positions.**
 
 <!--
-The graph's edges, not vertices, represent windows. The final two letters repeat
-the first two because the source is circular.
+The last two reads wrap around the circular genome. We assume
+error-free, oriented reads and independent uniform start positions.
 -->
 
 ---
 
-# Repeats create genuine ambiguity
+# Two different questions
 
-Two distinct circular genomes can have exactly the same short-read spectrum.
+**Reconstruction:** Can overlapping fragments tell us which circular genome produced them?
 
-<div class="grid grid-cols-2 gap-6 pt-5">
-<div>
+**Maximum likelihood:** Which proposed genome makes the **particular reads we saw** most probable?
 
-**Genome S**
+Reconstruction exploits clues such as overlaps and repeats.
+
+**Likelihood also uses how often each read appeared.**
+
+<!--
+Shomorony et al. (2016) prove reconstruction under structural
+coverage and bridging hypotheses. No algorithm internals are needed here.
+-->
+
+---
+
+# Maximum likelihood in one sentence
+
+Pretend each candidate genome is a machine that generates random reads.
+
+1. Give the machine a proposed genome.
+2. Ask how likely it is to emit our observed reads.
+3. Prefer the candidate assigning them the highest probability.
+
+$$
+\widehat D=\operatorname*{arg\,max}_D P(\text{reads}\mid D)
+$$
+
+**That's the scoring rule.** Searching all genomes can still be hard.
+
+<!--
+The likelihood P(reads | D) is not the posterior probability P(D | reads).
+We compare candidate scores for fixed data.
+-->
+
+---
+
+# A genome is a loaded die
+
+**Truth:** `AAATT` — five equally likely start positions.
+
+**Decoy:** `AAAATT` — six equally likely start positions.
+
+Count how often each read can be produced:
+
+| Read | Under $S$ | Under $D$ |
+|:---|---:|---:|
+| `AAA` | $1/5$ | $2/6$ |
+| `AAT` | $1/5$ | $1/6$ |
+| `ATT` | $1/5$ | $1/6$ |
+| `TTA` | $1/5$ | $1/6$ |
+| `TAA` | $1/5$ | $1/6$ |
+
+**The extra A creates two starts producing AAA instead of one** — probabilities $2/6$ versus $1/5$.
+
+---
+
+# What did we actually observe?
+
+Imagine six independently sampled reads:
 
 ```text
-AAABAB
+AAA   AAA   AAT   ATT   TTA   TAA
 ```
 
-</div>
-<div>
+- `AAA` appeared **twice**.
+- Each of the other four types appeared once.
 
-**Genome D**
+This sample is entirely possible under the true genome `AAATT`.
+
+But it contains **more AAA than the true distribution predicts on average**.
+
+<!--
+The read order is immaterial. A multinomial coefficient common to
+both candidate scores cancels in their likelihood ratio.
+-->
+
+---
+
+# Six reads. Just multiply.
+
+Every read contributes one probability factor.
+
+For the **true genome**:
+
+$$
+P(R\mid S)=(1/5)^6
+$$
+
+For the **decoy**:
+
+$$
+P(R\mid D)=(2/6)^2(1/6)^4
+$$
+
+That is the entire likelihood calculation for these two candidates.
+
+---
+
+# Surprise: the wrong genome wins
+
+$$
+\frac{P(R\mid D)}{P(R\mid S)}
+=\frac{15625}{11664}\approx 1.34
+$$
+
+The decoy makes our six reads about **34% more probable**.
+
+Why? It gives more weight to the twice-observed `AAA`.
+
+**Maximum likelihood rewards agreement with the sample, not direct knowledge of the truth.**
+
+*The exact finite ratio is verified in Lean.*
+
+---
+
+# One duplicate changes the winner
+
+If we observe each of the five read types **once**:
 
 ```text
-AABAAB
+AAA   AAT   ATT   TTA   TAA
 ```
 
-</div>
-</div>
+the truth wins:
 
-Both have the identical circular 2-mer counts:
+$$
+\frac{P(R_5\mid D)}{P(R_5\mid S)}=\frac{3125}{3888}<1
+$$
 
-| Read | `AA` | `AB` | `BA` |
+Duplicate one `AAA`, and the decoy wins:
+
+$$
+\frac{P(R_6\mid D)}{P(R_6\mid S)}=\frac{15625}{11664}>1
+$$
+
+**The rule did not change. The observed frequencies did.**
+
+<!--
+Five-read ratio computed exactly. The six-read finite witness has a
+kernel-checked certificate. No claim that typical samples behave this way.
+-->
+
+---
+
+# Why this simple idea is powerful
+
+For **any** proposed genome, likelihood gives a precise answer:
+
+> How well does this candidate predict the frequencies of the reads we saw?
+
+We can compare candidates without specifying how to construct them.
+
+But there are two distinct challenges:
+
+- **Scoring** a genome is conceptually simple.
+- **Finding** the best-scoring genome can be difficult.
+
+And the best finite-sample score does not always identify the true generator.
+
+---
+
+# What if sampling luck disappears?
+
+Imagine having enough reads to know the **exact true read frequencies**.
+
+For `AAATT`, each of the five length-3 read types then has frequency $1/5$.
+
+Different candidates predict different distributions.
+
+**Which distribution gives the highest average log-likelihood?**
+
+The answer is general: **the true distribution itself**.
+
+---
+
+# A one-line population theorem
+
+Let $p_S(w)$ be the true probability of read $w$ and $p_D(w)$ a candidate's probability.
+
+$$
+\ell_S(D)=\sum_w p_S(w)\log p_D(w)
+$$
+
+Then:
+
+$$
+\ell_S(S)-\ell_S(D)
+=D_{\mathrm{KL}}(p_S\|p_D)\geq 0
+$$
+
+**The truth is always a population-likelihood maximizer** over any candidate class containing it.
+
+For this *maximality* statement, **no bridging or repeat condition is needed**.
+
+<!--
+This is Gibbs' inequality: predicting a wrong frequency distribution
+cannot improve expected log-score. Zero-probability predictions have
+minus-infinity expected log-score when the true event has positive weight.
+-->
+
+---
+
+# But the maximum can be tied
+
+Consider these different circular genomes:
+
+```text
+AAACAC
+AACAAC
+```
+
+Their complete length-2 read counts are identical:
+
+| Read | `AA` | `AC` | `CA` |
 |:---|---:|---:|---:|
-| Count | 2 | 2 | 2 |
+| Count for either genome | 2 | 2 | 2 |
 
-<div class="pt-6 text-lg">
-Same edges, same multiplicities, different cyclic spellings. More computation cannot recover information absent from the reads.
-</div>
+Even with unlimited length-2 reads, the two genomes are indistinguishable.
 
----
-
-# The missing information: bridging a repeat
-
-A read **bridges** a repeat copy when it extends beyond **both** ends of that copy.
-
-```text
-genome     ...G [ A C G A ] T ...
-read          G [ A C G A ] T
-              ^             ^
-          left context   right context
-```
-
-The flanking bases attach this copy to its context.
-
-<div class="pt-6 grid grid-cols-2 gap-8">
-<div>
-
-**Triple repeats**
-
-Three copies of one sequence can create alternative routes. Bridging *every copy* supplies the required context.
-
-</div>
-<div>
-
-**Interleaved repeat pairs**
-
-Alternating occurrences can also allow two different circular arrangements. Their bridging condition rules out the ambiguity.
-
-</div>
-</div>
-
-<div class="pt-4 text-lg">
-This is the information-theoretic heart of the 2016 reconstruction theorem.
-</div>
+**The right probabilities can identify a distribution without identifying one unique genome.**
 
 ---
 
-# A second graph: reads as vertices
+# When does the truth become unique?
 
-The 2016 **Not-So-Greedy** algorithm uses a **read-overlap graph**, not the de Bruijn graph from our toy example.
+AssemblyP1 proves population uniqueness within a structured class:
 
-<div class="grid grid-cols-2 gap-8 pt-6">
-<div>
+- **Primitive** circular genomes: not repetitions of a shorter genome.
+- **P2-admissible** genomes: certain troublesome repeat arrangements are absent at the chosen read length.
+- **Oriented** reads, with circular rotations considered equivalent.
 
-**De Bruijn**
+Within that class, the true genome is the **unique population maximum up to rotation**.
 
-- vertices: (L−1)-mers
-- edges: L-mers
-- reconstruct by traversing window edges
-
-</div>
-<div>
-
-**Read-overlap**
-
-- vertices: entire observed reads
-- edges: compatible suffix-to-prefix overlaps
-- edge weights: overlap lengths
-- reconstruct by spelling an overlap walk
-
-</div>
-</div>
-
-```text
-read A: ACGTT
-            |||
-read B:     TTACG
-```
-
-<div class="pt-4 opacity-80">
-The second representation makes the original algorithm's operations understandable.
-</div>
-
----
-
-# Why ordinary greedy assembly is not enough
-
-A greedy graph keeps only each read's **longest suffix-prefix extension**.
-
-<div class="pt-5 text-lg">
-But a read can lie in a repeated region and need to be visited more than once.
-</div>
-
-**Not-So-Greedy keeps more useful structure:**
-
-1. Keep the longest-overlap successor.
-2. Also keep the first alternative whose extension **disagrees** with the greedy extension.
-3. Perform the symmetric construction for predecessors, then intersect the edge sets.
-
-<div class="pt-5 text-lg">
-Every read now has at most **two incoming and two outgoing edges**.
-</div>
+**Probability supplies maximality. Structure supplies uniqueness.**
 
 <!--
-Second edge means the first conflicting extension in decreasing overlap order;
-it does not simply mean the second-longest overlap.
+Both the truth and admissible candidates are restricted to the primitive P2
+class; this does not assert uniqueness for arbitrary genomes.
 -->
 
 ---
 
-# From a sparse graph to an Eulerian reconstruction
+# A positive result for finite reads, too
 
-<div class="grid grid-cols-3 gap-6 pt-7">
-<div>
+Finite sampling is not always hopeless.
 
-### Construct
+Under **stronger structural hypotheses** — including suitable bridging, an admissible true genome, and same-length oriented competitors — the overlap constraints force the possible read spectrum.
 
-Keep the greedy and first genuinely different extensions.
+In that precise setting, our rigidity theorem gives a **positive finite maximum-likelihood guarantee**.
 
-Result: bounded degree.
-
-</div>
-<div>
-
-### Prune
-
-Use **effective overlaps** to remove spurious links or transform equal-overlap hourglass structures.
-
-Result: a graph carrying a compatible genome walk.
-
-</div>
-<div>
-
-### Solve
-
-Choose edge multiplicities to turn the required walk into an Eulerian cycle.
-
-Traverse it and spell the circular genome.
-
-</div>
-</div>
-
-<div class="pt-9 text-lg">
-The surprising move: exchange a difficult general read-ordering problem for an efficiently solvable **Eulerian** one.
-</div>
-
-<!--
-This is the conceptual overview of the two phases and supplementary
-multiplicity modification in Shomorony et al. 2016, Section 3 and supplement F.
--->
+It does **not** automatically extend to arbitrary lengths or observation conventions.
 
 ---
 
-# Not-So-Greedy: the guarantee
+# What did we actually verify?
 
-Under the 2016 paper's information-feasibility conditions:
+Lean mechanically checked mathematical claims including:
 
-- the reads **cover** the true circular genome;
-- **every copy** of every triple repeat is bridged;
-- **every interleaved repeat pair** is bridged;
+- The **exact finite likelihood reversal** from our example.
+- **Structural rigidity** under explicit read-bridging assumptions.
+- **Population uniqueness** for the primitive P2 class.
 
-<div class="pt-8 text-2xl text-center">
-The constructed multigraph has a **unique Eulerian cycle**, whose spelling is the true genome **up to circular rotation**.
-</div>
-
-**Running time:** $O(NL)$ for $N$ reads of length $L$.
-
-<div class="pt-3 text-sm opacity-65">
-Shomorony, Kim, Courtade & Tse, <i>Bioinformatics</i> (2016), Theorem 1 and Corollary 1.
-</div>
+Independent agents helped explore examples and proofs. The lasting results are **precise, re-checkable theorems**.
 
 ---
 
-# A new question: reconstruction versus likelihood
+# One little rule, three discoveries
 
-The theorem answers:
+**Multiply the probabilities a candidate assigns to the reads.**
 
-> Can the reads determine the genome, and can an algorithm reconstruct it?
+That gives us:
 
-AssemblyP1 investigates a different question:
+1. A wrong genome can score higher on a finite sample.
+2. The truth always maximizes the exact-population score.
+3. Whether it is the **only** maximizer depends on the structure of repeats.
 
-> Does the **true** genome give the **highest probability** to the particular reads we observed?
-
-$$
-\widehat D_{\rm ML}
-  = \underset{D}{\operatorname{arg\,max}}\;
-    \Pr(R\mid D)
-$$
-
-<div class="pt-5 text-lg">
-Structural reconstruction uses **which overlaps fit**; likelihood also rewards **how frequently each read appears**.
-</div>
-
----
-
-# Read multiplicities change likelihood
-
-For a candidate circular genome $D$, uniformly sampled error-free reads have type probabilities
-
-$$
-p_D(w)=\frac{\#\{\text{starts of word }w\text{ in }D\}}{|D|}.
-$$
-
-If the observed count of read $w$ is $x(w)$, its candidate-dependent likelihood factor is
-
-$$
-\mathcal L(D;x)\ \propto\ \prod_w p_D(w)^{x(w)}.
-$$
-
-<div class="pt-7 text-lg">
-A candidate gets a higher score if it places more probability on read types that happened to be **over-represented in the sample**.
-</div>
-
----
-
-# Result I: an exact finite likelihood reversal
-
-For oriented reads with $L=3$, one verified example compares:
-
-| True genome | Competitor |
-|:---|:---|
-| $S=\texttt{AAATT}$ (length 5) | $D=\texttt{AAAATT}$ (length 6) |
-
-$$
-\frac{\mathcal L(D;x)}{\mathcal L(S;x)}
-=\frac{15625}{11664}>1
-$$
-
-<div class="pt-5 text-lg">
-The six observed reads are <code>AAA, AAA, AAT, ATT, TTA, TAA</code>. The competitor has two starts producing <code>AAA</code> instead of one, so the twice-observed read gets extra probability and wins this likelihood contest.
-</div>
-
-<div class="pt-4 text-sm opacity-70">
-Exact rational certificate in Lean; a mathematical finding about finite samples, not a reconstruction-algorithm failure.
-</div>
-
----
-
-# Result II: bridging imposes spectrum rigidity
-
-A genome's **complete $L$-mer spectrum** assigns a multiplicity to each read type.
-
-In the de Bruijn support graph, a valid circular spelling gives a balanced integer flow:
-
-$$
-\forall v:\quad \mathrm{in}(v)=\mathrm{out}(v).
-$$
-
-Our rigidity theorem shows that, under the stated bridging hypotheses, the true spectrum is the **unique positive balanced integer flow** of total length $|S|$ on its complete window-support graph.
-
-<div class="pt-5">
-**Consequence:** for oriented **same-length** spelled candidates using that full window support, no strictly better likelihood competitor exists; with the complete-spectrum uniqueness step, the spelling is the truth up to rotation.
-</div>
-
-<div class="pt-3 text-sm opacity-65">
-This is an AssemblyP1 theorem about the complete-spectrum graph, distinct from the 2016 algorithm's observed-read graph.
-</div>
-
----
-
-# Result III: population likelihood has a simple optimum
-
-Now imagine the exact read distribution is known, instead of a noisy finite sample.
-
-Expected log-likelihood becomes
-
-$$
-\ell_S(D)=\sum_w p_S(w)\log p_D(w).
-$$
-
-The key identity:
-
-$$
-\ell_S(D)-\ell_S(S)
-=-D_{\mathrm{KL}}(p_S\,\|\,p_D)\leq 0.
-$$
-
-<div class="pt-6 text-xl">
-The truth is **always** a population maximum-likelihood genome, for any candidate class that contains it.
-</div>
-
-<div class="pt-4 opacity-75">
-Equality means identical read distributions. Whether the genome itself is identifiable is a separate combinatorial question.
-</div>
-
----
-
-# Result IV: when is that optimum unique?
-
-Suppose the true genome and admissible competitors are:
-
-- **primitive** — not repetitions of a shorter circular word;
-- **P2 / Ukkonen-admissible** — excluding the problematic triple and interleaved repeat structures at the chosen read length.
-
-<div class="pt-7 text-2xl text-center">
-If a candidate has the same population read distribution, it must be a **rotation of the truth**.
-</div>
-
-<div class="pt-6 text-lg">
-Thus the **population maximum-likelihood genome is unique up to circular rotation** within the oriented primitive P2 class.
-</div>
-
-<div class="pt-3 text-sm opacity-70">
-The complete-spectrum uniqueness argument is the deep combinatorial ingredient; the KL inequality supplies optimality.
-</div>
-
----
-
-# How we checked the mathematics
-
-<div class="grid grid-cols-2 gap-8 pt-5">
-<div>
-
-### Formal statement
-
-Model circular strings, read spectra, graph flows, and repeat predicates explicitly.
-
-### Proof
-
-Reduce broad claims to smaller lemmas and construct Lean proof terms.
-
-</div>
-<div>
-
-### Mechanical verification
-
-Lean's type checker verifies the theorem against its exact hypotheses.
-
-```lean
-theorem and_comm
-    (p q : Prop) :
-    p ∧ q → q ∧ p :=
-  fun h => ⟨h.2, h.1⟩
-```
-
-</div>
-</div>
-
-<div class="pt-7 text-lg">
-The interesting achievement is not just finding a plausible theorem — it is producing one that can be **re-checked mechanically**.
-</div>
-
----
-
-# How the research was organized
-
-```text
-Research questions
-       |
-       v
-Independent agents: literature, examples, graph lemmas
-       |
-       v
-Formal definitions + Lean proofs + exact computations
-       |
-       v
-Independent review → CI → integrated repository
-```
-
-<div class="pt-6 text-lg">
-Agents explore mathematical alternatives in parallel; the final, persistent artifact is a set of exact propositions, proofs, tests, and a paper.
-</div>
-
-<!--
-This is a concise architecture slide, not a postmortem.
--->
-
----
-
-# One problem, four kinds of progress
-
-<div class="grid grid-cols-2 gap-8 pt-5">
-<div>
-
-**Algorithm**
-
-A sparse overlap graph and Eulerian traversal reconstruct a genome when bridging information suffices.
-
-**Combinatorics**
-
-Bridging imposes strong constraints on feasible complete-read spectra.
-
-</div>
-<div>
-
-**Statistics**
-
-Finite read counts can change a maximum-likelihood ranking.
-
-**Formal methods**
-
-Population uniqueness and the finite examples are supported by kernel-checked Lean development.
-
-</div>
-</div>
-
-<div class="pt-6 text-lg">
-The same reads can be studied as **paths, integer flows, probability distributions, and formal theorems**.
-</div>
+**Simple probability meets deep combinatorics.**
 
 ---
 
 layout: end
 ---
 
-# Reads → graphs → theorems
+# Thank you
 
-<div class="pt-6 text-xl">
-Overlaps make reconstruction possible.
-<br>
-Bridging resolves repeats.
-<br>
-Likelihood exposes a second, statistical dimension.
-<br>
-Lean makes the mathematical claims checkable.
-</div>
-
-<div class="pt-9 text-sm opacity-70">
-<a href="https://github.com/ottojung/assemblyp1">github.com/ottojung/assemblyp1</a>
-· Shomorony et al., <i>Information-optimal genome assembly via sparse read-overlap graphs</i> (2016)
-</div>
+**[The paper, proofs, and presentations](https://github.com/ottojung/assemblyp1)**
 
 <HomeLink label="Choose another audience" />
