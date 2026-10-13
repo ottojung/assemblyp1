@@ -96,6 +96,42 @@ theorem chooseMAP_optimal_randomized [Nonempty Θ] (J : Θ → X → ℝ)
   exact pointwise_MAP_optimal_randomized J (chooseMAP J) w
     (fun x θ => chooseMAP_maximizes J x θ) hw hnorm
 
+omit [Fintype Θ] [DecidableEq Θ] in
+/-- A pointwise optimal policy with an extra finite observation cannot do
+worse than any policy that ignores it, provided the old joint mass is the
+marginal of the refined joint mass. -/
+theorem more_information_cannot_hurt
+    {Y : Type*} [Fintype Y]
+    (J : Θ → X → ℝ) (K : Θ → X → Y → ℝ)
+    (old : X → Θ) (new : X → Y → Θ)
+    (hmarg : ∀ θ x, (∑ y : Y, K θ x y) = J θ x)
+    (hmax : ∀ x y θ, K θ x y ≤ K (new x y) x y) :
+    (∑ x : X, J (old x) x) ≤ (∑ x : X, ∑ y : Y, K (new x y) x y) := by
+  apply Finset.sum_le_sum
+  intro x _
+  calc
+    J (old x) x = ∑ y : Y, K (old x) x y := (hmarg (old x) x).symm
+    _ ≤ ∑ y : Y, K (new x y) x y := by
+      apply Finset.sum_le_sum
+      intro y _
+      exact hmax x y (old x)
+
+omit [DecidableEq Θ] in
+/-- Under a consistent finite marginal, the actually constructed MAP policy
+cannot lose prior-averaged zero-one success from observing extra information. -/
+theorem chooseMAP_success_monotone_under_refinement
+    {Y : Type*} [Fintype Y] [Nonempty Θ]
+    (J : Θ → X → ℝ) (K : Θ → X → Y → ℝ)
+    (hmarg : ∀ θ x, (∑ y : Y, K θ x y) = J θ x) :
+    (∑ x : X, J (chooseMAP J x) x) ≤
+      ∑ x : X, ∑ y : Y,
+        K (chooseMAP (fun θ (xy : X × Y) => K θ xy.1 xy.2) (x, y)) x y := by
+  exact more_information_cannot_hurt J K (chooseMAP J)
+    (fun x y => chooseMAP (fun θ (xy : X × Y) => K θ xy.1 xy.2) (x, y))
+    hmarg
+    (fun x y θ => chooseMAP_maximizes
+      (fun θ (xy : X × Y) => K θ xy.1 xy.2) (x, y) θ)
+
 /-- For iid finite read observations, a pointwise posterior-mass maximizer is
 prior-average optimal for all deterministic policies, at every sample size n,
 including n = 0. The MAP maximizer's existence and normalization of prior/pmf
@@ -113,6 +149,7 @@ theorem finite_iid_MAP_optimal
 #print axioms pointwise_MAP_optimal
 #print axioms pointwise_MAP_optimal_randomized
 #print axioms finite_iid_MAP_optimal
+#print axioms chooseMAP_success_monotone_under_refinement
 #print axioms chooseMAP_maximizes
 #print axioms chooseMAP_optimal
 #print axioms chooseMAP_optimal_randomized
