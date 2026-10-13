@@ -73,338 +73,632 @@ The takeaway is information content, not graph implementation.
 
 ---
 
-# An important result already existed
+# Assembly begins with overlaps
 
-Shomorony and colleagues (2016) showed that, under precise **coverage and repeat-bridging conditions**, the observed reads contain enough information to reconstruct the true circular genome.
+These reads came in an unknown order. But adjacent reads can agree on their last and first two letters:
 
-They also gave an algorithm that succeeds under those conditions.
+```text
+ACG → CGT → GTA → TAA → AAC
+ ↑                       ↓
+ └───────────←───────────┘
+```
 
-That is a remarkable **reconstruction guarantee**.
+Following those overlaps spells the circular genome `ACGTA`.
 
-But it leaves a different question open: *how should a candidate genome be scored?*
+**Assembly turns local matches into a global sequence.**
 
 <!--
-Source: Shomorony, Kim, Courtade & Tse, Bioinformatics 2016.
-Do not teach the implementation of Not-So-Greedy here.
-The reconstruction result and likelihood result concern different questions.
+Point to ACG -> CGT: the CG suffix matches the CG prefix.
+The circular cycle reuses each of the five length-3 windows once.
+Explain in words; no graph theory prerequisites.
 -->
 
 ---
 
-# Why use likelihood at all?
+# Why isn't assembly just joining overlaps?
 
-Read collection is **random sampling**.
+A repeated stretch of DNA can connect to **different neighbors**.
 
-Every proposed genome therefore predicts not just *which reads are possible*, but **how frequently** each read should appear.
+Choosing the first or longest-looking overlap can join two different copies incorrectly. That can collapse repeats or rearrange the sequence.
 
-Two genomes might explain every read we saw, yet predict very different frequencies.
+A *bridging read* extends across a repeat and includes distinguishing letters on both sides:
 
-**Maximum likelihood uses those frequencies as evidence.**
+```text
+... G | ACGA | T ...
+... C | ACGA | A ...
+      repeat
+```
 
-Instead of asking for the shortest compatible sequence, it asks:
-
-> Which candidate would most likely have produced this particular sample?
+**The extra context can rule out a wrong connection.**
 
 <!--
-Medvedev & Brudno (2009) proposed maximum likelihood as an alternative
-to maximum parsimony. Likelihood is a scoring objective, not a method
-for searching all possible genome sequences.
+Distinguish the same substring appearing twice from the full read that
+extends beyond a specific copy. Avoid claiming any overlap-based greedy
+heuristic is optimal.
 -->
 
 ---
 
-# A simple probabilistic model
+# The existing algorithm was the starting point
 
-Pick a start position **uniformly at random** on a candidate circular genome.
+In 2016, Shomorony, Kim, Courtade, and Tse introduced **Not-So-Greedy**.
 
-Take the next $L$ letters as a read. Repeat independently.
+Instead of committing blindly to each largest overlap, it builds and simplifies a sparse network of plausible read connections, then reconstructs a sequence from the remaining structure.
 
-For each read type:
+Their theorem guarantees that **this algorithm recovers the true circular genome** under precise coverage and repeat-bridging conditions.
+
+This is a remarkable *algorithmic* guarantee: the procedure works when those conditions hold.
+
+<!--
+Shomorony et al., "Information-optimal genome assembly via sparse
+read-overlap graphs", Bioinformatics 2016,
+https://doi.org/10.1093/bioinformatics/btw450
+Theorem 1 and supplementary conditions. The original method prunes
+spurious overlaps and modifies edge multiplicities. Deliberately explain
+the ideas rather than its full graph construction.
+The theorem is about the output of Not-So-Greedy, not an assertion
+that every assembly method gets the source.
+-->
+
+---
+
+# Another route: statistical inference
+
+An assembler might choose the **shortest sequence compatible with the reads**.
+
+But repeated DNA can make the shortest answer wrong: it may collapse multiple copies into one.
+
+A different idea from Medvedev and Brudno (2009):
+
+**Treat each possible genome as a hypothesis about how the reads were generated.**
+
+Then use probability to compare hypotheses.
+
+<!--
+Medvedev & Brudno, "Maximum likelihood genome assembly",
+J Comput Biol 2009, DOI 10.1089/cmb.2009.0047.
+This replaced standard maximum parsimony with a likelihood framework.
+The motivation is not merely that probabilities exist: statistical
+decision theory provides concrete optimality theorems.
+-->
+
+---
+
+# Every genome predicts a distribution
+
+In our idealized model, each read begins at a **uniformly random position** on the circular genome.
+
+If `AAATT` is the genome, just one of its five positions yields the length-3 read `AAA`.
+
+If `AAAATT` is the genome, two of its six positions yield `AAA`.
 
 $$
-P(\text{read}\mid\text{genome})
-=\frac{\text{number of matching start positions}}{\text{genome length}}
+P(\texttt{AAA}\mid\texttt{AAATT})=\frac15
+\qquad
+P(\texttt{AAA}\mid\texttt{AAAATT})=\frac26
 $$
 
-For a sample of independent reads, **multiply their probabilities**.
-
-This is the basic appeal: a statistical score derived from the experiment.
-
-It measures **how likely the reads are given a genome**, not how likely the genome itself is.
+**The two candidates predict different sampling frequencies.**
 
 <!--
-A fixed-length, oriented, error-free, independent uniform-start model.
-This slide introduces the simplest candidate-intrinsic likelihood,
-not every objective in the historical literature.
+Independent, error-free, oriented fixed-length reads.
+The exact MB09 molecule and approximation models are separate later
+branches of the research; this is the simplest generative illustration.
 -->
 
 ---
 
-# The research question
+# Reads → a probability for each genome
 
-The 2016 paper asked whether **bridging conditions**, which guarantee reconstruction, also guarantee that the **true genome maximizes likelihood**.
+There are two different probabilities, and we need both.
 
-It sounds plausible:
+**Likelihood:** If the genome were `G`, how probable would our observed reads `R` be?
 
-- The reads contain enough information to find the true sequence.
-- Likelihood is a principled way to score possible sequences.
+$$
+P(R\mid G)
+$$
 
-**Does the first fact imply the second?**
+**Posterior probability:** After observing `R`, how probable is it that the genome actually is `G`?
 
-That is the question I set out to investigate.
+$$
+P(G\mid R)=\frac{P(R\mid G)\,P(G)}{P(R)}
+$$
+
+The extra ingredient is the **prior** $P(G)$ — which genomes we considered plausible *before* seeing the reads.
 
 <!--
-Historical source: Shomorony et al. (2016), Discussion; likelihood is
-linked to Medvedev & Brudno (2009).
-Avoid silently changing 'is a maximizer' to 'is the unique maximizer'.
+This is the requested distinction between a generative likelihood and
+the probability of a genome after the reads. Posterior probabilities
+require a candidate set and a specified prior; there is no uniform
+probability distribution over an unrestricted infinite genome universe.
 -->
 
 ---
 
-# First, what exactly is the claim?
+# Why maximum likelihood is interesting
 
-The answer depends on choices that sound minor but change the mathematics:
+This method is more than a plausible scoring heuristic.
 
-- **Likelihood:** which probability model and approximation?
-- **Candidates:** any genome, or only certain compatible assemblies?
-- **Observations:** oriented reads or double-stranded molecules?
-- **Guarantee:** is the truth *a* maximizer, or the *only* one?
+Suppose we must return **one genome**, every wrong answer costs the same, and we have a probabilistic model with a finite set of candidates.
 
-There is also a difference between **observed read strings** and their hidden starting positions.
+Then the best possible decision after observing the reads is to choose the candidate with the **largest posterior probability**.
 
-**I made these distinctions explicit before treating any proof as a resolution.**
+That rule is called **MAP** (maximum a posteriori).
+
+**When all candidates have equal prior probability, MAP becomes maximum likelihood (ML).**
+
+Under these assumptions, no competing decision rule has a higher *average probability of correctly identifying the genome*.
 
 <!--
-The source is not a single universally specified mathematical objective.
-Historical read-string coverage must not be silently replaced by the
-project's sampled-placement variant. Keep both interpretations audited.
+Optimality is for prior-averaged 0-1 recovery risk, given the same model,
+prior and candidate universe. It is not a universal optimum for all losses
+or a pointwise guarantee for every true genome / finite read sample.
+MIT 6.011 Ch. 13: https://ocw.mit.edu/courses/6-011-introduction-to-communication-control-and-signal-processing-spring-2010/
+This finite result is kernel-checked in
+AssemblyP1/FiniteBayesDecision.lean.
 -->
 
 ---
 
-# A small example of the difficulty
+# Why is MAP optimal? A short proof
 
-Suppose the actual circular genome is:
+Imagine we have observed a particular sample $R$.
 
-**Truth:** `AAATT` (length 5)
+If we guess genome $D$, our chance of being right is exactly
 
-Consider another candidate:
+$$
+P(G=D\mid R)
+$$
 
-**Competitor:** `AAAATT` (length 6)
+So no choice can do better, **for this observed sample**, than choosing its largest posterior probability.
 
-And suppose we observed six length-3 reads:
+And if it is best for every observed sample, it is also best **on average over all samples**.
+
+That's the whole decision-theoretic argument.
+
+**Optimal on average does not mean correct every time.**
+
+<!--
+FiniteBayesDecision.lean proves the corresponding finite-sample
+decision theorem, including that randomizing the decision cannot beat
+a MAP choice and that extra observations cannot hurt optimal
+prior-averaged recovery under consistent marginals.
+The claim compares all decision functions of the same observations.
+-->
+
+---
+
+# Two powerful guarantees — but not the same
+
+**Not-So-Greedy (2016)**
+
+Under its specific coverage and bridging hypotheses, the algorithm reconstructs the true genome.
+
+**Maximum likelihood / MAP**
+
+Under a specified statistical model and equal priors for ML, it minimizes the *average* probability of an incorrect choice among candidate genomes.
+
+Neither statement immediately implies the other.
+
+The first is a **conditional algorithmic recovery theorem**. The second is an **optimal statistical decision rule**.
+
+<!--
+The Bayesian prior-averaged assertion is not a pointwise conditional
+guarantee under the truth-side latent placement event from Shomorony.
+Conditioning on that event changes the information provided to the
+decision rule. This distinction was a major conceptual research fork.
+-->
+
+---
+
+# The question I chose to investigate
+
+Shomorony and colleagues ended their paper with an open question:
+
+If the **coverage and bridging conditions make Not-So-Greedy reconstruct the true genome**, do they also guarantee that the **true genome maximizes likelihood**?
+
+In symbols, schematically:
+
+$$
+\text{NSG's success conditions}
+\quad\stackrel{?}{\Longrightarrow}\quad
+S\in\operatorname*{arg\,max}_D P(R\mid D)
+$$
+
+The answer depends on the exact sampling model and which genomes are allowed as candidates.
+
+<!--
+Paraphrase of Shomorony et al. 2016, Discussion, referring to Medvedev
+& Brudno 2009. Keep the antecedent about the *algorithm's* success
+conditions, not merely an abstract claim that reads contain information.
+The symbols are schematic; actual candidate predicates and read
+conventions vary across paper interpretations.
+-->
+
+---
+
+# A small example: the wrong answer can win
+
+Imagine the true circular genome is `AAATT`.
+
+We independently sample six length-3 reads:
 
 ```text
 AAA   AAA   AAT   ATT   TTA   TAA
 ```
 
-Both genomes can generate every one of these reads.
+Compare two candidates:
 
-**Which genome makes this particular sample more likely?**
+**True genome:** `AAATT`, length 5
+
+**Another genome:** `AAAATT`, length 6
+
+Both can generate all six reads. But they predict different frequencies.
 
 <!--
-This is a minimal illustration of finite-sample reweighting in an
-unrestricted variable-length candidate model. It is not, by itself,
-a source-faithful counterexample to every 2016/2009 interpretation.
+Illustrative unrestricted variable-length candidate comparison.
+This example alone is NOT a source-faithful counterexample to every
+2016/MB09 candidate class or strand convention.
 -->
 
 ---
 
-# Look at the predicted frequencies
+# The complete likelihood calculation
 
-| Read type | Truth `AAATT` | Competitor `AAAATT` |
+For these observed reads:
+
+| | `AAA` (twice) | Four other reads (once each) |
 |:---|---:|---:|
-| `AAA` | $1/5$ | $2/6$ |
-| `AAT` | $1/5$ | $1/6$ |
-| `ATT` | $1/5$ | $1/6$ |
-| `TTA` | $1/5$ | $1/6$ |
-| `TAA` | $1/5$ | $1/6$ |
+| True `AAATT` | $1/5$ | $1/5$ |
+| Other `AAAATT` | $2/6$ | $1/6$ |
 
-**The extra A creates two matching start positions**, instead of one.
-
-And `AAA` is exactly the read that appeared twice in our sample.
-
----
-
-# The surprising calculation
-
-Likelihood means multiplying the six read probabilities.
+Multiply the probabilities for independent draws:
 
 $$
-P(R\mid S)=(1/5)^6=\frac{1}{15625}
+P(R\mid S)=(1/5)^6=\frac1{15625}
 $$
 
 $$
-P(R\mid D)=(2/6)^2(1/6)^4=\frac{1}{11664}
+P(R\mid D)=(2/6)^2(1/6)^4=\frac1{11664}
 $$
 
-Therefore:
-
-$$
-\frac{P(R\mid D)}{P(R\mid S)}
-=\frac{15625}{11664}\approx1.34
-$$
-
-**The wrong genome gets the higher score.**
-
-The score is simple; the implications are not.
-
----
-
-# What have we actually learned?
-
-We have exhibited a **finite-sample failure**: a candidate that was not the source can assign greater probability to the reads that happened to be sampled.
-
-But this example does **not** settle every version of the original question.
-
-In particular, allowing a different genome length changes the candidate universe.
-
-**A good counterexample must satisfy the exact hypotheses of the statement it claims to refute.**
-
-That was one of my central requirements throughout the research.
-
----
-
-# The finite results have a boundary
-
-The investigation produced both **positive and negative** results.
-
-**Under specific same-length, oriented, bridging and candidate-admissibility assumptions:** the true genome is a likelihood maximizer; the relevant candidates cannot strictly outperform it.
-
-**Under broader candidate models or other read conventions:** strict finite counterexamples exist, including witnesses checked against the historical read-string conditions.
-
-Neither answer can be generalized by silently dropping its assumptions.
+The **wrong genome** scores about **34% higher** for this sample.
 
 <!--
-The positive result uses genuine Section 6.2 candidates, oriented reads,
-same length, and the project's read-placement information-feasibility.
-Historically faithful molecule witnesses exist for separate conventions.
-Exact details and proofs belong in the whitepaper.
+Likelihood ratio (D/S) = 15625/11664 ≈ 1.3396.
+Count windows explicitly in a code or hand check.
+This is an example of empirical-frequency reweighting.
 -->
 
 ---
 
-# How I directed the investigation
+# Is this a contradiction to optimality?
 
-I did not treat producing a proof as the research goal.
+No. Suppose, **just for this two-candidate example**, that the two genomes had equal priors.
 
-I kept making decisions about **which claim was worth proving**:
+Bayes' rule would assign the competitor probability
 
-- Return to the original papers when definitions or citations looked questionable.
-- Separate plausible readings instead of treating them as interchangeable.
-- Pursue both concrete counterexamples and restricted positive theorems.
-- Reject a result if its assumptions did not match the intended question.
-- Keep unresolved cases explicitly open rather than claiming completion.
+$$
+P(D\mid R)=\frac{15625}{15625+11664}\approx57.3\%
+$$
 
-**The task was to steer the research toward a correct answer, not merely a finished proof.**
+We know the true genome was `AAATT` because we constructed the experiment.
+
+But **the data favors the other one**. Choosing it is still the decision that minimizes conditional error *given just this model and these reads*.
+
+**An optimal estimator is not an infallible estimator.**
 
 <!--
-First-person research coordination is deliberate. Focus on the user's
-intellectual decisions, issue prioritization, source scrutiny and acceptance
-criteria, not agent scheduling, tool logistics or model endpoints.
+The 57.3% is posterior probability in a deliberately restricted
+two-hypothesis thought experiment, not a posterior over all genomes.
+The true candidate's posterior is about 42.7%. With another prior,
+MAP and ML can choose different answers.
 -->
 
 ---
 
-# What counted as convincing evidence?
+# From one example to a research program
 
-For every substantial claim, I required a chain of checks:
+The tiny example establishes a mechanism — it does **not** settle every precise version of the 2016 question.
 
-1. **Source fidelity:** are we answering the question actually written?
-2. **Exact examples:** do the counts and probabilities really work?
-3. **Formal statement:** does the theorem say precisely what we claim?
-4. **Lean verification:** is the proof accepted by the kernel?
-5. **Independent review and CI:** can the result be checked again?
+The research therefore branched:
 
-A green build alone is not enough if the theorem proves the wrong thing.
+- **Which finite models permit strict counterexamples?**
+- **Which restrictions restore a positive theorem?**
+- **What happens when read orientation or genome length changes?**
+- **How does Bayesian side information change the answer?**
+
+This was not a straight line from a conjecture to a proof. **The questions evolved as new results changed what was plausible.**
 
 <!--
-The user directed independent reviewers and insisted on direct target
-formalizations, exact-head CI, and not merging failing branches.
+The historical paper has exact multinomial, fixed-size product-binomial
+approximation, and bidirected molecule/flow interpretations, with
+different candidate domains and latent read-start versus observed
+read-string conditions. The project records distinct proved rows in
+docs/source-notes/interpretation-matrix-217.md. Keep slide conceptual.
 -->
 
 ---
 
-# Why the distinction matters
+# What the finite investigation found
 
-This work taught me to separate three questions:
+In a **restricted, same-length, oriented** assembly model with bridging and candidate-admissibility hypotheses, the true genome has a positive maximum-likelihood guarantee.
 
-- **Reconstruction:** do the reads determine the genome?
-- **Finite-sample likelihood:** does this actual sample score the truth highest?
-- **Identifiability:** can two different genomes have the same read distribution?
+In **broader candidate models**, strict finite-sample likelihood counterexamples exist — including variants faithful to the historical molecule/read-string conventions.
 
-They are related, but not equivalent.
+So the answer is not simply “yes” or “no” without a model.
 
-**The interesting work is finding the conditions under which one conclusion really follows from another.**
+**The interesting mathematical object became the boundary between the guarantees.**
 
 <!--
-Population ML is deliberately not introduced as though it were the
-original finite-sample question. The backup slide explains it as a
-separate response to sampling fluctuations, if asked.
+See paper/sections/04-finite-results.tex and the interpretation matrix.
+Do not transfer the positive same-length theorem to unrestricted candidate
+lengths, or transfer one negative witness to an incompatible source model.
 -->
 
 ---
 
-# What we can say in the end
+# The research changed direction several times
 
-A natural statistical scoring rule is **not automatically** a reconstruction guarantee.
+**September 17:** I chose a specific open question from the literature and started a research project around it.
 
-Finite-sample fluctuations can favor a wrong candidate.
+**September 18–21:** Counterexamples and source-model differences turned a single conjecture into several precise, different mathematical questions.
 
-But strong structural assumptions can produce positive guarantees for a carefully specified candidate class.
+**Late September:** I pursued positive structural results alongside the negative ones, and pushed for end-to-end theorems in Lean rather than isolated lemmas.
 
-Most importantly, these are **mathematical claims with boundaries** — and the research was about making those boundaries explicit, proving the results, and checking their fidelity.
+**October:** I broadened the program: Bayesian optimality, identifiability, necessary-and-sufficient conditions, and how many reads are needed for reliable recovery.
+
+<!--
+Provenance: repository history, issues #1, #5, #21, #22, #45,
+#82, #83, #87-#92, #269, #270 and #281; Sept-Oct project
+research conversations. The October extensions are directions in
+progress, not assertions they have all been solved.
+The presenter's own major contribution was directing and redirecting
+the agenda based on new mathematical evidence.
+-->
 
 ---
 
-layout: end
+# My central job was choosing the next question
+
+A counterexample is useful — but **what should we ask next?**
+
+When variable-length candidates fail, maybe equal length gives a theorem. If that works, ask whether equal length is necessary.
+
+When the finite-sample score fails, ask whether failure is caused by **sampling noise** or by **indistinguishable genomes**.
+
+When Bayesian optimality is proved, ask how fast recovery improves with more reads, and how its read requirements compare with Not-So-Greedy.
+
+**The valuable work was repeatedly finding these forks and deciding which were worth pursuing.**
+
+<!--
+This is intellectual direction and hypothesis generation, not the
+trivial requirement that a proof match its statement.
+User pushed especially for necessary/sufficient conditions and a
+like-for-like comparison of 99% recovery sample complexities.
+-->
+
+---
+
+# Why not simply use one chatbot?
+
+A tool-equipped chatbot can search papers, write code, and reason through a theorem.
+
+But **one conversational session is a poor structure for a large, branching research program**:
+
+- Only one line of work advances at a time.
+- Long searches consume and eventually exceed conversational context.
+- Failed attempts and partial results are easily lost.
+- Independent investigations and reviews compete for attention.
+
+I wanted **multiple persistent agents**, each able to work on a distinct question and leave inspectable evidence.
+
+<!--
+Multiple agents are not intrinsically more mathematically reliable.
+The gains are concurrency, specialization, independent falsification,
+durable memory and recovery, not "more votes" on whether a theorem is true.
+-->
+
+---
+
+# What an agent actually does
+
+An agent is an AI model **running a multi-step job with tools and a goal**.
+
+It can read papers and code, generate hypotheses, search for counterexamples, run tests, edit files, and revise its approach after feedback.
+
+For this project, agents worked on **different fronts**:
+
+**Literature and model** · **Counterexample search** · **Positive proofs** · **Lean formalization** · **Independent review**
+
+Each front produces durable artifacts — notes, issues, branches, commits, and proof results — rather than just an answer in a chat.
+
+<!--
+A workflow agent is not only a chat response. It maintains a sequence
+of tool-mediated actions and a work context. Its results remain
+uncertain until checked; different agents can disagree legitimately
+because of model assumptions.
+-->
+
+---
+
+# I built a continuous research loop
+
+```text
+ I choose and refine the research directions
+                    ↓
+       Antonina board: open questions
+                    ↓
+       Orchestrator selects ready work
+                    ↓
+   Parallel agents → isolated worktrees
+                    ↓
+   Experiments · Lean proofs · PRs · CI
+                    ↓
+     Review, reconcile, merge, update
+                    └───────────↻
+```
+
+The crucial feature is the **feedback loop**: completion or failure changes the research frontier, and further work can continue from durable state.
+
+<!--
+AssemblyP1 used Antonina for its evolving issue queue, Lubko hosts for
+remote commands and agents, Git branches/worktrees to isolate changes,
+and GitHub PR/CI for review and integration.
+The user steered through direct agent guidance and Antonina issue comments.
+The orchestrator schedules using dependency topology and available
+independent work, aiming to keep useful research parallel.
+This represents the design, not a guarantee the service never fails.
+-->
+
+---
+
+# Why use Lean?
+
+Agents are useful at **inventing** arguments. They can also make subtle mistakes.
+
+Lean is a programming language and theorem prover. A theorem is a **type**; a proof is a program whose type must match it.
+
+```lean
+theorem sum_commutes (a b : Nat) : a + b = b + a := by
+  exact Nat.add_comm a b
+```
+
+**Lean's small kernel checks the proof**, not the agent's confidence.
+
+The kernel does not have to trust the creativity, confidence, or correctness of the agent that proposed it.
+
+<!--
+Lean reference: https://lean-lang.org/doc/reference/latest/
+Elaborators/tactics generate proof terms; the small trusted kernel
+checks them. The project additionally replays the library through
+lean4checker and audits axioms in CI.
+This is why the trust boundary is smaller than for free-form AI prose.
+-->
+
+---
+
+# We proved a piece of the statistical story
+
+AssemblyP1 includes a Lean-checked finite Bayesian theorem:
+
+**For any finite hypothesis and observation spaces, a pointwise MAP decision rule has at least as high prior-averaged success as any other decision rule.**
+
+The development also covers randomized decision rules and the fact that additional information cannot hurt optimal Bayesian recovery.
+
+That is an example of how a **general claim about optimal decisions** can become a machine-checked theorem, not just an intuition.
+
+<!--
+AssemblyP1/FiniteBayesDecision.lean:
+pointwise_MAP_optimal; pointwise_MAP_optimal_randomized;
+finite_iid_MAP_optimal;
+chooseMAP_success_monotone_under_refinement.
+Distinguish this generic finite decision result from a complete
+assembly-specific ML theorem for every historical model.
+-->
+
+---
+
+# What do we actually need to trust?
+
+**Agent-generated arguments:** useful ideas, **not** automatically reliable.
+
+**Lean-checked proof:** a result follows from its formal premises in the kernel's logic.
+
+**Scientific interpretation:** those premises must still describe the intended sequencing model.
+
+This gives a division of labor:
+
+**I guide the questions. Agents explore. The orchestrator sustains the work. Lean checks mathematical proofs.**
+
+None of these roles replaces the others.
+
+<!--
+Lean cannot detect a faithfully proved theorem about an unintended
+definition. The user directed source-model fidelity as scientific
+interpretation; that is different from reducing research to a checking
+workflow. Keep this slide human-centered.
+-->
+
+---
+
+# What I wanted to explore next
+
+The most interesting questions now go beyond a yes/no statement:
+
+- When does the read data **uniquely identify** the true genome?
+- Under what conditions does the optimal Bayesian or ML rule recover it **with high probability**?
+- How many random reads give, say, **99% success**?
+- Under the **same sampling assumptions**, how does this compare with Not-So-Greedy?
+
+Those are research directions, not claims that every theorem has already been proved.
+
+<!--
+The user elevated sample complexity, monotonic finite recovery,
+identifiability and necessary/sufficient characterizations in
+October 2026; AssemblyP1 issue #281 concerns exponential ML recovery
+bounds, and #269 concerns Bayesian decision optimality.
+-->
+
 ---
 
 # The Most Likely Genome
 
-**[Paper, Lean proofs, and evidence](https://github.com/ottojung/assemblyp1)**
+We started with a deceptively simple question:
+
+**Does an assembly algorithm's success guarantee imply that the true genome also maximizes likelihood?**
+
+The answer depends on the model. But the investigation revealed something broader:
+
+**A method can be statistically optimal without being correct on every sample.**
+
+And difficult mathematical research can be advanced by combining **human direction, persistent agents, and machine-checked proofs**.
 
 <HomeLink label="Choose another audience" />
 
 ---
 
-# Optional extension: remove sampling noise
+# Additional question: what if we had unlimited reads?
 
-*This is a different question, not the finite conjecture.*
+This is a **new model**, motivated by the finite sampling failures.
 
-Suppose instead of a finite sample we know the **exact read-frequency distribution** of the true genome.
-
-Now Gibbs' inequality gives:
+If we replace the observed finite sample with the exact true read distribution, the true genome always maximizes expected log-likelihood:
 
 $$
 \ell_S(S)-\ell_S(D)=D_{\mathrm{KL}}(p_S\|p_D)\ge0
 $$
 
-So the truth **always maximizes population likelihood**.
+The hard question then changes to **uniqueness**: might two different genomes produce exactly the same read distribution?
 
-Why study this? It removes finite-sampling fluctuations and isolates the remaining problem: **can two genomes induce the same distribution?**
+This is why the project also studies population likelihood and structural identifiability.
 
 <!--
-This is the population follow-up formulated by the project, not a
-restatement of the source's finite-sample conjecture. Its maximality
-is generic; uniqueness under primitive P2 needs a separate theorem.
+Only use if asked. Do not insert population likelihood unmotivated
+between the finite counterexample and finite results.
+paper/sections/05-population.tex contains the full theorem.
 -->
 
 ---
 
-# Optional extension: maximum is not unique
+# Additional question: how much do the priors matter?
 
-Two different circular genomes may have the **same** distribution of short reads.
+For two candidates with likelihoods $L_S,L_D$ and prior probabilities $\pi_S,\pi_D$:
 
-For example:
+$$
+\frac{P(D\mid R)}{P(S\mid R)}
+=\frac{\pi_D}{\pi_S}\frac{L_D}{L_S}
+$$
 
-```text
-AAACAC
-AACAAC
-```
+Equal priors give **maximum likelihood**.
 
-Both have two occurrences each of `AA`, `AC`, and `CA`.
+Unequal priors can change the **most probable genome after observing the reads**.
 
-Then their population likelihoods **tie**, even with unlimited data at that read length.
+Conditioning on extra information — such as an externally disclosed structural event — changes the Bayesian problem again.
 
-Our separate population theorem proves uniqueness **up to rotation** inside a primitive, P2-admissible, oriented class — not among all genomes.
+<!--
+Useful if the audience asks why a deterministic reconstruction
+guarantee can coexist with a finite ML counterexample.
+Condition on the actual event in the sample space, including latent
+read placements where relevant, rather than simply applying a
+truth-feasibility indicator after ordinary likelihood.
+-->
