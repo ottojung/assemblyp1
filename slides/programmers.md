@@ -36,45 +36,6 @@ Welcome. This talk is for programmers who have never used an AI agent, so the se
 layout: default
 ---
 
-# Roadmap
-
-<div class="grid grid-cols-2 gap-10 pt-8">
-<div>
-
-### The science
-
-1. A genome-assembly mystery
-2. Two different questions
-3. A counterexample, exactly computed
-4. Right arithmetic, wrong definition
-5. A definition weaker than the paper's
-
-</div>
-<div>
-
-### The machine
-
-6. What an agent is
-7. One orchestrator, many workers
-8. What Lean is
-9. Why the checker can be trusted
-10. What was verified — and the caveat
-
-</div>
-</div>
-
-<div class="pt-8 opacity-70">
-The two halves meet at one point: the mathematical claims are exactly the ones the machine is built to falsify.
-</div>
-
-<!--
-Two halves, roughly ten minutes each. The science half ends with two episodes about definitions: one where a wrong definition manufactured a fake result, and one where a definition weaker than the paper's was caught and fixed additively. The machine half starts from zero — what an agent is — and builds up to the proof checker. If time is short, slides 7–8 (agent + orchestrator) can be compressed, but do not cut the kernel-trust and caveat slides: they are the point.
--->
-
----
-layout: default
----
-
 # The genome assembly mystery
 
 Sequencing reads a circular genome in short, overlapping pieces.
@@ -100,30 +61,21 @@ Set the stage. The genome is a circular string over the alphabet A, C, G, T. A s
 layout: default
 ---
 
-# Three different questions
+# Two different questions
 
-<div class="grid grid-cols-3 gap-6 pt-6 text-sm">
+<div class="grid grid-cols-2 gap-10 pt-6">
 <div>
 
-### (1) Deterministic reconstruction
+### Reconstruction
 
-Can a graph algorithm **provably recover** the genome under structural conditions?
+Can a candidate genome explain **every observed read**?
 
-Not a likelihood ranking.
+Structural: *which assemblies can spell the reads?*
 
 </div>
 <div>
 
-### (2) Conditional Bayesian
-
-Given an external promise about the truth, does the **posterior concentrate** on it?
-
-Uses side information the decoder is told.
-
-</div>
-<div>
-
-### (3) Ordinary maximum likelihood
+### Maximum likelihood
 
 Which candidate best explains the **observed read counts**?
 
@@ -131,24 +83,24 @@ $$
 \arg\max_{W}\ \Pr(\text{reads} \mid W)
 $$
 
-No side information; no finite pointwise guarantee.
+Optimization: *which candidate scores highest on this sample?*
 
 </div>
 </div>
 
 <div class="pt-8 text-lg text-amber-600">
-These are logically distinct claims. A deterministic guarantee does not transfer to the likelihood ranking; a conditional posterior statement is not an unconditional optimization result.
+A genome can be structurally consistent with the reads — and still not be the most likely explanation of their frequencies.
 </div>
 
 <!--
-Three logically distinct claims. (1) The 2016 Not-So-Greedy theorem: a graph built from observed reads has a unique Eulerian spelling = truth, under bridging conditions. (2) A conditional Bayesian statement: given a promise that the truth satisfies event E, the posterior concentrates on truth iff the fibre is singleton. (3) Ordinary ML: maximize P(reads | candidate) with no side information. The project's contribution is showing (1) does not imply (3), and mapping exactly where each claim holds.
+This distinction — structure versus frequency — is the central insight of the project. A 2016 paper (Shomorony, Kim, Courtade & Tse) gave conditions under which the reads contain enough structural information to reconstruct the genome, and left open whether those same conditions guarantee that the maximum-likelihood genome is the true genome. AssemblyP1 is what happens when you make that question precise and then check the answer in a proof kernel.
 -->
 
 ---
 layout: default
 ---
 
-# The historical boundary
+# The historical counterexample
 
 The 2016 question, answered the hard way: with a concrete witness.
 
@@ -297,33 +249,33 @@ The coordination surface is a durable board — issues, comments, reviews — ba
 layout: default
 ---
 
-# A definition weaker than the paper's
+# The coverage definition mismatch
 
-A late audit found the formal **coverage predicate** was weaker than the source's actual condition.
+A late audit found that the formal **coverage predicate** and the source's actual condition are **incomparable** — neither implies the other.
 
 <div class="grid grid-cols-2 gap-8 pt-6">
 <div>
 
-**What we formalized**
+**Base coverage** (old)
 
-Coverage counted only the **sampled placements** of each observed read.
+Every base position lies inside a read **placed at a sampled start**.
 
 </div>
 <div>
 
-**What the paper says**
+**Interval coverage** (historical)
 
-Coverage quantifies over **any matching occurrence** of an observed read string.
+Every position has a **matching occurrence** of an observed read string within distance `L − 2`.
 
 </div>
 </div>
 
-<div class="pt-6 text-lg">
-The fix was <b>additive</b>: new predicates, new endpoints — and every original theorem preserved.
+<div class="pt-6 text-lg text-amber-600">
+Two kernel-checked witnesses: each predicate holds where the other fails.
 </div>
 
 <!--
-This is the second definitions-are-part-of-the-claim episode, and the constructive version. The paper's coverage condition asks whether every position of the genome is covered by some occurrence of some observed read string — any matching occurrence, not only the placements that happened to be sampled. The first formalization counted only sampled placements, which is strictly weaker. Rather than silently strengthening the old theorems, the project added the stronger historical predicates and theorem endpoints alongside the old ones, and kept both models first-class. An independent Python audit certifies the new witnesses. The lesson is the same as the bridging bug, from the other side: never delete a valid theorem to make a stronger-sounding claim. A weaker theorem you keep is a result; a stronger theorem you fake is a liability.
+This is the second definitions-are-part-of-the-claim episode. The old base-coverage predicate (Covers) requires every genome position to lie inside a read placed at a sampled start. The historical interval-coverage predicate (HistoricalCovers) requires every position to have a matching occurrence of an observed read string within a window of length L−1 — any matching occurrence, not just sampled starts. These two notions are incomparable: neither implies the other. The project has kernel-checked regression witnesses proving both directions of failure (HistoricalCoverageSameLengthWitnesses.lean). Rather than silently replacing the old predicate, the project added the historical one alongside it and kept both models first-class. The lesson: formalization is research. Two definitions that look similar can be logically independent.
 -->
 
 ---
@@ -424,7 +376,7 @@ the wrong genome wins — exactly
 **Positive results**
 
 - **Rigidity**: the truth's spectrum is the unique circulation — no strict same-length counterexample, for any `G`, `L`, alphabet
-- **Population uniqueness**: the truth is always a maximizer; equality forces same length and rotation
+- **Population uniqueness**: the truth is always a maximizer (Gibbs); rotation uniqueness is conditional on truth `IsPrimitive`, `P2`, and candidate `AdmClass` restriction
 
 </div>
 </div>
@@ -434,7 +386,7 @@ the wrong genome wins — exactly
 </div>
 
 <!--
-Both directions are kernel-checked, and the boundary is explicit. Negative: three families of finite counterexamples where a wrong genome out-scores the truth — the historical AAATAT witness at exact ratio 3, the per-occurrence strengthening at 3/2, and the variable-length reversal at 15625/11664, with the amplification mechanism checked at M = 1, 2. Positive: rigidity says that under the right structural hypothesis the truth's read spectrum is the unique positive integer circulation of total G on the support graph, so no strict same-length counterexample exists at all; and the population theorem says that in the exact read distribution the truth is always a maximizer, with equality only at the same length up to cyclic rotation. The caveat matters: at full overlap, where consecutive windows of a circular molecule overlap in exactly L − 1 symbols, a genuine optimum of the flow optimizer need not be positive-support connected — the AAATAT witness again, at ratio 1280/243. The verified map is precise about where each statement holds. That precision is the result, not a limitation of it.
+Both directions are kernel-checked, and the boundary is explicit. Negative: three families of finite counterexamples where a wrong genome out-scores the truth — the historical AAATAT witness at exact ratio 3, the per-occurrence strengthening at 3/2, and the variable-length reversal at 15625/11664, with the amplification mechanism checked at M = 1, 2. Positive: rigidity says that under the right structural hypothesis the truth's read spectrum is the unique positive integer circulation of total G on the support graph, so no strict same-length counterexample exists at all. The population theorem (population_unique_ML in Issue94Complete.lean) has two layers: the Gibbs layer proves the truth is always a maximizer and that a tie forces equal distributions; the rotation conclusion — same length up to cyclic rotation — is conditional on the truth being IsPrimitive and P2 at read length L, and on candidates restricted to the AdmClass (primitive + P2). The caveat matters: at full overlap, where consecutive windows of a circular molecule overlap in exactly L − 1 symbols, a genuine optimum of the flow optimizer need not be positive-support connected — the AAATAT witness again, at ratio 1280/243. The verified map is precise about where each statement holds. That precision is the result, not a limitation of it.
 -->
 
 ---
@@ -455,7 +407,7 @@ A real math result, a real kernel check, and an honest account of the machine th
 <HomeLink label="Choose another audience" />
 
 <!--
-Land the three ideas. First: definitions are part of the claim — two separate episodes (the bridging predicate, the coverage predicate) were caught only because the project treated formalization as research and audited its own predicates against the source. Second: verify your verifier — a broken predicate can manufacture or hide a result, so the pipeline is designed to falsify, and review re-executes rather than inherits. Third: the kernel is the proof boundary, not the whole truth — it certifies the formal statement from audited axioms, and model fidelity remains a human, documented obligation. If you remember one sentence: trust the check, not the claim.
+Land the three ideas. First: definitions are part of the claim — two separate episodes (the bridging predicate, the coverage predicates) were caught only because the project treated formalization as research and audited its own predicates against the source. Second: verify your verifier — a broken predicate can manufacture or hide a result, so the pipeline is designed to falsify, and review re-executes rather than inherits. Third: the kernel is the proof boundary, not the whole truth — it certifies the formal statement from audited axioms, and model fidelity remains a human, documented obligation. If you remember one sentence: trust the check, not the claim.
 -->
 
 ---
@@ -478,6 +430,10 @@ layout: default
 
 `AssemblyP1/OrientedRigidity.lean`
 
+**Coverage incomparability**
+
+`AssemblyP1/HistoricalCoverageSameLengthWitnesses.lean`
+
 **The engineering**
 
 `.github/workflows/ci.yml` · `docs/research-orchestration.md`
@@ -489,5 +445,5 @@ Questions?
 </div>
 
 <!--
-Pointers for afterwards. The endpoint theorem is population_unique_ML in AssemblyP1/Issue94Complete.lean: for an oriented circular truth that is primitive and P2 at read length L, every primitive P2 candidate of any length scores at most the truth in the population log-likelihood, with equality only at the same length up to cyclic rotation. The finite witnesses live in the three counterexample modules; rigidity lives in OrientedRigidity.lean. The engineering story — board, orchestration, CI, review — is documented under docs/research-orchestration.md and the CI workflow. Everything on these slides reproduces: the exact scripts are in scripts/, the Lean modules build with lake build, and the decks build with npm run build in this directory.
+Pointers for afterwards. The endpoint theorem is population_unique_ML in AssemblyP1/Issue94Complete.lean: for an oriented circular truth that is primitive and P2 at read length L, every primitive P2 candidate of any length scores at most the truth in the population log-likelihood, with equality only at the same length up to cyclic rotation. The finite witnesses live in the three counterexample modules; rigidity lives in OrientedRigidity.lean. The coverage incomparability witnesses are in HistoricalCoverageSameLengthWitnesses.lean. The engineering story — board, orchestration, CI, review — is documented under docs/research-orchestration.md and the CI workflow. Everything on these slides reproduces: the exact scripts are in scripts/, the Lean modules build with lake build, and the decks build with npm run build in this directory.
 -->
