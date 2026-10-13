@@ -1,12 +1,13 @@
 \section{The sequencing and bridging model}
 \label{sec:model}
 
-This section fixes notation for both the cited model and our explicit variants. We separate
-the parts that come from the literature from the project's normalizations; the
-former are tagged \srcfact{} and the latter \projchoice. The de Bruijn/Eulerian
-view of assembly that underlies both the repeat theory and the Section~6.2 graph
-is classical \cite{idury1995,pevzner2001}. A fuller discussion of
-\emph{why} the model has this shape is deferred to Appendix~\ref{app:modeling}.
+We model circular genomes as words, reads as short windows, and repeat
+structure as conditions on what those reads determine. The resulting
+window-support graph and its balanced flows connect assembly to Eulerian
+traversal, as in the classical de Bruijn approach
+\cite{idury1995,pevzner2001}. We then define the sampling likelihoods
+that score candidate genomes. Precise source conventions and alternative
+normalizations are collected in Appendix~\ref{app:modeling}.
 
 \subsection{Circular genomes and spectra}
 

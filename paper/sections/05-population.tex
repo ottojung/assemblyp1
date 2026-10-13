@@ -1,4 +1,4 @@
-\section{Population maximum likelihood and a repaired uniqueness theorem}
+\section{Population maximum likelihood and uniqueness}
 \label{sec:population}
 
 The finite failures of Section~\ref{sec:finite} have two different causes, and
@@ -182,21 +182,13 @@ Setting $K=L-1$ aligns the theorem's condition exactly with P2: maximal triple
 repeats then have length at most $L-2$, and every interleaved maximal-repeat pair
 has a constituent of length at most $L-2$.
 
-\begin{remark}[The step is now proved internally]
+\begin{remark}[The complete-spectrum step is kernel checked]
 \label{rem:internal-bbt}
-An earlier formalization of this section took the complete-spectrum uniqueness
-step as the named external input \texttt{BBTUniqueAt}. That premise is now
-discharged. The kernel-checked theorem
-\popml{} proves the
-long-window uniqueness for primitive P2 truths directly, by a support-descent
-argument whose local step is an explicit component antiderivative on the
-condensed length-$(L-1)$-mer graph; its axiom audit reports only the three
-standard axioms and it names no BBT premise. Theorem~\ref{thm:BBT} is retained
-because it is the source-faithful classical statement of the same step.
-The finite truth-and-competitor-certified same-length rotation theorem
-(Corollary~\ref{cor:same-length-rotation}, merged PR~\#124)
-now also has its own kernel-checked proof; the historical finite BBT
-interface remains an optional conditional route under weaker hypotheses.
+The kernel-checked result \popml{} proves long-window uniqueness for primitive
+P2 truths using a support-descent argument on the condensed graph, and its
+axiom audit reports only the three standard axioms. Theorem~\ref{thm:BBT}
+records the classical mathematical result underlying the same identifiability
+step. The finite same-length rotation theorem is also proved in Lean.
 \end{remark}
 
 \subsection{Population uniqueness for the oriented primitive P2 class}
@@ -221,40 +213,17 @@ proved internally in the kernel (Remark~\ref{rem:internal-bbt}); either route
 proves the same conclusion.
 \end{proof}
 
-\statusline{The whole chain is \kernelcheck{} with \emph{no external premise}.
-The Gibbs/KL layer of Lemma~\ref{lem:gibbs} (issue \#89, in
-\texttt{PopulationGibbs}), the definitions P1/P2 of
-Definition~\ref{def:P1P2} and their alignment with Ukkonen's condition at
-$K=L-1$ (issue \#89, in \texttt{P2}), the division/Eulerian gcd-one
-argument of Lemma~\ref{lem:scaling} (issue \#70, in
-\texttt{Population\allowbreak{}Reduction}), and the complete-spectrum uniqueness step that
-was formerly the external \texttt{BBTUniqueAt} premise are all proved in the
-kernel. The end-to-end result is
-\popml{}, which states the
-objective of Definition~\ref{def:population} and the P2 condition of
-Definition~\ref{def:P1P2} directly, quantifies over \emph{every} positive-length
-primitive P2 candidate, and whose axiom audit reports only \texttt{propext},
-\texttt{Classical.choice}, and \texttt{Quot.sound}. The Gibbs/KL analysis is the
-project's own formalization of \cite{cover2006}, not an assumed premise. The
-classical Bresler--Bresler--Tse theorem (Theorem~\ref{thm:BBT}) is retained as
-the source-faithful statement of the same identifiability step.
-Neither this population theorem nor the truth-candidate-conditional finite
-rotation theorem now requires a BBT obstruction premise; the former
-historical BBT-dependent interfaces remain available with their hypotheses.}
+\statusline{The complete population uniqueness theorem \popml{}
+is kernel checked, with no unproved external BBT premise; its axiom audit
+contains only \texttt{propext}, \texttt{Classical.choice}, and
+\texttt{Quot.sound}.}
 
-\subsection{Scope and one failed proof route}
+\subsection{Scope of the population theorem}
 
-The theorem is stated for the \emph{oriented} spectrum model. It must not be
-silently transferred to reverse-complement-collapsed molecule classes, whose
-observation object is different: population equality there is a statement about
-class-indexed distributions, and the identification of classes changes which
-words are distinguishable. A direct matching-based proof of the theorem was
-attempted and has a genuine gap; the failed route and what it shows are
-recorded in Appendix~\ref{app:ledger}.
+The theorem concerns oriented read types. The corresponding question for
+reverse-complement-collapsed molecule classes involves a different read
+distribution and is not claimed here.
 
-Finally, the population result does \emph{not} answer the finite 2016 question.
-It answers a different, cleaner question: once empirical frequencies are replaced
-by the true read distribution, bridging-style repeat bounds plus primitivity do
-establish oriented circular uniqueness. Whether the historical finite-sample
-statement holds under any fixed source-supported reading remains governed by
-Section~\ref{sec:finite}.
+The population model isolates structural identifiability by using the true
+read distribution instead of a finite sample. Section~\ref{sec:finite}
+treats the original finite-frequency question.

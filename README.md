@@ -1,8 +1,22 @@
 # assemblyp1
 
-A Lean formalization project for a theoretical genome-assembly open problem stated by Shomorony, Kim, Courtade, and Tse in *Bioinformatics* (2016): whether suitable repeat-bridging conditions are enough to guarantee that the maximum-likelihood assembly is the true genome.
+AssemblyP1 studies a mathematical question about genome assembly:
+**when does the true circular genome maximize the likelihood of the reads?**
 
-The repository is deliberately starting from the mathematical model rather than from an attempted proof. The first milestone is to formalize the sequencing model, repeat/bridging definitions, and the maximum-likelihood formulation faithfully enough that the paper's open question has a precise Lean statement.
+The operational starting point is reconstruction: short reads overlap,
+a graph records those overlaps, and repeats can produce competing paths.
+Under coverage and repeat-bridging conditions, the 2016 Not-So-Greedy
+algorithm reconstructs a genome by building and pruning a sparse
+*read-overlap* graph, then finding a unique Eulerian spelling.
+
+The project proves positive results about complete-spectrum rigidity and
+population maximum-likelihood uniqueness, as well as exact finite-sample
+examples where a competitor has higher likelihood. It includes Lean proofs,
+an explanatory whitepaper, and two audience-specific presentations.
+
+**Start with the [programmers' presentation](slides/programmers.md)** for a
+worked graph construction and Not-So-Greedy, or the
+[whitepaper](paper/main.tex) for detailed definitions and theorems.
 
 See:
 

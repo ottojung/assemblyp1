@@ -10,30 +10,8 @@ mechanism --- empirical read reweighting --- which refutes the statement as
 soon as candidate length or strand convention is relaxed, including under the
 source's own read-string predicate of supplement \S6.4
 (\S\ref{sec:finite:historical}). Throughout, each witness is strict, hence
-robust to the unresolved equivalence and tie conventions. We begin with the
-logical device that makes the negatives robust.
-
-\subsection{Negative results transfer; positive results do not}
-
-\begin{lemma}[Negative transfer]
-\label{lem:negative-transfer}
-Let $\Lik(\cdot;x)$ be an objective defined on a candidate class $\cands$, let
-$\cands'\subseteq\cands$, and let $S,D\in\cands'$. If
-$\Lik(D;x) > \Lik(S;x)$ then $S$ is not a maximizer of $\Lik(\cdot;x)$ over
-$\cands$.
-\end{lemma}
-
-\begin{proof}
-$D\in\cands$ is a candidate with strictly larger value than $S$, so the maximum
-over $\cands$ exceeds $\Lik(S;x)$.
-\end{proof}
-
-The converse fails: a positive result over a restricted class does not imply the
-same over a superclass, because the superclass may contain a better candidate.
-This asymmetry is why a same-length \emph{negative} witness that is
-candidate-set closed settles the unrestricted question negatively, while a
-same-length \emph{positive} theorem is a restricted result unless the restriction
-is itself source-justified.
+robust to the unresolved equivalence and tie conventions. We begin with the positive graph-theoretic result and then examine finite
+read-count reweighting. A short transfer lemma introduces the negative cases.
 
 \subsection{A positive same-length oriented rigidity theorem}
 
@@ -292,6 +270,28 @@ $D=AABAB$ ($G=5$, $L=2$); its truth carries a long triple repeat and is
 therefore not $\Is$-admissible. Skirting the triple-repeat clause is precisely
 what permits the multiplicity reallocation.
 \kernelcheck{}
+
+\subsection{Negative results transfer; positive results do not}
+
+\begin{lemma}[Negative transfer]
+\label{lem:negative-transfer}
+Let $\Lik(\cdot;x)$ be an objective defined on a candidate class $\cands$, let
+$\cands'\subseteq\cands$, and let $S,D\in\cands'$. If
+$\Lik(D;x) > \Lik(S;x)$ then $S$ is not a maximizer of $\Lik(\cdot;x)$ over
+$\cands$.
+\end{lemma}
+
+\begin{proof}
+$D\in\cands$ is a candidate with strictly larger value than $S$, so the maximum
+over $\cands$ exceeds $\Lik(S;x)$.
+\end{proof}
+
+The converse fails: a positive result over a restricted class does not imply the
+same over a superclass, because the superclass may contain a better candidate.
+This asymmetry is why a same-length \emph{negative} witness that is
+candidate-set closed settles the unrestricted question negatively, while a
+same-length \emph{positive} theorem is a restricted result unless the restriction
+is itself source-justified.
 
 \subsection{Strict finite counterexamples: empirical read reweighting}
 

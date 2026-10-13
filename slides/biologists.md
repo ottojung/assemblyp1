@@ -25,7 +25,7 @@ mdc: true
   5. The key distinction: reconstruction (structure) vs. likelihood (frequency)
   6. A finite boundary: the decoy can score higher when the sample is unrepresentative
   7. Positive results: structural rigidity and population uniqueness
-  8. Honest limitations: what the model does and does not capture
+  8. Results in the sequencing model and directions for application
 
   ARTIFACTS REFERENCED
   ====================
@@ -156,6 +156,25 @@ Shomorony, Kim, Courtade & Tse (2016) formalized when bridging is sufficient —
 
 ---
 layout: default
+---
+
+# How Not-So-Greedy reconstructs the sequence
+
+The 2016 method turns the observed reads into a sparse **read-overlap graph**:
+
+1. For each read, retain its strongest suffix-prefix match and one genuinely different extension.
+2. Do the symmetric construction for incoming overlaps.
+3. Prune spurious links using effective overlaps.
+4. Choose edge multiplicities, then follow a unique Eulerian cycle.
+
+<div class="pt-6 text-lg">
+With coverage and bridging of all triple-repeat copies and interleaved repeat pairs, the cycle spells the true circular genome in \(O(NL)\) time.
+</div>
+
+<div class="pt-3 text-sm opacity-70">
+Shomorony et al. (2016), Theorem 1 and Corollary 1.
+</div>
+
 ---
 
 # The question that started this project
@@ -307,29 +326,28 @@ Under the bridging conditions, the graph's possible read spectra are tightly con
 layout: default
 ---
 
-# The support graph in detail
+# An operational example of graph-based assembly
 
-<div class="pt-4">
-For `L = 3`, each read `XYZ` is an **edge** from vertex `XY` to vertex `YZ`.
+For circular <code>ACGTA</code> and read length \(L=3\), the five windows
+are <code>ACG</code>, <code>CGT</code>, <code>GTA</code>,
+<code>TAA</code> and <code>AAC</code>.
+
+~~~text
+AC --ACG--> CG --CGT--> GT
+^                        |
+|                       GTA
+AAC                       |
+|                         v
+AA <--TAA-- TA <----------+
+~~~
+
+Each length-3 read becomes an edge between its two length-2 overlaps.
+
+<div class="pt-6 text-lg">
+Using every edge spells <code>ACGTA</code> and closes the circle.
+This is a de Bruijn example; Not-So-Greedy uses a read-overlap graph.
 </div>
 
-```
-        AAA
-       ↙   ↘
-     AA ———— AT
-     ↓  ↘   ↓
-     AT ———— TT
-       ↘   ↙
-        TTA
-```
-
-<div class="pt-4 text-sm">
-Each vertex's in-degree equals its out-degree in any valid assembly — a <b>balanced circulation</b>.
-</div>
-
-<div class="pt-4 text-sm opacity-70">
-This is the de Bruijn graph construction, fundamental to modern assemblers (SPAdes, ABySS, MEGAHIT).
-</div>
 
 ---
 layout: default
@@ -416,33 +434,36 @@ These are the same repeat structures that cause real assemblers to produce fragm
 layout: default
 ---
 
-# What is proved, and how strongly
+# Three mathematical conclusions
 
-| Claim | Status |
-| --- | --- |
-| Structural rigidity of the support graph | proved |
-| Explicit finite likelihood reversals | proved / computed exactly |
-| Population ML uniqueness up to rotation | machine-checked proof |
-| Same-length finite uniqueness | machine-checked, conditional |
+- **Reconstruction:** enough bridging information makes the true circular genome recoverable by a graph algorithm.
+- **Finite likelihood:** observed read frequencies can give a competitor a higher score.
+- **Population likelihood:** the true read distribution identifies the genome uniquely up to rotation within the primitive P2 class.
 
-<div class="pt-6 text-sm opacity-80">
-Machine-checked means a computer verified every logical step from the stated assumptions; it does not by itself settle how the historical paper intended those assumptions.
+<div class="pt-6 text-lg">
+The AssemblyP1 rigidity and likelihood results are backed by exact computations and Lean-checked proofs.
 </div>
+
 
 ---
 layout: default
 ---
 
-# Honest limitations
+# Results in the sequencing model
 
-- The genome is **circular**, reads are **error-free**, and every read has the **same length**.
-- Start positions are **uniformly random**; real libraries are not so clean.
-- The finite counterexamples are about idealized models, **not** evidence that real assemblies fail.
-- Results are about **identifiability in principle**, not about any specific assembler's output.
+Our theorems concern circular genomes and fixed-length, error-free reads
+sampled uniformly from the genome.
 
-<div class="pt-6 text-lg">
-The theorems are exact statements about a deliberately simple model.
+<div class="pt-7 text-xl">
+These assumptions let us give exact answers about the
+**information in reads** and the **probabilities of observed counts**.
 </div>
+
+<div class="pt-6">
+Real-world assembly also has to handle errors, coverage bias, and richer
+long-range evidence — natural directions for future work.
+</div>
+
 
 ---
 layout: default

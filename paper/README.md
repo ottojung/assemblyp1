@@ -1,15 +1,15 @@
 # AssemblyP1 white paper
 
-A publication-oriented LaTeX manuscript studying the 2016 open question of
-Shomorony, Kim, Courtade, and Tse: whether repeat-bridging conditions guarantee
-that the maximum-likelihood assembly is the true genome. It grows out of, but is
-not a conversion of, the repository synthesis
-[`docs/maximum-likelihood-models-for-genome-assembly.md`](../docs/maximum-likelihood-models-for-genome-assembly.md).
+**The Most Likely Genome** explains genome assembly as a graph reconstruction
+problem, then studies when the true circular genome maximizes the probability
+of short-read observations. Its central mathematical results are a positive
+same-length spectrum-rigidity theorem, exact finite-sample likelihood
+counterexamples, and a kernel-checked population uniqueness theorem.
 
-The paper keeps four layers visibly separate: historical definitions, the
-ambiguities those definitions leave open, results about the resulting
-formulations, and project-introduced repairs. Every nontrivial claim carries an
-epistemic status tag; Appendix B is the consolidated ledger.
+The main text develops the algorithms, the repeat structure, the likelihood
+models, and the proofs. The appendices preserve detailed modeling choices,
+verification provenance, and historical source reconciliation for readers
+who need that additional depth.
 
 ## Build
 
@@ -48,7 +48,7 @@ paper/
     03-open-question.tex   the mathematical question and its ingredients
     04-finite-results.tex  rigidity theorem and finite reweighting counterexamples
     05-population.tex      population ML and the uniqueness theorem
-    06-discussion.tex       failure modes, open problems, conclusion
+    06-discussion.tex       synthesis, open problems, conclusion
     a-modeling-choices.tex deliberate explanations of modeling decisions
     b-epistemic-ledger.tex consolidated status of every claim
     c-reproduction.tex     build and verification instructions
