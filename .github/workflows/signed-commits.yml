@@ -1,0 +1,56 @@
+name: Signed commits
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: signed-commits-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  signed-commits:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Determine base and head
+        id: range
+        run: |
+          set -euo pipefail
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            base="${{ github.event.pull_request.base.sha }}"
+            head="${{ github.event.pull_request.head.sha }}"
+          else
+            base="${{ github.event.before }}"
+            head="${{ github.event.after }}"
+          fi
+          # Empty before-sha (branch creation) has nothing to enforce.
+          if [ "$base" = "0000000000000000000000000000000000000000" ]; then
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+            echo "nothing to enforce (no base commit)"
+            exit 0
+          fi
+          echo "base=$base" >> "$GITHUB_OUTPUT"
+          echo "head=$head" >> "$GITHUB_OUTPUT"
+          echo "verifying $base..$head"
+
+      - name: Enforce signed commits on every incoming commit
+        if: steps.range.outputs.skip != 'true'
+        run: |
+          set -euo pipefail
+          python3 scripts/verify_signed_commits.py \
+            --base "${{ steps.range.outputs.base }}" \
+            --head "${{ steps.range.outputs.head }}"
+
+      - name: Selftest the gate itself
+        if: steps.range.outputs.skip != 'true'
+        run: bash scripts/test_signed_commits.sh
