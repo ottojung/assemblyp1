@@ -33,21 +33,11 @@ We will build and traverse a tiny graph, then see how repeat information and lik
 
 # One circular genome, many short reads
 
-Imagine a **circular** DNA word, with read length \(L=3\).
+Imagine a **circular** DNA word, with read length $L=3$.
 
-<div class="grid grid-cols-2 gap-8 pt-6">
-<div>
-
-**Hidden source**
-
-\[
-S=\texttt{ACGTA}
-\]
+**Hidden source:** $S=\texttt{ACGTA}$.
 
 Start at each position, take three letters, wrap around at the end.
-
-</div>
-<div>
 
 | Start | Observed read |
 |---:|:---|
@@ -56,9 +46,6 @@ Start at each position, take three letters, wrap around at the end.
 | 2 | `GTA` |
 | 3 | `TAA` |
 | 4 | `AAC` |
-
-</div>
-</div>
 
 <div class="pt-6 text-lg">
 The assembler sees the **reads**, not the source or their start positions.
@@ -70,23 +57,19 @@ The assembler sees the **reads**, not the source or their start positions.
 
 One useful construction is the **de Bruijn graph**.
 
-For read length \(L\), turn every read into an edge:
+For read length $L$, turn every read into an edge:
 
-- vertex = its \((L-1)\)-letter prefix or suffix;
-- edge = one observed length-\(L\) read, from prefix to suffix;
+- vertex = its $(L-1)$-letter prefix or suffix;
+- edge = one observed length-$L$ read, from prefix to suffix;
 - retain multiplicities when the same read occurs more than once.
 
-<div class="pt-6">
-
-\[
+$$
 \texttt{ACG}: \quad \texttt{AC} \longrightarrow \texttt{CG}
-\]
+$$
 
-\[
+$$
 \texttt{CGT}: \quad \texttt{CG} \longrightarrow \texttt{GT}
-\]
-
-</div>
+$$
 
 <div class="pt-6 opacity-75 text-sm">
 This is a teaching example of spectrum-based reconstruction. Not-So-Greedy, introduced shortly, constructs a different graph: a read-overlap graph.
@@ -208,8 +191,8 @@ The 2016 **Not-So-Greedy** algorithm uses a **read-overlap graph**, not the de B
 
 **De Bruijn**
 
-- vertices: \((L-1)\)-mers
-- edges: \(L\)-mers
+- vertices: (L−1)-mers
+- edges: L-mers
 - reconstruct by traversing window edges
 
 </div>
@@ -317,9 +300,7 @@ Under the 2016 paper's information-feasibility conditions:
 The constructed multigraph has a **unique Eulerian cycle**, whose spelling is the true genome **up to circular rotation**.
 </div>
 
-<div class="pt-8 text-lg">
-Construction and reconstruction take \(O(NL)\) time for \(N\) reads of length \(L\).
-</div>
+**Running time:** $O(NL)$ for $N$ reads of length $L$.
 
 <div class="pt-3 text-sm opacity-65">
 Shomorony, Kim, Courtade & Tse, <i>Bioinformatics</i> (2016), Theorem 1 and Corollary 1.
@@ -337,13 +318,11 @@ AssemblyP1 investigates a different question:
 
 > Does the **true** genome give the **highest probability** to the particular reads we observed?
 
-<div class="pt-7 text-center text-2xl">
-\[
+$$
 \widehat D_{\rm ML}
   = \underset{D}{\operatorname{arg\,max}}\;
     \Pr(R\mid D)
-\]
-</div>
+$$
 
 <div class="pt-5 text-lg">
 Structural reconstruction uses **which overlaps fit**; likelihood also rewards **how frequently each read appears**.
@@ -353,17 +332,17 @@ Structural reconstruction uses **which overlaps fit**; likelihood also rewards *
 
 # Read multiplicities change likelihood
 
-For a candidate circular genome \(D\), uniformly sampled error-free reads have type probabilities
+For a candidate circular genome $D$, uniformly sampled error-free reads have type probabilities
 
-\[
+$$
 p_D(w)=\frac{\#\{\text{starts of word }w\text{ in }D\}}{|D|}.
-\]
+$$
 
-If the observed count of read \(w\) is \(x(w)\), its candidate-dependent likelihood factor is
+If the observed count of read $w$ is $x(w)$, its candidate-dependent likelihood factor is
 
-\[
+$$
 \mathcal L(D;x)\ \propto\ \prod_w p_D(w)^{x(w)}.
-\]
+$$
 
 <div class="pt-7 text-lg">
 A candidate gets a higher score if it places more probability on read types that happened to be **over-represented in the sample**.
@@ -373,35 +352,16 @@ A candidate gets a higher score if it places more probability on read types that
 
 # Result I: an exact finite likelihood reversal
 
-For oriented reads with \(L=3\), one verified example compares:
+For oriented reads with $L=3$, one verified example compares:
 
-<div class="grid grid-cols-2 gap-10 pt-6">
-<div>
+| True genome | Competitor |
+|:---|:---|
+| $S=\texttt{AAATT}$ (length 5) | $D=\texttt{AAAATT}$ (length 6) |
 
-**True genome**
-
-\[
-S=\texttt{AAATT}\quad(|S|=5)
-\]
-
-</div>
-<div>
-
-**Competitor**
-
-\[
-D=\texttt{AAAATT}\quad(|D|=6)
-\]
-
-</div>
-</div>
-
-<div class="pt-6 text-center text-3xl">
-\[
+$$
 \frac{\mathcal L(D;x)}{\mathcal L(S;x)}
 =\frac{15625}{11664}>1
-\]
-</div>
+$$
 
 <div class="pt-5 text-lg">
 The six observed reads are <code>AAA, AAA, AAT, ATT, TTA, TAA</code>. The competitor has two starts producing <code>AAA</code> instead of one, so the twice-observed read gets extra probability and wins this likelihood contest.
@@ -415,17 +375,15 @@ Exact rational certificate in Lean; a mathematical finding about finite samples,
 
 # Result II: bridging imposes spectrum rigidity
 
-A genome's **complete \(L\)-mer spectrum** assigns a multiplicity to each read type.
+A genome's **complete $L$-mer spectrum** assigns a multiplicity to each read type.
 
 In the de Bruijn support graph, a valid circular spelling gives a balanced integer flow:
 
-\[
+$$
 \forall v:\quad \mathrm{in}(v)=\mathrm{out}(v).
-\]
+$$
 
-<div class="pt-5 text-lg">
-Our rigidity theorem shows that, under the stated bridging hypotheses, the true spectrum is the **unique positive balanced integer flow** of total length \(|S|\) on its complete window-support graph.
-</div>
+Our rigidity theorem shows that, under the stated bridging hypotheses, the true spectrum is the **unique positive balanced integer flow** of total length $|S|$ on its complete window-support graph.
 
 <div class="pt-5">
 **Consequence:** for oriented **same-length** spelled candidates using that full window support, no strictly better likelihood competitor exists; with the complete-spectrum uniqueness step, the spelling is the truth up to rotation.
@@ -443,16 +401,16 @@ Now imagine the exact read distribution is known, instead of a noisy finite samp
 
 Expected log-likelihood becomes
 
-\[
+$$
 \ell_S(D)=\sum_w p_S(w)\log p_D(w).
-\]
+$$
 
 The key identity:
 
-\[
+$$
 \ell_S(D)-\ell_S(S)
 =-D_{\mathrm{KL}}(p_S\,\|\,p_D)\leq 0.
-\]
+$$
 
 <div class="pt-6 text-xl">
 The truth is **always** a population maximum-likelihood genome, for any candidate class that contains it.
