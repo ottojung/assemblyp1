@@ -299,31 +299,31 @@ layout: default
 
 # A definition weaker than the paper's
 
-A late audit found the formal **coverage predicate** was weaker than the source's actual condition.
+A late audit found the formal **coverage predicate** did not match the source's actual condition.
 
 <div class="grid grid-cols-2 gap-8 pt-6">
 <div>
 
-**What we formalized**
+**Old model**
 
-Coverage counted only the **sampled placements** of each observed read.
+Sampled starts cover every genomic **base**; adjacent reads need not overlap.
 
 </div>
 <div>
 
-**What the paper says**
+**Historical model**
 
-Coverage quantifies over **any matching occurrence** of an observed read string.
+For every interval of length `L−1`, an **observed read string** must match at a start in that interval — possibly at a position never sampled.
 
 </div>
 </div>
 
 <div class="pt-6 text-lg">
-The fix was <b>additive</b>: new predicates, new endpoints — and every original theorem preserved.
+Neither coverage predicate implies the other. The fix was <b>additive</b>: separate source-literal endpoints, old results preserved.
 </div>
 
 <!--
-This is the second definitions-are-part-of-the-claim episode, and the constructive version. The paper's coverage condition asks whether every position of the genome is covered by some occurrence of some observed read string — any matching occurrence, not only the placements that happened to be sampled. The first formalization counted only sampled placements, which is strictly weaker. Rather than silently strengthening the old theorems, the project added the stronger historical predicates and theorem endpoints alongside the old ones, and kept both models first-class. An independent Python audit certifies the new witnesses. The lesson is the same as the bridging bug, from the other side: never delete a valid theorem to make a stronger-sounding claim. A weaker theorem you keep is a result; a stronger theorem you fake is a liability.
+This is the second definitions-are-part-of-the-claim episode, and the constructive version. Old model: sampled starts cover every genomic BASE; adjacent reads need not overlap. Historical model: for every interval of length L-1, an OBSERVED READ STRING must match at a start in that interval (possibly at a position never sampled). Neither coverage predicate implies the other in general; the correction adds separate source-literal endpoints without deleting old results. The historical model saturates matching repeat occurrences — weaker in that dimension — but requires a read START witness, which the old base-coverage model does not. Rather than silently strengthening the old theorems, the project added the historical predicates and theorem endpoints alongside the old ones, and kept both models first-class. An independent Python audit certifies the new witnesses. The lesson is the same as the bridging bug, from the other side: never delete a valid theorem to make a stronger-sounding claim. A weaker theorem you keep is a result; a stronger theorem you fake is a liability.
 -->
 
 ---
@@ -423,8 +423,8 @@ the wrong genome wins — exactly
 
 **Positive results**
 
-- **Rigidity**: the truth's spectrum is the unique circulation — no strict same-length counterexample, for any `G`, `L`, alphabet
-- **Population uniqueness**: the truth is always a maximizer; equality forces same length and rotation
+- **Rigidity**: under structural hypotheses, the truth's spectrum is the unique circulation — no strict same-length counterexample, for any `G`, `L`, alphabet
+- **Population uniqueness**: for a truth with mild non-repetition structure (primitive, P2), every admissible candidate scores at most the truth — equality forces same length and rotation
 
 </div>
 </div>
@@ -434,7 +434,7 @@ the wrong genome wins — exactly
 </div>
 
 <!--
-Both directions are kernel-checked, and the boundary is explicit. Negative: three families of finite counterexamples where a wrong genome out-scores the truth — the historical AAATAT witness at exact ratio 3, the per-occurrence strengthening at 3/2, and the variable-length reversal at 15625/11664, with the amplification mechanism checked at M = 1, 2. Positive: rigidity says that under the right structural hypothesis the truth's read spectrum is the unique positive integer circulation of total G on the support graph, so no strict same-length counterexample exists at all; and the population theorem says that in the exact read distribution the truth is always a maximizer, with equality only at the same length up to cyclic rotation. The caveat matters: at full overlap, where consecutive windows of a circular molecule overlap in exactly L − 1 symbols, a genuine optimum of the flow optimizer need not be positive-support connected — the AAATAT witness again, at ratio 1280/243. The verified map is precise about where each statement holds. That precision is the result, not a limitation of it.
+Both directions are kernel-checked, and the boundary is explicit. Negative: three families of finite counterexamples where a wrong genome out-scores the truth — the historical AAATAT witness at exact ratio 3, the per-occurrence strengthening at 3/2, and the variable-length reversal at 15625/11664, with the amplification mechanism checked at M = 1, 2. Positive: rigidity says that under the right structural hypothesis the truth's read spectrum is the unique positive integer circulation of total G on the support graph, so no strict same-length counterexample exists at all. The population theorem (Issue94Complete.population_unique_ML) is conditional: it assumes the truth is primitive and P2 at read length L, and quantifies over the admissible candidate class (primitive, P2, any positive length). Under those assumptions the truth is always a maximizer, and a population tie forces the same length up to cyclic rotation. The Gibbs layer proves always-maximality and equality of distributions; rotation uniqueness is not unconditional — it is exactly what the primitive and P2 hypotheses buy. The caveat matters: at full overlap, where consecutive windows of a circular molecule overlap in exactly L − 1 symbols, a genuine optimum of the flow optimizer need not be positive-support connected — the AAATAT witness again, at ratio 1280/243. The verified map is precise about where each statement holds. That precision is the result, not a limitation of it.
 -->
 
 ---
