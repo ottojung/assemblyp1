@@ -1,6 +1,6 @@
 # Spelled same-length challenger for the MB09 binomial approximation
 
-**Status:** exact rational arithmetic and independent executable verifier; not yet a Lean-kernel certificate of this full candidate likelihood. Antonina #259/#261/#284. This is a source-model research note, not a declaration that the 2016 open sentence is settled.
+**Status:** independent exact arithmetic AND Lean-kernel certificates for the full candidate score, exact iid tie, surviving circuit edges and signed seams. Antonina #259/#261/#284. This is a source-model research note, not a declaration that the 2016 open sentence is settled.
 
 ## Setup
 
@@ -60,8 +60,10 @@ Run the independent exact-arithmetic verifier:
 
     python3 scripts/verify_spelled_binomial_witness_261.py
 
-The verifier enumerates circular windows, RC-collapsed molecule classes, the oriented string overlaps at the sequence level, and all relevant binomial marginals with fractions.Fraction. It checks the explicit ratio and the full-vs-truncated spectrum distinction. Its successful execution is computational certification, not Lean kernel verification.
+The verifier enumerates circular windows, RC-collapsed molecule classes, the oriented string overlaps at the sequence level, and all relevant binomial marginals with fractions.Fraction. It checks the explicit ratio and the full-vs-truncated spectrum distinction. This independent arithmetic script supplements the finite kernel-checked Lean theorems named below.
 
-Next Lean packet: reuse AssemblyP1.Section62NonSpelledFlow definitions, define D=[A,A,A,T,A], show spec5 D has counts AAA2/AAT1/ATA1/TAA1 and all other classes zero, show lik obs (spec5 D) / lik obs dS = 65536/50625, combine with existing truth_information_feasible, then certify the signed connected overlap circuit survives the candidate transitive reduction. Distinct genome status follows from differing molecule spectra. An independent source-fidelity audit must still decide which likelihood layer and candidate universe the 2016 paper's question denotes.
+**New Lean verification:** The repository now proves dSpelled261_0/1/2/4, dSpelled261_off, spelledCandidate261_binomial_ratio, spelledCandidate261_binomial_better, spelled_candidate_reversal_with_bridging, spelledCandidate261_iid_tie, spelledCandidate261_circuit_edges_survive, and spelledCandidate261_circuit_signed in AssemblyP1.Section62NonSpelledFlow. The mathematical score and actual finite reduced edges plus all circular signed seams are therefore kernel-checked, not just reproduced by Python. A GENERAL theorem connecting arbitrary signed circuits to the complete internal-window spectrum is still a separate problem. Source-fidelity remains open: the exact MB09 surrogate and iid exact likelihood should not be conflated, and the 2016 sentence does not unambiguously select one referent.
+
+**Scope relative to the earlier positive theorem:** Interpretation-matrix row R7 concerns genuine same-length section-6.2 candidates whose flow throughputs represent the observed-read vertex support. D contains the UNOBSERVED ATA molecule and lies outside that restricted candidate class; the Lean lemma spelledCandidate261_outside_observed_support makes the support mismatch explicit. A circuit spelling a word need not encode its complete genome spectrum. Thus this result is NOT a counterexample to the established R7 positive theorem or a selection of the 2016 paper's ambiguous ML referent.
 
 This is a narrow technical manuscript result; the public presentations should continue foregrounding positive reconstruction and rigorous guarantees rather than a negative example.

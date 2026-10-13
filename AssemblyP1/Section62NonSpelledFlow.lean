@@ -1000,4 +1000,167 @@ theorem nonspelled_se62_flow_domain_countermodel :
     ⟨star_better, lik_star3_eq_star⟩, no_sequence_has_star_spectrum, lik_le_star,
     star_argmax⟩
 
+/-! ## A genuinely spelled same-length challenger for the fixed-N binomial score
+
+The flow-only optimum above can be spelled into a circular DNA molecule, but
+the spelling introduces an unobserved ATA 3-mer internally to a short overlap.
+This means its COMPLETE molecule spectrum is not the optimum's truncated vector.
+
+These finite theorems upgrade the independent rational certificate in
+docs/spelled-binomial-counterexample-261.md to a Lean-kernel comparison.
+The result is for MB09 §6.1's *product-binomial approximation*, not exact
+multinomial ML (the same four reads yield an exact-ML tie).
+-/
+
+/-- The circular length-5 competitor AAATA, not a rotation/RC of AAATT. -/
+def spelledCandidate261 : Fin 5 → Base := ![.A, .A, .A, .T, .A]
+
+/-- Its complete reverse-complement molecule-class spectrum. -/
+def dSpelled261 (c : Fin 8) : Nat := spec5 spelledCandidate261 c
+
+/-- Candidate molecule spectrum: AAA twice, AAT/ATA/TAA once each. -/
+theorem dSpelled261_0 : dSpelled261 0 = 2 := by decide
+theorem dSpelled261_1 : dSpelled261 1 = 1 := by decide
+theorem dSpelled261_2 : dSpelled261 2 = 1 := by decide
+theorem dSpelled261_4 : dSpelled261 4 = 1 := by decide
+
+theorem dSpelled261_off :
+    ∀ c : Fin 8, c ≠ 0 → c ≠ 1 → c ≠ 2 → c ≠ 4 → dSpelled261 c = 0 := by
+  decide
+
+/-- The truth has no ATA molecule, so the candidate cannot be equal to the
+truth modulo cyclic rotation or reverse complementation (both preserve
+the complete molecule-class spectrum). -/
+theorem dSpelled261_differs : dSpelled261 2 ≠ dS 2 := by decide
+
+/-- The candidate has an ATA read type outside the observed graph support. -/
+theorem spelledCandidate261_outside_observed_support :
+    ¬ (∀ c : Fin 8, c ∉ suppClasses → dSpelled261 c = 0) := by
+  intro h
+  have h2 := h 2 (by decide)
+  rw [dSpelled261_2] at h2
+  omega
+
+#print axioms spelledCandidate261_outside_observed_support
+
+private def suppSpelled261 : Finset (Fin 8) := {0, 1, 2, 4}
+
+private theorem suppSpelled261_prod_eq (f : Fin 8 → ℚ) :
+    ∏ c ∈ suppSpelled261, f c = f 0 * (f 1 * (f 2 * f 4)) := by
+  unfold suppSpelled261
+  rw [Finset.prod_insert (by decide), Finset.prod_insert (by decide),
+    Finset.prod_insert (by decide), Finset.prod_singleton]
+
+private theorem lik_spelled261_eq :
+    lik obs dSpelled261 =
+      marginal obs dSpelled261 0 * (marginal obs dSpelled261 1 *
+        (marginal obs dSpelled261 2 * marginal obs dSpelled261 4)) := by
+  have h : lik obs dSpelled261 =
+      ∏ c ∈ suppSpelled261, marginal obs dSpelled261 c := by
+    unfold lik
+    exact (Finset.prod_subset (s₁ := suppSpelled261) (s₂ := Finset.univ)
+      (by intro c _; exact Finset.mem_univ c)
+      (by
+        intro c _ hc
+        have h0 : c ≠ 0 := by
+          intro heq; subst c; exact hc (by decide)
+        have h1 : c ≠ 1 := by
+          intro heq; subst c; exact hc (by decide)
+        have h2 : c ≠ 2 := by
+          intro heq; subst c; exact hc (by decide)
+        have h4 : c ≠ 4 := by
+          intro heq; subst c; exact hc (by decide)
+        have ho : c ∉ suppClasses := by
+          simp [suppClasses, h0, h1, h4]
+        exact marginal_eq_one_of_zero obs dSpelled261 c
+          (obs_off c ho) (dSpelled261_off c h0 h1 h2 h4))).symm
+  rw [h, suppSpelled261_prod_eq]
+
+private theorem obs_2 : obs 2 = 0 := obs_off 2 (by decide)
+
+private theorem marginal_spelled261_0 :
+    marginal obs dSpelled261 0 = (216 : ℚ) / 625 := by
+  rw [marginal, obs_0, dSpelled261_0]
+  norm_num [Nat.choose]
+
+private theorem marginal_spelled261_1 :
+    marginal obs dSpelled261 1 = (256 : ℚ) / 625 := by
+  rw [marginal, obs_1, dSpelled261_1]
+  norm_num [Nat.choose]
+
+private theorem marginal_spelled261_2 :
+    marginal obs dSpelled261 2 = (256 : ℚ) / 625 := by
+  rw [marginal, obs_2, dSpelled261_2]
+  norm_num [Nat.choose]
+
+private theorem marginal_spelled261_4 :
+    marginal obs dSpelled261 4 = (256 : ℚ) / 625 := by
+  rw [marginal, obs_4, dSpelled261_4]
+  norm_num [Nat.choose]
+
+/-- Ratio of the *complete* spelled candidate genome to the bridged truth under
+the MB09 fixed-N=5 product-binomial score, including the unseen ATA read class. -/
+theorem spelledCandidate261_binomial_ratio :
+    lik obs dSpelled261 / lik obs dS = (65536 : ℚ) / 50625 := by
+  rw [lik_spelled261_eq, lik_truth, marginal_spelled261_0,
+    marginal_spelled261_1, marginal_spelled261_2, marginal_spelled261_4]
+  norm_num [marginal, obs_0, obs_1, obs_4, dS_0, dS_1, dS_4, Nat.choose]
+
+theorem spelledCandidate261_binomial_better :
+    lik obs dS < lik obs dSpelled261 := by
+  have h := spelledCandidate261_binomial_ratio
+  rw [div_eq_iff (ne_of_gt lik_truth_pos)] at h
+  nlinarith [h, lik_truth_pos]
+
+/-- The true placements meet the existing source-facing information-feasibility
+predicate while a distinct same-length spelled genome has a larger
+MB09 product-binomial score on the actually observed finite sample. -/
+theorem spelled_candidate_reversal_with_bridging :
+    SourceFaithfulIs.InformationFeasible truthGenome 3 realizedStarts ∧
+      dSpelled261 2 ≠ dS 2 ∧
+      lik obs dS < lik obs dSpelled261 :=
+  ⟨truth_information_feasible, dSpelled261_differs,
+    spelledCandidate261_binomial_better⟩
+
+
+/-- Exact iid categorical likelihood for the *particular* sample with two AAA,
+one AAT and one TAA molecule: the candidate and truth TIE, despite the strict
+binomial-surrogate reversal. The multinomial sample coefficient cancels. -/
+def exactIidScore261 (d : Fin 8 → Nat) : ℚ :=
+  ((d 0 : ℚ) / 5) ^ 2 * ((d 1 : ℚ) / 5) * ((d 4 : ℚ) / 5)
+
+theorem spelledCandidate261_iid_tie :
+    exactIidScore261 dSpelled261 = exactIidScore261 dS := by
+  norm_num [exactIidScore261, dSpelled261_0, dSpelled261_1,
+    dSpelled261_4, dS_0, dS_1, dS_4]
+
+/-- The circuit spelling AAATA traverses actual surviving overlap edges
+including one shorter overlap of length 1. This is an explicit graph check,
+not by itself a theorem about full visit-count / genome-spectrum equality. -/
+theorem spelledCandidate261_circuit_edges_survive :
+    ov 2 (m3 .A .A .A) (m3 .A .A .A) ∈ reducedList ∧
+      ov 2 (m3 .A .A .A) (m3 .A .A .T) ∈ reducedList ∧
+      ov 1 (m3 .A .A .T) (m3 .T .A .A) ∈ reducedList ∧
+      ov 2 (m3 .T .A .A) (m3 .A .A .A) ∈ reducedList := by
+  decide
+
+/-- The four signed incidences also agree at every internal seam and the
+circular seam, as required for a bidirected circuit. -/
+theorem spelledCandidate261_circuit_signed :
+    (ov 2 (m3 .A .A .A) (m3 .A .A .A)).sgnY =
+      -(ov 2 (m3 .A .A .A) (m3 .A .A .T)).sgnX ∧
+    (ov 2 (m3 .A .A .A) (m3 .A .A .T)).sgnY =
+      -(ov 1 (m3 .A .A .T) (m3 .T .A .A)).sgnX ∧
+    (ov 1 (m3 .A .A .T) (m3 .T .A .A)).sgnY =
+      -(ov 2 (m3 .T .A .A) (m3 .A .A .A)).sgnX ∧
+    (ov 2 (m3 .T .A .A) (m3 .A .A .A)).sgnY =
+      -(ov 2 (m3 .A .A .A) (m3 .A .A .A)).sgnX := by
+  decide
+
+#print axioms spelledCandidate261_iid_tie
+#print axioms spelledCandidate261_circuit_edges_survive
+#print axioms spelledCandidate261_circuit_signed
+
+#print axioms spelled_candidate_reversal_with_bridging
+
 end AssemblyP1.Section62NonSpelledFlow
