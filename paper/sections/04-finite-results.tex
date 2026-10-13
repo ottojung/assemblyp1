@@ -831,6 +831,67 @@ orientation is fixed by observing every truth type plus an extra $AAA$, so the
 mechanism is observed-multiplicity skew rather than strand collapse.
 \end{remark}
 
+\subsection{What a reduced graph preserves: spelling versus flow}
+\label{sec:finite:spelling}
+
+The distinction between a graph flow and a spelled genome is itself
+mathematically consequential. It is not enough for a reduction rule to
+preserve connectivity or to retain edges with longer shared nucleotide
+overlaps; a claimed \emph{sequence} equivalence must preserve the sequence
+spelled by a path.
+
+\begin{proposition}[A longer-overlap-only reduction can change spelling]
+\label{prop:reduction-mismatch}
+For reads of length $L=4$ at minimum overlap $1$, take oriented read
+strings $u=\texttt{AAAT}$, $v=\texttt{TAAA}$, and
+$m=\texttt{ATTA}$. The direct edge $u\to v$ has overlap $1$ and spells
+$\texttt{AAATAAA}$. A two-edge detour through $m$ has overlaps $2$ and
+$2$ but spells $\texttt{AAATTAAA}$. Thus the repository's
+\emph{longer-overlap-only} deletion predicate removes an edge that is
+\emph{not} spelling-equivalent to its alleged detour; a
+spelling-preserving reduction keeps it.
+\end{proposition}
+
+\statusline{\kernelcheck{} for the full finite claim in
+\texttt{AssemblyP1/Section62ReductionMismatch.lean},
+\texttt{longer\_is\_not\_spelling\_preserving}. This refutes
+the \emph{repository's broader predicate}, not Myers's published
+string-graph reduction, which requires an equivalent spelling.}
+
+There is also a positive, global result rather than merely this
+counterexample.
+
+\begin{theorem}[Whole-walk spelling preservation in the candidate reduction]
+\label{thm:global-spelling}
+For the repository's explicitly specified
+\texttt{transitivelyReducedSpelling} graph of equal-length oriented
+overlap strands, every nonempty signed walk in the complete overlap
+graph can be expanded to a signed walk of reduced-graph edges with
+the same endpoints and the same spelled sequence. The expansion
+respects the required opposing incidences at successive signed edges.
+\end{theorem}
+
+\statusline{\kernelcheck{} for the actual theorem's hypotheses in
+\texttt{AssemblyP1/Section62GlobalSpellingPreservation.lean},
+\texttt{global\_walk\_signed\_expansion}. Equivalence of this
+candidate reduction with the full published Myers/Medvedev--Brudno
+implementation, and equality between graph-flow counts and genomic
+window counts, remain separate obligations.}
+
+The combinatorial reason for this requirement is precise: a
+length-$L$ read-overlap step with shared overlap $\ell$ advances
+$L-\ell$ genomic positions and can skip unvisited internal
+length-$L$ windows. On a coherent circular spelling, the count of
+each read type equals its visited-vertex count \emph{plus} its
+skipped internal-window count. Thus flow counts and complete-genome
+spectra need not coincide without an additional proof that the
+skipped windows include no observed read type. The general oriented
+counting identity and a finite exhaustive regression are recorded in
+\texttt{docs/section62-observation7-skipped-windows.md}; its
+bidirected source-faithful Lean generalization is \emph{not} claimed
+here. This is a substantive boundary of the optimization model, not a
+technicality to discard.
+
 \subsection{Summary of the finite landscape}
 
 {\small
