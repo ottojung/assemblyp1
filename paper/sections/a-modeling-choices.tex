@@ -55,10 +55,42 @@ error-free model describes production assemblers.
 \paragraph{Why uniform and independent.}
 Uniformity over start positions makes the exact likelihood a multinomial with
 probabilities $d_i/N(D)$; a non-uniform or position-dependent coverage profile
-would destroy that conjugacy and change the objective. Independence makes the
-joint likelihood a product, which is what enables both the exact multinomial and
-the separable approximation. Neither is a biological law; both are the minimal
-statistical assumptions under which the source's likelihood has the stated form.
+would destroy that conjugacy and change the objective. Independence of the \emph{individual read draws} makes the probability of an
+ordered sample a product and produces the exact multinomial likelihood after
+aggregating read-type counts. It does \emph{not} make the read-type count
+variables independent; the separable product-binomial objective of
+\cite[\S6.1]{medvedev2009} is an additional modeling approximation.
+Uniformity and independent draws are mathematical assumptions, not biological
+laws, and their consequences must not be conflated with independence of counts.
+
+\paragraph{A limitation in the source's binomial justification.}
+Medvedev and Brudno motivate the approximation by saying that the multinomial
+category-count variables become independent as the number of trials increases
+\cite[\S6.1]{medvedev2009}. At fixed category probabilities this is false.
+If the sample consists of $n$ independent categorical draws with
+$p_i,p_j\in(0,1)$ and $i\ne j$, then
+\[
+ \operatorname{Cov}(X_i,X_j)=-np_ip_j,\qquad
+ \operatorname{Corr}(X_i,X_j)
+   =-\sqrt{\frac{p_ip_j}{(1-p_i)(1-p_j)}}.
+\]
+The correlation is independent of $n$. In the simplest two-category case,
+$p_1=p_2=1/2$, the exact law has $X_1+X_2=n$ with probability $1$ and
+$\operatorname{Corr}(X_1,X_2)=-1$ for every $n\ge1$. The independent product
+of its two binomial marginals instead gives this event probability
+$\binom{2n}{n}4^{-n}$, which tends to $0$. Thus, in this fixed-probability
+example, the product law does not even approach the multinomial joint law
+in total variation as $n$ grows.
+
+A distinct \emph{rare-category} scaling, in which the relevant $p_i$
+approach zero while $np_i$ stay bounded, can support a Poisson
+approximation. Poissonization of the \emph{total read count} also leads to
+independent category-wise \emph{Poisson} variables, not independent
+binomials with a fixed total of $n$ trials. Neither justification follows
+from high read coverage alone. Our theorems about the product-binomial
+objective are statements about that well-defined surrogate; we do not
+transfer its optimality claims to the exact joint likelihood without a
+separate proof.
 
 \subsection{Why multiplicity is retained}
 

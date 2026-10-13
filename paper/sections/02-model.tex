@@ -182,6 +182,19 @@ and Brudno explicitly adopt for their algorithm. The two are not
 definitionally equal.}
 \end{definition}
 
+\paragraph{Count dependence is not eliminated by larger samples.}
+In \cite[\S6.1]{medvedev2009}, the move from the exact multinomial
+to the product of per-type binomial probabilities is motivated by the claim
+that the count variables become independent as the number of reads grows.
+This does \emph{not} hold at fixed read-type probabilities:
+for two equiprobable read types, $X_1+X_2=n$ almost surely and
+$\operatorname{Corr}(X_1,X_2)=-1$ for every $n\ge1$.
+Thus the independent-binomial objective above is an explicitly \emph{surrogate}
+likelihood, not the exact multinomial and not a large-$n$ limit justified by
+the number of trials alone.  Rare-category or Poissonized sampling regimes
+require their own hypotheses (Appendix~\ref{app:modeling}).
+
+
 An \emph{admissible candidate class} specifies the objects over which an
 objective is optimized. For exact genome likelihood these are circular words;
 in Medvedev--Brudno's Section~6.2 they may instead be bidirected flows that
