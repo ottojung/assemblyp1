@@ -526,7 +526,38 @@ theorem conditionalSuccess_univ_eq [Nonempty Θ] (J : Θ → X → ℝ) (d : X �
 
 end CoverageConditional
 
-/-! ## 9. Exact iid likelihood vs fixed-`N` product-binomial surrogate -/
+/-! ## 9. Posterior/MAP equivalence for positive predictive mass -/
+
+namespace PosteriorMAP
+
+variable {Θ X : Type*} [Fintype Θ] [DecidableEq Θ] [Fintype X]
+
+/-- Predictive mass of a sample `x`. -/
+noncomputable def predictiveMass (J : Θ → X → ℝ) (x : X) : ℝ :=
+  ∑ θ : Θ, J θ x
+
+/-- Posterior mass of `θ` given `x`, defined only when the predictive mass is
+nonzero; for zero predictive mass no conditioning is asserted. -/
+noncomputable def posterior (J : Θ → X → ℝ) (x : X)
+    (_h : predictiveMass J x ≠ 0) (θ : Θ) : ℝ :=
+  J θ x / predictiveMass J x
+
+omit [DecidableEq Θ] [Fintype X] in
+/-- **Posterior/MAP equivalence.**  When the sample has positive predictive
+mass, a candidate maximizes the posterior iff it maximizes the joint mass, so
+the MAP policy is a posterior maximizer.  Zero-mass samples are excluded by the
+`h : predictiveMass J x ≠ 0` argument of `posterior` (no division by zero). -/
+theorem posterior_argmax_iff [Nonempty Θ] (J : Θ → X → ℝ) (x : X)
+    (h : 0 < predictiveMass J x) (θ : Θ) :
+    posterior J x (ne_of_gt h) θ ≤
+        posterior J x (ne_of_gt h) (FiniteBayesDecision.chooseMAP J x) ↔
+      J θ x ≤ J (FiniteBayesDecision.chooseMAP J x) x := by
+  unfold posterior
+  exact div_le_div_iff_of_pos_right h
+
+end PosteriorMAP
+
+/-! ## 10. Exact iid likelihood vs fixed-`N` product-binomial surrogate -/
 
 namespace ExactVsSurrogate
 
@@ -571,6 +602,7 @@ end ExactVsSurrogate
 #print axioms PerTruthDrop.perTruth_true_drops
 #print axioms CoverageConditional.conditional_MAP_optimal
 #print axioms CoverageConditional.conditionalSuccess_univ_eq
+#print axioms PosteriorMAP.posterior_argmax_iff
 #print axioms ExactVsSurrogate.exact_ne_productBinomial
 
 end AssemblyP1.GenomeOrbitAdapter
