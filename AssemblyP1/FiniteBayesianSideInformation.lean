@@ -1,9 +1,11 @@
 import Mathlib.Algebra.Order.BigOperators.Group.Finset
+import Mathlib.Algebra.BigOperators.Fin
 import Mathlib.Algebra.Order.GroupWithZero.Basic
 import Mathlib.Algebra.GroupWithZero.Units.Basic
 import Mathlib.Algebra.Order.Ring.Defs
 import Mathlib.Basic.Real.Basic
 import Mathlib.Data.Fintype.Basic
+import Mathlib.Tactic.FinCases
 import Mathlib.Tactic.Positivity
 import Mathlib.Tactic.NormNum
 
@@ -589,49 +591,68 @@ theorem side_information_needed :
 
 end TwoCandidate
 
-/- Two candidates and two reads: at read `0` both candidates are possible, at
-read `1` only candidate `0` is possible.  The truth-dependent promise
-`E g r := (g = 0)` and the read-only promise `Unambiguous` are both sufficient,
-but neither implies the other: `E` holds at `(0,0)` where `Unambiguous` fails,
-and `Unambiguous` holds at read `1` where `E 1 1` fails.  Sufficiency alone
-therefore imposes no ordering between promises, and in particular does not order
-them against the source `I_s` predicate. -/
+/- Two candidates and two reads, fully normalized.  Candidate `0` produces
+reads `0` and `1` with probability `1/2` each; candidate `1` produces read `0`
+with probability `1` and read `1` with probability `0`.  The truth-dependent
+promise `E g r := (g = 0 ∧ r = 0)` and the read-only promise `Unambiguous` are
+both sufficient and genuinely incomparable, with witnesses on the *positive*
+support:
+
+* `E` holds at the positive pair `(0,0)`, where `Unambiguous(0)` fails because
+  read `0` supports both candidates; so `E` does not imply `Unambiguous`.
+* `Unambiguous` holds at read `1` (only candidate `0` has positive likelihood),
+  while `E 0 1` fails; so `Unambiguous` does not imply `E`.
+
+Sufficiency alone therefore imposes no ordering between promises, and in
+particular does not order them against the source `I_s` predicate. -/
 namespace Incomparable
 
 def orbit : Fin 2 → Fin 2 := id
 noncomputable def π : Fin 2 → ℝ := fun _ => 1 / 2
-def p : Fin 2 → Fin 2 → ℝ := fun g r => if r = 0 then 1 else if g = 0 then 1 else 0
-def E : Fin 2 → Fin 2 → Prop := fun g _ => g = 0
+noncomputable def p : Fin 2 → Fin 2 → ℝ :=
+  fun g r => if g = 0 then (1 / 2 : ℝ) else if r = 0 then 1 else 0
+def E : Fin 2 → Fin 2 → Prop := fun g r => g = 0 ∧ r = 0
 
 instance : DecidableRel E := fun g r => by unfold E; infer_instance
 
-theorem pi_nonneg : ∀ g : Fin 2, 0 ≤ π g := fun g => by norm_num [π]
+theorem pi_normalized : ∑ g : Fin 2, π g = 1 := by
+  rw [Fin.sum_univ_two]; norm_num [π]
+
+theorem p_normalized : ∀ g : Fin 2, ∑ r : Fin 2, p g r = 1 := by
+  intro g
+  fin_cases g <;> norm_num [p, Fin.sum_univ_two]
+
+theorem pi_pos : ∀ g : Fin 2, 0 < π g := fun g => by norm_num [π]
 
 theorem p_nonneg : ∀ g : Fin 2, ∀ r : Fin 2, 0 ≤ p g r := by
   intro g r
   unfold p
-  by_cases hr : r = 0
-  · simp [hr]
-  · by_cases hg : g = 0 <;> simp [hr, hg]
+  by_cases hg : g = 0
+  · simp [hg]
+  · by_cases hr : r = 0 <;> simp [hg, hr]
 
 theorem sufficient_E : Sufficient π p orbit E := by
   intro g r _ _ hEg h _ _ hEh
-  have hg : g = 0 := hEg
-  have hh : h = 0 := hEh
+  have hg : g = 0 := hEg.1
+  have hh : h = 0 := hEh.1
   exact congrArg orbit (hh.trans hg.symm)
 
 theorem sufficient_unambiguous :
     Sufficient π p orbit (fun _ r => Unambiguous π p orbit r) :=
   unambiguous_sufficient π p orbit
 
+/-- `E` holds at the positive pair `(0,0)` while `Unambiguous(0)` fails, so `E`
+does not imply `Unambiguous`. -/
 theorem E_not_imp_unambiguous :
     ¬ (∀ g r, E g r → Unambiguous π p orbit r) := by
   intro h
-  have hu : Unambiguous π p orbit 0 := h 0 0 rfl
-  have h10 := hu 0 1 (by norm_num [π]) (by simp [p]) (by norm_num [π]) (by simp [p])
+  have hu : Unambiguous π p orbit 0 := h 0 0 ⟨rfl, rfl⟩
+  have h10 := hu 0 1 (by norm_num [π]) (by norm_num [p]) (by norm_num [π]) (by norm_num [p])
   simp only [orbit, id_eq] at h10
   exact (by decide : (1 : Fin 2) ≠ 0) h10
 
+/-- `Unambiguous` holds at read `1` while `E 0 1` fails at the positive pair
+`(0,1)`, so `Unambiguous` does not imply `E`. -/
 theorem unambiguous_not_imp_E :
     ¬ (∀ g r, Unambiguous π p orbit r → E g r) := by
   intro h
@@ -646,18 +667,22 @@ theorem unambiguous_not_imp_E :
       have hpz : ¬ 0 < p h' 1 := by simp [p, hh]
       exact hpz hph
     exact congrArg orbit (hh0.trans hg0.symm)
-  have hE : E 1 1 := h 1 1 hu1
-  exact (by decide : (1 : Fin 2) ≠ 0) hE
+  have hE : E 0 1 := h 0 1 hu1
+  exact (by decide : (1 : Fin 2) ≠ 0) hE.2
 
-/-- Two sufficient promises that are incomparable: sufficiency does not order
-promises, so no claim that `I_s`, `Unambiguous`, or an arbitrary sufficient `F`
-is weaker or stronger than another follows from sufficiency alone. -/
+/-- Two normalized, positive-support sufficient promises that are incomparable:
+sufficiency does not order promises, so no claim that `I_s`, `Unambiguous`, or an
+arbitrary sufficient `F` is weaker or stronger than another follows from
+sufficiency alone. -/
 theorem sufficient_promises_incomparable :
-    Sufficient π p orbit E ∧
+    (∑ g : Fin 2, π g = 1) ∧
+      (∀ g : Fin 2, ∑ r : Fin 2, p g r = 1) ∧
+      Sufficient π p orbit E ∧
       Sufficient π p orbit (fun _ r => Unambiguous π p orbit r) ∧
       ¬ (∀ g r, E g r → Unambiguous π p orbit r) ∧
       ¬ (∀ g r, Unambiguous π p orbit r → E g r) :=
-  ⟨sufficient_E, sufficient_unambiguous, E_not_imp_unambiguous, unambiguous_not_imp_E⟩
+  ⟨pi_normalized, p_normalized, sufficient_E, sufficient_unambiguous,
+    E_not_imp_unambiguous, unambiguous_not_imp_E⟩
 
 end Incomparable
 

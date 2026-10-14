@@ -156,12 +156,14 @@ weakest member of the *read-only* family only, and it is **not shown** to be
 ordered against arbitrary truth-dependent sufficient promises — nor is the
 source `I_s` predicate (§6). A kernel-checked witness
 (`Incomparable.sufficient_promises_incomparable`) exhibits two sufficient
-promises that are genuinely incomparable: `E = (g = 0)` is sufficient and holds
-at `(0,0)` where `Unambiguous(0)` fails, so `E` does not imply `Unambiguous`;
-and in a two-read model (`Unambiguous` true at read `1`, `E 1 1` false)
-`Unambiguous` does not imply `E`. Any claim that one sufficient promise is
-weaker than another therefore needs a separate proof and is not a consequence of
-sufficiency.
+promises that are genuinely incomparable on the positive support of a **fully
+normalized** model (`∑ π = 1`, `∑_r p_g(r) = 1`): with `E(g,r) = (g = 0 ∧ r =
+0)`, `E` holds at the positive pair `(0,0)` where `Unambiguous(0)` fails, so `E`
+does not imply `Unambiguous`; and `Unambiguous` holds at read `1` (only
+candidate `0` has positive likelihood there) while `E 0 1` fails at the positive
+pair `(0,1)`, so `Unambiguous` does not imply `E`. Any claim that one sufficient
+promise is weaker than another therefore needs a separate proof and is not a
+consequence of sufficiency.
 
 This is the precise "minimum vs minimal" distinction #272 asks for: an intrinsic
 least *event* does not exist for arbitrary promises, but it does once the family
