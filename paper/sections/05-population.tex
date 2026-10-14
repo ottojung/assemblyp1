@@ -275,13 +275,14 @@ $\rho_*<1$, and its failure bound decays exponentially.
 
 \statusline{\kernelcheck{} for the finite-PMF pairwise, union, affinity, and
 consistency theorems in \texttt{AssemblyP1.FiniteReadRecovery}.  This is a
-finite-family theorem, not an assertion of a uniform rate over all
-unbounded-length genome candidates.  The normalized uniform-start circular-genome read law, its
+finite-family theorem.  For the primitive-P2 class the finite-family
+hypothesis is discharged in Theorem~\ref{thm:p2-finite-class}, so the same
+bound applies to the entire unbounded-length candidate class; the general
+finite-PMF statement remains a finite-family statement.  The normalized uniform-start circular-genome read law, its
 read-occurrence equality, and finite-genome-family Hellinger bound are
 also kernel checked in \texttt{AssemblyP1.FiniteReadRecoveryGenome}.
 The primitive-P2 transport to strict separation is kernel-checked in
-Section~\ref{sec:p2-finite-recovery}; the finite-class bound does not extend
-to an unbounded candidate set without additional reasoning.}
+Section~\ref{sec:p2-finite-recovery}.}
 
 For circular genomes with uniformly sampled start positions and oriented
 error-free length-$L$ reads, the intended distributions are
@@ -352,14 +353,113 @@ uniform Hellinger gap, and the confidence theorem in
 \texttt{AssemblyP1.FiniteReadRecoveryP2Bridge} and
 \texttt{AssemblyP1.FiniteReadRecoveryP2Complete}, with axiom audits.
 The result is conditional on a finite, primitive-P2 admissible,
-nonrotational family and the exact oriented iid read model.}
+nonrotational family and the exact oriented iid read model.
+Corollary~\ref{cor:p2-finite-recovery-all} discharges the finiteness
+condition for the whole admissible class; the finite-family premise
+remains for caller-chosen families that are not covered by the length
+bound.}
 
-This closes the \emph{finite-class} population-to-sampling implication;
-it does not extend the exponential bound to the infinite universe of
-all unbounded-length genomes.  Nor does it classify ordinary finite
+This closes the \emph{finite-class} population-to-sampling implication
+for caller-supplied families.  Theorem~\ref{thm:p2-finite-class} then shows
+that the whole primitive-P2 admissible class, over all unbounded genome
+lengths, is finite, so Corollary~\ref{cor:p2-finite-recovery-all} extends the
+exponential bound to it.  Nor does any of this classify ordinary finite
 likelihood maximizers for every observed sample, which can differ from
 the truth even under structural identifiability.  The RC-collapsed
 double-strand model and MB09's binomial surrogate remain separate.
+
+\subsection{Finiteness of the primitive-P2 class: the finite-family premise is discharged}
+\label{sec:p2-finite-class}
+
+Corollary~\ref{cor:p2-finite-recovery} requires the competitor family
+$\mathcal C$ to be finite, and requires the caller to supply it.  The family
+is not an artefact of the theorem: it exists, and it is small.
+
+\begin{theorem}[Finiteness of the primitive-P2 admissible class]
+\label{thm:p2-finite-class}
+Fix a finite alphabet $\alpha$ with $|\alpha|=q$ and a read length
+$L\ge2$, and set $K=L-1$.  Let $D$ be an oriented circular genome over
+$\alpha$ of length $G$, primitive, with no maximal triple repeat of length
+$\ge K$.  Then
+\[
+  G\;\le\;2\,q^{K}.
+\]
+Consequently the class of primitive P2-admissible oriented circular genomes
+over $\alpha$, over \emph{all} positive lengths, is finite, and the bound is
+tight: at $q=2$, $L=2$ the circular word $1100$ attains $G=4=2\cdot2^{1}$.
+\end{theorem}
+
+\begin{proof}[Argument]
+Two regimes, both needed because a length-$K$ window wraps when $G<K$.
+
+\emph{Wrap-around regime $G<L$.}  A length-$K$ window with $K\ge G$ sees the
+whole circle, so two occurrences at distinct starts make the word
+shift-invariant by a nonzero shift below $G$, hence non-primitive.  Every
+$K$-window therefore occurs exactly once and $G\le q^{K}$.
+
+\emph{Ordinary regime $L\le G$.}  Three starts sharing a $K$-window are
+extended to a maximal common window: maximally backwards (a bounded maximum
+over the $G$ possible back-shifts) and then forwards.  Two things can
+happen.  Some extension phase reaches total length $\ge G$, which again
+forces shift-invariance and contradicts primitivity.  Or both flanks
+differ, and the extension is a maximal triple repeat of length $\ge K$,
+which P2 forbids.  Both alternatives are impossible, so no $K$-window occurs
+at three starts, and counting the fibers of the $K$-window map gives
+$G\le2\,q^{K}$.
+\end{proof}
+
+\statusline{\kernelcheck{} in \texttt{AssemblyP1.PrimitiveP2FiniteClass}.  The
+$K$-window cap is \texttt{P2RepeatResidual.P2.imp\_nodeCount\_le\_two},
+obtained by importing the shared two-sided maximal-extension engine
+(\texttt{RepeatAdapter.primitive\_nodeCount\_le\_two}) and the
+$P2$-to-repeat-theory conversion
+(\texttt{P2RepeatResidual.P2.imp\_noLongTripleRepeat}) rather than re-proving
+either; the wrap-around regime is
+\texttt{nodeWindow\_injective\_of\_short}; the bound is
+\texttt{primitive\_P2\_len\_le}.  Axiom audit reports only
+\texttt{propext}, \texttt{Classical.choice} and \texttt{Quot.sound}; the
+non-vacuity witness is in
+\texttt{AssemblyP1/PrimitiveP2FiniteClassAudit.lean}.  The two finite sets
+are classically, hence non-computably, defined; every membership statement
+about them is a proved theorem.}
+
+\begin{corollary}[Finite-sample ML recovery over the entire primitive-P2 class]
+\label{cor:p2-finite-recovery-all}
+Let $S$ be a primitive oriented circular genome satisfying $P2$ at read
+length $L\ge2$.  Observe $n$ independent length-$L$ error-free reads with
+uniformly sampled circular start positions in $S$.  Then the competitor
+family is a \emph{constructed} finite set --- the admissible genomes of
+length at most $2\,|\alpha|^{L-1}$, with the rotations of $S$ removed --- and
+there is a $\rho_*<1$ such that
+\[
+ \Pr_S\!\left\{\exists D\ \text{admissible, nonrotational}:
+       L_D(R_1,\dots,R_n)\ge L_S(R_1,\dots,R_n)\right\}
+ \;\le\;|\mathcal C_S|\,\rho_*^{n},
+\]
+and for every $\delta>0$ there exists $N$ such that the displayed
+wrong-competitor event has probability at most $\delta$ for all $n\ge N$.
+\end{corollary}
+
+\begin{proof}
+By Theorem~\ref{thm:p2-finite-class} every admissible candidate has length at
+most $2\,|\alpha|^{L-1}$, so the candidate class is a finite set
+$\mathcal C_S$ built from that bound.  Rotations of $S$ share $S$'s read law
+and are removed, so every remaining competitor is admissible and
+nonrotational.  Corollary~\ref{cor:p2-finite-recovery} applies to
+$\mathcal C_S$ with no finite-family hypothesis left.
+\end{proof}
+
+\statusline{\kernelcheck{} in \texttt{AssemblyP1.PrimitiveP2FiniteClass}:
+\texttt{all\_primitiveP2\_ML\_confidence} has as hypotheses only $L\ge2$, the
+primitivity and P2 of $S$, and $\delta>0$.  No finite-family premise, no
+small-multiplicity assumption and no generic likelihood argument is added.}
+
+This discharges the \emph{finite-family} premise of the primitive-P2
+population-to-sampling theorem.  It does not claim that the true genome is a
+finite-sample ML maximizer for every data realization, and it does not cover
+the reverse-complement-collapsed double-strand model or MB09's binomial
+surrogate, whose candidate classes and read laws differ.
+
 
 \subsection{Scope of the population theorem}
 
