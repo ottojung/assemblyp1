@@ -276,17 +276,21 @@ $\rho_*<1$, and its failure bound decays exponentially.
 \statusline{\kernelcheck{} for the finite-PMF pairwise, union, affinity, and
 consistency theorems in \texttt{AssemblyP1.FiniteReadRecovery}.  This is a
 finite-family theorem, not an assertion of a uniform rate over all
-unbounded-length genome candidates.  The formal adapter from the full
-circular-genome sampling model to the generic finite-PMF interface is
-still open.}
+unbounded-length genome candidates.  The normalized uniform-start circular-genome read law, its
+read-occurrence equality, and finite-genome-family Hellinger bound are
+also kernel checked in \texttt{AssemblyP1.FiniteReadRecoveryGenome}.
+What remains open is transporting the exact primitive-P2 identifiability
+and rotation quotient into the strict \(\rho_*<1\) hypothesis.}
 
 For circular genomes with uniformly sampled start positions and oriented
 error-free length-$L$ reads, the intended distributions are
-$p_D(w)=\spec_L(D)(w)/|D|$.  The primitive-P2 population uniqueness theorem
-above supplies distinguishability on the corresponding
-rotation-equivalence classes, but a \emph{finite candidate restriction}
-and a proved model adapter are separate requirements for importing this
-finite-PMF rate into a genome-indexed Lean endpoint.  Likewise the reverse-
+$p_D(w)=\spec_L(D)(w)/|D|$.  The concrete read-law adapter and its finite-genome-family
+bound are now kernel checked, under an explicit Hellinger separation
+hypothesis. The primitive-P2 population uniqueness theorem above supplies
+the mathematical route to distinguishability on rotation-equivalence
+classes, but a proved transfer across the precise orientation/orbit
+interfaces remains a separate Lean obligation.  The finite-family
+restriction is essential.  Likewise the reverse-
 complement-collapsed and product-binomial models require their own read-law
 interfaces.  Neither the theorem nor its proof conditions on the
 truth-dependent information-feasibility event, and neither contradicts the

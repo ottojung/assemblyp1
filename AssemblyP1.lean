@@ -222,6 +222,9 @@ import AssemblyP1.FiniteSideInformationColoring
 import AssemblyP1.FiniteSideInformationColoringAudit
 -- #270 positive finite-family iid ML recovery via Hellinger affinity.
 import AssemblyP1.FiniteReadRecovery
+-- #270 concrete uniform-start cyclic read distribution and conditional genome bounds.
+import AssemblyP1.FiniteReadRecoveryGenome
+import AssemblyP1.FiniteReadRecoveryGenomeAudit
 
 /-! ## `Issue94Transposition`: the Kotzig/Ukkonen/Pevzner descent, and an obstruction
 
