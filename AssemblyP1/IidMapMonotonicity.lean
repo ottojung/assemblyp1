@@ -53,7 +53,9 @@ namespace AssemblyP1.IidMapMonotonicity
 
 open Finset BigOperators
 
-variable {Θ R : Type*} [Fintype Θ] [DecidableEq Θ] [Fintype R] [Nonempty Θ]
+variable {Θ R : Type*}
+
+variable [Fintype R]
 
 /-- Algebraic joint weight of `π` and the iid read score `p` at sample
 size `n`: `π θ * ∏ i, p θ (x i)`. -/
@@ -74,6 +76,8 @@ theorem iidJointSucc_marginal (π : Θ → ℝ) (p : Θ → R → ℝ) (n : ℕ)
   intro θ x
   simp only [iidJointSucc]
   rw [← Finset.mul_sum, hnorm θ, mul_one]
+
+variable [Fintype Θ] [DecidableEq Θ] [Nonempty Θ]
 
 /-- Prior-averaged zero-one success of the constructed MAP policy at sample
 size `n`. -/
