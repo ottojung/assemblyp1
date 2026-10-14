@@ -244,6 +244,62 @@ def ReductionVacuousLonger (A : Type) (W : Type) [DecidableEq A] [DecidableEq W]
     (edges : List (BdEdge A W)) : Prop :=
   edges.all (fun e => !isReducibleLongerB A W toList rc readLen verts e) = true
 
+/-! ## The corrected spelling-preserving transitive edge reduction (#284)
+
+The literal `isReducibleB`/`transitivelyReduced` above is the model being
+audited: it demands both replacement overlaps strictly shorter than the direct
+edge plus the equation `l₁ + l₂ − readLen = e.len`, which is arithmetically
+impossible for proper overlaps (`Section62ReductionVacuityAudit`).  It is
+preserved unchanged as a model of the source sentence "remove any overlap that
+is spelled by two shorter overlaps", not as a correct algorithm.
+
+The **corrected** reduction below is the two-edge spelling-preserving
+reduction of MB09 §6.2 read through Myers (2005): a direct edge `e : sx → sy`
+of overlap `e.len` is removed when there is an intermediate strand `m` of some
+observed molecule class and proper overlap lengths `l₁`, `l₂` (both `≥ oMin`,
+so the detour edges exist in the graph) with genuine suffix-prefix overlaps
+`sufOf sx l₁ = preOf m l₁` and `sufOf m l₂ = preOf sy l₂` satisfying the
+composition law `l₁ + l₂ = readLen + e.len`.  By the spelling lemma
+(`Section62SpellingReductionCandidate.spellPath_eq_spellDirect`) these
+conditions are exactly "the two-edge path spells the same word as the direct
+edge", so removing `e` preserves the language of spelled molecules.  The
+composition law forces `l₁, l₂ > e.len` (`replacement_overlaps_longer`), so the
+reduction is well-founded and nontrivial.
+
+This is the graph model handed to #261/#262.  It is a separate development from
+the audited `isReducibleB` above; the two are not definitionally equal and no
+theorem conflates them. -/
+
+/-- Whether the direct edge `e : sx → sy` of overlap `e.len` is spelling-
+preservingly reducible (corrected #284 reading): there is an intermediate
+strand `m` of some observed molecule class and proper overlap lengths `l₁`,
+`l₂` (both `≥ oMin`) with genuine suffix-prefix overlaps and the composition
+law `l₁ + l₂ = readLen + e.len`. -/
+def isReducibleSpelling62B (A : Type) (W : Type) [DecidableEq A] [DecidableEq W]
+    (toList : W → List A) (rc : W → W) (readLen oMin : Nat) (verts : List W)
+    (e : BdEdge A W) : Bool :=
+  (strandsOf rc verts).any fun m =>
+    (List.range readLen).any fun l1 =>
+      (List.range readLen).any fun l2 =>
+        decide (oMin ≤ l1) && decide (oMin ≤ l2) &&
+          decide (sufOf (toList e.sx) l1 = preOf (toList m) l1) &&
+          decide (sufOf (toList m) l2 = preOf (toList e.sy) l2) &&
+          decide (l1 + l2 = readLen + e.len)
+
+/-- The corrected spelling-preserving transitive reduction, as a proposition. -/
+def isReducibleSpelling62 (A : Type) (W : Type) [DecidableEq A] [DecidableEq W]
+    (toList : W → List A) (rc : W → W) (readLen oMin : Nat) (verts : List W)
+    (e : BdEdge A W) : Prop :=
+  isReducibleSpelling62B A W toList rc readLen oMin verts e = true
+
+/-- The corrected transitively reduced bidirected overlap graph: those edges
+not spelling-preservingly reducible.  This is the graph model handed to
+#261/#262. -/
+def transitivelyReducedSpelling62 (A : Type) (W : Type) [DecidableEq A]
+    [DecidableEq W] (toList : W → List A) (rc : W → W) (readLen oMin : Nat)
+    (verts : List W) (edges : List (BdEdge A W)) : List (BdEdge A W) :=
+  edges.filter (fun e => !isReducibleSpelling62B A W toList rc readLen oMin verts e)
+
 /-! ## Flows, lower bounds, balance, supersource/supersink -/
 
 /-- A §6.2 integral flow on the bidirected overlap graph.  MB09 §6.2 leaves all
@@ -505,6 +561,41 @@ def SpelledFeasible62 (A : Type) (W : Type) [DecidableEq A] [DecidableEq W]
   VisitsObserved rep sp verts ∧
     StepsInGraph rep readLen sp (overlapEdges A W toList rep rc readLen oMin verts) ∧
     StepsSurviveReduction A W toList rep rc readLen verts sp
+      (overlapEdges A W toList rep rc readLen oMin verts) ∧
+    BidirectedCircuit rep readLen sp ∧
+    Feasible62 A W rep verts (overlapEdges A W toList rep rc readLen oMin verts) f t d
+
+/-! ## The corrected spelled candidate (#284)
+
+`SpelledFeasible62` above uses the audited vacuous `transitivelyReduced`, so
+its `StepsSurviveReduction` clause is trivial (every edge survives).  The
+corrected spelled candidate below uses the spelling-preserving reduction
+`transitivelyReducedSpelling62` of the previous section, so its
+`StepsSurviveReductionSpelling` clause is the genuine requirement that every
+step of the walk survives the nontrivial reduction.  This is the object
+#261/#262 should consume. -/
+
+/-- Every step of the cyclic walk survives the corrected spelling-preserving
+transitive edge reduction. -/
+def StepsSurviveReductionSpelling (A : Type) (W : Type) [DecidableEq A] [DecidableEq W]
+    {n : Nat} (toList : W → List A) (rep rc : W → W) (readLen oMin : Nat)
+    (verts : List W) (sp : Spelling A W n) (edges : List (BdEdge A W)) : Prop :=
+  ∀ i : Fin n,
+    sp.step rep readLen i ∈ transitivelyReducedSpelling62 A W toList rc readLen oMin verts edges
+
+/-- A §6.2 feasible *spelled* candidate under the corrected spelling-preserving
+reduction: the cyclic window walk of a circular molecule is a bidirected circuit,
+every step is an edge of the overlap graph and survives the corrected
+transitive reduction, every visited vertex is an observed read molecule, and `f`
+is a feasible §6.2 flow on the graph with throughput vector `d` and terminal
+usage `t`. -/
+def SpelledFeasible62Spelling (A : Type) (W : Type) [DecidableEq A] [DecidableEq W]
+    {n : Nat} (toList : W → List A) (rep rc : W → W) (readLen oMin : Nat)
+    (verts : List W) (sp : Spelling A W n) (f : BdFlow A W) (t : SuperTerminals W)
+    (d : W → ℕ) : Prop :=
+  VisitsObserved rep sp verts ∧
+    StepsInGraph rep readLen sp (overlapEdges A W toList rep rc readLen oMin verts) ∧
+    StepsSurviveReductionSpelling A W toList rep rc readLen oMin verts sp
       (overlapEdges A W toList rep rc readLen oMin verts) ∧
     BidirectedCircuit rep readLen sp ∧
     Feasible62 A W rep verts (overlapEdges A W toList rep rc readLen oMin verts) f t d
