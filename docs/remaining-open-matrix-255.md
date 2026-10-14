@@ -599,6 +599,24 @@ Every material result is classified as one of:
   and presenting the finite counterexamples as informative boundaries, not
   a paradox. No open #276 work remains.
 
+### #266 (PARTIAL) — conditional identifiability from the Not-So-Greedy premise
+
+- **Artifact (branch, pending independent review/merge):**
+  `AssemblyP1/ConditionalIdentifiability.lean`,
+  `docs/issue266-conditional-identifiability.md`.
+- **Kernel-checked:** feasible-fibre uniqueness and conditional posterior
+  certainty from the external Not-So-Greedy Corollary~1 premise, plus a
+  latent-placement weighted-mass adapter and a concrete ordinary-ML
+  non-implication witness. The NSG reconstruction guarantee itself remains an
+  external premise; the truth-dependent event `E=F(G,R)` is not `R`-observable,
+  and `I_s` is sufficient, not necessary.
+- **Source decoder adapter OPEN:** this endpoint assumes a decoder receiving
+  only distinct read types, while NSG operates on read instances. The
+  duplicate-invariance/instance-preserving bridge is not proved.
+- **Not claimed:** unconditional ordinary maximum-likelihood recovery; a new
+  biological or combinatorial theorem; that infinite-read uniqueness was
+  unnecessary; any transfer to the §§6.1/6.2 pseudo-likelihood objectives.
+
 ---
 
 ## AXIS MATRIX (PROVED / REFUTED / OPEN)
