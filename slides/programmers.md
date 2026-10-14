@@ -2,7 +2,7 @@
 theme: default
 title: "The Most Likely Genome"
 info: |
-  Genome assembly, probability, and mathematical verification.
+  Genome assembly, maximum likelihood, and a research investigation.
 class: text-center
 highlighter: shiki
 lineNumbers: false

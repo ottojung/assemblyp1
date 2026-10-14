@@ -1,7 +1,9 @@
 # Presentation arc and reconciliation for #265
 
-Status: 2026-10-14. Agent `74a003ebefb4`, branch
-`agent/74a003ebefb4-issue265-presentations`. Base: `main` @ `157ad34`.
+Status: 2026-10-14. Follow-up correction by agent `757b22c73e75`, branch
+`agent/757b22c73e75-issue265-restore-opening`. Base: `main` @ `b0a6e9f`
+(deck content unchanged since `22a6233`). The original #265 presentation
+rebalance was by agent `74a003ebefb4` on base `157ad34`.
 
 This note records (i) the revised presentation arc, (ii) the claim labels and
 exact project endpoints behind every nontrivial slide claim, (iii) where the
@@ -11,6 +13,14 @@ problem settled.
 
 ## What changed
 
+- **Opening restored (follow-up correction).** The recentered programmers deck
+  had altered the user-approved opening. The frontmatter and first three slides
+  (`The Most Likely Genome`, `How can we reconstruct a genome?`, `What makes
+  assembly difficult?`) are restored byte-for-byte from the approved `#254`
+  commit `7aba5d0`. The improved overlap traversal becomes slide 4; the now
+  redundant standalone repeat-obstacle slide is removed. No other slide,
+  speaker note, claim, or backup is weakened. See "Preserving the approved
+  opening" below.
 - `slides/programmers.md` — rewritten to a **positive, operational** main arc
   (14 slides) plus four backup slides. The distinct 2016 read-overlap
   Not-So-Greedy graph is restored to the main narrative; the finite reversal is
@@ -51,6 +61,33 @@ by the merged PR #189 and the #268 revisions (see "Reconciliation" below).
 
 Backups: B1 complete finite reversal; B2 incomparable coverage definitions;
 B3 open sample-complexity (Hellinger bound); B4 primary sources.
+
+## Preserving the approved opening
+
+The first three slides of the programmers deck were approved in the `#254`
+review and merged at `7aba5d0`. That board review (reviewer
+`independent-reviewer@5c6bda33c7ed`, 2026-10-14, about `7aba5d0`) records:
+"First three slides byte-for-byte identical to main (empty diff of lines 1-74;
+frontmatter title 'The Most Likely Genome' preserved)." The `#265` board finding
+(`research-assistant`, 2026-10-14, comments at 05:09 and 05:14) reports that the
+`#265` recentering (commits `91e34e4`, `22a6233`) altered them: slide 3 changed
+from `What makes assembly difficult?` to `Reconstruction from overlaps: a worked
+traversal`, the slide 1 and slide 2 speaker notes were rewritten, and the
+frontmatter `info` line changed. This follow-up restores `slides/programmers.md`
+lines 1–74 (frontmatter, the three approved slides, and the trailing separator)
+byte-for-byte from `7aba5d0`; `diff` of those ranges is empty. Slides 4–14 and
+backups B1–B4 are otherwise unchanged from `main`, so the only non-opening body
+content removed is the standalone `The repeat obstacle` slide, which is redundant
+with the restored slide 3.
+
+`slides/biologists.md` was checked the same way. Its first three headings
+(`Which genome is most likely?`, `A sequencer takes a sample`, `Overlaps help.
+Repeats confuse.`) are unchanged; only the slide 1 speaker note and one slide 2
+body line (adding "oriented … and independent") were refined. The `#254` board
+record and the `#265` findings name the programmers deck only; #265 explicitly
+sanctioned an analogous biologists rebalance. This correction therefore leaves
+the biologists deck as merged rather than asserting a byte-for-byte constraint
+that no tracked record states.
 
 ## Claim labels and endpoints
 
