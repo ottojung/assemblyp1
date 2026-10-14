@@ -218,6 +218,9 @@ import AssemblyP1.FiniteSideInformationColoring
 import AssemblyP1.FiniteSideInformationColoringAudit
 -- #270 positive finite-family iid ML recovery via Hellinger affinity.
 import AssemblyP1.FiniteReadRecovery
+-- #281 non-monotonicity of finite-sample exact-ML success (AAC vs AAAC).
+import AssemblyP1.NonmonotonicityWitness281
+import AssemblyP1.NonmonotonicityWitness281Audit
 
 /-! ## `Issue94Transposition`: the Kotzig/Ukkonen/Pevzner descent, and an obstruction
 
