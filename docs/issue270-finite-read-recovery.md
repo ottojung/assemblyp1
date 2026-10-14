@@ -1,9 +1,10 @@
 # Finite-read maximum-likelihood reliability: a positive exponential guarantee
 
-**Research status:** Generic finite-PMF proof complete and locally checked in Lean,
-including an independent axiom-audit module.  The *genome-indexed sampling
-adapter* and any extension to an unbounded competitor family remain OPEN
-(see Antonina #270).  Do not claim the full issue is complete.
+**Research status:** The generic finite-PMF proof AND its uniform-start,
+oriented circular-genome read-law adapter are locally checked in Lean with
+independent axiom audits and kernel checking.  The primitive-P2
+distribution-identifiability/orbit bridge and extension to an unbounded
+candidate family remain OPEN (Antonina #270); the whole issue is not closed.
 
 ## Statement
 
@@ -51,27 +52,46 @@ AssemblyP1/FiniteReadRecoveryAudit.lean.  These give a positive,
 quantitative reliability result in the exact iid model, not only a
 population or negative-counterexample statement.
 
-## Genome-model scope and further work
+## Genome-model instantiation (kernel checked)
 
-For oriented error-free reads, circular-genome sampling at a uniform
-random start is intended to induce p_D(w) =
-(cyclic occurrences of w in D) / length(D).  The project proves a
-primitive-P2 population uniqueness theorem for certain candidate
-classes, but the generic finite-PMF Lean theorem does not yet provide a
-kernel-checked genome-indexed corollary.  The following remain open:
+The additional module `AssemblyP1/FiniteReadRecoveryGenome.lean` works with
+the ACTUAL `SourceFaithfulIs.Genome.window` circular word model.  It proves:
 
-1. Formalize the exact circular-window read law as a normalized pmf on
-   a finite common alphabet for truth and all competing genome lengths,
-   including cyclic seam windows and lengths below read length if allowed.
-2. Prove the read law descends to the intended rotation quotient; a
-   reverse-complement quotient additionally requires an RC-invariant
-   observation model, not just a declared equivalence relation.
-3. Instantiate the primitive-P2 population uniqueness theorem to show
-   distinct candidate orbits give distinct read laws, with assumptions
-   on L and admissible candidate classes made explicit.
-4. State the genuinely FINITE candidate restriction.  The unrestricted
-   family of circular genomes of unbounded lengths is not finite and
-   is not covered by the uniform rate without extra arguments.
+- `circularReadPMF_isPmf`: choosing each of the genome's G cyclic starting
+  positions with probability 1/G produces a normalized, nonnegative pmf
+  on the finite universe of oriented length-L words.
+- `circularReadPMF_eq_count`: p_D(w) equals the cardinality of cyclic
+  occurrence starts that spell w divided by G, preserving repeated read
+  strings, origin-crossing reads, and read lengths L>G (periodic wrapping).
+- `circular_pairwise_bound`: the pairwise exact-ML Hellinger bound for
+  two actual circular genomes, even of different lengths.
+- `readLawFamily_all_pmf`, `circular_wrong_le_sum`,
+  `circular_wrong_le_card`, `circular_wrong_tendsto_zero`,
+  `circular_exists_n_for_confidence`: the finite CANDIDATE GENOME family
+  versions of the union-bound, uniform-rho, asymptotic and confidence
+  guarantees.  The strict rho_max<1 hypothesis is EXPLICIT, not
+  silently asserted for all genome pairs.
+
+These adapter results are independently audited by
+`AssemblyP1/FiniteReadRecoveryGenomeAudit.lean`, with a separate kernel
+checker.  They are quantitative positive reconstruction guarantees already
+phrased in the genome universe under the stated separation condition.
+
+## Remaining structural research
+
+1. Prove that the read law descends to the intended rotation quotient;
+   a reverse-complement quotient additionally requires an RC-invariant
+   observation model, not merely a declared equivalence relation.
+2. Instantiate the kernel-checked primitive-P2 population uniqueness
+   theorem to show distinct candidate orbits give distinct read laws
+   for the exact same oriented-length-L model, with admissibility
+   assumptions and length bounds explicit.  This would produce
+   rho_max<1 for a finite family of *wrong* orbits rather than requiring
+   the bound as an input.
+3. The unrestricted circular-genome candidate class of unbounded lengths
+   is NOT finite and is not covered by a uniform rate absent further
+   arguments.  Neither the exact PMF theorem nor the generic union bound
+   proves a guarantee for that unrestricted class.
 
 The binomial product surrogate of Medvedev--Brudno 2009 is a different
 likelihood model; this theorem does not establish its finite-sample
