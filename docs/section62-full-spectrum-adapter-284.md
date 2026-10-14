@@ -67,7 +67,7 @@ claimed. The adapter supplies the spectrum-level half of that interpretation.
 | The §6.2 graph objective omits unseen classes | **source fact** (MB09 §6.2: "the vertices of this graph are the reads") |
 | The full-spectrum adapter (zero-extension) makes the §6.1 product reduce to the observed-class product | **mathematical proof** (each unseen factor is `1`) |
 | A §6.2 feasible flow's adapter spectrum is a §6.1 maximizer | **open** (needs the flow-to-assembly interpretation and the ML maximality classification of #261/#262) |
-| The spelling-preserving transitive reduction preserves the §6.2 graph language | **kernel-checked** (`Section62SpellingReductionCandidate`, `Section62GlobalSpellingPreservation`, `Section62GlobalCircularCorrespondence`) |
+| The spelling-preserving transitive reduction preserves the §6.2 graph language, including closed (circular) walks | **kernel-checked** (`Section62SpellingReductionCandidate`, `Section62GlobalSpellingPreservation`) for open walks; **new in this branch** (`Section62GlobalCircularCorrespondence`) for the circular seam, total spelled length `G = Σ (readLen − e.len)` (covers `G < readLen`), and reverse-complement intermediates |
 
 ## 4. References
 

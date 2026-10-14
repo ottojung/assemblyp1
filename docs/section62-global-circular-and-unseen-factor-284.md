@@ -128,6 +128,35 @@ statement; it is stated here with its exact formula and is **not** silently
 assumed. It is the single remaining Lean obligation for the global Observation-7
 lift.
 
+### The circular seam itself (new module)
+
+`AssemblyP1/Section62GlobalCircularCorrespondence.lean` supplies the *circular*
+half of the global spelling correspondence, which the open-walk expansion above
+does not by itself provide. A `Circuit v walk` is a `SignedPath v v walk` whose
+last edge arrives at `v` with the incidence opposite to the first edge's
+departure (`Circuit`'s seam conjunct, the MB09 §3.2 signed-walk condition at the
+closing vertex). The module proves:
+
+- `surviving_seam_opposite` — every surviving expansion of a closed walk closes
+  with opposite incidences at the seam, because both boundary edges are graph
+  edges (`edge_signs_of_mem`) and `sgnRep`/`sgnTgt` are negatives
+  (`sgnRep_neg_sgnTgt`);
+- `global_circuit_signed_expansion` / `global_circuit_circular_word` — a circuit
+  of `overlapEdges` edges expands into a circuit of `transitivelyReducedSpelling`
+  edges spelling the same circular word `pathTail`;
+- `pathTail_length` / `circularWord_length` — the total spelled length is
+  `G = Σ_e (readLen − e.len)`, with **no** hypothesis `readLen ≤ G`, so the
+  `G < readLen` regime (genomes shorter than one read, with wrap-around windows)
+  is covered by the same statement;
+- `mem_strandsOf_self` / `mem_strandsOf_rc` — the intermediate strand of the
+  reduction ranges over `strandsOf rc verts`, which contains both `m` and `rc m`
+  for every observed molecule class, so reverse-complement intermediates are
+  available;
+- `isReducibleSpelling62B_eq_candidate` /
+  `transitivelyReducedSpelling62_eq_candidate` — the corrected predicate has two
+  definitionally identical homes (the base §6.2 model module and
+  `Section62SpellingReductionCandidate`), so downstream consumers of either agree.
+
 ### Scope caveat (source fidelity)
 
 This proves Observation 7 for the *implemented spelling-preserving candidate*, not
