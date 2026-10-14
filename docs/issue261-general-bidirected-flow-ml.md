@@ -98,7 +98,8 @@ length `N` is therefore a variable and the comparison acquires a length factor.
   `0 ≤ d_j ≤ N` before assigning a binomial probability. §6.2 graph edge
   capacities are infinite; the reconciliation of that graph domain with the
   binomial probability domain (restriction or extended cost) remains **OPEN**.
-- **Exact factorization** (mathematical identity; Lean theorem **OPEN**):
+- **Exact factorization** (kernel-checked in
+  `AssemblyP1.Section62BinomialCriterion.binomCoreNat_eq_prod_qFac`):
   for the full class universe `T`, let `n=∑_{j∈T}x_j` and
   `K(d;x)=∏_{j∈T} d_j^{x_j}(N-d_j)^{n-x_j}`.
   For each `i∈T`, define
@@ -121,10 +122,16 @@ length `N` is therefore a variable and the comparison acquires a length factor.
   positive-full-support observation, and these inequalities still hold.
   This is an exact `m`-check equivalence for a **fixed candidate B**;
   quantifying over a source-faithful feasible-flow universe is a further step.
-- **Uniformly over every `n≥m)**: for a fixed candidate B, non-defeat is
-  equivalent to `P_B=0` **or**
+- **Uniformly over every `n≥m`** (kernel-checked in
+  `AssemblyP1.Section62BinomialCriterion.binomial_uniform_criterion`):
+  for a fixed candidate B, with `I` the observed support and the truth an
+  *interior* truth (`q_i(A)>0` for all `i∈I`), non-defeat over **all** samples
+  supported exactly on `I` is equivalent to `P_B=0` **or**
   `∀i∈I: q_i(B)≤q_i(A)`. Unlike the interior-only version,
-  this correctly handles zero-likelihood candidate boundaries.
+  this correctly handles zero-likelihood candidate boundaries. The fixed-`n`
+  (non-uniform) extreme-sample iff is stated separately above and is
+  numerically audited by `scripts/verify_261_binomial_extreme_samples.py`; its
+  Lean formalization remains **OPEN**.
 - **Neither direction of coordinatewise dominance on the original `d_i`
   is valid as a general binomial criterion**:
   `binomial_not_coordinatewise` shows it is **not sufficient**
@@ -200,7 +207,7 @@ length `N` is therefore a variable and the comparison acquires a length factor.
 |---|---|
 | Variable-length exact-multinomial criterion (§6.1 exact display) | **RESOLVED** (`varLengthCriterion`), project-defined objective |
 | Fixed-external-`N` multinomial-product criterion | **RESOLVED** (`flow_dominance_criterion`), correctly labelled |
-| Genuine §6.1 separable-binomial count-vector criterion | **Mathematically derived**: exact q-factorization; fixed-n extreme-sample iff and boundary-complete all-n iff. Lean general theorem **OPEN** |
+| Genuine §6.1 separable-binomial count-vector criterion | **RESOLVED at the count-vector layer** (`AssemblyP1.Section62BinomialCriterion.binomial_uniform_criterion`, kernel-checked): exact q-factorization `K(d;x)=∏ᵢqᵢ(d)^{xᵢ}` and the all-`n` interior-truth iff `∏ᵢqᵢ(B)=0 ∨ ∀i∈I, qᵢ(B)≤qᵢ(A)`. The fixed-`n` extreme-sample iff remains **numerically audited** (`scripts/verify_261_binomial_extreme_samples.py`) but not yet kernel-checked |
 | §6.1 binomial over the §6.2 feasible flow set | **OPEN** |
 | Half-integral relaxation gap | **RESOLVED** (flow level: `Section62NonSpelledFlow`; arithmetic: `half_integral_gap`) |
 | Rescaling ties at variable length | **RESOLVED** (`rescaling_tie`) |
@@ -263,6 +270,13 @@ Source reading: [Medvedev–Brudno 2009, §§6.1–6.2](https://pmc.ncbi.nlm.nih
 
 - `AssemblyP1/GeneralBidirectedFlowML.lean`: kernel-checked abstract theorems,
   including the §6.1-binomial counterexample `binomial_not_coordinatewise`.
+- `AssemblyP1/Section62BinomialCriterion.lean`: kernel-checked genuine §6.1
+  separable-binomial **count-vector** criterion at a fixed external `N`: the
+  q-factorization `binomCoreNat_eq_prod_qFac`, the concentrated-sample score
+  `binomCoreNat_concentrated`, and the all-`n` interior-truth iff
+  `binomial_uniform_criterion`; plus the `A=(1,2)`, `B=(1,1)`, `N=3` witness.
+  Its axioms are `[propext, Classical.choice, Quot.sound]`. It does **not**
+  provide the §6.2 flow adapter, so the flow-level rows stay OPEN.
 - `scripts/verify_issue261_general_bidirected_flow_ml.py`: independent exact
   recomputation (all checks pass), including the binomial counterexample.
 - `scratch261/Audit.lean`: axiom audit (only propext, Classical.choice, Quot.sound).
