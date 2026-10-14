@@ -97,7 +97,22 @@ generic criterion is then run on the subtype `{i : U // 0 < A i}`.
 
 `covered_start_samples_effectiveProduct_le_iff` instantiates the same-support
 form with `FiniteStartCoverage.coverage_of_type_budget`, so a "covered sample"
-is one that visits every true genome start at least once.
+is one that visits every true genome start at least once.  It assumes the
+start-to-type map is surjective onto the modeled universe.
+
+The ambient start-coverage bridge
+`covered_ambient_start_samples_effectiveProduct_le_iff` removes that
+surjectivity assumption.  It connects `FiniteStartCoverage.SampleStartCoverage`
+for a map `f : S → U` — surjective only onto the *supported* subtype
+`{i : U // 0 < startSpectrum f i}`, which holds automatically — to the ambient
+weight criterion.  The two helper lemmas are `sampleStartCoverage_of_budget`
+(a budget supported on the true support is realizable by positive
+multiplicities of every true start, via `coverage_of_type_budget` on the
+supported subtype) and
+`sampleStartCoverage_eq_zero_of_startSpectrum_eq_zero` (an unproduced type is
+never observed, so the off-support sample counts are `0`).  Thus the exact iff
+of the ambient theorem is available for genuine covered-start samples of a
+truth whose support is a strict subset of the modeled universe `U`.
 
 ## 4. New-support examples
 
@@ -130,7 +145,7 @@ a covered sample).
 | Normalization `N` | fixed external `N`; omitted `∏ choose(n, x_i)` and `N ^ (-n·card U)` are candidate-independent | — |
 | Support | truth support `S0 = {i : 0 < A i}`; candidate may have new/zero support on `U`; effective weights computed over full `U` | classes outside the modeled `U` |
 | Sample size `n` | free (`n = ∑ x`), bounded below by the baseline `∑ a` | — |
-| Coverage | mandatory: every true-supported coordinate observed (`x_i ≥ A_i > 0`, `x_j = 0` off support) | weaker information-theoretic feasibility events |
+| Coverage | mandatory: every true-supported coordinate observed (`x_i ≥ A_i > 0`, `x_j = 0` off support); ambient start coverage tied to `SampleStartCoverage` without whole-universe surjectivity (`covered_ambient_start_samples_effectiveProduct_le_iff`) | weaker information-theoretic feasibility events |
 | Boundary probabilities | zero-weight candidates handled (score `0`); truth weights required positive | `qA` zero on the true support |
 | Graph rigidity | not addressed here; the same-support iff specializes to spectrum rigidity under the merged `#259(B)` hypotheses | rigidity as a *necessary* condition for general sample-uniform maximality |
 
