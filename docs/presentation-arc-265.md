@@ -1,0 +1,123 @@
+# Presentation arc and reconciliation for #265
+
+Status: 2026-10-14. Agent `74a003ebefb4`, branch
+`agent/74a003ebefb4-issue265-presentations`. Base: `main` @ `157ad34`.
+
+This note records (i) the revised presentation arc, (ii) the claim labels and
+exact project endpoints behind every nontrivial slide claim, (iii) where the
+negative finite-sample examples now live, and (iv) the reconciliation of #265
+and #268 against the current merged whitepaper. It does not declare any open
+problem settled.
+
+## What changed
+
+- `slides/programmers.md` — rewritten to a **positive, operational** main arc
+  (14 slides) plus four backup slides. The distinct 2016 read-overlap
+  Not-So-Greedy graph is restored to the main narrative; the finite reversal is
+  a single short aside (slide "A finite aside: even the truth can lose") and
+  the full calculation moves to backup B1. Bayes-optimal ML is the entrance,
+  not the headline. The founding-agent narrative, orchestration diagram, and
+  Lean/kernel-trust story are preserved (two slides plus notes; the coverage
+  audit is backup B2).
+- `slides/biologists.md` — rebalanced to the same positive arc at an accessible
+  level: sequencing model, overlaps and bridging, the 2016 read-overlap graph,
+  likelihood, a single "decoy can win" aside, population maximality and
+  identifiability, and the restricted finite positive theorem. The two former
+  consecutive negative slides are merged into one aside; the extra
+  "sample change" and "tie" slides are merged.
+- `slides/README.md` — deck descriptions updated to match.
+
+No paper file is changed by this branch. The whitepaper was already recentered
+by the merged PR #189 and the #268 revisions (see "Reconciliation" below).
+
+## Revised programmers' main arc (14 slides)
+
+| # | Slide | Idea |
+|---|-------|------|
+| 1 | The Most Likely Genome | title / framing |
+| 2 | How can we reconstruct a genome? | circular genome, independent uniform-start fixed-`L` reads |
+| 3 | Reconstruction from overlaps | suffix/prefix overlaps; didactic de Bruijn traversal spelling `ACGTA` |
+| 4 | The repeat obstacle | repeats and repeat-bridging context |
+| 5 | The 2016 algorithm uses a different graph | read-overlap graph: vertices are reads, greedy + first disagreeing extension, spurious/transitive pruning, multiplicities, unique Eulerian spelling |
+| 6 | The 2016 open question | reconstruction conditions `?=>` truth is a maximum-likelihood genome |
+| 7 | Every genome predicts a distribution | `P_G(w) = starts(w)/G`; likelihood vs posterior; uniform starts ≠ uniform read strings |
+| 8 | Why ML is worth studying | finite Bayes entrance; prior-averaged zero-one optimality |
+| 9 | Positive structural result | same-length rigidity and rotation uniqueness |
+| 10 | A finite aside: even the truth can lose | exact same-length finite witness; non-monotone per-truth success |
+| 11 | Population level: identifiability | KL maximality, primitive-P2 uniqueness, limiting consistency |
+| 12 | Agents were present from day one | founding narrative + orchestration diagram |
+| 13 | What Lean is | Curry–Howard, kernel, axiom audit, model-fidelity caveat |
+| 14 | Trust the check, not the claim | hierarchy: ML is the entrance; classification is the contribution |
+
+Backups: B1 complete finite reversal; B2 incomparable coverage definitions;
+B3 open sample-complexity (Hellinger bound); B4 primary sources.
+
+## Claim labels and endpoints
+
+Labels: **KERNEL** (checked in Lean at the cited file/theorem), **SOURCE**
+(stated by the cited primary source), **EXTERNAL** (standard statistics cited to
+a textbook; not proved in Lean here), **COMPUTED** (exact rational certificate),
+**OPEN**.
+
+| Slide claim | Label | Endpoint / citation |
+|---|---|---|
+| Uniform-start fixed-`L` read model | SOURCE | Shomorony et al. 2016, §2 |
+| de Bruijn traversal of `ACGTA`, `L=3` | SOURCE / teaching | paper `01-introduction.tex`, §"From reads to a graph algorithm" |
+| Distinct 2016 read-overlap graph and unique Eulerian spelling | SOURCE | Shomorony et al. 2016, Thm 1 + supplement (DOI 10.1093/bioinformatics/btw450) |
+| `P_G(w)=spec_L(G)(w)/|G|`; starts ≠ strings | SOURCE + EXTERNAL | paper `01-introduction.tex` `ex:ABAB`, `02-model.tex` |
+| Likelihood vs posterior vs sampling process | EXTERNAL + project note | standard Bayes; paper `02-model.tex` |
+| ML maximizes prior-averaged zero-one success (finite set, uniform prior) | KERNEL | `AssemblyP1/FiniteBayesDecision.lean`: `chooseMAP_optimal`, `chooseMAP_optimal_randomized`, `finite_iid_MAP_optimal` |
+| Prior-average success nondecreasing in `n` | KERNEL | `AssemblyP1/FiniteBayesDecision.lean`: `chooseMAP_success_monotone_under_refinement` |
+| No per-truth monotonicity claimed | EXTERNAL / project note | paper `03-open-question.tex` `rem:mono-avg`; standard calculation |
+| Same-length rigidity + rotation uniqueness | KERNEL | `OrientedRigidity.unique_positive_circulation`; `SameLength62Uniqueness.unique_62_maximizer_up_to_rotation`; `OrientedFinalRigidity.oriented_same_length_spectrum_rigidity`, `rotation_uniqueness_of_bbt` |
+| Graver-basis rigidity iff | KERNEL | `GraverRigidity.rigid_iff_forall_graver_not_feasible` |
+| Same-length finite witness `AAATAT`/`AAAAAT` (exact 3, binomial 5) | KERNEL | `SameLengthSection62Counterexample.samelength_se62_bidirected_flow_counterexample` |
+| Historical source-predicate witnesses | KERNEL | `HistoricalCoverageSameLengthWitnesses.w1_historical_literal_se62_flow_counterexample`, `w1_historical_maximality_refuted` |
+| Population maximality (Gibbs/KL) | KERNEL | `PopulationGibbs.popLogLik_le_self'`; equality `PopulationGibbs.popTie_iff` |
+| Population uniqueness up to rotation (primitive, P2, admissible class) | KERNEL | `Issue94Complete.population_unique_ML` |
+| Limiting consistency / `P(correct at n) -> 1` | EXTERNAL | standard SLLN + ML consistency (Lehmann & Casella 1998); not kernel-checked here |
+| Hellinger/union `99%` bound | EXTERNAL | Tsybakov 2009, Thm 2.4; not kernel-checked here |
+| Sample complexity in this model | OPEN | no theorem in paper or Lean |
+| Coverage predicates incomparable | KERNEL | `HistoricalCovers.lean`; `HistoricalCoverageSameLengthWitnesses.lean` |
+| `AAATT`/`AAAATT` reversal (backup B1) | COMPUTED | restricted two-candidate illustration, not a source-faithful counterexample |
+
+## Negative-example disposition
+
+- Main decks: exactly one short aside (programmers' slide 10; biologists' "A
+  finite aside: the decoy can win").
+- Full `AAATT`/`AAAATT` calculation: programmers' backup B1.
+- Source-faithful same-length witness: main aside plus the paper's Theorems
+  `thm:cex-historical-W1/W2`.
+- No deck leads with a negative result or claims ML is invalid.
+
+## Reconciliation of #265 and #268 with the current paper
+
+The current `main` whitepaper already carries the required arc; this branch does
+not modify it.
+
+- Abstract: positive-first, ML framed as benchmark/motivation that "does not
+  answer the assembly-specific question" (`paper/main.tex`).
+- `01-introduction.tex`: genome → reads → de Bruijn teaching graph → the
+  **distinct** 2016 read-overlap graph → bridging → the maximum-likelihood
+  question with the Bayes entrance → conditional vs unconditional questions →
+  contributions labelled motivation/positive/negative/general/population.
+- `03-open-question.tex`: Bayes-optimality theorem with explicit limits
+  (prior-averaged, not per-truth; not arbitrary loss; binomial is not exact
+  Bayes ML), prior-average monotonicity remark, five-notions table, and the
+  sample-complexity remark with the scoped Hellinger bound.
+- `04-finite-results.tex`, `05-population.tex`, `06-discussion.tex`: the
+  positive rigidity, finite counterexamples, population uniqueness, and the
+  open problems.
+
+Conclusion: #265's paper-side requirements are satisfied by the merged #189/#268
+work; the remaining #265 work was the presentation rebalancing recorded above.
+This branch keeps Bayes-optimal ML as the entrance and does not present an
+ML-supremacy pitch.
+
+## Validation
+
+- `cd slides && npm ci && npm run build` — format check, math check, both decks
+  built, portal assembled, `validate-dist` OK.
+- Both decks pass `scripts/check-format.mjs` and `scripts/check-math.mjs`.
+- Paper not rebuilt on this branch (unchanged); LaTeX toolchain is provided by
+  `paper/build.sh` via Guix.

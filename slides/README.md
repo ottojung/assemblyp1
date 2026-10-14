@@ -3,10 +3,9 @@
 Two independent [Slidev](https://sli.dev) decks that share one GitHub Pages
 site:
 
-- **`programmers.md`** — from assembly and Bayesian ML optimality to the now-settled finite bridging-to-ML question, then the human-directed multi-agent research method designed at project founding; Lean checks the results.
+- **`programmers.md`** — a positive, operational arc: circular genome, random fixed-length reads, overlaps, the didactic de Bruijn traversal, the distinct 2016 read-overlap Not-So-Greedy graph and its unique Eulerian spelling, then Bayes-optimal ML as the entrance to the now-settled finite bridging-to-ML question, the human-directed multi-agent research method designed at project founding, and Lean as the verification boundary. Negative finite-sample examples appear once as a short aside (and in backup).
 - **`programmers-research-notes.md`** — mathematical distinctions, research history and source references.
-- **`biologists.md`** — an accessible sequencing and likelihood story, using the same
-  concrete read-frequency calculation.
+- **`biologists.md`** — an accessible sequencing and likelihood story: overlaps and bridging, the 2016 read-overlap graph, likelihood, population identifiability, and the restricted finite positive theorem, using the same concrete read-frequency calculation.
 - **`portal/`** — the landing page that forks left to programmers and right to
   biologists (board #252). The checked-in page is a scaffold provided by the
   infrastructure work; the experience owner replaces it.
