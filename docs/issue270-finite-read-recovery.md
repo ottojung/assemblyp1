@@ -1,10 +1,13 @@
 # Finite-read maximum-likelihood reliability: a positive exponential guarantee
 
-**Research status:** The generic finite-PMF proof AND its uniform-start,
-oriented circular-genome read-law adapter are locally checked in Lean with
-independent axiom audits and kernel checking.  The primitive-P2
-distribution-identifiability/orbit bridge and extension to an unbounded
-candidate family remain OPEN (Antonina #270); the whole issue is not closed.
+**Research status:** The generic finite-PMF proof, its normalized cyclic
+read-law adapter, and now the primitive-P2 structural distinguishability
+bridge have Lean theorem implementations and explicit axiom audits.  The
+full finite-candidate primitive-P2 statistical recovery statement is
+`AssemblyP1.FiniteReadRecoveryP2Complete.finite_primitiveP2_ML_confidence`.
+The infinite/unbounded-genome uniform-rate question and extensions to
+RC-collapsed observations or MB09's binomial surrogate remain OPEN;
+those models are NOT corollaries of this oriented iid result.
 
 ## Statement
 
@@ -77,21 +80,56 @@ These adapter results are independently audited by
 checker.  They are quantitative positive reconstruction guarantees already
 phrased in the genome universe under the stated separation condition.
 
-## Remaining structural research
+## Primitive-P2 structural separation — kernel theorem
 
-1. Prove that the read law descends to the intended rotation quotient;
-   a reverse-complement quotient additionally requires an RC-invariant
-   observation model, not merely a declared equivalence relation.
-2. Instantiate the kernel-checked primitive-P2 population uniqueness
-   theorem to show distinct candidate orbits give distinct read laws
-   for the exact same oriented-length-L model, with admissibility
-   assumptions and length bounds explicit.  This would produce
-   rho_max<1 for a finite family of *wrong* orbits rather than requiring
-   the bound as an input.
-3. The unrestricted circular-genome candidate class of unbounded lengths
-   is NOT finite and is not covered by a uniform rate absent further
-   arguments.  Neither the exact PMF theorem nor the generic union bound
-   proves a guarantee for that unrestricted class.
+The directly checked `FiniteReadRecoveryP2Bridge.lean` identifies the
+exact uniform-start read law with `PopulationUniqueness.popSpectrum`
+**definitionally** (same cyclic occurrences divided by genome length).
+Its `equal_read_laws_imply_rotation`,
+`hellinger_lt_one_of_primitiveP2_not_rotation`,
+`finite_primitiveP2_family_affinity_gap`, and
+`finite_primitiveP2_family_confidence` use the explicit external
+Eulerian obstruction from the older
+`PopulationUniqueness.population_unique_ML_up_to_rotation` theorem.
+
+The final `FiniteReadRecoveryP2Complete.lean` calls the already
+kernel-checked `Issue94Complete.population_unique_ML` theorem and
+**does not assume an Eulerian obstruction** as an extra argument. Its
+endpoints establish:
+
+- Equal oriented read laws for two admissible primitive-P2 genomes
+  (possibly different lengths) force equal genome length and rotation
+  equivalence.
+- Therefore any admissible nonrotational competitor has read-law
+  Hellinger affinity strictly below one.
+- Any **finite** set of such competitors has a common upper affinity
+  `rho_max<1`, including the empty case.
+- For any `δ>0`, an exact iid uniformly sampled read count N exists
+  after which the probability that ANY wrong nonrotational candidate
+  ties or beats the true ML likelihood is at most δ for every n≥N.
+
+The two companion `*Audit.lean` modules print kernel axioms for
+each main endpoint. This is a *positive* genome-level finite-sample
+recovery guarantee from structural P2 alone, without any
+truth-dependent feasibility event and without separate statistical
+distinguishability hypotheses.
+
+## Remaining scope limits, not implied by this theorem
+
+1. The formal rotation conclusion already uses
+   `PopulationReduction.RotEquiv` and the right
+   `SourceFaithfulIs.Genome.window` circular sampling model;
+   it does NOT automatically extend to reverse-complement-collapsed
+   molecules unless the observation law is made RC invariant.
+2. The primitive-P2 candidate family is allowed to contain different
+   positive genome lengths, but the set of *candidates being compared*
+   must be FINITE. An unrestricted unbounded candidate family is
+   infinite, and obtaining uniform rates there requires a new argument.
+3. The positive convergence theorem is probabilistic. It does NOT
+   assert that the true genome is a finite-sample ML maximizer for
+   every data realization: the strict counterexamples still exist.
+4. The MB09 §6.1 product-binomial approximation is not the exact iid
+   read model here. Its §6.2 flow/maximizer equivalence remains open.
 
 The binomial product surrogate of Medvedev--Brudno 2009 is a different
 likelihood model; this theorem does not establish its finite-sample

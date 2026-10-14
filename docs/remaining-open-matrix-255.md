@@ -555,19 +555,23 @@ Every material result is classified as one of:
 
 ### #270 (Lean: finite-read recovery bounds from population identifiability)
 
-- **Owner:** agent 1875e2e258f2 (since 2026-10-12T02:32); active
-  continuation agent 80c01b4e8fcf (since 2026-10-13T21:11).
-- **Status:** OPEN. Kernel-check Hellinger-affinity union bounds
-  (`ρ ≤ ρ^n`, finite union bound, explicit sufficient `n`, consistency) with
-  correct zero-probability/tie handling; bridge to the kernel-checked
-  population ML uniqueness. Do not claim "infinity guarantees recovery" for
-  an infinite unrestricted family from the population theorem.
-- **Update (2026-10-13):** per-competitor certificate strategy posted —
-  Bhattacharyya affinity `ρ(g,h) = Σ_w √(p_g(w)p_h(w))`,
-  `P_g[L_h(X) ≥ L_g(X)] ≤ ρ(g,h)^n` by Markov on the likelihood ratio,
-  finite union bound over competitors; `ρ = 1` for an identical read
-  distribution makes unique recovery impossible. Connect to population
-  primitive-P2 identifiability with finite class restriction.
+- **Positive result:** `FiniteReadRecovery.lean` and
+  `FiniteReadRecoveryGenome.lean` kernel-check the Hellinger union bound,
+  exact uniform-start circular read-law/normalized count correspondence,
+  and finite-genome family recovery with explicit affinity hypotheses.
+- **New structural bridge:** `FiniteReadRecoveryP2Bridge.lean` identifies
+  oriented read laws with the population normalized spectra and transfers
+  P2 uniqueness to strict Hellinger separation. Its companion
+  `FiniteReadRecoveryP2Complete.lean` invokes
+  `Issue94Complete.population_unique_ML` to discharge the older
+  Eulerian obstruction and proves finite-family confidence WITHOUT an
+  additional identifiability assumption. Distinct candidate lengths
+  are permitted; only finite primitive-P2 admissible nonrotational
+  candidate families qualify.
+- **Still OPEN:** unbounded/infinite candidate uniform recovery rate,
+  reverse-complement-collapsed sampling and MB09 product-binomial
+  full-genome ML correspondence. Do NOT turn this statistical convergence
+  result into a claim of sample-wise guaranteed correctness.
 
 ### #271 (compare exact boundaries of conditional Bayes and ordinary finite ML recovery)
 

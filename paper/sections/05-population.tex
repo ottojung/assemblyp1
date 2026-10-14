@@ -279,22 +279,86 @@ finite-family theorem, not an assertion of a uniform rate over all
 unbounded-length genome candidates.  The normalized uniform-start circular-genome read law, its
 read-occurrence equality, and finite-genome-family Hellinger bound are
 also kernel checked in \texttt{AssemblyP1.FiniteReadRecoveryGenome}.
-What remains open is transporting the exact primitive-P2 identifiability
-and rotation quotient into the strict \(\rho_*<1\) hypothesis.}
+The primitive-P2 transport to strict separation is kernel-checked in
+Section~\ref{sec:p2-finite-recovery}; the finite-class bound does not extend
+to an unbounded candidate set without additional reasoning.}
 
 For circular genomes with uniformly sampled start positions and oriented
 error-free length-$L$ reads, the intended distributions are
 $p_D(w)=\spec_L(D)(w)/|D|$.  The concrete read-law adapter and its finite-genome-family
 bound are now kernel checked, under an explicit Hellinger separation
-hypothesis. The primitive-P2 population uniqueness theorem above supplies
-the mathematical route to distinguishability on rotation-equivalence
-classes, but a proved transfer across the precise orientation/orbit
-interfaces remains a separate Lean obligation.  The finite-family
-restriction is essential.  Likewise the reverse-
+hypothesis. The completed primitive-P2 theorem above now supplies a fully proved
+read-law distinguishability criterion for nonrotational, primitive-P2
+admissible candidates, as formalized in
+Section~\ref{sec:p2-finite-recovery}.  The finite-family restriction
+remains essential.  Likewise the reverse-
 complement-collapsed and product-binomial models require their own read-law
 interfaces.  Neither the theorem nor its proof conditions on the
 truth-dependent information-feasibility event, and neither contradicts the
 strict finite-sample counterexamples of Section~\ref{sec:finite}.
+
+
+\subsection{Primitive-P2 structure gives finite-read maximum-likelihood recovery}
+\label{sec:p2-finite-recovery}
+
+The previous finite-sample theorem assumes that each wrong candidate has a
+distinct read distribution.  For the paper's main structural class, that
+\emph{informational} condition is not an independent assumption: it follows
+from the completed primitive-P2 population uniqueness theorem.
+
+\begin{corollary}[Finite-sample ML recovery in the primitive-P2 class]
+\label{cor:p2-finite-recovery}
+Let $S$ be a primitive oriented circular genome satisfying $P2$ at read
+length $L\ge 2$.  Fix \emph{any finite family} $\mathcal C$ of primitive
+$P2$-admissible oriented circular genomes, possibly of lengths different
+from $|S|$, none rotation-equivalent to $S$.  Observe $n$ independent
+length-$L$ error-free reads with uniformly sampled circular start
+positions in $S$.  Then there is a $\rho_*<1$ such that
+\[
+ \Pr_S\!\left\{
+   \exists D\in\mathcal C:
+       L_D(R_1,\dots,R_n)\ge L_S(R_1,\dots,R_n)
+ \right\}
+ \le |\mathcal C|\,\rho_*^{n},
+\]
+and for every $\delta>0$ there exists $N$ such that the displayed
+wrong-competitor event has probability at most $\delta$ for all $n\ge N$.
+Ties are counted as errors, so this covers every maximum-likelihood
+tie-breaking rule.  If the original truth belongs to the candidate
+class, it therefore wins, up to rotation, with probability tending to one.
+\end{corollary}
+
+\begin{proof}
+The uniform-start read distribution is exactly
+$p_D(w)=\spec_L(D)(w)/|D|$ for every circular genome $D$, including the
+case of multiple copies of a read, origin-crossing windows, and $L>|D|$.
+The completed primitive-P2 theorem
+(\texttt{Issue94Complete.population\_unique\_ML}) says that equality of
+population likelihood between an admissible $D$ and $S$ forces rotation
+equivalence.  Gibbs equality says that two normalized read laws have
+equal population likelihood precisely when those laws agree.  Hence
+every $D\in\mathcal C$ has $p_D\neq p_S$.
+The finite-PMF Hellinger theorem then yields
+$\rho(p_S,p_D)<1$ for each such candidate.  Since $\mathcal C$ is
+finite, its affinities admit a common maximum $\rho_*<1$ (the empty
+family has zero error).  Applying the finite union bound above proves
+the displayed inequality and the confidence conclusion.
+\end{proof}
+
+\statusline{\kernelcheck{} for the source-faithful normalized-spectrum
+identity, the primitive-P2 read-law separation, the finite-family
+uniform Hellinger gap, and the confidence theorem in
+\texttt{AssemblyP1.FiniteReadRecoveryP2Bridge} and
+\texttt{AssemblyP1.FiniteReadRecoveryP2Complete}, with axiom audits.
+The result is conditional on a finite, primitive-P2 admissible,
+nonrotational family and the exact oriented iid read model.}
+
+This closes the \emph{finite-class} population-to-sampling implication;
+it does not extend the exponential bound to the infinite universe of
+all unbounded-length genomes.  Nor does it classify ordinary finite
+likelihood maximizers for every observed sample, which can differ from
+the truth even under structural identifiability.  The RC-collapsed
+double-strand model and MB09's binomial surrogate remain separate.
 
 \subsection{Scope of the population theorem}
 
