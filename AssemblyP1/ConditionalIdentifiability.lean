@@ -39,19 +39,22 @@ The logical shape, matching issue #266:
 ## Source fidelity: latent placements
 
 The repository's literal §6.4 predicate
-(`HistoricalCovers.HistoricalInformationFeasibleLiteral`) is a predicate of a
-*candidate genome* and a *candidate-specific set of sampled start positions*
-`R : Finset (Fin S.len)`; the observed data are the read **strings**
-`observedTypes_ofFinset S L R`.  For a competitor of a different length the true
-genome's start labels cannot be reused, and the source event is a property of the
-latent placement, not of the observed strings alone.
+(`HistoricalCovers.HistoricalInformationFeasibleLiteral S L R`) is determined
+by the candidate genome `S` and the *observed read-string set*
+`observedTypes_ofFinset S L R`; the sampled start set `R` enters only through
+that induced string set, and for a competitor of a different length the true
+genome's start labels cannot be reused.  The **likelihood**, by contrast, is a
+function of the candidate-specific placement, and several placements can induce
+the same observed string set.
 
-Consequently the scientifically correct event-weighted joint mass is
+Consequently, when the source event is expressed at the placement level as a
+predicate `E g T`, the scientifically correct event-weighted joint mass is
 
-`∑_{T : consistent g T Y ∧ F g T} weight g T`,
+`∑_{T : consistent g T Y ∧ E g T} weight g T`,
 
-an existential feasibility indicator is **not** enough.  `PlacementModel` and
-`placementJoint` below formalize exactly this weighted sum, and
+i.e. a weighted marginalization over compatible placements, rather than a single
+likelihood multiplied by an existential feasibility indicator.  `PlacementModel`
+and `placementJoint` below formalize exactly this weighted sum, and
 `placement_support_subset_orbit`/`placement_posterior_certain` are the
 placement-level versions of (1) and (2).  The string-level `ReadModel` is the
 clean abstraction the issue states; the placement-level model is the source

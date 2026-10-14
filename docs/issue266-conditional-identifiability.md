@@ -12,13 +12,15 @@ theorem/proof/caveat for issue #265 to incorporate._
   deterministic read-only reconstruction recovers the true circular genome up
   to cyclic shift. This is a cited external result. It is **not** formalized in
   this repository and is used below only as an explicit hypothesis.
-- **Kernel-checked mathematics (this work).** The five consequences in
-  §2–§6 — feasible-fibre uniqueness, conditional posterior certainty, the
-  constrained-MAP statement, the zero-one accuracy bound, and the decoder
-  interface — are proved from the external premise plus finite real algebra in
+- **Kernel-checked mathematics (this work).** The consequences in §2–§5 —
+  feasible-fibre uniqueness, conditional posterior certainty, the constrained-MAP
+  statement, the class-mass bound, and the latent-placement weighted-mass
+  adapter — are proved from the external premise plus finite real algebra in
   `AssemblyP1/ConditionalIdentifiability.lean`. They introduce no `axiom`,
   `sorry`, or `admit`; the module's `#print axioms` output shows only Lean's
-  three standard axioms.
+  three standard axioms (`feasible_fibre_unique` depends on none). The decoder
+  interface of §6 is **not** formalized: it is a prose adapter whose correctness
+  reduces to the external premise `(NSG)`.
 - **Source-theorem choice.** The deterministic reconstruction used here is the
   **Corollary 1** statement (a graph with a *unique* Eulerian cycle spelling the
   truth up to rotation), not the weaker **Theorem 1** (existence of *some*
@@ -149,8 +151,10 @@ rule can exceed `1`.
 **Proof.** Each summand is at most `K(g, r)` because `K ≥ 0`; equality at
 `c = A(r)` is Theorem 2. ∎
 
-Lean: `ReadModel.orbit_mass_le_total` (with the nonnegativity hypothesis
-`0 ≤ J`).
+Lean: the class-mass bound itself is `ReadModel.orbit_mass_le_total` (with the
+nonnegativity hypothesis `0 ≤ J`); the equality — hence accuracy `1` — is
+`ReadModel.orbit_mass_eq_total` / `ReadModel.conditional_posterior_eq_one`. The
+`100%` accuracy is a corollary of those two, not an independent theorem.
 
 **This is immediate given uniqueness.** The `100%` figure is a direct
 consequence of Theorem 1 and is **not** a stronger finite-ML conjecture, and it
@@ -188,22 +192,23 @@ that interface from the published algorithm. A full source connection
 needs a list/multiset of read instances (or a proof of duplicate
 invariance) and the original sampling/length restrictions.
 
-1. **Latent placements, not shared position labels.** The repository's literal
-   §6.4 predicate `HistoricalInformationFeasibleLiteral S L R` is a predicate of
-   a candidate genome and a *candidate-specific* set of sampled start positions
-   `R : Finset (Fin S.len)`; the observed data are the read strings
-   `observedTypes_ofFinset S L R`. For a competitor of a different length the
-   true genome's start labels cannot be reused. The correct event-weighted joint
-   mass is therefore the weighted sum over candidate-specific placements
-   compatible with the observed strings,
+1. **Latent placements and the likelihood marginal.** The repository's literal
+   §6.4 predicate `HistoricalInformationFeasibleLiteral S L R` is determined by
+   the candidate genome `S` and the *observed read-string set*
+   `observedTypes_ofFinset S L R`; the sampled start set `R` enters only through
+   that induced string set, and for a competitor of a different length the true
+   genome's start labels cannot be reused. The *likelihood*, by contrast, is a
+   function of the candidate-specific placement, and several placements can
+   induce the same observed string set. When the source event is expressed at the
+   placement level as a predicate `E(g,T)`, the correct event-weighted joint
+   mass is therefore the weighted marginalization over compatible placements,
 
    ```
-   L(g, Y) = ∑_{T : consistent(g,T,Y) ∧ F(g,T)} weight(g, T),
+   L(g, Y) = ∑_{T : consistent(g,T,Y) ∧ E(g,T)} weight(g, T),
    ```
 
-   **not** `π(g) P_g(Y) · 1_{∃T …}`: a candidate may have some placements
-   compatible with `Y` and others not, so an existential feasibility indicator
-   overstates the event. `PlacementModel`, `placementJoint`,
+   rather than a single likelihood times an existential feasibility indicator
+   `π(g) P_g(Y) · 1_{∃T …}`. `PlacementModel`, `placementJoint`,
    `placement_support_subset_orbit`, and `placement_posterior_certain` in the
    Lean module formalize this weighted-sum version; the string-level `ReadModel`
    is the clean abstraction stated by the issue, and the two are kept separate.
