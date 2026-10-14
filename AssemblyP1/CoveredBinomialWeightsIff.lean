@@ -375,6 +375,122 @@ theorem covered_ambient_effectiveProduct_le_iff
       · exact Or.inr (fun i => h i.1 i.2)
   exact hLHS.trans (key.trans hRHS)
 
+variable {S : Type*} [Fintype S]
+
+omit [Fintype U] in
+/-- A start-coverage sample never observes a read type that no true genome
+start produces: if `startSpectrum f j = 0`, the fibre over `j` is empty, so its
+sample count is `0`.  This is the support condition the ambient criterion
+needs, obtained from actual start coverage rather than assumed. -/
+theorem sampleStartCoverage_eq_zero_of_startSpectrum_eq_zero
+    (f : S → U) {x : U → ℕ}
+    (hx : FiniteStartCoverage.SampleStartCoverage f x) (j : U)
+    (hj : FiniteStartCoverage.startSpectrum f j = 0) : x j = 0 := by
+  obtain ⟨m, _hm, hsum⟩ := hx
+  rw [← hsum j]
+  have hempty : Finset.univ.filter (fun s => f s = j) = ∅ := by
+    apply Finset.card_eq_zero.mp
+    have hc : (Finset.univ.filter (fun s => f s = j)).card
+        = FiniteStartCoverage.startSpectrum f j := rfl
+    rw [hc, hj]
+  rw [hempty, Finset.sum_empty]
+
+/-- A type-wise budget that dominates the true start spectrum and is supported
+on the true support is realizable by positive multiplicities of every true
+genome start, even when the ambient modeled universe `U` is strictly larger
+than the true support.  This is the ambient analogue of
+`FiniteStartCoverage.coverage_of_type_budget`, which required surjectivity onto
+the *whole* universe; here only surjectivity onto the supported subtype
+`{i : U // 0 < startSpectrum f i}` is needed, and it holds automatically. -/
+theorem sampleStartCoverage_of_budget
+    (f : S → U) {x : U → ℕ}
+    (hdom : ∀ i, FiniteStartCoverage.startSpectrum f i ≤ x i)
+    (hsupp : ∀ j, FiniteStartCoverage.startSpectrum f j = 0 → x j = 0) :
+    FiniteStartCoverage.SampleStartCoverage f x := by
+  classical
+  let f0 : S → {i : U // 0 < FiniteStartCoverage.startSpectrum f i} := fun s =>
+    ⟨f s, by
+      unfold FiniteStartCoverage.startSpectrum
+      exact Finset.card_pos.mpr
+        ⟨s, Finset.mem_filter.mpr ⟨Finset.mem_univ s, rfl⟩⟩⟩
+  have hf0 : Function.Surjective f0 := by
+    intro i
+    have hpos : 0 < FiniteStartCoverage.startSpectrum f i.1 := i.2
+    unfold FiniteStartCoverage.startSpectrum at hpos
+    obtain ⟨s, hs⟩ := Finset.card_pos.mp hpos
+    exact ⟨s, Subtype.ext (Finset.mem_filter.mp hs).2⟩
+  have hspec : ∀ i : {j : U // 0 < FiniteStartCoverage.startSpectrum f j},
+      FiniteStartCoverage.startSpectrum f0 i
+        = FiniteStartCoverage.startSpectrum f i.1 := by
+    intro i
+    unfold FiniteStartCoverage.startSpectrum
+    congr 1
+    ext s
+    simp only [Finset.mem_filter, Finset.mem_univ, true_and, f0]
+    constructor
+    · intro h; exact congrArg Subtype.val h
+    · intro h; exact Subtype.ext h
+  obtain ⟨m, hmpos, hcounts⟩ := FiniteStartCoverage.coverage_of_type_budget f0 hf0
+    (fun i => x i.1) (fun i => by rw [hspec i]; exact hdom i.1)
+  refine ⟨m, hmpos, fun e => ?_⟩
+  by_cases he : 0 < FiniteStartCoverage.startSpectrum f e
+  · have hc := hcounts ⟨e, he⟩
+    have hfilter : Finset.univ.filter (fun s => f s = e)
+        = Finset.univ.filter (fun s => f0 s = ⟨e, he⟩) := by
+      ext s
+      simp only [Finset.mem_filter, Finset.mem_univ, true_and, f0]
+      constructor
+      · intro h; exact Subtype.ext h
+      · intro h; exact congrArg Subtype.val h
+    rw [hfilter]
+    exact hc
+  · have hA0 : FiniteStartCoverage.startSpectrum f e = 0 :=
+      Nat.eq_zero_of_not_pos he
+    rw [hsupp e hA0]
+    have hempty : Finset.univ.filter (fun s => f s = e) = ∅ := by
+      apply Finset.card_eq_zero.mp
+      have hc : (Finset.univ.filter (fun s => f s = e)).card
+          = FiniteStartCoverage.startSpectrum f e := rfl
+      rw [hc, hA0]
+    rw [hempty, Finset.sum_empty]
+
+/-- **Ambient covered-start-sample classification.**  Over the full modeled
+molecule universe `U` — so every MB09 §6.1 class, including unobserved ones,
+enters `effectiveWeight N B` — a candidate `B` is dominated by the true start
+spectrum `A = startSpectrum f` on every read sample that visits each true
+genome start at least once if and only if it has a zero effective weight on a
+true-supported class or its effective weights are pointwise dominated by the
+truth's on the true support.  Unlike
+`covered_start_samples_effectiveProduct_le_iff`, this does **not** require `f`
+to be surjective onto `U`; a candidate may put mass on classes outside the
+truth's support, and those unobserved `(N - B j)` factors are retained. -/
+theorem covered_ambient_start_samples_effectiveProduct_le_iff
+    (f : S → U) (N : ℕ) (B : U → ℕ)
+    (hqA : ∀ i, 0 < FiniteStartCoverage.startSpectrum f i →
+      0 < FixedNBinomialEffectiveWeights.effectiveWeight N
+        (FiniteStartCoverage.startSpectrum f) i) :
+    (∀ x : U → ℕ, FiniteStartCoverage.SampleStartCoverage f x →
+        FixedNBinomialEffectiveWeights.effectiveProduct N B x
+          ≤ FixedNBinomialEffectiveWeights.effectiveProduct N
+              (FiniteStartCoverage.startSpectrum f) x) ↔
+      ((∃ i, 0 < FiniteStartCoverage.startSpectrum f i ∧
+          FixedNBinomialEffectiveWeights.effectiveWeight N B i = 0) ∨
+        (∀ i, 0 < FiniteStartCoverage.startSpectrum f i →
+          FixedNBinomialEffectiveWeights.effectiveWeight N B i
+            ≤ FixedNBinomialEffectiveWeights.effectiveWeight N
+                (FiniteStartCoverage.startSpectrum f) i)) := by
+  have key := covered_ambient_effectiveProduct_le_iff N
+    (FiniteStartCoverage.startSpectrum f) B hqA
+  constructor
+  · intro h
+    refine key.mp ?_
+    intro x hdom hsupp
+    exact h x (sampleStartCoverage_of_budget f hdom hsupp)
+  · intro h x hx
+    exact key.mpr h x
+      (startSpectrum_le_of_sampleStartCoverage f hx)
+      (sampleStartCoverage_eq_zero_of_startSpectrum_eq_zero f hx)
+
 end Ambient
 
 /-- A candidate supported on a **new** molecule class (outside the truth's
