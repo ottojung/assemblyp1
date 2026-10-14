@@ -175,9 +175,10 @@ guarantee.**
 | Read-unambiguous (`Unambiguous`) | posterior one given `E = Unambiguous`; the unique weakest read-only promise | sufficient, read-only, independent of `I_s` |
 
 **Consequence.** `I_s` is a *sufficient* structural certificate, not a necessary
-condition for certainty: the weakest sufficient truth-dependent promise is
-strictly weaker than `I_s` (§5). The original necessity/sufficiency statements
-remain attributed to the source.
+condition for certainty: there exist sufficient truth-dependent promises
+strictly weaker than `I_s` (read-unambiguous is one, §5), so `I_s` is not
+necessary for posterior singleton. The original necessity/sufficiency
+statements remain attributed to the source.
 
 ## 7. Genuinely open cases
 
