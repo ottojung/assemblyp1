@@ -54,9 +54,15 @@ The published guarantee, taken as an external premise, is
 
 In the repository this is stated against the real §6.4 definitions as
 `HistoricalEvent S L R := HistoricalCovers.HistoricalInformationFeasibleLiteral S L R`,
-with the observation `observedTypes_ofFinset S L R` (the read-string set) and
-`A : Finset (Fin L → α) → Genome α`. The premise `(NSG)` is the hypothesis
-`hNSG` of `historical_feasible_fibre_unique`.
+with the observation `observedTypes_ofFinset S L R` (the set of distinct
+read strings) and `A : Finset (Fin L → α) → Genome α`. This particular
+`hNSG` is a **stronger decoder-interface assumption** than the cited
+Corollary 1: the source algorithm processes N sampled read instances and
+builds a graph with edge multiplicities. No theorem here proves its decoder
+factors through the deduplicated string set. Thus the Lean endpoint is a
+valid conditional implication, **not yet a source-instantiated proof**.
+The instance-preserving source adapter and the source's length/model
+restriction checks remain OPEN.
 
 ## 2. Theorem 1 — feasible-fibre uniqueness
 
@@ -172,6 +178,16 @@ dihedral equivalence), error-free reads, and finite versus population sampling.
 
 ## 7. Source-fidelity caveats
 
+**Open read-instance bridge.** The NSG Corollary 1 decoder operates on
+sampled read *instances*. The repository's `observedTypes_ofFinset`
+forgets repeated strings for coverage/bridging, but no theorem proves
+that this deletion preserves NSG reconstruction. The
+`historical_feasible_fibre_unique` theorem assumes a stronger
+read-type-set decoder interface as `hNSG`, rather than deriving
+that interface from the published algorithm. A full source connection
+needs a list/multiset of read instances (or a proof of duplicate
+invariance) and the original sampling/length restrictions.
+
 1. **Latent placements, not shared position labels.** The repository's literal
    §6.4 predicate `HistoricalInformationFeasibleLiteral S L R` is a predicate of
    a candidate genome and a *candidate-specific* set of sampled start positions
@@ -229,7 +245,7 @@ dihedral equivalence), error-free reads, and finite versus population sampling.
 | Ordinary-ML non-implication | Kernel-checked witness | `Example.ordinary_ML_prefers_infeasible`, `Example.constrained_kills_infeasible` |
 | Theorem 4, no rule exceeds the decoder | Kernel-checked | `ReadModel.orbit_mass_le_total` |
 | Theorem 5, decoder interface | Stated; depends on source case | this document, §6 |
-| Connection of `(NSG)` to the real §6.4 predicate | Source inference, not formalized | `historical_feasible_fibre_unique` hypothesis |
+| Connection of published NSG decoder to the §6.4 predicate | **OPEN:** Finset decoder assumption exceeds what Corollary 1 directly supplies | `historical_feasible_fibre_unique` strengthened external hypothesis; source instance adapter pending |
 
 ## 9. What this is not
 

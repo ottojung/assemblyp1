@@ -190,6 +190,9 @@ Every material result is classified as one of:
   non-implication witness. The NSG reconstruction guarantee itself remains an
   external premise; the truth-dependent event `E=F(G,R)` is not `R`-observable,
   and `I_s` is sufficient, not necessary.
+- **Source decoder adapter OPEN:** this endpoint assumes a decoder receiving
+  only distinct read types, while NSG operates on read instances. The
+  duplicate-invariance/instance-preserving bridge is not proved.
 - **Not claimed:** unconditional ordinary maximum-likelihood recovery; a new
   biological or combinatorial theorem; that infinite-read uniqueness was
   unnecessary; any transfer to the §§6.1/6.2 pseudo-likelihood objectives.

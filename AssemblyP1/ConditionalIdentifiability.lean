@@ -296,8 +296,16 @@ guarantee for the literal historical event: a deterministic read-only decoder
 candidates that are both historically feasible and induce the *same observed
 read-string set* lie in the same orbit.
 
-`hNSG` is the external premise (Shomorony et al. 2016, Corollary 1); it is not
-proved in this repository.  Everything below `hNSG` is kernel-checked. -/
+All subsequent theorems are kernel-checked FROM the `hNSG` hypothesis.
+The exact `hNSG` interface here is an ADDITIONAL, STRONGER ASSUMPTION
+than published Corollary 1: it gives the decoder only a Finset of DISTINCT
+read strings, whereas the published algorithm works with N sampled READ
+INSTANCES and constructs a graph with edge multiplicities. No theorem
+establishes that the original decoder factors through the deduplicated
+`observedTypes_ofFinset`, nor that it works outside the original
+read-length/genome-length regime. Hence the source decoder adapter
+remains OPEN. This endpoint establishes the stated conditional inference,
+not a formal source-level instantiation of the 2016 corollary. -/
 theorem historical_feasible_fibre_unique {α : Type u} [DecidableEq α] {L : ℕ}
     (A : Finset (Fin L → α) → Genome α)
     (orbit : Genome α → Genome α → Prop) (horb : Equivalence orbit)
