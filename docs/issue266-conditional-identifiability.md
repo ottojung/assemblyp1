@@ -1,7 +1,9 @@
 # Conditional identifiability from the Not-So-Greedy information-feasibility guarantee
 
 _Status: 2026-10-14. Mathematical front for issue #266. Readable
-theorem/proof/caveat for issue #265 to incorporate._
+theorem/proof/caveat for issue #265 to incorporate. The read-instance bridge
+(Finset decoder versus the source's sampled read instances) is closed by the
+duplicate-invariance adapter of §7._
 
 ## Epistemic status and trust boundary
 
@@ -57,14 +59,17 @@ The published guarantee, taken as an external premise, is
 In the repository this is stated against the real §6.4 definitions as
 `HistoricalEvent S L R := HistoricalCovers.HistoricalInformationFeasibleLiteral S L R`,
 with the observation `observedTypes_ofFinset S L R` (the set of distinct
-read strings) and `A : Finset (Fin L → α) → Genome α`. This particular
-`hNSG` is a **stronger decoder-interface assumption** than the cited
-Corollary 1: the source algorithm processes N sampled read instances and
-builds a graph with edge multiplicities. No theorem here proves its decoder
-factors through the deduplicated string set. Thus the Lean endpoint is a
-valid conditional implication, **not yet a source-instantiated proof**.
-The instance-preserving source adapter and the source's length/model
-restriction checks remain OPEN.
+read strings) and `A : Finset (Fin L → α) → Genome α`. This decoder interface
+is **not** a strengthening of the cited result: the manuscript explicitly
+deduplicates read instances before assembly — "since the reads in `R` are
+assumed to be all distinct from each other (which can be achieved by a
+preprocessing step)" (author-hosted manuscript, §3.2, PDF p. 12) — its vertex
+set is the set of distinct read strings `R = {st(v) : v ∈ V}`, and both the
+§6.4 feasibility conditions and the §6.3 edge multiplicities are functions of
+that set. §7 makes the deduplication adapter kernel-explicit. The remaining
+trust boundary is the source guarantee `hNSG` itself (the algorithm is not
+formalized), not the read-instance encoding; the source length/model
+restrictions are recorded in `SourceRegime`.
 
 ## 2. Theorem 1 — feasible-fibre uniqueness
 
@@ -179,18 +184,31 @@ genome length `G` (external parameter or intrinsic), read model (read strings,
 not sampled placements), orientation (oriented reads give cyclic-shift
 equivalence; reverse-complement-collapsed molecule classes give a coarser
 dihedral equivalence), error-free reads, and finite versus population sampling.
+The graph `X_r` in Case B is built from the distinct read-string set after the
+source's deduplication preprocessing (§7); `SourceRegime` records the
+`2 ≤ L ≤ S.len` length regime and the error-free/circular assumptions.
 
 ## 7. Source-fidelity caveats
 
-**Open read-instance bridge.** The NSG Corollary 1 decoder operates on
-sampled read *instances*. The repository's `observedTypes_ofFinset`
-forgets repeated strings for coverage/bridging, but no theorem proves
-that this deletion preserves NSG reconstruction. The
-`historical_feasible_fibre_unique` theorem assumes a stronger
-read-type-set decoder interface as `hNSG`, rather than deriving
-that interface from the published algorithm. A full source connection
-needs a list/multiset of read instances (or a proof of duplicate
-invariance) and the original sampling/length restrictions.
+**Read-instance bridge (duplicate invariance).** The NSG manuscript states
+the algorithm on a set of reads `R` and explicitly deduplicates read
+instances as a preprocessing step (§3.2, PDF p. 12); the vertex set is the
+distinct read strings, and the §6.3 edge multiplicities are computed by
+Algorithm 6 from the graph *topology*, not from read-instance counts. The
+repository's `observedTypes_ofFinset` is exactly that distinct-string set, and
+`HistoricalInformationFeasibleLiteral` depends on the candidate only through
+it. Section 7 of the Lean module makes this a kernel-checked adapter:
+`list_toFinset_map` and `observedTypes_ofList_eq_toFinset` relate an instance
+list to its support, `historicalEvent_dedup` shows feasibility is
+duplicate-invariant, `exists_finset_decoder` factors any duplicate-invariant
+instance decoder through the support, `nsg_instance_iff_finset` proves the
+instance-level NSG premise is equivalent to the Finset premise, and
+`historical_feasible_fibre_unique_of_instance_decoder` restates the historical
+endpoint with a source-shaped instance-level decoder. The remaining trust
+boundary is the external guarantee `hNSG` (the source algorithm is not
+formalized), not the read-instance encoding. `SourceRegime` records the
+`2 ≤ L ≤ S.len` length regime, error-free/circular hypotheses, and the
+deduplication step.
 
 1. **Latent placements and the likelihood marginal.** The repository's literal
    §6.4 predicate `HistoricalInformationFeasibleLiteral S L R` is determined by
@@ -250,7 +268,8 @@ invariance) and the original sampling/length restrictions.
 | Ordinary-ML non-implication | Kernel-checked witness | `Example.ordinary_ML_prefers_infeasible`, `Example.constrained_kills_infeasible` |
 | Theorem 4, no rule exceeds the decoder | Kernel-checked | `ReadModel.orbit_mass_le_total` |
 | Theorem 5, decoder interface | Stated; depends on source case | this document, §6 |
-| Connection of published NSG decoder to the §6.4 predicate | **OPEN:** Finset decoder assumption exceeds what Corollary 1 directly supplies | `historical_feasible_fibre_unique` strengthened external hypothesis; source instance adapter pending |
+| Read-instance bridge (Finset decoder vs. source instances) | Kernel-checked adapter under the source's explicit deduplication (§3.2, p. 12) | `exists_finset_decoder`, `nsg_instance_iff_finset`, `historicalEvent_dedup`, `historical_feasible_fibre_unique_of_instance_decoder` |
+| Source length/model regime | Kernel-checked structure; prose hypotheses | `SourceRegime` (this document, §7) |
 
 ## 9. What this is not
 

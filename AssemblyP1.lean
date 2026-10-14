@@ -52,6 +52,7 @@ import AssemblyP1.Section62VariableOverlap247e
 import AssemblyP1.FiniteSamplingCounterexample
 import AssemblyP1.FiniteBayesDecision
 import AssemblyP1.IidMapMonotonicity
+import AssemblyP1.GenomeOrbitAdapter
 import AssemblyP1.PopulationReduction
 import AssemblyP1.PopulationGibbsTest
 import AssemblyP1.OrientedRigidity
@@ -221,8 +222,12 @@ import AssemblyP1.FixedNConstructiveWitnessAudit
 import AssemblyP1.FiniteStartCoverage
 import AssemblyP1.FiniteStartCoverageAudit
 import AssemblyP1.FixedNBinomialEffectiveWeightsAudit
+import AssemblyP1.CoveredBinomialWeightsIff
+import AssemblyP1.CoveredBinomialWeightsIffAudit
 import AssemblyP1.FiniteSideInformationColoring
 import AssemblyP1.FiniteSideInformationColoringAudit
+-- #270 positive finite-family iid ML recovery via Hellinger affinity.
+import AssemblyP1.FiniteReadRecovery
 
 /-! ## `Issue94Transposition`: the Kotzig/Ukkonen/Pevzner descent, and an obstruction
 

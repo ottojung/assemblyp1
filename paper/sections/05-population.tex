@@ -218,6 +218,80 @@ is kernel checked, with no unproved external BBT premise; its axiom audit
 contains only \texttt{propext}, \texttt{Classical.choice}, and
 \texttt{Quot.sound}.}
 
+
+\subsection{Finite-read reliability: an exponential recovery theorem}
+\label{sec:finite-recovery}
+
+The population theorem answers the structural question: when can the read
+distribution identify the genome?  A second positive theorem quantifies how
+reliably \emph{finite} iid read samples discriminate hypotheses once the
+candidate family is finite and identifiable.  This result directly connects
+the population and finite-sampling questions without claiming that a
+finite-sample ML estimator always selects the truth.
+
+\begin{theorem}[Exponential maximum-likelihood recovery for a finite family]
+\label{thm:finite-recovery}
+Fix a finite read alphabet $W$, a true probability distribution $p$ on $W$,
+and a finite set $\Theta$ of competing probability distributions $q$,
+each distinct from $p$.  Write
+\[
+  \rho(p,q)=\sum_{w\in W}\sqrt{p(w)q(w)}
+  \quad\text{and}\quad
+  \rho_*=\max_{q\in\Theta}\rho(p,q)<1
+\]
+when $\Theta$ is nonempty (otherwise the error event is empty).  For $n$
+independent reads drawn from $p$, let
+$L_q(r_1,\ldots,r_n)=\prod_{j=1}^{n}q(r_j)$.
+Then
+\[
+  \Pr_p\!\bigl\{\exists q\in\Theta:
+       L_q(R_1,\ldots,R_n)\ge L_p(R_1,\ldots,R_n)\bigr\}
+  \;\le\; \sum_{q\in\Theta}\rho(p,q)^n
+  \;\le\;|\Theta|\rho_*^n.
+\]
+In particular, for every target error tolerance $\delta>0$ there is an $N$
+such that the probability of any wrong candidate tying or beating the
+truth is at most $\delta$ for every $n\ge N$.
+\end{theorem}
+
+\begin{proof}
+For any read tuple $r$, set $a=L_p(r)$ and $b=L_q(r)$.  Both are
+nonnegative, and on the event $b\ge a$ we have
+$a\le\sqrt{ab}$, including when $a$ or $b$ vanishes.
+Summing over read tuples distributed according to $p$ bounds the
+pairwise event probability by
+\[
+ \sum_{r\in W^n}\sqrt{L_p(r)L_q(r)}
+ =\left(\sum_{w\in W}\sqrt{p(w)q(w)}\right)^n
+ =\rho(p,q)^n.
+\]
+The first displayed bound follows by the union bound.  For probability
+distributions, the squared-distance identity
+$\sum_w(\sqrt{p(w)}-\sqrt{q(w)})^2=2(1-\rho(p,q))$
+implies $\rho(p,q)<1$ exactly when $p\ne q$.
+Thus a finite identifiable competitor family has a uniform
+$\rho_*<1$, and its failure bound decays exponentially.
+\end{proof}
+
+\statusline{\kernelcheck{} for the finite-PMF pairwise, union, affinity, and
+consistency theorems in \texttt{AssemblyP1.FiniteReadRecovery}.  This is a
+finite-family theorem, not an assertion of a uniform rate over all
+unbounded-length genome candidates.  The formal adapter from the full
+circular-genome sampling model to the generic finite-PMF interface is
+still open.}
+
+For circular genomes with uniformly sampled start positions and oriented
+error-free length-$L$ reads, the intended distributions are
+$p_D(w)=\spec_L(D)(w)/|D|$.  The primitive-P2 population uniqueness theorem
+above supplies distinguishability on the corresponding
+rotation-equivalence classes, but a \emph{finite candidate restriction}
+and a proved model adapter are separate requirements for importing this
+finite-PMF rate into a genome-indexed Lean endpoint.  Likewise the reverse-
+complement-collapsed and product-binomial models require their own read-law
+interfaces.  Neither the theorem nor its proof conditions on the
+truth-dependent information-feasibility event, and neither contradicts the
+strict finite-sample counterexamples of Section~\ref{sec:finite}.
+
 \subsection{Scope of the population theorem}
 
 The theorem concerns oriented read types. The corresponding question for

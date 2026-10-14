@@ -485,6 +485,18 @@ Every material result is classified as one of:
   theorem, NOT unconditional sample-wise ML maximality; the `E` predicate
   must be the literal 2016 matched-string predicate, with the adapter
   explicit.
+- **Update (2026-10-14):** PR #198 merged as `a3dd8a0` adds
+  `AssemblyP1/ConditionalIdentifiability.lean` (abstract decoder/feasible-
+  fibre, conditional posterior, constrained MAP, no-better-rule corollary,
+  latent-placement weighted-mass adapter, historically scoped endpoint) plus
+  `docs/issue266-conditional-identifiability.md`, the ledger row, and this
+  entry. The previously OPEN read-instance gap is closed: the 2016 manuscript
+  explicitly deduplicates read instances before assembly (§3.2, p. 12), and
+  the new §7 adapter (`exists_finset_decoder`, `nsg_instance_iff_finset`,
+  `historicalEvent_dedup`, `historical_feasible_fibre_unique_of_instance_decoder`)
+  is kernel-checked; `SourceRegime` makes the `2 ≤ L ≤ S.len` regime explicit.
+  The external `hNSG` guarantee remains the trust boundary (the algorithm is
+  not formalized).
 
 ### #267 (reconcile finite ML counterexamples with Bayes optimality and conditional feasibility)
 
