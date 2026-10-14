@@ -78,7 +78,7 @@ and a single observation `a` with `P(g1,a) = 1/2`, `P(g2,a) = 1`, ML selects
 
 **Prior on sequences vs rotation classes.** The prior is placed on rotation
 classes, not on individual sequences: rotations are observationally equivalent
-(Remark `rem:rotations-equiv`), so they share a likelihood and must share a
+(Remark `rem:cyclic`), so they share a likelihood and must share a
 prior weight. Two warnings: (i) a uniform prior on individual linear
 representatives is **not** uniform on the orbits when orbit sizes differ, so
 the equal-prior `MAP = ML` identity must be stated on classes, not on raw
@@ -98,10 +98,15 @@ information-feasibility predicate `I_s` against the realized read placements
 `R`: coverage of the realized start positions, all-bridged triple repeats, and
 bridged interleaved repeats (Shomorony et al. 2016, Eq. (1); kernel-checked as
 `SourceFaithfulIs.InformationFeasible`). This is a property of `g` and `R`
-alone, evaluated on the *latent* placements, **not** the weaker historical
-proxy that matches observed read strings; the two predicates differ and the
-audit (`docs/audit-267-finite-ml-vs-conditional-bayes.md` §2) records which
-witness uses which. The information-feasibility event is
+alone, evaluated on the *latent* placements, **not** the source's historical
+read-**string** predicate `I_s^match` (paper Definition `def:historical-match`),
+which matches observed read strings at any genomic position; the two predicates
+are incomparable (paper Proposition `prop:historical-source`). The audit
+(`docs/audit-267-finite-ml-vs-conditional-bayes.md` §1.7) classifies each
+witness by read-type panel (oriented vs reverse-complement molecule classes),
+coverage predicate (placement vs historical), and objective, and records which
+witnesses match Not-So-Greedy's observable model. The information-feasibility
+event is
 
 ```
 E = F(G, R) = {(g, r) : F(g, r) = 1}.
@@ -175,8 +180,10 @@ the event `E` it forces `P_E([S] | r) = 1`. It does **not** say that ordinary
 unconstrained ML returns `[S]`: the ordinary likelihood still ranges over the
 whole candidate set and may rank a competitor above `[S]` (the finite
 witnesses). On `E`, conditional MAP and Not-So-Greedy agree about the rotation
-**class only**; neither is an `R`-only rule in the original experiment.
-**Mathematical proof.**
+**class only**. Conditional MAP is **not** an `R`-only rule in the original
+experiment (it conditions on the truth-dependent event `E`), whereas
+Not-So-Greedy **is** a read-only reconstruction rule; the agreement on the class
+does not make the two algorithms identical. **Mathematical proof.**
 
 ---
 
@@ -211,8 +218,10 @@ is `P(E) = 1/4`. The unconstrained MAP rule selects `g2` at `a` (joint `3/8`)
 and `g1` at `b` (joint `3/8`), giving accuracy `3/8 + 3/8 = 3/4`. Hence
 `accuracy(δ_E) = 1/4 < 3/4 = accuracy(δ_MAP)`. **Kernel-checked**
 (`AssemblyP1.MapDecisionExamples.map_beats_infallible_on_E`; the optimality of
-`δ_MAP` in this instance is `AssemblyP1.MapDecisionExamples.deltaMap_pointwise_max`
-fed to `pointwise_MAP_optimal`).
+`δ_MAP` is the pointwise joint maximizer of this instance by the definitional
+weights `AssemblyP1.MapDecisionExamples.J2`, so its prior-averaged optimality is
+the general `AssemblyP1.FiniteBayesDecision.pointwise_MAP_optimal`, not a
+separately kernel-checked instance lemma).
 
 **Interpretation.** An `R`-only rule can be infallible on `E` yet lose in
 original prior-averaged accuracy to unconstrained MAP. This is not a paradox:
@@ -246,7 +255,7 @@ finite ML can rank a nonfeasible competitor `h` above the feasible truth `g`;
 set. There is no contradiction: conditioning on the truth-dependent event `E`
 is a different experiment (§3), and `E` is not `R`-observable (§2).
 **Kernel-checked** (`AssemblyP1.MapDecisionExamples.toy_ml_picks_h`,
-`toy_cond_support`, `toy_cond_g_maximizes`, `toy_cond_normalized`).
+`toy_cond_support`, `toy_cond_g_beats_h`, `toy_cond_normalized`).
 
 ---
 
@@ -296,11 +305,12 @@ population `P2` theorem in full generality.
 
 ## 6. Relation to the population `P2` theorem
 
-The population `P2` theorem (Theorem `rem:population`, kernel-checked as
-`\popml`) states that for `L ≥ 2` and a primitive P2 truth, the truth maximizes
-the population log-likelihood over every positive-length primitive P2
-candidate, and every population tie is a cyclic rotation of the truth. This is
-the nontrivial combinatorial heart of the identifiability step.
+The population `P2` theorem (Theorems `thm:open-population` and
+`thm:population`, kernel-checked as `\popml`) states that for `L ≥ 2` a
+primitive P2-admissible truth is a population maximum-likelihood genome over
+every candidate class containing it, and is the unique such maximizer up to
+cyclic rotation among primitive P2-admissible **oriented** circular candidates.
+This is the nontrivial combinatorial heart of the identifiability step.
 
 The conditional inference theorem (notion 1) is an elementary consequence of
 deterministic reconstruction: on the feasible fiber, the truth is the unique
