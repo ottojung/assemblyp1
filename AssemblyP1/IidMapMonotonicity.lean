@@ -68,7 +68,6 @@ def iidJointSucc (π : Θ → ℝ) (p : Θ → R → ℝ) (n : ℕ) :
 
 /-- The n-read joint mass is the marginal of the (n+1)-read joint mass over
 the last read, because the read pmf is normalized: `∑ r, p θ r = 1`. -/
-omit [Fintype Θ] [DecidableEq Θ] [Nonempty Θ] in
 theorem iidJointSucc_marginal (π : Θ → ℝ) (p : Θ → R → ℝ) (n : ℕ)
     (hnorm : ∀ θ, ∑ r : R, p θ r = 1) :
     ∀ θ x, (∑ r : R, iidJointSucc π p n θ x r) = iidJoint π p n θ x := by
