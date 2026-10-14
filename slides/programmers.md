@@ -163,7 +163,7 @@ Shomorony, Kim, Courtade, and Tse (2016) introduced **Not-So-Greedy**: instead o
 Their theorem guarantees recovery of the true circular genome under precise **coverage and repeat-bridging** conditions. They ended their paper with an open question:
 
 $$
-\text{NSG's success conditions}
+\text{Not-So-Greedy's success conditions}
 \quad\stackrel{?}{\Longrightarrow}\quad
 S\in\operatorname*{arg\,max}_D P(R\mid D)
 $$
@@ -337,7 +337,7 @@ theorem and_comm (p q : Prop) : p ∧ q → q ∧ p :=
   fun h => ⟨h.2, h.1⟩
 ```
 
-A tiny **kernel** checks every proof term — the only code that must be trusted. CI replays all theorems through it and audits the axioms: Lean's three standard ones, `propext`, `Classical.choice`, `Quot_sound`.
+A tiny **kernel** checks every proof term — the only code that must be trusted. CI replays every theorem through it and audits the axioms: only Lean's three standard ones are allowed.
 
 **Where trust ends:** axioms are assumed, not proved; the kernel checks the *formal statement* — not whether the definitions match the biology.
 
@@ -346,7 +346,8 @@ Curry-Howard correspondence: the proposition p ∧ q → q ∧ p is the type; th
 term fun h => ⟨h.2, h.1⟩ is the proof — given a proof h of p ∧ q, build a
 proof of q ∧ p from its two components, swapped. The kernel type-checks the
 term against the type; type checking is a small, mechanical procedure. The
-project permits only the three standard axioms and no sorry/admit. Model
+project permits only the three standard axioms (propext, Classical.choice,
+Quot.sound) and no sorry/admit. Model
 fidelity stays with the humans and the source audits: trust the kernel for
 the proof, audit the axioms, own the model.
 -->
