@@ -46,6 +46,7 @@ import AssemblyP1.Section62GlobalCircularCorrespondence
 import AssemblyP1.Section62GlobalCircularAudit
 import AssemblyP1.Section62ReductionDependencyAudit
 import AssemblyP1.Section62FullSpectrumUnseenFactor
+import AssemblyP1.Section62CircularWindowAdapter
 import AssemblyP1.Section62VariableOverlap247e
 import AssemblyP1.FiniteSamplingCounterexample
 import AssemblyP1.FiniteBayesDecision
