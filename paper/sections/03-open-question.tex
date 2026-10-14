@@ -109,18 +109,22 @@ theorem.
 Assume only $F(S,R)$ --- the truth is feasible --- and maximize the
 \emph{original, unrestricted} likelihood $\Lik$ over the \emph{original}
 universe $\cands$. The maximizer need not be the truth: the strict
-counterexamples of Section~\ref{sec:finite} exhibit feasible truths beaten by
-competitors outside the fiber. \emph{This} is the genuinely nontrivial published
-comparison, and it is the reading the rest of the paper adopts when it speaks of
-``the 2016 question''.
+counterexamples of Section~\ref{sec:finite} exhibit truths that satisfy the
+relevant feasibility predicate while a competitor scores strictly higher.
+\emph{This} is the genuinely nontrivial published comparison, and it is the
+reading the rest of the paper adopts when it speaks of ``the 2016 question''.
 
 \paragraph{The hinge.}
-In every strict counterexample of Section~\ref{sec:finite} the competitor fails
-the feasibility predicate the truth satisfies --- otherwise the uniqueness
-content of Theorem~\ref{thm:notso-greedy} would be violated. Questions A and B
-therefore differ in exactly one place: whether the optimization is restricted to
-the feasible fiber. Inside the fiber the truth is the unique conditional
-maximizer; outside it, likelihood can and does prefer other candidates.
+Questions A and B differ in exactly one place: whether the optimization is
+restricted to the feasible fiber. Inside the fiber the truth is the unique
+conditional maximizer, by the uniqueness content of the reconstruction theorem,
+so Question~A returns the truth; outside it --- that is, under the original
+unrestricted likelihood of Question~B --- likelihood can and does prefer other
+candidates, as the strict counterexamples of Section~\ref{sec:finite} show. Each
+witness is checked against its own feasibility predicate: the placement
+witnesses use the project's $\Is$, and $W_1,W_2$ are certified under the
+source's own $I_s^{\mathrm{match}}$. We do not read one predicate as the other
+(Proposition~\ref{prop:historical-source}).
 
 \paragraph{The conditioning is truth-dependent.}
 The event $E=F(S,R)$ --- ``the truth is feasible'' --- is defined through the
@@ -297,10 +301,11 @@ are fully consistent with the prior-averaged Bayes guarantee of
 Theorem~\ref{thm:bayes-optimal} --- which averages over the prior, not over a
 single truth --- and with limiting consistency for an identifiable finite family
 (Remark~\ref{rem:sample-complexity}). They are also consistent with Question~A
-of Section~\ref{sec:two-questions}: in every witness the beating competitor lies
-outside the feasible fiber, so the conditional guarantee is untouched. The
-finite landscape is therefore not a contradiction but a map of where each of the
-five notions of Section~\ref{sec:five-notions} applies, and we preserve each
+of Section~\ref{sec:two-questions}: that question restricts the candidate set to
+the feasible fiber and asks for the conditional maximizer there, a different
+experiment from the unrestricted maximization the witnesses refute. The finite
+landscape is therefore not a contradiction but a map of where each of the five
+notions of Section~\ref{sec:five-notions} applies, and we preserve each
 witness's exact scope --- observation model, candidate membership, historical
 read-string versus placement-based coverage, candidate lengths, prior family,
 and likelihood formula --- rather than reading one row as another.
@@ -497,9 +502,9 @@ finite distinguishable family &
 \caption{The theorem/assumption matrix. Proof-to-claim classes: (i)
 kernel-checked exact Lean theorem; (ii) proof in this paper, not yet in Lean;
 (iii) textbook external theorem with citation; (iv) published 2016
-reconstruction result used as an external premise; (v) open. Every headline
-claim carries exactly one class, and conditional residues are named rather than
-hidden.}
+reconstruction result used as an external premise; (v) open. Each headline
+claim carries one primary class (or an explicit pair), and conditional residues
+are named rather than hidden.}
 \label{tab:claims}
 \end{table}
 
