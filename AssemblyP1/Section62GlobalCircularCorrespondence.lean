@@ -47,6 +47,30 @@ open Section62Flow Section62SpellingReductionCandidate Section62GlobalSpellingPr
 
 variable {A W : Type} [DecidableEq W]
 
+/-! ## The two homes of the corrected reduction agree
+
+The corrected spelling-preserving reduction has two definitionally identical
+homes: the base §6.2 model module `Section62Flow` (added alongside the audited
+`isReducibleB`, so the base model carries both) and
+`Section62SpellingReductionCandidate` (the predicate consumed by #261/#262).
+The two Boolean definitions are the same expression, so the predicates — and
+hence the reduced edge lists — are definitionally equal.  This bridge records
+that the duplication is benign and lets downstream consumers use either. -/
+
+theorem isReducibleSpelling62B_eq_candidate {A W : Type} [DecidableEq A] [DecidableEq W]
+    (toList : W → List A) (rc : W → W) (readLen oMin : Nat) (verts : List W)
+    (e : BdEdge A W) :
+    Section62Flow.isReducibleSpelling62B A W toList rc readLen oMin verts e =
+      Section62SpellingReductionCandidate.isReducibleSpellingB W toList rc readLen oMin verts e :=
+  rfl
+
+theorem transitivelyReducedSpelling62_eq_candidate {A W : Type} [DecidableEq A] [DecidableEq W]
+    (toList : W → List A) (rc : W → W) (readLen oMin : Nat) (verts : List W)
+    (edges : List (BdEdge A W)) :
+    Section62Flow.transitivelyReducedSpelling62 A W toList rc readLen oMin verts edges =
+      Section62SpellingReductionCandidate.transitivelyReducedSpelling W toList rc readLen oMin verts edges :=
+  rfl
+
 /-! ## Circuits -/
 
 /-- A *circuit* (closed bidirected walk) at the read molecule class `v`: a
@@ -102,7 +126,8 @@ theorem surviving_seam_opposite {v : W}
   obtain ⟨e₁, hl₁, hy₁⟩ := hp.2.1
   refine ⟨e₀, e₁, hh₀, hl₁, ?_⟩
   have hmem₀ : e₀ ∈ overlapEdges A W toList rep rc readLen oMin verts :=
-    (List.mem_filter.mp (hsurv e₀ (by rw [hh₀]; exact List.mem_cons_self))).1
+    (List.mem_filter.mp (hsurv e₀ (by
+      rw [List.eq_cons_of_mem_head? hh₀]; exact List.mem_cons_self))).1
   have hmem₁ : e₁ ∈ overlapEdges A W toList rep rc readLen oMin verts :=
     (List.mem_filter.mp (hsurv e₁ (mem_of_mem_getLast? hl₁))).1
   have hs₀ : e₀.sgnX = sgnRep v (rep v) := by
@@ -153,9 +178,6 @@ theorem global_circuit_signed_expansion [DecidableEq A]
   refine ⟨p, ⟨hp, ?_⟩, hchain, hsurv, ?_⟩
   · exact surviving_seam_opposite toList rep rc readLen oMin verts p hsurv hp
   · exact List.append_right_injective (toList v) htail
-
-#print axioms global_circuit_signed_expansion
-#print axioms surviving_seam_opposite
 
 /-! ## The circular word of a circuit -/
 
@@ -210,13 +232,13 @@ theorem pathTail_length [DecidableEq A]
   | nil => intro _; simp [pathTail]
   | cons e rest ih =>
       intro hLen
-      have hlen_e : ((toList e.sy).drop e.len).length = readLen - e.len := by
+      have hlen_e : (edgeTail toList e).length = readLen - e.len := by
+        unfold edgeTail
         rw [List.length_drop, hLen e List.mem_cons_self]
       have hrest : ∀ x ∈ rest, (toList x.sy).length = readLen :=
         fun x hx => hLen x (List.mem_cons_of_mem e hx)
-      simp only [pathTail, List.flatMap_cons, List.length_append, List.map_cons,
+      rw [pathTail_cons, List.length_append, hlen_e, ih hrest, List.map_cons,
         List.sum_cons]
-      rw [hlen_e, ih hrest]
 
 /-- The spelled circular word of a circuit has length `G = Σ (readLen − e.len)`. -/
 theorem circularWord_length [DecidableEq A]
@@ -241,5 +263,13 @@ theorem mem_strandsOf_rc {rc : W → W} {verts : List W} {m : W}
     (hm : m ∈ verts) : rc m ∈ strandsOf rc verts := by
   unfold strandsOf
   exact List.mem_append.mpr (Or.inr (List.mem_map.mpr ⟨m, hm, rfl⟩))
+
+#print axioms global_circuit_signed_expansion
+#print axioms global_circuit_circular_word
+#print axioms surviving_seam_opposite
+#print axioms pathTail_length
+#print axioms circularWord_length
+#print axioms isReducibleSpelling62B_eq_candidate
+#print axioms transitivelyReducedSpelling62_eq_candidate
 
 end AssemblyP1.Section62GlobalCircularCorrespondence
