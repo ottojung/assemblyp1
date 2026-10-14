@@ -16,8 +16,13 @@ binomial approximation is
 L_6.1(D | x) = ∏_c C(n, x_c) · (d_c / N)^x_c · (1 − d_c/N)^(n − x_c)
 ```
 
-The product ranges over **all** `4^k` DNA molecule classes `c` (for a `k`-mer
-read length `k` over the four-base alphabet). Classes with `x_c = 0` and
+The product ranges over the DNA molecule classes `c` (for a `k`-mer read length
+`k` over the four-base alphabet). MB09 §6.1 writes `4^k` for the number of these
+variables; that is the *oriented* k-mer count, while the unordered
+reverse-complement molecule classes of §3.1 number `(4^k + f_k)/2` (about half).
+This note uses the **RC-class reading as an explicit modeling decision**, with the
+cardinality tension recorded in `section62-global-circular-and-unseen-factor-284.md`
+§3; the two readings give different universes and objectives. Classes with `x_c = 0` and
 `d_c = 0` contribute the factor `C(n,0)·(0/N)^0·(1−0/N)^n = 1`; these are the
 **unseen count-zero factors**. They are retained in the literal product
 (`lik` in `AssemblyP1/Section62BridgingCounterexample.lean`,
@@ -63,7 +68,7 @@ claimed. The adapter supplies the spectrum-level half of that interpretation.
 
 | Claim | Status |
 |---|---|
-| The §6.1 product ranges over all `4^k` molecule classes, including unseen count-zero factors | **source fact** (MB09 §6.1); formalized for the binary toy (`lik`, `marginal_eq_one_of_zero`, `lik_eq_relevant_prod`) |
+| The §6.1 product ranges over all k-molecule classes, including unseen count-zero factors | **source fact** for the product form (MB09 §6.1); the **RC-class versus oriented-`4^k` index is an explicit repository modeling decision**, not a source fact; formalized for the binary toy (`lik`, `marginal_eq_one_of_zero`, `lik_eq_relevant_prod`) |
 | The §6.2 graph objective omits unseen classes | **source fact** (MB09 §6.2: "the vertices of this graph are the reads") |
 | The full-spectrum adapter (zero-extension) makes the §6.1 product reduce to the observed-class product | **mathematical proof** (each unseen factor is `1`) |
 | A §6.2 feasible flow's adapter spectrum is a §6.1 maximizer | **open** (needs the flow-to-assembly interpretation and the ML maximality classification of #261/#262) |

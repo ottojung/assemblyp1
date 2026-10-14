@@ -140,6 +140,15 @@ This identity is now **kernel-checked in two layers**:
   `interior_count_zero_of_pointwise` turns the pointwise surviving-edge no-skip
   theorem into the count-zero hypothesis the partition consumes.
 
+  **Window-scope caveat.**  `window D readLen s` is the true length-`readLen`
+  circular window only when `readLen ≤ D.length`; when the spelled genome is
+  shorter than one read (`G = D.length < readLen`) the rotation
+  `D.drop s ++ D.take s` has length `G`, so `.take readLen` returns the whole
+  rotation rather than a genuine wrap-around length-`readLen` window.  The
+  adapter's `observation7_*` theorems are stated for the concrete `window`
+  function and therefore cover the `readLen ≤ G` regime; the `G < readLen`
+  wrap-around window is part of the bounded remaining work recorded below.
+
 The **only remaining sub-obligation** is the canonical construction of the
 circular genome `D` from a signed walk and the proof that it satisfies the
 `CircularSpelling` hypotheses (the coherence of the signed overlap data across
@@ -221,16 +230,27 @@ Theorems: `observed_ratio`, `unseen_factor_ratio`, `unseen_factor_lt_one`,
 it by exactly `256/625`. The observed-flow surrogate and the complete-spectrum
 likelihood are therefore genuinely different objectives and must not be conflated.
 
-### The indexing decision (resolved, kernel-checked for the instance)
+### The indexing decision (recorded as an explicit modeling choice; kernel-checked for the instance)
 
 §6.1 indexes `X_i` over `4^k` outcomes while calling them *k-molecules*.  MB09
 §3.1 models a DNA molecule as an unordered reverse-complement strand pair, so the
-index ranges over **reverse-complement classes**, not oriented k-mers: a
-non-palindromic oriented k-mer `w` and `rc w` are the same molecule, counted once
-with class frequency `c_S(w) + c_S(rc w)`.  For length `k` there are
+repository **chooses** to index by **reverse-complement classes**, not oriented
+k-mers: a non-palindromic oriented k-mer `w` and `rc w` are the same molecule,
+counted once with class frequency `c_S(w) + c_S(rc w)`.  For length `k` there are
 `(4^k + f_k)/2` RC classes (`f_k = 0` for odd `k`, `f_k = 4^{k/2}` for even `k`
-by Burnside on the involution `rc`).  This decision is now recorded and
-kernel-checked for the binary length-3 instance in
+by Burnside on the involution `rc`).
+
+This choice is a **modeling decision, not a source fact**, and the two readings
+have different cardinalities and different likelihood objectives.  MB09 §6.1
+states literally that "There are `4^k` such variables"; that count is the number
+of *oriented* k-mers, whereas the unordered RC molecule classes of §3.1 number
+`(4^k + f_k)/2` — roughly half.  The `4^k` wording therefore cannot itself be the
+RC-class count, and treating the §6.1 index as RC molecule classes refines the
+literal text rather than following from it.  The repository adopts the RC-class
+reading because §3.1 defines a molecule as an unordered strand pair and §6.2
+builds molecule vertices; the choice is recorded here so it is not mistaken for
+an established reading of the source.  This decision is kernel-checked for the
+binary length-3 instance in
 `AssemblyP1/Section62FullSpectrumIndexing.lean`: `rc3_orbit_count` proves the
 reverse-complement involution `rc3` on `Fin 3 → Bool` has exactly `4` orbits,
 each of size `2` (`rc3_orbit_card_two`), matching `(2^3 + 0)/2` and

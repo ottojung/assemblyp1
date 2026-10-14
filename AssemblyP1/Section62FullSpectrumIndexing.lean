@@ -12,14 +12,21 @@ binomials
 ## The indexing decision (oriented k-mers versus reverse-complement classes)
 
 MB09 §3.1 models a DNA *molecule* as an unordered reverse-complement strand pair,
-and §6.1 calls the index a "k-molecule".  The index therefore ranges over
-**reverse-complement classes**, not oriented k-mers: a non-palindromic oriented
-k-mer `w` and its reverse complement `rc w` are the *same* molecule, and its
-class frequency is the sum `c_S(w) + c_S(rc w)` counted once.  Consequently the
-number of classes is `(#oriented + #palindromes)/2`, where `#oriented = 4^k` and
-`#palindromes = 0` for odd `k`, `4^{k/2}` for even `k` (Burnside on the
+and §6.1 calls the index a "k-molecule".  The repository therefore **chooses** to
+index by **reverse-complement classes**, not oriented k-mers: a non-palindromic
+oriented k-mer `w` and its reverse complement `rc w` are the *same* molecule, and
+its class frequency is the sum `c_S(w) + c_S(rc w)` counted once.  Consequently
+the number of classes is `(#oriented + #palindromes)/2`, where `#oriented = 4^k`
+and `#palindromes = 0` for odd `k`, `4^{k/2}` for even `k` (Burnside on the
 involution `rc`).  For the repository's binary length-3 instance this is
 `(2^3 + 0)/2 = 4`, matching `Mol = Fin 4` of `Section62FullSpectrumUnseenFactor`.
+
+This is an explicit **modeling decision, not a source fact**: MB09 §6.1 states
+literally that "There are `4^k` such variables", which is the *oriented* k-mer
+count, whereas the unordered RC classes number `(4^k + f_k)/2` (about half).  The
+two readings give different universes and objectives; the decision is recorded in
+`docs/section62-global-circular-and-unseen-factor-284.md` §3.  The general
+Burnside orbit count for arbitrary `k` remains open.
 
 The general involution orbit-count `2 * #classes = #oriented + #fixed` is stated
 below for the concrete binary length-3 instance (`rc3`, kernel-checked by
