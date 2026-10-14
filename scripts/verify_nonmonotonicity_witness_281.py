@@ -111,11 +111,16 @@ def main():
           "succ(5)=%s > succ(6)=%s"
           % (succ[1], succ[2], succ[3], succ[4], succ[5], succ[6]))
 
-    # No ties anywhere: strict and non-strict success events coincide.
-    from math import log2
+    # Exact integer cross-check for absence of positive-probability ties,
+    # ONLY for n >= 1. The empty sample ties at n=0, and impossible reads
+    # (e.g., CC, with probability zero under p_S) can tie at 0 likelihood.
+    # For positive-probability tuples with a AA reads, equality of the
+    # two likelihoods would require 3**n == 2**(2*n-a), which is impossible
+    # for every n >= 1 by parity. No floating-point proximity heuristic.
     for n in range(1, 40):
-        assert abs(n * log2(Fraction(4, 3)) - round(n * log2(Fraction(4, 3)))) > 1e-9
-    print("no ties for 1<=n<40 (threshold n*log2(4/3) is never an integer)")
+        for a in range(n + 1):
+            assert 3**n != 2**(2*n-a)
+    print("no positive-probability ties for 1<=n<40 (exact integer check)")
 
     # Sanity: consistency, succ(n) -> 1 (law of large numbers).
     for n in (20, 40, 80):
