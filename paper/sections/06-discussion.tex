@@ -88,6 +88,19 @@ overlap deletion from a genuinely spelling-preserving graph
 reduction. That distinction determines whether the optimized
 object even represents a sequence.
 
+The finite-read recovery theorem (Theorem~\ref{thm:finite-recovery}) is a
+\emph{quantitative reliability} result rather than a structural
+classification: it converts population identifiability of a finite candidate
+family into an explicit exponential bound on the probability of an exact-ML
+error. Its hypotheses are deliberately minimal --- a finite, pairwise
+distinguishable family --- and its conclusion is about the error rate, not the
+likelihood, so it neither contradicts the finite counterexamples of
+Section~\ref{sec:finite} nor claims monotonicity of finite-sample success
+(Proposition~\ref{prop:nonmonotone}). It is the finite counterpart of the
+population uniqueness theorem; together the two answer the identifiability
+question at the population and finite-sample levels, each under its own
+assumptions.
+
 Each proof therefore has its own mathematical claim, scope,
 and consequence. The central investigation remains the
 relationship between read information, feasible assembly,
@@ -196,7 +209,11 @@ some read types, and a competitor can score higher even when the source is
 reconstructible. Exact counterexamples establish that boundary under
 several observation conventions. With the population distribution instead,
 the truth always maximizes expected likelihood; for primitive P2 genomes,
-complete-spectrum uniqueness makes that maximum unique up to rotation.
+complete-spectrum uniqueness makes that maximum unique up to rotation. On a
+finite, identifiable candidate family, the exact-ML error probability decays
+exponentially with the number of independent reads, even though its
+finite-sample success curve need not be monotone
+(Theorem~\ref{thm:finite-recovery}, Proposition~\ref{prop:nonmonotone}).
 The proofs and finite certificates are formalized in Lean. Together,
 these results explain what graph structure can determine, what read
 frequencies contribute, and how the two interact. Throughout, the

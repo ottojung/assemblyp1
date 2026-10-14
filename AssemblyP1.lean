@@ -245,6 +245,9 @@ import AssemblyP1.FiniteReadRecoveryP2Bridge
 import AssemblyP1.FiniteReadRecoveryP2BridgeAudit
 import AssemblyP1.FiniteReadRecoveryP2Complete
 import AssemblyP1.FiniteReadRecoveryP2CompleteAudit
+-- #281 non-monotonicity of finite-sample exact-ML success (AAC vs AAAC).
+import AssemblyP1.NonmonotonicityWitness281
+import AssemblyP1.NonmonotonicityWitness281Audit
 
 /-! ## `Issue94Transposition`: the Kotzig/Ukkonen/Pevzner descent, and an obstruction
 

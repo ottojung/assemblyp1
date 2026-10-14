@@ -324,8 +324,9 @@ positions in $S$.  Then there is a $\rho_*<1$ such that
 and for every $\delta>0$ there exists $N$ such that the displayed
 wrong-competitor event has probability at most $\delta$ for all $n\ge N$.
 Ties are counted as errors, so this covers every maximum-likelihood
-tie-breaking rule.  If the original truth belongs to the candidate
-class, it therefore wins, up to rotation, with probability tending to one.
+tie-breaking rule.  For maximum-likelihood selection over the augmented
+candidate family $\{S\}\cup\mathcal C$, the truth's rotation class therefore
+wins with probability tending to one.
 \end{corollary}
 
 \begin{proof}
@@ -382,3 +383,71 @@ says nothing about uniqueness within a tie class. The two are related only
 through identifiability, which each needs in its own way, and neither is
 replaced by conditioning on information feasibility.
 \end{remark}
+
+\subsection{Finite-sample success is not monotone in the number of reads}
+\label{sec:nonmonotone}
+
+Theorem~\ref{thm:finite-recovery} bounds the \emph{error} of exact
+maximum-likelihood selection, and the bound decreases monotonically in $n$.
+The success probability itself need not: because the exact objective compares
+likelihoods on the realized sample, adding one more read can move the decision
+boundary and lower the chance that the truth is the strict maximizer. The
+following two-genome witness makes this exact.
+
+\begin{proposition}[Non-monotonicity of exact finite-sample ML success]
+\label{prop:nonmonotone}
+Let the read length be $L=2$ over the binary alphabet $\{A,C\}$, and let the
+candidate class consist of the two circular genomes
+\[
+  S = AAC \ (\text{truth, length }3), \qquad D = AAAC \ (\text{length }4),
+\]
+sampled with a uniformly random start. The uniform-start read laws are
+\[
+  p_S : AA\mapsto \tfrac13,\ AC\mapsto \tfrac13,\ CA\mapsto \tfrac13,\ CC\mapsto 0,
+\]
+\[
+  p_D : AA\mapsto \tfrac12,\ AC\mapsto \tfrac14,\ CA\mapsto \tfrac14,\ CC\mapsto 0,
+\]
+so the two distributions are distinct and Theorem~\ref{thm:finite-recovery}
+applies with affinity $\rho(p_S,p_D) = (1+\sqrt2)/\sqrt6 < 1$. Writing
+$\mathrm{succ}(n)=\Pr_S\{L_S(R_1,\dots,R_n) > L_D(R_1,\dots,R_n)\}$ for the
+probability that the truth is the strict exact-ML maximizer,
+\[
+  \mathrm{succ}(1) = \tfrac23, \qquad \mathrm{succ}(2) = \tfrac49,
+  \qquad\text{so}\qquad \mathrm{succ}(1) > \mathrm{succ}(2).
+\]
+Hence the exact finite-sample ML success probability is not monotone in $n$,
+even though it tends to $1$.
+\end{proposition}
+
+\begin{proof}
+On any read tuple containing $a$ copies of $AA$ and no $CC$, the exact
+likelihood ratio is
+\[
+  \frac{L_D}{L_S} = \frac{3^n}{2^{\,2n-a}},
+\]
+so $L_D > L_S$ exactly when $a > n\log_2(4/3)$. For $n\ge1$ no positive-probability tuple ties: the ratio is a positive
+power of $3$ divided by a power of $2$, so it cannot equal $1$.
+At $n=0$ the empty likelihoods tie, and tuples containing $CC$ have
+probability zero under $p_S$. Under $p_S$ each read is $AA$ with probability $1/3$. For $n=1$
+the truth wins exactly when the single read is not $AA$, with probability
+$2/3$. For $n=2$ the truth wins exactly when $a=0$, with probability
+$(2/3)^2 = 4/9$. The competitor rewards the $AA$ count, so a single read is
+more favorable to the truth than two.
+\statusline{\kernelcheck{} for $\mathrm{succ}(1)=2/3$, $\mathrm{succ}(2)=4/9$,
+and $\mathrm{succ}(1)>\mathrm{succ}(2)$ against the actual genome, read, and
+likelihood definitions
+(\texttt{AssemblyP1.NonmonotonicityWitness281}); \computed{} for an
+independent exact-rational cross-check over all read tuples
+(\texttt{scripts/verify\_nonmonotonicity\_witness\_281.py}).}
+\end{proof}
+
+This is the precise sense in which finite-sample ML success is not monotone:
+the exponentially small error bound of Theorem~\ref{thm:finite-recovery} is
+about the eventual rate, not a pointwise monotone curve. It also isolates why
+the population statement (Lemma~\ref{lem:gibbs}) and the finite statement have
+different shapes: the population maximizer is fixed, whereas a finite
+maximizer is a random variable whose law can move non-monotonically with the
+sample size. The affinity here, $(1+\sqrt2)/\sqrt6 \approx 0.9856$, is close
+to $1$, so the exponential bound is weak at small $n$ --- another reason the
+finite curve is not the population one.

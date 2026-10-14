@@ -154,6 +154,19 @@ Population uniqueness, oriented primitive P2, every positive-length candidate
   gcd-one reduction and complete-spectrum uniqueness all in the kernel) &
   Thm.~\ref{thm:population},
   \texttt{Issue94Complete.\allowbreak{}population\_\allowbreak{}unique\_\allowbreak{}ML} (issues \#89, \#94) \\
+Exact-ML error over a finite, pairwise-distinguishable read-distribution family
+is at most the sum of pairwise Hellinger affinities, hence decays exponentially
+  & kernel-checked finite-PMF theorem; finite family only, genome adapter and
+  unbounded classes separate &
+  Thm.~\ref{thm:finite-recovery},
+  \texttt{FiniteReadRecovery} (issue \#270, PR~\#199) \\
+Exact finite-sample ML success is not monotone in the read count: for
+$\{AAC,AAAC\}$ under oriented length-2 reads,
+$\mathrm{succ}(1)=2/3>4/9=\mathrm{succ}(2)$
+  & kernel-checked concrete witness against the actual genome, read, and
+  likelihood definitions &
+  Prop.~\ref{prop:nonmonotone},
+  \texttt{NonmonotonicityWitness281} (issue \#281) \\
 P1/P2 intrinsic admissibility; population objective
   & project modeling choice & this paper, Defs.~\ref{def:P1P2},
   \ref{def:population} \\
