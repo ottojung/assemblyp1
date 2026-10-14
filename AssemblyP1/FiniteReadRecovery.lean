@@ -50,7 +50,7 @@ high-probability maximum-likelihood recovery.
    probability tends to zero, so the correct-selection probability tends to
    one; an explicit sufficient `n` exists for any requested confidence.
 
-5. **Quantitative 99% illustration** (`il_confidence_99`): with `|Θ| = 4`
+5. **Quantitative 99% illustration** (`il_confidence_99`): with `|Θ| = 3`
    candidates and uniform affinity bound `ρ_max = 9/10`, `n = 55` iid reads
    give wrong-selection probability `< 1/100`, i.e. `> 99%` confidence.
 
@@ -415,7 +415,7 @@ theorem exists_n_for_confidence (p : W → ℝ) (Θ : Finset (W → ℝ)) (ρ_ma
       field_simp [ne_of_gt hcardpos]
     exact (hle.trans_lt (hmul.trans_eq hcancel)).le
 
-/-- **Quantitative 99% illustration.** With `|Θ| = 4` candidates and a uniform
+/-- **Quantitative 99% illustration.** With `|Θ| = 3` candidates and a uniform
 affinity bound `ρ_max = 9/10`, `n = 55` iid reads give wrong-selection
 probability `< 1/100`, i.e. correct-selection probability `> 99%`. This is a
 conditional numerical illustration, not a measured AssemblyP1 constant. -/
