@@ -179,6 +179,21 @@ Every material result is classified as one of:
 
 - **Status:** IN PROGRESS. Separable convex discrete Graver criterion.
 
+### #266 (PARTIAL) — conditional identifiability from the Not-So-Greedy premise
+
+- **Artifact (branch, pending independent review/merge):**
+  `AssemblyP1/ConditionalIdentifiability.lean`,
+  `docs/issue266-conditional-identifiability.md`.
+- **Kernel-checked:** feasible-fibre uniqueness and conditional posterior
+  certainty from the external Not-So-Greedy Corollary~1 premise, plus a
+  latent-placement weighted-mass adapter and a concrete ordinary-ML
+  non-implication witness. The NSG reconstruction guarantee itself remains an
+  external premise; the truth-dependent event `E=F(G,R)` is not `R`-observable,
+  and `I_s` is sufficient, not necessary.
+- **Not claimed:** unconditional ordinary maximum-likelihood recovery; a new
+  biological or combinatorial theorem; that infinite-read uniqueness was
+  unnecessary; any transfer to the §§6.1/6.2 pseudo-likelihood objectives.
+
 ---
 
 ## AXIS MATRIX (PROVED / REFUTED / OPEN)
