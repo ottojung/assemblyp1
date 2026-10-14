@@ -467,12 +467,14 @@ circulation into `Fin(G+1)` using the coordinate bound; (⟹) is immediate.
 **Boolean decider (`decider`, `rigid_iff_decider`).** `decider A G` is the
 `Bool` obtained by `decide` of the finite universal statement; `rigid_iff_decider`
 proves `Rigid A G ↔ decider A G = true`. The search space has exactly
-`(G+1)^{|E|}` elements (`card_candidates`), so the decider runs in
-`O((G+1)^{|E|} · poly(|V|+|E|))` time — *pseudopolynomial* (exponential in the
-support size, and in the **unary** size of `G`), and explicitly **not** a claim
-of polynomial time in the bit length of `G`. This resolves the "checkable, not
-merely a logical iff" gap without needing a sharp Graver-basis cardinality bound
-(§8.2 remains open for a polynomial classification).
+`(G+1)^{|E|}` elements (`card_candidates`), so the decider is a **finite
+exhaustive exponential search**: for each *fixed* support size `|E|` it is
+polynomial in the numeric magnitude `G` (with degree depending on `|E|`), but it
+is exponential in the support size. It is **not** a general
+pseudopolynomial-time algorithm (and not polynomial in the bit length of `G` or
+in `|E|`). This resolves the "checkable, not merely a logical iff" gap without
+needing a sharp Graver-basis cardinality bound (§8.2 remains open for a
+polynomial classification).
 
 **Kernel-checked worked instances.** The module contains `by decide` proofs of:
 

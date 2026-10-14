@@ -33,10 +33,12 @@ the finite type `E → Fin (G + 1)` under the natural coercion. Therefore
 
 This is a terminating decision procedure: enumerate the finite set
 `(E → Fin (G + 1))`, keep the admissible ones, and compare. Its search space
-has exactly `(G + 1) ^ |E|` elements (`card_candidates`), so it runs in
-`O((G + 1)^|E| · poly(|V| + |E|))` — *pseudopolynomial*, exponential in the
-support size, and explicitly **not** a claim of polynomial time in the bit
-length of `G`. This matches the issue's request for a genuine finite
+has exactly `(G + 1) ^ |E|` elements (`card_candidates`), so it is a **finite
+exhaustive exponential search**: for each *fixed* support size `|E|` it is
+polynomial in the numeric magnitude `G` (with degree depending on `|E|`), but
+it is exponential in the support size and is **not** a general
+pseudopolynomial-time algorithm (and not polynomial in the bit length of `G`
+or in `|E|`). This matches the issue's request for a genuine finite
 certificate rather than only a logical iff, and it avoids the (still open)
 question of a sharp Graver-basis cardinality bound.
 
