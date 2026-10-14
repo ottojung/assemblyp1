@@ -22,6 +22,14 @@ two-hypothesis toy. The script now passes 35/35 checks. The Bayes/MAP theorem
 is cited from the merged `AssemblyP1.FiniteBayesDecision` rather than
 re-proved; the concrete examples live in `AssemblyP1.MapDecisionExamples`._
 
+_Update 2026-10-14 (independent-review fixes): the review of issue #267
+requested changes on six mechanical defects — two dangling Lean theorem
+citations, three dangling paper labels, the missing historical-vs-latent
+predicate record, and the missing explicit SAME/NOT-SAME observable-model
+classification against Not-So-Greedy. All six are addressed in this revision;
+the witness arithmetic and `I_s` membership results above are unchanged, and
+the independent checker still passes 35/35._
+
 _Reproduction:_
 
 ```sh
@@ -150,6 +158,81 @@ source-faithful `InformationFeasible` implementation in the Python script.
 **Critical finding**: W6 is a second witness (alongside W3) whose competitor satisfies `I_s`. The conditional-on-`E` MAP would **also** select the wrong genome (`AABC`, likelihood `1/8 > 2/25`). This is a variable-length counterexample where the shorter genome wins by concentrating the same read mass into fewer positions. Both candidates are P1 and primitive, so this is not a structural obstruction but a finite-frequency fluctuation.
 
 **W6 mechanism**: The observed reads `{AAB, BCA}` have the same multiplicity in both candidates (`d(AAB)=1, d(BCA)=1`), but the candidate lengths differ (5 vs 4). The exact multinomial `n! · ∏(d_w/G)^x_w` divides by `G^n`, so the shorter genome has higher likelihood. This is a pure length effect, independent of read content.
+
+### Historical vs latent coverage predicates (issue task 4)
+
+The note's §2 distinguishes two feasibility notions. This audit records, per
+witness, which one the `I_s` column uses; it does **not** substitute one for the
+other.
+
+- **Latent (`SourceFaithfulIs.InformationFeasible`).** The 2016 Eq. (1)
+  predicate evaluated against the **realized sampled starts** `R`: coverage of
+  the sampled positions, every triple repeat all-bridged, and every interleaved
+  pair of repeats bridged, with the bridging reads placed at the sampled starts.
+  It depends on the latent placement, not on the observed read strings alone
+  (note §2, Proposition 2). This is the predicate implemented by
+  `scripts/audit-267-independent-checks.py` and recorded in the `I_s` matrix of
+  §2 below.
+- **Historical (`AssemblyP1.HistoricalCovers`).** The 2016 supplement §6.4
+  Definition 1 read-**string** coverage: every length-`L − 1` circular start
+  interval contains a match of an *observed read string*, wherever that string
+  occurs; together with historical bridging over the matching start set this is
+  `HistoricalInformationFeasible`
+  (`AssemblyP1.HistoricalCoverageSameLengthWitnesses`). Because it is defined
+  from the observed read strings, its feasibility event is `R`-observable,
+  unlike the latent event. The two notions are **incomparable**: regression A
+  (`AAAA`, `L=3`, only `AAA` sampled at start `0`) has historical coverage but
+  not the old base coverage (`regA_historicalCovers`, `regA_not_covers`), and
+  regression B (`ACGT`, `L=2`, starts `{0,2}`) has base coverage but not
+  historical coverage (`regB_covers`, `regB_not_historicalCovers`).
+
+Per witness, as delivered:
+
+| Witness | `I_s` column predicate | Historical predicate separately certified? |
+|---|---|---|
+| W1 (AAABB→AAAAB) | latent | no |
+| W2 (AAACC→AAAAC) | latent | no |
+| W3 (AABB→ABAB) | latent | no |
+| W4 (ACGT→ACACGT) | latent | no |
+| W5 (AAATAT→AAAAAT) | latent | **yes** — `w1_historical_full_se62_flow_counterexample` (and the literal variant `w1_historical_literal_se62_flow_counterexample`) |
+| W6 (AABBC→AABC) | latent | no |
+
+No membership decision in this audit substitutes the `R`-observable historical
+coverage for the latent predicate. The historical certificate is recorded only
+for the same-length §6.2 witness `AAATAT→AAAAAT` (audit W5 =
+`HistoricalCoverageSameLength.W1`), whose matching-start set is saturated
+(`MatchStarts = sampled starts`), so its historical and latent bridging
+coincide there while the two coverage notions remain distinct definitions.
+**Label: source fact + kernel-checked.**
+
+### Observable-model classification (issue task 4)
+
+Not-So-Greedy's observable model is the set of **oriented read strings** on a
+single circular sequence (Shomorony et al. 2016; the 2016 supplement's
+string-matching semantics). The Medvedev–Brudno §6.2 flow instead consumes
+**reverse-complement-collapsed molecule classes** (a strand together with its
+reverse complement; e.g. `ATA` and `TAT` are the same molecule). Per witness,
+as delivered:
+
+| Witness | Observable (as delivered) | Same observable model as Not-So-Greedy? |
+|---|---|---|
+| W1 (AAABB→AAAAB) | oriented strings `{AAA, AAB, BAA}` | **SAME** |
+| W2 (AAACC→AAAAC) | oriented strings `{AAA, AAC, CAA}` | **SAME** |
+| W3 (AABB→ABAB) | oriented strings `{AB, BA}` | **SAME** |
+| W4 (ACGT→ACACGT) | oriented strings `{AC, GT}` | **SAME** |
+| W5 (AAATAT→AAAAAT) | molecule classes `{AAA, AAT, TAT, TAA}` (§6.2 flow) | **NOT SAME** |
+| W6 (AABBC→AABC) | oriented strings `{AAB, BCA}` | **SAME** |
+
+**Classification**: W1, W2, W3, W4, W6 are stated on oriented read strings, the
+**same** observable model as Not-So-Greedy; their likelihood **objectives** still
+differ (fixed-length exact multinomial for W1/W3/W4/W6, fixed-length
+product-of-binomial-marginals approximation for W2). W5 is stated on
+reverse-complement-collapsed molecule classes, the MB09 §6.2 flow observable,
+which is **not** the same observable model as Not-So-Greedy; the two
+representations must not be silently identified
+(`docs/maximum-likelihood-models-for-genome-assembly.md` §2). This is a
+classification of the observables only; it does not change any likelihood ratio
+or `I_s` membership recorded above. **Label: source fact.**
 
 ---
 

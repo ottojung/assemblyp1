@@ -98,10 +98,13 @@ information-feasibility predicate `I_s` against the realized read placements
 `R`: coverage of the realized start positions, all-bridged triple repeats, and
 bridged interleaved repeats (Shomorony et al. 2016, Eq. (1); kernel-checked as
 `SourceFaithfulIs.InformationFeasible`). This is a property of `g` and `R`
-alone, evaluated on the *latent* placements, **not** the weaker historical
-proxy that matches observed read strings; the two predicates differ and the
-audit (`docs/audit-267-finite-ml-vs-conditional-bayes.md` §2) records which
-witness uses which. The information-feasibility event is
+alone, evaluated on the *latent* placements, **not** the string-matching
+coverage notion of the 2016 supplement §6.4 (a read covers a position whenever
+the observed read string matches somewhere in the interval), which is
+kernel-checked separately as `AssemblyP1.HistoricalCovers`; the two notions are
+incomparable, and the audit
+(`docs/audit-267-finite-ml-vs-conditional-bayes.md` §1.1) records, per witness,
+which predicate is used. The information-feasibility event is
 
 ```
 E = F(G, R) = {(g, r) : F(g, r) = 1}.
