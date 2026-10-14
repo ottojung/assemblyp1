@@ -17,9 +17,10 @@ Merge commits are ordinary members of the range: a signed merge commit is
 verified like any other commit, so ``git merge --no-ff -S`` results are
 enforced too.
 
-The trusted keyring is assembled in a throwaway ``GNUPGHOME`` from the
-official GitHub web-flow key and the repository maintainer key, and each
-downloaded key is pinned by expected fingerprint.
+The offline trusted keyring is assembled in a throwaway GNUPGHOME from
+checked-in, PUBLIC, single-primary GitHub web-flow and maintainer key files.
+Only the explicitly pinned primary fingerprints are authorized. No runtime
+network requests are required.
 """
 
 from __future__ import annotations
@@ -30,16 +31,15 @@ import shutil
 import subprocess
 import sys
 import tempfile
-import urllib.request
 
 TRUSTED_KEYS = (
     (
-        "https://github.com/web-flow.gpg",
+        "github-web-flow.asc",
         "968479A1AFF927E37D1A566BB5690EEEBB952194",
         "GitHub web-flow (commits merged through the GitHub web UI)",
     ),
     (
-        "https://github.com/ottojung.gpg",
+        "maintainer-ottojung.asc",
         "8B9BE8115DCDEEFA3E24D5EDB851B4F4C06C04D6",
         "repository maintainer (signs agent commits via its ed25519 subkey)",
     ),
@@ -77,47 +77,51 @@ def git(repo: str, *args: str, check: bool = True,
 
 
 def import_key(keydir: str, key_path: str, env: dict) -> str:
-    """Import one key file; return its primary fingerprint."""
+    """Import a file containing EXACTLY ONE primary public key."""
     listing = run(["gpg", "--batch", "--show-keys", "--with-colons",
                    key_path], env=env).stdout
-    fps = [line.split(":")[9] for line in listing.splitlines()
-           if line.startswith("fpr:")]
-    if not fps:
-        raise AuditError(f"no fingerprint found in {key_path}")
+    primary_fps = []
+    primary_count = 0
+    need_fingerprint = False
+    for line in listing.splitlines():
+        if line.startswith("pub:"):
+            primary_count += 1
+            need_fingerprint = True
+        elif line.startswith("fpr:") and need_fingerprint:
+            primary_fps.append(line.split(":")[9])
+            need_fingerprint = False
+    if primary_count != 1 or len(primary_fps) != 1:
+        raise AuditError(
+            f"expected one primary key in {key_path}; got {primary_fps}")
     run(["gpg", "--batch", "--import", key_path], env=env)
-    return fps[0]
+    return primary_fps[0]
 
 
 def fetch_keyring(keydir: str, extra_keys: list[str] | None = None) -> dict[str, str]:
-    """Assemble the trusted keyring in an isolated GNUPGHOME.
+    """Load pinned single-primary PUBLIC keys into an isolated GNUPGHOME.
 
-    Production keys are downloaded from their official URLs and pinned by
-    expected fingerprint.  ``extra_keys`` (selftest hook) are imported as-is.
+    No network is used, including during the selftest. The actual imported
+    primary fingerprint must match the authorization list. Other keys fail
+    closed, including a bundle containing an additional primary key.
     """
     env = dict(os.environ, GNUPGHOME=keydir)
     fingerprints: dict[str, str] = {}
-    for url, expected_fp, label in TRUSTED_KEYS:
-        with urllib.request.urlopen(url, timeout=30) as resp:
-            key_data = resp.read()
-        if not key_data.startswith(b"-----BEGIN PGP PUBLIC KEY BLOCK-----"):
-            raise AuditError(f"unexpected key material from {url}")
-        with tempfile.NamedTemporaryFile(suffix=".gpg", delete=False) as fh:
-            fh.write(key_data)
-            key_path = fh.name
+    trusted_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "trusted-keys")
+    for filename, expected_fp, label in TRUSTED_KEYS:
+        key_path = os.path.join(trusted_dir, filename)
         try:
-            import_key(keydir, key_path, env)
-        finally:
-            os.unlink(key_path)
-        listing = run(["gpg", "--batch", "--with-colons", "--list-keys",
-                       "--fingerprint"], env=env).stdout
-        actual_fps = [line.split(":")[9] for line in listing.splitlines()
-                      if line.startswith("fpr:")]
-        match = [fp for fp in actual_fps if fp.replace(" ", "").endswith(expected_fp)]
-        if not match:
+            with open(key_path, "rb") as f:
+                contents = f.read()
+        except OSError as exc:
+            raise AuditError(f"cannot load pinned PUBLIC key {filename}: {exc}") from exc
+        if not contents.startswith(b"-----BEGIN PGP PUBLIC KEY BLOCK-----"):
+            raise AuditError(f"unexpected public key material in {filename}")
+        actual = import_key(keydir, key_path, env)
+        if actual.upper() != expected_fp:
             raise AuditError(
-                f"key from {url} does not match expected fingerprint "
-                f"{expected_fp}; got {actual_fps}")
-        fingerprints[label] = match[0]
+                f"key in {filename} does not match pinned primary fingerprint "
+                f"{expected_fp}; got {actual}")
+        fingerprints[label] = actual
     for key_path in extra_keys or []:
         fp = import_key(keydir, key_path, env)
         fingerprints[f"extra key {os.path.basename(key_path)}"] = fp

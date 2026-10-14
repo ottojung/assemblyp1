@@ -199,4 +199,9 @@ the truth always maximizes expected likelihood; for primitive P2 genomes,
 complete-spectrum uniqueness makes that maximum unique up to rotation.
 The proofs and finite certificates are formalized in Lean. Together,
 these results explain what graph structure can determine, what read
-frequencies contribute, and how the two interact.
+frequencies contribute, and how the two interact. Throughout, the
+reconstruction guarantee and the likelihood comparison are kept apart:
+conditioning on the feasible fiber is a corollary of reconstruction, while
+maximizing the unrestricted likelihood over the original candidate universe is
+the genuinely nontrivial question, and the finite counterexamples show where the
+two diverge.

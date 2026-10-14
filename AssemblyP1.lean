@@ -26,6 +26,7 @@ import AssemblyP1.Model
 import AssemblyP1.OpenProblem
 import AssemblyP1.SourceFaithfulIs
 import AssemblyP1.HistoricalCovers
+import AssemblyP1.ConditionalIdentifiability
 import AssemblyP1.ExactVariantECounterexample
 import AssemblyP1.FixedLengthExactCounterexample
 import AssemblyP1.FixedLengthBinomialCounterexample

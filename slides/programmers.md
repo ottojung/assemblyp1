@@ -73,9 +73,9 @@ The takeaway is information content, not graph implementation.
 
 ---
 
-# Assembly begins with overlaps
+# Reconstruction from overlaps: a worked traversal
 
-These reads came in an unknown order. But adjacent reads can agree on their last and first two letters:
+Adjacent reads agree on their last and first two letters:
 
 ```text
 ACG → CGT → GTA → TAA → AAC
@@ -85,24 +85,68 @@ ACG → CGT → GTA → TAA → AAC
 
 Following those overlaps spells the circular genome `ACGTA`.
 
-**Assembly turns local matches into a global sequence.**
+**This is a de Bruijn graph:** each 3-mer is an edge from its 2-letter prefix to its 2-letter suffix, and an Eulerian traversal uses each edge once.
 
 <!--
-Point to ACG -> CGT: the CG suffix matches the CG prefix.
-The circular cycle reuses each of the five length-3 windows once.
-Explain in words; no graph theory prerequisites. Repeated DNA can make one
-read consistent with several neighbors — the next slides show why that matters.
+Point to ACG -> CGT: the CG suffix matches the CG prefix. In the de Bruijn
+graph, ACG is an edge AC -> CG, CGT is CG -> GT, and so on; the cycle
+AC -> CG -> GT -> TA -> AA -> AC uses each of the five edges once and spells
+ACGTA. A circular genome has n rotation spellings with identical windows, so
+reconstruction is always "up to rotation". This teaching graph is NOT the
+read-overlap graph of the 2016 algorithm on the next slides.
+-->
+
+---
+
+# The 2016 algorithm uses a different graph
+
+Shomorony, Kim, Courtade, and Tse (2016) build a **read-overlap graph**:
+
+- **vertices are observed reads** — not short k-mers;
+- edges are suffix–prefix overlaps between reads;
+- Not-So-Greedy keeps the greedy successor **plus the first genuinely disagreeing extension**;
+- it **prunes spurious and transitive edges** and adjusts **edge multiplicities** to make the graph Eulerian.
+
+Under coverage and repeat-bridging conditions, that multigraph has a **unique Eulerian cycle**, and it spells the true circular genome.
+
+<!--
+Cite Shomorony et al., "Information-optimal genome assembly via sparse
+read-overlap graphs", Bioinformatics 2016, DOI 10.1093/bioinformatics/btw450,
+Theorem 1 and its supplementary conditions. The construction takes O(NL) time
+for N reads of length L. This graph is DISTINCT from the de Bruijn teaching
+graph on the earlier slide: here vertices are observed reads, not (L-1)-mers.
+Present the ideas, not the full internal construction. This slide restores the
+actual graph construction and reconstruction that an earlier draft had removed.
+-->
+
+---
+
+# The 2016 open question
+
+The paper closes with a question that sits between reconstruction and statistics:
+
+$$
+\text{Not-So-Greedy's success conditions}
+\quad\stackrel{?}{\Longrightarrow}\quad
+S\in\operatorname*{arg\,max}_D P(R\mid D)
+$$
+
+**Do the conditions that make reconstruction succeed also make the truth a maximum-likelihood genome?**
+
+<!--
+Paraphrase of the 2016 Discussion, which points back to Medvedev and Brudno
+2009. The symbols are schematic: the candidate predicates, the read-type
+convention, and the objective (exact multinomial, fixed-N product binomial, or
+the Section 6.2 flow) vary across readings and are exactly what the research
+pins down. This is the ENTRANCE to the statistical thread, not the paper's main
+result.
 -->
 
 ---
 
 # Every genome predicts a distribution
 
-In our idealized model, each read begins at a **uniformly random position** on the circular genome.
-
-If `AAATT` is the genome, just one of its five positions yields the length-3 read `AAA`.
-
-If `AAAATT` is the genome, two of its six positions yield `AAA`.
+In this model each read begins at a **uniformly random start**. So each genome assigns every read type a probability:
 
 $$
 P_G(w)=\frac{\text{starts yielding }w}{G}
@@ -112,163 +156,123 @@ P(\texttt{AAA}\mid\texttt{AAATT})=\tfrac15
 P(\texttt{AAA}\mid\texttt{AAAATT})=\tfrac26
 $$
 
-**The two candidates predict different sampling frequencies.**
+**Likelihood** $P(R\mid G)$ is not the **posterior** $P(G\mid R)$ — the posterior also needs a candidate set and a prior.
+
+**Uniform over start positions is not uniform over read strings.**
 
 <!--
-Independent, error-free, oriented fixed-length reads. The exact MB09 molecule
-and approximation models are separate later branches of the research; this is
-the simplest generative illustration.
+Uniformity is over the |G| start positions, not over the <= 4^L read types: the
+number of starts yielding a type varies by genome, so the induced probabilities
+differ. Distinguish (i) the sampling process, (ii) the likelihood P(R|G), and
+(iii) the posterior P(G|R), which needs a candidate universe and a prior; there
+is no uniform distribution over an unrestricted infinite genome universe.
+Circular rotations induce identical spectra, so they are observationally
+equivalent candidates.
 -->
 
 ---
 
-# Reads → a probability for each genome
+# Why ML is worth studying: the Bayes entrance
 
-Six length-3 reads, independently sampled from the true genome `AAATT`:
+With a **finite candidate set**, a **uniform prior**, and **zero-one loss**:
 
-```text
-AAA   AAA   AAT   ATT   TTA   TAA
-```
+> Maximum likelihood maximizes the **prior-averaged** probability of returning the truth, among **all** deterministic and randomized rules that use the same reads.
 
-Multiply each read's probability:
+The proof is one line: for each observed sample, choose the largest posterior; averaging preserves the inequality; randomization is a convex combination and cannot beat the best point.
+
+**Kernel-checked** in `AssemblyP1/FiniteBayesDecision.lean`.
+
+**Limits:** prior-averaged, not per-truth; not for arbitrary loss; ties are broken consistently.
+
+<!--
+This is the ENTRANCE and rationale, not the paper's overarching result. Standard
+decision theory (Berger 1985, Section 2.4). Kernel endpoints: chooseMAP_optimal,
+chooseMAP_optimal_randomized, finite_iid_MAP_optimal, and the monotonicity
+result chooseMAP_success_monotone_under_refinement. "More observations cannot
+hurt" is about PRIOR-AVERAGED success, never about a fixed true genome. The
+guarantee applies to the exact read distribution, not automatically to a
+surrogate objective. Keep the hierarchy: Bayes-optimal ML motivates the
+question; it is not an ML-supremacy claim.
+-->
+
+---
+
+# Positive structural result: rigidity and uniqueness
+
+Under the source's structural hypotheses — bridging, oriented reads, equal candidate length, truth among the candidates:
+
+> the truth's length-$L$ spectrum is the **unique positive integer circulation** of its window-support graph. Every same-length oriented competitor ties the truth, and with the complete-spectrum step each such competitor is a **cyclic rotation** of the truth.
+
+**No strict same-length counterexample exists** — for any genome length, read length, or alphabet.
+
+<!--
+Kernel endpoints: OrientedRigidity.unique_positive_circulation;
+SameLength62Maximizer (informationFeasible_62_maximizer);
+SameLength62Uniqueness.unique_62_maximizer_up_to_rotation (the unconditional
+rotation endpoint); OrientedFinal.oriented_same_length_spectrum_rigidity and
+OrientedFinal.rotation_uniqueness_of_bbt (the latter consumes the unproved
+external BBT premise, so it is conditional). State the qualifiers honestly:
+dropping truth candidacy is false at equal length (AABB -> ABAB); dropping equal
+length restores strict counterexamples. The general Graver-basis criterion
+(GraverRigidity.rigid_iff_forall_graver_not_feasible) is a separate iff for
+integer-flow supports, not this theorem.
+-->
+
+---
+
+# A finite aside: even the truth can lose
+
+Finite samples fluctuate. A competitor can assign the observed read counts higher probability even when reconstruction is feasible:
 
 $$
-P(R\mid S)=(1/5)^6=\tfrac1{15625}
+\frac{\mathrm{Lik}(D)}{\mathrm{Lik}(S)}=3
 \qquad
-P(R\mid D)=(2/6)^2(1/6)^4=\tfrac1{11664}
+S=\texttt{AAATAT},\quad D=\texttt{AAAAAT}
 $$
 
-The **wrong genome** scores about **34% higher** for this sample.
-
-**MAP** — choose the candidate with the largest posterior probability. With **equal priors**, MAP is maximum likelihood. MAP minimizes the *average* error over samples: **optimal on average, not infallible**.
+**An optimal estimator is not an infallible estimator.** More reads improve the *average*; success for a *particular* true genome need not be monotone in $n$.
 
 <!--
-Likelihood ratio (D/S) = 15625/11664 ≈ 1.3396; count the windows explicitly.
-With equal priors, Bayes gives the competitor posterior 15625/(15625+11664)
-≈ 57.3% — still the decision that minimizes conditional error given just this
-model and these reads; the truth is known only because we built the experiment.
-Optimality is for prior-averaged 0-1 recovery risk, given the same model, prior
-and candidate universe — not a pointwise guarantee for every true genome and
-finite sample. The finite decision theorem (randomization cannot beat MAP;
-extra observations cannot hurt under consistent marginals) is kernel-checked
-in AssemblyP1/FiniteBayesDecision.lean.
+Kernel endpoint:
+SameLengthSection62Counterexample.samelength_se62_bidirected_flow_counterexample
+(exact ratio 3; the source's fixed-N binomial ratio is 5), under the source's
+same-length molecule model with bridging holding. Whole families follow
+(HistoricalCoverageSameLengthWitnesses, OrientedVariableLengthSe62). This is a
+short aside: the full AAATT/AAAATT teaching calculation is in backup B1.
+Mechanism: the competitor reallocates multiplicity toward an over-represented
+observed read type. Do NOT present this as the first result or as "ML is
+invalid" — the prior-averaged optimality of the previous slide is untouched.
 -->
 
 ---
 
-# The question I chose to investigate
+# Population level: identifiability
 
-Shomorony, Kim, Courtade, and Tse (2016) introduced **Not-So-Greedy**: instead of trusting each largest-looking overlap — which can collapse repeats — it builds a sparse network of plausible read connections.
+Replace the finite sample by the **exact read distribution**:
 
-Their theorem guarantees recovery of the true circular genome under precise **coverage and repeat-bridging** conditions. They ended their paper with an open question:
+- the truth always **maximizes** expected log-likelihood — a Gibbs/KL identity;
+- **uniqueness** is the deep part: for primitive, P2-admissible genomes the maximizer is unique **up to rotation**.
 
-$$
-\text{Not-So-Greedy's success conditions}
-\quad\stackrel{?}{\Longrightarrow}\quad
-S\in\operatorname*{arg\,max}_D P(R\mid D)
-$$
+For a finite identifiable family, independent reads make empirical frequencies converge (strong law), so ML is eventually correct almost surely and $P(\text{correct at } n)\to 1$.
 
-**Do the algorithm's success conditions also make the truth a maximum-likelihood genome?**
+**"Infinite reads" is a limit — not an infinite product of probabilities.**
 
 <!--
-Shomorony et al., "Information-optimal genome assembly via sparse read-overlap
-graphs", Bioinformatics 2016, https://doi.org/10.1093/bioinformatics/btw450
-Theorem 1 and supplementary conditions. The antecedent is the *algorithm's*
-success conditions, not merely an abstract claim that reads contain information.
-The symbols are schematic; actual candidate predicates and read conventions
-vary across paper interpretations.
--->
-
----
-
-# A strict finite counterexample
-
-The 2016 question, answered by a concrete witness.
-
-truth `S = AAATAT` (length 6) · decoy `D = AAAAAT` (length 6) · reads of length `L = 3`, a read identified with its reverse complement
-
-$$
-\frac{\mathrm{Lik}(D)}{\mathrm{Lik}(S)} = 3
-$$
-
-Under the source's **same-length molecule model**, with **bridging conditions holding**, the wrong genome is **exactly 3× as likely** — an exact rational, **proved in Lean**, not a floating-point estimate.
-
-Whole **families** of finite counterexamples follow — not one unlucky dataset.
-
-<!--
-The project's historical witness, the first same-length counterexample. Sampled
-starts (0, 0, 1, 3, 5) on the truth give observed counts {AAA: 2, AAT: 1,
-ATA: 1, TAA: 1}; under the exact read distribution the decoy AAAAAT scores
-exactly 3× the truth AAATAT (fixed-N binomial sampling: ratio 5). Both are
-kernel-checked in AssemblyP1/SameLengthSection62Counterexample.lean.
-Strengthenings: per-occurrence model ratio 3/2
-(PerOccurrenceSameLengthCounterexample.lean); variable-length reversal ratio
-15625/11664 (OrientedVariableLengthSe62). Mechanism: the decoy produces the
-over-sampled read AAA from three start positions on its circle, so an unlucky
-sample containing extra AAA reads rewards the decoy.
--->
-
----
-
-# Strong positive theorems
-
-- **Rigidity** — under the source's structural hypotheses, no same-length competitor can strictly beat the truth.
-- **Population uniqueness** — for a truth with mild non-repetition structure, every admissible candidate scores at most the truth; a tie forces the same length up to rotation.
-- **Plus** — MAP decision optimality and population likelihood theorems: a growing portfolio, every result kernel-checked.
-
-**Caveat:** at full overlap the optimum can be disconnected — each verified statement is about a specific model reading, not all of sequencing.
-
-<!--
-Rigidity: AssemblyP1/OrientedRigidity.lean — under the right structural
-hypothesis the truth's read spectrum is the unique positive integer
-circulation of total G on the support graph. Population:
-Issue94Complete.population_unique_ML (AssemblyP1/Issue94Complete.lean) assumes
-the truth is primitive and P2 at read length L and quantifies over the
-admissible candidate class (AdmClass, PopulationUniqueness.lean); the Gibbs
-layer (PopulationGibbs.lean) proves always-maximality and equality of
-distributions — rotation uniqueness is exactly what the primitive and P2
-hypotheses buy. MAP optimality: FiniteBayesDecision.lean. Full-overlap
-caveat: Section62FullOverlapDisconnected.lean — at full overlap a genuine
-optimum need not be positive-support connected (the AAATAT witness again, at
-ratio 1280/243). The verified map is precise about where each statement holds;
-that precision is the result, not a limitation of it.
+Kernel endpoints: PopulationGibbs.popLogLik_le_self' (maximality; support holes
+give -infinity) and PopulationGibbs.popTie_iff (equality iff equal read
+distributions); Issue94Complete.population_unique_ML (uniqueness up to rotation,
+no external premise, under primitive + P2 + the admissible class + L >= 2). The
+convergence statement is standard statistics (strong law; ML consistency under
+identifiability, e.g. Lehmann & Casella 1998) and is NOT kernel-checked.
+Distinguish population uniqueness from finite-sample guarantees. The open
+sample-complexity question ("how many reads for 99%?") is backup B3.
 -->
 
 ---
 
 # Agents were present from day one
 
-On September 17, I began AssemblyP1 with **two things already in place**: a real open question from the genome-assembly literature, and a research method — cooperating AI agents, durable work, adaptive orchestration, Lean as the verification boundary.
-
-An **agent** is not a robot that reasons. It is a loop:
-
-```text
-   ┌──────────┐  next action   ┌──────────┐
-   │   LLM    │ ─────────────▶ │  tools   │
-   │ proposes │                │ act      │
-   └──────────┘                └────┬─────┘
-        ▲                          │
-        │        result            ▼
-        └──────────────────── observe
-```
-
-The system wasn't added after the mathematics became complicated — I designed the project from the outset to conduct mathematical research by directing it.
-
-<!--
-Primary evidence: docs/intent-records/project.md, intent records dated
-2026/09/17. The initial repository commits already seed Lean, agent
-instructions, research orchestration and durable intent records. This was the
-methodology at founding, not a post-hoc workaround. The model never touches
-the repository directly — it emits tool calls, the harness executes them, and
-the results come back as text. Everything the system can do, you can do by
-hand; the difference is speed and stamina.
--->
-
----
-
-# The central work: choosing directions
-
-The important decision was repeatedly **what to investigate next** — counterexamples, positive theorems, why the failures happen. Each result changed the next question.
+On September 17 the project began with **two things already in place**: a real open question from the genome-assembly literature, and a research method — cooperating AI agents, durable work, adaptive orchestration, and Lean as the verification boundary.
 
 ```text
    ┌───────────────────────────────┐
@@ -289,41 +293,14 @@ The important decision was repeatedly **what to investigate next** — counterex
 **Parallelize exploration. Serialize reconciliation.**
 
 <!--
-The coordination surface is a durable board — issues, comments, reviews — so a
-fresh invocation can reconstruct the whole research graph from it rather than
-from chat history. The orchestrator decomposes broad questions into narrow
-research packets; every write-capable worker gets its own branch and worktree.
-The expensive, serial part is reconciliation: merging partial results
-proposition by proposition, checking quantifiers, hypotheses, model versions
-and tie semantics rather than trusting prose summaries. A worker's own summary
-is not independent verification of its result. The board, the branches, and the
-reviews are the memory; the agents are stateless.
--->
-
----
-
-# Two incomparable definitions of coverage
-
-A late audit found the formal **coverage predicate** did not match the source's actual condition.
-
-**Old model** — every genomic **base** lies inside a read placed at a sampled start.
-
-**Historical model** — every length-`L−1` window must contain a match of an **observed read string**, even where no read was sampled.
-
-**Neither definition implies the other.**
-
-The fix was **additive** — old results preserved. A second bug, in a *bridging* predicate, was pure arithmetic done on the wrong definition: a phantom "counterexample" that only independent audit caught.
-
-<!--
-Predicate definitions: AssemblyP1/HistoricalCovers.lean and
-SourceFaithfulIs.lean; kernel-checked incomparability regressions in
-HistoricalCoverageSameLengthWitnesses.lean. The historical model saturates
-matching repeat occurrences — weaker in that dimension — but requires a read
-START witness, which the old base-coverage model does not. The bridging bug:
-the paper's condition is strict straddling; the first formalization was
-endpoint-wise, manufacturing a machine-checked phantom counterexample until an
-independent audit exposed it. Lesson: a weaker theorem you keep is a result; a
-stronger theorem you fake is a liability.
+Founding narrative: docs/intent-records/project.md, intent records dated
+2026/09/17; the initial commits already seed Lean, agent instructions,
+orchestration, and durable intent records. The board is the memory; agents are
+stateless. The orchestrator decomposes broad questions into narrow packets; every
+write-capable worker gets its own branch and worktree. The expensive, serial
+part is reconciliation — merging partial results proposition by proposition,
+checking quantifiers, hypotheses, model versions, and tie semantics rather than
+trusting prose summaries. A worker's own summary is not independent verification.
 -->
 
 ---
@@ -342,14 +319,13 @@ A tiny **kernel** checks every proof term — the only code that must be trusted
 **Where trust ends:** axioms are assumed, not proved; the kernel checks the *formal statement* — not whether the definitions match the biology.
 
 <!--
-Curry-Howard correspondence: the proposition p ∧ q → q ∧ p is the type; the
-term fun h => ⟨h.2, h.1⟩ is the proof — given a proof h of p ∧ q, build a
-proof of q ∧ p from its two components, swapped. The kernel type-checks the
-term against the type; type checking is a small, mechanical procedure. The
-project permits only the three standard axioms (propext, Classical.choice,
-Quot.sound) and no sorry/admit. Model
-fidelity stays with the humans and the source audits: trust the kernel for
-the proof, audit the axioms, own the model.
+Curry-Howard correspondence: the proposition p ∧ q → q ∧ p is the type; the term
+fun h => ⟨h.2, h.1⟩ is the proof. The kernel type-checks the term against the
+type; type checking is small and mechanical. The project permits only propext,
+Classical.choice, and Quot.sound, and no sorry/admit. Model fidelity stays with
+the humans and the source audits. Two predicate episodes (the bridging predicate
+and the coverage predicate) were caught only because formalization is treated as
+research and audited against the source; see backup B2.
 -->
 
 ---
@@ -358,19 +334,108 @@ the proof, audit the axioms, own the model.
 
 We started with a question from 2016: **do Not-So-Greedy's reconstruction conditions also make the true genome a maximum-likelihood genome?**
 
-**We settled the concrete source-supported finite versions** — strict counterexamples at exact ratios, strong positive theorems, both kernel-checked — through human-directed, parallel AI exploration with Lean as the proof boundary.
+**Bayes-optimal ML is the entrance**, not the headline. The contribution is the **assembly-specific classification**: positive rigidity, negative finite witnesses, and population identifiability — all kernel-checked.
 
 <HomeLink label="Choose another audience" />
 
 <!--
-Definitions are part of the claim — two separate episodes (the bridging
-predicate, the coverage predicate) were caught only because the project
-treated formalization as research and audited its own predicates against the
-source. Verify your verifier: a broken predicate can manufacture or hide a
-result, so the pipeline is designed to falsify, and review re-executes rather
-than inherits. The kernel is the proof boundary, not the whole truth — it
-certifies the formal statement from audited axioms, and model fidelity remains
-a human, documented obligation. The initial 2016 finite question is settled
-across determinate source-supported interpretations; general characterization
-and sample-complexity directions remain distinct new research questions.
+One-sentence takeaway: under a specified equal-prior model ML maximizes average
+correctness, yet can still be wrong on a particular sample; what AssemblyP1 adds
+is the assembly-specific classification of when the truth wins, ties, or loses
+under exact, binomial, and flow objectives, plus population uniqueness under
+primitive P2. General characterization and sample complexity remain open.
+Definitions are part of the claim: verify your verifier.
 -->
+
+---
+layout: end
+---
+
+# Backup B1: the complete finite reversal calculation
+
+Six length-3 reads sampled from the truth `AAATT`:
+
+```text
+AAA   AAA   AAT   ATT   TTA   TAA
+```
+
+$$
+P(R\mid S)=\left(\tfrac15\right)^6=\tfrac1{15625}
+\qquad
+P(R\mid D)=\left(\tfrac26\right)^2\left(\tfrac16\right)^4=\tfrac1{11664}
+$$
+
+The decoy `AAAATT` scores about **34% higher** for this sample.
+
+**An optimal estimator is not an infallible estimator.**
+
+<!--
+This is a restricted two-candidate teaching illustration with variable-length
+candidates; it is NOT a source-faithful counterexample to a 2016/MB09 candidate
+class. Use only if the audience asks "can the truth actually lose?". The
+source-faithful same-length witness is on the main "finite aside" slide. With
+equal priors the decoy posterior is 15625/(15625+11664) ~ 57.3%; the ML/MAP rule
+still minimizes prior-averaged error.
+-->
+
+---
+
+# Backup B2: two incomparable definitions of coverage
+
+A late audit found the formal **coverage predicate** did not match the source's actual condition.
+
+**Old model** — every genomic base lies inside a read placed at a sampled start.
+
+**Historical model** — every length-$(L-1)$ window must contain a match of an observed read string, even where no read was sampled.
+
+**Neither definition implies the other.**
+
+The fix was **additive**; old results were preserved.
+
+<!--
+Kernel regressions: AssemblyP1/HistoricalCovers.lean and
+HistoricalCoverageSameLengthWitnesses.lean. The historical model saturates
+matching repeat occurrences but requires a read START witness the old model does
+not, so the two predicates are incomparable. A second bug in the bridging
+predicate was pure arithmetic on the wrong definition and manufactured a phantom
+"counterexample" that only independent audit caught. Lesson: a weaker theorem you
+keep is a result; a stronger theorem you fake is a liability.
+-->
+
+---
+
+# Backup B3: how many reads for 99% recovery?
+
+The limit theorem gives **convergence**, not a finite sample size.
+
+**Sample complexity is an open quantitative problem** in this precise model.
+
+A scoped, external illustration: for a finite distinguishable family,
+
+$$
+\Pr_\theta[\text{a wrong genome beats the truth}]
+\;\le\; \sum_{\eta\neq\theta}\rho(\theta,\eta)^n,
+$$
+
+where $\rho$ is the Hellinger affinity. This is per-truth, and not proved here.
+
+<!--
+No sample-complexity theorem exists in this model. The Hellinger/union bound is
+standard (e.g. Tsybakov 2009, Theorem 2.4) and is labelled EXTERNAL — not
+kernel-checked. Never imply that the limit theorem itself supplies a finite n.
+The bound is per fixed truth, not a uniform guarantee, and needs the family to
+be finite and distinguishable.
+-->
+
+---
+
+# Backup B4: primary sources
+
+- Medvedev & Brudno (2009), *Maximum Likelihood Genome Assembly*.
+- Shomorony, Kim, Courtade & Tse (2016), *Information-optimal genome assembly via sparse read-overlap graphs*.
+- Bresler, Bresler & Tse (2013), *Optimal assembly for high throughput shotgun sequencing*.
+- Berger (1985), *Statistical Decision Theory and Bayesian Analysis*.
+- Cover & Thomas (2006), *Elements of Information Theory*.
+- Tsybakov (2009), *Introduction to Nonparametric Estimation*.
+
+**[Research repository](https://github.com/ottojung/assemblyp1)**

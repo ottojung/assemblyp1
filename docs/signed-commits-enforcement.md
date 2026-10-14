@@ -58,12 +58,21 @@ and should be considered **advisory, not mandatory**.
 
 ## Trusted keys
 
-Assembled in a throwaway `GNUPGHOME` at gate runtime and pinned by fingerprint:
+Assembled OFFLINE from checked-in PUBLIC key files into a throwaway GPG home at gate runtime. Each file must contain exactly one primary public key matching the pinned fingerprint; extra primary keys fail closed:
 
 | Key | Fingerprint | Source |
 |-----|-------------|--------|
-| GitHub web-flow | `968479A1AFF927E37D1A566BB5690EEEBB952194` | <https://github.com/web-flow.gpg> |
-| Maintainer (Otto Jung) | `8B9BE8115DCDEEFA3E24D5EDB851B4F4C06C04D6` | <https://github.com/ottojung.gpg> |
+| GitHub web-flow | `968479A1AFF927E37D1A566BB5690EEEBB952194` | `scripts/trusted-keys/github-web-flow.asc` (originally <https://github.com/web-flow.gpg>) |
+| Maintainer (Otto Jung) | `8B9BE8115DCDEEFA3E24D5EDB851B4F4C06C04D6` | `scripts/trusted-keys/maintainer-ottojung.asc` (originally <https://github.com/ottojung.gpg>) |
+
+The key files are public material, downloaded from the official GitHub profile
+URLs in October 2026, then exported by FULL primary fingerprint to retain
+exactly one explicitly authorized primary per file. GitHub currently offers
+multiple primary keys in its public web-flow download; the unapproved primary
+must NOT be silently imported. The gate requires no GitHub/keyserver HTTP
+requests on each run. To rotate or add a signing key, use a separately
+reviewed, signed PR that updates the pinned fingerprint and the public key
+file together. Never commit secret key material.
 
 Agent signing keys are subkeys of the maintainer key, so agent-signed commits
 verify against the same trusted primary.
