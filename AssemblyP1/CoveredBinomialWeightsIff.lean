@@ -395,6 +395,7 @@ theorem sampleStartCoverage_eq_zero_of_startSpectrum_eq_zero
     rw [hc, hj]
   rw [hempty, Finset.sum_empty]
 
+omit [Fintype U] in
 /-- A type-wise budget that dominates the true start spectrum and is supported
 on the true support is realizable by positive multiplicities of every true
 genome start, even when the ambient modeled universe `U` is strictly larger
