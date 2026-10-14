@@ -151,6 +151,50 @@ source-faithful `InformationFeasible` implementation in the Python script.
 
 **W6 mechanism**: The observed reads `{AAB, BCA}` have the same multiplicity in both candidates (`d(AAB)=1, d(BCA)=1`), but the candidate lengths differ (5 vs 4). The exact multinomial `n! · ∏(d_w/G)^x_w` divides by `G^n`, so the shorter genome has higher likelihood. This is a pure length effect, independent of read content.
 
+### 1.7 Observable-model classification against Not-So-Greedy
+
+Issue task 4 asks which finite witnesses are the **same observable model** as
+Not-So-Greedy (NSG). The observable model is the read-type panel of
+`docs/source-notes/finite-interpretation-universe-audit.md` §3.2:
+
+- **R-oriented** — oriented length-`L` substrings with cyclic-shift
+  equivalence. This is Shomorony et al.'s own convention, hence NSG's
+  observable model.
+- **R-molecule** — reverse-complement `k`-molecule classes with dihedral
+  equivalence. This is the Medvedev–Brudno §6.2 convention.
+
+Three axes must be kept apart (paper Remark `rem:historical-distinctions`): the
+read-type panel (oriented vs molecule), the feasibility predicate (the project's
+latent-placement `I_s` vs the source's historical read-string `I_s^match`, which
+are incomparable — paper Proposition `prop:historical-source`), and the scoring
+objective (exact multinomial `E`, fixed-`N` binomial `A`, or §6.2 flow `F`).
+NSG is a structural reconstruction on **oriented read strings under
+`I_s^match`**; it is not a likelihood algorithm, so no witness matches it on the
+objective axis.
+
+| Audit | Issue label | Genome pair | Read-type panel | Feasibility predicate | Objective | Candidate length | SAME observable model as NSG? |
+|---|---|---|---|---|---|---|---|
+| W1 | (extra) | AAABB → AAAAB | oriented | placement `I_s` | exact multinomial (E) | same length | **yes** (oriented) |
+| W2 | (extra) | AAACC → AAAAC | oriented | placement `I_s` | fixed-`N` binomial (A) | same length | **yes** |
+| W3 | AABB/ABAB | AABB → ABAB | oriented | placement `I_s` | exact per-read product (E) | same length | **yes** |
+| W4 | (extra) | ACGT → ACACGT | oriented | placement `I_s` | dinucleotide exact (E) | variable length | **yes** |
+| W5 | W1 | AAATAT → AAAAAT | **molecule** | **historical `I_s^match`** (paper); placement `I_s` also checked in §1 | exact + binomial (E, A) | same length | **no** (molecule panel) |
+| W6 | P1 finite | AABBC → AABC | oriented | placement `I_s` | exact multinomial (E) | variable length | **yes** |
+
+Issue label `W2` is the paper's per-occurrence historical witness
+`ATATACAC → ATACACAC` (paper Theorem `thm:cex-historical-W2`): molecule panel and
+historical `I_s^match`, hence **not** the same observable model as NSG. Its
+arithmetic (exact `3/2`, binomial `9/5` at `N=8`) is the paper's and is not
+re-derived by this audit's script.
+
+**Consequence.** The oriented-panel witnesses W1–W4 and W6 share NSG's
+observable model but differ from it on the **predicate** axis (project
+placement `I_s` rather than the source's `I_s^match`) and on the **objective**
+axis (a likelihood score rather than structural reconstruction); W5 and issue
+`W2` differ on the **panel** axis too. No witness is run under the identical
+experiment as NSG, so none may be read as contradicting the NSG guarantee or
+Bayes optimality when its model, candidate set, or sample differs.
+
 ---
 
 ## 2. The conditional-on-`E` analysis
