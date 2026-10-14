@@ -132,6 +132,32 @@ ISO=$(git -C "$TREPO" rev-parse HEAD)
 expect_exit "unsigned ancestor of base not checked" 0 \
   python3 "$SCRIPT" --repo "$TREPO" --base "$BASE2" --head "$ISO" --extra-key "$WORK/selftest.pub"
 
+echo "== 4b. pinning must reject unexpected fingerprint and extra primary keys =="
+cat "$REPO_ROOT/scripts/trusted-keys/github-web-flow.asc" \
+    "$REPO_ROOT/scripts/trusted-keys/maintainer-ottojung.asc" > "$WORK/multi.pub"
+if python3 - "$SCRIPT" "$WORK/selftest.pub" "$WORK/multi.pub" <<'PYKEY'
+import importlib.util,os,sys,tempfile
+spec=importlib.util.spec_from_file_location("gate",sys.argv[1])
+gate=importlib.util.module_from_spec(spec)
+spec.loader.exec_module(gate)
+def must_reject(path,fp,label):
+    gate.TRUSTED_KEYS=((path,fp,label),)
+    with tempfile.TemporaryDirectory(prefix="badkey.") as home:
+        os.chmod(home,0o700)
+        try: gate.fetch_keyring(home)
+        except gate.AuditError as e:
+            print("rejected",label,":",str(e)[:130])
+            return
+        raise AssertionError("UNEXPECTED ACCEPTANCE: "+label)
+must_reject(sys.argv[2],"0000000000000000000000000000000000000000","wrong fingerprint")
+must_reject(sys.argv[3],"968479A1AFF927E37D1A566BB5690EEEBB952194","extra primary key")
+PYKEY
+then
+  ok "fingerprint mismatch and multiple-primary bundle rejected"
+else
+  bad "pinned key file negative tests"
+fi
+
 echo "== 5. known signed commits from the real repository must PASS =="
 REAL="$REPO_ROOT"
 expect_exit "real signed PR #161 commit 96a5a7b accepted" 0 \
