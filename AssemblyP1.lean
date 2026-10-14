@@ -37,6 +37,9 @@ import AssemblyP1.HistoricalCoverageSameLengthWitnesses
 import AssemblyP1.Section62BidirectedFlow
 import AssemblyP1.Section62ReductionVacuityAudit
 import AssemblyP1.Section62SpellingReductionCandidate
+-- #262 full-overlap counterexample transfer across overlap thresholds.
+import AssemblyP1.Section62FullOverlapLift
+import AssemblyP1.Section62FullOverlapLiftAudit
 import AssemblyP1.Section62CircularStarts
 import AssemblyP1.Section62ReductionMismatch
 import AssemblyP1.Section62SkippedWindowFactor
