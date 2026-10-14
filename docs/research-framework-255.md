@@ -6,7 +6,7 @@ merged PRs #163/#165/#166/#167/#174/#179/#182/#193, the exact iid
 finite-ML classification posted on the issue 2026-10-13, and the
 population-to-finite bridge posted 2026-10-14. Coordination
 front: agent 96b26e582cdf (rebased by agents 491a5de6e543, 3a1a51f8aef9,
-and 4ba67d3247d8; superseded by this rebase onto `main` @ `6d28a41`).
+and 4ba67d3247d8; superseded by this rebase onto `main` @ `157ad34`).
 This document organizes the classification axes of the #255 research
 program. It is a framework, not a result: every scoped claim below is
 labeled with its epistemic class, and every unproved claim remains OPEN.
@@ -87,11 +87,15 @@ stay OPEN.
 
 ## 3. Anchors (known, with scope)
 
-- **Population maximality without repeats: PROVED (kernel-checked).**
-  `PopulationGibbs.truth_is_population_maximizer`: at the population level
-  (infinite reads, no repeats) the truth maximizes likelihood, with
-  equality iff normalized spectra agree. Population-level only; does NOT
-  settle finite sampling.
+- **Population maximality: PROVED (kernel-checked), unconditional for all
+  circular genomes.** `population_maximizer_unrestricted`: the truth
+  maximizes the exact population likelihood over ALL circular candidate
+  genomes, with no repeat, P2, primitivity, bridging, or
+  information-feasibility assumptions (#273 CLOSED). Repeats bear only on
+  *uniqueness*: `PopulationGibbs.truth_is_population_maximizer` gives
+  equality iff normalized spectra agree, and the uniqueness refinement
+  needs P2/primitivity conditions (#274 CLOSED). Population-level only;
+  does NOT settle finite sampling.
 - **Oriented same-length graph rigidity suffices: PROVED (kernel-checked).**
   Support-domain rigidity of the oriented `L`-mer circulation graph
   implies sample-uniform exact-ML maximality in that cell (#256).

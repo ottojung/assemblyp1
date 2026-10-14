@@ -1,13 +1,17 @@
 # AssemblyP1 umbrella #255 — remaining-open matrix
 
-_Status: 2026-10-14. Integration front (agent 4ba67d3247d8): rebased onto
-`main` @ `a9f8391` (current main head, which merged PRs #193 and #194) and
+_Status: 2026-10-14. Integration front (agent 4ba67d3247d8; orchestrator
+agent 4f59729f6003 for PR #196): rebased onto `main` @ `157ad34` (current
+main head at integration time; merged PRs #193/#194 and #267) and
 refreshed with the exact landed scopes of merged PRs #163/#165/#166/#167, the exact
 iid finite-ML classification posted on the issue 2026-10-13, the
 kernel-checked spelled binomial counterexample of PRs #179/#182, the finite
 Bayes/MAP decision theorem of PR #174 plus the landed iid MAP monotonicity
 of PR #193, the population-to-finite bridge observation, and current board
 child-issue statuses (board-verified 2026-10-14 via `antonina board show`).
+Observed integration range for audit: base `157ad34` = exact PR base at
+integration time; the signed PR #196 head this line ships is recorded on the
+PR page and in `git log`; observed 2026-10-14.
 Coordination front: agent 96b26e582cdf (rebased by agents 491a5de6e543,
 3a1a51f8aef9, and 4ba67d3247d8; superseded by this rebase).
 This matrix is a proposed, reviewable status record for the #255 research
@@ -101,27 +105,26 @@ Every material result is classified as one of:
   and no finite algorithm/test unless global Graver-set finiteness (Dickson/
   Gordan) is established.
 
-### Population maximality without repeats: PROVED
+### Population maximality: PROVED — unconditional for all circular genomes; repeats bear only on uniqueness
 
-- `PopulationGibbs.truth_is_population_maximizer`; equality iff normalized spectra
-  agree. Population-level only; does NOT settle finite sampling. (#274 CLOSED:
-  support-inclusion semantics fixed, merged PR #156.)
-
-### #273 (CLOSED) — unconditional population ML maximizer for all circular genomes: PROVED
-
-- **Artifact:** `AssemblyP1/PopulationMaximizerUnrestricted.lean`
-- **PR:** #154, merged `60821ac` (stacked on PR #158 base `d3b7fb3`, which
-  included the merged #156 support-inclusion repair).
-- **Statement:** `population_maximizer_unrestricted`: for any true circular
-  genome `S` and any candidate `D` under the exact population objective,
-  `ell_S(D) ≤ ell_S(S)`; no P2, primitivity, bridging, information-feasibility,
-  or no-repeat assumptions; no fixed candidate length. Tie iff distributions
-  agree (`population_tie_iff_distribution_eq_unrestricted`, plus the
+- **Unrestricted maximality (no repeat condition):**
+  `PopulationMaximizerUnrestricted.population_maximizer_unrestricted`: for any
+  true circular genome `S` and any candidate `D` under the exact population
+  objective, `ell_S(D) ≤ ell_S(S)` (Gibbs/KL inequality); no P2, primitivity,
+  bridging, information-feasibility, or no-repeat assumptions; no fixed
+  candidate length. Tie iff distributions agree
+  (`population_tie_iff_distribution_eq_unrestricted`, plus the
   periodic-read-distribution and periodic-population-likelihood tie
-  corollaries).
-- **Verification:** exact-head CI all green before merge (Lean build, Documents,
-  Slides and Pages); kernel replay under the corrected `PopLogLik` prints
-  axioms `{propext, Classical.choice, Quot.sound}` for all four endpoints.
+  corollaries). (#273 CLOSED; PR #154, merged `60821ac`, stacked on PR #158
+  base `d3b7fb3` which included the merged #156 support-inclusion repair;
+  exact-head CI all green before merge — Lean build, Documents, Slides and
+  Pages; kernel replay under the corrected `PopLogLik` prints axioms
+  `{propext, Classical.choice, Quot.sound}` for all four endpoints.)
+- **Uniqueness is repeat-dependent:** `PopulationGibbs.truth_is_population_maximizer`;
+  equality iff normalized spectra agree; the uniqueness refinement needs
+  P2/primitivity conditions. (#274 CLOSED: support-inclusion semantics fixed,
+  merged PR #156.)
+- Population-level only; does NOT settle finite sampling.
 
 ### #269 partial foundation — finite Bayes/MAP decision optimality: LANDED (issue still OPEN)
 
@@ -605,10 +608,10 @@ Every material result is classified as one of:
 | Oriented vs RC molecule types | PROVED (landed scopes) | Oriented + same-length + exact multinomial + sample-uniform PROVED (#256); RC + full-overlap + fixed-length + exact multinomial + sample-uniform PROVED (#260); oriented arbitrary-overlap and RC arbitrary-overlap OPEN (#261) |
 | Exact multinomial vs fixed-N binomial | PROVED (exact, landed scopes + full-start-covered classification) / PARTIAL (binomial) | Exact multinomial PROVED in the landed scopes (#256, #258, #260); exact iid full-start-covered classification PROVED (elementary, posted 2026-10-13, not kernel-checked): never-strictly-better IFF some true type has `q_j=0` OR `q_i ≤ p_i` for every true type; fixed-`x` (A) remains halfspace inequalities; fixed-N binomial (MB09 §6.1) PARTIAL: effective weights, strict witness, start coverage, sample-uniform rigidity iff landed (#259); full (A)/(B) classification OPEN |
 | Same vs variable length | PROVED (same) / OPEN (variable) | Same-length PROVED where landed; variable length OPEN (fenced to #261) |
-| Spelled genomes vs MB09 §6.2 bidirected flows / overlap floor | PROVED (full-overlap) / OPEN (arbitrary) | Equal-support full-overlap RC molecule-spectrum ML PROVED (#260); unrestricted source-faithful MB09 §6.2 nonspelled flow candidate domain and arbitrary overlap floor OPEN (#261); historical bridging sufficiency at full overlap REFUTED (W1/W2, PR #142) |
+| Spelled genomes vs MB09 §6.2 bidirected flows / overlap floor | PROVED (full-overlap) / OPEN (arbitrary) | Equal-support full-overlap RC molecule-spectrum ML PROVED (#260) — this settles only the equal-support molecule-spectrum cell, NOT the general §6.2 flow model; unrestricted source-faithful MB09 §6.2 nonspelled flow candidate domain and arbitrary overlap floor OPEN (#261); full historical MB09 §6.2 graph / Observation-7 source identification (nonspelled flows, transitive-reduction semantics) OPEN (#284); historical bridging sufficiency at full overlap REFUTED (W1/W2, PR #142) |
 | Truth candidacy | PROVED (landed scopes) / OPEN (extended) | Truth genuinely admissible over spelled candidate universes PROVED in the landed scopes; extended candidate sets OPEN (#261) |
 | Literal historical read-string `I_s` vs project placement `I_s` | PROVED (placement) / REFUTED (literal) / OPEN (remaining) | Project-placement reading PROVED (#256 iff needs no `I_s`); literal historical `I_s` full-overlap bridging sufficiency REFUTED (W1/W2); remaining historical-referent questions OPEN |
-| Population vs finite sample | PROVED (population + bridge) / OPEN (finite) | Population maximality without repeats PROVED (kernel-checked, #274 CLOSED); unconditional population maximizer for all circular genomes PROVED (#273 CLOSED, PR #154); population-to-finite bridge `∑ x log p_D = n ∑ p̂ log p_D` PROVED (elementary, 2026-10-14) so finite ML = empirical-population ML, with the 2-type separation witness; finite-sample classification OPEN in every cell except the landed ones |
+| Population vs finite sample | PROVED (population + bridge) / OPEN (finite) | Unconditional population maximizer for all circular genomes PROVED (kernel-checked, #273 CLOSED, PR #154); population uniqueness repeat-dependent — equality iff normalized spectra agree, P2/primitivity conditions PROVED (#274 CLOSED, PR #156); population-to-finite bridge `∑ x log p_D = n ∑ p̂ log p_D` PROVED (elementary, 2026-10-14) so finite ML = empirical-population ML, with the 2-type separation witness; finite-sample classification OPEN in every cell except the landed ones |
 | Bayes/MAP and conditional inference | PARTIAL / OPEN | Finite side-information coloring theorem + no-common-coarsest witness landed (#272); finite MAP decision optimality kernel-landed (PR #174, generic scope); exact iid `n→n+1` MAP prior-averaged success monotonicity kernel-landed (PR #193, #269); remaining assembly-specific orbit-pmf lift, Hellinger recovery bounds, conditional identifiability, and the Bayes/ML reconciliation OPEN (#266, #267, #269, #270, #271) |
 
 ---
