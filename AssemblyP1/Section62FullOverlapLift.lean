@@ -288,12 +288,17 @@ theorem competitor_steps_survive_spelling :
   exact fullOverlap_step_survives toList3 rep3 rc3 readLen oMin 1 readVerts
     (by decide) _ rfl hmem
 
-/-- **The lifted strict-ML / bridging-sufficiency counterexample at arbitrary
-overlap threshold `oMin = 1 ≤ readLen - 1`.**  Both the truth's and the
-competitor's full-overlap flows are §6.2 feasible after zero-extension onto the
-larger `oMin = 1` graph (so the candidate-set inclusion holds, not merely an edge
-survival), every walk step survives the spelling-preserving reduction, and the
-competitor still strictly beats the truth under the literal §6.1 objective. -/
+/-- **The lifted strict-ML / bridging-sufficiency counterexample at the lowered
+overlap threshold `oMin = 1 ≤ readLen - 1` (`readLen = 3`).**  Both the truth's
+and the competitor's full-overlap flows are §6.2 feasible after zero-extension
+onto the larger `oMin = 1` graph (so the candidate-set inclusion holds, not merely
+an edge survival), every walk step survives the spelling-preserving reduction, and
+the competitor still strictly beats the truth under the literal §6.1 objective.
+
+This is one concrete witness instance (`readLen = 3`, `oMin : 2 → 1`); the
+arbitrary-threshold content is carried by the general machinery
+`overlapEdges_mono`, `fullOverlap_step_survives` and
+`feasible62_zeroExtend_of_decomp` above, not by this instantiation. -/
 theorem bridging_lifted_strict_counterexample :
     Feasible62 Base Strand3 rep3 readVerts oMin1Edges
         (zeroExtend graphList truthCircuitFlow) noTerm dS' ∧
