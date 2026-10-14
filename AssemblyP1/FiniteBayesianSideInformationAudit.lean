@@ -1,0 +1,16 @@
+import AssemblyP1.FiniteBayesianSideInformation
+
+/-! Axiom audit for the #272 finite Bayesian side-information results. -/
+
+#print axioms AssemblyP1.FiniteBayesianSideInformation.sum_ite_eq_total_iff
+#print axioms AssemblyP1.FiniteBayesianSideInformation.posteriorMass_eq_one_iff
+#print axioms AssemblyP1.FiniteBayesianSideInformation.posteriorMass_eq_one_iff_excluded
+#print axioms AssemblyP1.FiniteBayesianSideInformation.readOnly_posterior_eq_one_iff
+#print axioms AssemblyP1.FiniteBayesianSideInformation.ae_certain_iff_pointwise
+#print axioms AssemblyP1.FiniteBayesianSideInformation.posteriorMassZ_eq_one_iff
+#print axioms AssemblyP1.FiniteBayesianSideInformation.fibreUnique_of_decoder
+#print axioms AssemblyP1.FiniteBayesianSideInformation.conditional_certain_of_fibreUnique
+#print axioms AssemblyP1.FiniteBayesianSideInformation.sufficient_implies_conditional_certain
+#print axioms AssemblyP1.FiniteBayesianSideInformation.unambiguous_unique_weakest_readonly
+#print axioms AssemblyP1.FiniteBayesianSideInformation.NoWeakest.no_weakest_sufficient
+#print axioms AssemblyP1.FiniteBayesianSideInformation.TwoCandidate.side_information_needed
