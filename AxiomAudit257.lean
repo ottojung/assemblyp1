@@ -1,3 +1,14 @@
 import AssemblyP1.ExactRigidityCriterion
+import AssemblyP1.FiniteRigidityDecider
 open AssemblyP1.ExactRigidityCriterion
+open AssemblyP1.FiniteRigidityDecider
 #print axioms AssemblyP1.ExactRigidityCriterion.nonrigid_iff_exists_delta
+#print axioms AssemblyP1.FiniteRigidityDecider.le_total_of_feasible
+#print axioms AssemblyP1.FiniteRigidityDecider.admissible_iff
+#print axioms AssemblyP1.FiniteRigidityDecider.rigid_iff_forall_admissible
+#print axioms AssemblyP1.FiniteRigidityDecider.rigid_iff_decider
+#print axioms AssemblyP1.FiniteRigidityDecider.card_candidates
+#print axioms AssemblyP1.FiniteRigidityDecider.atatat_rigid
+#print axioms AssemblyP1.FiniteRigidityDecider.aaaab_nonrigid
+#print axioms AssemblyP1.FiniteRigidityDecider.figureEight_rigid
+#print axioms AssemblyP1.FiniteRigidityDecider.figureEight_nonrigid

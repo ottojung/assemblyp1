@@ -43,6 +43,11 @@ candidate set of throughput vectors.  Nothing on `main` connects a *flow* to its
 * `throughputVec_congr` and `maximal_image_iff` — the likelihood factors through
   the throughput map `Θ(f) = throughput(f)`, so ML maximality over a feasible flow
   set `F` is equivalent to ML maximality over the **throughput image** `Θ(F)`.
+* `feasibleFlowSet` / `feasible_flow_maximal_image_iff` — this equivalence
+  is specialized to the project's actual zero-terminal `Feasible62` feasibility
+  predicate, with count d=throughputVec(f). This is a theorem about
+  the flow-score domain, NOT a proof that the image consists of
+  genomically spelled copy-count vectors.
 
 What this does **not** prove, and what stays OPEN:
 

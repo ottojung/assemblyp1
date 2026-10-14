@@ -36,6 +36,9 @@ import AssemblyP1.SameLengthSection62Parametric
 import AssemblyP1.PerOccurrenceSameLengthCounterexample
 import AssemblyP1.HistoricalCoverageSameLengthWitnesses
 import AssemblyP1.Section62BidirectedFlow
+-- #261 feasible-flow to throughput-count vector image adapter and axiom audit.
+import AssemblyP1.Section62FlowCountVectorAdapter
+import AssemblyP1.Section62FlowCountVectorAdapterAudit
 import AssemblyP1.Section62ReductionVacuityAudit
 import AssemblyP1.Section62SpellingReductionCandidate
 -- #262 full-overlap counterexample transfer across overlap thresholds.
@@ -60,6 +63,8 @@ import AssemblyP1.PopulationReduction
 import AssemblyP1.PopulationGibbsTest
 import AssemblyP1.OrientedRigidity
 import AssemblyP1.GraverRigidityAudit
+import AssemblyP1.FiniteRigidityDecider
+import AssemblyP1.FiniteRigidityDeciderAudit
 import AssemblyP1.RepeatAdapter
 import AssemblyP1.OrientedFinalRigidity
 import AssemblyP1.BridgingBridge
@@ -238,6 +243,14 @@ import AssemblyP1.FiniteReadRecovery
 -- #270 concrete uniform-start cyclic read distribution and conditional genome bounds.
 import AssemblyP1.FiniteReadRecoveryGenome
 import AssemblyP1.FiniteReadRecoveryGenomeAudit
+-- #270 connect structural primitive-P2 uniqueness to iid finite-read ML.
+import AssemblyP1.FiniteReadRecoveryP2Bridge
+import AssemblyP1.FiniteReadRecoveryP2BridgeAudit
+import AssemblyP1.FiniteReadRecoveryP2Complete
+import AssemblyP1.FiniteReadRecoveryP2CompleteAudit
+-- #281 non-monotonicity of finite-sample exact-ML success (AAC vs AAAC).
+import AssemblyP1.NonmonotonicityWitness281
+import AssemblyP1.NonmonotonicityWitness281Audit
 
 /-! ## `Issue94Transposition`: the Kotzig/Ukkonen/Pevzner descent, and an obstruction
 

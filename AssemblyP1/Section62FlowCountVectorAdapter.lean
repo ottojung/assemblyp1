@@ -102,4 +102,30 @@ theorem maximal_image_iff {A W : Type} [DecidableEq W] (rep : W → W)
     obtain ⟨f, hf, rfl⟩ := hB
     exact h f hf
 
+/-! ## Concrete zero-terminal §6.2 feasible-flow domain -/
+
+/-- Actual §6.2 zero-terminal feasible flows on the specified read-overlap
+graph, with their count vectors **required** to equal their throughputs. This
+keeps the abstract image lemma's domain tied to the project feasibility
+predicate without claiming that every feasible throughput is spelled by a
+circular genome. -/
+def feasibleFlowSet {A W : Type} [DecidableEq W] (rep : W → W)
+    (verts : List W) (edges : List (BdEdge A W)) : Set (BdFlow A W) :=
+  { f | Feasible62 A W rep verts edges f (noTerminals W)
+      (throughputVec rep f edges) }
+
+/-- An exact feasible-flow specialization of the maximal_image_iff theorem.
+Every score that factors through the molecule-throughput vector has the
+same maximality condition over the §6.2 zero-terminal flow domain and over
+its image of feasible throughput vectors. Neither side is asserted to
+equal the genome-spelled spectrum set. -/
+theorem feasible_flow_maximal_image_iff {A W : Type} [DecidableEq W]
+    (rep : W → W) (verts : List W) (edges : List (BdEdge A W))
+    (score : (W → ℕ) → ℚ) (f₀ : BdFlow A W) :
+    Maximal (Set.image (fun f => throughputVec rep f edges)
+        (feasibleFlowSet rep verts edges)) score (throughputVec rep f₀ edges) ↔
+    Maximal (feasibleFlowSet rep verts edges)
+        (fun f => score (throughputVec rep f edges)) f₀ := by
+  exact maximal_image_iff rep edges (feasibleFlowSet rep verts edges) score f₀
+
 end AssemblyP1.Section62FlowCountVectorAdapter

@@ -23,26 +23,34 @@ overlapping reads. Reconstructing it is a combinatorial problem: overlapping
 reads form a graph, repeats create competing traversals, and sufficiently
 informative reads resolve those ambiguities. The Not-So-Greedy algorithm of
 Shomorony et al.\ (2016) turns such information into a unique Eulerian
-reconstruction. This paper investigates a related statistical question:
-\emph{when is the true genome also the most likely explanation of the
-observed reads?} Maximum likelihood is a natural benchmark because, with
-the correct sampling model and a uniform prior on a finite candidate class,
-it maximizes average reconstruction correctness among all decision rules.
-This decision-theoretic guarantee motivates the investigation; it does not
-answer the assembly-specific question. We separate a conditional reading, in
-which the candidate set is restricted to the feasible fiber, from the
-unconditional comparison the 2016 sentence actually poses.
+reconstruction. This paper develops a unified account of the statistical
+question underneath: \emph{when do the reads identify the true genome, and
+when is it the most likely explanation of them?} Maximum likelihood is a
+natural benchmark because, with the correct sampling model and a uniform
+prior on a finite candidate class, it maximizes average reconstruction
+correctness among all decision rules. This decision-theoretic guarantee
+motivates the investigation; it does not answer the assembly-specific
+question. We separate a conditional reading, in which the candidate set is
+restricted to the feasible fiber, from the unconditional comparison the 2016
+sentence actually poses.
 
-We prove a positive rigidity theorem: under explicit bridging conditions the
-true length-$L$ spectrum is the unique positive integer circulation of its
-window-support graph. This yields a same-length oriented likelihood result
-under the stated candidate hypotheses. We also exhibit exact finite-sample
-counterexamples: because observed read counts fluctuate, another genome can
-assign them higher probability even when reconstruction is feasible.
-Finally, at the population level the true genome always maximizes expected
-log-likelihood, and the maximizer is unique up to rotation in the primitive
-P2-admissible class. These results connect graph reconstruction,
-repeat combinatorics, statistical optimization, and kernel-checked formal proof.
+The answer has three layers. Structurally, under explicit bridging conditions
+the true length-$L$ spectrum is the unique positive integer circulation of its
+window-support graph, yielding a same-length oriented likelihood result.
+Statistically, at the population level the true genome always maximizes
+expected log-likelihood, and for primitive P2 genomes the maximizer is unique
+up to rotation. Finitely, we prove a kernel-checked quantitative reliability
+theorem: for a finite, identifiable candidate family the probability that any
+wrong candidate ties or beats the truth in exact likelihood is at most the sum
+of pairwise Hellinger affinities, hence decays exponentially in the number of
+independent reads. This bounds the \emph{error}, not the likelihood, and exact
+finite-sample success is not even monotone in sample size; a two-genome
+circular example drops the success probability from $2/3$ to $4/9$ between one
+and two reads. We also exhibit exact finite-sample counterexamples in which
+another genome assigns the observed reads higher probability even though
+reconstruction is feasible. These results connect graph reconstruction,
+repeat combinatorics, statistical identifiability, and kernel-checked formal
+proof.
 \end{abstract}
 
 \clearpage
