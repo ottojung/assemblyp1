@@ -1,0 +1,10 @@
+import AssemblyP1.FiniteReadRecoveryP2Bridge
+
+/-! Independent Lean axiom audit for the P2-to-finite-read distribution bridge
+using the explicit Eulerian obstruction premise. The source-fidelity-free
+completed corollary is in FiniteReadRecoveryP2Complete. -/
+#print axioms AssemblyP1.FiniteReadRecoveryP2Bridge.circularReadPMF_eq_popSpectrum
+#print axioms AssemblyP1.FiniteReadRecoveryP2Bridge.equal_read_laws_imply_rotation
+#print axioms AssemblyP1.FiniteReadRecoveryP2Bridge.hellinger_lt_one_of_primitiveP2_not_rotation
+#print axioms AssemblyP1.FiniteReadRecoveryP2Bridge.finite_primitiveP2_family_affinity_gap
+#print axioms AssemblyP1.FiniteReadRecoveryP2Bridge.finite_primitiveP2_family_confidence
