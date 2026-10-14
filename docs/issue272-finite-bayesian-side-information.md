@@ -152,9 +152,9 @@ structural fibre condition of §2).
 **Sufficiency does not order promises.** Sufficiency is a property of each
 promise on its own; it does **not** by itself imply any inclusion between two
 sufficient promises. In particular the read-only minimum `Unambiguous` is the
-weakest member of the *read-only* family only, and it is **not** ordered against
-arbitrary truth-dependent sufficient promises — nor is the source `I_s`
-predicate (§6). A kernel-checked witness
+weakest member of the *read-only* family only, and it is **not shown** to be
+ordered against arbitrary truth-dependent sufficient promises — nor is the
+source `I_s` predicate (§6). A kernel-checked witness
 (`Incomparable.sufficient_promises_incomparable`) exhibits two sufficient
 promises that are genuinely incomparable: `E = (g = 0)` is sufficient and holds
 at `(0,0)` where `Unambiguous(0)` fails, so `E` does not imply `Unambiguous`;
