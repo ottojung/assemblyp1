@@ -232,6 +232,11 @@ import AssemblyP1.FiniteReadRecovery
 -- #270 concrete uniform-start cyclic read distribution and conditional genome bounds.
 import AssemblyP1.FiniteReadRecoveryGenome
 import AssemblyP1.FiniteReadRecoveryGenomeAudit
+-- #270 connect structural primitive-P2 uniqueness to iid finite-read ML.
+import AssemblyP1.FiniteReadRecoveryP2Bridge
+import AssemblyP1.FiniteReadRecoveryP2BridgeAudit
+import AssemblyP1.FiniteReadRecoveryP2Complete
+import AssemblyP1.FiniteReadRecoveryP2CompleteAudit
 
 /-! ## `Issue94Transposition`: the Kotzig/Ukkonen/Pevzner descent, and an obstruction
 
