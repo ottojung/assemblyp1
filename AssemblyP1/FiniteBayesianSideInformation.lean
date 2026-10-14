@@ -589,6 +589,78 @@ theorem side_information_needed :
 
 end TwoCandidate
 
+/- Two candidates and two reads: at read `0` both candidates are possible, at
+read `1` only candidate `0` is possible.  The truth-dependent promise
+`E g r := (g = 0)` and the read-only promise `Unambiguous` are both sufficient,
+but neither implies the other: `E` holds at `(0,0)` where `Unambiguous` fails,
+and `Unambiguous` holds at read `1` where `E 1 1` fails.  Sufficiency alone
+therefore imposes no ordering between promises, and in particular does not order
+them against the source `I_s` predicate. -/
+namespace Incomparable
+
+def orbit : Fin 2 → Fin 2 := id
+noncomputable def π : Fin 2 → ℝ := fun _ => 1 / 2
+def p : Fin 2 → Fin 2 → ℝ := fun g r => if r = 0 then 1 else if g = 0 then 1 else 0
+def E : Fin 2 → Fin 2 → Prop := fun g _ => g = 0
+
+instance : DecidableRel E := fun g r => by unfold E; infer_instance
+
+theorem pi_nonneg : ∀ g : Fin 2, 0 ≤ π g := fun g => by norm_num [π]
+
+theorem p_nonneg : ∀ g : Fin 2, ∀ r : Fin 2, 0 ≤ p g r := by
+  intro g r
+  unfold p
+  by_cases hr : r = 0
+  · simp [hr]
+  · by_cases hg : g = 0 <;> simp [hr, hg]
+
+theorem sufficient_E : Sufficient π p orbit E := by
+  intro g r _ _ hEg h _ _ hEh
+  have hg : g = 0 := hEg
+  have hh : h = 0 := hEh
+  exact congrArg orbit (hh.trans hg.symm)
+
+theorem sufficient_unambiguous :
+    Sufficient π p orbit (fun _ r => Unambiguous π p orbit r) :=
+  unambiguous_sufficient π p orbit
+
+theorem E_not_imp_unambiguous :
+    ¬ (∀ g r, E g r → Unambiguous π p orbit r) := by
+  intro h
+  have hu : Unambiguous π p orbit 0 := h 0 0 rfl
+  have h10 := hu 0 1 (by norm_num [π]) (by simp [p]) (by norm_num [π]) (by simp [p])
+  simp only [orbit, id_eq] at h10
+  exact (by decide : (1 : Fin 2) ≠ 0) h10
+
+theorem unambiguous_not_imp_E :
+    ¬ (∀ g r, Unambiguous π p orbit r → E g r) := by
+  intro h
+  have hu1 : Unambiguous π p orbit 1 := by
+    intro g h' hπg hpg hπh hph
+    have hg0 : g = 0 := by
+      by_contra hg
+      have hpz : ¬ 0 < p g 1 := by simp [p, hg]
+      exact hpz hpg
+    have hh0 : h' = 0 := by
+      by_contra hh
+      have hpz : ¬ 0 < p h' 1 := by simp [p, hh]
+      exact hpz hph
+    exact congrArg orbit (hh0.trans hg0.symm)
+  have hE : E 1 1 := h 1 1 hu1
+  exact (by decide : (1 : Fin 2) ≠ 0) hE
+
+/-- Two sufficient promises that are incomparable: sufficiency does not order
+promises, so no claim that `I_s`, `Unambiguous`, or an arbitrary sufficient `F`
+is weaker or stronger than another follows from sufficiency alone. -/
+theorem sufficient_promises_incomparable :
+    Sufficient π p orbit E ∧
+      Sufficient π p orbit (fun _ r => Unambiguous π p orbit r) ∧
+      ¬ (∀ g r, E g r → Unambiguous π p orbit r) ∧
+      ¬ (∀ g r, Unambiguous π p orbit r → E g r) :=
+  ⟨sufficient_E, sufficient_unambiguous, E_not_imp_unambiguous, unambiguous_not_imp_E⟩
+
+end Incomparable
+
 end Example
 
 end AssemblyP1.FiniteBayesianSideInformation

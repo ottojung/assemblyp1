@@ -17,6 +17,7 @@ module: [`AssemblyP1/FiniteBayesianSideInformation.lean`](../AssemblyP1/FiniteBa
 | Weakest read-only promise exists and is unique | kernel-checked | `unambiguous_unique_weakest_readonly` |
 | No weakest truth-dependent promise (counterexample) | kernel-checked | `NoWeakest.no_weakest_sufficient` |
 | Decoder-correctness ⇒ fibre uniqueness ⇒ posterior one | kernel-checked | `fibreUnique_of_decoder`, `conditional_certain_of_fibreUnique` |
+| Two sufficient promises are incomparable (no ordering from sufficiency) | kernel-checked example | `Incomparable.sufficient_promises_incomparable` |
 | Not-So-Greedy `I_s` ⇒ posterior one | external premise + the above bridge | §6 below |
 | Minimal source-defined bridging promise | **OPEN** | §7 |
 
@@ -33,12 +34,12 @@ Fix finite types:
 - `Θ`, the finite set of circular-rotation **orbit classes**;
 - `orbit : Genome → Θ`, mapping each candidate to its rotation class.
 
-A normalized prior `π : Genome → ℝ` (`0 ≤ π`, `∑ π = 1`) and a generative
-likelihood `p : Genome → Obs → ℝ` (`0 ≤ p g r`, `∑_r p g r = 1`) describe the
-experiment `G ∼ π`, `R | G = g ∼ p_g`. The extra information is a
-**truth-dependent promise** `E : Genome → Obs → Prop` (possibly depending on the
-unknown truth `g`), or an observed **side channel** `Z` with `q : Genome → Obs →
-Aux → ℝ`.
+A prior `π : Genome → ℝ` (`0 ≤ π`, optionally normalized `∑ π = 1`) and a
+generative likelihood `p : Genome → Obs → ℝ` (`0 ≤ p g r`, optionally normalized
+`∑_r p g r = 1`) describe the experiment `G ∼ π`, `R | G = g ∼ p_g`. The extra
+information is a **truth-dependent promise** `E : Genome → Obs → Prop` (possibly
+depending on the unknown truth `g`), or an observed **side channel** `Z` with
+`q : Genome → Obs → Aux → ℝ`.
 
 The joint mass used for inference is
 
@@ -51,6 +52,14 @@ posteriorMass π p E orbit r θ = (∑_{g : orbit g = θ} jointMass π p E g r) 
 The indicator `1_E(g,r)` is part of the joint mass: the **prior and the
 likelihood are both conditioned on `E`** by dividing by `predictiveMass`. No step
 assumes `E` is a function of `R` alone.
+
+**Normalization is an interpretation assumption, not a hypothesis of the
+algebra.** Every theorem below uses only `0 ≤ π` and `0 ≤ p` (plus strict
+positivity on the support of the fibre); it never uses `∑_g π g = 1`, `∑_r p_g(r)
+= 1`, or `∑_z q_g(z|r) = 1`. Those normalizations are needed only to *read* `π`,
+`p`, `q` as a prior, a likelihood, and a conditional pmf. The posterior-iff
+criterion and the fibre-uniqueness bridge are statements about the unnormalized
+masses `π g · p_g(r) · 1_E(g,r)` and hold with or without normalization.
 
 ## 2. The exact necessary-and-sufficient theorem
 
@@ -140,6 +149,20 @@ structural fibre condition of §2).
   **minimum**, while the full truth-dependent family has only **minimal**
   elements and no minimum.
 
+**Sufficiency does not order promises.** Sufficiency is a property of each
+promise on its own; it does **not** by itself imply any inclusion between two
+sufficient promises. In particular the read-only minimum `Unambiguous` is the
+weakest member of the *read-only* family only, and it is **not** ordered against
+arbitrary truth-dependent sufficient promises — nor is the source `I_s`
+predicate (§6). A kernel-checked witness
+(`Incomparable.sufficient_promises_incomparable`) exhibits two sufficient
+promises that are genuinely incomparable: `E = (g = 0)` is sufficient and holds
+at `(0,0)` where `Unambiguous(0)` fails, so `E` does not imply `Unambiguous`;
+and in a two-read model (`Unambiguous` true at read `1`, `E 1 1` false)
+`Unambiguous` does not imply `E`. Any claim that one sufficient promise is
+weaker than another therefore needs a separate proof and is not a consequence of
+sufficiency.
+
 This is the precise "minimum vs minimal" distinction #272 asks for: an intrinsic
 least *event* does not exist for arbitrary promises, but it does once the family
 is restricted to read-only structural predicates.
@@ -171,13 +194,14 @@ guarantee.**
 |---|---|---|
 | `I_s` holds for the truth (coverage + bridged interleaved + triple repeats) | posterior one given `E = I_s`, via the external Not-So-Greedy guarantee + `conditional_certain_of_fibreUnique` | sufficient; external premise; same orientation, `2 ≤ L ≤ G`, observed read multiplicities, fixed candidate universe |
 | Absence of a repeat-bridging obstruction | necessary for read-only certainty (else two orbits share the read support) | necessary only; formalized abstractly by §4, not as the 2016 predicate |
-| Arbitrary fibre-unique `F` (separates confusable orbits) | posterior one given `E = F` | sufficient and **strictly weaker** than `I_s`; read-unambiguous is the weakest such promise |
-| Read-unambiguous (`Unambiguous`) | posterior one given `E = Unambiguous`; the unique weakest read-only promise | sufficient, read-only, independent of `I_s` |
+| Arbitrary fibre-unique `F` (separates confusable orbits) | posterior one given `E = F` | sufficient; **no ordering against `I_s` follows from sufficiency** (incomparable in general, §5) |
+| Read-unambiguous (`Unambiguous`) | posterior one given `E = Unambiguous`; unique weakest **read-only** promise | sufficient, read-only; **not shown to be weaker or stronger than `I_s`** |
 
-**Consequence.** `I_s` is a *sufficient* structural certificate, not a necessary
-condition for certainty: there exist sufficient truth-dependent promises
-strictly weaker than `I_s` (read-unambiguous is one, §5), so `I_s` is not
-necessary for posterior singleton. The original necessity/sufficiency
+**Consequence.** `I_s` is a *sufficient* structural certificate. Sufficiency alone
+does **not** establish that `I_s` is necessary, nor that it is the strongest or
+the weakest sufficient promise: the ordering between `I_s` and other sufficient
+promises (read-only or arbitrary truth-dependent) is not determined by the
+posterior-iff theorem and is left OPEN (§7). The original necessity/sufficiency
 statements remain attributed to the source.
 
 ## 7. Genuinely open cases
@@ -195,6 +219,11 @@ statements remain attributed to the source.
    `conditional_certain_of_fibreUnique` on the full historical read-string model
    requires the external guarantee; the abstract bridge is proved, the concrete
    endpoint remains attributed/open.
+4. **Ordering among sufficient promises.** Whether `I_s` implies, is implied by,
+   or is incomparable with the read-only `Unambiguous` promise or with arbitrary
+   truth-dependent sufficient promises is OPEN. Sufficiency alone yields no
+   ordering, and `Incomparable.sufficient_promises_incomparable` shows two
+   sufficient promises can be incomparable, so no such ordering may be assumed.
 
 ## 8. Decision table
 

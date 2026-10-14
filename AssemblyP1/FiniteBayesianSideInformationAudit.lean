@@ -14,3 +14,4 @@ import AssemblyP1.FiniteBayesianSideInformation
 #print axioms AssemblyP1.FiniteBayesianSideInformation.unambiguous_unique_weakest_readonly
 #print axioms AssemblyP1.FiniteBayesianSideInformation.NoWeakest.no_weakest_sufficient
 #print axioms AssemblyP1.FiniteBayesianSideInformation.TwoCandidate.side_information_needed
+#print axioms AssemblyP1.FiniteBayesianSideInformation.Incomparable.sufficient_promises_incomparable
