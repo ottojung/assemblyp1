@@ -1,7 +1,9 @@
 # Presentation arc and reconciliation for #265
 
-Status: 2026-10-14. Agent `74a003ebefb4`, branch
-`agent/74a003ebefb4-issue265-presentations`. Base: `main` @ `157ad34`.
+Status: 2026-10-14. Follow-up correction by agent `757b22c73e75`, branch
+`agent/757b22c73e75-issue265-restore-opening`. Base: `main` @ `b0a6e9f`
+(deck content unchanged since `22a6233`). The original #265 presentation
+rebalance was by agent `74a003ebefb4` on base `157ad34`.
 
 This note records (i) the revised presentation arc, (ii) the claim labels and
 exact project endpoints behind every nontrivial slide claim, (iii) where the
@@ -11,6 +13,14 @@ problem settled.
 
 ## What changed
 
+- **Opening restored (follow-up correction).** The recentered programmers deck
+  had altered the user-approved opening. The frontmatter and first three slides
+  (`The Most Likely Genome`, `How can we reconstruct a genome?`, `What makes
+  assembly difficult?`) are restored byte-for-byte from the approved `#254`
+  commit `7aba5d0`. The improved overlap traversal becomes slide 4; the now
+  redundant standalone repeat-obstacle slide is removed. No other slide,
+  speaker note, claim, or backup is weakened. See "Preserving the approved
+  opening" below.
 - `slides/programmers.md` — rewritten to a **positive, operational** main arc
   (14 slides) plus four backup slides. The distinct 2016 read-overlap
   Not-So-Greedy graph is restored to the main narrative; the finite reversal is
@@ -36,8 +46,8 @@ by the merged PR #189 and the #268 revisions (see "Reconciliation" below).
 |---|-------|------|
 | 1 | The Most Likely Genome | title / framing |
 | 2 | How can we reconstruct a genome? | circular genome, independent uniform-start fixed-`L` reads |
-| 3 | Reconstruction from overlaps | suffix/prefix overlaps; didactic de Bruijn traversal spelling `ACGTA` |
-| 4 | The repeat obstacle | repeats and repeat-bridging context |
+| 3 | What makes assembly difficult? | repetition, ambiguous short reads, repeat bridging |
+| 4 | Reconstruction from overlaps: a worked traversal | suffix/prefix overlaps; didactic de Bruijn traversal spelling `ACGTA` |
 | 5 | The 2016 algorithm uses a different graph | read-overlap graph: vertices are reads, greedy + first disagreeing extension, spurious/transitive pruning, multiplicities, unique Eulerian spelling |
 | 6 | The 2016 open question | reconstruction conditions `?=>` truth is a maximum-likelihood genome |
 | 7 | Every genome predicts a distribution | `P_G(w) = starts(w)/G`; likelihood vs posterior; uniform starts ≠ uniform read strings |
@@ -51,6 +61,27 @@ by the merged PR #189 and the #268 revisions (see "Reconciliation" below).
 
 Backups: B1 complete finite reversal; B2 incomparable coverage definitions;
 B3 open sample-complexity (Hellinger bound); B4 primary sources.
+
+## Preserving the approved opening
+
+The first three slides of the programmers deck were directly approved by the
+user in the `#254` review and merged at `7aba5d0`; that review recorded an empty
+diff of lines 1–74 against the then-`main`. The #265 recentering (commits
+`91e34e4`, `22a6233`) altered them: slide 3 changed from `What makes assembly
+difficult?` to `Reconstruction from overlaps: a worked traversal`, the slide 1
+and slide 2 speaker notes were rewritten, and the frontmatter `info` line
+changed. This follow-up restores `slides/programmers.md` lines 1–72 (frontmatter
+plus slides 1–3) byte-for-byte from `7aba5d0`. Slides 4–14 and backups B1–B4 are
+otherwise unchanged from `main`; the removed `The repeat obstacle` slide is
+redundant with the restored slide 3.
+
+`slides/biologists.md` was checked the same way. Its first three headings
+(`Which genome is most likely?`, `A sequencer takes a sample`, `Overlaps help.
+Repeats confuse.`) are unchanged; only the slide 1 speaker note and one slide 2
+body line (adding "oriented … and independent") were refined. No byte-for-byte
+user constraint on the biologists opening was found — the `#254` constraint was
+specific to the programmers deck, and #265 explicitly sanctioned an analogous
+biologists rebalance — so the biologists deck is left as merged.
 
 ## Claim labels and endpoints
 

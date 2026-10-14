@@ -2,7 +2,7 @@
 theme: default
 title: "The Most Likely Genome"
 info: |
-  Genome assembly, probability, and mathematical verification.
+  Genome assembly, maximum likelihood, and a research investigation.
 class: text-center
 highlighter: shiki
 lineNumbers: false
@@ -24,10 +24,6 @@ mdc: true
 <!--
 This is not an algorithm lecture or a progress report about software agents.
 Begin with the scientific problem and develop the research question naturally.
-The main arc is positive and operational: a genome, random reads, overlaps, a
-graph, a unique spelling, then the statistical question of whether the truth is
-also the most likely explanation. Negative finite-sample examples appear once,
-as a short aside, and again in backup.
 -->
 
 ---
@@ -38,7 +34,7 @@ A genome is a very long string of DNA letters.
 
 Sequencing does not hand us that string. It gives us **many short fragments**, called *reads*, sampled from different positions.
 
-Take the tiny circular genome `ACGTA`. Reading three letters at a time gives its length-3 windows:
+For example, a circular genome `ACGTA` has these length-3 fragments:
 
 ```text
 ACG   CGT   GTA   TAA   AAC
@@ -49,13 +45,30 @@ ACG   CGT   GTA   TAA   AAC
 The assembly problem is to infer the original sequence.
 
 <!--
-Sampling model, used exactly and throughout this talk: a fixed circular genome
-G; reads of fixed length L; each read is the length-L window at a start position
-chosen uniformly at random among the |G| positions, independent of the others;
-error-free and oriented. The circular toy model removes distracting end effects.
-The MB09 molecule and fixed-N product-binomial models are separate branches of
-the research, not this model. Uniformity is over START POSITIONS; it does not
-make the induced probabilities of distinct read STRINGS uniform.
+The circular toy model removes distracting end effects.
+We assume error-free oriented reads; real sequencing is more complicated.
+-->
+
+---
+
+# What makes assembly difficult?
+
+DNA contains **repeated substrings**.
+
+```text
+... G [ ACGA ] T ...
+... C [ ACGA ] A ...
+```
+
+A short read containing only `ACGA` cannot tell us which copy was sampled.
+
+A longer read containing the **flanking context** can distinguish them.
+
+This is why read length, overlap, and *bridging repeats* matter.
+
+<!--
+Bridging means the read extends beyond a particular repeat copy on both sides.
+The takeaway is information content, not graph implementation.
 -->
 
 ---
@@ -81,31 +94,6 @@ AC -> CG -> GT -> TA -> AA -> AC uses each of the five edges once and spells
 ACGTA. A circular genome has n rotation spellings with identical windows, so
 reconstruction is always "up to rotation". This teaching graph is NOT the
 read-overlap graph of the 2016 algorithm on the next slides.
--->
-
----
-
-# The repeat obstacle
-
-DNA contains **repeated substrings**.
-
-```text
-... G [ ACGA ] T ...
-... C [ ACGA ] A ...
-```
-
-A short read containing only `ACGA` cannot tell us which copy was sampled.
-
-A longer read containing the **flanking context** can distinguish them.
-
-**Bridging repeats is the structural evidence that resolves ambiguity.**
-
-<!--
-A read bridges a copy of a repeat when it extends strictly beyond the copy on
-both sides; a repeat of length l is bridged by reads of length L when
-l <= L - 2. Then only one placement of the read fits, so the copy is no longer
-interchangeable with the other copy. This is information content, not graph
-implementation. Source: Shomorony et al. 2016, repeat-bridging conditions.
 -->
 
 ---
