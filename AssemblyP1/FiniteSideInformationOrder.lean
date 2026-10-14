@@ -34,7 +34,7 @@ order-theoretic and is stated for an arbitrary family `Adm` of promises:
   criterion: its unique weakest sufficient member is `Unambiguous`.
 * `NoWeakestProb.no_weakest_sufficient` / `NoWeakestProb.unionAllSufficient_not_sufficient`
   — the full truth-dependent family does **not** satisfy the criterion: on a
-  finite normalized-support model the union of all sufficient promises is
+  finite full-support model (unnormalized weights) the union of all sufficient promises is
   itself insufficient, so no weakest sufficient promise exists.  This reuses the
   merged `NoWeakest` counterexample rather than reproving it.
 * `NoWeakestProb.union_e1_e2_not_sufficient` — sufficiency is **not** closed

@@ -66,9 +66,13 @@ Two closure facts, both kernel-checked:
   sufficient (`sufficient_and`), and more generally the pointwise conjunction of
   a nonempty family of sufficient promises is sufficient (`sufficient_iInter`).
 
-Sufficiency is therefore a **meet-semilattice** of promises. It is *not* closed
+Sufficiency is therefore a **meet-semilattice** of promises.  It is *not* closed
 under union: `NoWeakestProb.union_e1_e2_not_sufficient` exhibits two sufficient
 promises on a fully specified finite model whose disjunction is insufficient.
+The read-only family is the exception: it is closed under arbitrary unions,
+because its total union is `Unambiguous` (`unionReadOnly_eq_unambiguous`), which
+is itself sufficient (`unambiguous_sufficient`), and sufficiency is downward
+closed.
 
 ## 3. When does a weakest sufficient promise exist?
 
@@ -209,7 +213,7 @@ weakest sufficient exists?      yes (= Unambiguous)        iff union is sufficie
 unique up to equivalence?       yes                        yes (when it exists)
 strongest (empty) sufficient?   yes, trivial               yes, trivial
 closed under conjunction?       yes                        yes
-closed under union?             no                         no
+closed under union?             yes (union = Unambiguous)   no
 ```
 
 The general criterion `weakest_iff_union` / `weakest_admissible_iff_union` is the
