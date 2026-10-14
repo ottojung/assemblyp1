@@ -1,6 +1,7 @@
 # Signed commit enforcement
 
-Status: **CI gate active on branch; branch-protection ruleset NOT enabled (admin step required).**
+Status: **CI gate active on `main`; mandatory branch ruleset NOT active (repository-admin step required).**
+Audit date: 2026-10-14. Audited revision: `origin/main` @ `157ad34`.
 
 ## Policy
 
@@ -31,30 +32,87 @@ independently.
 * Selftest: [`scripts/test_signed_commits.sh`](../scripts/test_signed_commits.sh)
   covers the unsigned-branch rejection, the `U` (unknown-local-trust) case, a
   signed two-parent merge commit, a signed merge with an **unsigned** side
-  branch (must fail), and range isolation, all under a throwaway `GNUPGHOME`.
+  branch (must fail), pin mismatch / multi-primary bundle rejection, and range
+  isolation, all under a throwaway `GNUPGHOME`. Current result: **8 passed, 0
+  failed**.
 
-## Branch protection (admin step required)
+## Exact gate identity
+
+Branch protection and rulesets match a status check by its **check-run name**,
+not by the workflow's display name. For this gate they differ:
+
+| Field | Value |
+|-------|-------|
+| Workflow display name | `Signed commits` |
+| Workflow file | `.github/workflows/signed-commits.yml` |
+| Workflow id | `383736431` |
+| **Required status check context** | **`signed-commits`** |
+
+A required status check must therefore be configured as exactly
+`Signed commits` / `signed-commits`; the value that actually matches is the job
+id **`signed-commits`**. This was read from the GitHub REST check-runs API on
+recent `main` commits, e.g.:
+
+```sh
+curl -sS "https://api.github.com/repos/ottojung/assemblyp1/commits/<sha>/check-runs" \
+  | grep -o '"name": "signed-commits"'
+```
+
+## Branch protection (repository-admin step required)
 
 The CI gate enforces signatures on every push/PR, but a workflow alone is
-**advisory** — it can be bypassed by force-push or disabled by an admin.
-GitHub's native **Require signed commits** ruleset is also **not enabled**,
-and enabling it as the sole gate is **problematic**: agent commits are signed
-with GPG subkeys of the maintainer key that GitHub's REST API does not
-recognize (`verification.verified=false, reason=no_user`), so native
-verification would reject valid agent signatures.
+**advisory** — it can be bypassed by force-push, direct push, or a disabled
+workflow. As of the audit date the repository ruleset **`ruleset1`
+(id `23626350`) is `enforcement=disabled`** and, even if merely enabled, its
+rules are only `deletion`, `non_fast_forward`, and `pull_request` — it contains
+**no `required_status_checks` rule**, so enabling it as-is would **not** require
+the signed-commit gate. This can be checked without an admin token:
 
-To make enforcement **mandatory**, a repository admin must:
+```sh
+python3 scripts/check_ruleset_enforcement.py            # exit 1 while advisory
+python3 scripts/check_ruleset_enforcement.py --selftest # offline fixture checks
+```
 
-1. Go to **Settings → Branches → Add branch protection rule** for `main`.
-2. Enable **Require status checks to pass** and add the `Signed commits` CI
-   job — this makes the cryptographic gate non-bypassable.
-3. Enable **Do not allow bypassing the above settings** and **Restrict who
-   can push** to prevent force-push and direct-push circumvention.
-4. Optionally enable **Require signed commits** as defense-in-depth, but be
-   aware it may reject agent GPG signatures that GitHub does not recognize.
+To make enforcement **mandatory**, a repository admin must add a rule that
+requires the gate and blocks bypass:
+
+1. **Settings → Rules → Rulesets → `ruleset1`** (or a new branch ruleset
+   targeting the default branch).
+2. Add a **Require status checks to pass** rule and select the
+   **`signed-commits`** check (exact context above). Optionally mark it
+   required for merge.
+3. Set the ruleset **Enforcement** to **Active** (not Disabled / Evaluate) and
+   enable **block force pushes** and **restrict deletions**; restrict direct
+   pushes to `main` so the check cannot be sidestepped.
+4. Do **not** rely on GitHub's native **Require signed commits** rule as the
+   sole gate — see the next section.
+5. Verify activation by re-reading the effective ruleset:
+   `python3 scripts/check_ruleset_enforcement.py` must exit 0 and print
+   `ENFORCED`.
 
 Until that admin step is completed, enforcement relies on the CI gate alone
 and should be considered **advisory, not mandatory**.
+
+### GitHub-native "Require signed commits" is not a safe substitute
+
+GitHub's own signature verification disagrees with a correct local
+cryptographic check on these agent commits, so the native rule must not be
+turned on as the primary gate. Live REST evidence (2026-10-14):
+
+| Commit | Local gate (`%G?`) | GitHub `verification` |
+|--------|--------------------|------------------------|
+| `7aba5d0` (agent slide commit, PR #254) | `U`, `verify-commit` exit 0 | `verified=false`, reason `bad_email` |
+| `157ad34` (agent merge, #267) | `U`, `verify-commit` exit 0 | `verified=false`, reason `no_user` |
+| `a9f8391` (PR #194 merge, web-flow) | `U` | `verified=true`, reason `valid` |
+| `080b1b3` (PR #159 merge, web-flow) | `U` | `verified=true`, reason `valid` |
+
+`bad_email` means the committer email is not among the signing key's identities
+— it is **not** an invalid signature — and `no_user` means GitHub has no user
+bound to the key. Both are properties of GitHub's verifier, not of the
+signature. Enabling native **Require signed commits** would therefore reject
+cryptographically valid agent commits (and the `080b1b3` row also shows that a
+GitHub-verified merge head does not imply signed ancestry: its proof commits
+`2b3011e`, `bd4ae52`, `d68dc6c`, `84daf85` are unsigned).
 
 ## Trusted keys
 
@@ -77,24 +135,29 @@ file together. Never commit secret key material.
 Agent signing keys are subkeys of the maintainer key, so agent-signed commits
 verify against the same trusted primary.
 
-## History report (audit of `origin/main`)
+## History report (audit of `origin/main` @ `157ad34`, 2026-10-14)
 
 Audit performed with the trusted keyring; `E` does not occur because the
 signing keys are present and pinned.
 
 | Range | Total | `N` (unsigned) | `U`/`G` (signed, verified) |
 |-------|-------|----------------|-----------------------------|
-| All of `main` | 737 | 455 | 282 |
-| Since 2026-10-09 | 172 | 25 | 147 |
+| All of `main` | 759 | 455 | 304 |
+| Since 2026-10-10 (committer date) | 173 | 25 | 148 |
 
 **Affected unsigned range:** from `1cce2a6` *Initialize assemblyp1 research
 repository* (2026-09-17) through `abbe728` *paper: list proof-level
 reproduction anchors in main theorem inventory* (2026-10-13, merged via PR
-#189 as `9ca5c8`). The unsigned history predates PR #159 and includes kernel
+#189 as `9ca5c8f`). The unsigned history predates PR #159 and includes kernel
 #256 (`737cc9d`). The four PR #159 proof commits named in the issue are
 `2b3011e`, `bd4ae52`, `d68dc6c`, `84daf85`.
 
-The 25 unsigned commits since 2026-10-09:
+The gate holds: **no unsigned commit has entered `main` since `abbe728`**. The
+29 commits reachable after `abbe728` (including the signed merges `d4406bc`
+PR #191, `a9f8391` PR #194, and `157ad34` #267) are all signed and pass the
+gate. The newest unsigned commit on `main` is still `abbe728`.
+
+The 25 unsigned commits since 2026-10-10:
 
 ```
 abbe728  paper: list proof-level reproduction anchors in main theorem inventory   [PR #189]
