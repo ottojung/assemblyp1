@@ -227,6 +227,21 @@ statements remain attributed to the source.
    ordering, and `Incomparable.sufficient_promises_incomparable` shows two
    sufficient promises can be incomparable, so no such ordering may be assumed.
 
+**Addendum (2026-10-14, `AssemblyP1/FiniteSideInformationOrder.lean`).** The
+*existence and uniqueness* question behind items 3–4 is now settled at the level
+of the promise order, without touching the posterior theorem: a weakest
+sufficient promise exists **iff** the union of all sufficient promises is itself
+sufficient (`weakest_iff_union`), and when it exists it is unique up to logical
+equivalence (`weakest_unique`); the same criterion holds inside any
+equivalence-closed structural family (`weakest_admissible_iff_union`). The
+read-only family satisfies it with weakest member `Unambiguous`
+(`unambiguous_isWeakest_readonly`), while the full truth-dependent family does
+not (`NoWeakestProb.unionAllSufficient_not_sufficient`). The `I_s`-specific
+ordering of item 4, the necessity of item 2, the source-defined weakest promise
+of item 1, and the concrete historical adapter of item 3 all remain OPEN. See
+[`docs/issue272-side-information-order.md`](issue272-side-information-order.md)
+for the precise reduction and status.
+
 ## 8. Decision table
 
 ```

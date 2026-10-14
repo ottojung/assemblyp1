@@ -220,6 +220,10 @@ import AssemblyP1.CoveredBinomialWeightsIff
 import AssemblyP1.CoveredBinomialWeightsIffAudit
 import AssemblyP1.FiniteSideInformationColoring
 import AssemblyP1.FiniteSideInformationColoringAudit
+import AssemblyP1.FiniteBayesianSideInformation
+import AssemblyP1.FiniteBayesianSideInformationAudit
+import AssemblyP1.FiniteSideInformationOrder
+import AssemblyP1.FiniteSideInformationOrderAudit
 -- #270 positive finite-family iid ML recovery via Hellinger affinity.
 import AssemblyP1.FiniteReadRecovery
 -- #270 concrete uniform-start cyclic read distribution and conditional genome bounds.
