@@ -194,7 +194,7 @@ The wrong genome gives **this** sample about **34% more probability**, because t
 
 **Most likely is not the same as certainly true.**
 
-With enough idealized sampling, the over- and under-representation disappears, and the truth wins (next slides). The exact comparison here is certified by Lean.
+With enough idealized sampling, the over- and under-representation disappears, and the truth wins (next slides). The exact likelihood ratio is certified by Lean.
 
 <!--
 This is the one negative aside in the main deck. If every read type is observed
@@ -275,8 +275,8 @@ In that setting the true genome is a maximum-likelihood solution, uniquely up to
 
 <!--
 Kernel endpoints: OrientedRigidity.unique_positive_circulation;
-SameLength62Uniqueness.unique_62_maximizer_up_to_rotation;
-OrientedFinalRigidity.oriented_same_length_spectrum_rigidity. The equal-length
+SameLength62Uniqueness.unique_62_maximizer_up_to_rotation (unconditional
+rotation); OrientedFinal.oriented_same_length_spectrum_rigidity. The equal-length
 restriction is essential: dropping it restores strict finite counterexamples.
 The general Graver-basis criterion (GraverRigidity) is a separate iff.
 -->

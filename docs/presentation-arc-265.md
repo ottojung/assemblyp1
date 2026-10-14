@@ -69,17 +69,17 @@ a textbook; not proved in Lean here), **COMPUTED** (exact rational certificate),
 | ML maximizes prior-averaged zero-one success (finite set, uniform prior) | KERNEL | `AssemblyP1/FiniteBayesDecision.lean`: `chooseMAP_optimal`, `chooseMAP_optimal_randomized`, `finite_iid_MAP_optimal` |
 | Prior-average success nondecreasing in `n` | KERNEL | `AssemblyP1/FiniteBayesDecision.lean`: `chooseMAP_success_monotone_under_refinement` |
 | No per-truth monotonicity claimed | EXTERNAL / project note | paper `03-open-question.tex` `rem:mono-avg`; standard calculation |
-| Same-length rigidity + rotation uniqueness | KERNEL | `OrientedRigidity.unique_positive_circulation`; `SameLength62Uniqueness.unique_62_maximizer_up_to_rotation`; `OrientedFinalRigidity.oriented_same_length_spectrum_rigidity`, `rotation_uniqueness_of_bbt` |
+| Same-length rigidity + rotation uniqueness | KERNEL | `OrientedRigidity.unique_positive_circulation`; `SameLength62Uniqueness.unique_62_maximizer_up_to_rotation` (unconditional rotation endpoint); `OrientedFinal.oriented_same_length_spectrum_rigidity`; `OrientedFinal.rotation_uniqueness_of_bbt` (conditional on the unproved external BBT premise) |
 | Graver-basis rigidity iff | KERNEL | `GraverRigidity.rigid_iff_forall_graver_not_feasible` |
 | Same-length finite witness `AAATAT`/`AAAAAT` (exact 3, binomial 5) | KERNEL | `SameLengthSection62Counterexample.samelength_se62_bidirected_flow_counterexample` |
-| Historical source-predicate witnesses | KERNEL | `HistoricalCoverageSameLengthWitnesses.w1_historical_literal_se62_flow_counterexample`, `w1_historical_maximality_refuted` |
+| Historical source-predicate witnesses | KERNEL | `AssemblyP1.HistoricalCoverageSameLength.W1.w1_historical_literal_se62_flow_counterexample`, `w1_historical_maximality_refuted` |
 | Population maximality (Gibbs/KL) | KERNEL | `PopulationGibbs.popLogLik_le_self'`; equality `PopulationGibbs.popTie_iff` |
 | Population uniqueness up to rotation (primitive, P2, admissible class) | KERNEL | `Issue94Complete.population_unique_ML` |
 | Limiting consistency / `P(correct at n) -> 1` | EXTERNAL | standard SLLN + ML consistency (Lehmann & Casella 1998); not kernel-checked here |
 | Hellinger/union `99%` bound | EXTERNAL | Tsybakov 2009, Thm 2.4; not kernel-checked here |
 | Sample complexity in this model | OPEN | no theorem in paper or Lean |
 | Coverage predicates incomparable | KERNEL | `HistoricalCovers.lean`; `HistoricalCoverageSameLengthWitnesses.lean` |
-| `AAATT`/`AAAATT` reversal (backup B1) | COMPUTED | restricted two-candidate illustration, not a source-faithful counterexample |
+| `AAATT`/`AAAATT` reversal (backup B1) | KERNEL | ratio `15625/11664`: `OrientedVariableLengthSe62.exact_ratio1`; restricted two-candidate illustration, not a source-faithful counterexample |
 
 ## Negative-example disposition
 

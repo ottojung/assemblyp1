@@ -220,11 +220,12 @@ Under the source's structural hypotheses — bridging, oriented reads, equal can
 <!--
 Kernel endpoints: OrientedRigidity.unique_positive_circulation;
 SameLength62Maximizer (informationFeasible_62_maximizer);
-SameLength62Uniqueness.unique_62_maximizer_up_to_rotation;
-OrientedFinalRigidity.oriented_same_length_spectrum_rigidity and
-rotation_uniqueness_of_bbt. State the qualifiers honestly: dropping truth
-candidacy is false at equal length (AABB -> ABAB); dropping equal length
-restores strict counterexamples. The general Graver-basis criterion
+SameLength62Uniqueness.unique_62_maximizer_up_to_rotation (the unconditional
+rotation endpoint); OrientedFinal.oriented_same_length_spectrum_rigidity and
+OrientedFinal.rotation_uniqueness_of_bbt (the latter consumes the unproved
+external BBT premise, so it is conditional). State the qualifiers honestly:
+dropping truth candidacy is false at equal length (AABB -> ABAB); dropping equal
+length restores strict counterexamples. The general Graver-basis criterion
 (GraverRigidity.rigid_iff_forall_graver_not_feasible) is a separate iff for
 integer-flow supports, not this theorem.
 -->
