@@ -216,6 +216,8 @@ import AssemblyP1.FiniteStartCoverageAudit
 import AssemblyP1.FixedNBinomialEffectiveWeightsAudit
 import AssemblyP1.FiniteSideInformationColoring
 import AssemblyP1.FiniteSideInformationColoringAudit
+-- #270 positive finite-family iid ML recovery via Hellinger affinity.
+import AssemblyP1.FiniteReadRecovery
 
 /-! ## `Issue94Transposition`: the Kotzig/Ukkonen/Pevzner descent, and an obstruction
 
