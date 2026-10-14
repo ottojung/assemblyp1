@@ -57,12 +57,14 @@ high-probability maximum-likelihood recovery.
 ## Scope
 
 These are generic finite-PMF lemmas. They apply to the AssemblyP1 primitive-P2
-candidate class only after restricting to a **finite** candidate family (see
-`AssemblyP1.FiniteReadRecoveryPopulation`): the full class has unbounded genome
-lengths and hence infinite size, so the finite-family bound cannot be applied
-to it directly. The population theorem `population_unique_ML` gives
-identifiability over the whole (infinite) class at the population level; the
-finite-read bound is a separate, finite-sample statement.
+candidate class only after restricting to a **finite** candidate family (the
+kernel-checked population theorem is
+`AssemblyP1.Issue94Complete.population_unique_ML`): the full class has
+unbounded genome lengths and hence infinite size, so the finite-family bound
+cannot be applied to it directly. The population theorem
+`population_unique_ML` gives identifiability over the whole (infinite) class
+at the population level; the finite-read bound is a separate, finite-sample
+statement.
 -/
 
 namespace AssemblyP1.FiniteReadRecovery
