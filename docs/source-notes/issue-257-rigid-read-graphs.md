@@ -14,7 +14,8 @@ theorem of `oriented-se62-rigidity-theorem.md` (Theorem A: vertex throughput
 
 _Reproduce: `python3 scratch257/rigidity.py`, `python3 scratch257/two_cycle.py`
 (n=3 exhaustive), `python3 scratch257/test_n4.py twocycle` (n=4 cross-check),
-`python3 scratch257/verify_counterexample.py` (the §4 counterexample).
+`python3 scratch257/verify_counterexample.py` (the §4 counterexample),
+`python3 scratch257/finite_decider.py` (§11 finite-decider cross-check).
 Self-contained, exact integer arithmetic, deterministic._
 
 _Blocking-review repair (2026-10-10, branch `research/257-graver-lean-repair`):
@@ -31,6 +32,13 @@ _Lean: the exact criterion (Theorem 1) is kernel-checked as
 only the standard axioms `[propext, Classical.choice, Quot.sound]`. Build with
 `lake build AssemblyP1.ExactRigidityCriterion`; audit with
 `lake env lean AxiomAudit257.lean`._
+
+_Lean (finite decider, 2026-10-14): the checkable decision procedure of §11 is
+kernel-checked as `AssemblyP1/FiniteRigidityDecider.lean`
+(`rigid_iff_forall_admissible`, `rigid_iff_decider`), with the same standard
+axioms. It imports — and does not duplicate — `GraverRigidity.lean`; the
+Graver criterion is `rigid_iff_forall_graver_not_feasible` there. Build with
+`lake build AssemblyP1.FiniteRigidityDecider`._
 
 ---
 
@@ -405,6 +413,10 @@ exhaustive zeros are a sanity check on the proofs, not a substitute for them.
 | §8.2 exact complexity | open |
 | §8.3 two-closed-walk certificate iff | open |
 | §8.4 finite-`k` cycle question | open |
+| §11 finite decider: `Rigid ↔ ∀ B : E→Fin(G+1), Admissible B → B = A` | mathematical proof + kernel-checked (`FiniteRigidityDecider.rigid_iff_forall_admissible`) |
+| §11 Boolean decider `decider` correctness | kernel-checked (`FiniteRigidityDecider.rigid_iff_decider`) |
+| §11 worked instances (`ATATAT` rigid, `AAAAB` non-rigid, figure-eight rigid/non-rigid) | kernel-checked (`by decide`) |
+| §11 finite-decider cross-check vs brute force (n=3: 255; n=4: 312; 0 mismatches) | verified computation, exhaustive in scope |
 
 ---
 
@@ -419,3 +431,80 @@ exhaustive zeros are a sanity check on the proofs, not a substitute for them.
   the uniqueness half that #256's `F = {A}` statement needs.
 * The `ATATAT` example and the "no triple repeat is sufficient not necessary"
   observation are from the issue statement; proved here as §5.1.
+
+---
+
+## 11. The finite decider (checkable criterion; kernel-checked)
+
+Theorem 1 is a *logical* iff; §11 turns it into a genuine terminating
+**decision procedure**. The unblock is the coordinate bound.
+
+**Proposition (coordinate bound).** If `B : E → ℤ` is a positive balanced
+circulation of total `G` (`B ≥ 1`, `M B = 0`, `∑ B = G`), then for every edge
+`e`,
+
+```
+1 ≤ B(e) ≤ G          (indeed B(e) ≤ G - (|E| - 1)).
+```
+
+_Proof._ `1 ≤ B(e)` is positivity. For the upper bound, every other coordinate
+is `≥ 1 > 0`, so `B(e) ≤ ∑_{e'} B(e') = G`. ∎
+
+Hence **every candidate `B` is already a function `E → Fin(G+1)`**, and the
+candidate set `F` is exactly the image of the admissible part of the finite type
+`E → Fin(G+1)`. This gives:
+
+**Theorem 4 (finite criterion, `FiniteRigidityDecider.rigid_iff_forall_admissible`).**
+
+```
+A rigid  ⟺  ∀ B : E → Fin(G+1),
+              (B ≥ 1) ∧ (M B = 0) ∧ (∑ B = G)  ⟹  ∀ e, B(e) = A(e).
+```
+
+Both directions are constructive. (⟸) encodes an arbitrary feasible integer
+circulation into `Fin(G+1)` using the coordinate bound; (⟹) is immediate.
+
+**Boolean decider (`decider`, `rigid_iff_decider`).** `decider A G` is the
+`Bool` obtained by `decide` of the finite universal statement; `rigid_iff_decider`
+proves `Rigid A G ↔ decider A G = true`. The search space has exactly
+`(G+1)^{|E|}` elements (`card_candidates`), so the decider runs in
+`O((G+1)^{|E|} · poly(|V|+|E|))` time — *pseudopolynomial* (exponential in the
+support size, and in the **unary** size of `G`), and explicitly **not** a claim
+of polynomial time in the bit length of `G`. This resolves the "checkable, not
+merely a logical iff" gap without needing a sharp Graver-basis cardinality bound
+(§8.2 remains open for a polynomial classification).
+
+**Kernel-checked worked instances.** The module contains `by decide` proofs of:
+
+| instance | result |
+|---|---|
+| `S = ATATAT`, `L = 3` (`A = (3,3)`, `G = 6`) | rigid, though `AT`, `TA` each occur `3` times |
+| `S = AAAAB`, `L = 2` (`A = (3,1,1)`, `G = 5`) | non-rigid (`B = (1,2,2)`) |
+| figure-eight `0→1→0, 0→2→0`, `A = (1,1,1,1)`, `G = 4` | rigid |
+| same figure-eight, `A = (2,2,1,1)`, `G = 6` | non-rigid (`B = (1,1,2,2)`) |
+
+These are the exact witnesses of the failed simpler hypotheses recorded in §0.6
+and §5–§6: the first is rigid *despite* a triple `(L-1)`-mer repeat, so "no
+triple repeat" is not necessary; the third is rigid with two independent cycles,
+so "single directed cycle" is not necessary; the third and fourth share the same
+support but differ in rigidity, so topology alone does not determine `A`.
+
+**Independent cross-check (`scratch257/finite_decider.py`).** A from-scratch
+re-implementation of the decider (full `itertools.product(range(G+1), repeat=m)`
+sweep with zero-coordinate rejection, no pruning) is compared against the
+backtracking brute force `rigidity.is_rigid` on exhaustive small cases:
+
+| scope | tested | rigid | non-rigid | skipped (`(G+1)^m` too large) | mismatches |
+|---|---|---|---|---|---|
+| `n = 3`, all strongly connected supports, `m ≤ 6`, `G ≤ 3m` | 255 | 58 | 197 | 8 | **0** |
+| `n = 4`, all strongly connected supports, `m ≤ 5`, `G ≤ 2m` | 312 | 240 | 72 | 0 | **0** |
+
+The four worked instances are also re-derived by the script. This confirms the
+coordinate bound and the enumerated criterion on every instance in scope; it is
+evidence for, not a replacement for, the kernel proofs.
+
+**Epistemic status.** The decider theorems and the four worked instances are
+kernel-checked with only `[propext, Classical.choice, Quot.sound]` (see
+`AxiomAudit257.lean`); the cross-check is verified computation, exhaustive in
+the stated scope. The broader closed-form/complexity questions (§8.1, §8.2)
+remain **open**.
