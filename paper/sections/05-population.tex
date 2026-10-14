@@ -227,3 +227,16 @@ distribution and is not claimed here.
 The population model isolates structural identifiability by using the true
 read distribution instead of a finite sample. Section~\ref{sec:finite}
 treats the original finite-frequency question.
+
+\begin{remark}[Finite-space consistency is a different theorem]
+\label{rem:consistency-distinction}
+Asymptotic recovery for a \emph{finite} candidate space --- per-truth success
+tending to $1$ as $n\to\infty$ when candidates are pairwise distinguishable ---
+is a consistency theorem about a growing sample
+(Remark~\ref{rem:sample-complexity}). The population theorem above instead
+fixes the exact read distribution and allows an arbitrarily large, even
+unbounded, candidate class; it involves no sampling and no finiteness, and it
+says nothing about uniqueness within a tie class. The two are related only
+through identifiability, which each needs in its own way, and neither is
+replaced by conditioning on information feasibility.
+\end{remark}

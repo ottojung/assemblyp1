@@ -124,6 +124,7 @@ asserts that the truth is \emph{a} maximizer or the \emph{unique} one. We
 separate those choices explicitly rather than absorbing them into notation.
 
 \subsection{Reconstruction and likelihood ask different questions}
+\label{sec:intro:two-questions}
 
 The graph algorithm answers a question of \emph{information and computation}:
 when reads provide sufficient context, can we reconstruct the true circular
@@ -131,6 +132,23 @@ word? Maximum likelihood instead asks which candidate $D$ assigns the
 largest probability to the \emph{observed read-type counts}. A finite sample
 can exhibit uneven frequencies even when its overlaps determine the source,
 so a reconstruction theorem does not automatically rank the source highest.
+
+Conflating the two produces a false headline, because ``the maximum-likelihood
+sequence is the true sequence'' names \emph{two} inequivalent questions. Let
+$F(g,R)$ be a feasibility predicate --- for the 2016 question, the source's
+coverage-and-bridging condition evaluated on candidate $g$ against the observed
+read set $R$. \emph{Question~A (conditional)} restricts the candidate set to the
+feasible fiber $\{\,g : F(g,R)\,\}$ and assumes the truth is in it; the
+uniqueness content of the reconstruction theorem then makes that fiber a
+singleton up to rotation, so any conditional MAP rule returns the truth. This is
+largely a corollary of the reconstruction theorem, not a new likelihood result.
+\emph{Question~B (unconditional)} assumes only that the truth is feasible,
+$F(S,R)$, and maximizes the \emph{original, unrestricted} likelihood over the
+\emph{original} candidate universe. That maximizer need not be the truth, and it
+is the genuinely nontrivial published comparison. The two differ in one place:
+whether optimization is restricted to the feasible fiber, an event defined
+through the hidden truth and therefore not knowable from the reads alone
+(Section~\ref{sec:two-questions}).
 
 We also study population likelihood, where the exact read distribution
 replaces a particular finite sample. A Gibbs/KL identity then gives
