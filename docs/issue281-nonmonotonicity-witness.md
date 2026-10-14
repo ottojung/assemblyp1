@@ -38,18 +38,18 @@ beats `D` in the exact iid product likelihood on `n` reads.  Then
 so the exact finite-sample ML success probability is **not monotone** in `n`,
 even though it tends to `1` as `n -> infinity`.
 
-## Why there are no ties
+## Why there are no positive-probability ties for n >= 1
 
-On a tuple with `a` copies of `AA` and no `CC`, the exact likelihood ratio is
+On a tuple with a copies of AA and no CC, for n >= 1,
+the competitor/truth exact likelihood ratio is
 
-```
-  L_D / L_S = 3^n / 2^(2n - a),
-```
+    L_D / L_S = 3^n / 2^(2n - a).
 
-so `L_D > L_S` iff `a > n * log2(4/3)`.  Since `log2(4/3)` is irrational,
-`n * log2(4/3)` is never an integer, so the strict and non-strict success
-events coincide for every `n`.  Tuples containing `CC` have probability zero
-under `p_S` and do not contribute.
+This cannot equal 1 for n >= 1 (a positive power of 3 cannot equal a
+power of 2). Consequently the strict and non-strict success events have
+equal PROBABILITIES under p_S for any positive n. For n=0 both empty
+products equal 1 and tie. Tuples containing CC produce a zero/zero
+likelihood tie, but p_S assigns these tuples probability zero.
 
 ## Formal Lean endpoints
 

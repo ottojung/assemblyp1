@@ -50,19 +50,21 @@ high-probability maximum-likelihood recovery.
    probability tends to zero, so the correct-selection probability tends to
    one; an explicit sufficient `n` exists for any requested confidence.
 
-5. **Quantitative 99% illustration** (`il_confidence_99`): with `|Θ| = 4`
+5. **Quantitative 99% illustration** (`il_confidence_99`): with `|Θ| = 3`
    candidates and uniform affinity bound `ρ_max = 9/10`, `n = 55` iid reads
    give wrong-selection probability `< 1/100`, i.e. `> 99%` confidence.
 
 ## Scope
 
 These are generic finite-PMF lemmas. They apply to the AssemblyP1 primitive-P2
-candidate class only after restricting to a **finite** candidate family (see
-`AssemblyP1.FiniteReadRecoveryPopulation`): the full class has unbounded genome
-lengths and hence infinite size, so the finite-family bound cannot be applied
-to it directly. The population theorem `population_unique_ML` gives
-identifiability over the whole (infinite) class at the population level; the
-finite-read bound is a separate, finite-sample statement.
+candidate class only after restricting to a **finite** candidate family (the
+kernel-checked population theorem is
+`AssemblyP1.Issue94Complete.population_unique_ML`): the full class has
+unbounded genome lengths and hence infinite size, so the finite-family bound
+cannot be applied to it directly. The population theorem
+`population_unique_ML` gives identifiability over the whole (infinite) class
+at the population level; the finite-read bound is a separate, finite-sample
+statement.
 -/
 
 namespace AssemblyP1.FiniteReadRecovery
@@ -415,7 +417,7 @@ theorem exists_n_for_confidence (p : W → ℝ) (Θ : Finset (W → ℝ)) (ρ_ma
       field_simp [ne_of_gt hcardpos]
     exact (hle.trans_lt (hmul.trans_eq hcancel)).le
 
-/-- **Quantitative 99% illustration.** With `|Θ| = 4` candidates and a uniform
+/-- **Quantitative 99% illustration.** With `|Θ| = 3` candidates and a uniform
 affinity bound `ρ_max = 9/10`, `n = 55` iid reads give wrong-selection
 probability `< 1/100`, i.e. correct-selection probability `> 99%`. This is a
 conditional numerical illustration, not a measured AssemblyP1 constant. -/

@@ -26,6 +26,7 @@ import AssemblyP1.Model
 import AssemblyP1.OpenProblem
 import AssemblyP1.SourceFaithfulIs
 import AssemblyP1.HistoricalCovers
+import AssemblyP1.ConditionalIdentifiability
 import AssemblyP1.ExactVariantECounterexample
 import AssemblyP1.FixedLengthExactCounterexample
 import AssemblyP1.FixedLengthBinomialCounterexample
@@ -37,14 +38,24 @@ import AssemblyP1.HistoricalCoverageSameLengthWitnesses
 import AssemblyP1.Section62BidirectedFlow
 import AssemblyP1.Section62ReductionVacuityAudit
 import AssemblyP1.Section62SpellingReductionCandidate
+-- #262 full-overlap counterexample transfer across overlap thresholds.
+import AssemblyP1.Section62FullOverlapLift
+import AssemblyP1.Section62FullOverlapLiftAudit
 import AssemblyP1.Section62CircularStarts
 import AssemblyP1.Section62ReductionMismatch
 import AssemblyP1.Section62SkippedWindowFactor
 import AssemblyP1.Section62GlobalSpellingPreservation
+import AssemblyP1.Section62GlobalCircularCorrespondence
+import AssemblyP1.Section62GlobalCircularAudit
+import AssemblyP1.Section62ReductionDependencyAudit
+import AssemblyP1.Section62FullSpectrumUnseenFactor
+import AssemblyP1.Section62CircularWindowAdapter
+import AssemblyP1.Section62FullSpectrumIndexing
 import AssemblyP1.Section62VariableOverlap247e
 import AssemblyP1.FiniteSamplingCounterexample
 import AssemblyP1.FiniteBayesDecision
 import AssemblyP1.IidMapMonotonicity
+import AssemblyP1.GenomeOrbitAdapter
 import AssemblyP1.PopulationReduction
 import AssemblyP1.PopulationGibbsTest
 import AssemblyP1.OrientedRigidity
@@ -214,10 +225,19 @@ import AssemblyP1.FixedNConstructiveWitnessAudit
 import AssemblyP1.FiniteStartCoverage
 import AssemblyP1.FiniteStartCoverageAudit
 import AssemblyP1.FixedNBinomialEffectiveWeightsAudit
+import AssemblyP1.CoveredBinomialWeightsIff
+import AssemblyP1.CoveredBinomialWeightsIffAudit
 import AssemblyP1.FiniteSideInformationColoring
 import AssemblyP1.FiniteSideInformationColoringAudit
+import AssemblyP1.FiniteBayesianSideInformation
+import AssemblyP1.FiniteBayesianSideInformationAudit
+import AssemblyP1.FiniteSideInformationOrder
+import AssemblyP1.FiniteSideInformationOrderAudit
 -- #270 positive finite-family iid ML recovery via Hellinger affinity.
 import AssemblyP1.FiniteReadRecovery
+-- #270 concrete uniform-start cyclic read distribution and conditional genome bounds.
+import AssemblyP1.FiniteReadRecoveryGenome
+import AssemblyP1.FiniteReadRecoveryGenomeAudit
 -- #281 non-monotonicity of finite-sample exact-ML success (AAC vs AAAC).
 import AssemblyP1.NonmonotonicityWitness281
 import AssemblyP1.NonmonotonicityWitness281Audit

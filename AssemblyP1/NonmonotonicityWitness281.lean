@@ -37,10 +37,12 @@ that the truth *strictly* beats the competitor under the exact ML rule,
 ```
   succ(1) = 2/3,   succ(2) = 4/9,   succ(1) > succ(2),
 ```
-so `succ` is not monotone in `n`, even though it tends to `1`.  There are no
-ties for any `n` (the strict and non-strict events coincide), because
-`L_D/L_S = 3^n / 2^(2n-a)` with `a = #AA` and the threshold
-`n·log₂(4/3)` is never an integer.  This is the "success probability need not
+so `succ` is not monotone in `n`, even though it tends to `1`.  For n >= 1, there are no ties on tuples with positive probability
+under the truth law. For these tuples, the competitor/truth likelihood
+ratio equals a product of powers of 2 and 3, which cannot equal 1
+for any positive n. At n=0 the empty likelihoods do tie, and tuples
+with both probabilities zero (e.g. CC) tie but occur with probability
+zero under the truth. This is the "success probability need not
 increase monotonically in sample count" caveat of #281, made exact.
 -/
 
