@@ -78,7 +78,7 @@ and a single observation `a` with `P(g1,a) = 1/2`, `P(g2,a) = 1`, ML selects
 
 **Prior on sequences vs rotation classes.** The prior is placed on rotation
 classes, not on individual sequences: rotations are observationally equivalent
-(Remark `rem:rotations-equiv`), so they share a likelihood and must share a
+(Remark `rem:cyclic`), so they share a likelihood and must share a
 prior weight. Two warnings: (i) a uniform prior on individual linear
 representatives is **not** uniform on the orbits when orbit sizes differ, so
 the equal-prior `MAP = ML` identity must be stated on classes, not on raw
@@ -175,7 +175,10 @@ the event `E` it forces `P_E([S] | r) = 1`. It does **not** say that ordinary
 unconstrained ML returns `[S]`: the ordinary likelihood still ranges over the
 whole candidate set and may rank a competitor above `[S]` (the finite
 witnesses). On `E`, conditional MAP and Not-So-Greedy agree about the rotation
-**class only**; neither is an `R`-only rule in the original experiment.
+**class only**, and this agreement does **not** make the two algorithms
+identical: Not-So-Greedy is an `R`-only reconstruction rule (its overlap graph
+is built from the observed reads alone), whereas conditional MAP is not
+`R`-only, because the event `E` it conditions on is not `R`-observable (§2).
 **Mathematical proof.**
 
 ---
@@ -210,9 +213,11 @@ P(g2, a) = 3/4   P(g2, b) = 1/4
 is `P(E) = 1/4`. The unconstrained MAP rule selects `g2` at `a` (joint `3/8`)
 and `g1` at `b` (joint `3/8`), giving accuracy `3/8 + 3/8 = 3/4`. Hence
 `accuracy(δ_E) = 1/4 < 3/4 = accuracy(δ_MAP)`. **Kernel-checked**
-(`AssemblyP1.MapDecisionExamples.map_beats_infallible_on_E`; the optimality of
-`δ_MAP` in this instance is `AssemblyP1.MapDecisionExamples.deltaMap_pointwise_max`
-fed to `pointwise_MAP_optimal`).
+(`AssemblyP1.MapDecisionExamples.map_beats_infallible_on_E`, together with the
+instance accuracies `AssemblyP1.MapDecisionExamples.accuracy_deltaE` and
+`AssemblyP1.MapDecisionExamples.accuracy_deltaMap`; the optimality of MAP is
+the general `AssemblyP1.FiniteBayesDecision.pointwise_MAP_optimal` cited in §1,
+which the instance joint weights satisfy definitionally).
 
 **Interpretation.** An `R`-only rule can be infallible on `E` yet lose in
 original prior-averaged accuracy to unconstrained MAP. This is not a paradox:
@@ -246,7 +251,9 @@ finite ML can rank a nonfeasible competitor `h` above the feasible truth `g`;
 set. There is no contradiction: conditioning on the truth-dependent event `E`
 is a different experiment (§3), and `E` is not `R`-observable (§2).
 **Kernel-checked** (`AssemblyP1.MapDecisionExamples.toy_ml_picks_h`,
-`toy_cond_support`, `toy_cond_g_maximizes`, `toy_cond_normalized`).
+`AssemblyP1.MapDecisionExamples.toy_cond_support`,
+`AssemblyP1.MapDecisionExamples.toy_cond_g_beats_h`,
+`AssemblyP1.MapDecisionExamples.toy_cond_normalized`).
 
 ---
 
@@ -296,7 +303,7 @@ population `P2` theorem in full generality.
 
 ## 6. Relation to the population `P2` theorem
 
-The population `P2` theorem (Theorem `rem:population`, kernel-checked as
+The population `P2` theorem (Theorem `thm:open-population`, kernel-checked as
 `\popml`) states that for `L ≥ 2` and a primitive P2 truth, the truth maximizes
 the population log-likelihood over every positive-length primitive P2
 candidate, and every population tie is a cyclic rotation of the truth. This is
