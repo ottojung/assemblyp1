@@ -151,11 +151,14 @@ closing vertex). The module proves:
 - `mem_strandsOf_self` / `mem_strandsOf_rc` — the intermediate strand of the
   reduction ranges over `strandsOf rc verts`, which contains both `m` and `rc m`
   for every observed molecule class, so reverse-complement intermediates are
-  available;
-- `isReducibleSpelling62B_eq_candidate` /
-  `transitivelyReducedSpelling62_eq_candidate` — the corrected predicate has two
-  definitionally identical homes (the base §6.2 model module and
-  `Section62SpellingReductionCandidate`), so downstream consumers of either agree.
+  available.
+
+The corrected predicate itself is **not** redefined in the base §6.2 model
+module; it remains exactly `Section62SpellingReductionCandidate.transitivelyReducedSpelling`,
+which is what #261/#262 consume. Requirement (1) is satisfied by keeping the old
+`Section62Flow.isReducibleB`/`transitivelyReduced` and the coarse
+`isReducibleLongerB`/`transitivelyReducedLonger` in place (with their audit
+notes) and adding the corrected predicate alongside, not by mutating either.
 
 ### Scope caveat (source fidelity)
 

@@ -42,34 +42,11 @@ module scope note of `Section62GlobalSpellingPreservation`.
 namespace AssemblyP1.Section62GlobalCircularCorrespondence
 
 set_option maxHeartbeats 4000000
+set_option linter.unusedSectionVars false
 
 open Section62Flow Section62SpellingReductionCandidate Section62GlobalSpellingPreservation
 
 variable {A W : Type} [DecidableEq W]
-
-/-! ## The two homes of the corrected reduction agree
-
-The corrected spelling-preserving reduction has two definitionally identical
-homes: the base §6.2 model module `Section62Flow` (added alongside the audited
-`isReducibleB`, so the base model carries both) and
-`Section62SpellingReductionCandidate` (the predicate consumed by #261/#262).
-The two Boolean definitions are the same expression, so the predicates — and
-hence the reduced edge lists — are definitionally equal.  This bridge records
-that the duplication is benign and lets downstream consumers use either. -/
-
-theorem isReducibleSpelling62B_eq_candidate {A W : Type} [DecidableEq A] [DecidableEq W]
-    (toList : W → List A) (rc : W → W) (readLen oMin : Nat) (verts : List W)
-    (e : BdEdge A W) :
-    Section62Flow.isReducibleSpelling62B A W toList rc readLen oMin verts e =
-      Section62SpellingReductionCandidate.isReducibleSpellingB W toList rc readLen oMin verts e :=
-  rfl
-
-theorem transitivelyReducedSpelling62_eq_candidate {A W : Type} [DecidableEq A] [DecidableEq W]
-    (toList : W → List A) (rc : W → W) (readLen oMin : Nat) (verts : List W)
-    (edges : List (BdEdge A W)) :
-    Section62Flow.transitivelyReducedSpelling62 A W toList rc readLen oMin verts edges =
-      Section62SpellingReductionCandidate.transitivelyReducedSpelling W toList rc readLen oMin verts edges :=
-  rfl
 
 /-! ## Circuits -/
 
@@ -79,7 +56,7 @@ opposite to the first edge's departure from `v`.  The second conjunct is the
 MB09 §3.2 signed-walk condition at the closing vertex: the walk arrives along
 its last edge and departs along its first edge, and the two incidences must be
 opposite. -/
-def Circuit {v : W} (edges : List (BdEdge A W)) : Prop :=
+def Circuit (v : W) (edges : List (BdEdge A W)) : Prop :=
   SignedPath v v edges ∧
     ∃ e₀ e₁, edges.head? = some e₀ ∧ edges.getLast? = some e₁ ∧ e₁.sgnY = -e₀.sgnX
 
@@ -100,7 +77,7 @@ theorem circuit_seam {v : W} {edges : List (BdEdge A W)}
 
 /-- Every edge of a surviving expansion is a graph edge, hence carries exactly
 the incidences its endpoint molecule classes determine (MB09 §3.3). -/
-theorem surviving_edge_signs {v : W}
+theorem surviving_edge_signs [DecidableEq A]
     (toList : W → List A) (rep rc : W → W) (readLen oMin : Nat) (verts : List W)
     (p : List (BdEdge A W))
     (hsurv : ∀ g ∈ p, g ∈ transitivelyReducedSpelling W toList rc readLen oMin verts
@@ -115,7 +92,7 @@ from `v` with incidence `sgnRep v (rep v)`, and `sgnRep`/`sgnTgt` are
 negatives.  This is the MB09 §3.2 signed-walk condition at the closing vertex,
 and it is the only new content of the circular correspondence beyond the
 open-walk expansion. -/
-theorem surviving_seam_opposite {v : W}
+theorem surviving_seam_opposite [DecidableEq A] {v : W}
     (toList : W → List A) (rep rc : W → W) (readLen oMin : Nat) (verts : List W)
     (p : List (BdEdge A W))
     (hsurv : ∀ g ∈ p, g ∈ transitivelyReducedSpelling W toList rc readLen oMin verts
@@ -140,6 +117,7 @@ theorem surviving_seam_opposite {v : W}
     exact h
   have hneg := sgnRep_neg_sgnTgt v rep
   rw [hs₀, hs₁, hneg]
+  ring
 
 /-! ## The global circular spelling correspondence -/
 
@@ -174,7 +152,7 @@ theorem global_circuit_signed_expansion [DecidableEq A]
   intro walk v hcirc hmem
   obtain ⟨hsp, -⟩ := hcirc
   obtain ⟨p, hp, hchain, hsurv, htail⟩ :=
-    global_walk_signed_expansion toList rep rc readLen oMin verts hLen v v hsp hmem
+    global_walk_signed_expansion toList rep rc readLen oMin verts hLen hsp hmem
   refine ⟨p, ⟨hp, ?_⟩, hchain, hsurv, ?_⟩
   · exact surviving_seam_opposite toList rep rc readLen oMin verts p hsurv hp
   · exact List.append_right_injective (toList v) htail
@@ -185,8 +163,7 @@ theorem global_circuit_signed_expansion [DecidableEq A]
 `pathTail toList edges`.  Two circuits spell the same circular word exactly
 when their extensions past the first read are equal, because the first read is
 the same (`toList v`) and the linear words are `toList v ++ pathTail`. -/
-def circularWord (toList : W → List A) {v : W} {edges : List (BdEdge A W)}
-    (_h : Circuit v edges) : List A :=
+def circularWord (toList : W → List A) (edges : List (BdEdge A W)) : List A :=
   pathTail toList edges
 
 /-- The global circular spelling correspondence, restated as a statement about
@@ -202,7 +179,7 @@ theorem global_circuit_circular_word [DecidableEq A]
         Circuit v p ∧ circularWord toList p = circularWord toList walk := by
   intro walk v hcirc hmem
   obtain ⟨p, hp, -, -, htail⟩ :=
-    global_circuit_signed_expansion toList rep rc readLen oMin verts hLen v hcirc hmem
+    global_circuit_signed_expansion toList rep rc readLen oMin verts hLen hcirc hmem
   exact ⟨p, hp, htail⟩
 
 /-! ## Total spelled length, `G < readLen`, and reverse-complement classes
@@ -243,9 +220,9 @@ theorem pathTail_length [DecidableEq A]
 /-- The spelled circular word of a circuit has length `G = Σ (readLen − e.len)`. -/
 theorem circularWord_length [DecidableEq A]
     (toList : W → List A) (readLen : Nat) {v : W} {edges : List (BdEdge A W)}
-    (hcirc : Circuit v edges)
+    (_hcirc : Circuit v edges)
     (hLen : ∀ e ∈ edges, (toList e.sy).length = readLen) :
-    (circularWord toList hcirc).length =
+    (circularWord toList edges).length =
       (edges.map (fun e => readLen - e.len)).sum :=
   pathTail_length toList readLen edges hLen
 
@@ -269,7 +246,5 @@ theorem mem_strandsOf_rc {rc : W → W} {verts : List W} {m : W}
 #print axioms surviving_seam_opposite
 #print axioms pathTail_length
 #print axioms circularWord_length
-#print axioms isReducibleSpelling62B_eq_candidate
-#print axioms transitivelyReducedSpelling62_eq_candidate
 
 end AssemblyP1.Section62GlobalCircularCorrespondence
