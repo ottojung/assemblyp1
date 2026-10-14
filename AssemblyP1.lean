@@ -214,6 +214,8 @@ import AssemblyP1.FixedNConstructiveWitnessAudit
 import AssemblyP1.FiniteStartCoverage
 import AssemblyP1.FiniteStartCoverageAudit
 import AssemblyP1.FixedNBinomialEffectiveWeightsAudit
+import AssemblyP1.CoveredBinomialWeightsIff
+import AssemblyP1.CoveredBinomialWeightsIffAudit
 import AssemblyP1.FiniteSideInformationColoring
 import AssemblyP1.FiniteSideInformationColoringAudit
 
