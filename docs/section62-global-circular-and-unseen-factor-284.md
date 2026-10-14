@@ -121,12 +121,30 @@ terms are nonnegative, for any observed class set `S`:
 
     (∀ c ∈ S, C_D(c) = V(c))  ⇔  no skipped internal window has class in S.
 
-Combined with the no-skip theorem above, this yields Observation 7 for the
-**spelling-preserving candidate reduction** under an oriented circular-spelling
-adapter. The partition identity is a self-contained finite cyclic-counting
-statement; it is stated here with its exact formula and is **not** silently
-assumed. It is the single remaining Lean obligation for the global Observation-7
-lift.
+This identity is now **kernel-checked in two layers**:
+
+- the abstract cyclic-start partition and its iff criterion are proved for any
+  class-valued function of genomic starts in
+  `AssemblyP1/Section62CircularStarts.lean`
+  (`covered_class_count`, `covered_count_eq_anchors_iff_no_internal`);
+- the **circular spelling adapter** `AssemblyP1/Section62CircularWindowAdapter.lean`
+  instantiates that partition at the concrete circular window
+  `window D readLen s = (D.drop s ++ D.take s).take readLen` of the spelled
+  genome, via the `CircularSpelling` spelling hypotheses (genome length =
+  extension sum, anchored windows = visited reads in order, no observed internal
+  window).  Its `window_count_decomposition` is exactly (1), its
+  `window_count_eq_anchors_iff` is exactly (2), and `observation7_window_count`
+  is Observation 7 at the word level: for every observed strand `m`, the number
+  of circular `readLen`-windows of `D` spelling `toList m` equals the number of
+  walk vertices spelling `toList m`.  The bridge
+  `interior_count_zero_of_pointwise` turns the pointwise surviving-edge no-skip
+  theorem into the count-zero hypothesis the partition consumes.
+
+The **only remaining sub-obligation** is the canonical construction of the
+circular genome `D` from a signed walk and the proof that it satisfies the
+`CircularSpelling` hypotheses (the coherence of the signed overlap data across
+the seam); the adapter is the composition interface that the source note
+`docs/section62-observation7-skipped-windows.md` calls for.
 
 ### The circular seam itself (new module)
 
@@ -203,18 +221,25 @@ Theorems: `observed_ratio`, `unseen_factor_ratio`, `unseen_factor_lt_one`,
 it by exactly `256/625`. The observed-flow surrogate and the complete-spectrum
 likelihood are therefore genuinely different objectives and must not be conflated.
 
-### Open source-fidelity question (recorded, not resolved)
+### The indexing decision (resolved, kernel-checked for the instance)
 
-§6.1 indexes `X_i` over `4^k` outcomes while calling them *k-molecules*, whereas
-§6.2 builds vertices only for observed double-stranded read molecules. Whether
-`4^k` means oriented k-mers or reverse-complement equivalence classes is a genuine
-universe-cardinality question: for length `k` there are `(4^k + f_k)/2` RC classes
-(`f_k = 0` for odd `k`, `f_k = 4^{k/2}` for even `k` by Burnside), and the class
-probability for a non-palindrome is `(c_S(w) + c_S(rc(w)))/G` counted once. The
-full-spectrum identity above is stated for the four RC-collapsed binary length-3
-classes of the instance; the general indexing model, the `G < k`/seam edge cases,
-and palindrome parity are **open** and must be fixed before promoting any
-complete-spectrum likelihood statement.
+§6.1 indexes `X_i` over `4^k` outcomes while calling them *k-molecules*.  MB09
+§3.1 models a DNA molecule as an unordered reverse-complement strand pair, so the
+index ranges over **reverse-complement classes**, not oriented k-mers: a
+non-palindromic oriented k-mer `w` and `rc w` are the same molecule, counted once
+with class frequency `c_S(w) + c_S(rc w)`.  For length `k` there are
+`(4^k + f_k)/2` RC classes (`f_k = 0` for odd `k`, `f_k = 4^{k/2}` for even `k`
+by Burnside on the involution `rc`).  This decision is now recorded and
+kernel-checked for the binary length-3 instance in
+`AssemblyP1/Section62FullSpectrumIndexing.lean`: `rc3_orbit_count` proves the
+reverse-complement involution `rc3` on `Fin 3 → Bool` has exactly `4` orbits,
+each of size `2` (`rc3_orbit_card_two`), matching `(2^3 + 0)/2` and
+`Mol = Fin 4`.  The same module proves the general full-spectrum identity
+`fullProduct = observedProduct * unseenProduct`, that unseen count-zero factors
+are exactly `1`, and that an unseen class with `0 < d < N` contributes the strict
+penalty `(1 − d/N)^n < 1` (`factor_zero_lt_one`).  The fully general Burnside
+orbit count for arbitrary `k`, and the `G < k`/seam edge cases, remain to be
+formalized before promoting any complete-spectrum likelihood statement.
 
 ## 4. Summary
 
@@ -227,10 +252,14 @@ complete-spectrum likelihood statement.
 - Requirement (4): finite positive regression with a genuinely removed edge and
   the longer-only vs spelling-preserving mismatch witness
   (`Section62ReductionMismatch`).
-- Requirement (5): global walk expansion + no-observed-skip theorem (this note,
-  kernel-checked) plus the exact circular seam partition formula (stated, not yet
-  Lean) and the §6.1 unseen-factor identity (kernel-checked).
+- Requirement (5): global walk expansion + no-observed-skip theorem, the exact
+  circular seam partition and iff criterion (`Section62CircularStarts`), the
+  circular spelling adapter and Observation-7 word-count identity
+  (`Section62CircularWindowAdapter`), and the §6.1 full-spectrum identity and
+  indexing decision (`Section62FullSpectrumIndexing`) — all kernel-checked.
+  The canonical construction of the circular genome from a signed walk and the
+  seam-coherence proof of the `CircularSpelling` hypotheses remain open.
 - Requirement (6): dependency re-audit above; all dependent conclusions survive,
   with the precise "wrapper must be re-stated" caveat.
-- Requirement (7): signed branch/PR, kernel replay and axiom audit pending on the
-  exact head; this note and its modules are the artifact.
+- Requirement (7): signed branch/PR, kernel replay and axiom audit on the exact
+  head; this note and its modules are the artifact.
