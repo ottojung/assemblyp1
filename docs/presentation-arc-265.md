@@ -36,8 +36,8 @@ by the merged PR #189 and the #268 revisions (see "Reconciliation" below).
 |---|-------|------|
 | 1 | The Most Likely Genome | title / framing |
 | 2 | How can we reconstruct a genome? | circular genome, independent uniform-start fixed-`L` reads |
-| 3 | Reconstruction from overlaps | suffix/prefix overlaps; didactic de Bruijn traversal spelling `ACGTA` |
-| 4 | The repeat obstacle | repeats and repeat-bridging context |
+| 3 | What makes assembly difficult? | repetition, ambiguous short reads, repeat bridging |
+| 4 | Reconstruction from overlaps: a worked traversal | suffix/prefix overlaps; didactic de Bruijn traversal spelling `ACGTA` |
 | 5 | The 2016 algorithm uses a different graph | read-overlap graph: vertices are reads, greedy + first disagreeing extension, spurious/transitive pruning, multiplicities, unique Eulerian spelling |
 | 6 | The 2016 open question | reconstruction conditions `?=>` truth is a maximum-likelihood genome |
 | 7 | Every genome predicts a distribution | `P_G(w) = starts(w)/G`; likelihood vs posterior; uniform starts ≠ uniform read strings |
