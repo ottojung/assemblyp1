@@ -138,7 +138,7 @@ This is not a story comparing AI tools. It is the story of a research method des
 
 ## Editorial guards
 
-- Preserve the original opening three slides; explain overlaps and bridging
+- Open with the read puzzle and model; explain overlaps and bridging
   before moving to probability.
 - Explain **posterior genome probability** via Bayes, not just read likelihood.
 - State exact MAP optimality and uniform-prior ML relation *before*
@@ -159,19 +159,22 @@ This is not a story comparing AI tools. It is the story of a research method des
 The 2016 question is an ordinary non-Bayesian CONDITIONAL IMPLICATION: if the
 observed reads satisfy information feasibility for the true genome, must
 that genome maximize the UNCONDITIONED likelihood of the observed reads?
-The substantive answer is **NO**, established by the strict W5 molecule
-counterexample AAATAT versus AAAAAT, and other source-supported witnesses.
-Do not frame the audience-facing answer as model-dependent or suggest the
-question is still open.
+The substantive answer is **NO** for the concrete likelihood models studied.
+The main talk uses the AAATT versus AAAATT example, whose competitor is
+one base longer. A separate strict W5 molecule counterexample
+AAATAT versus AAAAAT provides another source-supported witness.
+Do not turn the main presentation into a catalogue of model variants or
+suggest that the concrete finite question remains open.
 
-The counterexample does NOT show maximum likelihood is a statistically
-inferior algorithm. Ordinary ML is optimized on a broader candidate task
-than the truth-conditional Not-So-Greedy success guarantee. In the W5
-example, the competitor is allowed by the ordinary likelihood/candidate
-formulation but fails I_s for the witnessed placements.
+The counterexamples do NOT show maximum likelihood is a statistically
+inferior algorithm. Ordinary ML optimizes a different, broader candidate
+task than the truth-conditional Not-So-Greedy success guarantee. The main
+talk's competitor differs in length; the separate W5 molecule witness
+uses a different read model. Keep those distinctions in technical notes,
+not as repetitive qualifications on the audience-facing slides.
 
-We separately studied **conditional Bayesian inference** to recover
-optimality under the actual structural promise. The joint law of genome,
+We separately studied **conditional Bayesian inference** under the actual
+structural promise. The joint law of genome,
 reads, and the event E must be conditioned, rather than simply reusing
 ordinary likelihood. Under the original read-only unique-reconstruction
 guarantee F(g,r) => A(r) equivalent to g, the possible feasible true
