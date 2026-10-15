@@ -104,3 +104,19 @@ adapter's seam/periodicity conclusions and the anchored half of
 - `docs/section62-full-spectrum-adapter-284.md` (§6.2 observed-vertex objective
   vs. §6.1 full-spectrum product).
 - `docs/ml-formalization-contract.md` (flow feasible set vs. candidate universe).
+
+## Window alignment bridge (new, Lean-verified)
+
+`Section62AnchoredWindowBridge.periodic_window_eq_drop_take` proves that
+for a closed spelling `X` of length `L+G` with `G>0` and
+`X.take L=X.drop G`, its derived circular genome `D=X.take G` obeys
+
+`window D L s = (X.drop s).take L` for each `s<G`.
+
+The source-specific corollary `signed_circuit_window_eq_linear` obtains
+this equality directly from a genuine `SignedPath` of `overlapEdges`,
+including `G<L` (multiple wrapping). This proves geometric alignment
+of actual genomic windows with the linearized spelling but does **not** yet
+identify the *j*-th linear read at its accumulated extension anchor or
+transport the reduced-edge no-skipped-observed-window property. Those
+remain necessary for unconditional Observation 7 occurrence equality.
