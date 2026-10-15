@@ -56,13 +56,13 @@ The module also proves the general support-collapse characterization
 ## 3. What this says about "knowing the truth satisfies `F`"
 
 Supplying "the truth satisfies `F`" as side information is **not** the same as
-running ordinary ML over `F`-qualified candidates. The implication `E → B` holds
-exactly when the supplied `E` is sound for the ordinary likelihood (only
-certifies maximizers); it fails for the toy's and the genome adapter's `E`,
-which certify the truth even where the ordinary likelihood rejects it. In other
-words, an arbitrary side-information promise can make the posterior certain
-about a candidate the unconditional likelihood strictly disprefers; only an
-ML-sound promise converts conditional certainty into ordinary ML recovery.
+running ordinary ML over `F`-qualified candidates. ML-soundness of the supplied
+`E` is *sufficient* for the implication `E → B` (the module does not claim
+necessity). The implication can fail when `E` is not ML-sound: the toy's and the
+genome adapter's `E` certify the truth even where the ordinary likelihood rejects
+it. In other words, an arbitrary side-information promise can make the posterior
+certain about a candidate the unconditional likelihood strictly disprefers, while
+an ML-sound promise converts conditional certainty into ordinary ML recovery.
 
 ## 4. Relation to the source-faithful genome adapter
 
@@ -79,16 +79,16 @@ source-faithful witness, not a new genome-level theorem.
 
 ## 5. Manuscript-safe wording (for #265/#268, non-competing)
 
-> Conditional-Bayes certainty under externally supplied side information implies
-> ordinary maximum-likelihood recovery exactly when that side information is
-> *ML-sound*, i.e. it can only certify candidates that the ordinary likelihood
-> already maximizes. If instead the side information certifies a candidate the
-> ordinary likelihood rejects, the two guarantees separate: the posterior can be
-> a point mass on a candidate that is not a maximum-likelihood maximizer. In the
-> source-faithful finite circular read model the candidate-specific latent-start
-> information-feasibility predicate is not ML-sound, which is precisely why the
-> conditional posterior can be certain on the true orbit while ordinary maximum
-> likelihood strictly prefers a wrong orbit.
+> Conditional-Bayes certainty under externally supplied side information is
+> guaranteed to imply ordinary maximum-likelihood recovery when that side
+> information is *ML-sound*, i.e. it can only certify candidates that the
+> ordinary likelihood already maximizes. If the side information can certify a
+> candidate the ordinary likelihood rejects, the two guarantees can separate: the
+> posterior can be a point mass on a candidate that is not a maximum-likelihood
+> maximizer. In the source-faithful finite circular read model the
+> candidate-specific latent-start information-feasibility predicate is not
+> ML-sound, which is why the conditional posterior can be certain on the true
+> orbit while ordinary maximum likelihood strictly prefers a wrong orbit.
 
 ## 6. Open items
 

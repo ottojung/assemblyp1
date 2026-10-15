@@ -43,8 +43,9 @@ The refinement is *ML-soundness* of the side information:
 
 This is the exact sense in which "knowing the truth satisfies `F`" as supplied
 side information is **not** the same as running ordinary ML over `F`-qualified
-candidates: the implication `E → B` holds precisely when the supplied `E` is
-sound for the ordinary likelihood, and fails for the toy's unsound `E`.
+candidates: ML-soundness of the supplied `E` is *sufficient* for the implication
+`E → B`, and the implication can fail when `E` is not ML-sound (as the toy's and
+the genome adapter's unsound `E` show). Necessity of ML-soundness is not claimed.
 
 No `sorry`/`admit`/`axiom`/`native_decide`; the axiom audit is in
 `AxiomAudit271.lean`.
