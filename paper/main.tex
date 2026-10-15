@@ -18,30 +18,27 @@
 
 \begin{abstract}
 \noindent
-A genome is a circular word observed through randomly sampled short reads.
-Read overlaps allow reconstruction when repeats are sufficiently bridged,
-yet a reconstruction guarantee does not automatically rank the truth highest
-under maximum likelihood. We examine this distinction in the setting of
-Shomorony et al.'s (2016) question about bridging and maximum likelihood.
-Under the project's oriented, same-length, full-support assumptions and
-explicit truth candidacy, bridging forces a unique positive circulation
-and a unique genome up to rotation. This is a structural rigidity theorem:
-every admissible candidate has the truth's spectrum, so likelihood plays
-no part in distinguishing candidates on that slice. Dropping either truth candidacy or equal candidate length permits
-strict finite-sample likelihood reversals. Same-length molecule counterexamples also satisfy the
-historical matched-string bridging predicate.
+Maximum likelihood offers a natural way to infer a genome from sequencing
+data: choose the genome under which the observed reads are most probable.
+But is the genome that generated the reads necessarily the most likely one?
+We investigate this question in two settings: when only a finite sample
+of reads is available, and when the underlying distribution of reads is
+known exactly.
 
-At the population level the truth always maximizes expected
-log-likelihood; within the oriented primitive-P2 class it is
-identifiable up to rotation. We further prove that every primitive-P2
-genome has length at most $2q^{L-1}$ for alphabet size $q$ and read length
-$L$, making the entire class finite. For $n$ independent reads its
-wrong-candidate probability is bounded by
-$\sum_{D\not\sim S}\rho(p_S,p_D)^n$, the sum of the \emph{$n$-th powers}
-of Hellinger affinities. This is an exponential rate, not necessarily
-a usable numerical read-depth estimate. Exact per-truth ML success can
-oscillate with sample size. The principal structural and statistical
-results are kernel-checked in Lean.
+For finite samples, we examine a question raised by Shomorony et al.\ (2016):
+do the conditions that guarantee genome reconstruction also guarantee that
+maximum likelihood selects the true genome? We establish conditions under
+which the answer is yes, but also construct counterexamples in which the reads
+satisfy the original reconstruction conditions and yet an incorrect genome
+has greater likelihood. Thus, the information needed to reconstruct a genome
+does not always make it the most likely explanation of the data.
+
+When the read distribution is known exactly, the true genome always maximizes
+expected log-likelihood. We establish conditions on genomic repeats under which
+this distribution uniquely identifies the true genome. We further show that
+these conditions yield a quantitative guarantee for finite samples: the
+probability of maximum-likelihood error decreases exponentially as the number
+of reads increases.
 \end{abstract}
 
 \clearpage
