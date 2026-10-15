@@ -46,9 +46,11 @@ R=[AAA,AAA,AAT,ATT,TTA,TAA] at L=3:
 - with equal priors ONLY over these two candidates,
   posterior(D|R)=15625/(15625+11664)≈0.5726.
 Thus a statistically optimal rule can select a genome other than the
-constructed source for a particular finite sample. That example illustrates
-a variable-length mechanism; it is not by itself a certificate about every
-historical candidate universe.
+constructed source for a particular finite sample. The oriented variable-length
+example also has kernel-checked truth information-feasibility and genuine
+oriented Section 6.2 candidate certificates, in
+AssemblyP1/OrientedVariableLengthSe62.lean. It does not require
+reverse-complement-collapsed read classes.
 
 ## How the inquiry actually developed
 
@@ -202,4 +204,37 @@ paper/sections/03-open-question.tex.
 
 ## Presentation order after the October 14 review
 
-Teach the problem in causal order: unordered read inputs, actual reconstruction by overlapping, repeats creating ambiguous overlaps, then the idealized mathematical model, a genuine ambiguity example, and Not-So-Greedy. Explain ML probability and optimality before presenting the 2016 question. That original non-Bayesian implication has a negative answer. Show the exact counterexample; explain that ordinary ML was tackling a broader candidate universe; now the audience has a reason to ask what happens when the unique-reconstruction promise is included as Bayesian information. The answer is posterior certainty under the source-faithful read-only decoder premise. Then follow the separate finite-to-population hypothesis and theorems, and only after that the independent restricted oriented same-length positive result. Do not title a slide with the phrase recovering optimality.
+Teach the problem in causal order: unordered read inputs, idealized
+mathematical model, actual reconstruction by overlapping, repeats creating
+ambiguous overlaps, a genuine ambiguity example, and Not-So-Greedy. Explain ML probability and optimality before presenting the 2016 question. That original non-Bayesian implication has a negative answer. Show the exact counterexample; explain that ordinary ML was tackling a broader candidate universe; now the audience has a reason to ask what happens when the unique-reconstruction promise is included as Bayesian information. The answer is posterior certainty under the source-faithful read-only decoder premise. Then follow the separate finite-to-population hypothesis and theorems, and only after that the independent restricted oriented same-length positive result. Do not title a slide with the phrase recovering optimality.
+
+
+## Final review: oriented counterexample and executable details
+
+For the programmers' main talk use the **oriented** variable-length
+AAATT (length 5) versus AAAATT (length 6) example at L=3, six
+reads AAA,AAA,AAT,ATT,TTA,TAA from starts 0,0,1,2,3,4. It avoids
+reverse-complement equivalence entirely and has exact likelihood ratio
+15625/11664 > 1, source-feasible truth and both genuine oriented
+Section 6.2 candidates. Exact supporting Lean:
+AssemblyP1/OrientedVariableLengthSe62.lean. Its candidate-length
+difference is explicit; the 2016 source does not pin down an exact
+likelihood referent or impose fixed competitor length. Never claim
+this witness contradicts an equal-length theorem.
+
+The six sample frequencies exactly equal AAAATT's oriented spectrum:
+(2,1,1,1,1)/6. The truth's oriented law is (1,1,1,1,1)/5.
+This supplies a single consistent illustration for both finite
+reversal and population convergence. Backup B1 now shows the
+likelihood ratio flipping upon just one extra AAA. The older RC
+molecule AAATAT/AAAAAT witness remains important research evidence
+but is not the main pedagogical counterexample.
+
+Reviewer corrections: TypeScript rounds displayed floating output;
+Lean uses anonymous example to avoid redefining and_comm; the
+ML optimality proof spans one concrete and one general slide;
+conditional certainty is from an external read-only decoder premise
+and the promise does most of the work; historical coverage concerns
+a matching read START within each L-1 window; Antonina is introduced
+as the persistent agent/task orchestrator; BBT 2013 is attributed;
+a real closing Questions slide precedes the backup divider.

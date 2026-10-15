@@ -62,9 +62,9 @@ We assume:
 This simple model allows us to prove statements about **which assemblies are possible**, and about **how likely each genome is to produce the observed reads**.
 
 <!--
-The first examples use oriented reads. The historical MB09 finite
-counterexample later explicitly changes to reverse-complement molecule
-types. Model fidelity and theorem scope matter.
+All main examples use oriented reads, including the variable-length
+finite counterexample and later population theorem. The historical
+reverse-complement molecule model is documented separately in the notes.
 -->
 
 
@@ -110,8 +110,8 @@ Genomes contain **repeated substrings**. An overlap may match the wrong copy of 
 A read extending beyond both ends of a repeat can distinguish copies; we say it **bridges** the repeat.
 
 <!--
-Introduce complications only after successful assembly. All read types
-appear in the full ambiguity example two slides later. The arrows are
+Introduce complications only after successful assembly. All these read types
+appear in the following ambiguity example. The arrows are
 possible overlaps, not all realized at one physical genome position.
 -->
 
@@ -149,23 +149,21 @@ ATG/TGA/GAT/ATC/TCA/CAT once. Not a counterexample to the
 
 # Not-So-Greedy: a reconstruction guarantee
 
-Shomorony and colleagues (2016) developed an algorithm based on a **sparse read-overlap graph**.
+Shomorony and colleagues (2016) developed an algorithm using a **sparse read-overlap graph**. Under suitable conditions, it reconstructs the **unique true circular genome, up to rotation**.
 
-They proved it reconstructs the **unique true circular genome, up to rotation**, under these conditions on the reads:
+1. **Coverage:** reads cover the genome.
+2. **Triple repeats:** every copy is bridged.
+3. **Interleaved repeats:** at least one repeat in every interleaved pair is bridged.
 
-1. **Coverage:** the reads cover the genome.
-2. **Triple repeats:** every copy of a triple repeat is bridged.
-3. **Interleaved repeats:** at least one repeat in each interleaved pair is bridged.
-
-**This is a mathematical guarantee of correctness**, not just a heuristic that often works.
-
-*Aside: practical assemblers also use de Bruijn graphs. We don't need them for this story.*
+These repeat-and-bridging conditions build on **Bresler, Bresler & Tse (2013)**. The 2016 result makes them a **reconstruction guarantee**, not just a heuristic.
 
 <!--
-Source: Shomorony et al. 2016, doi:10.1093/bioinformatics/btw450.
-Information-feasible I_s conditions have precise maximal-repeat and
-strict-straddle definitions. Unique reconstruction follows from the
-published Corollary 1. The source algorithm remains an external premise.
+The source information-feasible set I_s includes the three clauses
+with strict bridging (read extends on both sides of a copy).
+BBT 2013 is the repeat/bridging origin; the read-overlap algorithm
+is Shomorony et al. 2016. Unique recovery is Corollary 1, distinct
+from the weaker existence theorem. The source theorem itself is
+an external premise, not Lean-proved in this project.
 -->
 
 ---
@@ -247,7 +245,7 @@ read model instead. Unequal priors change the normalization.
 
 # What that calculation looks like in TypeScript
 
-```ts
+~~~ts
 const genomes = ["AAATT", "AAAAT"];
 const reads = ["AAA", "AAA"];
 
@@ -262,339 +260,342 @@ function likelihood(g: string): number {
 
 const weights = genomes.map(likelihood);
 const total = weights.reduce((a, b) => a + b, 0);
-console.log(weights.map(w => w / total)); // [0.2, 0.8]
-```
-
-The code computes **likelihoods** from the sampling process; then the last line computes **genome probabilities given the data**, using an *equal prior over these two candidates*.
-
-<!--
-Runnable TypeScript for the simplified circular, equal-length, iid model.
-For an unequal prior, multiply each likelihood by its prior weight before
-normalizing. If the total is zero, all candidates rule out the data.
--->
-
----
-
-# Why maximum likelihood beats every algorithm
-
-Any reconstruction algorithm receives the reads, **not the hidden genome or the positions they came from**.
-
-Our example has **50 equally likely complete experiments**: choose A or B (50/50), then choose two start positions (5 × 5).
-
-| Observed reads: `AAA, AAA` | A was true | B was true |
-| --- | ---: | ---: |
-| Compatible experiments | **1** | **4** |
-
-**The algorithm cannot distinguish those five experiments.** Guess A: one correct. Guess B: four correct. ML picks B because **these reads are four times as likely under B**.
-
-**Why does this beat *every* algorithm?** Divide *all* experiments into groups with identical observed reads. In each group, ML guesses the genome responsible for the most experiments. No other choice wins more often **in that group**. Adding up the groups, **no algorithm can have higher overall correctness**.
-
-*Scope: best average correctness under an equal prior and the stated sampling model—not a guarantee for each sample or true genome.*
-
-<!--
-This is the direct proof of Bayes decision optimality, instead of treating
-optimality as a restatement of the posterior. For decision rule a(r):
-P(a(R)=G)=sum_r pi(a(r)) P(R=r | G=a(r)).
-With equal priors, each disjoint summand is maximized by choosing argmax_G
-P(R=r|G), i.e. ML. Randomized rules cannot improve the maximum because
-their conditional success is a convex combination of deterministic choices.
-The 50 equiprobable histories arise from 2 equiprobable five-base genomes
-with two independent uniform starting positions: 2 * 5 * 5 = 50.
-For r=[AAA,AAA], 1 A history and 4 B histories. An algorithm choosing A
-rather than B solely here loses 3/50 in prior-averaged success probability.
-This proves comparison against every algorithm using the same observed reads
-and candidate model. Formalized in AssemblyP1/FiniteBayesDecision.lean.
--->
-
----
-
-# The question raised in 2016
-
-We have two approaches:
-
-**Not-So-Greedy:** reconstruct by overlaps. With coverage and bridged repeats, it is **guaranteed to return the truth**.
-
-**Maximum likelihood:** pick the genome that makes the observed reads **most probable**.
-
-The 2016 paper asked:
-
-> If Not-So-Greedy's conditions hold, **must the true genome also maximize ordinary likelihood?**
-
-This is a logical **if–then statement**, not a Bayesian posterior calculation conditioned on the event.
-
-**We proved that the answer is no.**
-
-<!--
-The original non-Bayesian question is F(S,R) => S in argmax_D P(R|D),
-where the likelihood score is NOT conditioned on F. The strict
-source-supported finite counterexamples refute the implication.
--->
-
----
-
-# A counterexample to the 2016 implication
-
-The **true** circular genome is **AAATAT**. A competing genome is **AAAAAT**. Both have length **6**; reads have length **3**.
-
-Five reads were sampled from the truth at starts 0, 0, 1, 3, 5:
-
-~~~text
-AAA   AAA   AAT   TAT   TAA
+console.log(weights.map(w => Number((w / total).toFixed(2))));
+// [ 0.2, 0.8 ]
 ~~~
 
-The historical likelihood model groups a read with its reverse complement. Thus TAT and ATA count together.
+The last line computes **posterior probabilities with equal priors**, rounded for display.
 
-| Read type | Observed | True AAATAT: positions | Competitor AAAAAT: positions |
+<!--
+Original JS floating-point output was 0.19999999999999998 and
+0.7999999999999999. Number(toFixed(2)) prints numeric
+0.2 and 0.8 as the comment states. The likelihood products
+are conceptual floating-point values; for many reads use log likelihood.
+-->
+
+---
+
+# Which answer wins more often?
+
+Choose genome **A or B with equal probability**, then sample two reads at random. That makes **50 equally likely experiments**.
+
+Among experiments producing the reads AAA, AAA:
+
+| True genome | A | B |
+| --- | ---: | ---: |
+| Number of experiments | **1** | **4** |
+
+The algorithm sees **only the reads**, so these five experiments look identical.
+
+**Guess A:** correct once. **Guess B:** correct four times.
+
+ML chooses **B** for this observation. But how do we prove it is best over *all* observations?
+
+<!--
+A=AAATT, B=AAAAT, independent uniform starts. 2 genomes x 5 x 5
+start pairs = 50 equiprobable histories. Observation [AAA,AAA]
+has 1 A history, 4 B histories. This establishes only this
+observation-group comparison. The next slide generalizes.
+-->
+
+---
+
+# Why no algorithm can beat maximum likelihood
+
+Group **all possible experiments** by the reads they produce.
+
+Within each group, the algorithm must make **the same decision**, because it cannot distinguish the hidden experiments.
+
+ML chooses whichever genome accounts for **the most experiments in that group**. No alternative decision gets more of that group's experiments right.
+
+Now **add the winning counts over every group**. No algorithm can achieve a higher overall probability of reconstructing the genome.
+
+**Ties are allowed.** This result assumes **equal priors**, equal cost of mistakes, and the stated read-sampling model.
+
+<!--
+Formal result: in a finite candidate universe with prior π and 0-1
+loss, MAP maximizes prior-average correctness. Under a uniform prior
+ML=MAP. For any decision a(r), correctness is
+sum_r π(a(r))P(R=r|G=a(r)), optimized termwise.
+Randomization cannot improve since convex combinations cannot
+exceed a maximum. Lean FiniteBayesDecision.lean. No claim of
+pointwise correctness for every truth.
+-->
+
+---
+
+# The 2016 question: does the guarantee imply ML?
+
+We have **two methods**:
+
+**Not-So-Greedy:** reconstruct by overlaps when the coverage and repeat-bridging conditions guarantee success.
+
+**Maximum likelihood:** choose whichever candidate makes the observed reads most probable.
+
+Shomorony and colleagues asked:
+
+> If the reconstruction conditions hold, **must the true genome also maximize ordinary likelihood**?
+
+**Our answer is no.** We can exhibit an exact counterexample **using oriented reads throughout**, if the competing assembly is allowed to have a different length.
+
+<!--
+This is the source's non-Bayesian implication from the true
+genome's structural event to unconditioned P(R|D) ranking.
+The exact 2016 MB09 objective is not named unambiguously, but
+oriented candidate-intrinsic exact likelihood is source-supported.
+The counterexample is kernel-checked in OrientedVariableLengthSe62.
+Do not suggest all readings have a model-independent identical
+mathematical statement; keep the explicit candidate-length scope.
+-->
+
+---
+
+# An oriented-read counterexample
+
+**True circular genome:** AAATT (length **5**).
+
+**Competing genome:** AAAATT (length **6**).
+
+Sample six **oriented**, error-free reads of length 3 from the truth, at starts 0, 0, 1, 2, 3, 4:
+
+~~~text
+AAA    AAA    AAT    ATT    TTA    TAA
+~~~
+
+| Read | Observed | Positions in AAATT | Positions in AAAATT |
 | --- | ---: | ---: | ---: |
-| AAA | **2** | 1 | **3** |
+| AAA | **2** | 1 | **2** |
 | AAT | 1 | 1 | 1 |
-| ATA / TAT | 1 | **3** | 1 |
+| ATT | 1 | 1 | 1 |
+| TTA | 1 | 1 | 1 |
 | TAA | 1 | 1 | 1 |
 
-**The truth satisfies the reconstruction conditions.** The competitor is a valid likelihood candidate, but it **does not satisfy the same bridging conditions** in this witness.
+**The true genome satisfies the coverage and bridging conditions.** Both are valid candidates under the studied oriented read-overlap assembly constraints.
 
 <!--
-The source-faithful same-length MB09 §6.2 read-molecule witness:
-SameLengthSection62Counterexample. Both genomes have genuine spelled
-bidirected-flow candidate certificates. Truth satisfies full I_s at
-realized starts; D fails I_s in the witness owing to an unbridged
-triple repeat (audit #267, W5). Do not conclude D has zero marginalized
-conditional probability from its failure at ONE set of placements.
+OrientedVariableLengthSe62.lean theorem and script
+verify_oriented_variable_length_se62.py. Source truth S=AAATT,
+L=3, true starts 0,0,1,2,3,4; full coverage and strict bridging,
+all triple copies checked, interleaved pair vacuous.
+Both S and D=AAAATT admit genuine oriented Section 6.2
+read-overlap candidates. Variable candidate length is essential.
+No reverse-complement grouping.
 -->
 
 ---
 
-# Exact calculation: the implication is false
+# The longer genome scores higher
 
-At a uniformly random start, the probability of a read type equals its number of positions divided by 6.
+Each read begins uniformly at one of its candidate genome's positions.
 
-For the five independent reads, the **true genome** has likelihood:
-
-$$
-P(R\mid S)
-= \left(\tfrac16\right)^2
-  \left(\tfrac16\right)
-  \left(\tfrac36\right)
-  \left(\tfrac16\right)
-= \frac{3}{6^5} = \frac1{2592}.
-$$
-
-The **competing genome** has likelihood:
+Under the **true genome**, each observed read type occurs at 1 of 5 starts:
 
 $$
-P(R\mid D)
-= \left(\tfrac36\right)^2
-  \left(\tfrac16\right)
-  \left(\tfrac16\right)
-  \left(\tfrac16\right)
-= \frac{9}{6^5} = \frac1{864}.
+P(R\mid S)=\left(\frac15\right)^6=\frac1{15625}.
+$$
+
+Under the **competing genome**, AAA occurs at 2 of 6 starts; the other four read types occur at 1 of 6:
+
+$$
+P(R\mid D)=\left(\frac26\right)^2
+             \left(\frac16\right)^4
+           =\frac1{11664}.
 $$
 
 $$
-\boxed{\frac{P(R\mid D)}{P(R\mid S)}=3}
+\boxed{\frac{P(R\mid D)}{P(R\mid S)}
+     =\frac{15625}{11664}\approx1.34}
 $$
 
-**The competitor scores three times higher.** This **disproves the 2016 bridging-to-ordinary-ML implication**.
+**About 34% higher likelihood.** Thus the 2016 reconstruction guarantee does not force a true genome to maximize ordinary **oriented-read** likelihood when candidate lengths can differ.
 
 <!--
-Exact iid ordered molecule-type ratio is 3. The multinomial-count factor
-cancels for unordered sample counts. MB09 §6.1 product-binomial ratio
-on this same witness is 5, not 3. Source-faithful flow and inequalities
-are Lean checked; no claim is made about an unconditional Bayes posterior.
+Exact iid ordered-read model (observation multinomial coefficient
+cancels). Lean OrientedVariableLengthSe62, family M=1.
+All oriented types present; no reverse-complement collapse.
+The competitor is longer; a same-length requirement would
+exclude this particular witness and is a distinct assumption.
 -->
 
 ---
 
-# What did the counterexample really show?
+# What were the two methods asked to do?
 
-**Not-So-Greedy's guarantee** applies to a special set of experiments: the **actual genome and its reads** satisfy coverage and repeat bridging.
+**Not-So-Greedy's guarantee** concerns a special set of experiments: the actual genome's repeats must be sufficiently bridged.
 
-**Ordinary maximum likelihood** compares a **broader set of candidate explanations**, without using that structural guarantee as additional statistical information.
+**Ordinary ML** compares candidate genomes from the observed read probabilities, **without being told that the reconstruction guarantee applies**.
 
-Our competitor is a legitimate likelihood candidate, even though it **doesn't satisfy the bridging conditions** in this particular case.
+Here the longer genome explains the unusually frequent AAA reads better, while the true genome satisfies the reconstruction conditions.
 
-So the 2016 implication is **false**. But this does **not** mean ML is a worse decision rule than Not-So-Greedy on the *same* statistical problem.
-
-**What if we were given the reconstruction guarantee as part of the information?**
+**The proposed implication is false.** That suggests a different question: what if the structural guarantee itself becomes part of our statistical information?
 
 <!--
-W5 AAATAT/AAAAAT: competitor fails the information-feasibility
-condition for the witnessed placements, but has higher ordinary
-read-molecule likelihood. The failure for one placement is not proof
-of zero likelihood jointly conditioned on E after marginalizing
-unobserved starts. Pointwise failure and Bayes-average optimality
-are different claims.
+The source's pointwise guarantee differs from prior-averaged
+Bayes optimality of ordinary ML. Do not claim one algorithm
+has statistically defeated the other under the same decision
+problem. No need to assert competitor failure of I_s
+under every interpretation. Truth S length 5, competitor D length 6.
 -->
 
 ---
 
-# What if we know the guarantee applies?
+# What if we also know the guarantee holds?
 
-Imagine we are **also told**:
+Suppose we are told **one additional fact**:
 
-> The **true genome and these reads** satisfy Not-So-Greedy's reconstruction conditions.
+> The actual genome and the observed reads satisfy Not-So-Greedy's reconstruction conditions.
 
-Now we reason using **both the reads and that promise**.
+Not-So-Greedy is a **function of the reads alone**. When those conditions hold, its theorem says that function returns the true genome.
 
-Suppose two different genomes could each be the truth under this promise for the same reads. Then Not-So-Greedy would have to return **two different genomes for exactly the same input**. But its theorem guarantees a unique result.
+If two different genomes both qualified for the **same reads**, it would have to return two different answers on identical input. Impossible.
 
-**Therefore only one circular genome remains possible, up to rotation.**
+**Only one circular-genome class can remain.** Given both the reads and the promise, its Bayesian posterior probability is **100%**.
 
-In Bayesian terms, its probability **given the reads and the promise** is **100%**. Choosing it is the best possible decision for this *conditioned* experiment.
-
-The promise concerns the **unknown truth**: it is new information, not something ordinary ML already had.
+**The promise does most of the work.** That's the point: this conditioned experiment gives the estimator information ordinary ML did not have.
 
 <!--
-Assuming the published read-only unique decoder A with
-F(g,r)->A(r)≈g, feasible candidate classes for a fixed observed
-read set collapse to [A(r)]. The conditional joint distribution
-pi(g)P_g(r)1_F(g,r) is supported there; posterior certainty is
-kernel-checked in ConditionalIdentifiability.lean under the external
-NSG decoder premise. For latent start placements use the correctly
-marginalized E-weighted joint law; do NOT transfer this result to
-different placement-based predicates or confuse it with 2016 if-then.
+Given external source read-only unique decoder A satisfying
+F(g,r)->A(r)≈g, feasible-fibre uniqueness follows directly.
+Conditional joint K(g,r)=π(g)P_g(r)1_F(g,r) supports only
+[A(r)] for positive mass, giving posterior 1.
+Kernel consequences ConditionalIdentifiability.lean, with
+external original source theorem premise. For latent starts
+must marginalize feasible histories; don't substitute arbitrary
+placement-based predicates (W3/W6).
 -->
 
 ---
 
 
-# Why investigate a model with more reads?
+# A new hypothesis: was finite sampling the problem?
 
-The finite counterexample settled the 2016 question **negatively**. But it inspired a different research direction.
+Our six-read sample contains **AAA twice**. But the true genome AAATT produces AAA at only **1 of 5** positions.
 
-The true genome AAATAT generates AAA at only **1 of 6** positions, yet our five-read sample contained AAA **twice**. The competitor AAAAAT generates AAA at **3 of 6** positions, so that unusual sample favored it.
+The competitor AAAATT has **two AAA positions out of six**. In fact, the observed frequencies of **all five read types** match that competitor's predictions exactly.
 
-**My hypothesis:** perhaps the intuition that assembly and likelihood should agree was fundamentally sound, and the apparent disagreement came from **finite sampling fluctuations**.
+**My hypothesis:** perhaps the disagreement was caused by **finite-sample fluctuations**. What happens with enough reads that the observed frequencies settle toward the true distribution?
 
-**So I changed the question:** what if we could take as many independent reads as needed, removing that sampling accident?
+That motivated a new problem: **population likelihood**.
 
 <!--
-A new hypothesis-driven research pivot by the human director; the negative
-finite answer is already resolved. The molecule frequencies motivate
-an independent oriented primitive-P2 population theorem; do not
-pretend the population theorem retroactively makes the finite claim true.
+Human research director's deliberate pivot. True read law is
+uniform 1/5 over AAA,AAT,ATT,TTA,TAA; six observations have
+frequencies (2,1,1,1,1)/6 equal to D=AAAATT spectrum.
+This explanation stays oriented, consistent with the population
+theorem. It does not retroactively reverse the finite negative answer.
 -->
 
 ---
 
-# Population likelihood: remove the sampling noise
+# Population likelihood: remove sampling noise
 
-**Population** here does *not* mean a population of genomes.
+Here **population** means the complete read distribution from **one fixed genome**, not a population of genomes.
 
-It means the **complete probability distribution of reads generated by one fixed genome**—as though we knew the exact frequency of every possible read.
+All reads are still **oriented**:
 
-For independent reads, observed frequencies approach these probabilities as the number of reads grows:
+| Read type | True AAATT | Competitor AAAATT | Six observed reads |
+| --- | ---: | ---: | ---: |
+| AAA | 1/5 | **2/6** | **2/6** |
+| AAT | 1/5 | 1/6 | 1/6 |
+| ATT | 1/5 | 1/6 | 1/6 |
+| TTA | 1/5 | 1/6 | 1/6 |
+| TAA | 1/5 | 1/6 | 1/6 |
 
-```text
-                    True genome    Wrong genome    Observed 5 reads
-AAA type                1/6             3/6             2/5
-ATA / TAT type          3/6             1/6             1/5
-```
+Our small sample perfectly matches the **wrong genome's distribution**. More independent reads make the frequencies approach the **true column** instead.
 
-Our finite sample overrepresented `AAA` and underrepresented `ATA/TAT`. In the population limit, that fluctuation disappears.
-
-**This is not an infinite multiplication of probabilities.** It asks which genome best explains the *exact read distribution*, without finite-sample luck.
+Population likelihood compares predictions with that limiting read distribution.
 
 <!--
-The example uses the same molecule-type convention as the finite witness.
-Convergence of empirical read frequencies to the source distribution follows
-from the strong law of large numbers under conditional iid sampling.
-"Population likelihood" is expected log-likelihood, not an infinite read-product.
-Population-Gibbs maximality holds for the true distribution, and any distinct
-distribution has strictly lower expected log-likelihood (allowing -infinity).
+Expected log-likelihood, not infinite product of probabilities.
+No reverse-complement collapse in either finite witness or table.
+Gibbs inequality ensures truth's distribution is best;
+uniqueness of genome requires stronger structural arguments.
 -->
 
 ---
 
-# What we proved when the read frequencies are exact
+# When the exact read distribution is known
 
-**First, the true genome always maximizes population likelihood.** No alternative read distribution can fit the true long-run frequencies better.
+**First:** the true genome always maximizes population likelihood. No different distribution explains the true long-run read frequencies better.
 
-But could an entirely different genome generate **exactly those same read frequencies** and tie?
+**Uniqueness is harder:** could a different genome generate exactly the same frequencies and tie?
 
-**We proved uniqueness:** for oriented reads and **primitive, P2-admissible genomes**, the true genome is the **only population ML solution, up to rotation**.
+**We proved uniqueness for oriented reads**, if the truth and eligible competitors are **primitive and P2-admissible**. Only rotations of the true circular genome can tie.
 
-Here *primitive* means the genome is not a shorter pattern repeated; **P2** excludes the long triple and interleaved-repeat patterns that make assembly ambiguous.
-
-**This proves the intuition in a precise mathematical model.** It is a separate result from our finite molecule-type counterexample—not a claim that the latter was mistaken.
+*Primitive* means the entire genome is not a shorter pattern repeated. **P2**, rooted in the repeat analysis of **Bresler, Bresler & Tse (2013)**, excludes certain long triple and interleaved-repeat patterns.
 
 <!--
-PopulationGibbs.popLogLik_le_self' and popTie_iff: truth maximal over
-any candidate family containing it, equality iff read laws identical.
-Issue94Complete.population_unique_ML: full kernel-checked uniqueness for
-primitive P2 truths against any positive-length primitive P2 admissible
-oriented candidate, L >= 2, no external BBT premise. P2: no triple repeat
-of length >= L-1; interleaved maximal repeat pair cannot have both repeats
-of length >= L-1. Prim: circular word not a nontrivial power.
-Finite counterexample uses RC molecule types and different assumptions.
+PopulationGibbs.popLogLik_le_self' plus popTie_iff:
+any distribution has expected log likelihood <= truth,
+equal iff same law. Issue94Complete.population_unique_ML:
+kernel-checked for primitive P2 oriented genomes, L>=2,
+candidate classes up to rotation; no external Bresler axiom.
+P2 excludes triple repeats of length >= L-1 and a pair of
+interleaved maximal repeats both >= L-1.
 -->
 
 ---
 
 # Do we actually need infinitely many reads?
 
-**No.** Population likelihood describes the ideal target, but we also proved a practical mathematical consequence for **finite samples**.
+**No.** The population theorem motivates a result about **finite data**.
 
-Within **any fixed finite family of distinct admissible genomes**, the chance that a wrong genome ties or beats the truth **decreases exponentially as we take more independent reads**.
+Fix a finite collection of candidate genomes with **distinct read distributions**. As more independent reads arrive, the probability that a wrong candidate ties or beats the truth **falls exponentially**.
 
-So, for any desired reliability—say **99%**—**sufficiently many reads exist** to reach it under those assumptions.
+So for that identifiable finite family, sufficiently many reads can give **99% recovery probability**, or any other desired confidence.
 
-This does **not** promise a perfect answer from every finite experiment, nor does it give one universal read count that works for all possible genomes.
-
-**The population model explained why more data restores the intuition, and the finite theorem connects it back to real-sized samples.**
+The population model identifies the limiting answer; the finite theorem explains how more data approaches it.
 
 <!--
-Kernel checked finite read recovery: AssemblyP1.FiniteReadRecovery,
-FiniteReadRecoveryGenome, FiniteReadRecoveryP2Bridge,
-FiniteReadRecoveryP2Complete. For finite identifiable competitor set C
-distinct from truth, failure probability <= |C| rho_*^n, rho_*<1.
-For primitive P2 genome candidates modulo rotations, distinguishability
-follows from Issue94Complete.population_unique_ML.
-A uniform claim over unbounded candidate lengths is NOT proved.
-Hypotheses: oriented iid uniform-start sampling, finite family.
--->
----
-
-# Another positive result, in a restricted setting
-
-We also proved an independent theorem about **finite-sample likelihood**.
-
-Use reads with a known orientation, compare genomes of the **same length**, and require **both the truth and its competitors** to meet the specified read-overlap assembly constraints.
-
-Then **no admissible competing genome can have higher likelihood than the truth**.
-
-With stronger uniqueness assumptions, the only possible competitors are **rotations of the same circular genome**.
-
-This is a significant theorem for that **restricted candidate problem**. It does not make the broader 2016 implication true.
-
-<!--
-SameLength62Maximizer and SameLength62Uniqueness under true-and-competing
-genuine MB09 Section 6.2 certificates, oriented same-length model.
-Separate from conditional Bayesian posterior and from population P2.
+FiniteReadRecovery, FiniteReadRecoveryGenome,
+FiniteReadRecoveryP2Bridge, FiniteReadRecoveryP2Complete:
+for a finite distinguishable family C, error <= |C| rho_*^n,
+rho_* < 1. Primitive P2 supplies distinction modulo rotations.
+No universal constant sample count for unrestricted candidates.
 -->
 
 ---
 
-# How I directed the investigation
+# Another finite theorem: restrict the candidates
 
-The project began with a question from a 2016 paper. My job was to **find useful research directions**, not just to inspect work after it was done.
+We also proved a separate positive result about finite samples.
 
-The direction kept changing as we learned:
+Use **oriented reads**, compare genomes of the **same length**, and require **both truth and competitor** to meet the specified read-overlap assembly constraints.
 
-- Could the two methods be proved to agree?
-- If not, could we find **actual counterexamples** satisfying the reconstruction guarantee?
-- Why did some settings admit counterexamples, while others gave **positive theorems**?
-- Was the finite failure merely **sampling noise**? Could a population model recover the original intuition?
-- Could all these statements be **proved rigorously**, rather than supported only by numerical tests?
+Then **no admissible competitor has higher likelihood than the truth**.
 
-**The central work was deciding which question to ask next.** New discoveries changed the plan.
+Under the stronger structural uniqueness hypotheses, every eligible competing genome is a **rotation of the same circle**.
+
+This identifies the boundary that our **variable-length** counterexample does not satisfy.
 
 <!--
-The research director is the speaker. The principal intellectual work was
-choosing directions and hypotheses as evidence arrived, rather than merely
-checking conditions or enforcing correctness. This includes the population
-pivot motivated by the finite false result. See
-slides/programmers-research-notes.md and the dated intent records.
+SameLength62Maximizer and SameLength62Uniqueness:
+truth and competitor both genuine same-length Section 6.2
+candidate certificates, oriented convention, full stated
+information-feasible hypotheses. Not a result for the
+unrestricted variable-length model or unconditional Bayes
+certainty; it is a distinct structural theorem.
+-->
+
+---
+
+# Choosing the next research question
+
+The project began with **the 2016 question**—not a predetermined answer.
+
+Three turns shaped the investigation:
+
+1. **Test the implication:** search for concrete counterexamples instead of assuming the two methods agree.
+2. **Explain the disagreement:** separate likelihood scoring from the information in a reconstruction promise.
+3. **Go further:** ask whether sampling noise explains the finite result, then investigate population uniqueness and finite-read recovery.
+
+**I chose the questions and redirected the research as the results arrived.**
+
+<!--
+The speaker directed the scientific goals and questions.
+Independent agents worked on candidate theorems, examples,
+source interpretation and Lean formalization; their branches
+and notes fed back into the user's strategic pivots.
 -->
 
 ---
@@ -620,134 +621,153 @@ Do not imply agents independently chose the principal hypothesis.
 
 # How continuous research was organized
 
-The setup let investigations continue across sessions—not start over whenever I returned.
+**Antonina** is our persistent task board and agent orchestrator. It tracks questions, dependencies, progress, and findings.
 
 ~~~text
-     I set priorities and propose directions
-                    ↓
-      Antonina board preserves tasks,
-         dependencies and findings
-                    ↓
-     Orchestrator dispatches work
-                    ↓
-    Agents explore separate branches
-                    ↓
-        Review → tests → merge
-                    ↓
-       New results inform my
-         next research decisions
-                    ↺
+    I choose research directions
+               ↓
+   Antonina tracks ready tasks
+        and their evidence
+               ↓
+   Agents work on parallel branches
+               ↓
+       Review → merge
+               ↓
+    New results inform my
+     next research decisions
+               ↺
 ~~~
 
-**Orchestration kept independent work moving.** The board, repository, and continuous integration made the results durable and reviewable.
+The board and repository let the work **continue across sessions**, rather than starting from scratch.
 
 <!--
-The Antonina board is persistent coordination state. Orchestrators dispatch
-parallelizable ready tasks and continue dispatching, based on topology.
-Lubko provides isolated workers; agents work on separate branches/worktrees.
-GitHub PRs, review and CI are integration gates. The human director sets
-research priorities and pivots. This is a loop, not just a one-off agent run.
+Antonina is host-agnostic coordination infrastructure, not the
+intellectual source of research hypotheses. It stores tasks and
+dispatches ready work; separate worktrees/branches preserve outputs.
+Signed Git commits and independent reviews help integration.
 -->
+
 ---
 
 # Why Lean mattered
 
-Finding a convincing example is one thing. **Proving a claim for every genome** that satisfies the hypotheses is much harder.
+A numerical example can disprove a universal claim. But establishing a **positive theorem for every eligible genome** requires a proof.
 
-**Lean is a proof assistant.** We define the mathematical objects, state the theorem, and supply a proof checked by a small independent **kernel**.
+**Lean is a proof assistant:** it checks a precise statement and a formal proof using a small independent kernel.
 
 ~~~lean
-theorem and_comm (p q : Prop) : p ∧ q → q ∧ p :=
+example (p q : Prop) : p ∧ q → q ∧ p :=
   fun h => ⟨h.2, h.1⟩
 ~~~
 
-This simple proof rearranges two assumptions. Our assembly proofs are vastly more involved, but the **same checker** verifies their logic.
+Our genome-assembly arguments are more involved, but the **same checker** verifies the logic.
 
-**Why trust it?** The kernel checks formal proof terms instead of taking an AI agent's word. CI rebuilds and checks the proofs and audits which axioms they use.
-
-**What it cannot do:** decide whether our definitions faithfully represent the original scientific question. That remains a research decision.
+**Lean cannot decide whether the definitions match the original scientific question.** That still requires human judgment and careful source reading.
 
 <!--
-Curry-Howard correspondence, kernel checks proof terms against theorem
-statements; CI uses leanchecker and axiom audit.
-Allowed axioms: propext, Classical.choice, Quot.sound. No sorry/admit.
-Keep mathematical correctness of a formal statement distinct from
-fidelity to intended biology/published hypotheses.
+Use example, not theorem and_comm, which Lean core already declares.
+This Lean 4 snippet is pasteable. Kernel and axiom audits:
+propext, Classical.choice, Quot.sound only for the listed
+formal results. No sorry/admit in the completed proof modules.
 -->
 
 ---
 
 # What the investigation established
 
-**The 2016 question has a negative answer.** Guaranteed Not-So-Greedy reconstruction does not force the truth to maximize ordinary likelihood.
+**We answered the 2016 implication negatively.** With oriented reads, the true genome can meet reconstruction conditions while a longer genome has greater ordinary likelihood.
 
-The counterexample did **not** make ML inferior. The two methods were being judged on different problems. **Given the reconstruction guarantee as extra evidence**, conditional Bayesian inference identifies the true circular genome with certainty.
+We also clarified what this means statistically: a reconstruction promise is additional information. When it is explicitly given, the conditional posterior identifies the true circular genome class.
 
-We also established **population ML uniqueness**, **finite-read reliability bounds**, and a **separate positive theorem** for a restricted finite setting.
+Beyond the counterexample, we proved **population ML uniqueness**, **finite-family reliability**, and a **restricted same-length positive theorem**.
 
-The work combined **human-directed research choices**, parallel AI agents, continuous orchestration, and Lean-checked proofs.
+The results came from **human-led hypotheses**, parallel AI research, and **Lean-checked mathematics**.
 
-<HomeLink label="Choose another audience" />
 
 <!--
-Avoid slogans about recovering optimality or ML losing. Historical
-non-Bayesian if-then implication is false; conditional Bayes is a
-distinct truth-dependent inference experiment. Preserve theorem scopes.
+The negative witness has oriented reads, variable candidate length.
+Truth is I_s-feasible and ML can rank D higher. Ordinary ML's
+Bayes-optimality is prior-averaged; conditional posterior certainty
+uses extra truth-dependent source-decoder event. P2 population and
+same-length rigidity are distinct independent contributions.
 -->
 
 ---
 layout: end
 ---
 
-# Backup B1: the complete finite reversal calculation
+# Questions?
 
-Six length-3 reads sampled from the truth `AAATT`:
+**Genome assembly, likelihood, and human-directed AI research.**
 
-```text
-AAA   AAA   AAT   ATT   TTA   TAA
-```
+<HomeLink label="Choose another audience" />
+
+---
+
+# Backup slides
+
+Additional calculations, definitions, and sources.
+
+---
+
+# Backup B1: one extra read reverses the ranking
+
+Start with AAATT. Observe **one read from every start**:
+
+~~~text
+AAA    AAT    ATT    TTA    TAA
+~~~
+
+The truth is then **more likely** than AAAATT:
 
 $$
-P(R\mid S)=\left(\tfrac15\right)^6=\tfrac1{15625}
-\qquad
-P(R\mid D)=\left(\tfrac26\right)^2\left(\tfrac16\right)^4=\tfrac1{11664}
+\frac{P(R\mid D)}{P(R\mid S)}=\frac{3125}{3888}<1.
 $$
 
-The decoy `AAAATT` scores about **34% higher** for this sample.
+Now observe **just one additional AAA**. The ratio multiplies by:
 
-**An optimal estimator is not an infallible estimator.**
+$$
+\frac{P_D(\mathrm{AAA})}{P_S(\mathrm{AAA})}
+=\frac{2/6}{1/5}=\frac53.
+$$
+
+Therefore:
+
+$$
+\frac{P(R\mid D)}{P(R\mid S)}
+=\frac{3125}{3888}\cdot\frac53
+=\frac{15625}{11664}>1.
+$$
+
+**One extra read changes the likelihood ordering.**
 
 <!--
-This is a restricted two-candidate teaching illustration with variable-length
-candidates; it is NOT a source-faithful counterexample to a 2016/MB09 candidate
-class. Use only if the audience asks "can the truth actually lose?". The
-source-faithful same-length witness is on the main "finite aside" slide. With
-equal priors the decoy posterior is 15625/(15625+11664) ~ 57.3%; the ML/MAP rule
-still minimizes prior-averaged error.
+NOT a stale 'finite aside': this is backup detail for the
+main oriented AAATT / AAAATT example.
+M=0 exact ratio 3125/3888; M=1 ratio 15625/11664.
+OrientedVariableLengthSe62.lean and accompanying independent
+exact-rational verifier establish the result. No model switch.
 -->
 
 ---
 
-# Backup B2: two incomparable definitions of coverage
+# Backup B2: two different notions of coverage
 
-A late audit found the formal **coverage predicate** did not match the source's actual condition.
+A source audit found our earlier formal coverage predicate was **not the same** as the 2016 paper's definition.
 
-**Old model** — every genomic base lies inside a read placed at a sampled start.
+**Earlier sampled-position model:** every genome base lies inside a read at its **actual sampled position**.
 
-**Historical model** — every length-$(L-1)$ window must contain a match of an observed read string, even where no read was sampled.
+**Historical read-string model:** in **every interval of L−1 consecutive positions**, there is a **start position where some observed read string matches**—even if that string was sampled at a different occurrence.
 
-**Neither definition implies the other.**
-
-The fix was **additive**; old results were preserved.
+**Neither condition implies the other.** We preserved both models and made their distinction explicit.
 
 <!--
-Kernel regressions: AssemblyP1/HistoricalCovers.lean and
-HistoricalCoverageSameLengthWitnesses.lean. The historical model saturates
-matching repeat occurrences but requires a read START witness the old model does
-not, so the two predicates are incomparable. A second bug in the bridging
-predicate was pure arithmetic on the wrong definition and manufactured a phantom
-"counterexample" that only independent audit caught. Lesson: a weaker theorem you
-keep is a result; a stronger theorem you fake is a liability.
+Shomorony et al. supplement §6.4 Definition 1:
+for every t, exists tau ∈ [t,t+L-2] and observed read string r
+such that r=s[tau:tau+L-1]. The L-1 interval does NOT
+contain a length-L read: it contains a matching START position.
+MatchStarts saturates repeats; HistoricalCovers.lean formalizes
+the exact definition alongside sampled-placement Covers.
 -->
 
 ---
