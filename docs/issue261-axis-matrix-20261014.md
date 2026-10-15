@@ -19,7 +19,8 @@ claimed result's hypotheses against the source model (MB09 §6.1–§6.2, Myers
 | Fixed-external-`N` **multinomial product** criterion | **RESOLVED** | `GeneralBidirectedFlowML.flow_dominance_criterion` | coordinatewise dominance; *not* the §6.1 separable binomial |
 | Genuine §6.1 **separable-binomial count-vector** criterion | **RESOLVED at the count-vector layer** | `Section62BinomialCriterion.binomCoreNat_eq_prod_qFac`, `.binomCoreNat_concentrated`, `.binomial_uniform_criterion` | fixed external `N`, interior truth, all `n≥m`; q-factorization `K(d;x)=∏ᵢqᵢ(d)^{xᵢ}` |
 | Fixed-`n` (non-uniform) **extreme-sample iff** | **OPEN** (numerically audited) | `scripts/verify_261_binomial_extreme_samples.py` | Lean formalization absent |
-| §6.1 binomial over the **§6.2 feasible-flow set** | **PARTIAL** (spelled half RESOLVED) | `Section62FlowCountVectorAdapter`; spelled half `Section62SpelledFlowAdapter.spelling_flow_feasible` | image characterization still OPEN; see §2 |
+| §6.1 binomial over the **§6.2 feasible-flow set** | **PARTIAL** (spelled half RESOLVED + transfer) | `Section62FlowCountVectorAdapter`; `Section62SpelledFlowAdapter.spelling_flow_feasible`; `Section62SpelledFlowMaximality` | image characterization still OPEN; spelled sub-class is a strict sub-class; see §2 |
+| **Spelled-candidate length universe** | **RESOLVED** | `Section62SpelledFlowMaximality.sum_visits_eq_n`, `.sum_throughput_eq_n` | total visit/throughput mass of an `n`-position circular spelling is exactly `n`; not a claim about the full flow image |
 | **Half-integral relaxation gap** | **RESOLVED** (flow level) | `Section62NonSpelledFlow.half_integral_strictly_better`; arithmetic `GeneralBidirectedFlowML.half_integral_gap` | the finite `AAATT` instance; not a general theorem |
 | **Non-spelled-flow** maximality criterion | **OPEN** (finite obstruction kernel-checked) | `Section62NonSpelledFlow.no_sequence_has_star_spectrum`, `.star_argmax`, `.nonspelled_se62_flow_domain_countermodel` | no general necessary-and-sufficient condition known |
 | **Transitive reduction** interaction with ML | **PARTIAL** | `Section62SpellingReductionCandidate.spellPath_eq_spellDirect`, `.fullOverlap_survives`; `Section62ReductionDependencyAudit` | correct predicate defined and audited; ML-invariance under reduction still OPEN |
@@ -72,6 +73,33 @@ What this does **not** prove, and what stays OPEN:
    the weighted de-duplication lemma `weighted_dedup`.  The proof sketch of §4 is
    realized verbatim.  Candidates here are spelled circuits with their walk flow;
    the theorem is likelihood-independent and holds for all `n ≥ 1`.
+3. **Spelled sub-class maximality transfer and length universe.**  **PARTIAL**
+   (2026-10-15, `AssemblyP1.Section62SpelledFlowMaximality`).  Two additions.
+
+   *Length universe.*  `sum_visits_eq_n` proves that the visit vector of a
+   circular spelling of `n` read positions has total mass exactly `n` (every
+   position lies in exactly one molecule class), and `sum_throughput_eq_n` lifts
+   this to the walk flow: its total throughput is `n`.  This fixes the `N` consumed
+   by the length-parameterized likelihood criteria for spelled candidates.
+
+   *Transfer.*  `spelledVisitSet` is the spelled sub-class as a set of count
+   vectors; `spelledVisitSet_subset_image` places it inside the feasible throughput
+   image; `spelled_maximal_of_flow_maximal` restricts flow-level maximality to it;
+   and `flow_not_maximal_of_spelled_witness` (and its spelled-truth form) transfers
+   a spelled candidate that strictly beats the truth *upward* to the full
+   feasible-flow set.  This is the issue's "full-overlap failures transfer only when
+   candidate-set inclusion is proved" principle, here with the inclusion supplied by
+   the #233 adapter.
+
+   *Scope caveat (explicit).*  The spelled sub-class is **strict**: the `AAATT`
+   obstruction `no_sequence_has_star_spectrum` is a feasible throughput that is no
+   genome's spectrum.  So the spelled test is **necessary but not sufficient** for
+   flow-level maximality; whether a truth can be spelled-maximal yet not
+   flow-maximal is **OPEN** (no witness is constructed here).  The spelled
+   sub-class is further limited to candidates whose every window is an observed
+   graph vertex, because `Spelling.step` must lie in `edges`; the general §6.2
+   spelled candidate with skipped interior windows (e.g. `AAATA` over the observed
+   graph) is **not** in `spelledVisitSet`, so this transfer does not cover it.
 
 ## 3. Axis (b): the general non-spelled-flow maximality criterion
 

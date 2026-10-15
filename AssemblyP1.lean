@@ -42,6 +42,9 @@ import AssemblyP1.Section62FlowCountVectorAdapterAudit
 -- #261 spelled-circuit to zero-terminal feasible-flow adapter and axiom audit.
 import AssemblyP1.Section62SpelledFlowAdapter
 import AssemblyP1.Section62SpelledFlowAdapterAudit
+-- #261 spelled sub-class maximality transfer (length universe + transfer) and audit.
+import AssemblyP1.Section62SpelledFlowMaximality
+import AssemblyP1.Section62SpelledFlowMaximalityAudit
 import AssemblyP1.Section62ReductionVacuityAudit
 import AssemblyP1.Section62SpellingReductionCandidate
 -- #262 full-overlap counterexample transfer across overlap thresholds.
@@ -1030,6 +1033,13 @@ graph content remains external. -/
 #print axioms AssemblyP1.Section62SpelledFlowAdapter.balCore_eq_zero
 #print axioms AssemblyP1.Section62SpelledFlowAdapter.weighted_dedup
 #print axioms AssemblyP1.Section62SpelledFlowAdapter.visits_mem_throughput_image
+-- #261 spelled sub-class maximality transfer (length universe + transfer).
+#print axioms AssemblyP1.Section62SpelledFlowMaximality.sum_visits_eq_n
+#print axioms AssemblyP1.Section62SpelledFlowMaximality.sum_throughput_eq_n
+#print axioms AssemblyP1.Section62SpelledFlowMaximality.spelledVisitSet_subset_image
+#print axioms AssemblyP1.Section62SpelledFlowMaximality.spelled_maximal_of_flow_maximal
+#print axioms AssemblyP1.Section62SpelledFlowMaximality.flow_not_maximal_of_spelled_witness
+#print axioms AssemblyP1.Section62SpelledFlowMaximality.spelled_truth_flow_not_maximal_of_spelled_witness
 #print axioms AssemblyP1.Section62FullOverlapDisconnected.full_overlap_disconnected_optimum
 #print axioms AssemblyP1.Section62FullOverlapDisconnected.disc_support_disconnected
 #print axioms AssemblyP1.Section62FullOverlapDisconnected.dStar_argmax

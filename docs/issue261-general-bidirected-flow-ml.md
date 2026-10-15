@@ -306,3 +306,17 @@ Source reading: [Medvedev–Brudno 2009, §§6.1–6.2](https://pmc.ncbi.nlm.nih
   (`AssemblyP1/Section62SpelledFlowAdapterAudit.lean`). It does **not**
   characterize the image (the `AAATT` obstruction keeps that OPEN) and does not
   touch the transitive-reduction axis.
+- `AssemblyP1/Section62SpelledFlowMaximality.lean`: the spelled sub-class
+  maximality transfer and length universe (2026-10-15). `sum_visits_eq_n` /
+  `sum_throughput_eq_n` fix the total mass of a spelled candidate to its number of
+  read positions `n`; `spelledVisitSet_subset_image` places the spelled count
+  vectors inside the feasible throughput image; `spelled_maximal_of_flow_maximal`
+  restricts flow-level maximality to the spelled sub-class and
+  `flow_not_maximal_of_spelled_witness` (plus its spelled-truth form) transfers a
+  spelled dominator upward to the full feasible-flow set. Axioms:
+  `[propext, Classical.choice, Quot.sound]`
+  (`AssemblyP1/Section62SpelledFlowMaximalityAudit.lean`). It is a **necessary,
+  not sufficient** criterion: the spelled sub-class is a strict sub-class (the
+  `AAATT` non-spelled throughput), so the full image characterization and the
+  spelled-maximal-but-not-flow-maximal question stay OPEN. The spelled sub-class
+  is also limited to candidates whose every window is an observed graph vertex.
