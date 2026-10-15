@@ -1,19 +1,23 @@
 # AssemblyP1 umbrella #255 — remaining-open matrix
 
-_Status: 2026-10-14. Integration front (agent 4ba67d3247d8; orchestrator
-agent 4f59729f6003 for PR #196): rebased onto `main` @ `157ad34` (current
-main head at integration time; merged PRs #193/#194 and #267) and
-refreshed with the exact landed scopes of merged PRs #163/#165/#166/#167, the exact
-iid finite-ML classification posted on the issue 2026-10-13, the
-kernel-checked spelled binomial counterexample of PRs #179/#182, the finite
-Bayes/MAP decision theorem of PR #174 plus the landed iid MAP monotonicity
-of PR #193, the population-to-finite bridge observation, and current board
-child-issue statuses (board-verified 2026-10-14 via `antonina board show`).
-Observed integration range for audit: base `157ad34` = exact PR base at
-integration time; the signed PR #196 head this line ships is recorded on the
-PR page and in `git log`; observed 2026-10-14.
+_Status: 2026-10-15. Integration front (agent e05c947b4ab8): refreshed
+against current `origin/main` @ `b4071f5` and current board child states
+(board re-verified 2026-10-15 via `antonina board show`), superseding the
+2026-10-14 refresh at `157ad34` (PR #196) and the later edits landed by PRs
+#198/#203 (#266), #207 (#270), and #202/#206/#219/#220. This refresh
+re-derives the post-#196 landings directly from `git log`/`git diff` on
+`origin/main`: PRs #199–#234, including #300 short finite-read ML
+counterexamples (`67e1de7`), #281 finite primitive-P2 class/uniform
+separation (#214/#234), #261 flow adapters (#201/#212/#233), #271
+conditional-vs-ordinary separation (#232), #269 orbit adapter/Bayes value
+(#200/#231), #270 finite-read recovery (#199/#205/#207), #262 full-overlap
+lift (#202), #284 global-circular correspondence (#206/#219/#220), #259
+covered-binomial weight iff (#211) and circular binomial-vs-iid inversion
+(#224), #265 sample-complexity (#069f64e), and #268 fidelity check
+(`cac6347`). Since PR #196, board children #262, #266, #267, and #270 have
+CLOSED; #281, #284, and #300 are newly listed.
 Coordination front: agent 96b26e582cdf (rebased by agents 491a5de6e543,
-3a1a51f8aef9, and 4ba67d3247d8; superseded by this rebase).
+3a1a51f8aef9, 4ba67d3247d8, and e05c947b4ab8; superseded by this refresh).
 This matrix is a proposed, reviewable status record for the #255 research
 umbrella, not a declaration that the remaining proofs are finished. It is
 updated only when a scoped claim is proved, refuted, or explicitly
@@ -240,6 +244,147 @@ Every material result is classified as one of:
   global walk-language preservation, and Observation 7 remain OPEN.
   Does NOT lift any §6.2 genome flow witness or likelihood inequality.
 
+### #300 (OPEN, needs closure) — short finite-read ML counterexamples, variable length: LANDED
+
+- **Artifact:** `AssemblyP1/ShortFiniteMLCounterexamples.lean` +
+  `AxiomAudit300.lean` +
+  [short-finite-ml-counterexamples-300.md](source-notes/short-finite-ml-counterexamples-300.md)
+- **PR:** #229, merged `67e1de7` (independent adversarial review by
+  agent 2059786ae03a: APPROVE, no correctness-critical defect).
+- **Statement:** in the variable-length exact ordered-read/multinomial model,
+  truths `AT` (`G=2,L=1`), `AAT` (`G=3,L=2`), `AAAT` (`G=4,L=3`) each satisfy
+  the full `SourceFaithfulIs.InformationFeasible` predicate (discharged by
+  `decide`), while spelled competitors `AAT`, `AAAT`, `AAAAT` are strictly
+  better with exact ratios `32/27`, `81/64`, `4096/3125`; the multinomial-count
+  objective shares each ratio. `BridgesCopy` forces `e+2 ≤ L`, so the `L=1`/
+  `L=2` witnesses have vacuous repeat clauses (documented, not overclaimed).
+- **Scope:** refutes a variable-length sufficiency reading; not a
+  classification. Board #300 remains OPEN pending closure.
+
+### #281 (OPEN) — finite-read exponential error decay and finite primitive-P2 class: LANDED (scoped)
+
+- **Artifacts:** `AssemblyP1/NonmonotonicityWitness281.lean` (PR #208,
+  merged `36c09b4`; exact-ML success is non-monotone in `n`),
+  `AssemblyP1/PrimitiveP2FiniteClass.lean` (PR #214, merged `03e9446`;
+  finite primitive-P2 candidate class and `(L−1)`-window cap,
+  `scripts/verify_281_window_cap.py`), and
+  `AssemblyP1/PrimitiveP2UniformSeparation.lean` (PR #234, merged `b4071f5`;
+  uniform exponential exact-ML error bound for primitive-P2 genomes,
+  `docs/issue281-uniform-separation.md`).
+- **Axioms:** `{propext, Classical.choice, Quot.sound}` (kernel-checked).
+- **Still OPEN:** genome-level finite corollary and the paper recentering;
+  board #281 OPEN.
+
+### #261 (OPEN) — spelled-circuit to §6.2 feasible-flow adapters: LANDED (scoped)
+
+- **Artifacts:** `AssemblyP1/Section62BinomialCriterion.lean` (PR #201,
+  merged `72dca8a`), `AssemblyP1/Section62FlowCountVectorAdapter.lean`
+  (PR #212, merged `a426670`), `AssemblyP1/Section62SpelledFlowAdapter.lean`
+  (PR #233, merged `99e8527`; `spelling_flow_feasible`, `throughput_eq_visits`,
+  `balCore_eq_zero`, `weighted_dedup`), and
+  `AssemblyP1/Section62BinomialRealGenomeInversion.lean` (PR #224, merged
+  `aedf1b9`; a length-100 genome pair where the exact objective prefers `A`
+  and the fixed-N surrogate prefers `B`).
+- **Scope:** connects spelled circuits to §6.2 feasible flows; the general
+  §6.2 bidirected-flow classification remains OPEN.
+
+### #271 (OPEN, delivered) — conditional Bayes vs ordinary finite-ML separation: LANDED
+
+- **Artifacts:** `AssemblyP1/ConditionalVsOrdinaryMLSeparation.lean`,
+  `AssemblyP1/W1W2SeparationCompatibility.lean`, `AxiomAudit271.lean`,
+  `docs/conditional-vs-ordinary-ml-separation-271.md`
+- **PR:** #232, merged `4c90973` (kernel-checked; review + exact-head CI
+  recorded by the author).
+- **Statement:** the conditional-posterior-certainty boundary and the ordinary
+  finite-ML boundary are logically incomparable on the same finite model; the
+  W1/W2 (A)-side adapter is reused, not reproved.
+- **Still OPEN:** genome-level conditional-recovery claim (the landed witness
+  is an explicit abstract toy); board #271 OPEN pending closure.
+
+### #269 (OPEN) — oriented orbit adapter and Bayes-value monotonicity: LANDED (scoped)
+
+- **Artifacts:** `AssemblyP1/GenomeOrbitAdapter.lean` (PR #200, merged
+  `3c639dc`; `readPmf_sum_one`, `readPmf_rotWord`, `orbitReadPmf`,
+  `quotient_likelihood_well_defined_iff`, `orbit_map_success_monotone`,
+  `uniform_orbit_prior_ML`, and the raw-spelling vs orbit prior distinction)
+  and `AssemblyP1/BayesValueMonotonicity.lean` (PR #231, merged `967db37`;
+  `bayesValue_succ_ge`, `bayesValue_mono`).
+- **Scope:** oriented one-strand orbit model; RC invariance is deliberately
+  not claimed. Board #269 OPEN.
+
+### #284 (OPEN) — §6.2 global-circular correspondence and unseen-factor identity: LANDED (scoped)
+
+- **Artifacts:** `AssemblyP1/Section62GlobalCircularCorrespondence.lean`,
+  `AssemblyP1/Section62CircularWindowAdapter.lean`,
+  `AssemblyP1/Section62FullSpectrumIndexing.lean`,
+  `AssemblyP1/Section62FullSpectrumUnseenFactor.lean`,
+  `AssemblyP1/Section62ReductionDependencyAudit.lean` (PRs #206 `e024af2`,
+  #219 `6126b3b`, #220 `0fa663d`), plus
+  `docs/section62-global-circular-and-unseen-factor-284.md`.
+- **Still OPEN:** the cyclic-start seam partition identity
+  `C_D(c) = V(c) + Σ_j Σ_{u=1}^{e_j−1}[class(window(D,s_j+u))=c]` and its iff
+  criterion, the RC/`4^k` indexing model, and PR/CI/review; board #284 OPEN.
+
+### #262 (CLOSED) — full-overlap lift to arbitrary overlap threshold: LANDED
+
+- **Artifact:** `AssemblyP1/Section62FullOverlapLift.lean`
+- **PR:** #202, merged `4492b65`; independent review at exact head `3e3657c`
+  (module imported into the root replay/audit). Lifts the full-overlap
+  counterexample to arbitrary `o_min`; board #262 CLOSED.
+
+### #259 (PARTIAL) — covered-binomial weight iff and circular inversion: LANDED
+
+- **Artifact:** `AssemblyP1/CoveredBinomialWeightsIff.lean` (PR #211, merged
+  `298682b`; `covered_product_le_iff_zero_or_pointwise`,
+  `covered_effectiveProduct_le_iff`,
+  `covered_ambient_start_samples_effectiveProduct_le_iff`, plus
+  new-support/non-vacuity witnesses; `scripts/verify_covered_binomial_weights_259.py`)
+  and `AssemblyP1/Section62BinomialRealGenomeInversion.lean` (PR #224).
+- **Scope:** the fixed-`N` product-binomial covered-sample classification on a
+  fixed modeled read-type universe; does NOT classify the general §6.2 flow
+  domain or the exact iid objective.
+
+### #266 (CLOSED on board; PARTIAL scope) — conditional identifiability from the NSG premise: LANDED
+
+- **Artifacts:** `AssemblyP1/ConditionalIdentifiability.lean` (PR #198 merged
+  `a3dd8a0`; PR #203 merged `235114d` adds the read-instance/dedup source
+  adapter), `docs/issue266-conditional-identifiability.md`, and a
+  `paper/sections/b-epistemic-ledger.tex` row.
+- **Kernel-checked:** feasible-fibre uniqueness and conditional posterior
+  certainty from the external Not-So-Greedy Corollary 1 premise, plus a
+  latent-placement weighted-mass adapter and an ordinary-ML non-implication
+  witness. The NSG reconstruction guarantee remains an external premise.
+- **Residual OPEN:** the author handoff records that the
+  `Finset`-of-distinct-read-types decoder premise is stronger than NSG's
+  `N`-read-instance guarantee, so a duplicate-invariance adapter remains
+  open. Recorded as PARTIAL, not a full closure.
+
+### #267 (CLOSED) — finite ML vs Bayes-optimality reconciliation: LANDED
+
+- **Artifacts:** `docs/bayes-optimality-conditional-feasibility-267.md`,
+  `docs/audit-267-finite-ml-vs-conditional-bayes.md`,
+  `docs/recommendations-265-254-267.md`, `AssemblyP1/MapDecisionExamples.lean`,
+  `scripts/audit-267-independent-checks.py` (35/35).
+- **Merges:** `157ad34` (PR #196 branch base), mechanical review fixes F1–F6
+  `6a4d9e9`, audit fail-closed `5c8a103`; board review commit `6a4d9e9`.
+  Three-facts reconciliation: unconditional MAP optimality (reused, not
+  reproved), ordinary finite ML can rank a nonfeasible competitor above the
+  feasible truth (W1–W6), and conditioning on `E=F(G,R)` is a different
+  experiment. Board #267 CLOSED.
+
+### #270 (CLOSED) — finite-read recovery bounds from population identifiability: LANDED
+
+- **Artifacts:** `AssemblyP1/FiniteReadRecovery.lean` (PR #199, merged
+  `3b6fc7c`), `AssemblyP1/FiniteReadRecoveryGenome.lean` (PR #205, merged
+  `a42a53e`), `AssemblyP1/FiniteReadRecoveryP2Bridge.lean` and
+  `AssemblyP1/FiniteReadRecoveryP2Complete.lean` (PR #207, merged `41bc335`).
+- **Statement:** Hellinger/Bhattacharyya union bound, exact uniform-start
+  circular read-law correspondence, finite-genome family recovery with
+  explicit affinity hypotheses, and the primitive-P2 identifiability bridge.
+- **Scope:** statistical convergence, NOT sample-wise guaranteed correctness;
+  unbounded candidate uniform rates remain outside the closed scope. Board
+  #270 CLOSED.
+
 ---
 
 ## LANDED — mathematical proofs (human-readable; NOT kernel-checked, NOT merged)
@@ -248,8 +393,25 @@ Every material result is classified as one of:
 
 - **Source:** Antonina #255 board comment, research-assistant @
   2026-10-13T23:07:10.986Z. Epistemic class: mathematical proof
-  (finite products + power-unboundedness). Kernel-check feasible but NOT
-  yet performed; not merged to main.
+  (finite products + power-unboundedness). Not kernel-checked in this
+  pointwise form and not merged as a theorem statement.
+- **Kernel partial artifact on main (recorded 2026-10-15, step 3):**
+  `AssemblyP1/FiniteSampleIidEnvelope.lean` (added via PR #172, merge
+  `4d4970c`) proves `truth_maximizer_iff_envelope_le_one`: for a fixed finite
+  read-type universe `E`, baseline counts `a` positive on the true support,
+  surplus `y` with fixed total `m`, ratios `r_i=q_i/p_i` and `rmax=max_i r_i`,
+  truth is a MAP maximizer for every `x=a+y` with `∑y=m` IFF the scalar
+  envelope `(πQ/πP)·∏ r_i^{a_i}·rmax^m ≤ 1` (support holes give 0). The file
+  is compiled and kernel-replayed by the CI library glob
+  (`lakefile.lean` `globs := #[.andSubmodules \`AssemblyP1]`) even though it
+  is NOT imported by the root aggregator `AssemblyP1.lean`, and no doc
+  references it. It is an envelope form at fixed surplus total `m` with
+  priors; it does not state the pointwise `q_j=0 ∨ q_i≤p_i ∀i` all-sample
+  criterion above, and its scope note says "observed type counts alone do not
+  certify actual latent start coverage". The exact-iid full-start-covered
+  classification therefore remains an **OPEN** axis-(B) item: the pointwise
+  all-sample statement is not formalized on main, and the closest kernel
+  artifact is scoped to a fixed `m` and the envelope predicate.
 - **Setting:** truth oriented spectrum `A` on support `T = {i : A_i > 0}`,
   true pmf `p_i = A_i/|S| > 0`; candidate genome `D` with exact iid pmf
   `q_i = spec_L(D)_i/|D|`. Admissible full-start-covered observed count
@@ -375,6 +537,16 @@ Every material result is classified as one of:
   covered-sample iff — all kernel-checked in
   `FixedNBinomialEffectiveWeights.lean`, `FixedNConstructiveWitness.lean`,
   `FiniteStartCoverage.lean`.
+- **Additional landed (PR #211 `298682b`, PR #224 `aedf1b9`):**
+  `CoveredBinomialWeightsIff.lean` proves a genuine necessary-and-sufficient
+  covered-sample weight criterion on a fixed modeled read-type universe
+  (`covered_product_le_iff_zero_or_pointwise`,
+  `covered_ambient_start_samples_effectiveProduct_le_iff`, new-support and
+  non-vacuity witnesses; checked by
+  `scripts/verify_covered_binomial_weights_259.py`), and
+  `Section62BinomialRealGenomeInversion.lean` exhibits a length-100 genome pair
+  where the exact objective prefers `A` while the fixed-N surrogate prefers
+  `B`. Neither classifies the general §6.2 flow domain.
 - **New claim (OPEN, not kernel-checked; posted 2026-10-13T23:28:50Z):**
   full-coverage zero/new-support classification for the surrogate —
   `∀ y ≥ 0` on `supp(A)`, `F_B(A+y) ≤ F_A(A+y)` IFF
@@ -420,6 +592,14 @@ Every material result is classified as one of:
   `D=AAATA`, product-binomial ratio `65536/50625 > 1`, exact iid tie,
   surviving reduced circuit edges, signed seams. Scoped to one concrete
   same-length witness; NOT a general flow classification.
+- **Landed adapters (PRs #201 `72dca8a`, #212 `a426670`, #233 `99e8527`):**
+  `Section62BinomialCriterion.lean` (uniform binomial criterion and
+  `qFac` factorization), `Section62FlowCountVectorAdapter.lean`
+  (`feasible_flow_maximal_image_iff`, subset/count-vector monotonicity), and
+  `Section62SpelledFlowAdapter.lean` (`spelling_flow_feasible`,
+  `throughput_eq_visits`, `balCore_eq_zero`, `weighted_dedup`). These connect
+  spelled circuits to §6.2 feasible flows but do NOT classify the general
+  flow domain.
 - **Active (not kernel-checked):** Observation-7 characterization — exact
   cyclic-start partition identity `C_D(c) = V(c) + Σ` skipped-internal-window
   indicators, so observed-vertex count equality holds IFF every skipped
@@ -436,12 +616,12 @@ Every material result is classified as one of:
 - **Status:** OPEN, explicitly unresolved. General §6.2 bidirected flow
   classification remains OPEN.
 
-### #262 (full-overlap edge irreducibility; lift counterexamples to arbitrary overlap)
+### #262 (CLOSED) — full-overlap edge irreducibility; lift counterexamples to arbitrary overlap
 
-- **Owner:** agent b5fe60dfd915 (since 2026-10-12T02:49).
-- **Distinction:** Full-overlap edge irreducibility must be distinguished from
-  conditional source-faithful flow transfer.
-- **Status:** OPEN. Lean formalization of the embedding/lift in progress.
+- **Status:** CLOSED. `AssemblyP1/Section62FullOverlapLift.lean` (PR #202,
+  merged `4492b65`) lifts the full-overlap §6.2 ML counterexample to arbitrary
+  `o_min`; independent review at exact head `3e3657c` (module imported into the
+  root replay/audit). See the LANDED section above.
 
 ### #263 (separable convex discrete Graver criterion)
 
@@ -467,53 +647,51 @@ Every material result is classified as one of:
   the paper's core is the assembly-specific classification, positive
   rigidity, negative finite witnesses, and population identifiability.
   Reconcile #265/#268 against the current paper before closing either.
+- **Update (2026-10-15):** a scoped finite-family sample-complexity bound
+  landed (`docs/sample-complexity-265.md`, merge `069f64e`,
+  `scripts/verify_sample_complexity_265.py`) and the decks were rebalanced to
+  a positive operational arc (`22a6233`). Board #265 remains OPEN pending the
+  #254/#268 review pass; the general non-equal-length ML characterization
+  stays with #261/#284, not here.
 
-### #266 (conditional identifiability from Not-So-Greedy information-feasibility)
+### #266 (board CLOSED; PARTIAL scope) — conditional identifiability from Not-So-Greedy information-feasibility
 
-- **Owner:** agent 2318a363d938 (since 2026-10-12T02:45); active
-  continuation agent 24528d33253c (since 2026-10-13T23:23).
-- **Status:** OPEN. Prove what conditioning on `F(g,r)` implies: (1)
-  uniqueness of the feasible fibre given fixed observed `r`; (2) conditional
-  recovery `P([G]=[A(r)] | R=r, E) = 1` under any positive prior and any
-  valid generative finite-read likelihood. Exact source-faithful
-  read-STRING definitions; not an ordinary-ML-uniqueness claim.
-- **Update (2026-10-13):** conditional-posterior structure posted —
-  conditioning on truth-dependent `E(g,r)` restricts posterior support to
-  `{g : π(g)P(r|g) > 0 ∧ E(g,r)}`; a Not-So-Greedy deterministic
-  reconstruction guarantee for every feasible `g` forces this set to one
-  genome orbit, giving conditional posterior 1. This is a conditional
-  theorem, NOT unconditional sample-wise ML maximality; the `E` predicate
-  must be the literal 2016 matched-string predicate, with the adapter
-  explicit.
-- **Update (2026-10-14):** PR #198 merged as `a3dd8a0` adds
+- **Status:** board CLOSED 2026-10-14; recorded here as PARTIAL, not a full
+  scientific closure. PR #198 merged as `a3dd8a0` adds
   `AssemblyP1/ConditionalIdentifiability.lean` (abstract decoder/feasible-
   fibre, conditional posterior, constrained MAP, no-better-rule corollary,
   latent-placement weighted-mass adapter, historically scoped endpoint) plus
-  `docs/issue266-conditional-identifiability.md`, the ledger row, and this
-  entry. The previously OPEN read-instance gap is closed: the 2016 manuscript
-  explicitly deduplicates read instances before assembly (§3.2, p. 12), and
-  the new §7 adapter (`exists_finset_decoder`, `nsg_instance_iff_finset`,
-  `historicalEvent_dedup`, `historical_feasible_fibre_unique_of_instance_decoder`)
-  is kernel-checked; `SourceRegime` makes the `2 ≤ L ≤ S.len` regime explicit.
-  The external `hNSG` guarantee remains the trust boundary (the algorithm is
-  not formalized).
+  `docs/issue266-conditional-identifiability.md` and a ledger row. PR #203
+  merged as `235114d` adds the §7 read-instance/dedup adapter
+  (`exists_finset_decoder`, `nsg_instance_iff_finset`, `historicalEvent_dedup`,
+  `historical_feasible_fibre_unique_of_instance_decoder`); `SourceRegime` makes
+  the `2 ≤ L ≤ S.len` regime explicit.
+- **Kernel-checked:** feasible-fibre uniqueness and conditional posterior
+  certainty from the external Not-So-Greedy Corollary 1 premise. The external
+  `hNSG` guarantee remains the trust boundary (the algorithm is not
+  formalized).
+- **Residual OPEN (per author handoff):** the `Finset`-of-distinct-read-types
+  decoder premise used by `historical_feasible_fibre_unique` is stronger than
+  NSG Corollary 1, which consumes `N` read instances and adjusts edge
+  multiplicities; an instance/multiset-preserving adapter (or duplicate-
+  invariance theorem) remains to be proved. Not claimed: unconditional
+  ordinary maximum-likelihood recovery; any transfer to the §§6.1/6.2
+  pseudo-likelihood objectives.
 
-### #267 (reconcile finite ML counterexamples with Bayes optimality and conditional feasibility)
+### #267 (CLOSED) — reconcile finite ML counterexamples with Bayes optimality and conditional feasibility
 
-- **Owner:** agent d5f48efb876a (since 2026-10-12T02:45); active
-  continuation agent bb09fddb7948 (since 2026-10-13T23:12).
-- **Status:** OPEN. Rigorous source-faithful comparison of (a)
-  Not-So-Greedy's guarantee, (b) exact finite-sample ML failures, (c)
-  Bayes/MAP optimality. Cover finite-candidate Bayes/MAP optimality,
-  conditioning on the event `E`, and small rigorous examples.
-- **Update (2026-10-13):** three-facts reconciliation structure posted —
-  (1) unconditional MAP maximizes prior-average success but can be wrong
-  on individual `x`; (2) ordinary finite ML can rank a nonfeasible
-  competitor above truth; (3) conditional posterior given `E` is supported
-  only on feasible positive-weight hypotheses. Explicit finite toy
-  (`p_g=0.1`, `p_h=0.2`, `E(g,x)=true`, `E(h,x)=false`) separates the
-  regimes. Build on merged `FiniteBayesDecision.lean`; do not repeat the
-  generic MAP proof.
+- **Status:** CLOSED. Merged `157ad34` (PR #196 branch base) adds
+  `AssemblyP1/MapDecisionExamples.lean`, `docs/bayes-optimality-conditional-feasibility-267.md`,
+  `docs/audit-267-finite-ml-vs-conditional-bayes.md`,
+  `docs/recommendations-265-254-267.md`, and
+  `scripts/audit-267-independent-checks.py` (35/35); mechanical review fixes
+  F1–F6 at `6a4d9e9`; fail-closed audit at `5c8a103`; board review commit
+  `6a4d9e9`. Three coexisting facts: (1) unconditional MAP maximizes
+  prior-average success but can err on an individual `x` (reused from
+  `FiniteBayesDecision`, not reproved); (2) ordinary finite ML can rank a
+  nonfeasible competitor above the feasible truth (W1–W6); (3) conditioning on
+  `E=F(G,R)` is a different experiment with effective prior `π(g|E)` and joint
+  likelihood `π(g)P_g(R)1_F(g,R)`. See the LANDED section above.
 
 ### #268 (whitepaper: foreground Bayes-optimal ML and the nontrivial 2016 comparison)
 
@@ -525,6 +703,11 @@ Every material result is classified as one of:
   redundancy and propose only concrete remaining edits. Close only after
   current paper, slides/claims matrix, and bibliography acceptance are
   confirmed and all missing parts landed.
+- **Update (2026-10-15):** paper refocus delivered (`e7e3d20`, `b47eb04`),
+  followed by the #268 fidelity check (`cac6347`, MB09 verbatim quote,
+  Bayes prior-averaged scope, `#273`/`#274` likelihood convention). Board #268
+  remains OPEN pending the #265 mirror in the decks and claims-matrix
+  acceptance.
 
 ### #269 (Lean: finite Bayes/MAP optimality and monotone prior-average success)
 
@@ -547,14 +730,23 @@ Every material result is classified as one of:
   refinement theorem. Scope: prior-averaged success only; per-candidate
   success may drop; no coverage/event conditioning (#266); ties handled by
   a finite maximizing witness with no uniqueness claim.
-- **Still OPEN:** the assembly-specific endpoint — a finite family of
-  circular genome ORBITS with a prior on orbits (not uniform on raw
-  spellings) and the exact iid read pmf `p_g = count/G`, `∑_r p_g(r) = 1`,
-  plus the literal `Fin (n+1) → R` sample reindexing adapter. This module
-  does NOT construct the orbit quotient.
+- **Update (2026-10-15):** the oriented assembly-specific endpoint is
+  LANDED. `AssemblyP1/GenomeOrbitAdapter.lean` (PR #200, merged `3c639dc`)
+  constructs the oriented orbit quotient with the exact iid read pmf
+  `p_g = count/G` (`readPmf_sum_one`, `readPmf_rotWord`, `orbitReadPmf`,
+  `quotient_likelihood_well_defined_iff`, `orbit_map_success_monotone`,
+  `uniform_orbit_prior_ML`) and records the raw-spelling-vs-orbit prior
+  distinction (`spellingPushforward_eq_uniform_iff_constant_orbitSize`).
+  `AssemblyP1/BayesValueMonotonicity.lean` (PR #231, merged `967db37`) proves
+  `bayesValue_succ_ge` / `bayesValue_mono` (`V_{n+1} ≥ V_n`).
+- **Still OPEN:** the reverse-complement-orbit quotient (the adapter proves
+  rotation invariance only; RC invariance is deliberately not claimed) and any
+  source-historical endpoint. Board #269 remains OPEN.
 
-### #270 (Lean: finite-read recovery bounds from population identifiability)
+### #270 (CLOSED) — Lean: finite-read recovery bounds from population identifiability
 
+- **Status:** CLOSED (board). PRs #199 (`3b6fc7c`), #205 (`a42a53e`), and
+  #207 (`41bc335`) merged.
 - **Positive result:** `FiniteReadRecovery.lean` and
   `FiniteReadRecoveryGenome.lean` kernel-check the Hellinger union bound,
   exact uniform-start circular read-law/normalized count correspondence,
@@ -568,10 +760,10 @@ Every material result is classified as one of:
   additional identifiability assumption. Distinct candidate lengths
   are permitted; only finite primitive-P2 admissible nonrotational
   candidate families qualify.
-- **Still OPEN:** unbounded/infinite candidate uniform recovery rate,
-  reverse-complement-collapsed sampling and MB09 product-binomial
-  full-genome ML correspondence. Do NOT turn this statistical convergence
-  result into a claim of sample-wise guaranteed correctness.
+- **Outside the closed scope (recorded, not claimed):** unbounded/infinite
+  candidate uniform recovery rate, reverse-complement-collapsed sampling, and
+  MB09 product-binomial full-genome ML correspondence. This is a statistical
+  convergence result, NOT sample-wise guaranteed correctness.
 
 ### #271 (compare exact boundaries of conditional Bayes and ordinary finite ML recovery)
 
@@ -585,6 +777,13 @@ Every material result is classified as one of:
   (ties allowed) regardless of `E(h,r)`. The properties are logically
   incomparable; distinguish uniform vs nonuniform priors, ties,
   zero-likelihood competitors, and the source observation model.
+- **Update (2026-10-15):** the abstract separation is LANDED.
+  `AssemblyP1/ConditionalVsOrdinaryMLSeparation.lean` and
+  `AssemblyP1/W1W2SeparationCompatibility.lean` (PR #232, merged `4c90973`,
+  `AxiomAudit271.lean`) kernel-check the incomparability on a finite model and
+  reuse the W1/W2 (A)-side counterexamples. Board #271 remains OPEN: no
+  genome-level conditional-recovery claim is made (the witness is an explicit
+  abstract toy), and the W1/W2 (A)-side adapter stays open by design.
 
 ### #272 (classify weakest side information for certain finite Bayesian recovery)
 
@@ -599,6 +798,12 @@ Every material result is classified as one of:
   positive-weight fiber `C(r,z)` has cardinality 1; for a deterministic
   promise `E(g,r)` replace `P(z|g,r)` with its indicator. "Weakest" side
   information may be unique (incomparable minimal colorings, PR #164).
+- **Additional landed (PR #195 `b0a6e9f`, PR #204 `c312cbb`):**
+  `FiniteBayesianSideInformation.lean` (independent reviews of the ordering
+  blocker and the normalized positive-support incomparability) and
+  `FiniteSideInformationOrder.lean` (the `Stronger` preorder on side channels,
+  `sufficient_of_stronger`, `sufficient_and`, `false_strongest`, and
+  incomparable minimal channels).
 - **Still OPEN:** candidate-specific posterior weights and the
   latent-placement event `E(g,T)` adapter; the bridge to a specific genome
   assembly reconstruction theorem supplying the auxiliary label; the full
@@ -615,23 +820,35 @@ Every material result is classified as one of:
   and presenting the finite counterexamples as informative boundaries, not
   a paradox. No open #276 work remains.
 
-### #266 (PARTIAL) — conditional identifiability from the Not-So-Greedy premise
+### #281 (exponential ML error decay and finite primitive-P2 class)
 
-- **Artifact (branch, pending independent review/merge):**
-  `AssemblyP1/ConditionalIdentifiability.lean`,
-  `docs/issue266-conditional-identifiability.md`.
-- **Kernel-checked:** feasible-fibre uniqueness and conditional posterior
-  certainty from the external Not-So-Greedy Corollary~1 premise, plus a
-  latent-placement weighted-mass adapter and a concrete ordinary-ML
-  non-implication witness. The NSG reconstruction guarantee itself remains an
-  external premise; the truth-dependent event `E=F(G,R)` is not `R`-observable,
-  and `I_s` is sufficient, not necessary.
-- **Source decoder adapter OPEN:** this endpoint assumes a decoder receiving
-  only distinct read types, while NSG operates on read instances. The
-  duplicate-invariance/instance-preserving bridge is not proved.
-- **Not claimed:** unconditional ordinary maximum-likelihood recovery; a new
-  biological or combinatorial theorem; that infinite-read uniqueness was
-  unnecessary; any transfer to the §§6.1/6.2 pseudo-likelihood objectives.
+- **Status:** OPEN. Landed (see LANDED above): `NonmonotonicityWitness281.lean`
+  (PR #208), `PrimitiveP2FiniteClass.lean` (PR #214),
+  `PrimitiveP2UniformSeparation.lean` (PR #234). A prior review of PR #199
+  (`FiniteReadRecovery.lean`, merged for #270) is recorded on #281.
+- **Still OPEN:** the genome-level finite corollary (bounded genome lengths)
+  and the paper recentering around identifiability; the general
+  non-equal-length ML characterization is NOT owned here.
+
+### #284 (correct §6.2 transitive reduction; prove spelling fidelity)
+
+- **Status:** OPEN. Landed (see LANDED above): the global-circular
+  correspondence and unseen-factor modules (PRs #206/#219/#220).
+- **Still OPEN:** the cyclic-start seam partition identity
+  `C_D(c) = V(c) + Σ_j Σ_{u=1}^{e_j−1}[class(window(D,s_j+u))=c]` and its iff
+  criterion (the remaining Lean obligation for the Observation-7 lift), the
+  RC/`4^k` oriented-k-mer indexing model, and exact-head CI + independent
+  review of the pushed branch. #261/#262 may consume
+  `transitivelyReducedSpelling` and `Section62ReductionDependencyAudit` now.
+
+### #300 (short finite-read ML counterexamples, true lengths 2, 3, 4)
+
+- **Status:** OPEN (needs closure). Landed (see LANDED above):
+  `AssemblyP1/ShortFiniteMLCounterexamples.lean` + `AxiomAudit300.lean` +
+  `docs/source-notes/short-finite-ml-counterexamples-300.md` (PR #229, merged
+  `67e1de7`), independently reviewed APPROVE.
+- **Remaining:** close the board issue; no minimality is claimed and no
+  classification follows from the witnesses.
 
 ---
 
@@ -640,13 +857,14 @@ Every material result is classified as one of:
 | Axis | Status | Detail |
 |---|---|---|
 | Oriented vs RC molecule types | PROVED (landed scopes) | Oriented + same-length + exact multinomial + sample-uniform PROVED (#256); RC + full-overlap + fixed-length + exact multinomial + sample-uniform PROVED (#260); oriented arbitrary-overlap and RC arbitrary-overlap OPEN (#261) |
-| Exact multinomial vs fixed-N binomial | PROVED (exact, landed scopes + full-start-covered classification) / PARTIAL (binomial) | Exact multinomial PROVED in the landed scopes (#256, #258, #260); exact iid full-start-covered classification PROVED (elementary, posted 2026-10-13, not kernel-checked): never-strictly-better IFF some true type has `q_j=0` OR `q_i ≤ p_i` for every true type; fixed-`x` (A) remains halfspace inequalities; fixed-N binomial (MB09 §6.1) PARTIAL: effective weights, strict witness, start coverage, sample-uniform rigidity iff landed (#259); full (A)/(B) classification OPEN |
-| Same vs variable length | PROVED (same) / OPEN (variable) | Same-length PROVED where landed; variable length OPEN (fenced to #261) |
-| Spelled genomes vs MB09 §6.2 bidirected flows / overlap floor | PROVED (full-overlap) / OPEN (arbitrary) | Equal-support full-overlap RC molecule-spectrum ML PROVED (#260) — this settles only the equal-support molecule-spectrum cell, NOT the general §6.2 flow model; unrestricted source-faithful MB09 §6.2 nonspelled flow candidate domain and arbitrary overlap floor OPEN (#261); full historical MB09 §6.2 graph / Observation-7 source identification (nonspelled flows, transitive-reduction semantics) OPEN (#284); historical bridging sufficiency at full overlap REFUTED (W1/W2, PR #142) |
+| Exact multinomial vs fixed-N binomial | PROVED (exact, landed scopes) / PARTIAL (binomial) | Exact multinomial PROVED in the landed scopes (#256, #258, #260); short variable-length exact counterexamples kernel-landed (#300, PR #229); exact iid full-start-covered classification PROVED (elementary, posted 2026-10-13) but NOT kernel-checked in its pointwise form — the closest kernel artifact `FiniteSampleIidEnvelope.truth_maximizer_iff_envelope_le_one` (PR #172) is a fixed-`m` envelope, so this axis-(B) item is recorded OPEN; fixed-`x` (A) remains halfspace inequalities; fixed-N binomial (MB09 §6.1) PARTIAL: effective weights, strict witness, start coverage, covered-sample weight iff (#211), sample-uniform rigidity iff landed (#259); full (A)/(B) classification OPEN |
+| Same vs variable length | PROVED (same) / OPEN (variable) | Same-length PROVED where landed; variable-length sufficiency REFUTED by short exact counterexamples (#300); general variable-length classification OPEN (fenced to #261) |
+| Spelled genomes vs MB09 §6.2 bidirected flows / overlap floor | PROVED (full-overlap) / PARTIAL (adapters) / OPEN (arbitrary) | Equal-support full-overlap RC molecule-spectrum ML PROVED (#260); full-overlap lift to arbitrary `o_min` PROVED (#262 CLOSED, PR #202); spelled-circuit→§6.2 adapters, binomial criterion, and flow-count adapter kernel-landed (#201/#212/#233); unrestricted source-faithful MB09 §6.2 nonspelled flow candidate domain and arbitrary overlap floor OPEN (#261); global-circular correspondence/unseen-factor modules landed but the Observation-7 seam identity OPEN (#284); historical bridging sufficiency at full overlap REFUTED (W1/W2, PR #142) |
 | Truth candidacy | PROVED (landed scopes) / OPEN (extended) | Truth genuinely admissible over spelled candidate universes PROVED in the landed scopes; extended candidate sets OPEN (#261) |
 | Literal historical read-string `I_s` vs project placement `I_s` | PROVED (placement) / REFUTED (literal) / OPEN (remaining) | Project-placement reading PROVED (#256 iff needs no `I_s`); literal historical `I_s` full-overlap bridging sufficiency REFUTED (W1/W2); remaining historical-referent questions OPEN |
 | Population vs finite sample | PROVED (population + bridge) / OPEN (finite) | Unconditional population maximizer for all circular genomes PROVED (kernel-checked, #273 CLOSED, PR #154); population uniqueness repeat-dependent — equality iff normalized spectra agree, P2/primitivity conditions PROVED (#274 CLOSED, PR #156); population-to-finite bridge `∑ x log p_D = n ∑ p̂ log p_D` PROVED (elementary, 2026-10-14) so finite ML = empirical-population ML, with the 2-type separation witness; finite-sample classification OPEN in every cell except the landed ones |
-| Bayes/MAP and conditional inference | PARTIAL / OPEN | Finite side-information coloring theorem + no-common-coarsest witness landed (#272); finite MAP decision optimality kernel-landed (PR #174, generic scope); exact iid `n→n+1` MAP prior-averaged success monotonicity kernel-landed (PR #193, #269); remaining assembly-specific orbit-pmf lift, Hellinger recovery bounds, conditional identifiability, and the Bayes/ML reconciliation OPEN (#266, #267, #269, #270, #271) |
+| Finite-read reliability / sample complexity (#281) | PROVED (scoped) / OPEN (full) | Finite primitive-P2 candidate class (`PrimitiveP2FiniteClass.lean`, PR #214), non-monotonicity of exact-ML success (PR #208), and uniform exponential exact-ML separation (PR #234) kernel-landed; scoped sample-complexity bound (#265, merge `069f64e`); genome-level finite corollary OPEN (#281) |
+| Bayes/MAP and conditional inference | PARTIAL / OPEN | Finite side-information coloring (#164) and side-information order (#195/#204) landed (#272); finite MAP decision optimality kernel-landed (PR #174, generic scope); exact iid `n→n+1` MAP prior-averaged success monotonicity (PR #193) and oriented orbit adapter + Bayes value `V_{n+1} ≥ V_n` (#200/#231) kernel-landed; conditional-vs-ordinary separation (#232) kernel-landed; #266 (board CLOSED; residual instance adapter OPEN), #267 (CLOSED), and #270 (CLOSED) landed; RC-orbit quotient and genome-level conditional recovery remain OPEN (#269, #271) |
 
 ---
 
@@ -669,20 +887,23 @@ original Medvedev-Brudno 2009 source:
 
 ## #255 umbrella status
 
-**#255 remains OPEN.** Board-verified child states 2026-10-14
-(`antonina board show --id <n>`): #256, #258, #260, #264, #273, #274, and
-#276 are CLOSED after scoped Lean results landed (or, for #276, editorial
-delivery). #257, #259, #261, #262, #263, #265, #266, #267, #268, #269,
-#270, #271, and #272 remain OPEN on the board. #259, #269, and #272 have
-PARTIAL kernel-checked results landed (effective weights/q factorization,
-all-count coordinatewise iff, strict witness, start coverage, positive
-same-support covered-sample iff, side-information coloring, exact iid MAP
-`n→n+1` monotonicity) but their full classifications/endpoints remain OPEN.
+**#255 remains OPEN.** Board-verified child states 2026-10-15
+(`antonina board show --id <n>`): #256, #258, #260, #262, #264, #266, #267,
+#270, #273, #274, and #276 are CLOSED after scoped Lean results landed (or,
+for #276, editorial delivery). #257, #259, #261, #263, #265, #268, #269,
+#271, #272, #281, #284, and #300 remain OPEN on the board. Several OPEN
+children carry PARTIAL kernel-checked results (effective weights/q
+factorization, all-count coordinatewise iff, strict witness, start coverage,
+covered-sample weight iff, side-information coloring/order, orbit adapter,
+Bayes value monotonicity, finite primitive-P2 class and uniform separation,
+spelled-flow adapters, conditional-vs-ordinary separation, global-circular
+correspondence) but their full classifications/endpoints remain OPEN.
 No conjecture is promoted to fact. The exact iid full-start-covered
-classification (posted 2026-10-13) and the population-to-finite bridge
-(2026-10-14) are landed elementary mathematical proofs in precisely stated
-cells; neither closes any child issue, and the parallel §6.1 surrogate
-classification remains OPEN pending a kernel check. #255 closes only when
-every scoped claim is proved or refuted to the issue's evidence standard
-(audited proof, direct Lean theorem where feasible, green CI/merge) and
-this matrix is updated to match.
+classification (posted 2026-10-13) is an elementary proof in its pointwise
+form; the closest kernel artifact (`FiniteSampleIidEnvelope`, PR #172) is a
+fixed-`m` envelope, so this axis-(B) item stays OPEN. The population-to-finite
+bridge (2026-10-14) is likewise an elementary proof in a precisely stated
+cell. Neither closes any child issue. #255 closes only when every scoped
+claim is proved or refuted to the issue's evidence standard (audited proof,
+direct Lean theorem where feasible, green CI/merge) and this matrix is
+updated to match.
