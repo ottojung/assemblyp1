@@ -61,6 +61,7 @@ Click the source to inspect the exact hypotheses.
 | Primitive-P2 intrinsic length bound and class finiteness | [PrimitiveP2FiniteClass.lean](../AssemblyP1/PrimitiveP2FiniteClass.lean): **primitive_P2_len_le**, **primitiveP2Class_finite** | [PrimitiveP2FiniteClassAudit.lean](../AssemblyP1/PrimitiveP2FiniteClassAudit.lean); bound 2q^(L−1), no arbitrary genome-length cutoff |
 | Finite-family Hellinger union bound | [FiniteReadRecovery.lean](../AssemblyP1/FiniteReadRecovery.lean): **eventProb_pairwise**, **eventProb_wrong_le_sum**, **eventProb_wrong_tendsto_zero** | [FiniteReadRecoveryAudit.lean](../AssemblyP1/FiniteReadRecoveryAudit.lean); iid read laws, finite distinguishable family |
 | Complete primitive-P2 finite-read confidence | [PrimitiveP2FiniteClass.lean](../AssemblyP1/PrimitiveP2FiniteClass.lean): **all_primitiveP2_ML_confidence** | [FiniteReadRecoveryP2Complete.lean](../AssemblyP1/FiniteReadRecoveryP2Complete.lean): **finite_primitiveP2_ML_confidence**; no finite-family input for the **entire** class |
+| Explicit uniform exponential exact-ML error rate | [PrimitiveP2UniformSeparation.lean](../AssemblyP1/PrimitiveP2UniformSeparation.lean): **readLaw_separation**, **one_sub_hellinger_ge_of_gap**, **primitiveP2_exponential_error_bound**, **primitiveP2_ML_confidence_explicit**, **readLawFamily_card_le** | [PrimitiveP2UniformSeparationAudit.lean](../AssemblyP1/PrimitiveP2UniformSeparationAudit.lean); bound `N_C exp(-n/(8 B^4))`, `B = 2 q^(L-1)`, threshold `n >= 8 B^4 log(N_C/delta)`. Constants deliberately loose (exponential in `L`); exact oriented iid only; not universal ML and not the MB09 product-binomial surrogate |
 | Bridging-conditioned ML error bound | [Section 3 corollary](../paper/sections/03-open-question.tex) and **eventProb_wrong_le_sum** above | **Paper-level corollary**: P(error given B) ≤ P(error)/P(B), P(B)>0. No dedicated Lean formalization claimed |
 | Per-truth finite-sample ML non-monotonicity | [NonmonotonicityWitness281.lean](../AssemblyP1/NonmonotonicityWitness281.lean): **succ_one**, **succ_two**, **success_not_monotone** | [Exact enumeration script](../scripts/verify_nonmonotonicity_witness_281.py). The n=1,2 result is kernel-checked; later tabulated values are independently computed |
 | Spelling preservation and unsafe overlap deletion | [Section62GlobalSpellingPreservation.lean](../AssemblyP1/Section62GlobalSpellingPreservation.lean): **global_walk_signed_expansion**; [Section62ReductionMismatch.lean](../AssemblyP1/Section62ReductionMismatch.lean): **longer_is_not_spelling_preserving** | Distinguishes graph connectivity from correctly spelled genome sequences |
@@ -100,8 +101,12 @@ internally. The two propositions are **not interchangeable**.
   arithmetic or enumerative scope. An axiom audit applies to the *exact*
   named theorem, not every theorem in a similarly named module.
 - **Error-exponent caveat:** Primitive-P2 finiteness ensures a strict
-  exponential rate but does not supply a practical numerical affinity
-  or sample-depth estimate.
+  exponential rate, and `PrimitiveP2UniformSeparation` now supplies an explicit
+  one (`N_C exp(-n/(8 B^4))`, `B = 2 q^(L-1)`). The constants are deliberately
+  loose --- `B` is exponential in the read length `L` and `N_C` is enormous ---
+  so this is a positive rate, not a practical sample-depth estimate. The bound
+  is on the probability of exact-ML error, not on the likelihood, and it does
+  not make per-truth finite-sample success monotone.
 - **Historical filenames:** Some files retain issue-numbered names for
   repository traceability. The paper instead uses theorem names and this
   index preserves the exact paths needed to reproduce them.

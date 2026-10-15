@@ -28,50 +28,57 @@ Begin with the scientific problem and develop the research question naturally.
 
 ---
 
-# How can we reconstruct a genome?
+# Our goal: reconstruct the genome
 
-A genome is a very long string of DNA letters.
+**What we want:** recover a genome's full DNA sequence from the short fragments, called *reads*, that a sequencer produces.
 
-Sequencing does not hand us that string. It gives us **many short fragments**, called *reads*, sampled from different positions.
+Suppose we receive these reads, in no particular order:
 
-For example, a circular genome `ACGTA` has these length-3 fragments:
+~~~text
+GTA      AAC      CGT      TAA      ACG
+~~~
 
-```text
-ACG   CGT   GTA   TAA   AAC
-```
+We want to recover **the circular sequence that produced them**:
 
-**We know the fragments, but not where each one came from.**
+~~~text
+ACGTA
+~~~
 
-The assembly problem is to infer the original sequence.
+That is **genome assembly**: reconstructing the original whole from its fragments.
 
 <!--
-The circular toy model removes distracting end effects.
-We assume error-free oriented reads; real sequencing is more complicated.
+This slide states the desired INPUT and OUTPUT, not the obstacles.
+Do not move repeat ambiguity or difficulty discussion ahead of
+the successful worked reconstruction. ACGTA is one way to write
+the circular answer; rotations are the same circular genome.
+The displayed reads are unordered, fixed-length windows.
 -->
 
 ---
 
-# What makes assembly difficult?
+# The mathematical problem we chose to study
 
-DNA contains **repeated substrings**.
+We investigate an **idealized mathematical model** of assembly, not the engineering details of real sequencing.
 
-```text
-... G [ ACGA ] T ...
-... C [ ACGA ] A ...
-```
+- **Genome:** a circular string of DNA letters.
+- **Reads:** short, equal-length, error-free fragments sampled independently from random positions.
+- **Input:** the reads themselves, not their positions or the true genome's length.
 
-A short read containing only `ACGA` cannot tell us which copy was sampled.
-
-A longer read containing the **flanking context** can distinguish them.
-
-This is why read length, overlap, and *bridging repeats* matter.
+Our questions: **When can the true genome be reconstructed? How can we compare the candidates using probability?**
 
 <!--
-Bridging means the read extends beyond a particular repeat copy on both sides.
-The takeaway is information content, not graph implementation.
+All the main examples assume oriented reads and uniformly distributed
+random starts; read orientation is a technical convention, not a
+theme to foreground on the slides. Candidate length is not given
+unless explicitly introduced later as additional information.
+Circular genomes are defined only up to rotation. Real sequencing
+has additional sources of complexity intentionally excluded here.
 -->
 
 ---
+
+# A first reconstruction: join the overlaps
+
 The end of **ACG** matches the beginning of **CGT**: both share **CG**.
 
 The other reads fit together in the same way:
@@ -82,13 +89,14 @@ ACG → CGT → GTA → TAA → AAC → ACG
 
 Each arrow joins reads sharing a two-letter overlap. Following the arrows spells **ACGTA**.
 
-**We've reconstructed a circular genome!** This is the basic idea behind overlap-based assembly.
+**We reconstructed the genome!** This is the basic idea behind overlap-based assembly.
 
 <!--
 Read-overlap graph: vertices are reads, not (L-1)-mers.
-AAC -> ACG closes the circular sequence. Not a de Bruijn graph.
+AAC -> ACG closes the circular sequence. This is a positive
+worked solution to the goal shown two slides earlier.
+Only now introduce ambiguous overlaps and repeats.
 -->
-
 ---
 
 # What if an overlap has several choices?
@@ -275,90 +283,67 @@ are conceptual floating-point values; for many reads use log likelihood.
 
 ---
 
-# What does it mean for an assembly algorithm to be better?
+# What does the "best" assembly algorithm mean?
 
-An algorithm sees the **reads** and guesses which genome produced them.
+Imagine playing the **same guessing game** many times:
 
-To compare algorithms, imagine repeating the **whole experiment**:
+1. Secretly choose genome **A** or **B**, each with a **50%** chance.
+2. Draw **two random reads** from the chosen genome.
+3. Show only the reads to an algorithm. It must guess **A** or **B**.
 
-1. Pick the true genome: **A or B, equally likely**.
-2. Draw two random reads from it.
-3. Let each algorithm guess the genome from those reads.
+**Score:** how often does its guess match the hidden true genome?
 
-**Score:** how often does the algorithm guess correctly?
+We've already calculated that when the reads are **AAA, AAA**:
 
-For the reads **AAA, AAA**, we calculated that **B is the true genome in 80%** of experiments producing those reads. Guessing B is therefore the better decision **for this observation**.
+- **80%** of those games came from **B**.
+- **20%** came from **A**.
+
+So guessing **B** gets **80%** of these games right. Guessing **A** gets only **20%** right.
 
 <!--
-The comparison criterion is prior-averaged 0-1 correctness: draw a genome
-from the stated equal prior, independently sample two reads, and score
-one if the algorithm's guess matches the hidden genome.
-There are 2 * 5^2 = 50 equally likely latent (genome, start-pair)
-histories. Only five produce [AAA, AAA]: one from A and four from B.
-The conditional 80% is not a guarantee for a fixed true genome.
+The candidate set is exactly {A=AAATT, B=AAAAT}, equal prior 1/2,
+two independent length-3 oriented uniform-start reads.
+For the observation r=[AAA,AAA],
+P(r|A)=1/25 and P(r|B)=4/25.
+Bayes gives P(B|r)=4/5 and P(A|r)=1/5.
+Correctness is scored across repeated complete experiments
+(genome, two-read sample), NOT random placements with the truth fixed.
+The preceding two-read slide already proved the 80/20 split.
 -->
 
 ---
 
-# Counting the decisions an algorithm can get right
+# Why no algorithm can beat maximum likelihood in this game
 
-There are **50 equally likely experiments**: two equally likely true genomes, each with 25 possible pairs of read starts.
+Because **A and B are equally likely beforehand**, their probabilities *after seeing the reads* are their likelihoods **divided by the same sum**.
 
-Group the experiments by the **reads the algorithm sees**. Here are four example rows:
+So ML always guesses the genome **most likely to be true** given those reads.
 
-| Reads observed | True A | True B | Best guess |
-| --- | ---: | ---: | --- |
-| `AAA, AAA` | 1 | **4** | **B** |
-| `AAA, AAT` | 1 | **2** | **B** |
-| `AAA, ATT` | **1** | 0 | **A** |
-| `AAT, TAA` | 1 | 1 | Either |
+Now consider **any other algorithm**. For any possible reads, it either:
 
-The algorithm cannot distinguish experiments in the same row. **Guess A, and it gets the A count correct; guess B, and it gets the B count.**
+- **Agrees with ML:** their chance of being right is the same.
+- **Disagrees with ML:** it picks an answer with **no higher chance** of being right.
 
-So **the best possible score for any row is its larger count**.
+It cannot make up for a worse guess elsewhere: **ML already makes the best choice for every observation.**
 
-<!--
-These are ordered read pairs (not unordered bags), and each A/B
-latent pair of read-start positions is equiprobable. A=AAATT and
-B=AAAAT, both length five. Circular read-type counts:
-A: AAA,AAT,ATT,TTA,TAA each once.
-B: AAA twice, AAT once, ATA once, TAA once.
-Thus read-pair counts are products of type counts; all four table
-rows can be verified directly. The remaining observation rows are
-treated by the general argument on the next slide.
--->
+Therefore **ML has the highest overall chance of a correct guess** in our experiment.
 
----
-
-# The proof: choose the best guess for every observation
-
-**Every experiment belongs to exactly one row.** To count an algorithm's correct answers, add the count it gets right in **each** row.
-
-For any algorithm $f$, let $n_A(r)$ and $n_B(r)$ be the counts for observed reads $r$. Then:
-
-$$
-\underbrace{\frac1{50}\sum_r n_{f(r)}(r)}_{\text{accuracy of }f}
-\;\le\;
-\underbrace{\frac1{50}\sum_r\max\{n_A(r),n_B(r)\}}_{\text{best possible accuracy}}.
-$$
-
-**Why does ML reach the upper bound?** A genome has 25 possible pairs of starting positions. So the likelihood of $r$ is its row's count **divided by 25**.
-
-Choosing the **larger likelihood** therefore chooses the **larger count, in every row**.
-
-That is ML's decision rule. **No other algorithm can achieve higher average accuracy** under the assumed equal prior (ties are possible).
+**But it can still be wrong:** when the reads are **AAA, AAA**, ML's guess fails in **20%** of those cases.
 
 <!--
-Formal generalization: with finite candidates H, prior π, and 0–1 loss,
-accuracy(f) = Σ_r π(f(r)) P(r|f(r))
-            ≤ Σ_r max_g π(g) P(r|g).
-MAP attains the bound for any prior. Equal priors make MAP=ML,
-even when candidates have different lengths (there the raw counts
-must first be converted to candidate-relative probabilities).
-The displayed 50-history argument works because A and B both have
-five positions and the prior is uniform. Randomization cannot
-improve on the per-row maximum. Lean FiniteBayesDecision.lean.
-Prior-averaged optimality does not imply success for each fixed truth.
+Direct per-observation decision proof. General finite hypotheses
+H, observations R, prior π, equal 0-1 correctness:
+P(f(R)=H) = sum_r P(R=r) P(H=f(r)|R=r)
+         <= sum_r P(R=r) max_g P(H=g|R=r).
+MAP attains each maximum. Under uniform π, MAP equals ML, since
+P(H=g|r)=P(r|g)/sum_h P(r|h) when P(r)>0.
+Decisions on zero-probability observations do not affect accuracy.
+Randomized rules yield convex combinations of conditional success
+rates, never above their maximum.
+Lean: AssemblyP1/FiniteBayesDecision.lean.
+All algorithms get the same reads, prior, candidate set and
+0-1 correctness measure. No truth-by-truth guarantee or extra
+reconstruction-success promise is assumed.
 -->
 
 ---
@@ -391,27 +376,22 @@ mathematical statement; keep the explicit candidate-length scope.
 
 # A counterexample in six reads
 
-**True circular genome:** AAATT (length **5**).
+**True genome:** AAATT (length **5**) · **Competitor:** AAAATT (length **6**).
 
-**Competing genome:** AAAATT (length **6**).
-
-**We haven't supplied the true genome's length to the assembler.** Candidates of different lengths are allowed.
-
-Sample six reads of length 3 from the true genome:
+**Six length-3 reads sampled from the truth:**
 
 ~~~text
 AAA    AAA    AAT    ATT    TTA    TAA
 ~~~
 
-| Read | Observed | Positions in AAATT | Positions in AAAATT |
+| Read type | Observed | Starts in truth | Starts in competitor |
 | --- | ---: | ---: | ---: |
 | AAA | **2** | 1 | **2** |
-| AAT | 1 | 1 | 1 |
-| ATT | 1 | 1 | 1 |
-| TTA | 1 | 1 | 1 |
-| TAA | 1 | 1 | 1 |
+| AAT, ATT, TTA, TAA (each) | 1 | 1 | 1 |
 
-**The true genome satisfies the coverage and bridging conditions.** Both genomes are valid candidates in the read-overlap assembly model.
+**The truth satisfies coverage and repeat bridging.** Both genomes are legitimate read-overlap candidates.
+
+The true genome's length is **not** supplied to the assembler.
 
 <!--
 OrientedVariableLengthSe62.lean theorem and script
@@ -420,7 +400,10 @@ L=3, true starts 0,0,1,2,3,4; full coverage and strict bridging,
 all triple copies checked, interleaved pair vacuous.
 Both S and D=AAAATT admit genuine oriented Section 6.2
 read-overlap candidates. Variable candidate length is essential.
-No reverse-complement grouping.
+No reverse-complement grouping. The four grouped types
+AAT, ATT, TTA, TAA are EACH observed once and occur at
+one start in EACH genome. This table preserves the data
+of the original five-row version without the vertical overflow.
 -->
 
 ---

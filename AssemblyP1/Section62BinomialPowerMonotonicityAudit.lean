@@ -1,0 +1,11 @@
+import AssemblyP1.Section62BinomialPowerMonotonicity
+
+#print axioms AssemblyP1.Section62BinomialPowerMonotonicity.exactIidA_one
+#print axioms AssemblyP1.Section62BinomialPowerMonotonicity.exactIidB_one
+#print axioms AssemblyP1.Section62BinomialPowerMonotonicity.surrogateA_one
+#print axioms AssemblyP1.Section62BinomialPowerMonotonicity.surrogateB_one
+#print axioms AssemblyP1.Section62BinomialPowerMonotonicity.exact_prefers_A_all_n
+#print axioms AssemblyP1.Section62BinomialPowerMonotonicity.surrogate_prefers_B_all_n
+#print axioms AssemblyP1.Section62BinomialPowerMonotonicity.ranking_inversion_all_n
+#print axioms AssemblyP1.Section62BinomialPowerMonotonicity.ranking_inversion_one
+#print axioms AssemblyP1.Section62BinomialPowerMonotonicity.exact_ratio_gt_one
