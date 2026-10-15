@@ -359,6 +359,33 @@ This bound is kernel-checked for a finite family; a sharp uniform sample size ov
 
 ---
 
+# Backup: more reads help on average, not always
+
+More reads cannot lower the **average** chance of guessing the genome correctly: an algorithm may simply ignore the extra read.
+
+But for one **fixed** true genome, the chance of being the maximum-likelihood answer can go **down** when a read is added.
+
+Two circular genomes, read length 2, alphabet `{A, C}`:
+
+| | `AA` | `AC` | `CA` | `CC` |
+| --- | ---: | ---: | ---: | ---: |
+| Truth `AAC` | $1/3$ | $1/3$ | $1/3$ | $0$ |
+| Competitor `AAAC` | $1/2$ | $1/4$ | $1/4$ | $0$ |
+
+The truth wins strictly with probability $2/3$ after **one** read but only $4/9$ after **two**. With many reads the probability still returns to $1$.
+
+**More reads guarantee eventual success, not a steady climb.**
+
+<!--
+Prior-averaged success is nondecreasing in the read count; per-truth success
+need not be. Kernel endpoints: chooseMAP_success_monotone_under_refinement
+(average) and NonmonotonicityWitness281.success_not_monotone (per-genome),
+succ(1)=2/3 > succ(2)=4/9. No positive-probability ties for n>=1. This is the
+biologists-deck analogue of the programmers Backup B4.
+-->
+
+---
+
 # Backup: primary sources
 
 - Medvedev & Brudno (2009), *Maximum Likelihood Genome Assembly*.
