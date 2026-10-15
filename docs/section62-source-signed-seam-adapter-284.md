@@ -120,3 +120,22 @@ of actual genomic windows with the linearized spelling but does **not** yet
 identify the *j*-th linear read at its accumulated extension anchor or
 transport the reduced-edge no-skipped-observed-window property. Those
 remain necessary for unconditional Observation 7 occurrence equality.
+
+## Source-read anchor equality (new, kernel-checked)
+
+`Section62AnchorSourceWords.aligned_source_words` is a generic induction over
+honest suffix/prefix overlaps: at every cumulative edge-extension anchor, the
+linearized spelling's length-`L` window is exactly the source read for that
+edge. The source-specific corollaries
+`signed_circuit_anchors_linear` and
+`signed_circuit_anchors_are_read_words` discharge the
+`CircularSpelling.hAnchors` field **for any actual closed SignedPath of the
+complete overlap graph**, including repeated wraps when `G<L`.
+They derive both the exact tail-length equation and positivity of extensions
+from graph membership; anchor-bounds are proved, not assumed.
+
+The remaining independent `CircularSpelling` obligation is
+`hInteriorSkipped`: translate the implemented spelling-reduced graph's
+local no-observed-intermediate-window certificate into the periodic circular
+genome's internal windows. That source-specific translation is required
+before claiming unconditional Observation 7.
