@@ -15,7 +15,9 @@ theorem of `oriented-se62-rigidity-theorem.md` (Theorem A: vertex throughput
 _Reproduce: `python3 scratch257/rigidity.py`, `python3 scratch257/two_cycle.py`
 (n=3 exhaustive), `python3 scratch257/test_n4.py twocycle` (n=4 cross-check),
 `python3 scratch257/verify_counterexample.py` (the §4 counterexample),
-`python3 scratch257/finite_decider.py` (§11 finite-decider cross-check).
+`python3 scratch257/finite_decider.py` (§11 finite-decider cross-check),
+`python3 scripts/verify_257_two_walk_iff.py` (§12 two-closed-walk cross-check,
+constructive n=3/4 and exhaustive search n=3).
 Self-contained, exact integer arithmetic, deterministic._
 
 _Blocking-review repair (2026-10-10, branch `research/257-graver-lean-repair`):
@@ -39,6 +41,13 @@ kernel-checked as `AssemblyP1/FiniteRigidityDecider.lean`
 axioms. It imports — and does not duplicate — `GraverRigidity.lean`; the
 Graver criterion is `rigid_iff_forall_graver_not_feasible` there. Build with
 `lake build AssemblyP1.FiniteRigidityDecider`._
+
+_Lean (two-closed-walk criterion, 2026-10-15): §12's Theorem 5 is kernel-checked
+as `AssemblyP1/TwoWalkRigidity.lean` (`rigid_iff_no_two_nonneg_circ`,
+`nonrigid_of_two_nonneg_circ`, `exists_two_nonneg_circ_of_nonrigid`) with the
+same standard axioms, resolving §8.3. Build with
+`lake build AssemblyP1.TwoWalkRigidity`; audit with
+`lake env lean AxiomAudit257.lean`._
 
 ---
 
@@ -97,6 +106,13 @@ map `B : E → ℤ` with `B ≥ 1` on every edge, balanced at every node, and
    (c) "The support graph is a single directed cycle" is sufficient, not
    necessary (rigid graphs with `≥ 2` independent cycles exist; §5).
    [mathematical proof + verified computation]
+
+7. **The exact repeat-structural iff (two closed walks).** `A` is not rigid
+   **iff** two **closed walks** `W₁, W₂` (of unbounded length, `w₁=1, w₂=-1`,
+   equal length) satisfy `χ_{W₁} - χ_{W₂} ≥ -s` and `χ_{W₁} ≠ χ_{W₂}`. This is
+   necessary **and** sufficient for strongly connected supports, resolving open
+   item §8.3; it strictly extends the two-**cycle** certificate of item 3/4
+   (which is only sufficient). [mathematical proof + kernel-checked, §12]
 
 ---
 
@@ -381,13 +397,16 @@ exhaustive zeros are a sanity check on the proofs, not a substitute for them.
 ## 8. Open questions (kept explicitly OPEN)
 
 1. **A closed-form graph-theoretic iff** for rigidity, beyond the algebraic
-   criterion of Theorem 1 (e.g. a min-cut / max-flow characterization of
-   `L_0 ∩ box ≠ {0}`). None is known; the §4 counterexample rules out the
-   two-cycle condition specifically, but see also item 4. [open]
+   criterion of Theorem 1 (e.g. a *polynomial-time* min-cut / max-flow
+   characterization of `L_0 ∩ box ≠ {0}`). None is known; the §4 counterexample
+   rules out the two-cycle condition specifically, and the two-**closed-walk**
+   iff proved in §12 is repeat-structural rather than a min-cut form (it still
+   searches over closed walks). [open]
 2. **The exact complexity** of the exact criterion (§7). [open]
-3. **The two-closed-walk certificate** (§4): whether it is necessary and
-   sufficient when walks of unbounded length are allowed. The `n = 3` evidence
-   is consistent with it, but no proof or counterexample is known. [open]
+3. ~~**The two-closed-walk certificate** (§4)~~ **RESOLVED (2026-10-15).** The
+   two-closed-walk certificate is necessary **and** sufficient for strongly
+   connected supports; see Theorem 5 in §12. The earlier `n = 3` evidence was
+   correct. [proved, §12]
 4. **The finite-`k` cycle question** (§4): whether for every fixed `k` there is
    a non-rigid instance whose every witness needs `≥ k` simple cycles. The
    §4 example gives `k = 3`; no family for general `k` is known. [open]
@@ -409,10 +428,14 @@ exhaustive zeros are a sanity check on the proofs, not a substitute for them.
 | §6 exhaustive `n = 3` two-cycle agreement | verified computation, exhaustive in scope |
 | §7 exact criterion is a finite integer feasibility problem | mathematical proof |
 | §7 LP relaxation not exact (real/integer gap witnessed, §7) | mathematical proof + verified computation |
-| §8.1 closed-form graph-theoretic iff | open |
+| §8.1 closed-form graph-theoretic iff (polynomial / min-cut form) | open |
 | §8.2 exact complexity | open |
-| §8.3 two-closed-walk certificate iff | open |
+| §8.3 two-closed-walk certificate iff | mathematical proof + kernel-checked (`TwoWalkRigidity.rigid_iff_no_two_nonneg_circ`, §12) |
 | §8.4 finite-`k` cycle question | open |
+| §12 Theorem 5: two-closed-walk iff (general `w₁,w₂` and equal-length `w=1` forms) | mathematical proof + kernel-checked |
+| §12 `ATATAT` has no two-closed-walk certificate | kernel-checked (`TwoWalkRigidity.atatat_no_two_nonneg_circ`) |
+| §12 figure-eight two-closed-walk witness (`f=(0,0,1,1)`, `g=(1,1,0,0)`) | kernel-checked (`by decide`) |
+| §12 exhaustive two-walk cross-check (constructive n=3: 389; n=4: 80864; search n=3: 389; 0 mismatches) | verified computation, exhaustive in scope |
 | §11 finite decider: `Rigid ↔ ∀ B : E→Fin(G+1), Admissible B → B = A` | mathematical proof + kernel-checked (`FiniteRigidityDecider.rigid_iff_forall_admissible`) |
 | §11 Boolean decider `decider` correctness | kernel-checked (`FiniteRigidityDecider.rigid_iff_decider`) |
 | §11 worked instances (`ATATAT` rigid, `AAAAB` non-rigid, figure-eight rigid/non-rigid) | kernel-checked (`by decide`) |
@@ -509,4 +532,158 @@ evidence for, not a replacement for, the kernel proofs.
 kernel-checked with only `[propext, Classical.choice, Quot.sound]` (see
 `AxiomAudit257.lean`); the cross-check is verified computation, exhaustive in
 the stated scope. The broader closed-form/complexity questions (§8.1, §8.2)
+remain **open**.
+
+---
+
+## 12. The two-closed-walk criterion is necessary and sufficient (resolves §8.3)
+
+The **two-cycle** certificate of §3–§4 (two *simple* directed cycles) is
+sufficient but **not** necessary. The natural weakening — allow the two
+obstructions to be **closed walks** of unbounded length — *is* an iff. This
+settles open item §8.3.
+
+### 12.1 Statement
+
+Let `D` be a strongly connected support graph (every edge on a directed cycle),
+`A : E → ℕ` a positive circulation of total `G`, and `s := A - 1 ≥ 0` the
+slack. A **closed walk** is a walk `W = e_1 ⋯ e_k` with `head(e_i) =
+tail(e_{i+1})` and `head(e_k) = tail(e_1)`; its **count vector** is
+`χ_W ∈ ℕ^E`, `χ_W(e) = #{i : e_i = e}`, and its **length** is
+`|W| = ∑_e χ_W(e) = k`. A count vector of a closed walk is exactly a
+**nonnegative integer circulation** whose support is connected; a nonnegative
+integer circulation is a finite sum of such, and a single one whenever its
+support is connected (Eulerian circuit in the multigraph with `f_e` parallel
+copies of `e`).
+
+**Theorem 5 (two-closed-walk criterion).** `A` is **not** rigid **iff** there
+exist two closed walks `W₁, W₂` and integers `w₁, w₂`, not both zero, with
+
+```
+(i)   w₁·|W₁| + w₂·|W₂| = 0,                          (zero-sum)
+(ii)  w₁·χ_{W₁} + w₂·χ_{W₂} ≥ -s   coordinatewise,     (inside the box)
+(iii) w₁·χ_{W₁} + w₂·χ_{W₂} ≠ 0.                       (nonzero)
+```
+
+Moreover the certificate can always be taken with `w₁ = 1`, `w₂ = -1` and
+`|W₁| = |W₂|`:
+
+**Corollary 5′ (equal-length form).** `A` is not rigid iff there are two closed
+walks `W₁, W₂` of **equal length** with `χ_{W₁} - χ_{W₂} ≥ -s` and
+`χ_{W₁} ≠ χ_{W₂}`.
+
+### 12.2 Proof
+
+**(⟸) of Theorem 5.** Put `δ := w₁·χ_{W₁} + w₂·χ_{W₂}`. Each `χ_{Wᵢ}` is a
+circulation (`M χ_{Wᵢ} = 0`) of total `|Wᵢ| = 1ᵀχ_{Wᵢ}`, so `M δ = 0` and
+`1ᵀδ = w₁|W₁| + w₂|W₂| = 0` by (i). Condition (ii) is the box condition and
+(iii) makes `δ` nonzero on the support. Theorem 1 gives that `A` is not rigid.
+∎
+
+**(⟹) of Theorem 5.** By Theorem 1 there is a nonzero `δ ∈ L₀` with
+`δ ≥ -s`. Write `δ = δ⁺ - δ⁻` with `δ⁺, δ⁻ ≥ 0` (coordinatewise positive and
+negative parts). Since `Mδ = 0`, the two parts have **equal divergence**
+`D := Mδ⁺ = Mδ⁻` (each is the divergence contributed to a node by the
+positive and the negative coordinates separately). The vector `D` has total
+`1ᵀD = 0`. Because `D` is strongly connected, every integer divergence of
+total `0` is realisable by a **nonnegative integer flow**: route each unit of
+supply `D(v)⁺` from `v` to a vertex of demand `D(w)⁻` along a directed path
+(strong connectivity supplies the path), accumulating an integer flow `h₀ ≥ 0`
+with `Mh₀ = -D`. Choose also a nonnegative integer circulation `γ` whose
+support is connected and spans all vertices (a closed walk visiting every
+vertex; exists because `D` is strongly connected). Set
+
+```
+h := h₀ + γ ≥ 0,    f := δ⁺ + h,    g := δ⁻ + h.
+```
+
+Then:
+
+* `Mf = Mδ⁺ + Mh = D - D = 0` and `Mg = Mδ⁻ + Mh = 0`: both are
+  circulations, and `f, g ≥ 0`;
+* `f - g = δ⁺ - δ⁻ = δ`, so `f - g ≥ -s` and `f ≠ g` (as `δ ≠ 0`);
+* `1ᵀf - 1ᵀg = 1ᵀδ = 0`, so `|W_f| = |W_g|`;
+* `supp(f) = supp(δ⁺) ∪ supp(h) ⊇ supp(γ)` is connected (every edge of `δ⁺`
+  is incident to a vertex of the connected spanning support of `γ`), and
+  likewise `supp(g)`.
+
+Hence `f` and `g` are nonnegative integer circulations with connected support,
+i.e. count vectors of closed walks `W_f`, `W_g` with `χ_{W_f} = f`,
+`χ_{W_g} = g`. Taking `w₁ = 1`, `w₂ = -1` gives `δ = χ_{W_f} - χ_{W_g}`,
+`|W_f| = |W_g|`, and (i)–(iii) hold. This proves both Theorem 5 and Corollary
+5′. ∎
+
+### 12.3 Relation to the two-cycle certificate
+
+The two-cycle certificate of §3 is the special case in which `W₁, W₂` are
+simple directed cycles (with the normalisation `w₁ = a|C₂|/g`,
+`w₂ = -a|C₁|/g`). Theorem 3 / §4 exhibits a non-rigid instance where **no**
+such pair exists, while its witness `δ = 2·χ_{0→1→2→0} - χ_W` is already a
+two-**closed-walk** combination (the second walk `W` has length `6`). So the
+closed-walk criterion is strictly more powerful than the two-cycle one, and by
+Theorem 5 it is exact. The distinction is exactly the distinction between
+*support topology* (simple cycles: not enough, §4) and *true multiplicities*
+(repeated use of edges: enough, Theorem 5).
+
+### 12.4 Worked instances
+
+* **`S = ATATAT`, `L = 3` (rigid, no certificate).** `A = (3,3)`, `G = 6`,
+  support a single directed `2`-cycle. Every nonnegative circulation is
+  `(k,k)`; two of them with equal total have equal `k`, hence are equal. So the
+  distinct equal-total pair required by Theorem 5 does not exist — consistent
+  with rigidity, and with the triple `(L-1)`-mer repeats. [mathematical proof +
+  kernel-checked `TwoWalkRigidity.atatat_no_two_nonneg_circ`]
+* **Figure-eight `0→1→0, 0→2→0` at `A = (2,2,1,1)`, `G = 6` (non-rigid).** The
+  two `2`-cycles `f = (0,0,1,1)`, `g = (1,1,0,0)` are nonnegative circulations
+  of equal total `2`, distinct, with `f - g = (-1,-1,1,1) ≥ 1 - A`; they are
+  the two closed walks. The *same support* at `A = (1,1,1,1)` has no such pair
+  (slack `0`), so rigidity is a multiplicity, not a topology, property.
+  [kernel-checked `TwoWalkRigidity.figureEight_two_walk_witness`]
+
+### 12.5 Exhaustive cross-check (`scripts/verify_257_two_walk_iff.py`)
+
+The script has two independent halves and exits non-zero on any failure.
+
+| check | scope | result |
+|---|---|---|
+| constructive (proof's construction: complete `δ⁺`, `δ⁻` to connected circulations, extract Eulerian circuits, verify two equal-length walks in the box) | `n = 3`, all strongly connected supports, `G ≤ 3m`: 389 non-rigid of 447 | **0** failures |
+| constructive | `n = 4`, all strongly connected supports, `G ≤ 2m`: 80864 non-rigid of 83532 | **0** failures |
+| exhaustive search (enumerate closed walks up to length `10`, all `(w₁,w₂)` normalisations, compare with brute-force rigidity) | `n = 3`, `G ≤ 3m`: 447 | **0** mismatches |
+
+The constructive half validates the *forward* direction of Theorem 5 on every
+non-rigid instance in scope; the search half validates the criterion as a
+predicate. Both are exhaustive in their stated scope. [verified computation]
+
+### 12.6 Lean kernel check
+
+`AssemblyP1/TwoWalkRigidity.lean` formalizes Theorem 5 in the equivalent
+"two nonnegative circulations" form (the count vectors of the two closed
+walks; see the module docstring for why the connected-support/Eulerian
+refinement is a packaging step). The single graph-theoretic input is the
+**routing property** `Routable` (`∀ p ≥ 0, ∃ h ≥ 0, p + h` is a circulation),
+which is exactly the transshipment-routing consequence of strong connectivity
+used in the proof; it is stated as a hypothesis rather than reproved from
+connectivity.
+
+* `isCirc_iff_balancedZ`: the explicit `IsCirc` predicate is `BalancedZ` on all
+  vertices.
+* `nonrigid_of_two_nonneg_circ`: the easy direction (no routing needed).
+* `exists_two_nonneg_circ_of_nonrigid`: the constructive direction, via
+  `δ⁺ + h`, `δ⁻ + h`.
+* `rigid_iff_no_two_nonneg_circ`: `Rigid A G ↔ ¬ ∃ f g, TwoNonnegCirc A f g`,
+  assuming `Routable`.
+* Worked instances: `atatat_no_two_nonneg_circ` (no certificate) and
+  `figureEight_two_walk_witness` (the two `2`-cycles), both kernel-checked with
+  only `[propext, Classical.choice, Quot.sound]` (`TwoWalkRigidityAudit.lean`,
+  `AxiomAudit257.lean`); no `sorry`, no `native_decide`.
+
+**Complexity.** The criterion is *checkable* but not (via this form)
+*polynomial*: enumerating closed walks is exponential, so §8.1 (a min-cut /
+max-flow polynomial form) and §8.2 (exact complexity) remain **open**. The
+contribution of §12 is an exact **repeat-structural** iff, not a complexity
+improvement over the finite decider of §11.
+
+**Epistemic status.** Theorem 5 and Corollary 5′ are [mathematical proof]; the
+kernel-checked Lean form is [kernel-checked, standard axioms]; the exhaustive
+cross-checks are [verified computation, exhaustive in scope]. §8.1, §8.2, §8.4
 remain **open**.
