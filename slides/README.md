@@ -3,7 +3,7 @@
 Two independent [Slidev](https://sli.dev) decks that share one GitHub Pages
 site:
 
-- **`programmers.md`** — a mathematical genome-and-reads model, read-overlap reconstruction with the Not-So-Greedy guarantee, a concrete Bayes/ML optimality proof, the NEGATIVE answer to the original non-Bayesian conditional bridging-to-ordinary-likelihood implication, an exact counterexample showing ML was optimizing a broader problem, a conditional Bayesian theorem recovering optimality when the structural promise is given as additional information, a separate oriented same-length positive theorem, population identifiability, and the human-directed multi-agent research method with Lean verification.
+- **`programmers.md`** — an input puzzle, constructive overlap assembly, repeat ambiguity and the mathematical read model; Not-So-Greedy's guarantee; likelihood and Bayes; the negative 2016 implication and exact counterexample; conditional inference given the reconstruction promise; population results and a separate restricted positive theorem; human-directed agents and Lean.
 - **`programmers-research-notes.md`** — mathematical distinctions, research history and source references.
 - **`biologists.md`** — an accessible sequencing and likelihood story: overlaps and bridging, the 2016 read-overlap graph, likelihood, population identifiability, and the restricted finite positive theorem, using the same concrete read-frequency calculation.
 - **`portal/`** — the landing page that forks left to programmers and right to

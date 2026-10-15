@@ -28,138 +28,142 @@ Begin with the scientific problem and develop the research question naturally.
 
 ---
 
-# How can we reconstruct a genome?
+# The puzzle: DNA fragments without a map
 
-A genome is a very long string of DNA letters.
+A genome is a very long string made from the DNA letters **A, C, G, T**. Sequencing gives us short pieces, called **reads**, rather than the whole string.
 
-Sequencing does not hand us that string. It gives us **many short fragments**, called *reads*, sampled from different positions.
+Suppose the sequencer produces these reads, in no particular order:
 
-For example, a circular genome `ACGTA` has these length-3 fragments:
+~~~text
+GTA      AAC      CGT      TAA      ACG
+~~~
 
-```text
-ACG   CGT   GTA   TAA   AAC
-```
+We don't know which read came first—or where any read belongs.
 
-**We know the fragments, but not where each one came from.**
-
-The assembly problem is to infer the original sequence.
+**Our task:** reconstruct the original circular genome from these pieces.
 
 <!--
-The circular toy model removes distracting end effects.
-We assume error-free oriented reads; real sequencing is more complicated.
+This slide shows INPUT and GOAL, not an algorithm. The hidden circular
+source is ACGTA; the reads are deliberately unordered.
 -->
 
 ---
 
-# What makes assembly difficult?
+# A first attempt: join the overlaps
 
-DNA contains **repeated substrings**.
+The end of **ACG** matches the beginning of **CGT**: both share **CG**.
 
-```text
-... G [ ACGA ] T ...
-... C [ ACGA ] A ...
-```
+The other reads fit together in the same way:
 
-A short read containing only `ACGA` cannot tell us which copy was sampled.
+~~~text
+ACG → CGT → GTA → TAA → AAC → ACG
+~~~
 
-A longer read containing the **flanking context** can distinguish them.
+Each arrow joins reads sharing a two-letter overlap. Following the arrows spells **ACGTA**.
 
-This is why read length, overlap, and *bridging repeats* matter.
+**We've reconstructed a circular genome!** This is the basic idea behind overlap-based assembly.
 
 <!--
-Bridging means the read extends beyond a particular repeat copy on both sides.
-The takeaway is information content, not graph implementation.
+Read-overlap graph: vertices are reads, not (L-1)-mers.
+AAC -> ACG closes the circular sequence. Not a de Bruijn graph.
 -->
 
 ---
 
-# Our mathematical model
+# What if an overlap has several choices?
 
-We are **not** simulating every complication of real sequencing. We study a deliberately simple question that can be proved mathematically.
+Suppose our reads include **CAT, ATG, ATC, ATA**.
 
-- The genome is a **circular string**.
-- All reads have the same length, a known direction, and **no errors**.
-- Each read starts at a **uniformly random position**, independently of the other reads.
+**CAT** ends in **AT**, and all three other reads begin with **AT**:
 
-Some reconstruction theorems need **additional conditions** about which positions were observed and how repeats were bridged.
+~~~text
+           ┌→ ATG
+CAT ───────├→ ATC
+           └→ ATA
+~~~
+
+Every arrow is locally valid. **Which one is correct?**
+
+Genomes contain **repeated substrings**. An overlap may match the wrong copy of a repeat.
+
+A read extending beyond both ends of a repeat can distinguish copies; we say it **bridges** the repeat.
 
 <!--
-The idealized model needs to be clear before explaining graphs or claiming that
-sampling frequency is a probability. Its conclusions are conditional and do not
-by themselves specify a real sequencing workflow.
+Introduce complications only after successful assembly. All read types
+appear in the full ambiguity example two slides later. The arrows are
+possible overlaps, not all realized at one physical genome position.
 -->
 
 ---
 
-# How the read-overlap idea works
+# The mathematical version of genome assembly
 
-Each read may follow another when its **ending matches the next read's beginning**.
+This project studies an idealized problem, **not** the practical details of real sequencing.
 
-```text
-ACG -> CGT -> GTA -> TAA -> AAC -> ACG
-```
+We assume:
 
-Each arrow means a two-letter suffix matches a two-letter prefix.
+- A genome is a **circular string**.
+- Reads have a **fixed length**, a known direction, and **no errors**.
+- Every read starts at a **uniformly random position**, independently of the others.
 
-The arrows form a **read-overlap graph**: each read is a vertex; an arrow means the two reads *could* be consecutive.
-
-This simple cycle spells the circular genome `ACGTA`.
+This simple model allows us to prove statements about **which assemblies are possible**, and about **how likely each genome is to produce the observed reads**.
 
 <!--
-This is a read-overlap diagram, NOT a de Bruijn graph.
-It is intentionally simple; the next slide explains why repeats complicate it.
+The first examples use oriented reads. The historical MB09 finite
+counterexample later explicitly changes to reverse-complement molecule
+types. Model fidelity and theorem scope matter.
 -->
 
 ---
 
-# Why repeats create ambiguity
+# Sometimes even all short reads are ambiguous
 
-Take the following length-3 reads, including repeated occurrences:
+These ten length-3 reads, including repeated occurrences:
 
-```text
+~~~text
 ATG  TGA  GAT  ATC  TCA  CAT  ATA  TAT  ATA  TAT
-```
+~~~
 
-When a read ends in `AT`, more than one continuation is possible. **The graph branches.**
+come from **either** of two circular genomes:
 
-In fact, these **two different circular genomes** yield exactly that same collection:
-
-```text
+~~~text
 ATGATCATAT
 ATGATATCAT
-```
+~~~
 
-Neither is a rotation of the other. **The short reads alone cannot distinguish them.** Longer reads that span the ambiguous repeats can.
+The genomes are **not rotations** of one another. Yet they produce exactly the **same length-3 reads with the same multiplicities**.
+
+**No algorithm can distinguish them from those reads alone.**
+
+We need conditions that prevent this kind of ambiguity.
 
 <!--
-Verified circular length-3 read counts for each:
-ATA twice, TAT twice, ATG/TGA/GAT/ATC/TCA/CAT once each.
-The two genomes are not rotations. This toy illustrates ambiguity, NOT a
-counterexample under the bridging assumptions of the 2016 theorem.
+Exact circular length-3 read counts: ATA and TAT twice; each of
+ATG/TGA/GAT/ATC/TCA/CAT once. Not a counterexample to the
+2016 algorithmic theorem because its bridging hypotheses do not hold.
 -->
 
 ---
 
-# Not-So-Greedy: reconstruction with a guarantee
+# Not-So-Greedy: a reconstruction guarantee
 
-Shomorony, Kim, Courtade, and Tse (2016) built an algorithm on a **sparse read-overlap graph**. It does not blindly follow the longest overlap:
+Shomorony and colleagues (2016) developed an algorithm based on a **sparse read-overlap graph**.
 
-- It retains a likely next read **and a meaningfully different alternative**.
-- It removes redundant or misleading connections and tracks repeated traversals.
+They proved it reconstructs the **unique true circular genome, up to rotation**, under these conditions on the reads:
 
-**Under the theorem's coverage and repeat-bridging conditions, Not-So-Greedy reconstructs the true circular genome uniquely, up to rotation.**
+1. **Coverage:** the reads cover the genome.
+2. **Triple repeats:** every copy of a triple repeat is bridged.
+3. **Interleaved repeats:** at least one repeat in each interleaved pair is bridged.
 
-That is a **guarantee about this particular algorithm**, not just a promising heuristic.
+**This is a mathematical guarantee of correctness**, not just a heuristic that often works.
 
-*Side note:* de Bruijn graphs are another representation used widely in practical assembly. We do not need them for this argument.
+*Aside: practical assemblers also use de Bruijn graphs. We don't need them for this story.*
 
 <!--
-Shomorony et al. (2016), DOI 10.1093/bioinformatics/btw450. The sparse
-construction adjusts edge multiplicities and gives a unique Eulerian spelling.
-Its Theorem 1 requires coverage and all-bridged triple repeats; the
-information-feasible set I_s adds bridging of interleaved repeats. The full
-I_s conditions on the later question slide are a sufficient case, not a claim
-that all three are individually necessary for Theorem 1.
+Source: Shomorony et al. 2016, doi:10.1093/bioinformatics/btw450.
+Information-feasible I_s conditions have precise maximal-repeat and
+strict-straddle definitions. Unique reconstruction follows from the
+published Corollary 1. The source algorithm remains an external premise.
 -->
 
 ---
@@ -302,26 +306,26 @@ and candidate model. Formalized in AssemblyP1/FiniteBayesDecision.lean.
 
 ---
 
-# The 2016 question — and our answer
+# The question raised in 2016
 
-Shomorony et al. proved that **Not-So-Greedy reconstructs the true circular genome uniquely**, up to rotation, when the reads satisfy:
+We have two approaches:
 
-1. **Coverage:** reads cover the genome.
-2. **Triple repeats:** every copy is bridged by a read extending beyond it.
-3. **Interleaved repeats:** at least one repeat in each interleaved pair is bridged.
+**Not-So-Greedy:** reconstruct by overlaps. With coverage and bridged repeats, it is **guaranteed to return the truth**.
 
-Their question was a **non-Bayesian if–then statement**:
+**Maximum likelihood:** pick the genome that makes the observed reads **most probable**.
 
-> If those conditions hold, **must the true genome also maximize ordinary likelihood** among candidate genomes?
+The 2016 paper asked:
 
-**Our answer is NO.** We proved a counterexample. The reconstruction guarantee itself remains correct.
+> If Not-So-Greedy's conditions hold, **must the true genome also maximize ordinary likelihood?**
+
+This is a logical **if–then statement**, not a Bayesian posterior calculation conditioned on the event.
+
+**We proved that the answer is no.**
 
 <!--
-The 2016 question is an implication F(S,R) => S ∈ argmax_D P(R|D).
-The likelihood score does NOT condition on F. The published MB09
-referent has source-level ambiguity, but genuine source-supported
-counterexamples establish the negative substantive answer.
-The bridging clauses stated are the full information-feasible event.
+The original non-Bayesian question is F(S,R) => S in argmax_D P(R|D),
+where the likelihood score is NOT conditioned on F. The strict
+source-supported finite counterexamples refute the implication.
 -->
 
 ---
@@ -399,84 +403,58 @@ are Lean checked; no claim is made about an unconditional Bayes posterior.
 
 ---
 
-# Why ML was not defeated
+# What did the counterexample really show?
 
-**Not-So-Greedy has a conditional guarantee:** whenever coverage and bridging hold **for the actual genome**, its read-overlap algorithm returns the truth.
+**Not-So-Greedy's guarantee** applies to a special set of experiments: the **actual genome and its reads** satisfy coverage and repeat bridging.
 
-**Ordinary ML has a broader assignment:** rank all permitted candidate genomes by the probability of producing the observed reads, **without using that structural guarantee as extra statistical information**.
+**Ordinary maximum likelihood** compares a **broader set of candidate explanations**, without using that structural guarantee as additional statistical information.
 
-Our competing genome remains in this ordinary likelihood comparison, even though it does not satisfy the reconstruction conditions in the witnessed case.
+Our competitor is a legitimate likelihood candidate, even though it **doesn't satisfy the bridging conditions** in this particular case.
 
-**So the implication is false — but this is not a head-to-head demonstration that ML is a worse statistical estimator.**
+So the 2016 implication is **false**. But this does **not** mean ML is a worse decision rule than Not-So-Greedy on the *same* statistical problem.
 
-It suggests another question: **can we recover optimality when both methods are evaluated on the same promised event?**
+**What if we were given the reconstruction guarantee as part of the information?**
 
 <!--
-The NSG guarantee is pointwise on a truth-dependent event E. The
-algorithm itself is read-only and does not require the event label.
-Ordinary ML maximizes P(R|D) over its candidate universe. Its
-prior-averaged Bayes-optimality in the uniform-prior setup coexists
-with specific finite samples where the source truth is not ML.
-Do not claim NSG received E as operational input.
+W5 AAATAT/AAAAAT: competitor fails the information-feasibility
+condition for the witnessed placements, but has higher ordinary
+read-molecule likelihood. The failure for one placement is not proof
+of zero likelihood jointly conditioned on E after marginalizing
+unobserved starts. Pointwise failure and Bayes-average optimality
+are different claims.
 -->
 
 ---
 
-# Conditional Bayes: recovering optimality
+# What if we know the guarantee applies?
 
-Imagine that we are **also told** the actual genome and its reads satisfy the reconstruction guarantee. Call that event **E**.
+Imagine we are **also told**:
 
-Bayesian inference must now use the reads **and E**:
+> The **true genome and these reads** satisfy Not-So-Greedy's reconstruction conditions.
 
-- **Ordinary inference** scores how likely these reads are under each genome.
-- **Conditional inference** scores how likely a genome could produce **these reads together with E**, with a prior.
+Now we reason using **both the reads and that promise**.
 
-The reconstruction theorem says: among possible true genomes compatible with **the same reads and E**, every one is the **same circular genome up to rotation**.
+Suppose two different genomes could each be the truth under this promise for the same reads. Then Not-So-Greedy would have to return **two different genomes for exactly the same input**. But its theorem guarantees a unique result.
 
-**Therefore its conditional posterior probability is 100%.** Conditional MAP recovers the truth, and **no algorithm can beat it on this conditioned experiment**.
+**Therefore only one circular genome remains possible, up to rotation.**
 
-**This recovers bestness in the right statistical problem.** But E depends on the unknown truth: it is **extra information**, not a reinterpretation of ordinary ML.
+In Bayesian terms, its probability **given the reads and the promise** is **100%**. Choosing it is the best possible decision for this *conditioned* experiment.
+
+The promise concerns the **unknown truth**: it is new information, not something ordinary ML already had.
 
 <!--
-Use source-faithful fixed-regime read-string F(g,r) and the cited
-Not-So-Greedy unique read-only decoder A satisfying
-F(g,r) -> A(r) equivalent-to g (external source premise).
-Then K(g,r)=pi(g) P_g(r) 1_{F(g,r)}, with P_E supported on the one
-class [A(r)]. Kernel-checked consequences:
-ConditionalIdentifiability.lean: feasible_fibre_unique,
-conditional_posterior_eq_one, constrained_MAP_mem_orbit.
-For latent placements the correct joint mass sums weights over
-compatible placements satisfying E, not P(R|g) times a naive
-existence indicator. Event E is generally not R-observable.
-The W3/W6 placement-based counterexamples cannot be fed into the
-different read-string feasibility theorem; do not conflate predicates.
-The 2016 negative conclusion remains untouched by this new
-conditional Bayesian decision result.
+Assuming the published read-only unique decoder A with
+F(g,r)->A(r)≈g, feasible candidate classes for a fixed observed
+read set collapse to [A(r)]. The conditional joint distribution
+pi(g)P_g(r)1_F(g,r) is supported there; posterior certainty is
+kernel-checked in ConditionalIdentifiability.lean under the external
+NSG decoder premise. For latent start placements use the correctly
+marginalized E-weighted joint law; do NOT transfer this result to
+different placement-based predicates or confuse it with 2016 if-then.
 -->
 
 ---
 
-# Another theorem: a restricted positive result
-
-There is also a **separate structural result** that is worth highlighting.
-
-If we distinguish the direction of reads, compare genomes of the **same length**, and require **both the truth and its competitors** to satisfy the relevant assembly-candidate constraints:
-
-**No admissible competing genome can score higher than the truth.**
-
-With the stronger uniqueness hypotheses, the only valid alternatives are **rotations of the same circular genome**.
-
-This is a powerful theorem about a **restricted candidate problem**. It **does not change the negative answer** to the original, broader likelihood question.
-
-<!--
-Oriented, same-length, both genuine §6.2 candidate certificates:
-SameLength62Maximizer.informationFeasible_62_maximizer and
-SameLength62Uniqueness.unique_62_maximizer_up_to_rotation.
-This is NOT the conditional Bayesian theorem; present it afterward
-so it does not dilute the headline negative result.
--->
-
----
 
 # Why investigate a model with more reads?
 
@@ -573,6 +551,26 @@ follows from Issue94Complete.population_unique_ML.
 A uniform claim over unbounded candidate lengths is NOT proved.
 Hypotheses: oriented iid uniform-start sampling, finite family.
 -->
+---
+
+# Another positive result, in a restricted setting
+
+We also proved an independent theorem about **finite-sample likelihood**.
+
+Use reads with a known orientation, compare genomes of the **same length**, and require **both the truth and its competitors** to meet the specified read-overlap assembly constraints.
+
+Then **no admissible competing genome can have higher likelihood than the truth**.
+
+With stronger uniqueness assumptions, the only possible competitors are **rotations of the same circular genome**.
+
+This is a significant theorem for that **restricted candidate problem**. It does not make the broader 2016 implication true.
+
+<!--
+SameLength62Maximizer and SameLength62Uniqueness under true-and-competing
+genuine MB09 Section 6.2 certificates, oriented same-length model.
+Separate from conditional Bayesian posterior and from population P2.
+-->
+
 ---
 
 # How I directed the investigation
@@ -679,23 +677,20 @@ fidelity to intended biology/published hypotheses.
 
 # What the investigation established
 
-**The 2016 bridging-to-ordinary-ML implication is false.** Not-So-Greedy can have a guaranteed reconstruction while ordinary likelihood gives a competitor a higher score.
+**The 2016 question has a negative answer.** Guaranteed Not-So-Greedy reconstruction does not force the truth to maximize ordinary likelihood.
 
-**That does not mean ML is worse.** Its statistical optimality concerns a broader inference task. If we instead include the structural guarantee in a **conditional Bayesian experiment**, we recover **certain and optimal** reconstruction of the true genome class.
+The counterexample did **not** make ML inferior. The two methods were being judged on different problems. **Given the reconstruction guarantee as extra evidence**, conditional Bayesian inference identifies the true circular genome with certainty.
 
-We also proved a **restricted same-length positive theorem**, **population ML uniqueness** under explicit repeat assumptions, and **finite-family recovery guarantees** as reads accumulate.
+We also established **population ML uniqueness**, **finite-read reliability bounds**, and a **separate positive theorem** for a restricted finite setting.
 
-The research was driven by **my choice of hypotheses and directions**, with parallel agents, continuous orchestration, and Lean-checked mathematics.
+The work combined **human-directed research choices**, parallel AI agents, continuous orchestration, and Lean-checked proofs.
 
 <HomeLink label="Choose another audience" />
 
 <!--
-Main answer NO (non-Bayesian if/then implication), not model-dependent
-on the audience slide. Do not describe ML as statistically defeated.
-The conditional Bayes certainty is a corollary of the external NSG unique
-decoder theorem on the event E, with E given as truth-dependent extra
-side information. Restricted positive ML and population-P2 are
-separate theorems and do not rescue the original finite implication.
+Avoid slogans about recovering optimality or ML losing. Historical
+non-Bayesian if-then implication is false; conditional Bayes is a
+distinct truth-dependent inference experiment. Preserve theorem scopes.
 -->
 
 ---
