@@ -1,5 +1,28 @@
 # The conceptual story behind the programmers' talk
 
+
+## Approved opening: show the goal, model, and success before obstacles
+
+The first content slide must explain what genome assembly **aims to
+produce**, with concrete unordered read input and the recovered whole
+circular sequence. Do not replace the goal with a catalogue of
+difficulties or begin with repeated substrings.
+
+The second content slide establishes the **idealized mathematical
+problem**, including its assumptions and the fact that the input
+does not provide the true genome length. The third content slide
+works through an **actual successful overlap reconstruction** from
+the example reads. Only after the audience has seen the aim, model,
+and positive example should the deck discuss ambiguity, repeats,
+bridging, and guarantees. This ordering is a repeated explicit
+editorial requirement and must survive future content revisions.
+
+Do not focus attention on read-orientation qualifiers in these
+opening slides; preserve those exact conventions in speaker notes.
+Keep the rest of the research story and its proven mathematical
+assumptions unchanged.
+
+
 ## What this talk is about
 
 The project is not primarily a tutorial on genome assembly, a catalogue of
@@ -25,6 +48,30 @@ particular algorithm* imply that the true genome also maximizes the likelihood
 of those observed reads. It is wrong to replace that antecedent with a generic
 claim that the reads contain information; it is wrong to portray the
 consequent simply as a vague "principled score."
+
+### Editorial guidance: optimal ML needs no second counting apparatus
+
+The two-read calculation already shows that if the reads are
+[AAA,AAA], P(B|reads)=80% and P(A|reads)=20%. Use this directly:
+guessing B succeeds in 80% of experiments *with those reads*;
+guessing A in just 20%.
+
+Then prove optimality by comparing **any** rival rule pointwise
+over all observations. For each pair of observed reads a rival
+either agrees with ML (same correctness) or disagrees (no higher
+conditional correctness). Because the priors are equal, likelihood
+ranking equals posterior ranking. Averaging these pointwise
+inequalities gives the overall Bayes optimality theorem.
+There is no compensating gain on other observations: ML was already
+the best there too. Randomization cannot exceed the pointwise maximum.
+
+Do NOT reintroduce the 50-history counting table, n_A(r)/n_B(r)
+notation or a second sample-enumeration argument: those
+were mathematically valid but cognitively unnecessary here.
+The exact sum-of-conditional-success proof and randomized
+extension belong in speaker notes and FiniteBayesDecision.lean.
+Show the audience clearly that high average success does not
+mean guaranteed success for every true genome.
 
 ### Why likelihood can be called optimal, precisely
 

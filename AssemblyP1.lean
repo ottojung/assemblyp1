@@ -284,6 +284,9 @@ import AssemblyP1.PrimitiveP2FiniteClass
 import AssemblyP1.PrimitiveP2FiniteClassAudit
 import AssemblyP1.PrimitiveP2UniformSeparation
 import AssemblyP1.PrimitiveP2UniformSeparationAudit
+-- #263 separable-convex Graver optimality certificate (conditional core) + audit.
+import AssemblyP1.SeparableConvexGraver
+import AssemblyP1.SeparableConvexGraverAudit
 
 /-! ## `Issue94Transposition`: the Kotzig/Ukkonen/Pevzner descent, and an obstruction
 
