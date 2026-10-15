@@ -376,27 +376,22 @@ mathematical statement; keep the explicit candidate-length scope.
 
 # A counterexample in six reads
 
-**True circular genome:** AAATT (length **5**).
+**True genome:** AAATT (length **5**) · **Competitor:** AAAATT (length **6**).
 
-**Competing genome:** AAAATT (length **6**).
-
-**We haven't supplied the true genome's length to the assembler.** Candidates of different lengths are allowed.
-
-Sample six reads of length 3 from the true genome:
+**Six length-3 reads sampled from the truth:**
 
 ~~~text
 AAA    AAA    AAT    ATT    TTA    TAA
 ~~~
 
-| Read | Observed | Positions in AAATT | Positions in AAAATT |
+| Read type | Observed | Starts in truth | Starts in competitor |
 | --- | ---: | ---: | ---: |
 | AAA | **2** | 1 | **2** |
-| AAT | 1 | 1 | 1 |
-| ATT | 1 | 1 | 1 |
-| TTA | 1 | 1 | 1 |
-| TAA | 1 | 1 | 1 |
+| AAT, ATT, TTA, TAA (each) | 1 | 1 | 1 |
 
-**The true genome satisfies the coverage and bridging conditions.** Both genomes are valid candidates in the read-overlap assembly model.
+**The truth satisfies coverage and repeat bridging.** Both genomes are legitimate read-overlap candidates.
+
+The true genome's length is **not** supplied to the assembler.
 
 <!--
 OrientedVariableLengthSe62.lean theorem and script
@@ -405,7 +400,10 @@ L=3, true starts 0,0,1,2,3,4; full coverage and strict bridging,
 all triple copies checked, interleaved pair vacuous.
 Both S and D=AAAATT admit genuine oriented Section 6.2
 read-overlap candidates. Variable candidate length is essential.
-No reverse-complement grouping.
+No reverse-complement grouping. The four grouped types
+AAT, ATT, TTA, TAA are EACH observed once and occur at
+one start in EACH genome. This table preserves the data
+of the original five-row version without the vertical overflow.
 -->
 
 ---

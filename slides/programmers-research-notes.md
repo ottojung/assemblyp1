@@ -1,6 +1,20 @@
 # The conceptual story behind the programmers' talk
 
 
+## Shared presentation layout rules
+
+Slidev's default theme fades the first \`h1 + p\` paragraph to 50%
+opacity. The explicit project-wide override in \`slides/styles/index.css\`
+restores full opacity for that paragraph while retaining all other
+theme styles. Do not remove this override unless the theme is changed
+and the introductory paragraph color is checked again.
+
+The six-read counterexample must be vertically compact: group the
+four read types that have identical multiplicities into a single
+table row, labeling the values as applying to **each** read type.
+Do not expand the table back to five data rows without first checking
+that the slide fits inside Slidev's 16:9 content area.
+
 ## Approved opening: show the goal, model, and success before obstacles
 
 The first content slide must explain what genome assembly **aims to
