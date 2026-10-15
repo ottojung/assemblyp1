@@ -222,6 +222,7 @@ import AssemblyP1.DoubleStrandBridgingTransfer
 import AssemblyP1.TwoDisjointCirclesDuplex
 import AssemblyP1.ImplicationLattice
 import AssemblyP1.OrientedVariableLengthSe62
+import AssemblyP1.ShortFiniteMLCounterexamples
 import AssemblyP1.Section62VarlenPerOccurrence
 import AssemblyP1.BreslerRemapCompatibility
 import AssemblyP1.Issue209EAudit
@@ -1038,6 +1039,9 @@ graph content remains external. -/
 #print axioms AssemblyP1.ImplicationLattice.ConcretePanel.lambda1_A_tie
 #print axioms AssemblyP1.OrientedVariableLengthSe62.oriented_variable_length_se62_counterexample
 #print axioms AssemblyP1.OrientedVariableLengthSe62.oriented_variable_length_se62_counterexample'
+#print axioms AssemblyP1.ShortFiniteMLCounterexamples.short_finite_ml_counterexample_2
+#print axioms AssemblyP1.ShortFiniteMLCounterexamples.short_finite_ml_counterexample_3
+#print axioms AssemblyP1.ShortFiniteMLCounterexamples.short_finite_ml_counterexample_4
 #print axioms AssemblyP1.Section62VarlenPerOccurrence.truth_not_maximizer_in_general_flow_universe
 #print axioms AssemblyP1.Section62VarlenPerOccurrence.competitor_is_unique_optimizer
 #print axioms AssemblyP1.FibreCount.sum_antidiagonal_eq_sum_divisors
