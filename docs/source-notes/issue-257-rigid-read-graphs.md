@@ -59,7 +59,7 @@ real/integer gap `len233_mult211_real_integer_gap`), with the same standard
 axioms. Build with `lake build AssemblyP1.RigidityBouquet`; audit with
 `lake env lean AxiomAudit257.lean`. This is a partial advance on §8.1: an exact,
 checkable graph-theoretic criterion for the whole bouquet family and a
-kernel-checked proof that the LP/fractional relaxation is **not** sufficient; a
+kernel-checked proof that the direct LP/fractional relaxation is **not** sufficient; a
 polynomial min-cut/max-flow form for general supports (or a proof that none
 exists) remains **OPEN**._
 
@@ -730,7 +730,7 @@ remain **open**.
 
 This section advances open item §8.1 by giving an exact, checkable
 graph-theoretic criterion for the **bouquet** family, and a kernel-checked proof
-that the fractional (LP) relaxation is *not* exact.
+that this direct fractional (LP) relaxation is *not* exact.
 
 ### 13.1 Definition
 
@@ -772,32 +772,44 @@ and is kernel-checked as `AssemblyP1.RigidityBouquet.bouquet_nonrigid_iff`.
 For `k ≥ 3` it is a genuinely two-dimensional lattice condition (e.g.
 `len = (2, 3, 3)`, `mult = (2, 1, 1)`), not reducible to the two-cycle check.
 
-### 13.4 No fractional closed form: the real/integer gap
+### 13.4 Direct rational relaxation is not exact
 
-The rational relaxation of the criterion (replace `ℤ` by `ℚ`) is the LP
-relaxation `L_0 ∩ box ≠ {0}` over the reals (§7). The bouquet family exhibits a
-gap: for `len = (2, 3, 3)`, `mult = (2, 1, 1)` the rational vector
-`x = (-1, 0, 2/3)` satisfies `∑ len_i x_i = 2(-1) + 3·0 + 3·(2/3) = 0`,
-`x_1 = -1 ≥ -1`, `x_2 = 0 ≥ 0`, `x_3 = 2/3 ≥ 0` and is nonzero, while no
-*integer* `x` satisfies the constraints (the integer condition forces
-`x_1 + x_2 = 0`, hence `x = 0`). So the instance is **rigid**, yet its LP
-relaxation reports non-rigidity. This is kernel-checked as
-`AssemblyP1.RigidityBouquet.len233_mult211_real_integer_gap` and rules out any
-purely fractional min-cut/max-flow characterization of rigidity.
+Replacing the integer vector in the bouquet criterion by a rational vector
+produces a direct linear relaxation. For cycle lengths (2,3,3) and
+multiplicities (2,1,1), the rational vector (-1,0,2/3) is nonzero,
+has weighted sum zero, and respects all lower bounds.
 
-### 13.5 Relation to hardness and to §8.1
+The integer system, however, has only x=0: its equation is
+2*x1 + 3*(x2+x3) = 0, with x1 >= -1 and x2,x3 >= 0.
+If x1=0, both other coordinates vanish; if x1=-1, the equation
+would require 3*(x2+x3)=2, impossible over the integers.
+Positive x1 cannot cancel nonnegative x2,x3. This proves a rigid
+integer instance whose *direct* rational relaxation reports a witness,
+kernel-checked by len233_mult211_real_integer_gap.
 
-The bouquet criterion is exactly the feasibility of a bounded linear Diophantine
-system `∑_i len_i x_i = 0`, `x_i ≥ 1 - mult_i`. This contains the
-**numerical-semigroup / coin problem** (choose a cycle of length `t` with slack
-`1`, and lengths `a_i` with slack `0`: non-rigidity then asks whether `t` is a
-nonnegative combination of the `a_i`), which is the classical NP-complete
-*coin problem* of Lueker (1975) in the relevant (binary) encoding. Hence the
-general rigidity problem inherits a Diophantine core, and a *polynomial*
-min-cut/max-flow closed form for general supports is unlikely (and remains
-**OPEN**, §8.1/§8.2). The contribution here is a sharp, exact, checkable
-criterion for the whole bouquet family, together with the kernel-checked proof
-that no fractional relaxation can be exact.
+This example does not exclude other exact LP/extended formulations,
+integral network-flow formulations, or polynomial-time graph algorithms.
+
+### 13.5 Complexity and realizability caveats
+
+The bouquet criterion is a bounded linear Diophantine feasibility
+problem. With lengths encoded in binary it resembles numerical-semigroup
+membership: one cycle of length t with slack 1 and other cycles of
+length a_i with zero slack admits a nonzero integer perturbation exactly
+when t is a nonnegative combination of the a_i. But an *explicit*
+bouquet graph has size proportional to the sum of cycle lengths, not
+their binary bit lengths. Therefore this observation by itself is **not**
+an NP-hardness proof for rigidity on explicitly represented read graphs,
+nor does it rule out a polynomial min-cut/max-flow characterization.
+Those complexity questions remain OPEN.
+
+Abstract bouquets also need not be realizable as de Bruijn read-support
+graphs over a fixed alphabet. One concrete realization is checked in
+AssemblyP1/RigidityBouquetGenomeWitness.lean: the circular DNA genome
+ACACGACTAC with L=3 has the three cycles (2,3,3), multiplicities
+(2,1,1), at shared (L-1)-mer AC. The Lean regression checks all cyclic
+reads, their multiplicities, and the source/target 2-mers; the abstract
+integer rigidity theorem is a separate kernel-checked result.
 
 ### 13.6 Kernel-checked instances and cross-check
 
