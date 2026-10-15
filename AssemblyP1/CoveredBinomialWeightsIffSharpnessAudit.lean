@@ -1,0 +1,4 @@
+import AssemblyP1.CoveredBinomialWeightsIffSharpness
+
+#print axioms AssemblyP1.CoveredBinomialWeightsIffSharpness.iff_needs_zero_disjunct
+#print axioms AssemblyP1.CoveredBinomialWeightsIffSharpness.iff_needs_pointwise_disjunct

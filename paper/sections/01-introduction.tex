@@ -256,7 +256,19 @@ statement about a \emph{finite} candidate class. This premise holds for
 the entire primitive-P2 class: Theorem~\ref{thm:p2-finite-class} gives the
 intrinsic bound $|D|\le2q^{L-1}$, so
 Corollary~\ref{cor:p2-finite-recovery-all} applies without an artificial
-length cutoff. The numerical error exponent may still be weak. Exact finite-sample success is not even monotone
+length cutoff. The abstract affinity can moreover be made explicit:
+Theorem~\ref{thm:p2-uniform-rate} derives from the integer-denominator
+structure of the uniform-start read law the uniform gap
+$1-\rho(p_S,p_D)\ge1/(8B^4)$ with $B=2q^{L-1}$, hence the kernel-checked bound
+\[
+  \Pr_S\!\bigl\{\exists D\ \text{nonrotational admissible}:
+    L_D(R_1,\dots,R_n)\ge L_S(R_1,\dots,R_n)\bigr\}
+  \;\le\; N_C\,e^{-n/(8B^4)},
+\]
+where $N_C\le\sum_{g=1}^{B}q^{g}$ counts the distinct competitor read laws and
+$n\ge8B^4\log(N_C/\delta)$ suffices for error at most $\delta$. The constants
+are deliberately loose and exponential in the read length $L$: this is a
+positive rate, not a tractability claim. Exact finite-sample success is not even monotone
 in sample size (Proposition~\ref{prop:nonmonotone}); the exponential guarantee
 is asymptotic, not a monotone curve.
 
