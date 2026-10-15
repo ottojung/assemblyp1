@@ -302,197 +302,194 @@ and candidate model. Formalized in AssemblyP1/FiniteBayesDecision.lean.
 
 ---
 
-# The 2016 question — and our answer
+# The question left open in 2016
 
-Shomorony et al. proved that **Not-So-Greedy reconstructs the true circular genome uniquely**, up to rotation, when the reads satisfy:
+The 2016 paper gave Not-So-Greedy a remarkable guarantee. If the sampled reads:
 
-1. **Coverage:** reads cover the genome.
-2. **Triple repeats:** every copy is bridged by a read extending beyond it.
-3. **Interleaved repeats:** at least one repeat in each interleaved pair is bridged.
+1. **Cover** the circular genome;
+2. **Bridge every copy of a triple repeat** (a read extends beyond both ends);
+3. **Bridge at least one repeat in every interleaved pair**;
 
-Their question was a **non-Bayesian if–then statement**:
+then **Not-So-Greedy reconstructs the unique true genome**, up to rotation.
 
-> If those conditions hold, **must the true genome also maximize ordinary likelihood** among candidate genomes?
+The authors then asked a different question:
 
-**Our answer is NO.** We proved a counterexample. The reconstruction guarantee itself remains correct.
+> Under those same conditions, **must the true genome also have the highest ordinary likelihood**?
+
+That is an *if–then* claim about a reconstruction guarantee and a likelihood score. **It does not condition the probabilities themselves on the guarantee.**
 
 <!--
-The 2016 question is an implication F(S,R) => S ∈ argmax_D P(R|D).
-The likelihood score does NOT condition on F. The published MB09
-referent has source-level ambiguity, but genuine source-supported
-counterexamples establish the negative substantive answer.
-The bridging clauses stated are the full information-feasible event.
+This is the original non-Bayesian implication:
+F(S,R) -> S ∈ argmax_D P(R|D), with the ORIGINAL unconstrained
+likelihood, not the Bayesian conditional P(S|R,F).
+The full historical information-feasible I_s is a sufficient
+source condition for NSG's unique reconstruction corollary;
+do not claim each condition is separately necessary.
+The original source's likelihood referent has technical ambiguity
+but the substantive claimed implication is refuted by strict
+source-supported witnesses.
 -->
 
 ---
 
-# A counterexample to the 2016 implication
+# A read sample that makes the methods disagree
 
-The **true** circular genome is **AAATAT**. A competing genome is **AAAAAT**. Both have length **6**; reads have length **3**.
+**True genome:** AAATAT. **Competing genome:** AAAAAT.
 
-Five reads were sampled from the truth at starts 0, 0, 1, 3, 5:
+Both are circular, length 6. Read length is 3. We sampled five reads from the **true** genome:
 
 ~~~text
 AAA   AAA   AAT   TAT   TAA
 ~~~
 
-The historical likelihood model groups a read with its reverse complement. Thus TAT and ATA count together.
+The historical likelihood formulation groups a read with its reverse complement: ATA and TAT are one molecule type.
 
-| Read type | Observed | True AAATAT: positions | Competitor AAAAAT: positions |
+| Read type | Observed | True: positions | Competitor: positions |
 | --- | ---: | ---: | ---: |
 | AAA | **2** | 1 | **3** |
 | AAT | 1 | 1 | 1 |
 | ATA / TAT | 1 | **3** | 1 |
 | TAA | 1 | 1 | 1 |
 
-**The truth satisfies the reconstruction conditions.** The competitor is a valid likelihood candidate, but it **does not satisfy the same bridging conditions** in this witness.
+**The true genome satisfies all the reconstruction conditions.** The competing genome is still eligible for ordinary likelihood scoring—even though **it fails the bridging conditions** for this witness.
 
 <!--
-The source-faithful same-length MB09 §6.2 read-molecule witness:
-SameLengthSection62Counterexample. Both genomes have genuine spelled
-bidirected-flow candidate certificates. Truth satisfies full I_s at
-realized starts; D fails I_s in the witness owing to an unbridged
-triple repeat (audit #267, W5). Do not conclude D has zero marginalized
-conditional probability from its failure at ONE set of placements.
+SameLengthSection62Counterexample (MB09 §6.2): both true and
+competitor are genuine bidirected read-molecule flow/spelling
+candidates of length six. The true genome satisfies complete
+source-faithful placement I_s at starts 0,0,1,3,5; D fails
+I_s for the exhibited starts (audit #267, W5). Candidate eligibility
+for ordinary flow ML is not the same as I_s for the truth.
+Do not transfer this placement witness directly to source read-string
+conditional Bayesian event or infer zero marginalized event likelihood.
 -->
 
 ---
 
-# Exact calculation: the implication is false
+# No: ordinary likelihood can favor another genome
 
-At a uniformly random start, the probability of a read type equals its number of positions divided by 6.
+Each molecule type's probability is its occurrence count divided by 6. For these five independent reads:
 
-For the five independent reads, the **true genome** has likelihood:
+**True genome AAATAT:**
 
 $$
 P(R\mid S)
-= \left(\tfrac16\right)^2
-  \left(\tfrac16\right)
-  \left(\tfrac36\right)
-  \left(\tfrac16\right)
-= \frac{3}{6^5} = \frac1{2592}.
+=\left(\tfrac16\right)^2
+ \left(\tfrac16\right)
+ \left(\tfrac36\right)
+ \left(\tfrac16\right)
+=\frac{3}{6^5}=\frac1{2592}
 $$
 
-The **competing genome** has likelihood:
+**Competing genome AAAAAT:**
 
 $$
 P(R\mid D)
-= \left(\tfrac36\right)^2
-  \left(\tfrac16\right)
-  \left(\tfrac16\right)
-  \left(\tfrac16\right)
-= \frac{9}{6^5} = \frac1{864}.
+=\left(\tfrac36\right)^2
+ \left(\tfrac16\right)
+ \left(\tfrac16\right)
+ \left(\tfrac16\right)
+=\frac{9}{6^5}=\frac1{864}
 $$
 
 $$
-\boxed{\frac{P(R\mid D)}{P(R\mid S)}=3}
+\boxed{P(R\mid D)=3\,P(R\mid S)}
 $$
 
-**The competitor scores three times higher.** This **disproves the 2016 bridging-to-ordinary-ML implication**.
+**Not-So-Greedy is guaranteed to return S, but D has three times its ordinary likelihood.** This is a rigorous **negative answer to the 2016 question**.
 
 <!--
-Exact iid ordered molecule-type ratio is 3. The multinomial-count factor
-cancels for unordered sample counts. MB09 §6.1 product-binomial ratio
-on this same witness is 5, not 3. Source-faithful flow and inequalities
-are Lean checked; no claim is made about an unconditional Bayes posterior.
+Exact iid probability of ordered molecule-type sample. Under
+unordered read counts both have the same multinomial coefficient,
+so the exact likelihood RATIO is 3. The alternative MB09 binomial
+surrogate ratio is 5. Source-feasibility and ratios are Lean checked
+in SameLengthSection62Counterexample. This is not a statement
+about any posterior being incorrect.
 -->
 
 ---
 
-# Why ML was not defeated
+# Why that does not make ML inferior
 
-**Not-So-Greedy has a conditional guarantee:** whenever coverage and bridging hold **for the actual genome**, its read-overlap algorithm returns the truth.
+The two statements make **different promises**.
 
-**Ordinary ML has a broader assignment:** rank all permitted candidate genomes by the probability of producing the observed reads, **without using that structural guarantee as extra statistical information**.
+**Not-So-Greedy:** *If* the actual genome and reads satisfy coverage and bridging, the algorithm reconstructs that genome. This is a **guarantee on a particular subset of experiments**.
 
-Our competing genome remains in this ordinary likelihood comparison, even though it does not satisfy the reconstruction conditions in the witnessed case.
+**Ordinary ML:** Among the allowed candidates, choose the genome that best explains the **observed reads alone**. Its average-correctness optimality (with equal priors) is about **the entire sampling experiment**.
 
-**So the implication is false — but this is not a head-to-head demonstration that ML is a worse statistical estimator.**
+In our counterexample, the other genome is permitted in the latter comparison, but it does **not** meet the guarantee's conditions in the witnessed case.
 
-It suggests another question: **can we recover optimality when both methods are evaluated on the same promised event?**
+**The 2016 implication is false. But we have not shown that Not-So-Greedy beats ML on the statistical problem ML was given.**
+
+That leaves a useful question: **what if we include the guarantee in the statistical experiment?**
 
 <!--
-The NSG guarantee is pointwise on a truth-dependent event E. The
-algorithm itself is read-only and does not require the event label.
-Ordinary ML maximizes P(R|D) over its candidate universe. Its
-prior-averaged Bayes-optimality in the uniform-prior setup coexists
-with specific finite samples where the source truth is not ML.
-Do not claim NSG received E as operational input.
+The NSG algorithm does NOT need event E as explicit input: it is
+a read-only method with a conditional correctness theorem. The
+conditional theorem's event is truth-dependent. ML optimizes
+unconditioned P(R|D); the negative witness does not contradict
+the uniform-prior, average-success theorem in FiniteBayesDecision.
+Avoid 'ML lost' rhetoric or vague 'bestness' language.
 -->
 
 ---
 
-# Conditional Bayes: recovering optimality
+# What if we knew the guarantee held?
 
-Imagine that we are **also told** the actual genome and its reads satisfy the reconstruction guarantee. Call that event **E**.
+Suppose that, along with the reads R, we are **also told** a fact E:
 
-Bayesian inference must now use the reads **and E**:
+> The actual, unknown genome **satisfies Not-So-Greedy's reconstruction conditions** on these reads.
 
-- **Ordinary inference** scores how likely these reads are under each genome.
-- **Conditional inference** scores how likely a genome could produce **these reads together with E**, with a prior.
+Why is that powerful? Imagine **two different genomes** could both be the truth while satisfying E and producing **the same reads**.
 
-The reconstruction theorem says: among possible true genomes compatible with **the same reads and E**, every one is the **same circular genome up to rotation**.
+Not-So-Greedy sees only those reads. Its theorem would force it to return **both** genomes from the **same input**—impossible unless they are the same circular genome up to rotation.
 
-**Therefore its conditional posterior probability is 100%.** Conditional MAP recovers the truth, and **no algorithm can beat it on this conditioned experiment**.
+**So only one genome class remains possible.** Bayesian inference using **the reads and E** assigns that class **100% posterior probability**. Its choice is then certain.
 
-**This recovers bestness in the right statistical problem.** But E depends on the unknown truth: it is **extra information**, not a reinterpretation of ordinary ML.
+This is **not ordinary ML**. E depends on the unknown truth and supplies additional information; it changes the statistical question.
 
 <!--
-Use source-faithful fixed-regime read-string F(g,r) and the cited
-Not-So-Greedy unique read-only decoder A satisfying
-F(g,r) -> A(r) equivalent-to g (external source premise).
-Then K(g,r)=pi(g) P_g(r) 1_{F(g,r)}, with P_E supported on the one
-class [A(r)]. Kernel-checked consequences:
-ConditionalIdentifiability.lean: feasible_fibre_unique,
-conditional_posterior_eq_one, constrained_MAP_mem_orbit.
-For latent placements the correct joint mass sums weights over
-compatible placements satisfying E, not P(R|g) times a naive
-existence indicator. Event E is generally not R-observable.
-The W3/W6 placement-based counterexamples cannot be fed into the
-different read-string feasibility theorem; do not conflate predicates.
-The 2016 negative conclusion remains untouched by this new
-conditional Bayesian decision result.
+Proof from external source read-only deterministic unique decoder A:
+for every g,r, F(g,r) -> A(r) ~ g. If F(g,r) and F(h,r)
+then g~h, so supported conditional joint K(g,r) =
+pi(g)P_g(r) 1_F(g,r) concentrates on orbit [A(r)].
+P([G]=[A(r)] | R=r, E)=1 when the denominator is positive;
+conditional MAP is optimal and certain in this different experiment.
+Formal consequences: AssemblyP1/ConditionalIdentifiability.lean
+(feasible_fibre_unique, conditional_posterior_eq_one,
+constrained_MAP_mem_orbit), with the NSG decoder as EXTERNAL
+source theorem premise. In the latent-placement variant, sum
+P_g(T) over compatible feasible placements; do not naively
+multiply P_g(R) by existential feasibility. E is truth-dependent
+and not generally observable from read strings alone.
+Do NOT transfer the RC molecule witness directly to this
+historical observed-read-string theorem or assume all
+placement predicates obey the same uniqueness.
 -->
 
 ---
 
-# Another theorem: a restricted positive result
+# A new question: was finite sampling the problem?
 
-There is also a **separate structural result** that is worth highlighting.
+Knowing the structural promise explains why **conditional** inference can be certain. But I still wanted to understand **ordinary likelihood**, without supplying that extra fact.
 
-If we distinguish the direction of reads, compare genomes of the **same length**, and require **both the truth and its competitors** to satisfy the relevant assembly-candidate constraints:
+Look again at our counterexample. The true genome generates AAA at **1 of 6** positions, yet we observed it **2 out of 5** times. The competitor generates AAA at **3 of 6** positions, so it benefited from this unrepresentative sample.
 
-**No admissible competing genome can score higher than the truth.**
+**My hypothesis:** perhaps the mismatch was largely a **finite-sampling effect**, not a fundamental reason that the likelihood approach and reconstruction intuition could never agree.
 
-With the stronger uniqueness hypotheses, the only valid alternatives are **rotations of the same circular genome**.
+So we asked a new question: **with as many independent reads as we need, does likelihood eventually identify the truth?**
 
-This is a powerful theorem about a **restricted candidate problem**. It **does not change the negative answer** to the original, broader likelihood question.
-
-<!--
-Oriented, same-length, both genuine §6.2 candidate certificates:
-SameLength62Maximizer.informationFeasible_62_maximizer and
-SameLength62Uniqueness.unique_62_maximizer_up_to_rotation.
-This is NOT the conditional Bayesian theorem; present it afterward
-so it does not dilute the headline negative result.
--->
-
----
-
-# Why investigate a model with more reads?
-
-The finite counterexample settled the 2016 question **negatively**. But it inspired a different research direction.
-
-The true genome AAATAT generates AAA at only **1 of 6** positions, yet our five-read sample contained AAA **twice**. The competitor AAAAAT generates AAA at **3 of 6** positions, so that unusual sample favored it.
-
-**My hypothesis:** perhaps the intuition that assembly and likelihood should agree was fundamentally sound, and the apparent disagreement came from **finite sampling fluctuations**.
-
-**So I changed the question:** what if we could take as many independent reads as needed, removing that sampling accident?
+That led us to the **population model**.
 
 <!--
-A new hypothesis-driven research pivot by the human director; the negative
-finite answer is already resolved. The molecule frequencies motivate
-an independent oriented primitive-P2 population theorem; do not
-pretend the population theorem retroactively makes the finite claim true.
+The human research director's actual pivot: the 2016 finite implication
+is already answered NO. Conditional Bayes is a corollary when extra
+truth-dependent information is supplied. Population changes the
+amount of evidence instead, giving ordinary ML a chance to behave
+as originally expected WITHOUT the feasibility side-information.
+The motivating toy uses molecule types whereas the later proved
+population uniqueness result uses a distinct oriented primitive-P2
+model; never silently identify those hypotheses.
 -->
 
 ---
@@ -573,6 +570,30 @@ follows from Issue94Complete.population_unique_ML.
 A uniform claim over unbounded candidate lengths is NOT proved.
 Hypotheses: oriented iid uniform-start sampling, finite family.
 -->
+---
+
+# A second positive result: restrict the candidates
+
+More reads were **one** way to make the inference problem better behaved. We also proved a strong **finite-sample** result by changing which candidate genomes are allowed.
+
+For **oriented reads**, compare genomes of the **same length** and require both the truth and its competitors to be **genuine assemblies under the specified read-overlap constraints**.
+
+**No such competitor can have a higher likelihood than the truth.**
+
+Under the full structural uniqueness hypotheses, a compatible competitor is actually **the same circular genome**, perhaps starting at a different position.
+
+This is an important theorem in its own right—not a qualification of the negative answer to the broader 2016 question.
+
+<!--
+Kernel-checked oriented same-length genuine MB09 §6.2 setting,
+both truth and competitor genuine candidate certificates:
+SameLength62Maximizer.informationFeasible_62_maximizer;
+SameLength62Uniqueness.unique_62_maximizer_up_to_rotation.
+The latter needs its stated support/structural hypotheses.
+This is a distinct finite positive theorem, not the
+conditional Bayesian theorem or population P2 result.
+-->
+
 ---
 
 # How I directed the investigation
@@ -679,23 +700,25 @@ fidelity to intended biology/published hypotheses.
 
 # What the investigation established
 
-**The 2016 bridging-to-ordinary-ML implication is false.** Not-So-Greedy can have a guaranteed reconstruction while ordinary likelihood gives a competitor a higher score.
+**We answered the 2016 question: no.** Not-So-Greedy's reconstruction guarantee does not imply that the true genome has the largest **ordinary likelihood**.
 
-**That does not mean ML is worse.** Its statistical optimality concerns a broader inference task. If we instead include the structural guarantee in a **conditional Bayesian experiment**, we recover **certain and optimal** reconstruction of the true genome class.
+That does **not** refute ML's statistical optimality. If the experiment **also includes the reconstruction guarantee as a fact**, the conditional posterior identifies the true genome class with certainty. It is a **different inference problem**.
 
-We also proved a **restricted same-length positive theorem**, **population ML uniqueness** under explicit repeat assumptions, and **finite-family recovery guarantees** as reads accumulate.
+We proved further results that go beyond that original question: **finite-sample rigidity for restricted candidates**, **population likelihood uniqueness** under precise repeat conditions, and **exponential finite-family recovery** as more reads arrive.
 
-The research was driven by **my choice of hypotheses and directions**, with parallel agents, continuous orchestration, and Lean-checked mathematics.
+The driving contribution was **choosing and redirecting mathematical questions**, supported by parallel AI agents, continuous orchestration, and kernel-checked Lean proofs.
 
 <HomeLink label="Choose another audience" />
 
 <!--
-Main answer NO (non-Bayesian if/then implication), not model-dependent
-on the audience slide. Do not describe ML as statistically defeated.
-The conditional Bayes certainty is a corollary of the external NSG unique
-decoder theorem on the event E, with E given as truth-dependent extra
-side information. Restricted positive ML and population-P2 are
-separate theorems and do not rescue the original finite implication.
+Scientific hierarchy: the original non-Bayesian finite implication
+is FALSE; the counterexample does NOT show ML as an algorithm is
+worse on prior-averaged risk; conditional posterior certainty follows
+from the externally cited unique NSG decoder when given the
+truth-dependent E as side information; it is NOT ordinary ML.
+Oriented same-length positive theorem, oriented primitive-P2
+population uniqueness, and finite-family recovery are independent
+results. Keep the talk accessible, not a catalogue of qualifiers.
 -->
 
 ---

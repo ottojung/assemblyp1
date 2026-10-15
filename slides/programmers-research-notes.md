@@ -198,3 +198,47 @@ Primary internal sources: docs/issue266-conditional-identifiability.md,
 docs/audit-267-finite-ml-vs-conditional-bayes.md,
 docs/bayes-optimality-conditional-feasibility-267.md,
 paper/sections/03-open-question.tex.
+
+
+## Editorial arc revision — distinguish the questions without slogans
+
+The programmers' talk must NOT use the phrase "recovering optimality" as
+a heading or describe conditional Bayes as a rescue operation for
+maximum likelihood. The useful, audience-facing question is:
+"What if we knew the guarantee held?" Start with the external promise E
+about the true genome, then derive conditional certainty by the
+**read-only decoder contradiction**: if two non-equivalent genomes both
+met F(g,R) for the same reads, NSG's deterministic decoder would be
+forced to output two different genomes on the same input. The
+single feasible orbit implies posterior one in the *conditioned*
+experiment. This is a consequence of the reconstruction theorem,
+not a claim that ordinary ML always returns the true genome.
+
+The order is scientifically motivated:
+(1) mathematical genome/read problem and Not-So-Greedy;
+(2) read likelihood -> posterior -> ordinary uniform-prior ML
+decision optimality;
+(3) 2016 conditional-implication question (assumptions explicit);
+(4) one exact finite counterexample with factor-three odds and
+negative conclusion;
+(5) what the two guarantees compare (no 'ML lost' rhetoric);
+(6) additional truth-dependent event E and conditional posterior
+certainty, proved from decoder uniqueness;
+(7) human researcher's hypothesis that the remaining mismatch
+might be finite-sample fluctuation, motivating population;
+(8) population result and finite-family rate;
+(9) independently significant oriented same-length finite rigidity;
+(10) human-directed parallel agent research and Lean.
+
+Do not insert the restricted positive theorem between conditional
+Bayes and the finite-to-population hypothesis. The former interrupts
+the central research-motivation transition and wrongly turns a
+negative answer into a prolonged taxonomy of qualifications.
+The different finite positive result deserves its own place after
+the population investigation.
+
+Trust boundary: the Shomorony/2016 unique read-only reconstruction
+guarantee is an EXTERNAL theorem premise to the Lean conditional
+posterior consequences. Keep the observed-read-string feasibility
+setting fixed, and do not identify it with the latent-placement,
+reverse-complement molecule counterexample without an adapter.
