@@ -291,8 +291,10 @@ bound are now kernel checked, under an explicit Hellinger separation
 hypothesis. The completed primitive-P2 theorem above now supplies a fully proved
 read-law distinguishability criterion for nonrotational, primitive-P2
 admissible candidates, as formalized in
-Section~\ref{sec:p2-finite-recovery}.  The finite-family restriction
-remains essential.  Likewise the reverse-
+Section~\ref{sec:p2-finite-recovery}.  The general finite-PMF recovery
+theorem still requires a finite competitor family, but for the complete
+primitive-P2 admissible class Theorem~\ref{thm:p2-finite-class} proves that
+this family is finite, without imposing an arbitrary shortlist.  The reverse-
 complement-collapsed and product-binomial models require their own read-law
 interfaces.  Neither the theorem nor its proof conditions on the
 truth-dependent information-feasibility event, and neither contradicts the
@@ -372,8 +374,10 @@ double-strand model and MB09's binomial surrogate remain separate.
 \label{sec:p2-finite-class}
 
 Corollary~\ref{cor:p2-finite-recovery} requires the competitor family
-$\mathcal C$ to be finite, and requires the caller to supply it.  The family
-is not an artefact of the theorem: it exists, and it is small.
+$\mathcal C$ to be finite, and requires the caller to supply it.  The
+following theorem constructs the complete primitive-P2 admissible family
+from an explicit genome-length bound, exponential in $L$.  Its finiteness
+does not imply that enumeration is computationally small.
 
 \begin{theorem}[Finiteness of the primitive-P2 admissible class]
 \label{thm:p2-finite-class}
