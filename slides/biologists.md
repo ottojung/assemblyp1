@@ -287,7 +287,7 @@ The general Graver-basis criterion (GraverRigidity) is a separate iff.
 
 1. **Short reads contain structural information.** Overlaps and bridging resolve repeats; under precise conditions they determine a unique circular genome.
 2. **Likelihood is a beautifully simple probability calculation.** It uses *how often* different reads were sampled.
-3. **Finite and population likelihood differ.** Sampling luck can favor a decoy in a finite sample; with exact frequencies the truth always attains the maximum, and repeat structure decides whether it is unique.
+3. **Finite and population likelihood differ.** Sampling luck can favor a decoy in a finite sample; with exact frequencies the truth always attains the maximum, and repeat structure decides whether it is unique. For our structural class the finite-sample error probability obeys an explicit kernel-checked exponential bound (backup).
 
 **One simple statistical idea illuminates an entire reconstruction problem.**
 
@@ -355,7 +355,21 @@ $$
 n \;\ge\; \frac{\ln(|\mathcal C|/\delta)}{\ln(1/\rho_*)} .
 $$
 
-This bound is kernel-checked for a finite family; a sharp uniform sample size over all genome candidates (all lengths and models) remains an open quantitative problem.
+This bound is kernel-checked for a finite family.
+
+For our **primitive-P2** class the abstract gap is now **explicit and kernel-checked**. With alphabet size $q$, read length $L\ge2$, and $B=2q^{L-1}$:
+
+$$
+\Pr_S[\exists\,D\ \text{nonrotational admissible}:\ L_D\ge L_S]
+\;\le\; N_C\,\exp\!\left(-\frac{n}{8B^4}\right),
+\qquad N_C\le\sum_{g=1}^{B}q^{g},
+$$
+
+where $N_C$ counts the distinct competitor read laws. A sufficient read count is $n\ge 8B^4\ln(N_C/\delta)$ for error at most $\delta$.
+
+**Caveats.** The constants are deliberately loose and exponential in $L$; the bound controls the exact-ML **error probability**, not likelihood growth; and per-truth finite-sample success is **not monotone**. Kernel endpoints: `AssemblyP1.PrimitiveP2UniformSeparation.primitiveP2_exponential_error_bound`, `primitiveP2_ML_confidence_explicit`.
+
+A sharp uniform sample size over all genome candidates (all lengths and models) remains an open quantitative problem.
 
 ---
 
