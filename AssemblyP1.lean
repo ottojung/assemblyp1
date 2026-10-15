@@ -70,6 +70,8 @@ import AssemblyP1.Section62PeriodicSeam
 import AssemblyP1.Section62OverlapSuffix
 -- #284: actual signed overlap circuits yield an aligned periodic circular word.
 import AssemblyP1.Section62SourceSignedSeamAdapter
+-- #284: generic periodic-window/linear-spelling equality for genuine signed circuits.
+import AssemblyP1.Section62AnchoredWindowBridge
 -- #284: non-vacuity regression instantiating the signed-circuit adapter on
 -- concrete legal signed overlap circuits, including the G < readLen case.
 import AssemblyP1.Section62SignedAdapterRegression
