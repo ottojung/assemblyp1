@@ -734,15 +734,18 @@ that this direct fractional (LP) relaxation is *not* exact.
 
 ### 13.1 Definition
 
-A **bouquet** is a strongly connected support consisting of `k` directed cycles
-`C_1, …, C_k` through one common vertex `v` (so the cycles are otherwise
-vertex-disjoint). It is the multi-cycle generalization of the figure-eight
-(§5.3), and it is a genuine `L`-mer support: a circular word that traverses each
-loop is realizable (e.g. `ATATAC`, `L = 2`, is the figure-eight at vertex `A`).
-Write `len_i ≥ 1` for the length of `C_i` and let the truth circulation `A` be
-constant on each cycle, `A = mult_i ≥ 1` on every edge of `C_i` (the slack is
-`s_i = mult_i - 1`). This is the spectrum of a circular word that traverses
-`C_i` exactly `mult_i` times.
+A **bouquet** is an abstract strongly connected directed graph consisting of
+k cycles C_i through one common vertex, otherwise vertex-disjoint.
+It generalizes the figure-eight. Not every choice of cycle lengths and
+alphabet is automatically realizable as a de Bruijn/read-support graph;
+the concrete DNA realization in section 13.5 is checked separately.
+
+Let len_i >= 1 be the cycle lengths, and let a positive circulation A
+be constant on each cycle with multiplicity mult_i >= 1, giving slack
+s_i = mult_i - 1. When such a bouquet is realizable as a read-support
+graph, the circulation represents a circular walk traversing C_i
+exactly mult_i times. The algebraic criterion applies to abstract
+bouquets without a realizability assumption.
 
 ### 13.2 Every circulation is constant on each cycle
 
