@@ -1,6 +1,6 @@
 ---
 theme: default
-title: "Genome Assembly and Maximum Likelihood"
+title: "The Most Likely Genome"
 info: |
   Genome assembly, maximum likelihood, and a research investigation.
 class: text-center
@@ -13,9 +13,9 @@ routerMode: hash
 mdc: true
 ---
 
-# Genome Assembly and Maximum Likelihood
+# The Most Likely Genome
 
-### A mathematical research investigation
+### Genome assembly, probability, and mathematical verification
 
 **AssemblyP1** · A research investigation
 
@@ -28,50 +28,50 @@ Begin with the scientific problem and develop the research question naturally.
 
 ---
 
-# The puzzle: DNA fragments without a map
+# How can we reconstruct a genome?
 
-A genome is a very long string made from the DNA letters **A, C, G, T**. Sequencing gives us short pieces, called **reads**, rather than the whole string.
+A genome is a very long string of DNA letters.
 
-Suppose the sequencer produces these reads, in no particular order:
+Sequencing does not hand us that string. It gives us **many short fragments**, called *reads*, sampled from different positions.
 
-~~~text
-GTA      AAC      CGT      TAA      ACG
-~~~
+For example, a circular genome `ACGTA` has these length-3 fragments:
 
-We don't know which read came first—or where any read belongs.
+```text
+ACG   CGT   GTA   TAA   AAC
+```
 
-**Our task:** reconstruct the original circular genome from these pieces.
+**We know the fragments, but not where each one came from.**
+
+The assembly problem is to infer the original sequence.
 
 <!--
-This slide shows INPUT and GOAL, not an algorithm. The hidden circular
-source is ACGTA; the reads are deliberately unordered.
+The circular toy model removes distracting end effects.
+We assume error-free oriented reads; real sequencing is more complicated.
 -->
 
 ---
 
-# The mathematical version of genome assembly
+# What makes assembly difficult?
 
-This project studies an idealized problem, **not** the practical details of real sequencing.
+DNA contains **repeated substrings**.
 
-We assume:
+```text
+... G [ ACGA ] T ...
+... C [ ACGA ] A ...
+```
 
-- A genome is a **circular string**.
-- Reads have a **fixed length**, a known direction, and **no errors**.
-- Every read starts at a **uniformly random position**, independently of the others.
+A short read containing only `ACGA` cannot tell us which copy was sampled.
 
-This simple model allows us to prove statements about **which assemblies are possible**, and about **how likely each genome is to produce the observed reads**.
+A longer read containing the **flanking context** can distinguish them.
+
+This is why read length, overlap, and *bridging repeats* matter.
 
 <!--
-All main examples use oriented reads, including the variable-length
-finite counterexample and later population theorem. The historical
-reverse-complement molecule model is documented separately in the notes.
+Bridging means the read extends beyond a particular repeat copy on both sides.
+The takeaway is information content, not graph implementation.
 -->
 
-
 ---
-
-# A first attempt: join the overlaps
-
 The end of **ACG** matches the beginning of **CGT**: both share **CG**.
 
 The other reads fit together in the same way:
@@ -903,16 +903,26 @@ $$
 \qquad 0\le\rho_*<1 .
 $$
 
-The affinity constant $\rho_*$ expresses how similar the competitors' read distributions are to the truth. The bound shrinks exponentially as the number of reads $n$ grows.
+Invert the bound: to push it below a target $\delta$, it is **enough** to take
+
+$$
+n \;\ge\; \frac{\ln(|\mathcal C|/\delta)}{\ln(1/\rho_*)} .
+$$
+
+One competitor with affinity $\rho_*=\sqrt3/2\approx0.87$ needs $n\ge 33$ reads for a $1\%$ bound.
 
 **What remains open:** one sharp, uniform sample-size guarantee over the unrestricted universe of genome candidates, especially across different lengths and models.
 
 <!--
-Unlike the original backup, this is now a kernel-checked result:
+The explicit n is the algebraic inversion of the kernel-checked union bound
+(FiniteReadRecovery.eventProb_wrong_le_card; concrete instance
+il_confidence_99: |Θ|=3, ρ=9/10, n=55). It is SUFFICIENT, not necessary,
+and conservative (union bound; -ln ρ ≤ Chernoff exponent). It does not
+cover the unrestricted universe or different lengths/models; that stays open.
 FiniteReadRecovery, FiniteReadRecoveryGenome, FiniteReadRecoveryP2Bridge,
-FiniteReadRecoveryP2Complete. Do not claim sample complexity is wholly
-open; finite-family confidence theorem is established. Finite family,
-positive separation, iid oriented reads, and candidate model matter.
+FiniteReadRecoveryP2Complete. Do not claim sample complexity is wholly open;
+the finite-family confidence theorem is established. Finite family, positive
+separation, iid oriented reads, and the candidate model matter.
 -->
 
 ---

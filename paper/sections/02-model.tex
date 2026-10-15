@@ -72,8 +72,9 @@ symbols immediately preceding the two copies differ and the symbols immediately
 following them differ. A \emph{triple repeat} uses three starts with equal
 length-$\ell$ windows, with the three-copy maximality condition that the
 preceding symbols are not all equal and the following symbols are not all equal.
-A repeat pair is \emph{interleaved} if its four selected starts alternate in
-cyclic order; its length is the shorter constituent length.
+Two repeat pairs are \emph{interleaved} if their four selected starts
+alternate in cyclic order; the relevant length of the pair is the
+shorter of the two constituent repeat lengths.
 \statusline{\srcfact{} \cite[repeat definitions]{bresler2013};
 the cyclic-order normalization of interleaving is a \projchoice{} proved
 equivalent to the source's displayed linear orders on a circle.}
@@ -83,8 +84,7 @@ A read interval $[r,r+L)$ \emph{bridges} a lifted copy $[t,t+\ell)$ iff
 $r<t$ and $t+\ell<r+L$, i.e.\ the read strictly extends beyond the copy on both
 sides. A repeat is \emph{bridged} if at least one selected copy is bridged; a
 triple repeat is \emph{all-bridged} if \emph{every} selected copy is bridged.
-This must not be confused with the weaker ``at least one copy bridged'' reading
-of a triple repeat.
+This is stronger than merely requiring one bridged copy of a triple repeat.
 
 \begin{definition}[Information-feasible set $\Is$]
 \label{def:Is}
@@ -93,7 +93,7 @@ A read realization $R$ of $S$ is \emph{information-feasible}, written $R \in
 \begin{enumerate}[label=(C\arabic*),leftmargin=*]
   \item $R$ covers $S$;
   \item every triple repeat of $S$ is all-bridged;
-  \item every interleaved repeat pair of $S$ is bridged.
+  \item of any two interleaved repeats of $S$, at least one is bridged.
 \end{enumerate}
 \statusline{\projchoice{} for the placement-based realization predicate;
 \srcfact{} for the analogous historical three-clause structure, whose coverage
@@ -115,7 +115,7 @@ Proposition~\ref{prop:historical-source}); any passage from a placement-based
 theorem to the historical question requires an explicit adapter proof.
 Section~\ref{sec:finite:historical} states the historical predicate as a
 proposition, exhibits the two same-length molecule witnesses that satisfy it,
-and identifies its kernel-checked proof on \texttt{main} (PR~\#142).
+and points to its Lean verification.
 \statusline{\srcfact{} for the historical matching-string definitions;
 \projchoice{} for the placement-based variant used by the existing Lean
 library.}
@@ -137,12 +137,13 @@ it concerns the graph $X_S$ built from the \emph{complete} length-$L$ spectrum
 of the truth $S$ (all windows, not just observed ones), and asserts that the
 truth's spectrum is the unique \emph{positive circulation} of total $G$ on that
 graph. The two results share the bridging hypothesis but differ in the graph,
-the candidate universe, and the conclusion. Neither is a restatement or automatic corollary of the other; the
-circulation rigidity theorem is a project-level contribution with its own proof,
-not a restatement or corollary of the 2016 result.
+the candidate universe, and the conclusion. Neither is an automatic corollary of the other.
 \statusline{\srcfact{} for the 2016 graph-uniqueness statement
-  \cite[Corollary~1]{shomorony2016}; \projchoice{} for the circulation
-  rigidity theorem of Section~\ref{sec:finite}.}
+\cite[Corollary~1]{shomorony2016}. The separately proved
+circulation-rigidity theorem is \kernelcheck{} under the
+explicit project-level support and realization hypotheses of
+Section~\ref{sec:finite}; those hypotheses are modeling choices,
+not the theorem's proof status.}
 \end{remark}
 
 \subsection{Observation models and candidate classes}
@@ -183,10 +184,24 @@ and Brudno explicitly adopt for their algorithm. The two are not
 definitionally equal.}
 \end{definition}
 
+\paragraph{Uniform start sampling is not uniform read-type probability.}
+Two distinct uniformities must not be conflated. Start positions are sampled
+uniformly over the $|D|$ positions of the candidate, but the induced
+\emph{read-type} probabilities $d_w/|D|$ are in general nonuniform: a type
+occurring $d_w$ times has probability $d_w/|D|$, which can be much larger than
+$1/|\Alphabet|^L$. Uniformity is a property of the \emph{start} distribution,
+not of the read-type distribution, and it is the latter that enters the
+likelihood. A model with nonuniform read-type probabilities can arise from
+nonuniform start sampling, from a position-dependent coverage profile, or from
+a different read-type convention; each changes the objective
+(Appendix~\ref{app:modeling}). All exact-likelihood statements below are for
+uniform start sampling unless stated otherwise.
+
 \paragraph{Count dependence is not eliminated by larger samples.}
 In \cite[\S6.1]{medvedev2009}, the move from the exact multinomial
 to the product of per-type binomial probabilities is motivated by the claim
-that the count variables become independent as the number of reads grows.
+that ``[a]s the number of trials goes to infinity, the $X_i$ random variables
+become independent''.
 This does \emph{not} hold at fixed read-type probabilities:
 for two equiprobable read types, $X_1+X_2=n$ almost surely and
 $\operatorname{Corr}(X_1,X_2)=-1$ for every $n\ge1$.

@@ -39,6 +39,12 @@ import AssemblyP1.Section62BidirectedFlow
 -- #261 feasible-flow to throughput-count vector image adapter and axiom audit.
 import AssemblyP1.Section62FlowCountVectorAdapter
 import AssemblyP1.Section62FlowCountVectorAdapterAudit
+-- #261 spelled-circuit to zero-terminal feasible-flow adapter and axiom audit.
+import AssemblyP1.Section62SpelledFlowAdapter
+import AssemblyP1.Section62SpelledFlowAdapterAudit
+-- #261 spelled sub-class maximality transfer (length universe + transfer) and audit.
+import AssemblyP1.Section62SpelledFlowMaximality
+import AssemblyP1.Section62SpelledFlowMaximalityAudit
 import AssemblyP1.Section62ReductionVacuityAudit
 import AssemblyP1.Section62SpellingReductionCandidate
 -- #262 full-overlap counterexample transfer across overlap thresholds.
@@ -70,12 +76,18 @@ import AssemblyP1.FiniteSamplingCounterexample
 import AssemblyP1.FiniteBayesDecision
 import AssemblyP1.IidMapMonotonicity
 import AssemblyP1.GenomeOrbitAdapter
+import AssemblyP1.ConditionalVsOrdinaryMLSeparation
+import AssemblyP1.ConditionalVsOrdinaryMLBoundary271
+import AssemblyP1.W1W2SeparationCompatibility
+import AssemblyP1.BayesValueMonotonicity
 import AssemblyP1.PopulationReduction
 import AssemblyP1.PopulationGibbsTest
 import AssemblyP1.OrientedRigidity
 import AssemblyP1.GraverRigidityAudit
 import AssemblyP1.FiniteRigidityDecider
 import AssemblyP1.FiniteRigidityDeciderAudit
+import AssemblyP1.TwoWalkRigidity
+import AssemblyP1.TwoWalkRigidityAudit
 import AssemblyP1.RepeatAdapter
 import AssemblyP1.OrientedFinalRigidity
 import AssemblyP1.BridgingBridge
@@ -229,6 +241,7 @@ import AssemblyP1.DoubleStrandBridgingTransfer
 import AssemblyP1.TwoDisjointCirclesDuplex
 import AssemblyP1.ImplicationLattice
 import AssemblyP1.OrientedVariableLengthSe62
+import AssemblyP1.ShortFiniteMLCounterexamples
 import AssemblyP1.Section62VarlenPerOccurrence
 import AssemblyP1.BreslerRemapCompatibility
 import AssemblyP1.Issue209EAudit
@@ -266,6 +279,8 @@ import AssemblyP1.NonmonotonicityWitness281Audit
 -- theorem needs no caller-supplied finite candidate family.
 import AssemblyP1.PrimitiveP2FiniteClass
 import AssemblyP1.PrimitiveP2FiniteClassAudit
+import AssemblyP1.PrimitiveP2UniformSeparation
+import AssemblyP1.PrimitiveP2UniformSeparationAudit
 
 /-! ## `Issue94Transposition`: the Kotzig/Ukkonen/Pevzner descent, and an obstruction
 
@@ -1024,6 +1039,20 @@ graph content remains external. -/
 #print axioms AssemblyP1.Section62NonSpelledFlow.half_integral_strictly_better
 #print axioms AssemblyP1.Section62NonSpelledFlow.no_sequence_has_star_spectrum
 #print axioms AssemblyP1.Section62NonSpelledFlow.spelled_subset_general
+-- #261 spelled-circuit -> §6.2 feasible-flow adapter (general, any o_min).
+#print axioms AssemblyP1.Section62SpelledFlowAdapter.spelling_flow_feasible
+#print axioms AssemblyP1.Section62SpelledFlowAdapter.throughput_eq_visits
+#print axioms AssemblyP1.Section62SpelledFlowAdapter.balCore_eq_zero
+#print axioms AssemblyP1.Section62SpelledFlowAdapter.weighted_dedup
+#print axioms AssemblyP1.Section62SpelledFlowAdapter.visits_mem_throughput_image
+-- #261 spelled sub-class maximality transfer (length universe + transfer).
+#print axioms AssemblyP1.Section62SpelledFlowMaximality.sum_visits_eq_n
+#print axioms AssemblyP1.Section62SpelledFlowMaximality.sum_throughput_eq_n
+#print axioms AssemblyP1.Section62SpelledFlowMaximality.spelledVisitSet_subset_image
+#print axioms AssemblyP1.Section62SpelledFlowMaximality.spelled_maximal_of_flow_maximal
+#print axioms AssemblyP1.Section62SpelledFlowMaximality.flow_not_maximal_of_spelled_witness
+#print axioms AssemblyP1.Section62SpelledFlowMaximality.spelled_truth_flow_not_maximal_of_spelled_witness
+#print axioms AssemblyP1.Section62SpelledFlowMaximality.flow_maximal_iff_spelled_maximal_of_image_eq
 #print axioms AssemblyP1.Section62FullOverlapDisconnected.full_overlap_disconnected_optimum
 #print axioms AssemblyP1.Section62FullOverlapDisconnected.disc_support_disconnected
 #print axioms AssemblyP1.Section62FullOverlapDisconnected.dStar_argmax
@@ -1045,6 +1074,9 @@ graph content remains external. -/
 #print axioms AssemblyP1.ImplicationLattice.ConcretePanel.lambda1_A_tie
 #print axioms AssemblyP1.OrientedVariableLengthSe62.oriented_variable_length_se62_counterexample
 #print axioms AssemblyP1.OrientedVariableLengthSe62.oriented_variable_length_se62_counterexample'
+#print axioms AssemblyP1.ShortFiniteMLCounterexamples.short_finite_ml_counterexample_2
+#print axioms AssemblyP1.ShortFiniteMLCounterexamples.short_finite_ml_counterexample_3
+#print axioms AssemblyP1.ShortFiniteMLCounterexamples.short_finite_ml_counterexample_4
 #print axioms AssemblyP1.Section62VarlenPerOccurrence.truth_not_maximizer_in_general_flow_universe
 #print axioms AssemblyP1.Section62VarlenPerOccurrence.competitor_is_unique_optimizer
 #print axioms AssemblyP1.FibreCount.sum_antidiagonal_eq_sum_divisors

@@ -19,7 +19,8 @@ claimed result's hypotheses against the source model (MB09 §6.1–§6.2, Myers
 | Fixed-external-`N` **multinomial product** criterion | **RESOLVED** | `GeneralBidirectedFlowML.flow_dominance_criterion` | coordinatewise dominance; *not* the §6.1 separable binomial |
 | Genuine §6.1 **separable-binomial count-vector** criterion | **RESOLVED at the count-vector layer** | `Section62BinomialCriterion.binomCoreNat_eq_prod_qFac`, `.binomCoreNat_concentrated`, `.binomial_uniform_criterion` | fixed external `N`, interior truth, all `n≥m`; q-factorization `K(d;x)=∏ᵢqᵢ(d)^{xᵢ}` |
 | Fixed-`n` (non-uniform) **extreme-sample iff** | **OPEN** (numerically audited) | `scripts/verify_261_binomial_extreme_samples.py` | Lean formalization absent |
-| §6.1 binomial over the **§6.2 feasible-flow set** | **OPEN** | adapter half: `Section62FlowCountVectorAdapter` (this branch) | see §2 |
+| §6.1 binomial over the **§6.2 feasible-flow set** | **PARTIAL** (spelled half RESOLVED + transfer) | `Section62FlowCountVectorAdapter`; `Section62SpelledFlowAdapter.spelling_flow_feasible`; `Section62SpelledFlowMaximality` | image characterization still OPEN; spelled sub-class is a strict sub-class; see §2 |
+| **Spelled-candidate length universe** | **RESOLVED** | `Section62SpelledFlowMaximality.sum_visits_eq_n`, `.sum_throughput_eq_n` | total visit/throughput mass of an `n`-position circular spelling is exactly `n`; not a claim about the full flow image |
 | **Half-integral relaxation gap** | **RESOLVED** (flow level) | `Section62NonSpelledFlow.half_integral_strictly_better`; arithmetic `GeneralBidirectedFlowML.half_integral_gap` | the finite `AAATT` instance; not a general theorem |
 | **Non-spelled-flow** maximality criterion | **OPEN** (finite obstruction kernel-checked) | `Section62NonSpelledFlow.no_sequence_has_star_spectrum`, `.star_argmax`, `.nonspelled_se62_flow_domain_countermodel` | no general necessary-and-sufficient condition known |
 | **Transitive reduction** interaction with ML | **PARTIAL** | `Section62SpellingReductionCandidate.spellPath_eq_spellDirect`, `.fullOverlap_survives`; `Section62ReductionDependencyAudit` | correct predicate defined and audited; ML-invariance under reduction still OPEN |
@@ -55,14 +56,55 @@ What this does **not** prove, and what stays OPEN:
    the incidence/Graver problem.  It is not the vertex-bound + balance set: the
    `AAATT` obstruction (`no_sequence_has_star_spectrum`) is a balanced, connected,
    vertex-`lb`-`1` feasible flow whose throughput is not any genome's spectrum.
-   So no spelling-based or support-based characterization is complete.
-2. **Spelled circuit → feasible flow with `d = Spelling.visits`.**  The
-   instance-specific equalities exist (`Section62BridgingCounterexample.truth_visits_eq_spectrum`,
-   `Primitive62Uniqueness.walkFlow_eq_flow`), but the general theorem
-   (`Spelling.flow` is `Feasible62` and its throughput is `Spelling.visits`) is not
-   on `main`.  It requires the edge-indexed `balCore`/`throughput` folds to be
-   rewritten as position sums over the walk and the incidence cancellation
-   `OppositeAtInterior`; a complete proof sketch is in §4.
+   So no spelling-based or support-based characterization is complete.  The
+   spelled *inclusion* half is now settled: `spelling_flow_feasible` and
+   `visits_mem_throughput_image` show every spelled circuit's visit vector is in
+   the image, so the image strictly contains the spelled throughputs; only the
+   converse/characterization remains open.
+2. **Spelled circuit → feasible flow with `d = Spelling.visits`.**  **RESOLVED**
+   (2026-10-15, `AssemblyP1.Section62SpelledFlowAdapter`).  The general theorem
+   `spelling_flow_feasible` proves that for any `Nodup` graph `edges` containing
+   all steps of a bidirected-circuit spelling `sp`, the walk flow
+   `sp.flow rep readLen` is `Feasible62` with `d = sp.visits rep` and
+   `t = noTerminals`, given the genuine extra hypothesis
+   `∀ v ∈ verts, 1 ≤ sp.visits rep v` (the walk visits every observed vertex).
+   It is axiom-clean (`[propext, Classical.choice, Quot.sound]`); the two
+   computational halves are `throughput_eq_visits` and `balCore_eq_zero`, built on
+   the weighted de-duplication lemma `weighted_dedup`.  The proof sketch of §4 is
+   realized verbatim.  Candidates here are spelled circuits with their walk flow;
+   the theorem is likelihood-independent and holds for all `n ≥ 1`.
+3. **Spelled sub-class maximality transfer and length universe.**  **PARTIAL**
+   (2026-10-15, `AssemblyP1.Section62SpelledFlowMaximality`).  Two additions.
+
+   *Length universe.*  `sum_visits_eq_n` proves that the visit vector of a
+   circular spelling of `n` read positions has total mass exactly `n` (every
+   position lies in exactly one molecule class), and `sum_throughput_eq_n` lifts
+   this to the walk flow: its total throughput is `n`.  This fixes the `N` consumed
+   by the length-parameterized likelihood criteria for spelled candidates.
+
+   *Transfer.*  `spelledVisitSet` is the spelled sub-class as a set of count
+   vectors; `spelledVisitSet_subset_image` places it inside the feasible throughput
+   image; `spelled_maximal_of_flow_maximal` restricts flow-level maximality to it;
+   and `flow_not_maximal_of_spelled_witness` (and its spelled-truth form) transfers
+   a spelled candidate that strictly beats the truth *upward* to the full
+   feasible-flow set.  This is the issue's "full-overlap failures transfer only when
+   candidate-set inclusion is proved" principle, here with the inclusion supplied by
+   the #233 adapter.
+
+   *Sufficiency reduction.*  `flow_maximal_iff_spelled_maximal_of_image_eq` makes
+   the gap exact: the spelled test is sufficient for flow-level maximality **iff**
+   `Θ(feasibleFlowSet) = spelledVisitSet`.  Since that identity fails in general
+   (`AAATT`), sufficiency is precisely the open image-characterization problem.
+
+   *Scope caveat (explicit).*  The spelled sub-class is **strict**: the `AAATT`
+   obstruction `no_sequence_has_star_spectrum` is a feasible throughput that is no
+   genome's spectrum.  So the spelled test is **necessary but not sufficient** for
+   flow-level maximality; whether a truth can be spelled-maximal yet not
+   flow-maximal is **OPEN** (no witness is constructed here).  The spelled
+   sub-class is further limited to candidates whose every window is an observed
+   graph vertex, because `Spelling.step` must lie in `edges`; the general §6.2
+   spelled candidate with skipped interior windows (e.g. `AAATA` over the observed
+   graph) is **not** in `spelledVisitSet`, so this transfer does not cover it.
 
 ## 3. Axis (b): the general non-spelled-flow maximality criterion
 
@@ -98,7 +140,15 @@ predicate `P` on the §6.2 feasible flow set such that truth is sample-uniformly
 maximal iff `P` holds.  A tractable target would be a conformal Graver-augmentation
 certificate for each fixed extreme sample (#263); this is not yet a theorem.
 
-## 4. Proof sketch for the unproved general adapter (b2)
+## 4. Proof sketch for the general adapter (b2) — now realized
+
+**Status 2026-10-15:** the sketch below is realized by
+`AssemblyP1.Section62SpelledFlowAdapter.spelling_flow_feasible`.  The four steps
+correspond to `throughput_eq_visits` (step 1), `balCore_eq_zero` (step 2), the
+explicit `hVisit` hypothesis (step 3), and the trivial edge-bound/terminal
+clauses (step 4).  The `Nodup` hypothesis on `edges` is used by the
+`foldr`-to-`Finset` bridge `throughput_eq_sum`/`balCore_eq_sum`; the de-duplication
+itself (`weighted_dedup`) needs no `Nodup`.  The sketch is kept for provenance.
 
 To prove `Spelling.flow` is `Feasible62` with `d = Spelling.visits` for a circular
 spelling `sp` whose steps lie in a `Nodup` graph `edges` and which satisfies
