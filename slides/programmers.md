@@ -1,6 +1,6 @@
 ---
 theme: default
-title: "Genome Assembly and Maximum Likelihood"
+title: "The Most Likely Genome"
 info: |
   Genome assembly, maximum likelihood, and a research investigation.
 class: text-center
@@ -13,9 +13,9 @@ routerMode: hash
 mdc: true
 ---
 
-# Genome Assembly and Maximum Likelihood
+# The Most Likely Genome
 
-### A mathematical research investigation
+### Genome assembly, probability, and mathematical verification
 
 **AssemblyP1** · A research investigation
 
@@ -28,49 +28,56 @@ Begin with the scientific problem and develop the research question naturally.
 
 ---
 
-# The puzzle: DNA fragments without a map
+# Our goal: reconstruct the genome
 
-A genome is a very long string made from the DNA letters **A, C, G, T**. Sequencing gives us short pieces, called **reads**, rather than the whole string.
+**What we want:** recover a genome's full DNA sequence from the short fragments, called *reads*, that a sequencer produces.
 
-Suppose the sequencer produces these reads, in no particular order:
+Suppose we receive these reads, in no particular order:
 
 ~~~text
 GTA      AAC      CGT      TAA      ACG
 ~~~
 
-We don't know which read came first—or where any read belongs.
+We want to recover **the circular sequence that produced them**:
 
-**Our task:** reconstruct the original circular genome from these pieces.
+~~~text
+ACGTA
+~~~
+
+That is **genome assembly**: reconstructing the original whole from its fragments.
 
 <!--
-This slide shows INPUT and GOAL, not an algorithm. The hidden circular
-source is ACGTA; the reads are deliberately unordered.
+This slide states the desired INPUT and OUTPUT, not the obstacles.
+Do not move repeat ambiguity or difficulty discussion ahead of
+the successful worked reconstruction. ACGTA is one way to write
+the circular answer; rotations are the same circular genome.
+The displayed reads are unordered, fixed-length windows.
 -->
 
 ---
 
-# The mathematical version of genome assembly
+# The mathematical problem we chose to study
 
-This project studies an idealized problem, **not** the practical details of real sequencing.
+We investigate an **idealized mathematical model** of assembly, not the engineering details of real sequencing.
 
-We assume:
+- **Genome:** a circular string of DNA letters.
+- **Reads:** short, equal-length, error-free fragments sampled independently from random positions.
+- **Input:** the reads themselves, not their positions or the true genome's length.
 
-- A genome is a **circular string**.
-- Reads have a **fixed length**, a known direction, and **no errors**.
-- Every read starts at a **uniformly random position**, independently of the others.
-
-This simple model allows us to prove statements about **which assemblies are possible**, and about **how likely each genome is to produce the observed reads**.
+Our questions: **When can the true genome be reconstructed? How can we compare the candidates using probability?**
 
 <!--
-All main examples use oriented reads, including the variable-length
-finite counterexample and later population theorem. The historical
-reverse-complement molecule model is documented separately in the notes.
+All the main examples assume oriented reads and uniformly distributed
+random starts; read orientation is a technical convention, not a
+theme to foreground on the slides. Candidate length is not given
+unless explicitly introduced later as additional information.
+Circular genomes are defined only up to rotation. Real sequencing
+has additional sources of complexity intentionally excluded here.
 -->
-
 
 ---
 
-# A first attempt: join the overlaps
+# A first reconstruction: join the overlaps
 
 The end of **ACG** matches the beginning of **CGT**: both share **CG**.
 
@@ -82,13 +89,14 @@ ACG → CGT → GTA → TAA → AAC → ACG
 
 Each arrow joins reads sharing a two-letter overlap. Following the arrows spells **ACGTA**.
 
-**We've reconstructed a circular genome!** This is the basic idea behind overlap-based assembly.
+**We reconstructed the genome!** This is the basic idea behind overlap-based assembly.
 
 <!--
 Read-overlap graph: vertices are reads, not (L-1)-mers.
-AAC -> ACG closes the circular sequence. Not a de Bruijn graph.
+AAC -> ACG closes the circular sequence. This is a positive
+worked solution to the goal shown two slides earlier.
+Only now introduce ambiguous overlaps and repeats.
 -->
-
 ---
 
 # What if an overlap has several choices?
@@ -275,90 +283,67 @@ are conceptual floating-point values; for many reads use log likelihood.
 
 ---
 
-# What does it mean for an assembly algorithm to be better?
+# What does the "best" assembly algorithm mean?
 
-An algorithm sees the **reads** and guesses which genome produced them.
+Imagine playing the **same guessing game** many times:
 
-To compare algorithms, imagine repeating the **whole experiment**:
+1. Secretly choose genome **A** or **B**, each with a **50%** chance.
+2. Draw **two random reads** from the chosen genome.
+3. Show only the reads to an algorithm. It must guess **A** or **B**.
 
-1. Pick the true genome: **A or B, equally likely**.
-2. Draw two random reads from it.
-3. Let each algorithm guess the genome from those reads.
+**Score:** how often does its guess match the hidden true genome?
 
-**Score:** how often does the algorithm guess correctly?
+We've already calculated that when the reads are **AAA, AAA**:
 
-For the reads **AAA, AAA**, we calculated that **B is the true genome in 80%** of experiments producing those reads. Guessing B is therefore the better decision **for this observation**.
+- **80%** of those games came from **B**.
+- **20%** came from **A**.
+
+So guessing **B** gets **80%** of these games right. Guessing **A** gets only **20%** right.
 
 <!--
-The comparison criterion is prior-averaged 0-1 correctness: draw a genome
-from the stated equal prior, independently sample two reads, and score
-one if the algorithm's guess matches the hidden genome.
-There are 2 * 5^2 = 50 equally likely latent (genome, start-pair)
-histories. Only five produce [AAA, AAA]: one from A and four from B.
-The conditional 80% is not a guarantee for a fixed true genome.
+The candidate set is exactly {A=AAATT, B=AAAAT}, equal prior 1/2,
+two independent length-3 oriented uniform-start reads.
+For the observation r=[AAA,AAA],
+P(r|A)=1/25 and P(r|B)=4/25.
+Bayes gives P(B|r)=4/5 and P(A|r)=1/5.
+Correctness is scored across repeated complete experiments
+(genome, two-read sample), NOT random placements with the truth fixed.
+The preceding two-read slide already proved the 80/20 split.
 -->
 
 ---
 
-# Counting the decisions an algorithm can get right
+# Why no algorithm can beat maximum likelihood in this game
 
-There are **50 equally likely experiments**: two equally likely true genomes, each with 25 possible pairs of read starts.
+Because **A and B are equally likely beforehand**, their probabilities *after seeing the reads* are their likelihoods **divided by the same sum**.
 
-Group the experiments by the **reads the algorithm sees**. Here are four example rows:
+So ML always guesses the genome **most likely to be true** given those reads.
 
-| Reads observed | True A | True B | Best guess |
-| --- | ---: | ---: | --- |
-| `AAA, AAA` | 1 | **4** | **B** |
-| `AAA, AAT` | 1 | **2** | **B** |
-| `AAA, ATT` | **1** | 0 | **A** |
-| `AAT, TAA` | 1 | 1 | Either |
+Now consider **any other algorithm**. For any possible reads, it either:
 
-The algorithm cannot distinguish experiments in the same row. **Guess A, and it gets the A count correct; guess B, and it gets the B count.**
+- **Agrees with ML:** their chance of being right is the same.
+- **Disagrees with ML:** it picks an answer with **no higher chance** of being right.
 
-So **the best possible score for any row is its larger count**.
+It cannot make up for a worse guess elsewhere: **ML already makes the best choice for every observation.**
 
-<!--
-These are ordered read pairs (not unordered bags), and each A/B
-latent pair of read-start positions is equiprobable. A=AAATT and
-B=AAAAT, both length five. Circular read-type counts:
-A: AAA,AAT,ATT,TTA,TAA each once.
-B: AAA twice, AAT once, ATA once, TAA once.
-Thus read-pair counts are products of type counts; all four table
-rows can be verified directly. The remaining observation rows are
-treated by the general argument on the next slide.
--->
+Therefore **ML has the highest overall chance of a correct guess** in our experiment.
 
----
-
-# The proof: choose the best guess for every observation
-
-**Every experiment belongs to exactly one row.** To count an algorithm's correct answers, add the count it gets right in **each** row.
-
-For any algorithm $f$, let $n_A(r)$ and $n_B(r)$ be the counts for observed reads $r$. Then:
-
-$$
-\underbrace{\frac1{50}\sum_r n_{f(r)}(r)}_{\text{accuracy of }f}
-\;\le\;
-\underbrace{\frac1{50}\sum_r\max\{n_A(r),n_B(r)\}}_{\text{best possible accuracy}}.
-$$
-
-**Why does ML reach the upper bound?** A genome has 25 possible pairs of starting positions. So the likelihood of $r$ is its row's count **divided by 25**.
-
-Choosing the **larger likelihood** therefore chooses the **larger count, in every row**.
-
-That is ML's decision rule. **No other algorithm can achieve higher average accuracy** under the assumed equal prior (ties are possible).
+**But it can still be wrong:** when the reads are **AAA, AAA**, ML's guess fails in **20%** of those cases.
 
 <!--
-Formal generalization: with finite candidates H, prior π, and 0–1 loss,
-accuracy(f) = Σ_r π(f(r)) P(r|f(r))
-            ≤ Σ_r max_g π(g) P(r|g).
-MAP attains the bound for any prior. Equal priors make MAP=ML,
-even when candidates have different lengths (there the raw counts
-must first be converted to candidate-relative probabilities).
-The displayed 50-history argument works because A and B both have
-five positions and the prior is uniform. Randomization cannot
-improve on the per-row maximum. Lean FiniteBayesDecision.lean.
-Prior-averaged optimality does not imply success for each fixed truth.
+Direct per-observation decision proof. General finite hypotheses
+H, observations R, prior π, equal 0-1 correctness:
+P(f(R)=H) = sum_r P(R=r) P(H=f(r)|R=r)
+         <= sum_r P(R=r) max_g P(H=g|R=r).
+MAP attains each maximum. Under uniform π, MAP equals ML, since
+P(H=g|r)=P(r|g)/sum_h P(r|h) when P(r)>0.
+Decisions on zero-probability observations do not affect accuracy.
+Randomized rules yield convex combinations of conditional success
+rates, never above their maximum.
+Lean: AssemblyP1/FiniteBayesDecision.lean.
+All algorithms get the same reads, prior, candidate set and
+0-1 correctness measure. No truth-by-truth guarantee or extra
+reconstruction-success promise is assumed.
 -->
 
 ---
@@ -927,7 +912,45 @@ separation, iid oriented reads, and the candidate model matter.
 
 ---
 
-# Backup B4: primary sources
+# Backup B4: more reads help on average, not for every genome
+
+Adding a read cannot lower the **prior-averaged** chance of guessing the genome correctly: a rule may simply ignore the extra read.
+
+But the **per-genome** success probability is **not** monotone in the number of reads.
+
+Two circular genomes, read length 2, alphabet `{A, C}`, uniform starts:
+
+| | `AA` | `AC` | `CA` | `CC` |
+| --- | ---: | ---: | ---: | ---: |
+| Truth `AAC` | $1/3$ | $1/3$ | $1/3$ | $0$ |
+| Competitor `AAAC` | $1/2$ | $1/4$ | $1/4$ | $0$ |
+
+The truth is the strict exact-ML maximizer with probability
+
+$$
+\operatorname{succ}(1)=\frac23,\qquad
+\operatorname{succ}(2)=\frac49,\qquad
+\operatorname{succ}(1)>\operatorname{succ}(2).
+$$
+
+More reads still drive the success probability to $1$ eventually. The dip is a finite-sample effect, not a failure of consistency.
+
+<!--
+This is the #265 item-4 contrast, absent from the earlier arc:
+prior-averaged success is nondecreasing in n (a rule can ignore an extra
+read): FiniteBayesDecision.chooseMAP_success_monotone_under_refinement.
+Per-truth success need not be: NonmonotonicityWitness281.success_not_monotone,
+kernel-checked, succ(1)=2/3 > succ(2)=4/9. Tie handling: for n>=1 the exact
+likelihood ratio is 3^n / 2^(2n-a) (a = number of AA reads), never 1, so no
+positive-probability ties; n=0 ties. Independent exact-rational check:
+scripts/verify_nonmonotonicity_witness_281.py. Do NOT claim per-truth
+monotonicity; the exponential bound is about the eventual rate, not a
+monotone curve.
+-->
+
+---
+
+# Backup B5: primary sources
 
 - Medvedev & Brudno (2009), *Maximum Likelihood Genome Assembly*.
 - Shomorony, Kim, Courtade & Tse (2016), *Information-optimal genome assembly via sparse read-overlap graphs*.

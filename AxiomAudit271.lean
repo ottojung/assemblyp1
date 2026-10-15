@@ -1,6 +1,7 @@
 import AssemblyP1.ConditionalVsOrdinaryMLSeparation
 import AssemblyP1.ConditionalVsOrdinaryMLBoundary271
 import AssemblyP1.W1W2SeparationCompatibility
+import AssemblyP1.ConditionalVsMLGenomeAdapter271
 
 open AssemblyP1.ConditionalVsOrdinaryMLSeparation
 
@@ -28,3 +29,22 @@ open AssemblyP1.ConditionalVsOrdinaryMLSeparation
 #print axioms AssemblyP1.W1W2SeparationCompatibility.w1_truth_not_maximizer_exact
 #print axioms AssemblyP1.W1W2SeparationCompatibility.w2_truth_not_maximizer_binomial
 #print axioms AssemblyP1.W1W2SeparationCompatibility.w2_truth_not_maximizer_exact
+
+-- Genome-level adapter in the exact AssemblyP1 finite read model (#271):
+-- normalized per-candidate read pmf, orbit-class prior, external truth-dependent
+-- promise E; separation (A ∧ ¬B) and converse (B ∧ ¬A).
+#print axioms AssemblyP1.ConditionalVsMLGenomeAdapter271.p_sum_one
+#print axioms AssemblyP1.ConditionalVsMLGenomeAdapter271.prior_sum_one
+#print axioms AssemblyP1.ConditionalVsMLGenomeAdapter271.orbit_injective
+#print axioms AssemblyP1.ConditionalVsMLGenomeAdapter271.E_one_not_dataOnly
+#print axioms AssemblyP1.ConditionalVsMLGenomeAdapter271.sep_posteriorMass_one
+#print axioms AssemblyP1.ConditionalVsMLGenomeAdapter271.sep_posteriorMass_one_excluded
+#print axioms AssemblyP1.ConditionalVsMLGenomeAdapter271.sep_truth_not_ml
+#print axioms AssemblyP1.ConditionalVsMLGenomeAdapter271.sep_ordinary_not_certain
+#print axioms AssemblyP1.ConditionalVsMLGenomeAdapter271.separation_genome
+#print axioms AssemblyP1.ConditionalVsMLGenomeAdapter271.conv_ml_unique
+#print axioms AssemblyP1.ConditionalVsMLGenomeAdapter271.conv_ordinary_not_certain
+#print axioms AssemblyP1.ConditionalVsMLGenomeAdapter271.converse_genome
+#print axioms AssemblyP1.ConditionalVsMLGenomeAdapter271.postCandidate_sep
+#print axioms AssemblyP1.ConditionalVsMLGenomeAdapter271.postCandidate_conv
+#print axioms AssemblyP1.ConditionalVsMLGenomeAdapter271.map_ml_agree_uniform

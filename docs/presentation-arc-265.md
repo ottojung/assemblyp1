@@ -1,9 +1,13 @@
 # Presentation arc and reconciliation for #265
 
-Status: 2026-10-14. Follow-up correction by agent `757b22c73e75`, branch
-`agent/757b22c73e75-issue265-restore-opening`. Base: `main` @ `b0a6e9f`
-(deck content unchanged since `22a6233`). The original #265 presentation
-rebalance was by agent `74a003ebefb4` on base `157ad34`.
+Status: 2026-10-14, addendum 2026-10-15. Follow-up correction by agent
+`757b22c73e75`, branch `agent/757b22c73e75-issue265-restore-opening`. Base:
+`main` @ `b0a6e9f` (deck content unchanged since `22a6233`). The original #265
+presentation rebalance was by agent `74a003ebefb4` on base `157ad34`. The
+2026-10-15 addendum by agent `1da4e6282b15` records that the opening
+restoration (PR #239) is merged to `main` as `c8b4b21`, and adds the
+prior-average / per-truth monotonicity contrast (required item 4) as backup
+slides in both decks; see the audit `docs/audit-265-centering-2026-10-15.md`.
 
 This note records (i) the revised presentation arc, (ii) the claim labels and
 exact project endpoints behind every nontrivial slide claim, (iii) where the
@@ -60,7 +64,10 @@ by the merged PR #189 and the #268 revisions (see "Reconciliation" below).
 | 14 | Trust the check, not the claim | hierarchy: ML is the entrance; classification is the contribution |
 
 Backups: B1 complete finite reversal; B2 incomparable coverage definitions;
-B3 open sample-complexity (Hellinger bound); B4 primary sources.
+B3 open sample-complexity (Hellinger bound); B4 prior-average monotonicity
+versus per-truth non-monotonicity (`succ(1)=2/3 > succ(2)=4/9`); B5 primary
+sources. The biologists deck carries the analogous monotonicity backup before
+its sources slide.
 
 ## Preserving the approved opening
 
@@ -105,7 +112,7 @@ a textbook; not proved in Lean here), **COMPUTED** (exact rational certificate),
 | Likelihood vs posterior vs sampling process | EXTERNAL + project note | standard Bayes; paper `02-model.tex` |
 | ML maximizes prior-averaged zero-one success (finite set, uniform prior) | KERNEL | `AssemblyP1/FiniteBayesDecision.lean`: `chooseMAP_optimal`, `chooseMAP_optimal_randomized`, `finite_iid_MAP_optimal` |
 | Prior-average success nondecreasing in `n` | KERNEL | `AssemblyP1/FiniteBayesDecision.lean`: `chooseMAP_success_monotone_under_refinement` |
-| No per-truth monotonicity claimed | EXTERNAL / project note | paper `03-open-question.tex` `rem:mono-avg`; standard calculation |
+| Per-truth success not monotone in `n` (no per-truth monotonicity claimed) | KERNEL + EXTERNAL | paper `05-population.tex` `prop:nonmonotone`; `AssemblyP1/NonmonotonicityWitness281.lean`: `success_not_monotone`; exact check `scripts/verify_nonmonotonicity_witness_281.py`; backup slide B4 (programmers) / monotonicity backup (biologists) |
 | Same-length rigidity + rotation uniqueness | KERNEL | `OrientedRigidity.unique_positive_circulation`; `SameLength62Uniqueness.unique_62_maximizer_up_to_rotation` (unconditional rotation endpoint); `OrientedFinal.oriented_same_length_spectrum_rigidity`; `OrientedFinal.rotation_uniqueness_of_bbt` (conditional on the unproved external BBT premise) |
 | Graver-basis rigidity iff | KERNEL | `GraverRigidity.rigid_iff_forall_graver_not_feasible` |
 | Same-length finite witness `AAATAT`/`AAAAAT` (exact 3, binomial 5) | KERNEL | `SameLengthSection62Counterexample.samelength_se62_bidirected_flow_counterexample` |

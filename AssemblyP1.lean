@@ -63,6 +63,13 @@ import AssemblyP1.Section62BinomialRealGenomeInversion
 import AssemblyP1.Section62CircularWindowAdapter
 -- #284 seam periodicity, aligned circular genome prefix and tail rotation (kernel-audited).
 import AssemblyP1.Section62PeriodicSeam
+-- #284: legal overlap paths spell their last read, giving a closed circular seam.
+import AssemblyP1.Section62OverlapSuffix
+-- #284: actual signed overlap circuits yield an aligned periodic circular word.
+import AssemblyP1.Section62SourceSignedSeamAdapter
+-- #284: non-vacuity regression instantiating the signed-circuit adapter on
+-- concrete legal signed overlap circuits, including the G < readLen case.
+import AssemblyP1.Section62SignedAdapterRegression
 import AssemblyP1.Section62FullSpectrumIndexing
 import AssemblyP1.Section62VariableOverlap247e
 import AssemblyP1.FiniteSamplingCounterexample
@@ -79,6 +86,8 @@ import AssemblyP1.OrientedRigidity
 import AssemblyP1.GraverRigidityAudit
 import AssemblyP1.FiniteRigidityDecider
 import AssemblyP1.FiniteRigidityDeciderAudit
+import AssemblyP1.TwoWalkRigidity
+import AssemblyP1.TwoWalkRigidityAudit
 import AssemblyP1.RepeatAdapter
 import AssemblyP1.OrientedFinalRigidity
 import AssemblyP1.BridgingBridge
@@ -244,6 +253,9 @@ import AssemblyP1.FixedNConstructiveWitness
 import AssemblyP1.FixedNConstructiveWitnessAudit
 import AssemblyP1.FiniteStartCoverage
 import AssemblyP1.FiniteStartCoverageAudit
+-- #255 exact iid full-start-covered pointwise ML classification (envelope generalization).
+import AssemblyP1.FiniteSampleIidEnvelope
+import AssemblyP1.FiniteSampleIidEnvelopeAudit
 import AssemblyP1.FixedNBinomialEffectiveWeightsAudit
 import AssemblyP1.CoveredBinomialWeightsIff
 import AssemblyP1.CoveredBinomialWeightsIffAudit
@@ -275,6 +287,9 @@ import AssemblyP1.PrimitiveP2FiniteClass
 import AssemblyP1.PrimitiveP2FiniteClassAudit
 import AssemblyP1.PrimitiveP2UniformSeparation
 import AssemblyP1.PrimitiveP2UniformSeparationAudit
+-- #263 separable-convex Graver optimality certificate (conditional core) + audit.
+import AssemblyP1.SeparableConvexGraver
+import AssemblyP1.SeparableConvexGraverAudit
 
 /-! ## `Issue94Transposition`: the Kotzig/Ukkonen/Pevzner descent, and an obstruction
 

@@ -1,0 +1,96 @@
+# Separable-convex Graver optimality certificate (issue #263)
+
+This note documents the kernel-checked Lean artifact
+[`AssemblyP1/SeparableConvexGraver.lean`](../AssemblyP1/SeparableConvexGraver.lean)
+and its axiom audit
+[`AssemblyP1/SeparableConvexGraverAudit.lean`](../AssemblyP1/SeparableConvexGraverAudit.lean).
+
+## What is proved
+
+The file formalizes the **convex-objective half** of the Graver optimality
+certificate for a separable convex integer program.  The endpoint is the
+conditional necessary-and-sufficient theorem
+
+```
+graver_optimal_iff_no_improving :
+  (∀ w, Feasible w → F z ≤ F w) ↔
+  (∀ g, Graver g → Feasible (z + g) → F z ≤ F (z + g))
+```
+
+for a separable discrete-convex objective `F z = ∑ e, f e (z e)` on an
+integer affine fiber `lin z = b` with coordinatewise box `l ≤ z ≤ u`, under
+two explicit hypotheses:
+
+* `hker : Graver g → lin g = 0` — Graver moves lie in the kernel;
+* `HasGraverDecomposition` — every feasible displacement `y - z` is a `List`
+  of coordinatewise sign-compatible Graver moves summing to `y - z`.
+
+The inequality direction is the **minimization** form `F z ≤ F (z + g)`; this
+is the direction that a discrete optimality certificate requires.  It is *not*
+the continuous KKT stationarity condition: a discrete minimizer need not be a
+stationary point of the real relaxation.
+
+Supporting results:
+
+* `inc_mono` — monotonicity of finite differences under discrete convexity.
+* `quad_pos`, `quad_neg` — the two-step discrete-convex quadrangle inequality.
+* `superadd_list` — the one-dimensional Positive Sum Property.
+* `superadd_separable_list` — the separable Positive Sum Property.
+* `multiplier_improving` — if the integer Graver ray `α • g` (`α ≥ 1`) strictly
+  improves over `z` while the path stays in the box, then the unit step `g`
+  already strictly improves.
+* `negLog_discConvOn`, `negLog_sub_discConvOn`, `multinomialTerm_discConvOn`,
+  `binomTerm_discConvOn` — the source likelihood costs are discretely convex in
+  the **candidate copy count** `d` on the positive interior.
+
+## Mathematical source
+
+* Hunkenschröder, Koutecký, Levin, Vu, *(Near)-Optimal algorithms for sparse
+  separable convex integer programs*, Mathematical Programming (2026):
+  **Proposition 1** is the separable-convex superadditivity for same-orthant
+  increments, and **Proposition 3** is the conformal positive-sum decomposition
+  of integer kernel moves into Graver elements,
+  <https://link.springer.com/article/10.1007/s10107-026-02341-5>.
+* Hemmecke, Onn, Weismantel, *A polynomial oracle-time algorithm for convex
+  integer minimization*, <https://arxiv.org/abs/0710.3003> (Mathematical
+  Programming 126, 2011).
+* The standard Graver optimality certificate (Onn; De Loera–Oebelein–Onn).
+
+## Relation to the neighbouring fronts
+
+* **#257 / #264** (`AssemblyP1/GraverRigidity.lean`): that front proves the
+  integer-kernel conformal decomposition
+  `graver_decomposition`, which returns exactly a `List` of Graver moves each
+  conformal to the total displacement.  This file does **not** duplicate that
+  existence proof; it consumes the decomposition as the explicit
+  `HasGraverDecomposition` hypothesis.  A `List` (rather than a `Finset`) is
+  essential because a conformal decomposition may repeat a Graver move, and a
+  `Finset` silently loses multiplicities.
+* **#259 / #261**: those fronts concern likelihood maximizers and exact finite
+  binomial comparisons.  Here the objective is a **cost to be minimized**
+  (`F = -log-likelihood` on the interior), and the certificate is stated for
+  the generic separable convex objective; the finite likelihood costs are
+  provided as convexity instantiations, not as an optimality claim about a
+  specific historical candidate set.
+
+## Boundary honesty
+
+`Real.log 0 = 0` by the totalized definition, so the naive everywhere-real
+negative-log-likelihood would report a false finite value at impossible
+boundary candidates (copy count `0` with a positive observed count, or copy
+count `N` with a positive missing count).  The instantiation lemmas therefore
+restrict to the positive interior (`d ∈ [1, hi]` for the fixed-total
+multinomial term, `d ∈ [1, N-1]` for the product-binomial term), where the
+source formulas are honest.  The abstract certificate `graver_optimal_iff_no_improving`
+carries the box `l ≤ z ≤ u` explicitly, so any boundary policy is a modelling
+choice made by the caller, not an implicit assumption of the theorem.
+
+## Open / deferred
+
+* The direct discharge of `HasGraverDecomposition` from
+  `AssemblyP1.GraverRigidity.graver_decomposition` in the augmented
+  `[A 0; -T I]` flow/throughput setting (the #259/#261 vertex-throughput
+  bridge) is deliberately **left open**; this issue closes as the conditional
+  core convex theorem.
+* No claim is made about polynomial-time Graver augmentation or about which
+  feasible flows spell genomes.
