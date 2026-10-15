@@ -104,6 +104,11 @@ What this does **not** prove, and what stays OPEN:
    edges but none arriving at `ACA`.  The hypothesis `hEq` is therefore not
    universally satisfiable, so the spelled test is **not** sufficient in general.
    The identity restricted to graphs whose every edge is maximal stays OPEN.
+   This is **not** a refutation of source Observation 7 for arbitrary walks
+   in a transitively reduced graph: `spelledVisitSet` is a narrower
+   consecutive-window model with maximal overlaps, whereas shorter-overlap
+   signed paths may spell legitimate circular words.
+
 
    *Scope caveat (explicit).*  The spelled sub-class is **strict**: the `AAATT`
    obstruction `no_sequence_has_star_spectrum` is a feasible throughput that is no

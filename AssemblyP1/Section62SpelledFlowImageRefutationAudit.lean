@@ -24,3 +24,6 @@ facts, and the image-inequality theorems.  The expected axiom set is a subset of
 #print axioms AssemblyP1.Section62SpelledFlowImageRefutation.flow4b_throughput_ACA
 #print axioms AssemblyP1.Section62SpelledFlowImageRefutation.flow4b_throughput_not_spelled
 #print axioms AssemblyP1.Section62SpelledFlowImageRefutation.image_ne_spelledVisitSet_of_maxEdge_instance
+
+#print axioms AssemblyP1.Section62SpelledFlowImageRefutation.rc4_spells_dna_complement
+#print axioms AssemblyP1.Section62SpelledFlowImageRefutation.rc4b_spells_dna_complement

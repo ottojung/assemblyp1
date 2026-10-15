@@ -340,6 +340,15 @@ Source reading: [Medvedev–Brudno 2009, §§6.1–6.2](https://pmc.ncbi.nlm.nih
   (`AssemblyP1/Section62SpelledFlowImageRefutationAudit.lean`), all `decide`-checked
   against the literal `overlapEdges` construction.
 
+  **Source-fidelity qualification.** These are counterexamples to
+  `Θ(feasibleFlowSet) = spelledVisitSet` for the *project's narrow*
+  `Spelling.step` model (each edge has overlap length `L-1`) on the
+  **complete** overlap graph. They do **not** refute MB09 Observation 7,
+  which speaks about occurrences along walks of the *transitively reduced*
+  graph, including potentially shorter-than-maximal overlaps. To address
+  Observation 7 requires a separate no-skipped-observed-windows theorem,
+  relating all positions of a circular spelling to its read-vertex anchors.
+
   **Consequence for the sufficiency axis.**  The hypothesis `hEq` of
   `flow_maximal_iff_spelled_maximal_of_image_eq` is *not* universally satisfiable:
   the identity is false, so the spelled test cannot be a sufficient condition for

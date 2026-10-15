@@ -60,6 +60,15 @@ construction of `AssemblyP1.Section62BidirectedFlow`, not against a proxy.
   (`e.len = readLen − 1`), where the spelled sub-class and the feasible set can
   still differ by connectivity/strand-consistency; that remains OPEN.
 * It does not touch the count-vector criteria or the source-fidelity question.
+* **Important source distinction:** this refutes equality with the repository's
+  narrow `spelledVisitSet`, whose `Spelling.step` always uses length-`L-1`
+  overlaps. It is **not** a counterexample to MB09 Observation 7: the source's
+  claim concerns occurrence counts for an arbitrary walk in the *transitively
+  reduced* overlap graph. A legal signed walk using shorter overlaps may still
+  spell a circular sequence, as proved by the separate signed-seam adapter.
+  Nothing here establishes that the graph reduction's no-skipped-windows
+  condition holds, nor that arbitrary feasible flows decompose into a single
+  legal source walk.
 -/
 
 namespace AssemblyP1.Section62SpelledFlowImageRefutation
@@ -179,6 +188,18 @@ theorem flow4_throughput_AAC : throughputVec rep4 flow4 edges4 0 = 1 := by
 theorem flow4_throughput_CCA : throughputVec rep4 flow4 edges4 1 = 1 := by
   decide
 
+/-! The DNA encodings are checked against the ACTUAL reverse-complement
+involution, not merely two arbitrary strand indices. This prevents source-model
+mismatches that a separate graph/flow check would not detect. -/
+
+/-- Watson-Crick complement on the project-local encoding A=0,C=1,G=2,T=3. -/
+def complement4 : A4 → A4 := ![3, 2, 1, 0]
+
+theorem rc4_spells_dna_complement :
+    ∀ s : W4, toList4 (rc4 s) =
+      ((toList4 s).reverse.map complement4) := by
+  decide
+
 /-! ## The refutation -/
 
 /-- The feasible throughput image is nonempty: `flow4` supplies the vector with
@@ -224,10 +245,16 @@ length-`1` overlap. -/
 /-- The second instance's strand type: `0 = AAA`, `1 = ACA`, `2 = TTT = rc(AAA)`,
 `3 = TGT = rc(ACA)`. -/
 def toList4b : W4 → List A4 :=
-  ![[0, 0, 0], [0, 1, 0], [1, 1, 1], [1, 2, 1]]
+  ![[0, 0, 0], [0, 1, 0], [3, 3, 3], [3, 2, 3]]
 
 /-- Reverse complement on the second instance: `AAA ↔ TTT`, `ACA ↔ TGT`. -/
 def rc4b : W4 → W4 := ![2, 3, 0, 1]
+
+/-- The second instance truly encodes DNA reverse-complement pairs. -/
+theorem rc4b_spells_dna_complement :
+    ∀ s : W4, toList4b (rc4b s) =
+      ((toList4b s).reverse.map complement4) := by
+  decide
 
 /-- Molecule-class representative: `AAA = rep(TTT)`, `ACA = rep(TGT)`. -/
 def rep4b : W4 → W4 := ![0, 1, 0, 1]

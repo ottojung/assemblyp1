@@ -23,6 +23,8 @@ integer arithmetic and no trust in the Lean output.  It is deterministic and
 exits non-zero on any failed assertion.  It shares no code with the Lean module.
 """
 from itertools import product
+from pathlib import Path
+import re
 
 # --- the four-symbol alphabet {A,C,G,T}, A=0 C=1 G=2 T=3 -------------------
 COMP = {0: 3, 3: 0, 1: 2, 2: 1}
@@ -170,7 +172,25 @@ def check_instance_b():
     print("instance B (AAA,ACA): maximal edges exist but none arrives at ACA; feasible (1,1) not spelled: OK")
 
 
+def check_lean_dna_encodings():
+    """Ensure the Python DNA graph tests exercise precisely the Lean DNA witnesses.
+
+    Lean separately proves rc/toList compatibility with Watson-Crick complement.
+    This text-level guard catches accidental divergence between the independent
+    Python test's instance and the Lean instance (which happened in a review).
+    """
+    src = (Path(__file__).resolve().parents[1] /
+           "AssemblyP1/Section62SpelledFlowImageRefutation.lean").read_text()
+    compact = re.sub(r"\s+", "", src)
+    for fragment in [
+        "deftoList4:W4→ListA4:=![[0,0,1],[1,1,0],[2,3,3],[3,2,2]]",
+        "deftoList4b:W4→ListA4:=![[0,0,0],[0,1,0],[3,3,3],[3,2,3]]",
+    ]:
+        assert fragment in compact, "Lean DNA encoding diverged from Python witness"
+
+
 def main():
+    check_lean_dna_encodings()
     check_instance_a()
     check_instance_b()
     print("verify_261_spelled_flow_image_refutation: PASS")
