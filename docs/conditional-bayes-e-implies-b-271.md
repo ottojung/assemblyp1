@@ -21,7 +21,7 @@ assumption refinement on the side information repairs the implication `E → B`.
 
 ## 2. The refinement: ML-soundness
 
-The exact refinement is **ML-soundness** of `E`:
+A sufficient refinement is **ML-soundness** of `E`:
 
 ```
 MLSound p E  :=  ∀ h x, E h x → MLMax p h x,

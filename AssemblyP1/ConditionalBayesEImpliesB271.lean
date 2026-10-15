@@ -13,7 +13,7 @@ implication `E → B` — that certain conditional-Bayes recovery under the side
 information `E` yields ordinary R-only maximum-likelihood recovery — and which
 merely refute it. The merged `AssemblyP1/ConditionalVsOrdinaryMLSeparation`
 module exhibits the *unrestricted* separation `A ∧ ¬B` on a two-candidate toy.
-This module isolates the exact refinement that repairs the implication, for an
+This module isolates a sufficient refinement that repairs the implication, for an
 **arbitrary finite candidate type** `Θ` and observation type `X` over any
 linear ordered field.
 
