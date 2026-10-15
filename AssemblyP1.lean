@@ -39,6 +39,9 @@ import AssemblyP1.Section62BidirectedFlow
 -- #261 feasible-flow to throughput-count vector image adapter and axiom audit.
 import AssemblyP1.Section62FlowCountVectorAdapter
 import AssemblyP1.Section62FlowCountVectorAdapterAudit
+-- #261 spelled-circuit to zero-terminal feasible-flow adapter and axiom audit.
+import AssemblyP1.Section62SpelledFlowAdapter
+import AssemblyP1.Section62SpelledFlowAdapterAudit
 import AssemblyP1.Section62ReductionVacuityAudit
 import AssemblyP1.Section62SpellingReductionCandidate
 -- #262 full-overlap counterexample transfer across overlap thresholds.
@@ -1021,6 +1024,12 @@ graph content remains external. -/
 #print axioms AssemblyP1.Section62NonSpelledFlow.half_integral_strictly_better
 #print axioms AssemblyP1.Section62NonSpelledFlow.no_sequence_has_star_spectrum
 #print axioms AssemblyP1.Section62NonSpelledFlow.spelled_subset_general
+-- #261 spelled-circuit -> §6.2 feasible-flow adapter (general, any o_min).
+#print axioms AssemblyP1.Section62SpelledFlowAdapter.spelling_flow_feasible
+#print axioms AssemblyP1.Section62SpelledFlowAdapter.throughput_eq_visits
+#print axioms AssemblyP1.Section62SpelledFlowAdapter.balCore_eq_zero
+#print axioms AssemblyP1.Section62SpelledFlowAdapter.weighted_dedup
+#print axioms AssemblyP1.Section62SpelledFlowAdapter.visits_mem_throughput_image
 #print axioms AssemblyP1.Section62FullOverlapDisconnected.full_overlap_disconnected_optimum
 #print axioms AssemblyP1.Section62FullOverlapDisconnected.disc_support_disconnected
 #print axioms AssemblyP1.Section62FullOverlapDisconnected.dStar_argmax
