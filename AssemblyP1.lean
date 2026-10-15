@@ -253,6 +253,9 @@ import AssemblyP1.FixedNConstructiveWitness
 import AssemblyP1.FixedNConstructiveWitnessAudit
 import AssemblyP1.FiniteStartCoverage
 import AssemblyP1.FiniteStartCoverageAudit
+-- #255 exact iid full-start-covered pointwise ML classification (envelope generalization).
+import AssemblyP1.FiniteSampleIidEnvelope
+import AssemblyP1.FiniteSampleIidEnvelopeAudit
 import AssemblyP1.FixedNBinomialEffectiveWeightsAudit
 import AssemblyP1.CoveredBinomialWeightsIff
 import AssemblyP1.CoveredBinomialWeightsIffAudit
