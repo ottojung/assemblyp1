@@ -903,16 +903,26 @@ $$
 \qquad 0\le\rho_*<1 .
 $$
 
-The affinity constant $\rho_*$ expresses how similar the competitors' read distributions are to the truth. The bound shrinks exponentially as the number of reads $n$ grows.
+Invert the bound: to push it below a target $\delta$, it is **enough** to take
+
+$$
+n \;\ge\; \frac{\ln(|\mathcal C|/\delta)}{\ln(1/\rho_*)} .
+$$
+
+One competitor with affinity $\rho_*=\sqrt3/2\approx0.87$ needs $n\ge 33$ reads for a $1\%$ bound.
 
 **What remains open:** one sharp, uniform sample-size guarantee over the unrestricted universe of genome candidates, especially across different lengths and models.
 
 <!--
-Unlike the original backup, this is now a kernel-checked result:
+The explicit n is the algebraic inversion of the kernel-checked union bound
+(FiniteReadRecovery.eventProb_wrong_le_card; concrete instance
+il_confidence_99: |Θ|=3, ρ=9/10, n=55). It is SUFFICIENT, not necessary,
+and conservative (union bound; -ln ρ ≤ Chernoff exponent). It does not
+cover the unrestricted universe or different lengths/models; that stays open.
 FiniteReadRecovery, FiniteReadRecoveryGenome, FiniteReadRecoveryP2Bridge,
-FiniteReadRecoveryP2Complete. Do not claim sample complexity is wholly
-open; finite-family confidence theorem is established. Finite family,
-positive separation, iid oriented reads, and candidate model matter.
+FiniteReadRecoveryP2Complete. Do not claim sample complexity is wholly open;
+the finite-family confidence theorem is established. Finite family, positive
+separation, iid oriented reads, and the candidate model matter.
 -->
 
 ---
