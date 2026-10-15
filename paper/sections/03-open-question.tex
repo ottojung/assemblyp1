@@ -112,8 +112,12 @@ likelihood maximizers.
 \end{proof}
 
 \statusline{\kernelcheck{} for deterministic and randomized finite decisions
-and the iid specialization in \texttt{AssemblyP1.FiniteBayesDecision};
-the decision principle itself is classical \cite{berger1985}.}
+and the iid specialization in \texttt{AssemblyP1.FiniteBayesDecision}, and,
+in the standalone model-level evaluator \texttt{AssemblyP1.FiniteMapOptimality},
+for the same optimality derived from the explicit finite maximum
+\texttt{Finset.exists\_max\_image}, together with the concrete $2\times2$
+witness of Remark~\ref{rem:map-vs-infallible}; the decision principle itself is
+classical \cite{berger1985}.}
 
 \paragraph{Rotation classes and the choice of prior.}
 The prior is a prior on \emph{equivalence classes}, not on literal spellings.
@@ -128,6 +132,22 @@ prior and loss, and the ML rule is no longer claimed optimal. The theorem says
 nothing about a \emph{fixed} truth, where the relevant question is instead
 identifiability (Section~\ref{sec:population}) and its finite-sample
 approximation (Section~\ref{sec:finite}).
+
+\begin{remark}[Infallibility on a truth-dependent event is not Bayes optimality]
+\label{rem:map-vs-infallible}
+Let $E=\{(S,a),(D,b)\}$ be a truth-dependent event and let a rule $\delta_E$ be
+\emph{correct by construction} on $E$ ($a\mapsto S$, $b\mapsto D$). With a
+uniform prior and $P_S(a)=\tfrac14$, $P_S(b)=\tfrac34$, $P_D(a)=\tfrac34$,
+$P_D(b)=\tfrac14$, the rule $\delta_E$ has prior-averaged success
+$\tfrac14$, whereas the unconstrained MAP rule --- which returns $D$ on $a$ and
+$S$ on $b$ --- succeeds with probability $\tfrac34$. Being infallible on $E$ is
+a conditional guarantee, not a prior-average one, and an $R$-only rule need not
+know that $E=F(S,R)$. This is precisely how the finite counterexamples coexist
+with Theorem~\ref{thm:bayes-optimal}. The four values are kernel-checked in
+\texttt{AssemblyP1.FiniteMapOptimality}
+(\texttt{accuracy\_deltaE}, \texttt{accuracy\_deltaMap},
+\texttt{map\_beats\_infallible\_on\_E}).
+\end{remark}
 
 The theorem concerns the \emph{prior average}, not optimality for every
 fixed truth. It applies to the true joint likelihood, not automatically to
@@ -268,7 +288,8 @@ Prior-average Bayes optimality
   & for every finite $n$, averaged over truth $\sim\pi$ and data $\sim P_\theta$
   & finite classes, correct model, specified prior, zero-one loss
   & MAP/ML maximizes prior-average success
-  & kernel-checked; classical \cite{berger1985}\\
+  & kernel-checked (\texttt{FiniteBayesDecision},
+    \texttt{FiniteMapOptimality}); classical \cite{berger1985}\\
 \addlinespace
 Pointwise finite-sample failure
   & exists a truth $S$, realized $R$, competitor $D$
@@ -294,7 +315,8 @@ Limiting consistency
 \begin{sloppypar}
 The kernel-checked endpoints referenced in the last column are
 \texttt{ConditionalVsOrdinaryMLSeparation} (row~1),
-\texttt{FiniteBayesDecision} (row~2), the $W_1,W_2$ certificates (row~3), the
+\texttt{FiniteBayesDecision} and \texttt{FiniteMapOptimality} (row~2), the
+$W_1,W_2$ certificates (row~3), the
 population and rigidity theorems (row~4), and \texttt{FiniteReadRecovery}
 (row~5); the complete claim-to-proof index is \path{docs/verification.md}.
 \end{sloppypar}
