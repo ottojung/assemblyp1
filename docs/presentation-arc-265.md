@@ -1,6 +1,6 @@
 # Presentation arc and reconciliation for #265
 
-Status: 2026-10-14, addendum 2026-10-15. Follow-up correction by agent
+Status: 2026-10-14, addenda 2026-10-15. Follow-up correction by agent
 `757b22c73e75`, branch `agent/757b22c73e75-issue265-restore-opening`. Base:
 `main` @ `b0a6e9f` (deck content unchanged since `22a6233`). The original #265
 presentation rebalance was by agent `74a003ebefb4` on base `157ad34`. The
@@ -8,6 +8,10 @@ presentation rebalance was by agent `74a003ebefb4` on base `157ad34`. The
 restoration (PR #239) is merged to `main` as `c8b4b21`, and adds the
 prior-average / per-truth monotonicity contrast (required item 4) as backup
 slides in both decks; see the audit `docs/audit-265-centering-2026-10-15.md`.
+A second 2026-10-15 addendum by agent `7b4df767b5fa` adds the kernel-checked
+explicit uniform exponential exact-ML error rate from #281 (primitive-P2 class)
+to the sample-complexity backup of both decks, with its caveats; see "What
+changed" and the claim table below.
 
 This note records (i) the revised presentation arc, (ii) the claim labels and
 exact project endpoints behind every nontrivial slide claim, (iii) where the
@@ -40,6 +44,19 @@ problem settled.
   consecutive negative slides are merged into one aside; the extra
   "sample change" and "tie" slides are merged.
 - `slides/README.md` — deck descriptions updated to match.
+- **Explicit uniform error rate added to both decks (2026-10-15 addendum by
+  agent `7b4df767b5fa`).** The kernel-checked primitive-P2 rate from #281,
+  `Pr[∃ nonrotational admissible D : L_D ≥ L_S] ≤ N_C exp(-n/(8 B^4))` with
+  `B = 2 q^(L-1)` and threshold `n ≥ 8 B^4 log(N_C/δ)`, is now stated in the
+  sample-complexity backup of `slides/biologists.md` and in Backup B3 of
+  `slides/programmers.md`, together with its caveats (constants deliberately
+  loose and exponential in `L`; it bounds exact-ML error probability, not
+  likelihood growth; per-truth finite-sample success is not monotone). A
+  one-line pointer was added to the programmers' main slide "Do we actually
+  need infinitely many reads?" and to the biologists' "Three take-aways" slide.
+  No main-arc slide was removed or restructured; the programmer-newcomer
+  audience, the 14-slide main arc, and the Lean/agent-proof-trust story are
+  unchanged.
 
 No paper file is changed by this branch. The whitepaper was already recentered
 by the merged PR #189 and the #268 revisions (see "Reconciliation" below).
@@ -121,6 +138,7 @@ a textbook; not proved in Lean here), **COMPUTED** (exact rational certificate),
 | Population uniqueness up to rotation (primitive, P2, admissible class) | KERNEL | `Issue94Complete.population_unique_ML` |
 | Limiting consistency / `P(correct at n) -> 1` | EXTERNAL | standard SLLN + ML consistency (Lehmann & Casella 1998); not kernel-checked here |
 | Hellinger/union `99%` bound | EXTERNAL | Tsybakov 2009, Thm 2.4; not kernel-checked here |
+| Explicit uniform primitive-P2 exponential exact-ML error rate `N_C exp(-n/(8 B^4))`, `B = 2 q^(L-1)`, threshold `n >= 8 B^4 log(N_C/δ)` | KERNEL | `AssemblyP1/PrimitiveP2UniformSeparation.lean`: `primitiveP2_exponential_error_bound`, `primitiveP2_ML_confidence_explicit`; paper `05-population.tex` `thm:p2-uniform-rate`; caveats: loose constants exponential in `L`, bounds error probability not likelihood growth, per-truth success not monotone; oriented primitive-P2 exact iid only, not universal ML and not the MB09 product-binomial surrogate |
 | Sample complexity in this model | OPEN | no theorem in paper or Lean |
 | Coverage predicates incomparable | KERNEL | `HistoricalCovers.lean`; `HistoricalCoverageSameLengthWitnesses.lean` |
 | `AAATT`/`AAAATT` reversal (backup B1) | KERNEL | ratio `15625/11664`: `OrientedVariableLengthSe62.exact_ratio1`; restricted two-candidate illustration, not a source-faithful counterexample |
