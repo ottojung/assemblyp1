@@ -336,7 +336,7 @@ Shomorony and colleagues asked:
 
 > If the reconstruction conditions hold, **must the true genome also maximize ordinary likelihood**?
 
-**Our answer is no.** We can exhibit an exact counterexample **using oriented reads throughout**, if the competing assembly is allowed to have a different length.
+**Our answer is no.** We found a counterexample in which the competing assembly is one base longer.
 
 <!--
 This is the source's non-Bayesian implication from the true
@@ -350,13 +350,13 @@ mathematical statement; keep the explicit candidate-length scope.
 
 ---
 
-# An oriented-read counterexample
+# A counterexample in six reads
 
 **True circular genome:** AAATT (length **5**).
 
 **Competing genome:** AAAATT (length **6**).
 
-Sample six **oriented**, error-free reads of length 3 from the truth, at starts 0, 0, 1, 2, 3, 4:
+Sample six reads of length 3 from the true genome:
 
 ~~~text
 AAA    AAA    AAT    ATT    TTA    TAA
@@ -370,7 +370,7 @@ AAA    AAA    AAT    ATT    TTA    TAA
 | TTA | 1 | 1 | 1 |
 | TAA | 1 | 1 | 1 |
 
-**The true genome satisfies the coverage and bridging conditions.** Both are valid candidates under the studied oriented read-overlap assembly constraints.
+**The true genome satisfies the coverage and bridging conditions.** Both genomes are valid candidates in the read-overlap assembly model.
 
 <!--
 OrientedVariableLengthSe62.lean theorem and script
@@ -407,7 +407,7 @@ $$
      =\frac{15625}{11664}\approx1.34}
 $$
 
-**About 34% higher likelihood.** Thus the 2016 reconstruction guarantee does not force a true genome to maximize ordinary **oriented-read** likelihood when candidate lengths can differ.
+**About 34% higher likelihood.** The reconstruction guarantee does not force the true genome to maximize ordinary likelihood.
 
 <!--
 Exact iid ordered-read model (observation multinomial coefficient
@@ -491,7 +491,7 @@ theorem. It does not retroactively reverse the finite negative answer.
 
 Here **population** means the complete read distribution from **one fixed genome**, not a population of genomes.
 
-All reads are still **oriented**:
+For our example, the full read distribution is:
 
 | Read type | True AAATT | Competitor AAAATT | Six observed reads |
 | --- | ---: | ---: | ---: |
@@ -520,7 +520,7 @@ uniqueness of genome requires stronger structural arguments.
 
 **Uniqueness is harder:** could a different genome generate exactly the same frequencies and tie?
 
-**We proved uniqueness for oriented reads**, if the truth and eligible competitors are **primitive and P2-admissible**. Only rotations of the true circular genome can tie.
+**We proved uniqueness** for **primitive, P2-admissible** genomes under our read model. Only rotations of the true circular genome can tie.
 
 *Primitive* means the entire genome is not a shorter pattern repeated. **P2**, rooted in the repeat analysis of **Bresler, Bresler & Tse (2013)**, excludes certain long triple and interleaved-repeat patterns.
 
@@ -560,7 +560,7 @@ No universal constant sample count for unrestricted candidates.
 
 We also proved a separate positive result about finite samples.
 
-Use **oriented reads**, compare genomes of the **same length**, and require **both truth and competitor** to meet the specified read-overlap assembly constraints.
+Compare genomes of the **same length**, and require **both truth and competitor** to meet the specified read-overlap assembly constraints.
 
 Then **no admissible competitor has higher likelihood than the truth**.
 
@@ -675,7 +675,7 @@ formal results. No sorry/admit in the completed proof modules.
 
 # What the investigation established
 
-**We answered the 2016 implication negatively.** With oriented reads, the true genome can meet reconstruction conditions while a longer genome has greater ordinary likelihood.
+**We answered the 2016 implication negatively.** The true genome can meet reconstruction conditions while a longer competing genome has greater ordinary likelihood.
 
 We also clarified what this means statistically: a reconstruction promise is additional information. When it is explicitly given, the conditional posterior identifies the true circular genome class.
 
