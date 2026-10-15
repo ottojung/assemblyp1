@@ -52,12 +52,30 @@ open Section62Flow Section62SpellingReductionCandidate
 
 variable {A W : Type}
 
-/-- The length-`readLen` circular window of the genome `D` starting at cyclic
-position `s`: rotate `D` left by `s` and take `readLen` letters.  When `s` is past
-the end the window wraps around the seam, which is why the rotation (rather than a
-plain `drop`) is used. -/
+/-- The length-`readLen` periodic window of the circular genome `D` starting
+at `s`, with letters indexed modulo `D.length`.  In particular a read can
+wrap around the genome seam *multiple times* when `0 < D.length < readLen`.
+The empty word has no circular positions and produces the empty window. -/
 def window (D : List A) (readLen s : Nat) : List A :=
-  (D.drop s ++ D.take s).take readLen
+  if h : 0 < D.length then
+    (List.range readLen).map (fun i =>
+      D.get ⟨(s + i) % D.length, Nat.mod_lt _ h⟩)
+  else []
+
+/-- Every window of a nonempty circular genome has exactly the requested
+read length, even when the read is longer than the genome. -/
+theorem window_length_of_nonempty (D : List A) (readLen s : Nat)
+    (hD : 0 < D.length) : (window D readLen s).length = readLen := by
+  simp [window, hD]
+
+/-- Regression: read length 3 wraps across the seam of the length-2 circle. -/
+example : window ([true, false] : List Bool) 3 0 = [true, false, true] := by
+  decide
+
+/-- Regression: repeated wrapping, including a nonzero starting offset. -/
+example : window ([true, false] : List Bool) 5 1 =
+    [false, true, false, true, false] := by
+  decide
 
 /-- The extension length `readLen − e.len` contributed by an overlap edge: the
 number of new letters the edge adds past the first read. -/
