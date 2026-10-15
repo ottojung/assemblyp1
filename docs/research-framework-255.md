@@ -91,7 +91,7 @@ stay OPEN.
   circular genomes.** `population_maximizer_unrestricted`: the truth
   maximizes the exact population likelihood over ALL circular candidate
   genomes, with no repeat, P2, primitivity, bridging, or
-  information-feasibility assumptions (#273 CLOSED). Repeats bear only on
+  information-feasibility assumptions (merged PR #154; #273 CLOSED). Repeats bear only on
   *uniqueness*: `PopulationGibbs.truth_is_population_maximizer` gives
   equality iff normalized spectra agree, and the uniqueness refinement
   needs P2/primitivity conditions (#274 CLOSED). Population-level only;
@@ -102,13 +102,9 @@ stay OPEN.
 - **Historical molecule-flow full-overlap bridging sufficiency:
   REFUTED.** Literal W1 (`AAATAT→AAAAAT`, exact ratio 3, binomial ratio
   5) and W2 (`ATATACAC→ATACACAC`, exact ratio 3/2, binomial ratio 9/5)
-  refute the bridging claim at MB09 full-overlap §6.2 (merged PR #142).
+  refute the bridging claim at MB09 full-overlap §6.2 (merged PR #142, merge commit `49b2903`).
   This refutes a sufficiency claim only; it classifies no genome set or
   overlap floor.
-- **Unconditional population maximizer: PROVED (kernel-checked).**
-  `population_maximizer_unrestricted` (merged PR #154, #273 CLOSED):
-  truth maximizes the population objective over ALL circular candidate
-  genomes with no repeat/primitivity/bridging assumptions.
 - **#259 fixed-N product-binomial scoped landings: PROVED (kernel-checked),
   partial scope.** q factorization `∏ q_i(B)^{x_i}` (PR #163); all-count
   effectiveWeight coordinatewise iff over arbitrary nonnegative count
@@ -162,7 +158,7 @@ stay OPEN.
 | #276 | reframe paper around comparable information/recovery guarantees | editorial | CLOSED — delivered 2026-10-12 | — |
 
 Adjacent (outside the #255 ML-classification core): #254 (programmers'
-talk; merged, awaiting human closure), #280 (signed-commit policy).
+talk; merged, CLOSED on board 2026-10-14), #280 (signed-commit policy).
 
 ## 5. Epistemic policy
 

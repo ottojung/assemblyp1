@@ -108,7 +108,7 @@ Every material result is classified as one of:
 ### Population maximality: PROVED — unconditional for all circular genomes; repeats bear only on uniqueness
 
 - **Unrestricted maximality (no repeat condition):**
-  `PopulationMaximizerUnrestricted.population_maximizer_unrestricted`: for any
+  `AssemblyP1.PopulationUniqueness.population_maximizer_unrestricted`: for any
   true circular genome `S` and any candidate `D` under the exact population
   objective, `ell_S(D) ≤ ell_S(S)` (Gibbs/KL inequality); no P2, primitivity,
   bridging, information-feasibility, or no-repeat assumptions; no fixed
@@ -242,7 +242,7 @@ Every material result is classified as one of:
 
 ---
 
-## LANDED — mathematical proofs (human-readable; NOT kernel-checked, NOT merged)
+## Mathematical proofs (human-readable; NOT kernel-checked, NOT merged)
 
 ### Exact iid finite-ML classification on the all-true-starts-sampled domain: PROVED (elementary), posted 2026-10-13
 
@@ -339,7 +339,7 @@ Every material result is classified as one of:
 
 ### Historical molecule-flow full-overlap BRIDGING SUFFICIENCY: REFUTED
 
-- Merged PR #142 literal Shomorony §6.4 W1/W2 strict exact/binomial
+- Merged PR #142 (merge commit `49b2903`, merged 2026-10-10) literal Shomorony §6.4 W1/W2 strict exact/binomial
   counterexamples at MB09 full-overlap §6.2.
 - **W1:** `S=AAATAT`, `D=AAAAAT` (`G=6`, `L=3`): exact ratio 3, binomial ratio 5.
 - **W2:** `S=ATATACAC`, `D=ATACACAC` (`G=8`, `L=3`): exact ratio 3/2, binomial ratio 9/5.
@@ -642,7 +642,7 @@ Every material result is classified as one of:
 | Oriented vs RC molecule types | PROVED (landed scopes) | Oriented + same-length + exact multinomial + sample-uniform PROVED (#256); RC + full-overlap + fixed-length + exact multinomial + sample-uniform PROVED (#260); oriented arbitrary-overlap and RC arbitrary-overlap OPEN (#261) |
 | Exact multinomial vs fixed-N binomial | PROVED (exact, landed scopes + full-start-covered classification) / PARTIAL (binomial) | Exact multinomial PROVED in the landed scopes (#256, #258, #260); exact iid full-start-covered classification PROVED (elementary, posted 2026-10-13, not kernel-checked): never-strictly-better IFF some true type has `q_j=0` OR `q_i ≤ p_i` for every true type; fixed-`x` (A) remains halfspace inequalities; fixed-N binomial (MB09 §6.1) PARTIAL: effective weights, strict witness, start coverage, sample-uniform rigidity iff landed (#259); full (A)/(B) classification OPEN |
 | Same vs variable length | PROVED (same) / OPEN (variable) | Same-length PROVED where landed; variable length OPEN (fenced to #261) |
-| Spelled genomes vs MB09 §6.2 bidirected flows / overlap floor | PROVED (full-overlap) / OPEN (arbitrary) | Equal-support full-overlap RC molecule-spectrum ML PROVED (#260) — this settles only the equal-support molecule-spectrum cell, NOT the general §6.2 flow model; unrestricted source-faithful MB09 §6.2 nonspelled flow candidate domain and arbitrary overlap floor OPEN (#261); full historical MB09 §6.2 graph / Observation-7 source identification (nonspelled flows, transitive-reduction semantics) OPEN (#284); historical bridging sufficiency at full overlap REFUTED (W1/W2, PR #142) |
+| Spelled genomes vs MB09 §6.2 bidirected flows / overlap floor | PROVED (full-overlap) / OPEN (arbitrary) | Equal-support full-overlap RC molecule-spectrum ML PROVED (#260) — this settles only the equal-support molecule-spectrum cell, NOT the general §6.2 flow model; unrestricted source-faithful MB09 §6.2 nonspelled flow candidate domain and arbitrary overlap floor OPEN (#261); full historical MB09 §6.2 graph / Observation-7 source identification (nonspelled flows, transitive-reduction semantics) OPEN (#284); historical bridging sufficiency at full overlap REFUTED (W1/W2, PR #142, merge commit `49b2903`) |
 | Truth candidacy | PROVED (landed scopes) / OPEN (extended) | Truth genuinely admissible over spelled candidate universes PROVED in the landed scopes; extended candidate sets OPEN (#261) |
 | Literal historical read-string `I_s` vs project placement `I_s` | PROVED (placement) / REFUTED (literal) / OPEN (remaining) | Project-placement reading PROVED (#256 iff needs no `I_s`); literal historical `I_s` full-overlap bridging sufficiency REFUTED (W1/W2); remaining historical-referent questions OPEN |
 | Population vs finite sample | PROVED (population + bridge) / OPEN (finite) | Unconditional population maximizer for all circular genomes PROVED (kernel-checked, #273 CLOSED, PR #154); population uniqueness repeat-dependent — equality iff normalized spectra agree, P2/primitivity conditions PROVED (#274 CLOSED, PR #156); population-to-finite bridge `∑ x log p_D = n ∑ p̂ log p_D` PROVED (elementary, 2026-10-14) so finite ML = empirical-population ML, with the 2-type separation witness; finite-sample classification OPEN in every cell except the landed ones |
@@ -657,7 +657,7 @@ original Medvedev-Brudno 2009 source:
 
 | Audit point | Status |
 |---|---|
-| §6.1 true joint multinomial vs approximate product-binomial pseudo-likelihood | Correctly distinguished in paper Def. 1.2 and Appendix A.5 |
+| §6.1 true joint multinomial vs approximate product-binomial pseudo-likelihood | Correctly distinguished in paper `Definition~\ref{def:likelihoods}` (§2, `paper/sections/02-model.tex:155-156`) and Appendix A.2 (`paper/sections/a-modeling-choices.tex:55-93`) |
 | §6.1 asymptotic independence sentence | Literal statement present in the MB09 PDF, p. 11: "However, as the number of trials goes to infinity, the X_i random variables become independent." — recorded verbatim in the #259 primary-source record; licenses no finite-sample claim |
 | §6.2 signed bidirected flow vs actual circular genomes | Correctly distinguished in paper §2.3, §4, and Appendix D |
 | Infinite graph capacities vs external N probability bound | Correctly distinguished: §6.2 has `u = ∞` on overlap edges; §6.1 binomial uses external `N` |
