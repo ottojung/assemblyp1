@@ -79,6 +79,8 @@ import AssemblyP1.OrientedRigidity
 import AssemblyP1.GraverRigidityAudit
 import AssemblyP1.FiniteRigidityDecider
 import AssemblyP1.FiniteRigidityDeciderAudit
+import AssemblyP1.TwoWalkRigidity
+import AssemblyP1.TwoWalkRigidityAudit
 import AssemblyP1.RepeatAdapter
 import AssemblyP1.OrientedFinalRigidity
 import AssemblyP1.BridgingBridge

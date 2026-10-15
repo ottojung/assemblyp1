@@ -1,7 +1,9 @@
 import AssemblyP1.ExactRigidityCriterion
 import AssemblyP1.FiniteRigidityDecider
+import AssemblyP1.TwoWalkRigidity
 open AssemblyP1.ExactRigidityCriterion
 open AssemblyP1.FiniteRigidityDecider
+open AssemblyP1.TwoWalkRigidity
 #print axioms AssemblyP1.ExactRigidityCriterion.nonrigid_iff_exists_delta
 #print axioms AssemblyP1.FiniteRigidityDecider.le_total_of_feasible
 #print axioms AssemblyP1.FiniteRigidityDecider.admissible_iff
@@ -12,3 +14,11 @@ open AssemblyP1.FiniteRigidityDecider
 #print axioms AssemblyP1.FiniteRigidityDecider.aaaab_nonrigid
 #print axioms AssemblyP1.FiniteRigidityDecider.figureEight_rigid
 #print axioms AssemblyP1.FiniteRigidityDecider.figureEight_nonrigid
+#print axioms AssemblyP1.TwoWalkRigidity.isCirc_iff_balancedZ
+#print axioms AssemblyP1.TwoWalkRigidity.IsCirc.add
+#print axioms AssemblyP1.TwoWalkRigidity.IsCirc.sub
+#print axioms AssemblyP1.TwoWalkRigidity.nonrigid_of_two_nonneg_circ
+#print axioms AssemblyP1.TwoWalkRigidity.exists_two_nonneg_circ_of_nonrigid
+#print axioms AssemblyP1.TwoWalkRigidity.rigid_iff_no_two_nonneg_circ
+#print axioms AssemblyP1.TwoWalkRigidity.atatat_no_two_nonneg_circ
+#print axioms AssemblyP1.TwoWalkRigidity.figureEight_two_walk_witness
