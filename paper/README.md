@@ -17,8 +17,8 @@ between graph-flow optimization and sequence-spelling preservation.
 
 The main text develops the algorithms, the repeat structure, the likelihood
 models, and the proofs. The appendices preserve detailed modeling choices,
-verification provenance, and historical source reconciliation for readers
-who need that additional depth.
+verification scope, and historical source reconciliation. A full
+[claim-to-proof index](../docs/verification.md) lives outside the paper.
 
 ## Build
 
@@ -26,7 +26,7 @@ The build is reproducible and uses a pinned, minimal TeX dependency set. With
 Guix available:
 
 ```sh
-sh build.sh
+sh paper/build.sh
 ```
 
 This builds a local Guix profile from [`manifest.scm`](manifest.scm) inside
@@ -59,8 +59,8 @@ paper/
     05-population.tex      population ML and the uniqueness theorem
     06-discussion.tex       synthesis, open problems, conclusion
     a-modeling-choices.tex deliberate explanations of modeling decisions
-    b-epistemic-ledger.tex consolidated status of every claim
-    c-reproduction.tex     build and verification instructions
+    b-epistemic-ledger.tex compact claim-status summary
+    c-reproduction.tex     build and verification-index pointer
     d-referents-audit.tex      source-referent audit behind Section 3
   manifest.scm             pinned Guix TeX dependencies
   build.sh                 reproducible PDF build
@@ -70,9 +70,9 @@ paper/
 
 Theorems, counterexamples, and their epistemic status follow the repository's
 research notes and verification artifacts (Lean modules under `../AssemblyP1/`
-and exact-rational scripts under `../scripts/`). Where the paper states a
-kernel-checked finite witness, the corresponding module is named in
-Appendix B; where a claim is only source-supported or computationally verified,
-it is labeled as such. Reproduction of the finite arithmetic does not by itself
+and exact-rational scripts under `../scripts/`). For each kernel-checked witness, the exact module and theorem are recorded
+in the [verification index](../docs/verification.md), rather than
+repeated in Appendix B. Source-supported statements, independent finite
+computations, and formal results have distinct evidence labels. Reproduction of the finite arithmetic does not by itself
 verify the source-correspondence claims that identify a finite objective with
 the one the published sentence intends.

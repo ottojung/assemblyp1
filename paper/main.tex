@@ -18,39 +18,30 @@
 
 \begin{abstract}
 \noindent
-A genome is a long string that a sequencer reveals only through short,
-overlapping reads. Reconstructing it is a combinatorial problem: overlapping
-reads form a graph, repeats create competing traversals, and sufficiently
-informative reads resolve those ambiguities. The Not-So-Greedy algorithm of
-Shomorony et al.\ (2016) turns such information into a unique Eulerian
-reconstruction. This paper develops a unified account of the statistical
-question underneath: \emph{when do the reads identify the true genome, and
-when is it the most likely explanation of them?} Maximum likelihood is a
-natural benchmark because, with the correct sampling model and a uniform
-prior on a finite candidate class, it maximizes average reconstruction
-correctness among all decision rules. This decision-theoretic guarantee
-motivates the investigation; it does not answer the assembly-specific
-question. We separate a conditional reading, in which the candidate set is
-restricted to the feasible fiber, from the unconditional comparison the 2016
-sentence actually poses.
+A genome is a circular word observed through randomly sampled short reads.
+Read overlaps allow reconstruction when repeats are sufficiently bridged,
+yet a reconstruction guarantee does not automatically rank the truth highest
+under maximum likelihood. We examine this distinction in the setting of
+Shomorony et al.'s (2016) question about bridging and maximum likelihood.
+Under the project's oriented, same-length, full-support assumptions and
+explicit truth candidacy, bridging forces a unique positive circulation
+and a unique genome up to rotation. This is a structural rigidity theorem:
+every admissible candidate has the truth's spectrum, so likelihood plays
+no part in distinguishing candidates on that slice. Dropping either truth candidacy or equal candidate length permits
+strict finite-sample likelihood reversals. Same-length molecule counterexamples also satisfy the
+historical matched-string bridging predicate.
 
-The answer has three layers. Structurally, under explicit bridging conditions
-the true length-$L$ spectrum is the unique positive integer circulation of its
-window-support graph, yielding a same-length oriented likelihood result.
-Statistically, at the population level the true genome always maximizes
-expected log-likelihood, and for primitive P2 genomes the maximizer is unique
-up to rotation. Finitely, we prove a kernel-checked quantitative reliability
-theorem: for a finite, identifiable candidate family the probability that any
-wrong candidate ties or beats the truth in exact likelihood is at most the sum
-of pairwise Hellinger affinities, hence decays exponentially in the number of
-independent reads. This bounds the \emph{error}, not the likelihood, and exact
-finite-sample success is not even monotone in sample size; a two-genome
-circular example drops the success probability from $2/3$ to $4/9$ between one
-and two reads. We also exhibit exact finite-sample counterexamples in which
-another genome assigns the observed reads higher probability even though
-reconstruction is feasible. These results connect graph reconstruction,
-repeat combinatorics, statistical identifiability, and kernel-checked formal
-proof.
+At the population level the truth always maximizes expected
+log-likelihood; within the oriented primitive-P2 class it is
+identifiable up to rotation. We further prove that every primitive-P2
+genome has length at most $2q^{L-1}$ for alphabet size $q$ and read length
+$L$, making the entire class finite. For $n$ independent reads its
+wrong-candidate probability is bounded by
+$\sum_{D\not\sim S}\rho(p_S,p_D)^n$, the sum of the \emph{$n$-th powers}
+of Hellinger affinities. This is an exponential rate, not necessarily
+a usable numerical read-depth estimate. Exact per-truth ML success can
+oscillate with sample size. The principal structural and statistical
+results are kernel-checked in Lean.
 \end{abstract}
 
 \clearpage
