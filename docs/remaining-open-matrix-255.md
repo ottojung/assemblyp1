@@ -247,7 +247,7 @@ Every material result is classified as one of:
   and arbitrary feasible-flow realizability remain OPEN. These scopes must
   not be conflated.
 
-### #284 (OPEN) — global circular read occurrences: PROVED in integration PR #274 (pending main merge)
+### #284 (OPEN) — global circular read occurrences: PROVED in signed integration PR #274
 
 - **Already on main:** Section62GlobalCircularCorrespondence,
   Section62CircularWindowAdapter, Section62FullSpectrumIndexing,
