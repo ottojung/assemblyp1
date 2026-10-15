@@ -49,6 +49,27 @@ source is ACGTA; the reads are deliberately unordered.
 
 ---
 
+# The mathematical version of genome assembly
+
+This project studies an idealized problem, **not** the practical details of real sequencing.
+
+We assume:
+
+- A genome is a **circular string**.
+- Reads have a **fixed length**, a known direction, and **no errors**.
+- Every read starts at a **uniformly random position**, independently of the others.
+
+This simple model allows us to prove statements about **which assemblies are possible**, and about **how likely each genome is to produce the observed reads**.
+
+<!--
+The first examples use oriented reads. The historical MB09 finite
+counterexample later explicitly changes to reverse-complement molecule
+types. Model fidelity and theorem scope matter.
+-->
+
+
+---
+
 # A first attempt: join the overlaps
 
 The end of **ACG** matches the beginning of **CGT**: both share **CG**.
@@ -96,25 +117,6 @@ possible overlaps, not all realized at one physical genome position.
 
 ---
 
-# The mathematical version of genome assembly
-
-This project studies an idealized problem, **not** the practical details of real sequencing.
-
-We assume:
-
-- A genome is a **circular string**.
-- Reads have a **fixed length**, a known direction, and **no errors**.
-- Every read starts at a **uniformly random position**, independently of the others.
-
-This simple model allows us to prove statements about **which assemblies are possible**, and about **how likely each genome is to produce the observed reads**.
-
-<!--
-The first examples use oriented reads. The historical MB09 finite
-counterexample later explicitly changes to reverse-complement molecule
-types. Model fidelity and theorem scope matter.
--->
-
----
 
 # Sometimes even all short reads are ambiguous
 
