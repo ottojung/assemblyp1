@@ -150,3 +150,51 @@ This is not a story comparing AI tools. It is the story of a research method des
   it as a separate model only when motivated.
 - For a research talk, explain who chooses questions, who explores,
   what persists, and what the kernel checks.
+
+
+## Editorial correction: the 2016 negative result and conditional Bayes
+
+The 2016 question is an ordinary non-Bayesian CONDITIONAL IMPLICATION: if the
+observed reads satisfy information feasibility for the true genome, must
+that genome maximize the UNCONDITIONED likelihood of the observed reads?
+The substantive answer is **NO**, established by the strict W5 molecule
+counterexample AAATAT versus AAAAAT, and other source-supported witnesses.
+Do not frame the audience-facing answer as model-dependent or suggest the
+question is still open.
+
+The counterexample does NOT show maximum likelihood is a statistically
+inferior algorithm. Ordinary ML is optimized on a broader candidate task
+than the truth-conditional Not-So-Greedy success guarantee. In the W5
+example, the competitor is allowed by the ordinary likelihood/candidate
+formulation but fails I_s for the witnessed placements.
+
+We separately studied **conditional Bayesian inference** to recover
+optimality under the actual structural promise. The joint law of genome,
+reads, and the event E must be conditioned, rather than simply reusing
+ordinary likelihood. Under the original read-only unique-reconstruction
+guarantee F(g,r) => A(r) equivalent to g, the possible feasible true
+genomes for the same observed read strings are one equivalence class.
+Conditional posterior mass on that class is one; conditional MAP is
+correct and optimal for the conditioned experiment. E is truth-dependent
+and extra side information, not determined by reads alone. This is a
+corollary of the published deterministic guarantee with an external NSG
+premise, and the consequences are checked in
+AssemblyP1/ConditionalIdentifiability.lean.
+
+Do not overextend this conditional result to arbitrary placement-based
+predicates or reverse-complement molecule variants: certain W3/W6
+counterexamples satisfy the differently defined placement feasibility.
+Failing a specific placement test does not automatically make the entire
+marginalized P(R,E | D) equal to zero. Presenter notes must keep the event,
+observations, and model conventions consistent.
+
+The oriented same-length restricted positive result and the primitive-P2
+population uniqueness theorem are independent discoveries, not
+qualifications of the negative original answer. The later population
+model was motivated by the research director hypothesizing finite-sample
+noise, not by uncertainty about the already negative finite answer.
+
+Primary internal sources: docs/issue266-conditional-identifiability.md,
+docs/audit-267-finite-ml-vs-conditional-bayes.md,
+docs/bayes-optimality-conditional-feasibility-267.md,
+paper/sections/03-open-question.tex.

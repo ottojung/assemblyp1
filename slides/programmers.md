@@ -302,181 +302,197 @@ and candidate model. Formalized in AssemblyP1/FiniteBayesDecision.lean.
 
 ---
 
-# The 2016 question: are the guarantees the same?
+# The 2016 question — and our answer
 
-Recall the **three conditions** defining the paper's information-feasible read sets:
+Shomorony et al. proved that **Not-So-Greedy reconstructs the true circular genome uniquely**, up to rotation, when the reads satisfy:
 
-1. **Coverage:** every position in the circular genome is covered by a read.
-2. **Triple repeats:** **every copy** of every triple repeat is **bridged**: a read extends beyond both ends of that copy.
-3. **Interleaved repeats:** when two repeats have alternating occurrences (A–B–A–B), at least one of the repeats is **bridged**.
+1. **Coverage:** reads cover the genome.
+2. **Triple repeats:** every copy is bridged by a read extending beyond it.
+3. **Interleaved repeats:** at least one repeat in each interleaved pair is bridged.
 
-**These conditions guarantee that Not-So-Greedy reconstructs the one true circular genome (up to rotation).**
+Their question was a **non-Bayesian if–then statement**:
 
-But do they **also** guarantee that the true genome maximizes likelihood among the permitted candidates?
+> If those conditions hold, **must the true genome also maximize ordinary likelihood** among candidate genomes?
 
-**AssemblyP1 settled the precisely specified versions of this question.** The answer depends on which statistical model and candidate class we mean.
+**Our answer is NO.** We proved a counterexample. The reconstruction guarantee itself remains correct.
 
 <!--
-Source: docs/bridging-source-semantics.md and docs/open-problem.md.
-All triple-repeat copies must be bridged (not just one); an interleaved
-repeat pair needs at least one copy of either repeat bridged.
-These are the source's I_s conditions, sufficient for Not-So-Greedy, and
-not the complete minimal hypotheses of the algorithm's Theorem 1.
-The original open-question wording did not identify a unique MB09 objective,
-so distinguish exact multinomial, §6.1 binomial, and §6.2 flow candidates.
+The 2016 question is an implication F(S,R) => S ∈ argmax_D P(R|D).
+The likelihood score does NOT condition on F. The published MB09
+referent has source-level ambiguity, but genuine source-supported
+counterexamples establish the negative substantive answer.
+The bridging clauses stated are the full information-feasible event.
 -->
 
 ---
 
-# A positive result: the truth cannot be outscored
+# A counterexample to the 2016 implication
 
-We also proved that **the original intuition is correct in one carefully defined setting**.
+The **true** circular genome is **AAATAT**. A competing genome is **AAAAAT**. Both have length **6**; reads have length **3**.
 
-Suppose we distinguish the direction of a read and consider candidate genomes **of the true genome's length**, each genuinely compatible with the specified assembly constraints.
+Five reads were sampled from the truth at starts 0, 0, 1, 3, 5:
 
-Under the required coverage and bridging assumptions, **no such competitor can have higher likelihood than the true genome**.
+~~~text
+AAA   AAA   AAT   TAT   TAA
+~~~
 
-The stronger structural result says something more: under its full conditions, a compatible competitor must actually be the **same circular genome**, perhaps with a different starting position.
+The historical likelihood model groups a read with its reverse complement. Thus TAT and ATA count together.
 
-**This is a theorem, not an experimental observation.** The restriction to this specific read model and candidate class matters.
-
-<!--
-Oriented single-strand reads, same-length genuine 6.2 flow candidates with
-truth-and-competitor feasibility, I_s on the realized read-start set.
-SameLength62Maximizer.informationFeasible_62_maximizer;
-SameLength62Uniqueness.unique_62_maximizer_up_to_rotation, with its precise
-additional assumptions. Historical conditional BBT route is separate.
-Do not transfer to RC-collapsed molecule classes or an unrestricted
-candidate universe. Avoid internal circulation/spectrum jargon on slides.
--->
-
----
-
-# Main discovery: maximum likelihood can choose the wrong genome
-
-The true circular genome is **AAATAT**. A competing genome is **AAAAAT**.
-Both have length **6**; each read has length **3**.
-
-We sampled starts `0, 0, 1, 3, 5` from the **true** genome:
-
-```text
-Observed reads: AAA, AAA, AAT, TAT, TAA
-```
-
-For this historical likelihood model, a read and its **reverse complement** count as the same *molecule type*: in particular, `TAT` and `ATA` count together.
-
-| Molecule type | Observed | True genome: occurrences | Wrong genome: occurrences |
+| Read type | Observed | True AAATAT: positions | Competitor AAAAAT: positions |
 | --- | ---: | ---: | ---: |
-| `AAA` | **2** | 1 | **3** |
-| `AAT` | 1 | 1 | 1 |
-| `ATA` or `TAT` | 1 | **3** | 1 |
-| `TAA` | 1 | 1 | 1 |
+| AAA | **2** | 1 | **3** |
+| AAT | 1 | 1 | 1 |
+| ATA / TAT | 1 | **3** | 1 |
+| TAA | 1 | 1 | 1 |
 
-**The sample happened to contain `AAA` twice. The wrong genome predicts that type more often.**
+**The truth satisfies the reconstruction conditions.** The competitor is a valid likelihood candidate, but it **does not satisfy the same bridging conditions** in this witness.
 
 <!--
-This is source-faithful MB09 '6.2's reverse-complement molecule-type
-interpretation, not the oriented-read model of the preceding positive theorem.
-Complement map A <-> T. True circular molecule windows in classes:
-AAA, AAT, ATA, ATA (from TAT), ATA, TAA. Wrong: AAA, AAA, AAA,
-AAT, ATA, TAA. Realized starts (0,0,1,3,5) produce sequences
-AAA,AAA,AAT,TAT,TAA. Source:
-docs/section62-same-length-bidirected-counterexample.md
+The source-faithful same-length MB09 §6.2 read-molecule witness:
+SameLengthSection62Counterexample. Both genomes have genuine spelled
+bidirected-flow candidate certificates. Truth satisfies full I_s at
+realized starts; D fails I_s in the witness owing to an unbridged
+triple repeat (audit #267, W5). Do not conclude D has zero marginalized
+conditional probability from its failure at ONE set of placements.
 -->
 
 ---
 
-# The exact calculation: ML prefers the wrong genome
+# Exact calculation: the implication is false
 
-With a uniformly random start, each type has probability
-**(its occurrence count) / 6**. For five conditionally independent reads:
+At a uniformly random start, the probability of a read type equals its number of positions divided by 6.
 
-**True genome** `S = AAATAT`:
-
-$$
-P(R\mid S)=
-\left(\tfrac16\right)^2
-\left(\tfrac16\right)
-\left(\tfrac36\right)
-\left(\tfrac16\right)
-=\frac{3}{6^5}=\frac1{2592}
-$$
-
-**Wrong genome** `D = AAAAAT`:
+For the five independent reads, the **true genome** has likelihood:
 
 $$
-P(R\mid D)=
-\left(\tfrac36\right)^2
-\left(\tfrac16\right)
-\left(\tfrac16\right)
-\left(\tfrac16\right)
-=\frac{9}{6^5}=\frac1{864}
+P(R\mid S)
+= \left(\tfrac16\right)^2
+  \left(\tfrac16\right)
+  \left(\tfrac36\right)
+  \left(\tfrac16\right)
+= \frac{3}{6^5} = \frac1{2592}.
+$$
+
+The **competing genome** has likelihood:
+
+$$
+P(R\mid D)
+= \left(\tfrac36\right)^2
+  \left(\tfrac16\right)
+  \left(\tfrac16\right)
+  \left(\tfrac16\right)
+= \frac{9}{6^5} = \frac1{864}.
 $$
 
 $$
-\boxed{\frac{P(R\mid D)}{P(R\mid S)}=3>1}
+\boxed{\frac{P(R\mid D)}{P(R\mid S)}=3}
 $$
 
-**ML prefers the wrong genome by a factor of three.** Therefore the truth **cannot be an ML maximizer** in this candidate class.
+**The competitor scores three times higher.** This **disproves the 2016 bridging-to-ordinary-ML implication**.
 
 <!--
-These are probabilities of an ordered sample of read-molecule types under
-independent, uniform starts. For unordered observed counts both candidate
-likelihoods share the multinomial coefficient 5!/2! = 60, so the ratio is
-still exactly 3. The literal MB09 '6.1 fixed-N product-binomial objective
-is DIFFERENT; its ratio for this witness is 5, not 3. Do not conflate.
-Both objective ratios and full '6.2 candidate feasibility are Lean-checked.
+Exact iid ordered molecule-type ratio is 3. The multinomial-count factor
+cancels for unordered sample counts. MB09 §6.1 product-binomial ratio
+on this same witness is 5, not 3. Source-faithful flow and inequalities
+are Lean checked; no claim is made about an unconditional Bayes posterior.
 -->
 
 ---
 
-# Why this settles a substantive case of the 2016 question
+# Why ML was not defeated
 
-This is **not** a made-up case where assembly was impossible.
+**Not-So-Greedy has a conditional guarantee:** whenever coverage and bridging hold **for the actual genome**, its read-overlap algorithm returns the truth.
 
-- The observed reads satisfy the 2016 **coverage and repeat-bridging conditions**, so **Not-So-Greedy's reconstruction guarantee applies** to the true genome.
-- The true and competing genomes are both **legal assemblies under the 2009 read-molecule model**.
-- They have the **same length**. There is no hidden benefit from adding genome positions.
-- Yet the competitor has **strictly higher likelihood**.
+**Ordinary ML has a broader assignment:** rank all permitted candidate genomes by the probability of producing the observed reads, **without using that structural guarantee as extra statistical information**.
 
-**Therefore the reconstruction guarantee does not, in this model, force the true genome to be maximum likelihood.** We have a checked counterexample—not merely a numerical suspicion.
+Our competing genome remains in this ordinary likelihood comparison, even though it does not satisfy the reconstruction conditions in the witnessed case.
 
-This does **not** contradict ML's optimality *averaged over the prior*. An optimal decision rule can still be wrong on a particular sample.
+**So the implication is false — but this is not a head-to-head demonstration that ML is a worse statistical estimator.**
+
+It suggests another question: **can we recover optimality when both methods are evaluated on the same promised event?**
 
 <!--
-Source: docs/section62-same-length-bidirected-counterexample.md.
-Kernel theorem:
-AssemblyP1.SameLengthSection62Counterexample.
-samelength_se62_bidirected_flow_counterexample.
-It checks Shomorony information feasibility (coverage, triple all-bridged,
-interleaved bridging), same length, both literal bidirected '6.2 spelled
-circuits, and strict exact likelihood inequality (ratio 3).
-The earlier oriented-positive result and this molecule-negative result
-are compatible because their statistical/sample conventions differ.
+The NSG guarantee is pointwise on a truth-dependent event E. The
+algorithm itself is read-only and does not require the event label.
+Ordinary ML maximizes P(R|D) over its candidate universe. Its
+prior-averaged Bayes-optimality in the uniform-prior setup coexists
+with specific finite samples where the source truth is not ML.
+Do not claim NSG received E as operational input.
+-->
+
+---
+
+# Conditional Bayes: recovering optimality
+
+Imagine that we are **also told** the actual genome and its reads satisfy the reconstruction guarantee. Call that event **E**.
+
+Bayesian inference must now use the reads **and E**:
+
+- **Ordinary inference** scores how likely these reads are under each genome.
+- **Conditional inference** scores how likely a genome could produce **these reads together with E**, with a prior.
+
+The reconstruction theorem says: among possible true genomes compatible with **the same reads and E**, every one is the **same circular genome up to rotation**.
+
+**Therefore its conditional posterior probability is 100%.** Conditional MAP recovers the truth, and **no algorithm can beat it on this conditioned experiment**.
+
+**This recovers bestness in the right statistical problem.** But E depends on the unknown truth: it is **extra information**, not a reinterpretation of ordinary ML.
+
+<!--
+Use source-faithful fixed-regime read-string F(g,r) and the cited
+Not-So-Greedy unique read-only decoder A satisfying
+F(g,r) -> A(r) equivalent-to g (external source premise).
+Then K(g,r)=pi(g) P_g(r) 1_{F(g,r)}, with P_E supported on the one
+class [A(r)]. Kernel-checked consequences:
+ConditionalIdentifiability.lean: feasible_fibre_unique,
+conditional_posterior_eq_one, constrained_MAP_mem_orbit.
+For latent placements the correct joint mass sums weights over
+compatible placements satisfying E, not P(R|g) times a naive
+existence indicator. Event E is generally not R-observable.
+The W3/W6 placement-based counterexamples cannot be fed into the
+different read-string feasibility theorem; do not conflate predicates.
+The 2016 negative conclusion remains untouched by this new
+conditional Bayesian decision result.
+-->
+
+---
+
+# Another theorem: a restricted positive result
+
+There is also a **separate structural result** that is worth highlighting.
+
+If we distinguish the direction of reads, compare genomes of the **same length**, and require **both the truth and its competitors** to satisfy the relevant assembly-candidate constraints:
+
+**No admissible competing genome can score higher than the truth.**
+
+With the stronger uniqueness hypotheses, the only valid alternatives are **rotations of the same circular genome**.
+
+This is a powerful theorem about a **restricted candidate problem**. It **does not change the negative answer** to the original, broader likelihood question.
+
+<!--
+Oriented, same-length, both genuine §6.2 candidate certificates:
+SameLength62Maximizer.informationFeasible_62_maximizer and
+SameLength62Uniqueness.unique_62_maximizer_up_to_rotation.
+This is NOT the conditional Bayesian theorem; present it afterward
+so it does not dilute the headline negative result.
 -->
 
 ---
 
 # Why investigate a model with more reads?
 
-We found a real counterexample: **Not-So-Greedy is guaranteed to reconstruct the truth, yet maximum likelihood picks another genome.**
+The finite counterexample settled the 2016 question **negatively**. But it inspired a different research direction.
 
-But **why** did ML lose? I hypothesized that the intuition might still be right: perhaps a **finite, unusually unrepresentative sample** was the problem—not a fundamental conflict between reconstruction and likelihood.
+The true genome AAATAT generates AAA at only **1 of 6** positions, yet our five-read sample contained AAA **twice**. The competitor AAAAAT generates AAA at **3 of 6** positions, so that unusual sample favored it.
 
-In the counterexample, the true genome **AAATAT** has **AAA** at **1 of 6** starting positions, but our five reads happened to include it **2 of 5 times**.
+**My hypothesis:** perhaps the intuition that assembly and likelihood should agree was fundamentally sound, and the apparent disagreement came from **finite sampling fluctuations**.
 
-The wrong genome **AAAAAT** has **AAA** at **3 of 6** positions. This unusually AAA-heavy sample therefore favored the wrong genome.
-
-**So I changed the research question:** what if we remove that sampling accident, by allowing as many independent reads as needed?
+**So I changed the question:** what if we could take as many independent reads as needed, removing that sampling accident?
 
 <!--
-This research motivation is the human director's actual hypothesis, not a
-mathematical consequence of the counterexample.
-The 1/6 and 3/6 occurrence rates refer to reverse-complement-collapsed
-molecule types in the finite witness. For a read-type-specific frequency
-table these are exact. The five-read observation of AAA twice is 2/5.
-This motivates moving to a DIFFERENT question; it does not undo the finite
-counterexample or make ML uniformly correct at any fixed sample size.
+A new hypothesis-driven research pivot by the human director; the negative
+finite answer is already resolved. The molecule frequencies motivate
+an independent oriented primitive-P2 population theorem; do not
+pretend the population theorem retroactively makes the finite claim true.
 -->
 
 ---
@@ -663,22 +679,23 @@ fidelity to intended biology/published hypotheses.
 
 # What the investigation established
 
-We compared **a reconstruction algorithm with a success guarantee** and **maximum likelihood, statistically optimal in the specified prior-averaged sense**.
+**The 2016 bridging-to-ordinary-ML implication is false.** Not-So-Greedy can have a guaranteed reconstruction while ordinary likelihood gives a competitor a higher score.
 
-**We settled the determinate source-supported finite interpretations** of the 2016 question: there are genuine counterexamples to finite ML recovery, alongside strong positive results for carefully defined candidate classes.
+**That does not mean ML is worse.** Its statistical optimality concerns a broader inference task. If we instead include the structural guarantee in a **conditional Bayesian experiment**, we recover **certain and optimal** reconstruction of the true genome class.
 
-When the finite failures suggested a **sampling effect rather than a fundamental obstruction**, I directed the investigation toward a population model. There, we proved **ML uniqueness up to rotation**, under explicit structural assumptions.
+We also proved a **restricted same-length positive theorem**, **population ML uniqueness** under explicit repeat assumptions, and **finite-family recovery guarantees** as reads accumulate.
 
-The research combined **human direction, parallel AI exploration, continuous orchestration, and Lean-checked proofs**.
+The research was driven by **my choice of hypotheses and directions**, with parallel agents, continuous orchestration, and Lean-checked mathematics.
 
 <HomeLink label="Choose another audience" />
 
 <!--
-The old 2016 sentence does not uniquely select an MB09 objective, but its
-determinate source-supported interpretations have been resolved. Do not
-understate this as not having answered our original question. The
-population theorem is separate (oriented primitive P2 class); do not
-suggest it makes finite counterexamples disappear.
+Main answer NO (non-Bayesian if/then implication), not model-dependent
+on the audience slide. Do not describe ML as statistically defeated.
+The conditional Bayes certainty is a corollary of the external NSG unique
+decoder theorem on the event E, with E given as truth-dependent extra
+side information. Restricted positive ML and population-P2 are
+separate theorems and do not rescue the original finite implication.
 -->
 
 ---
