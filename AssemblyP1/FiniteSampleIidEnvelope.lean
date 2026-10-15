@@ -6,6 +6,8 @@ import Mathlib.Algebra.Order.BigOperators.Group.Finset
 import Mathlib.Algebra.BigOperators.Group.Finset.Sigma
 import Mathlib.Algebra.BigOperators.Group.Finset.Piecewise
 import Mathlib.Algebra.Order.BigOperators.GroupWithZero.Finset
+import Mathlib.Algebra.Order.Archimedean.Real.Basic
+import Mathlib.Algebra.Order.Field.Basic
 
 /-!
 # Exact finite-sample iid ML/MAP envelope (Antonina #269/#271)
@@ -166,8 +168,103 @@ theorem truth_maximizer_iff_envelope_le_one [DecidableEq E]
     have hle := likelihood_prior_ratio_le_envelope p q piP piQ a y hp hq hpiP hpiQ j hrmax m hy
     exact le_trans hle henvelope
 
+/-- A count vector `x` is compatible with **full true-start coverage** on the
+true oriented read support `E`: every true read type is observed at least as
+often as its start multiplicity `A i`.  This is the type-count shadow of
+sampling every true genome start at least once. -/
+def FullStartCovered (A x : E → ℕ) : Prop := ∀ i, A i ≤ x i
+
+/-- **Exact iid full-start-covered pointwise classification.**
+
+Let `E` be the true oriented read-type support, `A i > 0` the truth's start
+spectrum, `p i > 0` the truth's exact iid read-type probabilities, and `q i ≥ 0`
+a candidate's read-type probabilities.  Then the candidate's exact iid
+likelihood is never strictly larger than the truth's on *any* full-start-covered
+observed count vector `x ≥ A` if and only if either the candidate assigns zero
+probability to some true read type, or it is coordinatewise dominated by the
+truth on the true support.
+
+This is the `m`-free generalization of `truth_maximizer_iff_envelope_le_one`:
+the latter fixes the total surplus `m`, while this quantifies over every
+admissible full-start-covered sample.  Sufficiency is the product inequality on
+the observed types (with the zero-support case immediate); necessity samples the
+baseline once and then concentrates `k` surplus copies at a type where
+`q j > p j`, whose likelihood ratio `C · (q j / p j)^k` grows without bound.
+
+This is EXACT IID multinomial likelihood; it is NOT the MB09 fixed-`N`
+product-binomial model, nor the general bidirected-flow structural
+classification. -/
+theorem truth_maximizer_forall_covered_iff [DecidableEq E]
+    (p q : E → ℝ) (A : E → ℕ)
+    (hp : ∀ i, 0 < p i)
+    (hq : ∀ i, 0 ≤ q i)
+    (hA : ∀ i, 0 < A i) :
+    (∀ x : E → ℕ, FullStartCovered A x →
+      (∏ i : E, (q i) ^ (x i)) ≤ (∏ i : E, (p i) ^ (x i)))
+      ↔ (∃ j, q j = 0) ∨ (∀ i, q i ≤ p i) := by
+  constructor
+  · intro h
+    by_cases hhole : ∃ j, q j = 0
+    · exact Or.inl hhole
+    · right
+      push Not at hhole
+      by_contra hnotle
+      push Not at hnotle
+      obtain ⟨j, hpj⟩ := hnotle
+      have hqpos : ∀ i, 0 < q i := fun i => lt_of_le_of_ne (hq i) (Ne.symm (hhole i))
+      have hrj : 1 < q j / p j := (one_lt_div (hp j)).mpr hpj
+      have hPqpos : 0 < ∏ i : E, (q i) ^ (A i) :=
+        Finset.prod_pos (fun i _ => pow_pos (hqpos i) (A i))
+      have hPppos : 0 < ∏ i : E, (p i) ^ (A i) :=
+        Finset.prod_pos (fun i _ => pow_pos (hp i) (A i))
+      have hCpos : 0 < (∏ i : E, (q i) ^ (A i)) / (∏ i : E, (p i) ^ (A i)) :=
+        div_pos hPqpos hPppos
+      obtain ⟨k, hk⟩ := pow_unbounded_of_one_lt
+        (1 / ((∏ i : E, (q i) ^ (A i)) / (∏ i : E, (p i) ^ (A i)))) hrj
+      have hgt1 : 1 < ((∏ i : E, (q i) ^ (A i)) / (∏ i : E, (p i) ^ (A i))) *
+          (q j / p j) ^ k := by
+        have hc : ((∏ i : E, (q i) ^ (A i)) / (∏ i : E, (p i) ^ (A i))) *
+            (1 / ((∏ i : E, (q i) ^ (A i)) / (∏ i : E, (p i) ^ (A i)))) = 1 := by
+          field_simp
+        have hstep := mul_lt_mul_of_pos_left hk hCpos
+        rwa [hc] at hstep
+      let x : E → ℕ := fun i => A i + if i = j then k else 0
+      have hcov : FullStartCovered A x := fun i => by
+        dsimp only [FullStartCovered, x]; omega
+      have hx := h x hcov
+      have hqx : (∏ i : E, (q i) ^ (x i)) =
+          (∏ i : E, (q i) ^ (A i)) * (q j) ^ k := by
+        dsimp only [x]
+        exact prod_pow_eq_prod_pow_mul_rmax_pow_concentrated q A j k hq
+      have hpx : (∏ i : E, (p i) ^ (x i)) =
+          (∏ i : E, (p i) ^ (A i)) * (p j) ^ k := by
+        dsimp only [x]
+        exact prod_pow_eq_prod_pow_mul_rmax_pow_concentrated p A j k
+          (fun i => le_of_lt (hp i))
+      have hden : 0 < (∏ i : E, (p i) ^ (x i)) :=
+        Finset.prod_pos (fun i _ => pow_pos (hp i) (x i))
+      have hratio : (∏ i : E, (q i) ^ (x i)) / (∏ i : E, (p i) ^ (x i)) =
+          ((∏ i : E, (q i) ^ (A i)) / (∏ i : E, (p i) ^ (A i))) *
+            (q j / p j) ^ k := by
+        rw [hqx, hpx, div_pow, div_mul_div_comm]
+      have hle1 : (∏ i : E, (q i) ^ (x i)) / (∏ i : E, (p i) ^ (x i)) ≤ 1 := by
+        rw [div_le_one hden]; exact hx
+      rw [hratio] at hle1
+      exact absurd hgt1 (not_lt_of_ge hle1)
+  · rintro (⟨j, hqj⟩ | hle) x hx
+    · have hxj : 0 < x j := lt_of_lt_of_le (hA j) (hx j)
+      have hzj : (q j) ^ (x j) = 0 := by
+        rw [hqj]; exact zero_pow (ne_of_gt hxj)
+      have hprod0 : (∏ i : E, (q i) ^ (x i)) = 0 :=
+        Finset.prod_eq_zero_iff.mpr ⟨j, Finset.mem_univ j, hzj⟩
+      rw [hprod0]
+      exact Finset.prod_nonneg (fun i _ => pow_nonneg (le_of_lt (hp i)) (x i))
+    · exact Finset.prod_le_prod₀ (fun i _ => pow_nonneg (hq i) (x i))
+        (fun i _ => pow_le_pow_left₀ (hq i) (hle i) (x i))
+
 #print axioms prod_pow_le_prod_pow_mul_rmax_pow
 #print axioms likelihood_prior_ratio_le_envelope
 #print axioms truth_maximizer_iff_envelope_le_one
+#print axioms truth_maximizer_forall_covered_iff
 
 end AssemblyP1.FiniteSampleIidEnvelope

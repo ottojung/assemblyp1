@@ -1,0 +1,6 @@
+import AssemblyP1.FiniteSampleIidEnvelope
+
+#print axioms AssemblyP1.FiniteSampleIidEnvelope.prod_pow_le_prod_pow_mul_rmax_pow
+#print axioms AssemblyP1.FiniteSampleIidEnvelope.likelihood_prior_ratio_le_envelope
+#print axioms AssemblyP1.FiniteSampleIidEnvelope.truth_maximizer_iff_envelope_le_one
+#print axioms AssemblyP1.FiniteSampleIidEnvelope.truth_maximizer_forall_covered_iff
