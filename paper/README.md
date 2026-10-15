@@ -20,6 +20,14 @@ models, and the proofs. The appendices preserve detailed modeling choices,
 verification scope, and historical source reconciliation. A full
 [claim-to-proof index](../docs/verification.md) lives outside the paper.
 
+## Download
+
+The current white paper is available as a [PDF download](https://github.com/ottojung/assemblyp1/releases/download/whitepaper-latest/assemblyp1-white-paper.pdf).
+After each successful main build, the Documents workflow updates the
+whitepaper-latest GitHub Release; pull requests only build and validate
+without publishing. Previous CI workflow artifacts are also available for
+individual revisions.
+
 ## Build
 
 The build is reproducible and uses a pinned, minimal TeX dependency set. With
