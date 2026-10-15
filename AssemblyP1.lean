@@ -50,6 +50,8 @@ import AssemblyP1.Section62SpelledFlowImageRefutation
 import AssemblyP1.Section62SpelledFlowImageRefutationAudit
 import AssemblyP1.Section62ReductionVacuityAudit
 import AssemblyP1.Section62SpellingReductionCandidate
+-- #284 source fidelity: exact idealized two-hop transitivity iff spelling reduction.
+import AssemblyP1.Section62MyersIdealTransitivity
 -- #262 full-overlap counterexample transfer across overlap thresholds.
 import AssemblyP1.Section62FullOverlapLift
 import AssemblyP1.Section62FullOverlapLiftAudit
