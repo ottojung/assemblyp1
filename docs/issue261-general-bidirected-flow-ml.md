@@ -212,7 +212,7 @@ half added by `AssemblyP1.Section62FlowCountVectorAdapter`.
 | Variable-length exact-multinomial criterion (§6.1 exact display) | **RESOLVED** (`varLengthCriterion`), project-defined objective |
 | Fixed-external-`N` multinomial-product criterion | **RESOLVED** (`flow_dominance_criterion`), correctly labelled |
 | Genuine §6.1 separable-binomial count-vector criterion | **RESOLVED at the count-vector layer** (`AssemblyP1.Section62BinomialCriterion.binomial_uniform_criterion`, kernel-checked): exact q-factorization `K(d;x)=∏ᵢqᵢ(d)^{xᵢ}` and the all-`n` interior-truth iff `∏ᵢqᵢ(B)=0 ∨ ∀i∈I, qᵢ(B)≤qᵢ(A)`. The fixed-`n` extreme-sample iff remains **numerically audited** (`scripts/verify_261_binomial_extreme_samples.py`) but not yet kernel-checked |
-| §6.1 binomial over the §6.2 feasible flow set | **PARTIAL** — spelled half RESOLVED (`Section62SpelledFlowAdapter.spelling_flow_feasible`, 2026-10-15); image characterization still OPEN |
+| §6.1 binomial over the §6.2 feasible flow set | **PARTIAL** — spelled half RESOLVED (`Section62SpelledFlowAdapter.spelling_flow_feasible`, 2026-10-15); the image identity `Θ(F)=spelledVisitSet` is **REFUTED** (2026-10-15, `Section62SpelledFlowImageRefutation`); general image characterization still OPEN |
 | Half-integral relaxation gap | **RESOLVED** (flow level: `Section62NonSpelledFlow`; arithmetic: `half_integral_gap`) |
 | Rescaling ties at variable length | **RESOLVED** (`rescaling_tie`) |
 | Non-spelled-flow maximality criterion | **OPEN** (finite obstruction kernel-checked) |
@@ -322,3 +322,31 @@ Source reading: [Medvedev–Brudno 2009, §§6.1–6.2](https://pmc.ncbi.nlm.nih
   is also limited to candidates whose every window is an observed graph vertex.
   `flow_maximal_iff_spelled_maximal_of_image_eq` reduces sufficiency exactly to the
   open identity `Θ(feasibleFlowSet) = spelledVisitSet`.
+- `AssemblyP1/Section62SpelledFlowImageRefutation.lean` (+ `.Audit.lean`): the
+  **refutation** of that identity (2026-10-15). It proves two general structural
+  obstructions and exhibits two genuine MB09 §6.2 `overlapEdges` instances at
+  `o_min = 1`, `readLen = 3`:
+  * `visits_eq_zero_of_no_arriving_maxEdge` — no spelled circuit visits a class
+    `v` unless some maximal edge (`len = readLen − 1`) *arrives* at `v`, because
+    every visited position is the arrival strand of the maximal step `pred i`;
+  * `spelledVisitSet_eq_empty_of_no_maxEdge` — a graph with no maximal edge has
+    no spelled circuit at all.
+  Instance A (`AAC`, `CCA`) has no maximal edge, so `spelledVisitSet = ∅`, while a
+  zero-terminal feasible flow exists (`image_ne_spelledVisitSet`).  Instance B
+  (`AAA`, `ACA`) *does* contain maximal edges, but none arrives at the class `ACA`;
+  a feasible flow routes through `ACA` on a length-`1` overlap, so its throughput
+  is not spelled (`image_ne_spelledVisitSet_of_maxEdge_instance`).  Axioms:
+  `[propext, Classical.choice, Quot.sound]`
+  (`AssemblyP1/Section62SpelledFlowImageRefutationAudit.lean`), all `decide`-checked
+  against the literal `overlapEdges` construction.
+
+  **Consequence for the sufficiency axis.**  The hypothesis `hEq` of
+  `flow_maximal_iff_spelled_maximal_of_image_eq` is *not* universally satisfiable:
+  the identity is false, so the spelled test cannot be a sufficient condition for
+  flow-level maximality in general.  The precise obstruction is that a §6.2
+  feasible flow may be supported on proper overlaps strictly shorter than
+  `readLen − 1`, while `Spelling.step` is always the maximal overlap; the graph
+  need not even contain a maximal edge.  The identity restricted to graphs whose
+  *every* edge is maximal (so the obstruction above cannot occur) remains OPEN;
+  there the spelled sub-class and the feasible set can still differ by
+  connectivity and strand-consistency.

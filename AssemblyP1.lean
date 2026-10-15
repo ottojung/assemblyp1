@@ -45,6 +45,9 @@ import AssemblyP1.Section62SpelledFlowAdapterAudit
 -- #261 spelled sub-class maximality transfer (length universe + transfer) and audit.
 import AssemblyP1.Section62SpelledFlowMaximality
 import AssemblyP1.Section62SpelledFlowMaximalityAudit
+-- #261 refutation of the spelled-throughput image identity Θ(F) = spelledVisitSet.
+import AssemblyP1.Section62SpelledFlowImageRefutation
+import AssemblyP1.Section62SpelledFlowImageRefutationAudit
 import AssemblyP1.Section62ReductionVacuityAudit
 import AssemblyP1.Section62SpellingReductionCandidate
 -- #262 full-overlap counterexample transfer across overlap thresholds.
@@ -1044,6 +1047,13 @@ graph content remains external. -/
 #print axioms AssemblyP1.Section62SpelledFlowMaximality.flow_not_maximal_of_spelled_witness
 #print axioms AssemblyP1.Section62SpelledFlowMaximality.spelled_truth_flow_not_maximal_of_spelled_witness
 #print axioms AssemblyP1.Section62SpelledFlowMaximality.flow_maximal_iff_spelled_maximal_of_image_eq
+-- #261 refutation of the spelled-throughput image identity Θ(F) = spelledVisitSet.
+#print axioms AssemblyP1.Section62SpelledFlowImageRefutation.visits_eq_zero_of_no_arriving_maxEdge
+#print axioms AssemblyP1.Section62SpelledFlowImageRefutation.spelledVisitSet_eq_empty_of_no_maxEdge
+#print axioms AssemblyP1.Section62SpelledFlowImageRefutation.image_ne_spelledVisitSet
+#print axioms AssemblyP1.Section62SpelledFlowImageRefutation.exists_feasible_not_spelled
+#print axioms AssemblyP1.Section62SpelledFlowImageRefutation.flow4b_throughput_not_spelled
+#print axioms AssemblyP1.Section62SpelledFlowImageRefutation.image_ne_spelledVisitSet_of_maxEdge_instance
 #print axioms AssemblyP1.Section62FullOverlapDisconnected.full_overlap_disconnected_optimum
 #print axioms AssemblyP1.Section62FullOverlapDisconnected.disc_support_disconnected
 #print axioms AssemblyP1.Section62FullOverlapDisconnected.dStar_argmax

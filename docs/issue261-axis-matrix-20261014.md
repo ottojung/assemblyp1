@@ -19,7 +19,7 @@ claimed result's hypotheses against the source model (MB09 §6.1–§6.2, Myers
 | Fixed-external-`N` **multinomial product** criterion | **RESOLVED** | `GeneralBidirectedFlowML.flow_dominance_criterion` | coordinatewise dominance; *not* the §6.1 separable binomial |
 | Genuine §6.1 **separable-binomial count-vector** criterion | **RESOLVED at the count-vector layer** | `Section62BinomialCriterion.binomCoreNat_eq_prod_qFac`, `.binomCoreNat_concentrated`, `.binomial_uniform_criterion` | fixed external `N`, interior truth, all `n≥m`; q-factorization `K(d;x)=∏ᵢqᵢ(d)^{xᵢ}` |
 | Fixed-`n` (non-uniform) **extreme-sample iff** | **OPEN** (numerically audited) | `scripts/verify_261_binomial_extreme_samples.py` | Lean formalization absent |
-| §6.1 binomial over the **§6.2 feasible-flow set** | **PARTIAL** (spelled half RESOLVED + transfer) | `Section62FlowCountVectorAdapter`; `Section62SpelledFlowAdapter.spelling_flow_feasible`; `Section62SpelledFlowMaximality` | image characterization still OPEN; spelled sub-class is a strict sub-class; see §2 |
+| §6.1 binomial over the **§6.2 feasible-flow set** | **PARTIAL** (spelled half RESOLVED + transfer; image identity REFUTED) | `Section62FlowCountVectorAdapter`; `Section62SpelledFlowAdapter.spelling_flow_feasible`; `Section62SpelledFlowMaximality`; `Section62SpelledFlowImageRefutation` | spelled sub-class strictly contained in the image; identity `Θ(F)=spelledVisitSet` FALSE in general; image characterization still OPEN; see §2 |
 | **Spelled-candidate length universe** | **RESOLVED** | `Section62SpelledFlowMaximality.sum_visits_eq_n`, `.sum_throughput_eq_n` | total visit/throughput mass of an `n`-position circular spelling is exactly `n`; not a claim about the full flow image |
 | **Half-integral relaxation gap** | **RESOLVED** (flow level) | `Section62NonSpelledFlow.half_integral_strictly_better`; arithmetic `GeneralBidirectedFlowML.half_integral_gap` | the finite `AAATT` instance; not a general theorem |
 | **Non-spelled-flow** maximality criterion | **OPEN** (finite obstruction kernel-checked) | `Section62NonSpelledFlow.no_sequence_has_star_spectrum`, `.star_argmax`, `.nonspelled_se62_flow_domain_countermodel` | no general necessary-and-sufficient condition known |
@@ -93,8 +93,17 @@ What this does **not** prove, and what stays OPEN:
 
    *Sufficiency reduction.*  `flow_maximal_iff_spelled_maximal_of_image_eq` makes
    the gap exact: the spelled test is sufficient for flow-level maximality **iff**
-   `Θ(feasibleFlowSet) = spelledVisitSet`.  Since that identity fails in general
-   (`AAATT`), sufficiency is precisely the open image-characterization problem.
+   `Θ(feasibleFlowSet) = spelledVisitSet`.  That identity is now **REFUTED**
+   (2026-10-15, `AssemblyP1.Section62SpelledFlowImageRefutation`, kernel-checked,
+   axioms `[propext, Classical.choice, Quot.sound]`): two genuine §6.2
+   `overlapEdges` instances at `o_min = 1`, `readLen = 3` carry zero-terminal
+   feasible flows whose throughputs are not spelled visit vectors.
+   `visits_eq_zero_of_no_arriving_maxEdge` shows no spelled circuit visits a class
+   unless a maximal edge arrives there; instance A (`AAC`, `CCA`) has no maximal
+   edge at all (`spelledVisitSet = ∅`), and instance B (`AAA`, `ACA`) has maximal
+   edges but none arriving at `ACA`.  The hypothesis `hEq` is therefore not
+   universally satisfiable, so the spelled test is **not** sufficient in general.
+   The identity restricted to graphs whose every edge is maximal stays OPEN.
 
    *Scope caveat (explicit).*  The spelled sub-class is **strict**: the `AAATT`
    obstruction `no_sequence_has_star_spectrum` is a feasible throughput that is no
