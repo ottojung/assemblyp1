@@ -73,6 +73,8 @@ import AssemblyP1.Section62AnchoredWindowBridge
 import AssemblyP1.Section62AnchorSourceWords
 -- #284: full circular no-skipped-windows and read-occurrence theorem for reduced signed circuits.
 import AssemblyP1.Section62GlobalSkippedBridge
+-- #284: RC molecule-class occurrence counts, including palindromes.
+import AssemblyP1.Section62ObservedMoleculeCount
 -- #284: non-vacuity regression instantiating the signed-circuit adapter on
 -- concrete legal signed overlap circuits, including the G < readLen case.
 import AssemblyP1.Section62SignedAdapterRegression
