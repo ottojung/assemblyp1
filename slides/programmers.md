@@ -275,51 +275,90 @@ are conceptual floating-point values; for many reads use log likelihood.
 
 ---
 
-# Which answer wins more often?
+# What does it mean for an assembly algorithm to be better?
 
-Choose genome **A or B with equal probability**, then sample two reads at random. That makes **50 equally likely experiments**.
+An algorithm sees the **reads** and guesses which genome produced them.
 
-Among experiments producing the reads AAA, AAA:
+To compare algorithms, imagine repeating the **whole experiment**:
 
-| True genome | A | B |
-| --- | ---: | ---: |
-| Number of experiments | **1** | **4** |
+1. Pick the true genome: **A or B, equally likely**.
+2. Draw two random reads from it.
+3. Let each algorithm guess the genome from those reads.
 
-The algorithm sees **only the reads**, so these five experiments look identical.
+**Score:** how often does the algorithm guess correctly?
 
-**Guess A:** correct once. **Guess B:** correct four times.
-
-ML chooses **B** for this observation. But how do we prove it is best over *all* observations?
+For the reads **AAA, AAA**, we calculated that **B is the true genome in 80%** of experiments producing those reads. Guessing B is therefore the better decision **for this observation**.
 
 <!--
-A=AAATT, B=AAAAT, independent uniform starts. 2 genomes x 5 x 5
-start pairs = 50 equiprobable histories. Observation [AAA,AAA]
-has 1 A history, 4 B histories. This establishes only this
-observation-group comparison. The next slide generalizes.
+The comparison criterion is prior-averaged 0-1 correctness: draw a genome
+from the stated equal prior, independently sample two reads, and score
+one if the algorithm's guess matches the hidden genome.
+There are 2 * 5^2 = 50 equally likely latent (genome, start-pair)
+histories. Only five produce [AAA, AAA]: one from A and four from B.
+The conditional 80% is not a guarantee for a fixed true genome.
 -->
 
 ---
 
-# Why no algorithm can beat maximum likelihood
+# Counting the decisions an algorithm can get right
 
-Group **all possible experiments** by the reads they produce.
+There are **50 equally likely experiments**: two equally likely true genomes, each with 25 possible pairs of read starts.
 
-Within each group, the algorithm must make **the same decision**, because it cannot distinguish the hidden experiments.
+Group the experiments by the **reads the algorithm sees**. Here are four example rows:
 
-ML chooses whichever genome accounts for **the most experiments in that group**. No alternative decision gets more of that group's experiments right.
+| Reads observed | True A | True B | Best guess |
+| --- | ---: | ---: | --- |
+| `AAA, AAA` | 1 | **4** | **B** |
+| `AAA, AAT` | 1 | **2** | **B** |
+| `AAA, ATT` | **1** | 0 | **A** |
+| `AAT, TAA` | 1 | 1 | Either |
 
-Now **add the winning counts over every group**. No algorithm can achieve a higher overall probability of reconstructing the genome.
+The algorithm cannot distinguish experiments in the same row. **Guess A, and it gets the A count correct; guess B, and it gets the B count.**
 
-**Ties are allowed.** This result assumes **equal priors**, equal cost of mistakes, and the stated read-sampling model.
+So **the best possible score for any row is its larger count**.
 
 <!--
-Formal result: in a finite candidate universe with prior π and 0-1
-loss, MAP maximizes prior-average correctness. Under a uniform prior
-ML=MAP. For any decision a(r), correctness is
-sum_r π(a(r))P(R=r|G=a(r)), optimized termwise.
-Randomization cannot improve since convex combinations cannot
-exceed a maximum. Lean FiniteBayesDecision.lean. No claim of
-pointwise correctness for every truth.
+These are ordered read pairs (not unordered bags), and each A/B
+latent pair of read-start positions is equiprobable. A=AAATT and
+B=AAAAT, both length five. Circular read-type counts:
+A: AAA,AAT,ATT,TTA,TAA each once.
+B: AAA twice, AAT once, ATA once, TAA once.
+Thus read-pair counts are products of type counts; all four table
+rows can be verified directly. The remaining observation rows are
+treated by the general argument on the next slide.
+-->
+
+---
+
+# The proof: choose the best guess for every observation
+
+**Every experiment belongs to exactly one row.** To count an algorithm's correct answers, add the count it gets right in **each** row.
+
+For any algorithm $f$, let $n_A(r)$ and $n_B(r)$ be the counts for observed reads $r$. Then:
+
+$$
+\underbrace{\frac1{50}\sum_r n_{f(r)}(r)}_{\text{accuracy of }f}
+\;\le\;
+\underbrace{\frac1{50}\sum_r\max\{n_A(r),n_B(r)\}}_{\text{best possible accuracy}}.
+$$
+
+**Why does ML reach the upper bound?** A genome has 25 possible pairs of starting positions. So the likelihood of $r$ is its row's count **divided by 25**.
+
+Choosing the **larger likelihood** therefore chooses the **larger count, in every row**.
+
+That is ML's decision rule. **No other algorithm can achieve higher average accuracy** under the assumed equal prior (ties are possible).
+
+<!--
+Formal generalization: with finite candidates H, prior π, and 0–1 loss,
+accuracy(f) = Σ_r π(f(r)) P(r|f(r))
+            ≤ Σ_r max_g π(g) P(r|g).
+MAP attains the bound for any prior. Equal priors make MAP=ML,
+even when candidates have different lengths (there the raw counts
+must first be converted to candidate-relative probabilities).
+The displayed 50-history argument works because A and B both have
+five positions and the prior is uniform. Randomization cannot
+improve on the per-row maximum. Lean FiniteBayesDecision.lean.
+Prior-averaged optimality does not imply success for each fixed truth.
 -->
 
 ---
