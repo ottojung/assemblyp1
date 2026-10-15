@@ -52,6 +52,8 @@ import AssemblyP1.Section62GlobalCircularCorrespondence
 import AssemblyP1.Section62GlobalCircularAudit
 import AssemblyP1.Section62ReductionDependencyAudit
 import AssemblyP1.Section62FullSpectrumUnseenFactor
+-- #259 real circular-genome witness: exact iid and product-binomial rankings differ.
+import AssemblyP1.Section62BinomialRealGenomeInversion
 import AssemblyP1.Section62CircularWindowAdapter
 -- #284 seam periodicity, aligned circular genome prefix and tail rotation (kernel-audited).
 import AssemblyP1.Section62PeriodicSeam
