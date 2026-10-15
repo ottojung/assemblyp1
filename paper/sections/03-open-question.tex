@@ -86,13 +86,17 @@ does not prove that it selects the true genome for each sample.
 
 \begin{theorem}[Bayes-optimal reconstruction; ML under a uniform prior]
 \label{thm:bayes-optimal}
-Let $\Theta$ be a nonempty finite set of candidate equivalence classes,
-$X$ a finite observation space, $\pi$ a prior and $P(x\mid\theta)$ the
-correct sampling model. A rule choosing
+Let $\Theta$ be a nonempty finite set of candidate equivalence classes ---
+for us, cyclic-rotation classes of circular genomes --- let $X$ be a finite
+observation space, let $\pi$ be a prior on $\Theta$, and let $P(x\mid\theta)$
+be the correct sampling model. Under \emph{zero-one loss}, in which a rule
+succeeds exactly when it returns the truth's class, a rule choosing
 $\widehat\theta_{\rm MAP}(x)\in\arg\max_\theta\pi(\theta)P(x\mid\theta)$
 maximizes the prior-averaged probability of exact reconstruction among
-all deterministic and randomized rules. Under a uniform prior MAP and ML
-coincide.
+all deterministic and randomized rules. If instead $\pi$ is uniform on the
+equivalence classes, MAP and maximum likelihood coincide. When the observation
+is $n$ independent reads from a common model, the conclusion holds at every
+finite sample size $n$.
 \end{theorem}
 
 \begin{proof}
@@ -110,6 +114,20 @@ likelihood maximizers.
 \statusline{\kernelcheck{} for deterministic and randomized finite decisions
 and the iid specialization in \texttt{AssemblyP1.FiniteBayesDecision};
 the decision principle itself is classical \cite{berger1985}.}
+
+\paragraph{Rotation classes and the choice of prior.}
+The prior is a prior on \emph{equivalence classes}, not on literal spellings.
+A uniform prior over circular words would instead weight each class in
+proportion to its orbit size, which is $n$ for a primitive length-$n$ word but
+smaller for a word with a shorter period; that asymmetry is an artifact of the
+representation, not of the data (Remark~\ref{rem:cyclic}). We therefore take the
+uniform prior over rotation classes, the symmetric choice under which ML is the
+prior-average optimum. This is a modeling choice, not a theorem: with a
+nonuniform prior or a different loss the prior-average optimum is MAP for that
+prior and loss, and the ML rule is no longer claimed optimal. The theorem says
+nothing about a \emph{fixed} truth, where the relevant question is instead
+identifiability (Section~\ref{sec:population}) and its finite-sample
+approximation (Section~\ref{sec:finite}).
 
 The theorem concerns the \emph{prior average}, not optimality for every
 fixed truth. It applies to the true joint likelihood, not automatically to
@@ -200,6 +218,96 @@ Apply this to the wrong-candidate event and use the preceding union bound.
 The conditioning here is on the \emph{truth's} bridging event. It is not
 a switch to Question~A's restricted posterior, and it becomes informative
 only after bounding the denominator and the pairwise affinities.
+
+\subsection{A worked example, and five claims that must not be conflated}
+\label{sec:five-claims}
+
+The statements above are logically independent, and a small example makes the
+independence vivid before the assembly-specific instances.
+
+\begin{example}[Prior-average optimality without pointwise success]
+\label{ex:worked-bayes}
+Let $\Theta=\{S,D\}$ with uniform prior $\pi(S)=\pi(D)=\tfrac12$, and let a
+single observed read type take values in $\{a,b\}$ with $P_S(a)=\tfrac34$ and
+$P_D(a)=\tfrac12$. Then $\pi(S)P_S(a)=\tfrac38$ and
+$\pi(D)P_D(a)=\tfrac14$, so MAP --- and, by uniformity of the prior, ML ---
+returns $S$ on $a$ and $D$ on $b$. Its prior-averaged success is
+$\tfrac12\cdot\tfrac34+\tfrac12\cdot\tfrac12=\tfrac58$, which is optimal
+(Theorem~\ref{thm:bayes-optimal}). Yet when the truth is $S$ and the
+observation is $b$ --- an event of probability $\tfrac14$ --- the rule returns
+$D$ and is wrong. Prior-average optimality therefore coexists with a
+positive-probability pointwise failure. This is an elementary direct
+computation, not a new theorem.
+\end{example}
+
+The assembly analogues of the two directions are: Example~\ref{ex:ABAB}
+realizes the stronger failure in which two candidates have \emph{identical}
+read laws, so no rule can beat chance (a failure of identifiability), whereas
+the historical witnesses $W_1,W_2$ realize strict pointwise failure while the
+population laws remain identifiable. The five notions are collected below with
+their exact quantifiers, hypotheses, and evidence.
+
+\begin{table}[t]
+\centering
+\small
+\setlength{\tabcolsep}{4pt}
+\caption{Five notions that the phrase ``the maximum-likelihood sequence is the
+true sequence'' can denote.}
+\label{tab:claims}
+\begin{tabular}{@{}>{\raggedright\arraybackslash}p{0.14\textwidth}>{\raggedright\arraybackslash}p{0.19\textwidth}>{\raggedright\arraybackslash}p{0.17\textwidth}>{\raggedright\arraybackslash}p{0.23\textwidth}>{\raggedright\arraybackslash}p{0.14\textwidth}@{}}
+\toprule
+Notion & Scope / quantifier & Hypothesis & Conclusion & Evidence\\
+\midrule
+Conditional reconstruction (Question~A)
+  & each realized $R$ with $F(S,R)$ and $P_S(R)>0$
+  & candidate set restricted to the feasible fiber; source model assumptions
+  & positive-weight feasible fiber is one rotation class; conditional MAP returns truth
+  & 2016 reconstruction premise \cite{shomorony2016}; kernel-checked\\
+\addlinespace
+Prior-average Bayes optimality
+  & for every finite $n$, averaged over truth $\sim\pi$ and data $\sim P_\theta$
+  & finite classes, correct model, specified prior, zero-one loss
+  & MAP/ML maximizes prior-average success
+  & kernel-checked; classical \cite{berger1985}\\
+\addlinespace
+Pointwise finite-sample failure
+  & exists a truth $S$, realized $R$, competitor $D$
+  & historical bridging predicate; source read types
+  & $\Lik(D;R)>\Lik(S;R)$
+  & kernel-checked $W_1,W_2$ (Thm.~\ref{thm:cex-historical-W1}--\ref{thm:cex-historical-W2})\\
+\addlinespace
+Identifiability
+  & law level; $n\to\infty$
+  & primitive-P2 or rigidity hypotheses
+  & read laws distinct modulo rotation; spectrum unique
+  & kernel-checked (Thm.~\ref{thm:population}, Thm.~\ref{thm:rigidity})\\
+\addlinespace
+Limiting consistency
+  & as $n\to\infty$ over $n$ iid reads
+  & finite, pairwise-distinguishable candidate family
+  & exact-ML error $\le\sum_{D}\rho(p_S,p_D)^n\to0$
+  & kernel-checked; explicit size Cor.~\ref{cor:explicit-sample-size}\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{sloppypar}
+The kernel-checked endpoints referenced in the last column are
+\texttt{ConditionalVsOrdinaryMLSeparation} (row~1),
+\texttt{FiniteBayesDecision} (row~2), the $W_1,W_2$ certificates (row~3), the
+population and rigidity theorems (row~4), and \texttt{FiniteReadRecovery}
+(row~5); the complete claim-to-proof index is \path{docs/verification.md}.
+\end{sloppypar}
+
+The rows are independent at the level of their quantifiers: prior-average
+optimality (row~2) does not exclude pointwise failure (row~3); identifiability
+(row~4) is a law-level statement that neither forbids finite-sample reversals
+nor follows from a reconstruction guarantee (row~1); and limiting consistency
+(row~5) is an asymptotic statement over an identifiable family, distinct from
+the population theorem's distribution-level maximizer claim. Row~5 does use
+identifiability (row~4) as a hypothesis, so it is not independent of that row;
+what it adds is the finite- and infinite-sample link that neither row~4 nor
+row~2 supplies.
 
 \subsection{Finite and population conclusions}
 
