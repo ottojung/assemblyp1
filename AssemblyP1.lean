@@ -55,6 +55,8 @@ import AssemblyP1.Section62FullSpectrumUnseenFactor
 import AssemblyP1.Section62CircularWindowAdapter
 -- #284 seam periodicity, aligned circular genome prefix and tail rotation (kernel-audited).
 import AssemblyP1.Section62PeriodicSeam
+-- #284: legal overlap paths spell their last read, giving a closed circular seam.
+import AssemblyP1.Section62OverlapSuffix
 import AssemblyP1.Section62FullSpectrumIndexing
 import AssemblyP1.Section62VariableOverlap247e
 import AssemblyP1.FiniteSamplingCounterexample
