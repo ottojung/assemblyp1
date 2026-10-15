@@ -300,9 +300,10 @@ Pointwise finite-sample failure
 \addlinespace
 Identifiability
   & law level; $n\to\infty$
-  & primitive-P2 or rigidity hypotheses
+  & primitive-P2, rigidity, or nonbranching hypotheses
   & read laws distinct modulo rotation; spectrum unique
-  & kernel-checked (Thm.~\ref{thm:population}, Thm.~\ref{thm:rigidity})\\
+  & kernel-checked (Thm.~\ref{thm:population}, Thm.~\ref{thm:rigidity},
+    Thm.~\ref{thm:identifiable-iff-nonbranching}, Thm.~\ref{thm:fibre-count})\\
 \addlinespace
 Limiting consistency
   & as $n\to\infty$ over $n$ iid reads
@@ -320,6 +321,9 @@ The kernel-checked endpoints referenced in the last column are
 $W_1,W_2$ certificates (row~3), the
 population and rigidity theorems (row~4), and \texttt{FiniteReadRecovery}
 (row~5); the complete claim-to-proof index is \path{docs/verification.md}.
+Section~\ref{sec:structural-landmarks} adds the variable-length primitive
+classification \texttt{identifiable\_iff\_nonbranching} and the same-length
+fibre-count criterion of Theorem~\ref{thm:fibre-count}.
 \end{sloppypar}
 
 The rows are independent at the level of their quantifiers: prior-average
@@ -375,3 +379,68 @@ the truth. Conversely, the finite counterexamples do not contradict
 Bayes-optimality or asymptotic recovery on the identifiable primitive-P2
 class. The modeling and source-referent distinctions are documented in
 Appendices~\ref{app:modeling} and~\ref{app:referents}.
+
+\subsection{Structural identifiability landmarks}
+\label{sec:structural-landmarks}
+
+Two structural results sharpen the identifiability landscape beyond the
+primitive-P2 population theorem. The first is kernel-checked in full; the
+second has a kernel-checked divisor-sum core and a paper-level count whose
+BEST premise is external. Both are conditional on the oriented
+complete-spectrum model and do not by themselves settle which candidate
+universe the 2016 sources intended.
+
+\begin{theorem}[Variable-length primitive identifiability iff nonbranching]
+\label{thm:identifiable-iff-nonbranching}
+Let $S$ be a primitive circular genome of length $G$ and read length $L>1$.
+Then $S$ is identifiable among primitive candidates of arbitrary length from
+its normalized complete $L$-spectrum if and only if its spectrum-support
+graph has no vertex with two distinct outgoing edge types.
+\end{theorem}
+\statusline{\kernelcheck{} in
+\texttt{AssemblyP1.ScalarPrimitiveSpellings.identifiable\_iff\_nonbranching};
+no external complete-spectrum uniqueness premise.}
+
+\begin{theorem}[Same-length complete-spectrum fibre count and singleton criterion]
+\label{thm:fibre-count}
+Let $S$ be a circular genome of length $G$ and read length $L\ge2$, and let
+$c=\spec_L(S)$ be its complete $L$-spectrum viewed as a balanced capacity.
+Write $g=\gcd\{c(e):0<c(e)\}$. The number of same-length rotation classes
+with spectrum $c$ is
+\[
+  N(c)=\sum_{h\mid g}P_h,\qquad
+  P_h=\sum_{d\mid h}\frac{\mu(d)}{d}\,B_{h/d},
+\]
+where $B_h=\tau_r(c_h)\prod_u(d_u(h)-1)!/\prod_e c_h(e)!$ is the weighted
+BEST quantity at level $h$ ($\tau_r$ the weighted in-arborescence count and
+$d_u$ the out-degree for the gcd-one capacity $c_0=c/g$), and $\mu$ is the
+M\"obius function. Equivalently $N(c)=\sum_{k\mid g}\varphi(g/k)/(g/k)\cdot B_k$.
+The fibre is a singleton modulo rotation iff the support is nonbranching,
+or it branches with $g=1$ and $B_1=1$; if it branches and $g>1$ then
+$N(c)\ge2$. The precise statement, conventions, and proof are in
+\path{docs/exact-fibre-count-theorem-219.md}.
+\end{theorem}
+\statusline{Lean status: partial. \kernelcheck{} for the
+divisor-sum core in \texttt{AssemblyP1.FibreCountArithmetic}
+(\texttt{fibre\_mobius\_inversion}, \texttt{fibre\_totient}); the full count
+is a \mathfact{} whose weighted BEST double-counting rests on the external
+BEST theorem (van Aardenne-Ehrenfest--de~Bruijn 1951; Tutte 1975), with the
+branching construction kernel-checked in
+\texttt{AssemblyP1.ScalarPrimitiveSpellings}.}
+
+\begin{remark}[Robust same-length and molecule full-overlap iff criteria]
+\label{rem:robust-iff-criteria}
+The paper states the beatability direction of the robust same-length
+criterion (Proposition~\ref{prop:beatability}) and the negative molecule
+witnesses (Theorem~\ref{thm:cex-molecule}). The complete iff statements are
+kernel-checked: \texttt{AssemblyP1.RobustSameLengthIff.robust\_iff\_unique\_spectrum}
+characterizes exact multinomial robustness over all positive samples by
+uniqueness of the truth spectrum among positive balanced circulations, and
+\texttt{AssemblyP1.FullOverlapMoleculeML.robust\_maximality\_iff\_unique}
+characterizes robust maximality in the full-overlap molecule domain by
+uniqueness of the normalized count vector. Both are conditional on their
+respective model domains and do not transfer across the oriented/molecule
+boundary.
+\end{remark}
+\statusline{\kernelcheck{} for both iff endpoints; the paper text states
+only the directional parts.}
