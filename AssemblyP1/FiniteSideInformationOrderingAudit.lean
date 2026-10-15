@@ -1,0 +1,21 @@
+import AssemblyP1.FiniteSideInformationOrdering
+
+/-! Axiom audit for the #272 `I_s`-vs-`Unambiguous` ordering results.
+
+Every endpoint below must depend only on the three permitted axioms
+`propext`, `Classical.choice`, and `Quot.sound`. -/
+
+#print axioms AssemblyP1.FiniteSideInformationOrdering.sufficient_of_imp_unambiguous
+#print axioms AssemblyP1.FiniteSideInformationOrdering.sufficient_readonly_iff_imp_unambiguous
+#print axioms AssemblyP1.FiniteSideInformationOrdering.unambiguous_promise_readOnly
+#print axioms AssemblyP1.FiniteSideInformationOrdering.singleton_promise_sufficient
+#print axioms AssemblyP1.FiniteSideInformationOrdering.singleton_promise_not_imp_unambiguous
+#print axioms AssemblyP1.FiniteSideInformationOrdering.unambiguous_not_imp_singleton
+#print axioms AssemblyP1.FiniteSideInformationOrdering.truthdependent_sufficient_incomparable
+#print axioms AssemblyP1.FiniteSideInformationOrdering.ThreeCandidate.p_at_read1
+#print axioms AssemblyP1.FiniteSideInformationOrdering.ThreeCandidate.unambiguous_one
+#print axioms AssemblyP1.FiniteSideInformationOrdering.ThreeCandidate.neither_implication
+#print axioms AssemblyP1.FiniteSideInformationOrdering.IsTruthDependence.truthSpelling_feasible
+#print axioms AssemblyP1.FiniteSideInformationOrdering.IsTruthDependence.aaaabSpelling_not_feasible
+#print axioms AssemblyP1.FiniteSideInformationOrdering.IsTruthDependence.informationFeasible_not_readOnly
+#print axioms AssemblyP1.FiniteSideInformationOrdering.IsTruthDependence.ordering_verdict

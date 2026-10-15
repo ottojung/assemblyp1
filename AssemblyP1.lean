@@ -253,6 +253,9 @@ import AssemblyP1.FiniteBayesianSideInformation
 import AssemblyP1.FiniteBayesianSideInformationAudit
 import AssemblyP1.FiniteSideInformationOrder
 import AssemblyP1.FiniteSideInformationOrderAudit
+-- #272 ordering of the source predicate `I_s` against the read-only `Unambiguous`.
+import AssemblyP1.FiniteSideInformationOrdering
+import AssemblyP1.FiniteSideInformationOrderingAudit
 -- #270 positive finite-family iid ML recovery via Hellinger affinity.
 import AssemblyP1.FiniteReadRecovery
 -- #270 concrete uniform-start cyclic read distribution and conditional genome bounds.
