@@ -927,7 +927,45 @@ separation, iid oriented reads, and the candidate model matter.
 
 ---
 
-# Backup B4: primary sources
+# Backup B4: more reads help on average, not for every genome
+
+Adding a read cannot lower the **prior-averaged** chance of guessing the genome correctly: a rule may simply ignore the extra read.
+
+But the **per-genome** success probability is **not** monotone in the number of reads.
+
+Two circular genomes, read length 2, alphabet `{A, C}`, uniform starts:
+
+| | `AA` | `AC` | `CA` | `CC` |
+| --- | ---: | ---: | ---: | ---: |
+| Truth `AAC` | $1/3$ | $1/3$ | $1/3$ | $0$ |
+| Competitor `AAAC` | $1/2$ | $1/4$ | $1/4$ | $0$ |
+
+The truth is the strict exact-ML maximizer with probability
+
+$$
+\operatorname{succ}(1)=\frac23,\qquad
+\operatorname{succ}(2)=\frac49,\qquad
+\operatorname{succ}(1)>\operatorname{succ}(2).
+$$
+
+More reads still drive the success probability to $1$ eventually. The dip is a finite-sample effect, not a failure of consistency.
+
+<!--
+This is the #265 item-4 contrast, absent from the earlier arc:
+prior-averaged success is nondecreasing in n (a rule can ignore an extra
+read): FiniteBayesDecision.chooseMAP_success_monotone_under_refinement.
+Per-truth success need not be: NonmonotonicityWitness281.success_not_monotone,
+kernel-checked, succ(1)=2/3 > succ(2)=4/9. Tie handling: for n>=1 the exact
+likelihood ratio is 3^a / 2^b (a = number of AA reads), never 1, so no
+positive-probability ties; n=0 ties. Independent exact-rational check:
+scripts/verify_nonmonotonicity_witness_281.py. Do NOT claim per-truth
+monotonicity; the exponential bound is about the eventual rate, not a
+monotone curve.
+-->
+
+---
+
+# Backup B5: primary sources
 
 - Medvedev & Brudno (2009), *Maximum Likelihood Genome Assembly*.
 - Shomorony, Kim, Courtade & Tse (2016), *Information-optimal genome assembly via sparse read-overlap graphs*.
