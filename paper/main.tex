@@ -6,7 +6,9 @@
 
 \addbibresource{references.bib}
 
-\title{\bfseries The Most Likely Genome}
+\title{\bfseries The Most Likely Genome\\[0.35em]
+\large Structural reconstruction, statistical identifiability,\\
+and finite-sample likelihood reliability}
 
 \author{Vitaliy Mysak\\\href{mailto:assemblyp1@vau.place}{\texttt{assemblyp1@vau.place}}}
 
@@ -35,10 +37,15 @@ does not always make it the most likely explanation of the data.
 
 When the read distribution is known exactly, the true genome always maximizes
 expected log-likelihood. We establish conditions on genomic repeats under which
-this distribution uniquely identifies the true genome. We further show that
-these conditions yield a quantitative guarantee for finite samples: the
-probability of maximum-likelihood error decreases exponentially as the number
-of reads increases.
+this distribution uniquely identifies the true genome. We further prove, and
+kernel-check in the Lean proof assistant, an explicit quantitative guarantee for
+finite samples: over the identifiable primitive-P2 candidate class the
+probability that the exact maximum-likelihood rule errs decreases exponentially
+in the number of independent reads, with a rate that is explicit but
+deliberately loose (exponential in the read length). The theorem bounds the
+\emph{error} probability, not the likelihood, and it does not claim that
+per-truth finite-sample success is monotone in the sample size; we supply a
+kernel-checked two-genome witness to the contrary.
 \end{abstract}
 
 \clearpage

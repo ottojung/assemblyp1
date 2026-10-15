@@ -263,12 +263,21 @@ import AssemblyP1.FiniteSampleIidEnvelopeAudit
 import AssemblyP1.FixedNBinomialEffectiveWeightsAudit
 import AssemblyP1.CoveredBinomialWeightsIff
 import AssemblyP1.CoveredBinomialWeightsIffAudit
+-- #259 sharpness: neither disjunct of the covered-sample iff is redundant.
+import AssemblyP1.CoveredBinomialWeightsIffSharpness
+import AssemblyP1.CoveredBinomialWeightsIffSharpnessAudit
+-- #259 power monotonicity: the exact-iid vs §6.1 ranking inversion holds for all n ≥ 1.
+import AssemblyP1.Section62BinomialPowerMonotonicity
+import AssemblyP1.Section62BinomialPowerMonotonicityAudit
 import AssemblyP1.FiniteSideInformationColoring
 import AssemblyP1.FiniteSideInformationColoringAudit
 import AssemblyP1.FiniteBayesianSideInformation
 import AssemblyP1.FiniteBayesianSideInformationAudit
 import AssemblyP1.FiniteSideInformationOrder
 import AssemblyP1.FiniteSideInformationOrderAudit
+-- #272 ordering of the source predicate `I_s` against the read-only `Unambiguous`.
+import AssemblyP1.FiniteSideInformationOrdering
+import AssemblyP1.FiniteSideInformationOrderingAudit
 -- #270 positive finite-family iid ML recovery via Hellinger affinity.
 import AssemblyP1.FiniteReadRecovery
 -- #270 concrete uniform-start cyclic read distribution and conditional genome bounds.
@@ -288,6 +297,9 @@ import AssemblyP1.PrimitiveP2FiniteClass
 import AssemblyP1.PrimitiveP2FiniteClassAudit
 import AssemblyP1.PrimitiveP2UniformSeparation
 import AssemblyP1.PrimitiveP2UniformSeparationAudit
+-- #263 separable-convex Graver optimality certificate (conditional core) + audit.
+import AssemblyP1.SeparableConvexGraver
+import AssemblyP1.SeparableConvexGraverAudit
 
 /-! ## `Issue94Transposition`: the Kotzig/Ukkonen/Pevzner descent, and an obstruction
 

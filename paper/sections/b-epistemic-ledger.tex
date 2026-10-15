@@ -46,8 +46,16 @@ and \texttt{PrimitiveP2FiniteClass}; length bound $2q^{L-1}$.
 The cited endpoint has no separate Eulerian-cycle obstruction premise.\\
 Finite-family Hellinger error bound and complete P2 recovery &
 Kernel-checked in \texttt{FiniteReadRecovery} and
-\texttt{PrimitiveP2FiniteClass}; existence of a strict rate
-does not provide a numerically evaluated constant.\\
+\texttt{PrimitiveP2FiniteClass}; exact iid multinomial, ties counted as
+errors, finite identifiable family.\\
+Explicit uniform exponential exact-ML error rate over the primitive-P2 class &
+Kernel-checked in \texttt{PrimitiveP2UniformSeparation}:
+\texttt{primitiveP2\_exponential\_error\_bound} and
+\texttt{primitiveP2\_ML\_confidence\_explicit}. Bound
+$N_C\,e^{-n/(8B^4)}$ with $B=2q^{L-1}$; the constants are deliberately
+loose (exponential in $L$), the scope is oriented exact iid reads, and it is
+neither universal maximum likelihood nor the MB09 product-binomial
+surrogate.\\
 Non-monotonic exact-ML per-truth success &
 Kernel-checked two-genome theorem \texttt{success\_not\_monotone},
 with exact namespace in \path{docs/verification.md}.\\
