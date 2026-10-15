@@ -114,6 +114,10 @@ the decision principle itself is classical \cite{berger1985}.}
 The theorem concerns the \emph{prior average}, not optimality for every
 fixed truth. It applies to the true joint likelihood, not automatically to
 the independent-binomial surrogate of Definition~\ref{def:likelihoods}.
+A uniform positive prior is sufficient for ML and MAP to coincide, but not
+necessary: on a restricted observation family the candidate-dependent
+likelihood ratios may never cross prior thresholds, so nonuniform priors can
+share the ML argmax on every observable sample.
 Additional independent observations cannot reduce the \emph{optimal
 prior-average} reconstruction probability, because the decision rule can
 ignore them \cite{berger1985}. Per-truth success can nevertheless oscillate,
