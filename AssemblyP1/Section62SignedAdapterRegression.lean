@@ -74,21 +74,25 @@ theorem cycle_hLen : ∀ s ∈ strandsOf id cycleVerts, (id s).length = 3 := by
   have h8 : strandsOf id cycleVerts = [abc, bcd, cda, dab, abc, bcd, cda, dab] := by
     simp [strandsOf, cycleVerts]
   rw [h8] at hs
-  simp only [List.mem_cons, List.mem_nil] at hs
+  simp only [List.mem_cons, List.not_mem_nil, or_false] at hs
   rcases hs with rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl <;> rfl
 
 theorem cycle_hsp : SignedPath abc abc cycleEdges := by
   unfold SignedPath Step cycleEdges
   refine ⟨⟨_, rfl, rfl⟩, ⟨_, rfl, rfl⟩, ?_⟩
-  exact List.IsChain.cons (by rfl)
-    (List.IsChain.cons (by rfl)
-      (List.IsChain.cons (by rfl) (List.IsChain.singleton _)))
+  exact List.IsChain.cons
+    (List.IsChain.cons
+      (List.IsChain.cons
+        (List.IsChain.singleton _)
+        (by intro y hy; simp at hy; subst hy; rfl))
+      (by intro y hy; simp at hy; subst hy; rfl))
+    (by intro y hy; simp at hy; subst hy; rfl)
 
 theorem cycle_hmem :
-    ∀ e ∈ cycleEdges, e ∈ overlapEdges Nat (List Nat) id id 3 1 cycleVerts := by
+    ∀ e ∈ cycleEdges, e ∈ overlapEdges Nat (List Nat) id id id 3 1 cycleVerts := by
   intro e he
   unfold cycleEdges at he
-  simp only [List.mem_cons, List.mem_nil] at he
+  simp only [List.mem_cons, List.not_mem_nil, or_false] at he
   rcases he with rfl | rfl | rfl | rfl
   · decide
   · decide
@@ -103,7 +107,9 @@ theorem regression_graphSteps_1 :
 /-- The projected walk is a concrete legal `ValidPath` from the first read. -/
 theorem regression_validPath_1 :
     ValidPath 3 (id abc) (graphSteps id cycleEdges) := by
-  simp [graphSteps, ValidPath]
+  rw [regression_graphSteps_1]
+  simp only [ValidPath]
+  decide
 
 /-- The projected walk's final target read is the first read again (closure). -/
 theorem regression_pathTarget_1 :
@@ -181,20 +187,23 @@ theorem cycle5_hLen : ∀ s ∈ strandsOf id cycle5Verts, (id s).length = 5 := b
   have h6 : strandsOf id cycle5Verts = [e5ab, e5bc, e5ca, e5ab, e5bc, e5ca] := by
     simp [strandsOf, cycle5Verts]
   rw [h6] at hs
-  simp only [List.mem_cons, List.mem_nil] at hs
+  simp only [List.mem_cons, List.not_mem_nil, or_false] at hs
   rcases hs with rfl | rfl | rfl | rfl | rfl | rfl <;> rfl
 
 theorem cycle5_hsp : SignedPath e5ab e5ab cycle5Edges := by
   unfold SignedPath Step cycle5Edges
   refine ⟨⟨_, rfl, rfl⟩, ⟨_, rfl, rfl⟩, ?_⟩
-  exact List.IsChain.cons (by rfl)
-    (List.IsChain.cons (by rfl) (List.IsChain.singleton _))
+  exact List.IsChain.cons
+    (List.IsChain.cons
+      (List.IsChain.singleton _)
+      (by intro y hy; simp at hy; subst hy; rfl))
+    (by intro y hy; simp at hy; subst hy; rfl)
 
 theorem cycle5_hmem :
-    ∀ e ∈ cycle5Edges, e ∈ overlapEdges Nat (List Nat) id id 5 1 cycle5Verts := by
+    ∀ e ∈ cycle5Edges, e ∈ overlapEdges Nat (List Nat) id id id 5 1 cycle5Verts := by
   intro e he
   unfold cycle5Edges at he
-  simp only [List.mem_cons, List.mem_nil] at he
+  simp only [List.mem_cons, List.not_mem_nil, or_false] at he
   rcases he with rfl | rfl | rfl
   · decide
   · decide
