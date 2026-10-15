@@ -275,42 +275,42 @@ are conceptual floating-point values; for many reads use log likelihood.
 
 ---
 
-# Which answer wins more often?
+# What does it mean for an assembly algorithm to be better?
 
-Choose genome **A or B with equal probability**, then sample two reads at random. That makes **50 equally likely experiments**.
+An algorithm sees the **reads** and guesses which genome produced them.
 
-Among experiments producing the reads AAA, AAA:
+To compare algorithms, imagine repeating the **whole experiment**:
 
-| True genome | A | B |
-| --- | ---: | ---: |
-| Number of experiments | **1** | **4** |
+1. Pick the true genome: **A or B, equally likely**.
+2. Draw two random reads from it.
+3. Let each algorithm guess the genome from those reads.
 
-The algorithm sees **only the reads**, so these five experiments look identical.
+**Score:** how often does the algorithm guess correctly?
 
-**Guess A:** correct once. **Guess B:** correct four times.
-
-ML chooses **B** for this observation. But how do we prove it is best over *all* observations?
+For the reads **AAA, AAA**, we calculated that **B is the true genome in 80%** of experiments producing those reads. Guessing B is therefore the better decision **for this observation**.
 
 <!--
-A=AAATT, B=AAAAT, independent uniform starts. 2 genomes x 5 x 5
-start pairs = 50 equiprobable histories. Observation [AAA,AAA]
-has 1 A history, 4 B histories. This establishes only this
-observation-group comparison. The next slide generalizes.
+The comparison criterion is prior-averaged 0-1 correctness: draw a genome
+from the stated equal prior, independently sample two reads, and score
+one if the algorithm's guess matches the hidden genome.
+There are 2 * 5^2 = 50 equally likely latent (genome, start-pair)
+histories. Only five produce [AAA, AAA]: one from A and four from B.
+The conditional 80% is not a guarantee for a fixed true genome.
 -->
 
 ---
 
-# Why no algorithm can beat maximum likelihood
+# Why maximum likelihood maximizes average accuracy
 
-Group **all possible experiments** by the reads they produce.
+Every possible pair of observed reads identifies a **group of experiments**. An algorithm sees the reads, not the hidden true genome, so it must make **the same guess** throughout that group.
 
-Within each group, the algorithm must make **the same decision**, because it cannot distinguish the hidden experiments.
+For **AAA, AAA**, guessing B gets **four out of five** compatible experiments right. Guessing A gets only one.
 
-ML chooses whichever genome accounts for **the most experiments in that group**. No alternative decision gets more of that group's experiments right.
+For **every other possible observation**, maximum likelihood likewise selects the genome with the highest chance of being the truth under our equal-prior model.
 
-Now **add the winning counts over every group**. No algorithm can achieve a higher overall probability of reconstructing the genome.
+It makes the most accurate decision **for each observation**, so no other algorithm can have a higher **overall chance of being correct**.
 
-**Ties are allowed.** This result assumes **equal priors**, equal cost of mistakes, and the stated read-sampling model.
+**Ties are possible.** This is an average-accuracy result under equal priors, not a promise of always reconstructing the truth.
 
 <!--
 Formal result: in a finite candidate universe with prior π and 0-1
