@@ -198,3 +198,8 @@ Primary internal sources: docs/issue266-conditional-identifiability.md,
 docs/audit-267-finite-ml-vs-conditional-bayes.md,
 docs/bayes-optimality-conditional-feasibility-267.md,
 paper/sections/03-open-question.tex.
+
+
+## Presentation order after the October 14 review
+
+Teach the problem in causal order: unordered read inputs, actual reconstruction by overlapping, repeats creating ambiguous overlaps, then the idealized mathematical model, a genuine ambiguity example, and Not-So-Greedy. Explain ML probability and optimality before presenting the 2016 question. That original non-Bayesian implication has a negative answer. Show the exact counterexample; explain that ordinary ML was tackling a broader candidate universe; now the audience has a reason to ask what happens when the unique-reconstruction promise is included as Bayesian information. The answer is posterior certainty under the source-faithful read-only decoder premise. Then follow the separate finite-to-population hypothesis and theorems, and only after that the independent restricted oriented same-length positive result. Do not title a slide with the phrase recovering optimality.
