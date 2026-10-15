@@ -323,7 +323,7 @@ population and rigidity theorems (row~4), and \texttt{FiniteReadRecovery}
 (row~5); the complete claim-to-proof index is \path{docs/verification.md}.
 Section~\ref{sec:structural-landmarks} adds the variable-length primitive
 classification \texttt{identifiable\_iff\_nonbranching} and the same-length
-fibre-count criterion (Section~\ref{sec:structural-landmarks}).
+fibre-count criterion of Theorem~\ref{thm:fibre-count}.
 \end{sloppypar}
 
 The rows are independent at the level of their quantifiers: prior-average
@@ -383,10 +383,12 @@ Appendices~\ref{app:modeling} and~\ref{app:referents}.
 \subsection{Structural identifiability landmarks}
 \label{sec:structural-landmarks}
 
-Two kernel-checked structural results sharpen the identifiability landscape
-beyond the primitive-P2 population theorem. Both are conditional on the
-oriented complete-spectrum model and do not by themselves settle which
-candidate universe the 2016 sources intended.
+Two structural results sharpen the identifiability landscape beyond the
+primitive-P2 population theorem. The first is kernel-checked in full; the
+second has a kernel-checked divisor-sum core and a paper-level count whose
+BEST premise is external. Both are conditional on the oriented
+complete-spectrum model and do not by themselves settle which candidate
+universe the 2016 sources intended.
 
 \begin{theorem}[Variable-length primitive identifiability iff nonbranching]
 \label{thm:identifiable-iff-nonbranching}
@@ -409,16 +411,22 @@ with spectrum $c$ is
   N(c)=\sum_{h\mid g}P_h,\qquad
   P_h=\sum_{d\mid h}\frac{\mu(d)}{d}\,B_{h/d},
 \]
-where $B_h$ is the weighted BEST quantity at level $h$ and $\mu$ is the
+where $B_h=\tau_r(c_h)\prod_u(d_u(h)-1)!/\prod_e c_h(e)!$ is the weighted
+BEST quantity at level $h$ ($\tau_r$ the weighted in-arborescence count and
+$d_u$ the out-degree for the gcd-one capacity $c_0=c/g$), and $\mu$ is the
 M\"obius function. Equivalently $N(c)=\sum_{k\mid g}\varphi(g/k)/(g/k)\cdot B_k$.
 The fibre is a singleton modulo rotation iff the support is nonbranching,
-or it branches with $g=1$ and $B_1=1$.
+or it branches with $g=1$ and $B_1=1$; if it branches and $g>1$ then
+$N(c)\ge2$. The precise statement, conventions, and proof are in
+\path{docs/exact-fibre-count-theorem-219.md}.
 \end{theorem}
-\statusline{\mathfact{} for the full count
-(\path{docs/exact-fibre-count-theorem-219.md}); \kernelcheck{} for the
+\statusline{Lean status: partial. \kernelcheck{} for the
 divisor-sum core in \texttt{AssemblyP1.FibreCountArithmetic}
-(\texttt{fibre\_mobius\_inversion}, \texttt{fibre\_totient}). The BEST theorem
-and the branching construction are external premises.}
+(\texttt{fibre\_mobius\_inversion}, \texttt{fibre\_totient}); the full count
+is a \mathfact{} whose weighted BEST double-counting rests on the external
+BEST theorem (van Aardenne-Ehrenfest--de~Bruijn 1951; Tutte 1975), with the
+branching construction kernel-checked in
+\texttt{AssemblyP1.ScalarPrimitiveSpellings}.}
 
 \begin{remark}[Robust same-length and molecule full-overlap iff criteria]
 \label{rem:robust-iff-criteria}
