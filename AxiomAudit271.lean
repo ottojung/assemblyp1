@@ -31,12 +31,20 @@ open AssemblyP1.ConditionalVsOrdinaryMLSeparation
 #print axioms AssemblyP1.W1W2SeparationCompatibility.w2_truth_not_maximizer_exact
 
 -- Genome-level adapter in the exact AssemblyP1 finite read model (#271):
--- normalized per-candidate read pmf, orbit-class prior, external truth-dependent
--- promise E; separation (A ∧ ¬B) and converse (B ∧ ¬A).
+-- normalized per-candidate read pmf, orbit-class prior, and the candidate-specific
+-- latent-start information-feasibility predicate E built from the exact source
+-- predicate SourceFaithfulIs.InformationFeasible; separation (A ∧ ¬B) and
+-- converse (B ∧ ¬A).
 #print axioms AssemblyP1.ConditionalVsMLGenomeAdapter271.p_sum_one
 #print axioms AssemblyP1.ConditionalVsMLGenomeAdapter271.prior_sum_one
 #print axioms AssemblyP1.ConditionalVsMLGenomeAdapter271.orbit_injective
-#print axioms AssemblyP1.ConditionalVsMLGenomeAdapter271.E_one_not_dataOnly
+#print axioms AssemblyP1.ConditionalVsMLGenomeAdapter271.E
+#print axioms AssemblyP1.ConditionalVsMLGenomeAdapter271.informationFeasible_two_no_tripleRepeat
+#print axioms AssemblyP1.ConditionalVsMLGenomeAdapter271.feasible_genOf_one
+#print axioms AssemblyP1.ConditionalVsMLGenomeAdapter271.E_one_00
+#print axioms AssemblyP1.ConditionalVsMLGenomeAdapter271.E_zero_00
+#print axioms AssemblyP1.ConditionalVsMLGenomeAdapter271.E_two_00
+#print axioms AssemblyP1.ConditionalVsMLGenomeAdapter271.E_not_dataOnly
 #print axioms AssemblyP1.ConditionalVsMLGenomeAdapter271.sep_posteriorMass_one
 #print axioms AssemblyP1.ConditionalVsMLGenomeAdapter271.sep_posteriorMass_one_excluded
 #print axioms AssemblyP1.ConditionalVsMLGenomeAdapter271.sep_truth_not_ml
