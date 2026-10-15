@@ -121,10 +121,19 @@ distinguishability hypotheses.
    `SourceFaithfulIs.Genome.window` circular sampling model;
    it does NOT automatically extend to reverse-complement-collapsed
    molecules unless the observation law is made RC invariant.
-2. The primitive-P2 candidate family is allowed to contain different
+2. ~~The primitive-P2 candidate family is allowed to contain different
    positive genome lengths, but the set of *candidates being compared*
    must be FINITE. An unrestricted unbounded candidate family is
-   infinite, and obtaining uniform rates there requires a new argument.
+   infinite, and obtaining uniform rates there requires a new argument.~~
+   **DISCHARGED by issue #281.** `AssemblyP1.PrimitiveP2FiniteClass.primitive_P2_len_le`
+   proves `G ≤ 2 * |α| ^ (L - 1)` for every primitive P2-admissible genome,
+   so the whole admissible class over all positive lengths is finite
+   (`primitiveP2Class_finite`), and
+   `all_primitiveP2_ML_confidence` applies the confidence theorem to the
+   *constructed* family of all admissible nonrotational genomes with no
+   finite-family premise. See `docs/issue281-finite-candidate-class.md`.
+   The finite-family formulation above remains the right statement for
+   caller-chosen families that are not dominated by the length bound.
 3. The positive convergence theorem is probabilistic. It does NOT
    assert that the true genome is a finite-sample ML maximizer for
    every data realization: the strict counterexamples still exist.

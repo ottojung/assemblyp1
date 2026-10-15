@@ -248,6 +248,10 @@ import AssemblyP1.FiniteReadRecoveryP2CompleteAudit
 -- #281 non-monotonicity of finite-sample exact-ML success (AAC vs AAAC).
 import AssemblyP1.NonmonotonicityWitness281
 import AssemblyP1.NonmonotonicityWitness281Audit
+-- #281 the whole primitive-P2 admissible class is finite, so the ML recovery
+-- theorem needs no caller-supplied finite candidate family.
+import AssemblyP1.PrimitiveP2FiniteClass
+import AssemblyP1.PrimitiveP2FiniteClassAudit
 
 /-! ## `Issue94Transposition`: the Kotzig/Ukkonen/Pevzner descent, and an obstruction
 
