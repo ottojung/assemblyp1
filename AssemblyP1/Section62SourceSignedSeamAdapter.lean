@@ -68,6 +68,7 @@ theorem valid_graph_steps
       exact ⟨hv, Nat.le_of_lt hinfo.2.1, hOverlap,
         ih e.sy hc.2 hrest hrestStart⟩
 
+omit [DecidableEq A] in
 /-- The last target read of the projected steps is the last source edge's
 arrival strand. This is purely structural and does not assume overlap legality. -/
 theorem target_graphSteps_of_last
@@ -120,6 +121,7 @@ theorem signedPath_valid_graph_steps
     edges start hsp.2.2 hmem hfirst, ?_⟩
   exact target_graphSteps_of_last toList edges start sy hsp.2.1
 
+omit [DecidableEq A] in
 /-- Projected steps append exactly the source spelling's edge tails. -/
 theorem graphSteps_tails_eq_pathTail (toList : W → List A)
     (edges : List (BdEdge A W)) :
