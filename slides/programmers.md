@@ -1,6 +1,6 @@
 ---
 theme: default
-title: "Genome Assembly and Maximum Likelihood"
+title: "The Most Likely Genome"
 info: |
   Genome assembly, maximum likelihood, and a research investigation.
 class: text-center
@@ -13,9 +13,9 @@ routerMode: hash
 mdc: true
 ---
 
-# Genome Assembly and Maximum Likelihood
+# The Most Likely Genome
 
-### A mathematical research investigation
+### Genome assembly, probability, and mathematical verification
 
 **AssemblyP1** · A research investigation
 
@@ -28,50 +28,50 @@ Begin with the scientific problem and develop the research question naturally.
 
 ---
 
-# The puzzle: DNA fragments without a map
+# How can we reconstruct a genome?
 
-A genome is a very long string made from the DNA letters **A, C, G, T**. Sequencing gives us short pieces, called **reads**, rather than the whole string.
+A genome is a very long string of DNA letters.
 
-Suppose the sequencer produces these reads, in no particular order:
+Sequencing does not hand us that string. It gives us **many short fragments**, called *reads*, sampled from different positions.
 
-~~~text
-GTA      AAC      CGT      TAA      ACG
-~~~
+For example, a circular genome `ACGTA` has these length-3 fragments:
 
-We don't know which read came first—or where any read belongs.
+```text
+ACG   CGT   GTA   TAA   AAC
+```
 
-**Our task:** reconstruct the original circular genome from these pieces.
+**We know the fragments, but not where each one came from.**
+
+The assembly problem is to infer the original sequence.
 
 <!--
-This slide shows INPUT and GOAL, not an algorithm. The hidden circular
-source is ACGTA; the reads are deliberately unordered.
+The circular toy model removes distracting end effects.
+We assume error-free oriented reads; real sequencing is more complicated.
 -->
 
 ---
 
-# The mathematical version of genome assembly
+# What makes assembly difficult?
 
-This project studies an idealized problem, **not** the practical details of real sequencing.
+DNA contains **repeated substrings**.
 
-We assume:
+```text
+... G [ ACGA ] T ...
+... C [ ACGA ] A ...
+```
 
-- A genome is a **circular string**.
-- Reads have a **fixed length**, a known direction, and **no errors**.
-- Every read starts at a **uniformly random position**, independently of the others.
+A short read containing only `ACGA` cannot tell us which copy was sampled.
 
-This simple model allows us to prove statements about **which assemblies are possible**, and about **how likely each genome is to produce the observed reads**.
+A longer read containing the **flanking context** can distinguish them.
+
+This is why read length, overlap, and *bridging repeats* matter.
 
 <!--
-All main examples use oriented reads, including the variable-length
-finite counterexample and later population theorem. The historical
-reverse-complement molecule model is documented separately in the notes.
+Bridging means the read extends beyond a particular repeat copy on both sides.
+The takeaway is information content, not graph implementation.
 -->
 
-
 ---
-
-# A first attempt: join the overlaps
-
 The end of **ACG** matches the beginning of **CGT**: both share **CG**.
 
 The other reads fit together in the same way:
@@ -927,7 +927,45 @@ separation, iid oriented reads, and the candidate model matter.
 
 ---
 
-# Backup B4: primary sources
+# Backup B4: more reads help on average, not for every genome
+
+Adding a read cannot lower the **prior-averaged** chance of guessing the genome correctly: a rule may simply ignore the extra read.
+
+But the **per-genome** success probability is **not** monotone in the number of reads.
+
+Two circular genomes, read length 2, alphabet `{A, C}`, uniform starts:
+
+| | `AA` | `AC` | `CA` | `CC` |
+| --- | ---: | ---: | ---: | ---: |
+| Truth `AAC` | $1/3$ | $1/3$ | $1/3$ | $0$ |
+| Competitor `AAAC` | $1/2$ | $1/4$ | $1/4$ | $0$ |
+
+The truth is the strict exact-ML maximizer with probability
+
+$$
+\operatorname{succ}(1)=\frac23,\qquad
+\operatorname{succ}(2)=\frac49,\qquad
+\operatorname{succ}(1)>\operatorname{succ}(2).
+$$
+
+More reads still drive the success probability to $1$ eventually. The dip is a finite-sample effect, not a failure of consistency.
+
+<!--
+This is the #265 item-4 contrast, absent from the earlier arc:
+prior-averaged success is nondecreasing in n (a rule can ignore an extra
+read): FiniteBayesDecision.chooseMAP_success_monotone_under_refinement.
+Per-truth success need not be: NonmonotonicityWitness281.success_not_monotone,
+kernel-checked, succ(1)=2/3 > succ(2)=4/9. Tie handling: for n>=1 the exact
+likelihood ratio is 3^n / 2^(2n-a) (a = number of AA reads), never 1, so no
+positive-probability ties; n=0 ties. Independent exact-rational check:
+scripts/verify_nonmonotonicity_witness_281.py. Do NOT claim per-truth
+monotonicity; the exponential bound is about the eventual rate, not a
+monotone curve.
+-->
+
+---
+
+# Backup B5: primary sources
 
 - Medvedev & Brudno (2009), *Maximum Likelihood Genome Assembly*.
 - Shomorony, Kim, Courtade & Tse (2016), *Information-optimal genome assembly via sparse read-overlap graphs*.
