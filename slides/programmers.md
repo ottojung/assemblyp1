@@ -269,28 +269,35 @@ normalizing. If the total is zero, all candidates rule out the data.
 
 ---
 
-# Why can no reconstruction algorithm do better?
+# Why maximum likelihood beats every algorithm
 
-In this example, after two `AAA` reads, we calculate:
+Any reconstruction algorithm receives the reads, **not the hidden genome or the positions they came from**.
 
-**A has 20% probability of being true; B has 80%.**
+Our example has **50 equally likely complete experiments**: choose A or B (50/50), then choose two start positions (5 × 5).
 
-Any algorithm with **the same observations and candidate model** must ultimately output a genome:
+| Observed reads: `AAA, AAA` | A was true | B was true |
+| --- | ---: | ---: |
+| Compatible experiments | **1** | **4** |
 
-- It chooses **B**: 80% probability of a correct answer *given these reads*.
-- It chooses **A**: 20%.
-- It randomizes: an average of those numbers, **never more than 80%**.
+**The algorithm cannot distinguish those five experiments.** Guess A: one correct. Guess B: four correct. ML picks B because **these reads are four times as likely under B**.
 
-The argument works for **every possible collection of reads**. So choosing the highest *posterior* probability is better than or tied with **any other algorithm** in prior-averaged correctness.
+**Why does this beat *every* algorithm?** Divide *all* experiments into groups with identical observed reads. In each group, ML guesses the genome responsible for the most experiments. No other choice wins more often **in that group**. Adding up the groups, **no algorithm can have higher overall correctness**.
 
-With **equally likely candidate genomes beforehand**, that rule is **maximum likelihood (ML)**.
+*Scope: best average correctness under an equal prior and the stated sampling model—not a guarantee for each sample or true genome.*
 
 <!--
-This is Bayesian decision optimality under zero-one loss over a *specified*
-finite candidate set and prior. It does not claim superiority for each fixed
-true genome, and it does not apply unchanged under unequal priors (then use
-MAP). Kernel-checked in AssemblyP1/FiniteBayesDecision.lean, including
-deterministic and randomized decisions.
+This is the direct proof of Bayes decision optimality, instead of treating
+optimality as a restatement of the posterior. For decision rule a(r):
+P(a(R)=G)=sum_r pi(a(r)) P(R=r | G=a(r)).
+With equal priors, each disjoint summand is maximized by choosing argmax_G
+P(R=r|G), i.e. ML. Randomized rules cannot improve the maximum because
+their conditional success is a convex combination of deterministic choices.
+The 50 equiprobable histories arise from 2 equiprobable five-base genomes
+with two independent uniform starting positions: 2 * 5 * 5 = 50.
+For r=[AAA,AAA], 1 A history and 4 B histories. An algorithm choosing A
+rather than B solely here loses 3/50 in prior-averaged success probability.
+This proves comparison against every algorithm using the same observed reads
+and candidate model. Formalized in AssemblyP1/FiniteBayesDecision.lean.
 -->
 
 ---
