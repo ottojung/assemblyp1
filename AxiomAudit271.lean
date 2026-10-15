@@ -2,6 +2,7 @@ import AssemblyP1.ConditionalVsOrdinaryMLSeparation
 import AssemblyP1.ConditionalVsOrdinaryMLBoundary271
 import AssemblyP1.W1W2SeparationCompatibility
 import AssemblyP1.ConditionalVsMLGenomeAdapter271
+import AssemblyP1.ConditionalBayesEImpliesB271
 
 open AssemblyP1.ConditionalVsOrdinaryMLSeparation
 
@@ -56,3 +57,19 @@ open AssemblyP1.ConditionalVsOrdinaryMLSeparation
 #print axioms AssemblyP1.ConditionalVsMLGenomeAdapter271.postCandidate_sep
 #print axioms AssemblyP1.ConditionalVsMLGenomeAdapter271.postCandidate_conv
 #print axioms AssemblyP1.ConditionalVsMLGenomeAdapter271.map_ml_agree_uniform
+
+-- General finite-candidate refinement of the (A)-boundary (#271 goal 5):
+-- conditional recovery implies ordinary ML recovery exactly when the side
+-- information is ML-sound; `E = MLMax` makes A and B coincide; the merged toy's
+-- `sideInfo` is exactly *not* ML-sound.
+#print axioms AssemblyP1.ConditionalBayesEImpliesB271.condCertain_imp_E
+#print axioms AssemblyP1.ConditionalBayesEImpliesB271.condCertain_imp_MLMax_of_MLsound
+#print axioms AssemblyP1.ConditionalBayesEImpliesB271.condCertain_imp_MLMax_exists_of_MLsound
+#print axioms AssemblyP1.ConditionalBayesEImpliesB271.not_MLsound_of_witness
+#print axioms AssemblyP1.ConditionalBayesEImpliesB271.posteriorE_eq_one_imp
+#print axioms AssemblyP1.ConditionalBayesEImpliesB271.posteriorE_of_fibre
+#print axioms AssemblyP1.ConditionalBayesEImpliesB271.condCertain_iff
+#print axioms AssemblyP1.ConditionalBayesEImpliesB271.mlSound_EML
+#print axioms AssemblyP1.ConditionalBayesEImpliesB271.condCertain_EML_iff_unique
+#print axioms AssemblyP1.ConditionalBayesEImpliesB271.toy_sideInfo_not_MLsound
+#print axioms AssemblyP1.ConditionalBayesEImpliesB271.genome_E_not_MLsound
