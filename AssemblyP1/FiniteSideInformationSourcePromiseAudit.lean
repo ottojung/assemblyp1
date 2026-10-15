@@ -1,0 +1,31 @@
+import AssemblyP1.FiniteSideInformationSourcePromise
+
+/-! Axiom audit for the #272 source-defined property promise results.
+
+Every endpoint below must depend only on the three permitted axioms
+`propext`, `Classical.choice`, and `Quot.sound`. -/
+
+#print axioms AssemblyP1.FiniteSideInformationSourcePromise.admTruthOnly_congr
+#print axioms AssemblyP1.FiniteSideInformationSourcePromise.admTruthOnly_singleton
+#print axioms AssemblyP1.FiniteSideInformationSourcePromise.admTruthOnly_true
+#print axioms AssemblyP1.FiniteSideInformationSourcePromise.singleton_sufficient
+#print axioms AssemblyP1.FiniteSideInformationSourcePromise.unionAdmissible_eq_true_of_singletons
+#print axioms AssemblyP1.FiniteSideInformationSourcePromise.weakest_admissible_iff_sufficient_true
+#print axioms AssemblyP1.FiniteSideInformationSourcePromise.weakest_truthOnly_iff
+#print axioms AssemblyP1.FiniteSideInformationSourcePromise.sufficient_true_iff_unambiguous
+#print axioms AssemblyP1.FiniteSideInformationSourcePromise.weakest_truthOnly_iff_readonly_certain
+#print axioms AssemblyP1.FiniteSideInformationSourcePromise.weakest_truthOnly_exists_of_readonly_certain
+#print axioms AssemblyP1.FiniteSideInformationSourcePromise.true_isWeakest_truthOnly
+#print axioms AssemblyP1.FiniteSideInformationSourcePromise.weakest_truthOnly_unique
+#print axioms AssemblyP1.FiniteSideInformationSourcePromise.empty_isStrongestSufficient
+#print axioms AssemblyP1.FiniteSideInformationSourcePromise.strongest_unique
+#print axioms AssemblyP1.FiniteSideInformationSourcePromise.AmbiguousRead.not_sufficient_true
+#print axioms AssemblyP1.FiniteSideInformationSourcePromise.AmbiguousRead.union_eq_true
+#print axioms AssemblyP1.FiniteSideInformationSourcePromise.AmbiguousRead.union_not_sufficient
+#print axioms AssemblyP1.FiniteSideInformationSourcePromise.AmbiguousRead.no_weakest
+#print axioms AssemblyP1.FiniteSideInformationSourcePromise.AmbiguousRead.counterexample
+#print axioms AssemblyP1.FiniteSideInformationSourcePromise.UnambiguousExample.p_pos_iff
+#print axioms AssemblyP1.FiniteSideInformationSourcePromise.UnambiguousExample.unambiguous
+#print axioms AssemblyP1.FiniteSideInformationSourcePromise.UnambiguousExample.weakest_exists
+#print axioms AssemblyP1.FiniteSideInformationSourcePromise.UnambiguousExample.true_is_weakest
+#print axioms AssemblyP1.FiniteSideInformationSourcePromise.UnambiguousExample.weakest_exists_and_is_true
