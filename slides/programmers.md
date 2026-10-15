@@ -300,26 +300,65 @@ The conditional 80% is not a guarantee for a fixed true genome.
 
 ---
 
-# Why maximum likelihood maximizes average accuracy
+# Counting the decisions an algorithm can get right
 
-Every possible pair of observed reads identifies a **group of experiments**. An algorithm sees the reads, not the hidden true genome, so it must make **the same guess** throughout that group.
+There are **50 equally likely experiments**: two equally likely true genomes, each with 25 possible pairs of read starts.
 
-For **AAA, AAA**, guessing B gets **four out of five** compatible experiments right. Guessing A gets only one.
+Group the experiments by the **reads the algorithm sees**. Here are four example rows:
 
-For **every other possible observation**, maximum likelihood likewise selects the genome with the highest chance of being the truth under our equal-prior model.
+| Reads observed | True A | True B | Best guess |
+| --- | ---: | ---: | --- |
+| `AAA, AAA` | 1 | **4** | **B** |
+| `AAA, AAT` | 1 | **2** | **B** |
+| `AAA, ATT` | **1** | 0 | **A** |
+| `AAT, TAA` | 1 | 1 | Either |
 
-It makes the most accurate decision **for each observation**, so no other algorithm can have a higher **overall chance of being correct**.
+The algorithm cannot distinguish experiments in the same row. **Guess A, and it gets the A count correct; guess B, and it gets the B count.**
 
-**Ties are possible.** This is an average-accuracy result under equal priors, not a promise of always reconstructing the truth.
+So **the best possible score for any row is its larger count**.
 
 <!--
-Formal result: in a finite candidate universe with prior π and 0-1
-loss, MAP maximizes prior-average correctness. Under a uniform prior
-ML=MAP. For any decision a(r), correctness is
-sum_r π(a(r))P(R=r|G=a(r)), optimized termwise.
-Randomization cannot improve since convex combinations cannot
-exceed a maximum. Lean FiniteBayesDecision.lean. No claim of
-pointwise correctness for every truth.
+These are ordered read pairs (not unordered bags), and each A/B
+latent pair of read-start positions is equiprobable. A=AAATT and
+B=AAAAT, both length five. Circular read-type counts:
+A: AAA,AAT,ATT,TTA,TAA each once.
+B: AAA twice, AAT once, ATA once, TAA once.
+Thus read-pair counts are products of type counts; all four table
+rows can be verified directly. The remaining observation rows are
+treated by the general argument on the next slide.
+-->
+
+---
+
+# The proof: choose the best guess for every observation
+
+**Every experiment belongs to exactly one row.** To count an algorithm's correct answers, add the count it gets right in **each** row.
+
+For any algorithm $f$, let $n_A(r)$ and $n_B(r)$ be the counts for observed reads $r$. Then:
+
+$$
+\underbrace{\frac1{50}\sum_r n_{f(r)}(r)}_{\text{accuracy of }f}
+\;\le\;
+\underbrace{\frac1{50}\sum_r\max\{n_A(r),n_B(r)\}}_{\text{best possible accuracy}}.
+$$
+
+**Why does ML reach the upper bound?** A genome has 25 possible pairs of starting positions. So the likelihood of $r$ is its row's count **divided by 25**.
+
+Choosing the **larger likelihood** therefore chooses the **larger count, in every row**.
+
+That is ML's decision rule. **No other algorithm can achieve higher average accuracy** under the assumed equal prior (ties are possible).
+
+<!--
+Formal generalization: with finite candidates H, prior π, and 0–1 loss,
+accuracy(f) = Σ_r π(f(r)) P(r|f(r))
+            ≤ Σ_r max_g π(g) P(r|g).
+MAP attains the bound for any prior. Equal priors make MAP=ML,
+even when candidates have different lengths (there the raw counts
+must first be converted to candidate-relative probabilities).
+The displayed 50-history argument works because A and B both have
+five positions and the prior is uniform. Randomization cannot
+improve on the per-row maximum. Lean FiniteBayesDecision.lean.
+Prior-averaged optimality does not imply success for each fixed truth.
 -->
 
 ---
