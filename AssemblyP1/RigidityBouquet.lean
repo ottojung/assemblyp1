@@ -20,7 +20,8 @@ here.
 
 A **bouquet** is a strongly connected support consisting of `k` directed cycles
 through one common vertex (the multi-cycle generalization of the figure-eight,
-which is a genuine `L`-mer support: a circular word traverses each loop). Write
+which is an abstract directed graph; de Bruijn/read-support realizability
+must be verified separately for a particular alphabet and read length). Write
 `len i ≥ 1` for the length of cycle `i` and `mult i ≥ 1` for the (constant)
 multiplicity of every edge of cycle `i`; the slack is `mult i - 1`.
 
@@ -35,13 +36,14 @@ criterion collapses to a **bounded linear Diophantine condition**:
 
 This is a sharp, checkable, purely graph-theoretic criterion for the whole
 family, and it is *strictly stronger* than the rank-one (`k = 2`) form of §3.
-It also shows that **no simple min-cut / max-flow closed form exists for the
-general problem**: the bouquet family already encodes bounded linear Diophantine
-feasibility (a numerical-semigroup / coin problem), so the general criterion is
-an integer — not a fractional — feasibility problem. The kernel-checked
-`len233_mult211_real_integer_gap` makes the fractional/integer gap explicit:
-the rational relaxation has the nonzero solution `x = (-1, 0, 2/3)` while the
-integer condition has none, so no LP/min-cut relaxation can decide rigidity.
+The bouquet criterion is an integer feasibility condition, and its direct
+rational relaxation need not decide it. The kernel-checked
+len233_mult211_real_integer_gap gives a nonzero rational solution
+x = (-1, 0, 2/3) but no admissible nonzero integer solution. This refutes
+only this direct relaxation; it does not rule out exact extended linear
+formulations, min-cut methods, or polynomial-time algorithms. Those remain open.
+A concrete DNA circular genome realizing this bouquet is checked separately in
+RigidityBouquetGenomeWitness.lean.
 
 ## Main results
 

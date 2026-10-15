@@ -128,16 +128,15 @@ map `B : E → ℤ` with `B ≥ 1` on every edge, balanced at every node, and
    item §8.3; it strictly extends the two-**cycle** certificate of item 3/4
    (which is only sufficient). [mathematical proof + kernel-checked, §12]
 
-8. **Bouquet family: exact Diophantine criterion, and no fractional closed
-   form.** For a **bouquet** (k directed cycles through one common vertex —
-   the multi-cycle generalization of the figure-eight, and a genuine L-mer
-   support), the exact criterion collapses to a bounded linear Diophantine
-   condition: non-rigidity iff there is a nonzero integer `x` with
-   `∑ len_i x_i = 0` and `x_i ≥ 1 - mult_i` (§13). This is a sharp, checkable,
-   graph-theoretic criterion for the whole family, and a kernel-checked
-   **real/integer gap** shows the rational (LP) relaxation is *not* sufficient,
-   so no purely fractional min-cut/max-flow condition can decide rigidity.
-   [mathematical proof + kernel-checked, §13]
+8. **Bouquet family: exact Diophantine criterion; direct LP relaxation fails.**
+   For an abstract directed bouquet (k cycles through one common vertex),
+   non-rigidity is equivalent to a nonzero integer vector x satisfying
+   sum_i len_i x_i = 0 and x_i >= 1 - mult_i. The kernel-checked real/integer
+   gap proves only that this direct rational relaxation is insufficient,
+   not that all exact LP/extended formulations or min-cut algorithms fail.
+   A genuine circular DNA read-spectrum realization of the (2,3,3) bouquet
+   is Lean-checked in RigidityBouquetGenomeWitness.lean.
+   [mathematical proof + kernel-checked, section 13]
 
 ---
 
@@ -431,10 +430,9 @@ exhaustive zeros are a sanity check on the proofs, not a substitute for them.
    condition `∃ x ≠ 0, ∑ len_i x_i = 0, x_i ≥ 1 - mult_i`, kernel-checked as
    `bouquet_nonrigid_iff`; a kernel-checked **real/integer gap**
    (`len233_mult211_real_integer_gap`) proves the rational/LP relaxation is
-   **not** sufficient, so no fractional min-cut relaxation can be exact. The
-   bouquet family already encodes bounded linear Diophantine feasibility (a
-   numerical-semigroup / coin problem), so a *polynomial* general closed form is
-   unlikely; the general case remains **OPEN**. [open; bouquet case reduced, §13]
+   **not** sufficient for that direct integer system. This does not rule out
+   other exact LP/extended formulations or polynomial graph algorithms. The
+   general complexity and graph-theoretic characterization remain **OPEN**. [open; bouquet case reduced, §13]
 2. **The exact complexity** of the exact criterion (§7). [open]
 3. ~~**The two-closed-walk certificate** (§4)~~ **RESOLVED (2026-10-15).** The
    two-closed-walk certificate is necessary **and** sufficient for strongly
