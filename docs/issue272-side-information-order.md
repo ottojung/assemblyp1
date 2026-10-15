@@ -30,7 +30,7 @@ supplied promise `E`) are inherited verbatim from the merged module.
 | Full truth-dependent family: no weakest (union insufficient) | kernel-checked | `NoWeakestProb.no_weakest_sufficient`, `NoWeakestProb.unionAllSufficient_not_sufficient` |
 | Sufficiency is **not** closed under binary union | kernel-checked | `NoWeakestProb.union_e1_e2_not_sufficient` |
 | `I_s` necessity for the specific Not-So-Greedy decoder | **OPEN** | §6 |
-| Ordering of `I_s` against `Unambiguous` / arbitrary sufficient promises | **OPEN** | §6 |
+| Ordering of `I_s` against `Unambiguous` / arbitrary sufficient promises | **neither** at promise level; read-string adapter OPEN | [`FiniteSideInformationOrdering.lean`](../AssemblyP1/FiniteSideInformationOrdering.lean), §6 |
 | Weakest sufficient inside the source-defined bridging subfamily | **OPEN** (reduced to a concrete criterion) | §6 |
 
 All results are proved with `autoImplicit` disabled and audited by
@@ -175,10 +175,15 @@ equivalence-closed admissible) family.
    one admissible promise, and sufficiency of one promise does not order it
    against another (§2, and the merged `Incomparable.sufficient_promises_incomparable`).
 2. **Ordering of `I_s` against `Unambiguous` / arbitrary sufficient promises.**
-   OPEN. Sufficiency alone imposes no ordering; the merged incomparability
-   example (two normalized, positive-support sufficient promises that do not
-   imply each other) is the kernel-checked obstruction to assuming one. No new
-   implication is claimed here.
+   Resolved at the promise level as **neither**: `I_s` is a truth-dependent
+   promise (`informationFeasible_not_readOnly`) while `Unambiguous` is read-only,
+   and a sufficient truth-dependent promise need not imply `Unambiguous`
+   (`truthdependent_sufficient_incomparable`). The read-only boundary theorem
+   `sufficient_readonly_iff_imp_unambiguous` therefore does not order `I_s`.
+   The literal read-string adapter that would make the question a well-typed
+   implication about one observation type remains OPEN. See
+   [`issue272-is-vs-unambiguous-ordering.md`](issue272-is-vs-unambiguous-ordering.md)
+   and [`AssemblyP1/FiniteSideInformationOrdering.lean`](../AssemblyP1/FiniteSideInformationOrdering.lean).
 3. **Weakest source-defined bridging promise.** OPEN, but now reduced by
    `weakest_admissible_iff_union` to the single question of whether the union of
    all source-defined sufficient promises is itself source-defined and
