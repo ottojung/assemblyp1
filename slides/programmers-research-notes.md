@@ -49,6 +49,30 @@ of those observed reads. It is wrong to replace that antecedent with a generic
 claim that the reads contain information; it is wrong to portray the
 consequent simply as a vague "principled score."
 
+### Editorial guidance: optimal ML needs no second counting apparatus
+
+The two-read calculation already shows that if the reads are
+[AAA,AAA], P(B|reads)=80% and P(A|reads)=20%. Use this directly:
+guessing B succeeds in 80% of experiments *with those reads*;
+guessing A in just 20%.
+
+Then prove optimality by comparing **any** rival rule pointwise
+over all observations. For each pair of observed reads a rival
+either agrees with ML (same correctness) or disagrees (no higher
+conditional correctness). Because the priors are equal, likelihood
+ranking equals posterior ranking. Averaging these pointwise
+inequalities gives the overall Bayes optimality theorem.
+There is no compensating gain on other observations: ML was already
+the best there too. Randomization cannot exceed the pointwise maximum.
+
+Do NOT reintroduce the 50-history counting table, n_A(r)/n_B(r)
+notation or a second sample-enumeration argument: those
+were mathematically valid but cognitively unnecessary here.
+The exact sum-of-conditional-success proof and randomized
+extension belong in speaker notes and FiniteBayesDecision.lean.
+Show the audience clearly that high average success does not
+mean guaranteed success for every true genome.
+
 ### Why likelihood can be called optimal, precisely
 
 For finite hypotheses H, finite observations X, a prior π and read model
