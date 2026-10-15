@@ -139,3 +139,40 @@ The remaining independent `CircularSpelling` obligation is
 local no-observed-intermediate-window certificate into the periodic circular
 genome's internal windows. That source-specific translation is required
 before claiming unconditional Observation 7.
+
+## Full reduced-circuit Observation 7 (new, Lean-verified)
+
+`Section62GlobalSkippedBridge` now **discharges** the remaining
+`CircularSpelling.hInteriorSkipped` clause rather than assuming it.
+Its `aligned_interiors_no_observed` proves by induction that every internal
+window of a legal multi-edge linearized spelling is contained in its edge's
+direct spelling, or in the corresponding suffix subwalk.
+`reduced_graph_no_observed_steps` obtains the local premise directly from
+the *implemented* `transitivelyReducedSpelling` edge predicate and
+`surviving_edge_skips_no_observed_strand`.
+`reduced_signed_circuit_no_skipped_windows` then transports that fact to
+the genuinely **periodic circular** genome, including all seam crossings.
+
+The target theorem
+`observation7_reduced_signed_circuit_range_count` states directly in Lean
+that **for every observed strand word** the count among all circular read
+windows equals the number of visits to that strand as a signed circuit's
+departure read. Its `CircularSpelling` witness is *constructed* from the
+actual reduced signed path, not supplied as a hypothesis.
+
+`Section62Observation7Regression` instantiates this theorem on concrete
+nonempty reduced circuits for both `G=4,L=3` and `G=3,L=5` (multiple wraps),
+with all graph-membership, reduction and signed-circuit premises kernel-checked.
+Both examples have extension length one. An additional **independent
+computational** check, `python3 scripts/verify_284_nontrivial_skipped_windows.py`,
+exercises two reduced edges of extension length two on the circle `ABCD`:
+visited reads `ABC,CDA`, skipped windows `BCD,DAB`, neither observed.
+This check is not presented as an extra Lean theorem; the general Lean
+proof already covers all positive extension lengths.
+
+**Scope:** This proves the full oriented-strand word-count statement for the
+repository's spelling-preserving reduction. It does **not** prove that the
+implemented reduction is identical to Myers 2005 / the exact MB09 graph
+construction, nor that every feasible balanced integer flow is a single
+closed signed walk, nor the quotient treatment of reverse-complement molecule
+classes (especially palindromic reads). Those remain independent obligations.
