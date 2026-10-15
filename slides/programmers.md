@@ -956,7 +956,7 @@ prior-averaged success is nondecreasing in n (a rule can ignore an extra
 read): FiniteBayesDecision.chooseMAP_success_monotone_under_refinement.
 Per-truth success need not be: NonmonotonicityWitness281.success_not_monotone,
 kernel-checked, succ(1)=2/3 > succ(2)=4/9. Tie handling: for n>=1 the exact
-likelihood ratio is 3^a / 2^b (a = number of AA reads), never 1, so no
+likelihood ratio is 3^n / 2^(2n-a) (a = number of AA reads), never 1, so no
 positive-probability ties; n=0 ties. Independent exact-rational check:
 scripts/verify_nonmonotonicity_witness_281.py. Do NOT claim per-truth
 monotonicity; the exponential bound is about the eventual rate, not a
