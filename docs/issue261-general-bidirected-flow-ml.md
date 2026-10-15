@@ -203,6 +203,10 @@ length `N` is therefore a variable and the comparison acquires a length factor.
 
 ## Remaining-open matrix
 
+See `docs/issue261-axis-matrix-20261014.md` for the independently audited matrix
+(current at `origin/main` `e024af2`), including the flow-to-count-vector adapter
+half added by `AssemblyP1.Section62FlowCountVectorAdapter`.
+
 | Axis | Status |
 |---|---|
 | Variable-length exact-multinomial criterion (§6.1 exact display) | **RESOLVED** (`varLengthCriterion`), project-defined objective |
@@ -280,3 +284,9 @@ Source reading: [Medvedev–Brudno 2009, §§6.1–6.2](https://pmc.ncbi.nlm.nih
 - `scripts/verify_issue261_general_bidirected_flow_ml.py`: independent exact
   recomputation (all checks pass), including the binomial counterexample.
 - `scratch261/Audit.lean`: axiom audit (only propext, Classical.choice, Quot.sound).
+- `AssemblyP1/Section62FlowCountVectorAdapter.lean`: the flow-to-count-vector
+  adapter half — `maximal_of_subset` / `not_maximal_of_subset` (candidate-set
+  inclusion transfers failures, not positive statements) and `throughputVec_congr`
+  / `maximal_image_iff` (ML maximality over a flow set equals maximality over its
+  throughput image). It does **not** characterize the throughput image, so the
+  §6.1-binomial-over-§6.2-flow row stays OPEN.

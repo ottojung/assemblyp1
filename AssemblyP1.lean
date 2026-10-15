@@ -36,6 +36,9 @@ import AssemblyP1.SameLengthSection62Parametric
 import AssemblyP1.PerOccurrenceSameLengthCounterexample
 import AssemblyP1.HistoricalCoverageSameLengthWitnesses
 import AssemblyP1.Section62BidirectedFlow
+-- #261 feasible-flow to throughput-count vector image adapter and axiom audit.
+import AssemblyP1.Section62FlowCountVectorAdapter
+import AssemblyP1.Section62FlowCountVectorAdapterAudit
 import AssemblyP1.Section62ReductionVacuityAudit
 import AssemblyP1.Section62SpellingReductionCandidate
 -- #262 full-overlap counterexample transfer across overlap thresholds.
