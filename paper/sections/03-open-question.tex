@@ -146,6 +146,37 @@ Numerical values of its worst-case affinity are not computed here.
 See Theorem~\ref{thm:finite-recovery} for the kernel-checked proof.
 \end{remark}
 
+\begin{corollary}[Explicit sufficient sample size]
+\label{cor:explicit-sample-size}
+In the setting of Remark~\ref{rem:sample-complexity}, suppose
+$\mathcal C_S$ is finite and nonempty with uniform affinity
+$\rho_*=\max_{D\in\mathcal C_S}\rho(p_S,p_D)<1$. Then for every
+$\delta\in(0,1]$,
+\[
+  n\;\ge\;
+  \left\lceil\frac{\ln(|\mathcal C_S|/\delta)}{\ln(1/\rho_*)}\right\rceil
+  \quad\Longrightarrow\quad
+  \Pr_S\!\left\{\exists D\in\mathcal C_S:
+      L_D(R_1,\dots,R_n)\ge L_S(R_1,\dots,R_n)\right\}
+  \;\le\;\delta .
+\]
+For ML selection over $\{S\}\cup\mathcal C_S$, the truth's rotation class is
+then the strict maximizer with probability at least $1-\delta$.
+\end{corollary}
+\begin{proof}
+The choice of $n$ gives
+$|\mathcal C_S|\,\rho_*^{\,n}
+=|\mathcal C_S|\,e^{-n\ln(1/\rho_*)}\le\delta$, which inserted into the union
+bound of Remark~\ref{rem:sample-complexity} proves the display.
+\end{proof}
+The threshold is a \emph{sufficient}, conservative sample size: it inverts a
+union bound, is not necessary or minimax-optimal, and inherits the
+finite-family and uniform-separation hypotheses. Replacing $-\ln\rho_*$ by the
+optimal Chernoff exponent gives a bound at least as strong
+\cite{cover2006,tsybakov2009}; the Hellinger constant is the one kernel-checked
+in \texttt{AssemblyP1.FiniteReadRecovery}, whose concrete instance
+\texttt{il\_confidence\_99} is kernel-checked there.
+
 \begin{corollary}[Conditional error while bridging holds]
 \label{cor:conditional-bridging-error}
 Let $B_n$ be the event that the true genome satisfies a specified bridging

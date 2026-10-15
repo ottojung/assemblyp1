@@ -341,14 +341,21 @@ The detailed hypotheses and the other likelihood objective are in the whitepaper
 
 # Backup: how many reads for 99% recovery?
 
-The limit theorem gives convergence, not a finite sample size. For a finite distinguishable family, a standard Hellinger/union bound gives
+The limit theorem gives convergence, not a finite sample size. For a finite distinguishable family, the exact iid likelihood obeys a Hellinger/union bound:
 
 $$
-\Pr_\theta[\text{a wrong genome beats the truth}]
-\;\le\; \sum_{\eta\neq\theta}\rho(\theta,\eta)^n .
+\Pr_\theta[\text{a wrong genome ties or beats the truth}]
+\;\le\; |\mathcal C|\,\rho_*^{\,n},
+\qquad 0\le\rho_*<1 .
 $$
 
-This is per-truth and **not proved in Lean** here; sample complexity is an open quantitative problem in this precise model.
+Inverting it gives a **sufficient** number of reads for a target bound $\delta$:
+
+$$
+n \;\ge\; \frac{\ln(|\mathcal C|/\delta)}{\ln(1/\rho_*)} .
+$$
+
+This bound is kernel-checked for a finite family; a sharp uniform sample size over all genome candidates (all lengths and models) remains an open quantitative problem.
 
 ---
 
