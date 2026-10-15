@@ -17,7 +17,9 @@ _Reproduce: `python3 scratch257/rigidity.py`, `python3 scratch257/two_cycle.py`
 `python3 scratch257/verify_counterexample.py` (the §4 counterexample),
 `python3 scratch257/finite_decider.py` (§11 finite-decider cross-check),
 `python3 scripts/verify_257_two_walk_iff.py` (§12 two-closed-walk cross-check,
-constructive n=3/4 and exhaustive search n=3).
+constructive n=3/4 and exhaustive search n=3),
+`python3 scripts/verify_257_bouquet.py` (§13 bouquet Diophantine criterion
+cross-check, exhaustive small scope).
 Self-contained, exact integer arithmetic, deterministic._
 
 _Blocking-review repair (2026-10-10, branch `research/257-graver-lean-repair`):
@@ -48,6 +50,18 @@ as `AssemblyP1/TwoWalkRigidity.lean` (`rigid_iff_no_two_nonneg_circ`,
 same standard axioms, resolving §8.3. Build with
 `lake build AssemblyP1.TwoWalkRigidity`; audit with
 `lake env lean AxiomAudit257.lean`._
+
+_Lean (bouquet criterion, §8.1 progress, 2026-10-15): the bouquet reduction of
+§13 is kernel-checked as `AssemblyP1/RigidityBouquet.lean`
+(`bouquet_nonrigid_iff`, plus the rigid-repetitive instance
+`len24_mult21_rigid`, the non-rigidity witness `len23_mult41_nonrigid`, and the
+real/integer gap `len233_mult211_real_integer_gap`), with the same standard
+axioms. Build with `lake build AssemblyP1.RigidityBouquet`; audit with
+`lake env lean AxiomAudit257.lean`. This is a partial advance on §8.1: an exact,
+checkable graph-theoretic criterion for the whole bouquet family and a
+kernel-checked proof that the direct LP/fractional relaxation is **not** sufficient; a
+polynomial min-cut/max-flow form for general supports (or a proof that none
+exists) remains **OPEN**._
 
 ---
 
@@ -113,6 +127,16 @@ map `B : E → ℤ` with `B ≥ 1` on every edge, balanced at every node, and
    necessary **and** sufficient for strongly connected supports, resolving open
    item §8.3; it strictly extends the two-**cycle** certificate of item 3/4
    (which is only sufficient). [mathematical proof + kernel-checked, §12]
+
+8. **Bouquet family: exact Diophantine criterion; direct LP relaxation fails.**
+   For an abstract directed bouquet (k cycles through one common vertex),
+   non-rigidity is equivalent to a nonzero integer vector x satisfying
+   sum_i len_i x_i = 0 and x_i >= 1 - mult_i. The kernel-checked real/integer
+   gap proves only that this direct rational relaxation is insufficient,
+   not that all exact LP/extended formulations or min-cut algorithms fail.
+   A genuine circular DNA read-spectrum realization of the (2,3,3) bouquet
+   is Lean-checked in RigidityBouquetGenomeWitness.lean.
+   [mathematical proof + kernel-checked, section 13]
 
 ---
 
@@ -401,7 +425,14 @@ exhaustive zeros are a sanity check on the proofs, not a substitute for them.
    characterization of `L_0 ∩ box ≠ {0}`). None is known; the §4 counterexample
    rules out the two-cycle condition specifically, and the two-**closed-walk**
    iff proved in §12 is repeat-structural rather than a min-cut form (it still
-   searches over closed walks). [open]
+   searches over closed walks). **Partial progress (§13, 2026-10-15):** for the
+   bouquet family the exact criterion is the bounded linear Diophantine
+   condition `∃ x ≠ 0, ∑ len_i x_i = 0, x_i ≥ 1 - mult_i`, kernel-checked as
+   `bouquet_nonrigid_iff`; a kernel-checked **real/integer gap**
+   (`len233_mult211_real_integer_gap`) proves the rational/LP relaxation is
+   **not** sufficient for that direct integer system. This does not rule out
+   other exact LP/extended formulations or polynomial graph algorithms. The
+   general complexity and graph-theoretic characterization remain **OPEN**. [open; bouquet case reduced, §13]
 2. **The exact complexity** of the exact criterion (§7). [open]
 3. ~~**The two-closed-walk certificate** (§4)~~ **RESOLVED (2026-10-15).** The
    two-closed-walk certificate is necessary **and** sufficient for strongly
@@ -440,6 +471,11 @@ exhaustive zeros are a sanity check on the proofs, not a substitute for them.
 | §11 Boolean decider `decider` correctness | kernel-checked (`FiniteRigidityDecider.rigid_iff_decider`) |
 | §11 worked instances (`ATATAT` rigid, `AAAAB` non-rigid, figure-eight rigid/non-rigid) | kernel-checked (`by decide`) |
 | §11 finite-decider cross-check vs brute force (n=3: 255; n=4: 312; 0 mismatches) | verified computation, exhaustive in scope |
+| §13 bouquet exact criterion (`bouquet_nonrigid_iff`: non-rigid iff `∃ x ≠ 0, ∑ len_i x_i = 0, x_i ≥ 1 - mult_i`) | mathematical proof + kernel-checked (`AssemblyP1/RigidityBouquet.lean`) |
+| §13 bouquet rigid-repetitive instance `len24_mult21_rigid` | kernel-checked |
+| §13 bouquet non-rigidity witness `len23_mult41_nonrigid` (`x = (-3, 2)`) | kernel-checked |
+| §13 bouquet real/integer gap `len233_mult211_real_integer_gap` (rational `(-1, 0, 2/3)`, no integer solution) | mathematical proof + kernel-checked |
+| §13 bouquet cross-check vs brute force (`scripts/verify_257_bouquet.py`: 3133 bouquets, 0 mismatches) | verified computation, exhaustive in scope |
 
 ---
 
@@ -687,3 +723,117 @@ improvement over the finite decider of §11.
 kernel-checked Lean form is [kernel-checked, standard axioms]; the exhaustive
 cross-checks are [verified computation, exhaustive in scope]. §8.1, §8.2, §8.4
 remain **open**.
+
+---
+
+## 13. The bouquet family: an exact Diophantine criterion (§8.1 progress)
+
+This section advances open item §8.1 by giving an exact, checkable
+graph-theoretic criterion for the **bouquet** family, and a kernel-checked proof
+that this direct fractional (LP) relaxation is *not* exact.
+
+### 13.1 Definition
+
+A **bouquet** is an abstract strongly connected directed graph consisting of
+k cycles C_i through one common vertex, otherwise vertex-disjoint.
+It generalizes the figure-eight. Not every choice of cycle lengths and
+alphabet is automatically realizable as a de Bruijn/read-support graph;
+the concrete DNA realization in section 13.5 is checked separately.
+
+Let len_i >= 1 be the cycle lengths, and let a positive circulation A
+be constant on each cycle with multiplicity mult_i >= 1, giving slack
+s_i = mult_i - 1. When such a bouquet is realizable as a read-support
+graph, the circulation represents a circular walk traversing C_i
+exactly mult_i times. The algebraic criterion applies to abstract
+bouquets without a realizability assumption.
+
+### 13.2 Every circulation is constant on each cycle
+
+At an internal vertex of `C_i` there is exactly one in-edge and one out-edge
+(the two consecutive edges of `C_i`), so balance forces their values equal; by
+induction all `len_i` edges of `C_i` carry the same value `x_i`. Balance at the
+common vertex is then automatic (`∑_i x_i = ∑_i x_i`). Conversely every vector
+`x : ℤ^k` gives a circulation. Hence the circulation space is `ℤ^k`, and the
+total mass is `1ᵀδ = ∑_i len_i x_i`.
+
+### 13.3 Exact criterion
+
+**Theorem 6 (bouquet criterion).** `A` is **not** rigid **iff** there is a
+nonzero integer vector `x ∈ ℤ^k` with
+
+```
+∑_i len_i x_i = 0        (zero-sum)
+x_i ≥ 1 - mult_i         (box)         for every i.
+```
+
+_Proof._ Immediate from Theorem 1 together with §13.2: a nonzero
+`δ ∈ L_0 ∩ box` corresponds bijectively to a nonzero integer `x` with
+`∑ len_i x_i = 0` and `x_i ≥ 1 - mult_i`. ∎
+
+This specializes to the rank-one (`k = 2`) form of §3 and to the figure-eight,
+and is kernel-checked as `AssemblyP1.RigidityBouquet.bouquet_nonrigid_iff`.
+For `k ≥ 3` it is a genuinely two-dimensional lattice condition (e.g.
+`len = (2, 3, 3)`, `mult = (2, 1, 1)`), not reducible to the two-cycle check.
+
+### 13.4 Direct rational relaxation is not exact
+
+Replacing the integer vector in the bouquet criterion by a rational vector
+produces a direct linear relaxation. For cycle lengths (2,3,3) and
+multiplicities (2,1,1), the rational vector (-1,0,2/3) is nonzero,
+has weighted sum zero, and respects all lower bounds.
+
+The integer system, however, has only x=0: its equation is
+2*x1 + 3*(x2+x3) = 0, with x1 >= -1 and x2,x3 >= 0.
+If x1=0, both other coordinates vanish; if x1=-1, the equation
+would require 3*(x2+x3)=2, impossible over the integers.
+Positive x1 cannot cancel nonnegative x2,x3. This proves a rigid
+integer instance whose *direct* rational relaxation reports a witness,
+kernel-checked by len233_mult211_real_integer_gap.
+
+This example does not exclude other exact LP/extended formulations,
+integral network-flow formulations, or polynomial-time graph algorithms.
+
+### 13.5 Complexity and realizability caveats
+
+The bouquet criterion is a bounded linear Diophantine feasibility
+problem. With lengths encoded in binary it resembles numerical-semigroup
+membership: one cycle of length t with slack 1 and other cycles of
+length a_i with zero slack admits a nonzero integer perturbation exactly
+when t is a nonnegative combination of the a_i. But an *explicit*
+bouquet graph has size proportional to the sum of cycle lengths, not
+their binary bit lengths. Therefore this observation by itself is **not**
+an NP-hardness proof for rigidity on explicitly represented read graphs,
+nor does it rule out a polynomial min-cut/max-flow characterization.
+Those complexity questions remain OPEN.
+
+Abstract bouquets also need not be realizable as de Bruijn read-support
+graphs over a fixed alphabet. One concrete realization is checked in
+AssemblyP1/RigidityBouquetGenomeWitness.lean: the circular DNA genome
+ACACGACTAC with L=3 has the three cycles (2,3,3), multiplicities
+(2,1,1), at shared (L-1)-mer AC. The Lean regression checks all cyclic
+reads, their multiplicities, and the source/target 2-mers; the abstract
+integer rigidity theorem is a separate kernel-checked result.
+
+### 13.6 Kernel-checked instances and cross-check
+
+* `len24_mult21_rigid`: the bouquet `len = (2, 4)`, `mult = (2, 1)` — the
+  `2`-cycle is traversed **twice**, yet the instance is rigid (`x_1 ≥ -1`,
+  `x_2 ≥ 0`, `2x_1 + 4x_2 = 0` force `x = 0`). A rigid repetitive example.
+* `len23_mult41_nonrigid`: the bouquet `len = (2, 3)`, `mult = (4, 1)` — the
+  explicit witness `x = (-3, 2)` (`2·(-3) + 3·2 = 0`, `-3 ≥ -3`, `2 ≥ 0`).
+* `len233_mult211_real_integer_gap`: the real/integer gap of §13.4.
+* `scripts/verify_257_bouquet.py`: a self-contained, exact, deterministic
+  cross-check. It recomputes rigidity from scratch by enumerating **all**
+  positive integer circulations of total `G` on the actual support graph
+  (balance-guided backtracking) and compares with the Diophantine criterion over
+  an exhaustive small scope (`k ≤ 4`, cycle lengths `≤ 4`, multiplicities
+  `≤ 3`, `G ≤ 12`: **3133** bouquets, **0** mismatches), and re-derives the gap
+  and the worked instances. [verified computation, exhaustive in scope]
+
+### 13.7 Epistemic status
+
+Theorem 6 and the three worked instances are kernel-checked with only
+`[propext, Classical.choice, Quot.sound]`
+(`AssemblyP1/RigidityBouquetAudit`); no `sorry`/`admit`/`axiom`/`native_decide`.
+The residual — a *polynomial* min-cut/max-flow closed form for general supports,
+or a proof that none exists — remains **OPEN** (§8.1/§8.2).
