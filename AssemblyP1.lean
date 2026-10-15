@@ -59,6 +59,8 @@ import AssemblyP1.Section62CircularWindowAdapter
 import AssemblyP1.Section62PeriodicSeam
 -- #284: legal overlap paths spell their last read, giving a closed circular seam.
 import AssemblyP1.Section62OverlapSuffix
+-- #284: actual signed overlap circuits yield an aligned periodic circular word.
+import AssemblyP1.Section62SourceSignedSeamAdapter
 import AssemblyP1.Section62FullSpectrumIndexing
 import AssemblyP1.Section62VariableOverlap247e
 import AssemblyP1.FiniteSamplingCounterexample
