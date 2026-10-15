@@ -67,6 +67,7 @@ import AssemblyP1.FiniteBayesDecision
 import AssemblyP1.IidMapMonotonicity
 import AssemblyP1.GenomeOrbitAdapter
 import AssemblyP1.ConditionalVsOrdinaryMLSeparation
+import AssemblyP1.ConditionalVsOrdinaryMLBoundary271
 import AssemblyP1.W1W2SeparationCompatibility
 import AssemblyP1.BayesValueMonotonicity
 import AssemblyP1.PopulationReduction

@@ -201,3 +201,50 @@ observation model).
 > count vectors; they do not instantiate the conditional guarantee, which
 > requires a prior, a normalized observation model, and a promise that the
 > witness model does not contain.
+
+## 9. Tiny-table sanity regressions: ties, zero-likelihood competitors, MAP vs ML
+
+_Added by the follow-up to PR #232; Lean kernel-checked in
+`AssemblyP1/ConditionalVsOrdinaryMLBoundary271.lean` (audited in
+`AxiomAudit271.lean`). Abstract finite pmf regressions, not genome witnesses._
+
+The single separation table of Section 3 is not the whole boundary. The
+degenerate cases the #271 comparison must distinguish are pinned by three tiny
+exact-rational tables:
+
+* **Ties (maximizer vs unique maximizer).** With `p_A = p_B = (1/2, 1/2)` at
+  `r = r0`, the truth `A` is an ordinary-ML maximizer but **not** the unique
+  maximizer (`ml_tie_A_r0`, `ml_tie_not_unique_r0`), and the unconditional
+  posterior on `A` is `1/2`, not certainty (`post_tie_A_r0`). Packaged as
+  `tie_maximizer_posterior_not_certain`: neither the maximizer nor the
+  unique-maximizer form of (B) gives (A).
+* **Zero-likelihood competitors (overlap).** With `p_A = (1, 0)`,
+  `p_B = (0, 1)`, the candidate `B` has zero likelihood at `r = r0`, so it is
+  excluded from the posterior automatically: `post2 A r0 = 1`,
+  `post2 B r0 = 0` (`zero_likelihood_overlap`), and `A` is the unique ordinary
+  ML maximizer. This is an **overlap** of the two guarantees and the concrete
+  shadow of the general excluded-orbit result
+  `AssemblyP1.FiniteBayesianSideInformation.posteriorMass_eq_one_iff_excluded`
+  (#272). No prior rescues the excluded candidate: with the skewed prior
+  `π = (9/10, 1/10)` the posteriors are unchanged (`post_zero_A_r0_skew`,
+  `post_zero_B_r0_skew`).
+* **Uniform vs nonuniform prior (MAP vs ML).** On the Section-3 likelihood
+  table `p_A = (1/4, 3/4)`, `p_B = (3/4, 1/4)`, ordinary ML at `r = r0`
+  prefers `B` (`3/4 > 1/4`). Under the uniform prior the posterior maximizer
+  is also `B`; under the skewed prior `π = (9/10, 1/10)` the posterior
+  maximizer flips to `A` (`map_ne_ml_nonuniform`, `prior_flips_MAP_not_ML`).
+  The prior moves MAP but not ML. The general equivalence of posterior
+  maximizer and joint-mass maximizer is #269
+  (`AssemblyP1.GenomeOrbitAdapter.PosteriorMAP.posterior_argmax_iff`); this is
+  only its concrete two-candidate instantiation, not new generic MAP
+  infrastructure.
+
+Summary of the boundary, case by case (truth `A` at the shown observation):
+
+| table | likelihood order | ordinary ML (B) | posterior (A) | overlap/separate |
+|---|---|---|---|---|
+| Section 3, `r = r0` | `B` strictly higher | `B` unique | `1/4` | separate (A∧¬B via `E`) |
+| Section 3, `r = r1` | `A` strictly higher | `A` unique | `3/4` | separate (B∧¬A) |
+| tie | equal | `A` non-unique | `1/2` | separate (B non-unique ∧ ¬A) |
+| zero-likelihood | `A` strictly higher | `A` unique | `1` | **overlap** |
+| MAP vs ML, skew prior | `B` strictly higher | `B` unique | `3/4` (posterior argmax `A`) | MAP ≠ ML |
