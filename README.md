@@ -14,9 +14,12 @@ population maximum-likelihood uniqueness, as well as exact finite-sample
 examples where a competitor has higher likelihood. It includes Lean proofs,
 an explanatory whitepaper, and two audience-specific presentations.
 
+**Download the [latest white paper (PDF)](https://github.com/ottojung/assemblyp1/releases/download/whitepaper-latest/assemblyp1-white-paper.pdf)** for the full mathematical study,
+or read its [LaTeX source](paper/main.tex). The PDF is automatically updated
+from successful CI builds on main.
+
 **Start with the [programmers' presentation](slides/programmers.md)** for a
-worked graph construction and Not-So-Greedy, or the
-[whitepaper](paper/main.tex) for detailed definitions and theorems.
+worked graph construction and Not-So-Greedy.
 
 See:
 
@@ -55,5 +58,4 @@ npm ci
 npm run build
 ```
 
-The LaTeX white paper under [`paper/`](paper/) is separate and still built as a
-PDF artifact by CI.
+The LaTeX white paper under [`paper/`](paper/) is built by CI and published both as a workflow artifact and as a stable [downloadable PDF](https://github.com/ottojung/assemblyp1/releases/download/whitepaper-latest/assemblyp1-white-paper.pdf).

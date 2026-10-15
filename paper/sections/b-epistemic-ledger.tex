@@ -1,372 +1,66 @@
-\section{Epistemic ledger}
+\section{Verification and claim scope}
 \label{app:ledger}
 
-Every nontrivial claim in this paper belongs to one of a small number of
-epistemic classes. This appendix consolidates them. The classes are:
-\emph{source fact} (stated by a cited source), \emph{source-supported inference}
-(a reading of a source that the source does not literally state),
-\emph{project modeling choice} (introduced here, not in the literature),
-\emph{mathematical result} (proved in the repository's notes),
-\emph{kernel-checked} (checked in Lean),
-\emph{verified computation} (exact-rational script), \emph{bounded computational
-evidence} (search in a stated scope, not a proof), \emph{source gap} (the
-sources do not determine it), and \emph{open}.
+The mathematical assertions in this paper have different kinds of support.
+Published reconstruction and combinatorial results are attributed to their
+sources; original project-level conclusions are stated with their hypotheses;
+Lean-checked results are distinguished from exact scripts and modeling
+choices. The claim-to-proof index in \path{docs/verification.md} records
+exact Lean namespaces, theorem hypotheses and independent check scripts,
+without embedding development history in the manuscript.
 
-\subsection{Source facts and source gaps}
-
-\begin{table}[h]
-\centering
+\begin{center}
 \small
-\begin{tabular}{@{}p{0.46\textwidth}p{0.20\textwidth}p{0.26\textwidth}@{}}
+\begin{tabular}{@{}p{0.48\textwidth}p{0.40\textwidth}@{}}
 \toprule
-Claim & Status & Basis \\
+Result & Evidence and qualification\\
 \midrule
-Circular oriented length-$L$ read model; independent uniform starts
-  & source fact & \cite[\S2]{shomorony2016} \\
-Project sampled-placement $\Is$: base coverage and maximal-triple/interleaved
-bridging at realized starts & project modeling choice & Def.~\ref{def:Is};
-compare historical $\Is^{\mathrm{match}}$ \\
-Historical read-string coverage (Def.~1) and matched-string bridging (Def.~2)
-  & source fact & \cite[Supplement, \S6.4]{shomorony2016} \\
-Placement-based $\Is$ and source $\Is^{\mathrm{match}}$ are incomparable
-  & kernel-checked project fact & \S\ref{sec:finite:historical},
-  \texttt{Historical\allowbreak{}Covers} \\
-Maximality of paired repeats; historical triple occurrences need not be maximal;
-bridging is strict on both sides
-  & source fact & \cite{bresler2013,shomorony2016} \\
-Exact multinomial with candidate-intrinsic $N(D)$
-  & source fact & \cite[\S6.1]{medvedev2009} \\
-Fixed-$N$ binomial approximation; ``genome size known''
-  & source fact & \cite[\S6.1]{medvedev2009} \\
-Section~6.2 objects are bidirected flows, not necessarily sequences
-  & source fact & \cite[\S6.2]{medvedev2009} \\
-Reads are reverse-complement molecule pairs in MB09
-  & source fact & \cite[\S3.1,\S4.1]{medvedev2009} \\
-``$4^k$ variables'' vs.\ molecule vocabulary (internal tension)
-  & source fact / tension & \cite[\S6.1]{medvedev2009} \\
-Which MB09 object the 2016 sentence denotes
-  & source gap & \cite[\S5]{shomorony2016} \\
-Which read-type convention / equivalence; candidate length; maximizer vs.\
-uniqueness & source gap & \cite[\S5]{shomorony2016} \\
-Publisher-hosted supplement archive unretrieved (author-hosted manuscript with
-supplement \S6.4 reviewed) & source gap & repository record \\
+Not-So-Greedy reconstruction &
+Published theorem \cite{shomorony2016}, for the source's matched-string
+coverage and bridging predicate.\\
+Same-length circulation rigidity and rotation uniqueness &
+Kernel-checked, under placement-based $\Is$, oriented full-overlap
+support, same length and truth candidacy
+(Theorem~\ref{thm:rigidity}; Corollary~\ref{cor:same-length-rotation}).\\
+Bayes/MAP optimal average reconstruction &
+Classical decision result, formalized in
+\texttt{FiniteBayesDecision}; true likelihood and specified prior.\\
+Historical witnesses $W_1$ and $W_2$ &
+Kernel-checked historical predicate, Section~6.2 flow feasibility,
+and strict likelihood comparisons
+(Theorems~\ref{thm:cex-historical-W1}--\ref{thm:cex-historical-W2}).\\
+$AAABB\to AAAAB$; $AAACC\to AAAAC$ &
+Kernel-checked exact and binomial finite counterexamples.
+The $AAABCBC\to AAAAABC$ instance is an independently verified
+exact computation, not stated as a Lean theorem.\\
+$AABB\to ABAB$ and $AAATT\to AAAATT$ &
+Kernel-checked truth-candidacy and variable-length boundaries.\\
+$AABBC\to AABC$ finite sampling &
+Kernel-checked in \texttt{FiniteSamplingCounterexample}.\\
+Ukkonen condition and spectrum uniqueness &
+Classical combinatorial work \cite{ukkonen1992,pevzner1995,bresler2013};
+the needed specialized P2 result is also proved in Lean.\\
+Primitive-P2 population identifiability and class finiteness &
+Unconditional theorem \texttt{population\_unique\_ML}
+and \texttt{PrimitiveP2FiniteClass}; length bound $2q^{L-1}$.
+The cited endpoint has no separate Eulerian-cycle obstruction premise.\\
+Finite-family Hellinger error bound and complete P2 recovery &
+Kernel-checked in \texttt{FiniteReadRecovery} and
+\texttt{PrimitiveP2FiniteClass}; existence of a strict rate
+does not provide a numerically evaluated constant.\\
+Non-monotonic exact-ML per-truth success &
+Kernel-checked two-genome theorem \texttt{success\_not\_monotone},
+with exact namespace in \path{docs/verification.md}.\\
+Graver rigidity and binomial effective weights &
+Kernel-checked general criteria, with the restricted flow
+and surrogate likelihood domains stated in the body.\\
 \bottomrule
 \end{tabular}
-\caption{Source facts and gaps. The gaps are what prevent any single theorem
-from being advertised as settling the published sentence.}
-\end{table}
+\end{center}
 
-\subsection{Mathematical and project results}
-
-{\small
-\begin{longtable}{@{}p{0.48\textwidth}p{0.20\textwidth}p{0.24\textwidth}@{}}
-\caption{Mathematical and project-level results. The same-length rigidity core, its primitive/periodic repeat reduction, its
-conditional final wiring, the population Gibbs/KL layer, the P1/P2
-definitions and their Ukkonen alignment, and the population
-division/Eulerian reduction plus the formerly external complete-spectrum
-uniqueness step (now discharged internally) are kernel-checked. The end-to-end
-population theorem \popml{} carries no
-external premise. The \emph{finite} same-length candidate-rotation
-corollary is also kernel-checked when truth and competitor are both genuine
-Section~6.2 candidates (\texttt{Same\allowbreak{}Length62Uniqueness}, merged PR~\#124),
-rather than requiring the older external BBT obstruction input.
-Nonprimitive candidate rotation without truth candidacy is also checked
-(merged PR~\#126), while the primitive claim without truth candidacy is
-refuted (merged PR~\#127). Source-referent correspondence, candidate
-existence, and unrestricted likelihood-optimality are not kernel-checked
-by these rotation theorems.}
-\label{tab:math-results}\\
-\toprule
-Claim & Status & Provenance \\
-\midrule
-\endfirsthead
-\multicolumn{3}{@{}l@{}}{\small Table~\thetable, continued from previous page}\\
-\addlinespace
-\toprule
-Claim & Status & Provenance \\
-\midrule
-\endhead
-\midrule
-\multicolumn{3}{@{}r@{}}{\small Continued on next page}\\
-\endfoot
-\bottomrule
-\endlastfoot
-Finite Bayesian MAP maximizes prior-averaged exact recovery probability
-against every deterministic or randomized rule; uniform-prior ML inherits
-this for the true likelihood
-  & kernel-checked formalization of a standard decision result &
-  Thm.~\ref{thm:bayes-optimal},
-  \texttt{FiniteBayesDecision} (merged PR~\#174) \\
-Additional genuinely observed finite information cannot reduce MAP's
-optimal average recovery probability
-  & kernel-checked finite decision theorem &
-  \texttt{FiniteBayesDecision},
-  \texttt{chooseMAP\_success\_monotone\_under\_refinement} \\
-Cyclic shift is forced for the strong schema; reverse complement forced iff
-molecule types & mathematical fact & repository equivalence note \\
-Negative results transfer to superclasses; positives do not
-  & mathematical fact & Lemma~\ref{lem:negative-transfer} \\
-Same-length oriented circulation rigidity from the no-long-triple-repeat
-boundary, including the primitive/periodic split
-  & kernel-checked project reduction &
-  \texttt{OrientedRigidity}, \texttt{WordLayer}, \texttt{RepeatAdapter} \\
-No strict same-length Section~6.2 counterexample, any $G,L,\Alphabet$
-  & source-supported mathematics with kernel-checked conditional core &
-  Corollary~\ref{cor:same-length-zero} \\
-Uniqueness up to cyclic rotation on the truth-admissible same-length row
-  & source-supported mathematical theorem &
-  Corollary~\ref{cor:same-length-rotation}, \cite{bresler2013} \\
-Beatability criterion; non-rigidity is the same-length obstruction
-  & mathematical fact & Prop.~\ref{prop:beatability} \\
-General finite positive-flow rigidity iff no feasible Graver basis
-perturbation (conformal integer-lattice certificate)
-  & kernel-checked abstract structural iff &
-  Thm.~\ref{thm:graver-rigidity},
-  \texttt{GraverRigidity} \\
-Fixed-$N$ binomial surrogate: exact effective-weight factorization
-and all-count pairwise dominance iff coordinatewise weight dominance
-  & kernel-checked abstract statistical iff &
-  Thm.~\ref{thm:binomial-weights},
-  \texttt{FixedNBinomialEffectiveWeights} \\
-Spelling-preserving candidate reduction: every signed overlap walk
-expands to a signed reduced walk with the same word and endpoints
-  & kernel-checked conditional graph theorem &
-  Thm.~\ref{thm:global-spelling},
-  \texttt{Section62GlobalSpellingPreservation} \\
-Longer-overlap-only reduction removes a non-spelling-equivalent edge
-on three length-4 reads
-  & kernel-checked finite counterexample, not a Myers refutation &
-  Prop.~\ref{prop:reduction-mismatch},
-  \texttt{Section62ReductionMismatch} \\
-Gibbs/KL: truth is a population maximizer over any class, with equality iff
-the read distributions agree
-  & kernel-checked project formalization of \cite{cover2006} &
-  Lemma~\ref{lem:gibbs}, \texttt{PopulationGibbs}, issue \#89 \\
-Primitivity plus P2 gives gcd-one spectra (division + Eulerian + complete-spectrum
-step), reducing normalized to ordinary spectra
-  & kernel-checked project reduction &
-  \texttt{Population\allowbreak{}Reduction}, issue \#70 \\
-P1/P2 implies Ukkonen's condition at $K=L-1$
-  & kernel-checked project fact &
-  Def.~\ref{def:P1P2}, \texttt{P2}, issue \#89 \\
-Population uniqueness, oriented primitive P2, every positive-length candidate
-  & kernel-checked project theorem, no external premise (objective, P2 condition,
-  gcd-one reduction and complete-spectrum uniqueness all in the kernel) &
-  Thm.~\ref{thm:population},
-  \texttt{Issue94Complete.\allowbreak{}population\_\allowbreak{}unique\_\allowbreak{}ML} (issues \#89, \#94) \\
-Exact-ML error over a finite, pairwise-distinguishable read-distribution family
-is at most the sum of pairwise Hellinger affinities, hence decays exponentially
-  & kernel-checked finite-PMF theorem; finite family only, genome adapter and
-  unbounded classes separate &
-  Thm.~\ref{thm:finite-recovery},
-  \texttt{FiniteReadRecovery} (issue \#270, PR~\#199) \\
-Exact finite-sample ML success is not monotone in the read count: for
-$\{AAC,AAAC\}$ under oriented length-2 reads,
-$\mathrm{succ}(1)=2/3>4/9=\mathrm{succ}(2)$
-  & kernel-checked concrete witness against the actual genome, read, and
-  likelihood definitions &
-  Prop.~\ref{prop:nonmonotone},
-  \texttt{NonmonotonicityWitness281} (issue \#281) \\
-P1/P2 intrinsic admissibility; population objective
-  & project modeling choice & this paper, Defs.~\ref{def:P1P2},
-  \ref{def:population} \\
-Feasible-fibre uniqueness and conditional posterior certainty from the
-external Not-So-Greedy Corollary~1 premise (truth-dependent event
-$E=F(G,R)$; conditioned on $E$, not ordinary ML)
-  & kernel-checked conditional consequence of an external premise &
-  \texttt{Conditional\allowbreak{}Identifiability}, issue~\#266 \\
-Read-instance bridge: the Finset-of-distinct-read-types decoder equals the
-source's deduplicated instance interface (the manuscript deduplicates read
-instances, and the duplicate-invariance adapter is kernel-checked)
-  & kernel-checked adapter for an external premise &
-  \texttt{Conditional\allowbreak{}Identifiability}, issue~\#266 \\
-\end{longtable}
-}
-
-\subsection{Finite certificates and computations}
-
-{\small
-\begin{longtable}{@{}p{0.44\textwidth}p{0.20\textwidth}p{0.28\textwidth}@{}}
-\caption{Finite certificates. Kernel-checked statements concern the finite
-instance and arithmetic; the source-correspondence claims are separate
-source-supported inferences.}
-\label{tab:finite-certs}\\
-\toprule
-Claim & Status & Artifact \\
-\midrule
-\endfirsthead
-\multicolumn{3}{@{}l@{}}{\small Table~\thetable, continued from previous page}\\
-\addlinespace
-\toprule
-Claim & Status & Artifact \\
-\midrule
-\endhead
-\midrule
-\multicolumn{3}{@{}r@{}}{\small Continued on next page}\\
-\endfoot
-\bottomrule
-\endlastfoot
-$AAABB\to AAAAB$, exact ratio $2$, $\Is$ certificate
-  & kernel-checked & \texttt{Fixed\allowbreak{}Length\allowbreak{}Exact\allowbreak{}Counterexample} \\
-$AAABCBC\to AAAAABC$, same length, exact ratio $27$, $\Is$ non-vacuous
-  & verified computation (recorded without an artifact until issue \#217) &
-  \texttt{verify\_\allowbreak{}readtiled\_\allowbreak{}exact\_\allowbreak{}counterexample.\allowbreak{}py} \\
-$AAACC\to AAAAC$, binomial ratio $1125/512$
-  & kernel-checked & \texttt{Fixed\allowbreak{}Length\allowbreak{}Binomial\allowbreak{}Counterexample} \\
-$AAATT\to AAAATT$, §6.1 ratio $9/8$; $\Is$; literal §6.2 feasibility of both
-genomes (graph, transitive reduction, vertex LB 1, signed-incidence balance,
-no supersource/sink)
-  & kernel-checked (incl. the §6.2 graph certificate) &
-  \texttt{Section62Bridging\allowbreak{}Counterexample} \\
-$AAATAT\to AAAAAT$, same length, exact $3$, binomial $5$, literal §6.2
-feasibility of both genomes
-  & kernel-checked (incl. the §6.2 graph certificate) &
-  \texttt{Same\allowbreak{}Length\allowbreak{}Section62Counterexample} \\
-$AAATAT\to AAAAAT$ under the \emph{source historical} $\Is^{\mathrm{match}}$,
-same length, exact $3$, binomial $5$
-  & kernel-checked on \texttt{main} (merged PR~\#142;
-    literal all-triple bridging) &
-  \texttt{Historical\allowbreak{}Coverage\allowbreak{}Same\allowbreak{}Length\allowbreak{}Witnesses},
-  \texttt{Historical\allowbreak{}Covers} \\
-$ATATACAC\to ATACACAC$ under the \emph{source historical}
-$\Is^{\mathrm{match}}$, per-occurrence, exact $3/2$, binomial $9/5$
-  & kernel-checked on \texttt{main} (merged PR~\#142) &
-  \texttt{Historical\allowbreak{}Coverage\allowbreak{}Same\allowbreak{}Length\allowbreak{}Witnesses} \\
-$AABB\to ABAB$, same length, exact ratio $4$; full $\Is$; the competitor is a
-literal §6.2 candidate while the truth is not — the §6.2 acceptance boundary is
-a separate, false, statement
-  & kernel-checked & \texttt{Same\allowbreak{}Length\allowbreak{}Exact\allowbreak{}MLCounterexample} \\
-$AAATT\to AAAATT$ variable-length oriented boundary, in infinite strict families
-(strict for every sample multiplicity $M\ge1$, exact and fixed-$N$ binomial)
-  & kernel-checked at $M=1,2$ + general proof &
-  \texttt{Oriented\allowbreak{}Variable\allowbreak{}Length\allowbreak{}Se62} \\
-$AAATT\to AAAATT$ variable-length per-occurrence audit: both genomes satisfy the
-per-vertex \emph{and} per-occurrence rules; competitor the unique §6.1 optimizer
-over the whole domain and the general flow universe
-  & kernel-checked & \texttt{Section62Varlen\allowbreak{}Per\allowbreak{}Occurrence} \\
-$o_{\min}=1$ §6.2 flow optimum $(2,1,1)$ for $AAATT$ is no circular molecule's
-spectrum (non-spellable flow maximum)
-  & kernel-checked & \texttt{Section62Non\allowbreak{}Spelled\allowbreak{}Flow} \\
-$o_{\min}=L-1$ full-overlap disconnected optimum $d^*$ for $AAATAT$,
-$\Lik(d^*)/\Lik(d_S)=1280/243$; support disconnected yet $d^*$ spellable as
-$AAAAT$ (disconnectedness, not non-spellability)
-  & kernel-checked & \texttt{Section62Full\allowbreak{}Overlap\allowbreak{}Disconnected} \\
-Minimum same-length non-rigid pair $AAAAB/AABAB$
-  & verified computation (bounded, exhaustive in scope) &
-  rigidity script \\
-$AABBC\to AABC$ sampling failure, ratio $25/16$
-  & kernel-checked & \texttt{Finite\allowbreak{}Sampling\allowbreak{}Counterexample} \\
-Oriented spectrum rigidity (no-long-triple-repeat boundary and
-primitive/periodic split; the older BBT rotation interface remains conditional)
-  & kernel-checked (exact hypotheses) & \texttt{Oriented\allowbreak{}Final\allowbreak{}Rigidity} \\
-Same-length maximizer over same-length genuine §6.2 candidates, oriented read
-types, full $\Is$ at the realized placements, both objectives
-  & kernel-checked with truth candidacy (candidate-rotation
-    additionally proved without BBT) &
-  \texttt{MLEscape}, \texttt{Same\allowbreak{}Length62Maximizer},
-  \texttt{Same\allowbreak{}Length62Uniqueness} \\
-Direct P2 matching proof's maximal-extension step is invalid
-  & counterexample to a proof step, not the theorem & audit note \\
-\end{longtable}
-}
-
-\subsection{Unresolved register}
-
-We reproduce the project's open items so that the boundary of this paper is
-explicit: (1) the referent of the 2016 sentence; (2) the read-type convention and
-hence the equivalence; (3) the candidate-length convention; (4) the
-maximizer-vs-uniqueness reading; (5) the $4^k$ vs.\ molecule-class index count in
-MB09 Section~6.1; (6) the unretrieved publisher-hosted supplement archive
-(the author-hosted manuscript with supplement \S6.4 has been reviewed); and
-(9) the population
-model for molecule read types. The \textbf{final source-gap count} for the 2016
-finite question is \textbf{7 unresolved items} (the canonical register
-\texttt{docs/\allowbreak{}source-notes/\allowbreak{}finite-interpretation-universe-audit.\allowbreak{}md}, \S6, items
-1--6 and~8; item~7, a repository-provenance gap, was closed). None is a matrix
-row and none is used to decide one; the enumeration, and the three that bear
-directly on the finite claim (the referent, the publisher supplement, and
-the strand/equivalence convention), are in \S3.1 of
-\texttt{docs/\allowbreak{}source-notes/\allowbreak{}interpretation-matrix-217.\allowbreak{}}md.
-
-Three items that used to appear on this list have been resolved and are recorded
-in Table~\ref{tab:finite} instead. Item (7), the \emph{per-occurrence
-same-length} Section~6.2 statement, is \emph{false}: the
-$ATATACAC\to ATACACAC$ witness
-(Theorem~\ref{thm:cex-peroccurrence}) has a per-occurrence-feasible truth and a
-strictly better same-length competitor, and it needs the real four-letter DNA
-alphabet — with a self-complementary base the searched scope has no same-length
-beat at all. Item (8), the \emph{single-strand variable-length} Section~6.2
-statement, is also \emph{false}: the oriented variable-length boundary witness beats
-the truth as soon as $n>G$, under both objectives, and it is now kernel-checked
-(\texttt{Oriented\allowbreak{}Variable\allowbreak{}Length\allowbreak{}Se62}) in infinite strict families, not merely
-computed.
-
-Two further items are explicitly \emph{not} settled and must not be absorbed into
-the resolved class. The doubled-strand $2G$ convention of \cite{bresler2013} is a
-project-level convention (not a source fact), is \emph{not a determinate source
-row}, and is open in both directions; no bounded search is used as evidence, and
-the known witness is inadmissible under the remap. The reading of the 2016
-sentence as an unspecified general ML principle is not a determinate proposition,
-because the source fixes no objective and no source argument settles it; its
-three source-nameable members are each refuted, but the family reading itself
-cannot be settled by a finite witness.
-
-One leaf artifact is resolved as \emph{redundant} rather than pending, and it is
-not a matrix row. Issue~\#216's general sample-multiplicity amplification
-formalization is uncommitted, has no committed or board result, and does not
-compile; it is deliberately not integrated because the amplification result is
-already kernel-checked through \texttt{Oriented\allowbreak{}Variable\allowbreak{}Length\allowbreak{}Se62} and the
-$AAATT\to AAAATT$ families, which are its canonical carriers.
-Issue~\#219's same-length complete-spectrum fibre-count theorem is now fully
-integrated: the note proves Theorems~1--3, an exact-arithmetic audit reproduces
-them against brute force, and the Lean module
-\texttt{Fibre\allowbreak{}Count\allowbreak{}Arithmetic.\allowbreak{}lean} kernel-checks the divisor-sum core (Möbius
-inversion and the totient rearrangement). The BEST/Matrix-Tree graph content is
-external, and the closest prior art (the $g=1$ multiplicity-one-edge corner) is
-Shomorony et al.\ ISIT 2016, Appendix~C, Corollary~1, cited and not claimed. It
-is a population-level counting result, not a finite-data reading of the 2016
-sentence, so it resolves no row.
-
-Item (7) deserves a label rather than a silent reclassification: the
-per-occurrence requirement $d_D(w)\ge x(w)$ is \emph{not} Medvedev--Brudno's §6.2
-rule, which states a per-vertex lower bound of $1$ and nothing stronger, so it is
-a repository-added assumption surface (issue \#212). It is refuted because it is
-a determinate mathematical question, not because the 2016 sentence asserts it.
-With item (7) resolved, no determinate row of the matrix remains open; what is
-left is a non-source convention and a non-determinate family, both flagged as
-such in Table~\ref{tab:finite}.
-
-The consolidated row-by-row matrix is
-\texttt{docs/\allowbreak{}source-notes/\allowbreak{}interpretation-matrix-217.\allowbreak{}}md,
-with every axis value tagged as source fact, source-supported inference, or
-project modeling choice; the record of the
-follow-up material collected from the protected \#94 worktrees in this same
-round is \texttt{docs/\allowbreak{}issue-217-followup-collection.\allowbreak{}}md.
-
-\subsection{Duplex bridging certificates}
-
-The non-equivalence of the concatenation and disjoint-duplex readings, their
-circle-by-circle equivalence, and the mixed-repeat obstruction are
-\kernelcheck{} in
-\texttt{Assembly\allowbreak{}P1/\allowbreak{}Double\allowbreak{}Strand\allowbreak{}Bridging\allowbreak{}Transfer.\allowbreak{}lean} and
-\texttt{Assembly\allowbreak{}P1/\allowbreak{}Two\allowbreak{}Disjoint\allowbreak{}Circles\allowbreak{}Duplex.\allowbreak{}lean};
-the spectrum/seam arithmetic and the witness ratios are \computed{} by
-\texttt{scripts/\allowbreak{}verify\_\allowbreak{}two\_\allowbreak{}disjoint\_\allowbreak{}circles\_\allowbreak{}duplex.\allowbreak{}py} and
-\texttt{scripts/\allowbreak{}verify\_\allowbreak{}oriented\_\allowbreak{}molecule\_\allowbreak{}bridging.\allowbreak{}py}. The representation
-choice is a \projchoice{} and the historical strand convention stays open.
-
-\subsection{A failed proof route for population uniqueness}
-
-The internally proved complete-spectrum uniqueness step that
-Theorem~\ref{thm:population} uses was not the route first attempted. A
-stronger statement was attempted directly within the project, via a matching
-argument on the transition involution of the length-$(L-1)$ de Bruijn
-structure. That route has a genuine gap: a crossing between two raw occurrence
-pairs need not survive maximal extension as two interleaved \emph{maximal}
-repeats, and an explicit primitive example with the same length-$3$ spectrum and
-no cyclic relation exhibits the failure (it nevertheless fails P2 for a
-different interleaved pair, so it refutes the proof step, not the theorem). The
-internally proved complete-spectrum step (in its Bresler--Bresler--Tse source
-form) bypasses this gap; the failed route is recorded because it shows that
-``the same spectrum is unique'' is not automatic from short local repeat
-structure.
+The source's historical matched-string predicate and the manuscript's
+sampled-placement predicate are not interchangeable. Likewise, oriented
+reads, reverse-complement molecule classes, genuine bidirected flows and
+full-overlap support proxies belong to distinct model domains.
+These distinctions are mathematical assumptions rather than stages of
+repository development.
