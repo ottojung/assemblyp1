@@ -266,6 +266,8 @@ import AssemblyP1.NonmonotonicityWitness281Audit
 -- theorem needs no caller-supplied finite candidate family.
 import AssemblyP1.PrimitiveP2FiniteClass
 import AssemblyP1.PrimitiveP2FiniteClassAudit
+import AssemblyP1.PrimitiveP2UniformSeparation
+import AssemblyP1.PrimitiveP2UniformSeparationAudit
 
 /-! ## `Issue94Transposition`: the Kotzig/Ukkonen/Pevzner descent, and an obstruction
 

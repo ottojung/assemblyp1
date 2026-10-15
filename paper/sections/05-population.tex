@@ -466,6 +466,72 @@ the reverse-complement-collapsed double-strand model or MB09's binomial
 surrogate, whose candidate classes and read laws differ.
 
 
+\subsection{An explicit uniform exponential rate for the primitive-P2 class}
+\label{sec:p2-uniform-rate}
+
+Corollary~\ref{cor:p2-finite-recovery-all} proves that a uniform
+$\rho_*<1$ exists but leaves it abstract.  For the primitive-P2 class the gap
+can be quantified from first principles, without invoking population
+uniqueness.
+
+\begin{theorem}[Explicit uniform separation and exponential error decay]
+\label{thm:p2-uniform-rate}
+Fix a finite alphabet $\alpha$ with $q=|\alpha|$ and read length $L\ge2$, and
+set $B=2q^{L-1}$.  Let $S$ be a primitive oriented circular genome satisfying
+$P2$ at read length $L$, with $G_S=|S|$.  Every nonrotational admissible
+competitor $D$ with $G_D=|D|$ has
+\[
+  1-\rho(p_S,p_D)\;\ge\;\frac{1}{8\,(G_S G_D)^2}\;\ge\;\frac{1}{8\,B^4}.
+\]
+Consequently, after $n$ independent oriented length-$L$ reads with uniform
+circular starts,
+\[
+  \Pr_S\!\left\{\exists D\ \text{nonrotational admissible}:
+       L_D(R_1,\dots,R_n)\ge L_S(R_1,\dots,R_n)\right\}
+  \;\le\; N_C\,\exp\!\Bigl(-\frac{n}{8B^4}\Bigr),
+\]
+where $N_C$ is the number of distinct competitor read laws,
+$N_C\le\sum_{g=1}^{B}q^{g}$; and
+$n\ge 8B^4\log(N_C/\delta)$ suffices for error at most $\delta$.
+\end{theorem}
+
+\begin{proof}[Argument]
+The read law of a genome of length $G$ is $p(w)=c_w/G$ with $c_w$ the number
+of circular starts spelling $w$, so a nonzero difference of two such laws has
+the form $(c_w G_D-c'_w G_S)/(G_S G_D)$ with a nonzero integer numerator, hence
+absolute value at least $1/(G_SG_D)$.  The squared-distance identity
+$\sum_w(\sqrt{p(w)}-\sqrt{q(w)})^2=2(1-\rho)$ and the coordinate inequality
+$|\sqrt p-\sqrt q|\ge|p-q|/2$ on $[0,1]$ turn this into
+$1-\rho\ge 1/(8(G_SG_D)^2)$.  The primitive-P2 length bound $G\le B$ of
+Theorem~\ref{thm:p2-finite-class} gives the uniform form, and the finite union
+bound of Theorem~\ref{thm:finite-recovery} yields the displayed exponential
+bound.
+\end{proof}
+
+\statusline{\kernelcheck{} in
+\texttt{AssemblyP1.PrimitiveP2UniformSeparation}: the integer-denominator
+separation \texttt{readLaw\_separation}, the square-root inequality
+\texttt{abs\_sub\_le\_two\_abs\_sqrt\_sub}, the gap lemma
+\texttt{one\_sub\_hellinger\_ge\_of\_gap}, the genome-level bound
+\texttt{primitiveP2\_exponential\_error\_bound}, the explicit threshold
+\texttt{primitiveP2\_ML\_confidence\_explicit}, and the class-size bound
+\texttt{readLawFamily\_card\_le}.  The axiom audit
+(\texttt{PrimitiveP2UniformSeparationAudit}) reports only \texttt{propext},
+\texttt{Classical.choice} and \texttt{Quot.sound}.  The constants are
+deliberately loose --- $B$ is exponential in $L$ and $N_C$ is enormous --- so
+this is a kernel-checked positive rate, not a tractability or efficiency
+claim.  It is a frequentist uniform-separation guarantee for the exact
+multinomial likelihood, distinct from any Bayes-optimality statement.}
+
+Unlike Corollary~\ref{cor:p2-finite-recovery-all}, this bound does not use the
+population uniqueness theorem: it is a direct finite-sample separation.  It is
+also compatible with the non-monotonicity of Section~\ref{sec:finite}: the
+exponential statement concerns the eventual rate, not a pointwise monotone
+success curve.  The competitor class here is restricted to primitive-P2
+admissible, oriented exact iid reads; it is not universal maximum likelihood
+over all genomes and not the MB09 product-binomial approximation.
+
+
 \subsection{Scope of the population theorem}
 
 The theorem concerns oriented read types. The corresponding question for
