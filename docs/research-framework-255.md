@@ -94,7 +94,7 @@ stay OPEN.
   circular genomes.** `population_maximizer_unrestricted`: the truth
   maximizes the exact population likelihood over ALL circular candidate
   genomes, with no repeat, P2, primitivity, bridging, or
-  information-feasibility assumptions (#273 CLOSED). Repeats bear only on
+  information-feasibility assumptions (merged PR #154; #273 CLOSED). Repeats bear only on
   *uniqueness*: `PopulationGibbs.truth_is_population_maximizer` gives
   equality iff normalized spectra agree, and the uniqueness refinement
   needs P2/primitivity conditions (#274 CLOSED). Population-level only;
@@ -105,13 +105,9 @@ stay OPEN.
 - **Historical molecule-flow full-overlap bridging sufficiency:
   REFUTED.** Literal W1 (`AAATAT→AAAAAT`, exact ratio 3, binomial ratio
   5) and W2 (`ATATACAC→ATACACAC`, exact ratio 3/2, binomial ratio 9/5)
-  refute the bridging claim at MB09 full-overlap §6.2 (merged PR #142).
+  refute the bridging claim at MB09 full-overlap §6.2 (merged PR #142, merge commit `49b2903`).
   This refutes a sufficiency claim only; it classifies no genome set or
   overlap floor.
-- **Unconditional population maximizer: PROVED (kernel-checked).**
-  `population_maximizer_unrestricted` (merged PR #154, #273 CLOSED):
-  truth maximizes the population objective over ALL circular candidate
-  genomes with no repeat/primitivity/bridging assumptions.
 - **#259 fixed-N product-binomial scoped landings: PROVED (kernel-checked),
   partial scope.** q factorization `∏ q_i(B)^{x_i}` (PR #163); all-count
   effectiveWeight coordinatewise iff over arbitrary nonnegative count
@@ -196,17 +192,17 @@ stay OPEN.
 | #268 | whitepaper: foreground Bayes-optimal ML and the 2016 comparison | editorial | OPEN (delivered) — paper refocus (`e7e3d20`/`b47eb04`), MB09 verbatim fidelity check (merge `cac6347`); #265 mirror pending | — |
 | #269 | Lean: finite Bayes/MAP optimality; monotone prior-average success | conditional inference (kernel) | OPEN — generic MAP (#174), iid `n→n+1` monotonicity (#193), oriented orbit adapter (`GenomeOrbitAdapter.lean`, PR #200), Bayes value `V_{n+1} ≥ V_n` (PR #231) kernel-landed; RC-orbit/source endpoint deliberately not claimed | — |
 | #270 | Lean: finite-read recovery bounds from population identifiability (Hellinger) | conditional inference (kernel) | CLOSED — `FiniteReadRecovery*.lean` (PRs #199/#205/#207) merged; board CLOSED | — |
-| #271 | compare exact boundaries of conditional Bayes and ordinary finite ML | conditional inference | OPEN (delivered) — `ConditionalVsOrdinaryMLSeparation.lean` + `W1W2SeparationCompatibility.lean` (PR #232, merged `4c90973`); genome-level conditional recovery and W1/W2 (A)-side adapter OPEN by design | — |
-| #272 | weakest side information for certain finite Bayesian recovery | conditional inference | PARTIAL — coloring theorem (`FiniteSideInformationColoring.lean`, PR #164) and side-information order (`FiniteSideInformationOrder.lean`, PR #195/#204) landed; source-defined minimal promise OPEN | — |
+| #271 | compare conditional Bayes and ordinary finite ML | conditional inference | PARTIAL — separation and genome adapter landed; integration PR #274 proves ML-soundness is a SUFFICIENT (not necessary) refinement for conditional certainty to imply ordinary ML; the general source-defined implication remains OPEN | — |
+| #272 | weakest side information for certain finite Bayesian recovery | conditional inference | PARTIAL — coloring and side-information order landed; integration PR #274 proves the source-property/truth-only weakest-promise iff; the fully read-dependent source promise family remains OPEN | — |
 | #273 | unconditional population ML maximizer for all circular genomes | population | CLOSED — `population_maximizer_unrestricted` merged (PR #154) | — |
 | #274 | population likelihood support-inclusion semantics | population | CLOSED — merged (PR #156) | — |
 | #276 | reframe paper around comparable information/recovery guarantees | editorial | CLOSED — delivered 2026-10-12 | — |
-| #281 | Lean exponential ML error decay; recenter paper around identifiability | kernel/editorial | OPEN — nonmonotonicity witness (PR #208), finite primitive-P2 class (PR #214), uniform exponential exact-ML separation (PR #234, merged `b4071f5`) landed; genome-level corollary and paper recentering OPEN | — |
-| #284 | correct §6.2 transitive reduction; prove spelling fidelity (Observation 7) | structural/source | OPEN — global-circular correspondence and unseen-factor modules (PRs #206/#219/#220) landed; cyclic-start seam identity Lean proof and RC/`4^k` indexing model OPEN | — |
+| #281 | finite primitive-P2 candidate class, uniform exact-ML recovery and tightness | kernel/editorial | PARTIAL — finite class and uniform error bound landed; integration PR #274 proves the length cap is tight at K=1 for every alphabet q>=2; tightness for K>1 and remaining editorial integration OPEN | — |
+| #284 | correct section-6.2 reduction; circular read-occurrence and RC observed-class fidelity | structural/source | PARTIAL — signed integration PR #274 kernel-proves ideal two-hop reduction iff, oriented circular read counts and observed RC molecule-class counts (including palindromes); full Myers practical algorithm, unobserved RC universe and general flow realization remain OPEN | — |
 | #300 | Lean short finite-read ML counterexamples (true lengths 2,3,4) | (A)/variable-length | OPEN (needs closure) — `ShortFiniteMLCounterexamples.lean` (PR #229, merged `67e1de7`), independently reviewed | — |
 
 Adjacent (outside the #255 ML-classification core): #254 (programmers'
-talk; merged, awaiting human closure), #280 (signed-commit policy).
+talk; merged, CLOSED on board 2026-10-14), #280 (signed-commit policy).
 
 ## 5. Epistemic policy
 

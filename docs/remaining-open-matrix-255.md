@@ -112,7 +112,7 @@ Every material result is classified as one of:
 ### Population maximality: PROVED — unconditional for all circular genomes; repeats bear only on uniqueness
 
 - **Unrestricted maximality (no repeat condition):**
-  `PopulationMaximizerUnrestricted.population_maximizer_unrestricted`: for any
+  `AssemblyP1.PopulationUniqueness.population_maximizer_unrestricted`: for any
   true circular genome `S` and any candidate `D` under the exact population
   objective, `ell_S(D) ≤ ell_S(S)` (Gibbs/KL inequality); no P2, primitivity,
   bridging, information-feasibility, or no-repeat assumptions; no fixed
@@ -238,92 +238,30 @@ Every material result is classified as one of:
   `spellDirect_full_overlap`, `spellPath_eq_spellDirect`,
   `fullOverlap_not_reducible`, `fullOverlap_survives`,
   `replacement_overlaps_longer`, `regression_rc_involution`.
-- **Status:** Partial spelling-preserving overlap-reduction candidate;
-  NOT a source-faithful proof of Myers transitive reduction. Equivalence
-  to the cited algorithm, bidirected reverse-complement semantics,
-  global walk-language preservation, and Observation 7 remain OPEN.
-  Does NOT lift any §6.2 genome flow witness or likelihood inequality.
+- **Status:** The idealized two-hop reduction and global walk-language
+  preservation are kernel-checked (Section62GlobalSpellingPreservation and
+  Section62MyersIdealTransitivity). The oriented circular read-occurrence
+  equality and observed reverse-complement class-count lift are also
+  kernel-checked in integration PR #274. Exact equivalence to the full
+  approximate Myers algorithm, the full unobserved section-6.1 class universe,
+  and arbitrary feasible-flow realizability remain OPEN. These scopes must
+  not be conflated.
 
-### #300 (OPEN, needs closure) — short finite-read ML counterexamples, variable length: LANDED
+### #284 (OPEN) — global circular read occurrences: PROVED in integration PR #274 (pending main merge)
 
-- **Artifact:** `AssemblyP1/ShortFiniteMLCounterexamples.lean` +
-  `AxiomAudit300.lean` +
-  [short-finite-ml-counterexamples-300.md](source-notes/short-finite-ml-counterexamples-300.md)
-- **PR:** #229, merged `67e1de7` (independent adversarial review by
-  agent 2059786ae03a: APPROVE, no correctness-critical defect).
-- **Statement:** in the variable-length exact ordered-read/multinomial model,
-  truths `AT` (`G=2,L=1`), `AAT` (`G=3,L=2`), `AAAT` (`G=4,L=3`) each satisfy
-  the full `SourceFaithfulIs.InformationFeasible` predicate (discharged by
-  `decide`), while spelled competitors `AAT`, `AAAT`, `AAAAT` are strictly
-  better with exact ratios `32/27`, `81/64`, `4096/3125`; the multinomial-count
-  objective shares each ratio. `BridgesCopy` forces `e+2 ≤ L`, so the `L=1`/
-  `L=2` witnesses have vacuous repeat clauses (documented, not overclaimed).
-- **Scope:** refutes a variable-length sufficiency reading; not a
-  classification. Board #300 remains OPEN pending closure.
+- **Already on main:** Section62GlobalCircularCorrespondence,
+  Section62CircularWindowAdapter, Section62FullSpectrumIndexing,
+  Section62FullSpectrumUnseenFactor, and the periodic seam lemmas.
+- **Kernel-checked in signed integration PR #274:** the genuine reduced
+  signed-circuit circular-window alignment, no-skipped-observed-window
+  theorem, exact oriented read-word occurrence equality (including G<L),
+  observed reverse-complement molecule-class count identity (palindromes
+  counted once), and the ideal Myers same-spelling two-hop iff.
+- **Still OPEN:** full equivalence to Myers's practical approximate-overlap
+  algorithm; the complete unobserved section-6.1 RC class universe versus
+  the source's literal 4^k indexing; general feasible-flow-to-genome
+  realization. The issue remains OPEN despite the new scoped theorems.
 
-### #281 (OPEN) — finite-read exponential error decay and finite primitive-P2 class: LANDED (scoped)
-
-- **Artifacts:** `AssemblyP1/NonmonotonicityWitness281.lean` (PR #208,
-  merged `36c09b4`; exact-ML success is non-monotone in `n`),
-  `AssemblyP1/PrimitiveP2FiniteClass.lean` (PR #214, merged `03e9446`;
-  finite primitive-P2 candidate class and `(L−1)`-window cap,
-  `scripts/verify_281_window_cap.py`), and
-  `AssemblyP1/PrimitiveP2UniformSeparation.lean` (PR #234, merged `b4071f5`;
-  uniform exponential exact-ML error bound for primitive-P2 genomes,
-  `docs/issue281-uniform-separation.md`).
-- **Axioms:** `{propext, Classical.choice, Quot.sound}` (kernel-checked).
-- **Still OPEN:** genome-level finite corollary and the paper recentering;
-  board #281 OPEN.
-
-### #261 (OPEN) — spelled-circuit to §6.2 feasible-flow adapters: LANDED (scoped)
-
-- **Artifacts:** `AssemblyP1/Section62BinomialCriterion.lean` (PR #201,
-  merged `72dca8a`), `AssemblyP1/Section62FlowCountVectorAdapter.lean`
-  (PR #212, merged `a426670`), `AssemblyP1/Section62SpelledFlowAdapter.lean`
-  (PR #233, merged `99e8527`; `spelling_flow_feasible`, `throughput_eq_visits`,
-  `balCore_eq_zero`, `weighted_dedup`), and
-  `AssemblyP1/Section62BinomialRealGenomeInversion.lean` (PR #224, merged
-  `aedf1b9`; a length-100 genome pair where the exact objective prefers `A`
-  and the fixed-N surrogate prefers `B`).
-- **Scope:** connects spelled circuits to §6.2 feasible flows; the general
-  §6.2 bidirected-flow classification remains OPEN.
-
-### #271 (OPEN, delivered) — conditional Bayes vs ordinary finite-ML separation: LANDED
-
-- **Artifacts:** `AssemblyP1/ConditionalVsOrdinaryMLSeparation.lean`,
-  `AssemblyP1/W1W2SeparationCompatibility.lean`, `AxiomAudit271.lean`,
-  `docs/conditional-vs-ordinary-ml-separation-271.md`
-- **PR:** #232, merged `4c90973` (kernel-checked; review + exact-head CI
-  recorded by the author).
-- **Statement:** the conditional-posterior-certainty boundary and the ordinary
-  finite-ML boundary are logically incomparable on the same finite model; the
-  W1/W2 (A)-side adapter is reused, not reproved.
-- **Still OPEN:** genome-level conditional-recovery claim (the landed witness
-  is an explicit abstract toy); board #271 OPEN pending closure.
-
-### #269 (OPEN) — oriented orbit adapter and Bayes-value monotonicity: LANDED (scoped)
-
-- **Artifacts:** `AssemblyP1/GenomeOrbitAdapter.lean` (PR #200, merged
-  `3c639dc`; `readPmf_sum_one`, `readPmf_rotWord`, `orbitReadPmf`,
-  `quotient_likelihood_well_defined_iff`, `orbit_map_success_monotone`,
-  `uniform_orbit_prior_ML`, and the raw-spelling vs orbit prior distinction)
-  and `AssemblyP1/BayesValueMonotonicity.lean` (PR #231, merged `967db37`;
-  `bayesValue_succ_ge`, `bayesValue_mono`).
-- **Scope:** oriented one-strand orbit model; RC invariance is deliberately
-  not claimed. Board #269 OPEN.
-
-### #284 (OPEN) — §6.2 global-circular correspondence and unseen-factor identity: LANDED (scoped)
-
-- **Artifacts:** `AssemblyP1/Section62GlobalCircularCorrespondence.lean`,
-  `AssemblyP1/Section62CircularWindowAdapter.lean`,
-  `AssemblyP1/Section62FullSpectrumIndexing.lean`,
-  `AssemblyP1/Section62FullSpectrumUnseenFactor.lean`,
-  `AssemblyP1/Section62ReductionDependencyAudit.lean` (PRs #206 `e024af2`,
-  #219 `6126b3b`, #220 `0fa663d`), plus
-  `docs/section62-global-circular-and-unseen-factor-284.md`.
-- **Still OPEN:** the cyclic-start seam partition identity
-  `C_D(c) = V(c) + Σ_j Σ_{u=1}^{e_j−1}[class(window(D,s_j+u))=c]` and its iff
-  criterion, the RC/`4^k` indexing model, and PR/CI/review; board #284 OPEN.
 
 ### #262 (CLOSED) — full-overlap lift to arbitrary overlap threshold: LANDED
 
@@ -387,7 +325,7 @@ Every material result is classified as one of:
 
 ---
 
-## LANDED — mathematical proofs (human-readable; NOT kernel-checked, NOT merged)
+## Mathematical proofs (human-readable; NOT kernel-checked, NOT merged)
 
 ### Exact iid finite-ML classification on the all-true-starts-sampled domain: PROVED (elementary), posted 2026-10-13
 
@@ -501,7 +439,7 @@ Every material result is classified as one of:
 
 ### Historical molecule-flow full-overlap BRIDGING SUFFICIENCY: REFUTED
 
-- Merged PR #142 literal Shomorony §6.4 W1/W2 strict exact/binomial
+- Merged PR #142 (merge commit `49b2903`, merged 2026-10-10) literal Shomorony §6.4 W1/W2 strict exact/binomial
   counterexamples at MB09 full-overlap §6.2.
 - **W1:** `S=AAATAT`, `D=AAAAAT` (`G=6`, `L=3`): exact ratio 3, binomial ratio 5.
 - **W2:** `S=ATATACAC`, `D=ATACACAC` (`G=8`, `L=3`): exact ratio 3/2, binomial ratio 9/5.
@@ -600,15 +538,11 @@ Every material result is classified as one of:
   `throughput_eq_visits`, `balCore_eq_zero`, `weighted_dedup`). These connect
   spelled circuits to §6.2 feasible flows but do NOT classify the general
   flow domain.
-- **Active (not kernel-checked):** Observation-7 characterization — exact
-  cyclic-start partition identity `C_D(c) = V(c) + Σ` skipped-internal-window
-  indicators, so observed-vertex count equality holds IFF every skipped
-  internal window class is unobserved; a proof strategy that surviving
-  reduced edges skip no observed read class (two-hop detour contradiction
-  via `isReducibleSpellingB`) was posted 2026-10-13T21:05Z and remains a
-  strategy, not a theorem. An earlier total-mass obstruction was corrected
-  (2026-10-13T20:00Z): it requires the graph vertices to cover ALL
-  genomic L-window classes, which §6.2 observed read vertices need not.
+- **New kernel-checked scope (integration PR #274):** the exact circular
+  occurrence equality for every observed oriented read word of a genuine
+  reduced signed circuit, plus its observed RC molecule-class corollary.
+  This replaces the old no-skipped-window proof strategy, now discharged.
+  It does not identify all feasible flow throughputs with spelled genomes.
 - **OPEN sub-axes:** arbitrary overlap floor, transitive reduction, vertex
   lower bound 1, orientation/RC classes, integer vs half-integral flows,
   flows not spelling one circular genome, candidate-set choice, truth
@@ -832,14 +766,16 @@ Every material result is classified as one of:
 
 ### #284 (correct §6.2 transitive reduction; prove spelling fidelity)
 
-- **Status:** OPEN. Landed (see LANDED above): the global-circular
-  correspondence and unseen-factor modules (PRs #206/#219/#220).
-- **Still OPEN:** the cyclic-start seam partition identity
-  `C_D(c) = V(c) + Σ_j Σ_{u=1}^{e_j−1}[class(window(D,s_j+u))=c]` and its iff
-  criterion (the remaining Lean obligation for the Observation-7 lift), the
-  RC/`4^k` oriented-k-mer indexing model, and exact-head CI + independent
-  review of the pushed branch. #261/#262 may consume
-  `transitivelyReducedSpelling` and `Section62ReductionDependencyAudit` now.
+- **Status:** OPEN at the source-model boundary, despite substantial
+  kernel-checked advances in integration PR #274: idealized Myers
+  two-hop reduction iff, signed global walk-language preservation,
+  full oriented circular read-occurrence identity, and observed RC
+  molecule-class counting including palindromes.
+- **Still OPEN:** exact Myers practical algorithm correspondence,
+  the full unobserved section-6.1 class universe and 4^k ambiguity,
+  and characterization of which general feasible balanced flows spell
+  a single circular genome.
+
 
 ### #300 (short finite-read ML counterexamples, true lengths 2, 3, 4)
 
@@ -859,7 +795,7 @@ Every material result is classified as one of:
 | Oriented vs RC molecule types | PROVED (landed scopes) | Oriented + same-length + exact multinomial + sample-uniform PROVED (#256); RC + full-overlap + fixed-length + exact multinomial + sample-uniform PROVED (#260); oriented arbitrary-overlap and RC arbitrary-overlap OPEN (#261) |
 | Exact multinomial vs fixed-N binomial | PROVED (exact, landed scopes) / PARTIAL (binomial) | Exact multinomial PROVED in the landed scopes (#256, #258, #260); short variable-length exact counterexamples kernel-landed (#300, PR #229); exact iid full-start-covered classification PROVED (elementary, posted 2026-10-13) but NOT kernel-checked in its pointwise form — the closest kernel artifact `FiniteSampleIidEnvelope.truth_maximizer_iff_envelope_le_one` (PR #172) is a fixed-`m` envelope, so this axis-(B) item is recorded OPEN; fixed-`x` (A) remains halfspace inequalities; fixed-N binomial (MB09 §6.1) PARTIAL: effective weights, strict witness, start coverage, covered-sample weight iff (#211), sample-uniform rigidity iff landed (#259); full (A)/(B) classification OPEN |
 | Same vs variable length | PROVED (same) / OPEN (variable) | Same-length PROVED where landed; variable-length sufficiency REFUTED by short exact counterexamples (#300); general variable-length classification OPEN (fenced to #261) |
-| Spelled genomes vs MB09 §6.2 bidirected flows / overlap floor | PROVED (full-overlap) / PARTIAL (adapters) / OPEN (arbitrary) | Equal-support full-overlap RC molecule-spectrum ML PROVED (#260); full-overlap lift to arbitrary `o_min` PROVED (#262 CLOSED, PR #202); spelled-circuit→§6.2 adapters, binomial criterion, and flow-count adapter kernel-landed (#201/#212/#233); unrestricted source-faithful MB09 §6.2 nonspelled flow candidate domain and arbitrary overlap floor OPEN (#261); global-circular correspondence/unseen-factor modules landed but the Observation-7 seam identity OPEN (#284); historical bridging sufficiency at full overlap REFUTED (W1/W2, PR #142) |
+| Spelled genomes vs MB09 §6.2 bidirected flows / overlap floor | PROVED (full-overlap and reduced-circuit occurrences) / OPEN (arbitrary flows) | Full-overlap RC molecule-spectrum ML proved (#260); spelled-circuit flow adapters landed (#201/#212/#233); signed integration PR #274 kernel-proves circular oriented read occurrences and observed RC class counts for genuine reduced circuits, but also refutes the general spelled-throughput image identity (#247). Arbitrary feasible-flow realization, full unobserved RC classes, and exact Myers practical-algorithm fidelity remain OPEN (#261/#284). |
 | Truth candidacy | PROVED (landed scopes) / OPEN (extended) | Truth genuinely admissible over spelled candidate universes PROVED in the landed scopes; extended candidate sets OPEN (#261) |
 | Literal historical read-string `I_s` vs project placement `I_s` | PROVED (placement) / REFUTED (literal) / OPEN (remaining) | Project-placement reading PROVED (#256 iff needs no `I_s`); literal historical `I_s` full-overlap bridging sufficiency REFUTED (W1/W2); remaining historical-referent questions OPEN |
 | Population vs finite sample | PROVED (population + bridge) / OPEN (finite) | Unconditional population maximizer for all circular genomes PROVED (kernel-checked, #273 CLOSED, PR #154); population uniqueness repeat-dependent — equality iff normalized spectra agree, P2/primitivity conditions PROVED (#274 CLOSED, PR #156); population-to-finite bridge `∑ x log p_D = n ∑ p̂ log p_D` PROVED (elementary, 2026-10-14) so finite ML = empirical-population ML, with the 2-type separation witness; finite-sample classification OPEN in every cell except the landed ones |
@@ -875,7 +811,7 @@ original Medvedev-Brudno 2009 source:
 
 | Audit point | Status |
 |---|---|
-| §6.1 true joint multinomial vs approximate product-binomial pseudo-likelihood | Correctly distinguished in paper Def. 1.2 and Appendix A.5 |
+| §6.1 true joint multinomial vs approximate product-binomial pseudo-likelihood | Correctly distinguished in paper `Definition~\ref{def:likelihoods}` (§2, `paper/sections/02-model.tex:155-156`) and Appendix A.2 (`paper/sections/a-modeling-choices.tex:55-93`) |
 | §6.1 asymptotic independence sentence | Literal statement present in the MB09 PDF, p. 11: "However, as the number of trials goes to infinity, the X_i random variables become independent." — recorded verbatim in the #259 primary-source record; licenses no finite-sample claim |
 | §6.2 signed bidirected flow vs actual circular genomes | Correctly distinguished in paper §2.3, §4, and Appendix D |
 | Infinite graph capacities vs external N probability bound | Correctly distinguished: §6.2 has `u = ∞` on overlap edges; §6.1 binomial uses external `N` |
