@@ -1,8 +1,14 @@
 # §6.2/§6.1 global audit for #284: corrected-reduction dependency re-audit, circular spelling, and the §6.1 unseen-factor identity
 
-**Status (2026-10-14):** kernel-checked additions plus a precise statement of the
-one remaining formal obligation. This note does **not** claim Myers/MB09
-algorithm equivalence, and does **not** settle full genome ML maximality.
+**Status (2026-10-15):** the full oriented read-word Observation 7
+occurrence/visit equality is now kernel-checked for the **implemented
+spelling-preserving reduced graph** in
+`Section62GlobalSkippedBridge.observation7_reduced_signed_circuit_range_count`.
+All three `CircularSpelling` fields are constructed from a genuine closed
+reduced signed walk, including genomes shorter than reads. This does **not**
+prove equivalence to Myers/MB09's exact graph construction, an arbitrary
+balanced-flow-to-walk realization, RC molecule-class quotient counting, or
+full-genome ML maximality.
 
 Primary sources:
 
@@ -107,7 +113,7 @@ The graph-side half is kernel-checked in
 - `global_closed_walk_reduced_skips_no_observed_window` — the closed (circular)
   specialization.
 
-The remaining obligation is the **cyclic-start partition identity** for the
+The now-proved combinatorial core is the **cyclic-start partition identity** for the
 spelled circular genome `D` of a closed walk with visits `u₀,…,u_{m−1}`, proper
 overlaps `ell_j < L`, extensions `e_j = L − ell_j ≥ 1`, partial sums
 `s₀ = 0`, `s_j = Σ_{a<j} e_a`, and circular length `G = Σ_j e_j`:
@@ -129,8 +135,8 @@ This identity is now **kernel-checked in two layers**:
   (`covered_class_count`, `covered_count_eq_anchors_iff_no_internal`);
 - the **circular spelling adapter** `AssemblyP1/Section62CircularWindowAdapter.lean`
   instantiates that partition at the concrete circular window
-  `window D readLen s = (D.drop s ++ D.take s).take readLen` of the spelled
-  genome, via the `CircularSpelling` spelling hypotheses (genome length =
+  `window D readLen s` of the spelled genome (indexing each symbol
+  modulo `D.length`, so reads may wrap multiple times), via the `CircularSpelling` spelling hypotheses (genome length =
   extension sum, anchored windows = visited reads in order, no observed internal
   window).  Its `window_count_decomposition` is exactly (1), its
   `window_count_eq_anchors_iff` is exactly (2), and `observation7_window_count`
@@ -140,20 +146,25 @@ This identity is now **kernel-checked in two layers**:
   `interior_count_zero_of_pointwise` turns the pointwise surviving-edge no-skip
   theorem into the count-zero hypothesis the partition consumes.
 
-  **Window-scope caveat.**  `window D readLen s` is the true length-`readLen`
-  circular window only when `readLen ≤ D.length`; when the spelled genome is
-  shorter than one read (`G = D.length < readLen`) the rotation
-  `D.drop s ++ D.take s` has length `G`, so `.take readLen` returns the whole
-  rotation rather than a genuine wrap-around length-`readLen` window.  The
-  adapter's `observation7_*` theorems are stated for the concrete `window`
-  function and therefore cover the `readLen ≤ G` regime; the `G < readLen`
-  wrap-around window is part of the bounded remaining work recorded below.
+  **Periodic-window correction (PR #219).** The concrete `window` is now
+  indexed modulo the nonempty circular genome length, not by a one-wrap
+  `D.drop s ++ D.take s` rotation. Consequently it returns exactly
+  `readLen` symbols even when `G = D.length < readLen`.
+  `Section62AnchoredWindowBridge` proves these circular windows agree with
+  the linearized spelling at every genomic start.
 
-The **only remaining sub-obligation** is the canonical construction of the
-circular genome `D` from a signed walk and the proof that it satisfies the
-`CircularSpelling` hypotheses (the coherence of the signed overlap data across
-the seam); the adapter is the composition interface that the source note
-`docs/section62-observation7-skipped-windows.md` calls for.
+The formerly missing canonical construction and seam correspondence are now
+**proved**, not hypothesized. `Section62AnchorSourceWords` proves exact
+source-read equality at every accumulated extension anchor and the genome
+length formula. `Section62GlobalSkippedBridge` proves that local
+no-observed-internal-window certificates on reduced edges imply the **global
+circular** no-skips property, constructs all three fields of
+`CircularSpelling`, and directly proves
+`observation7_reduced_signed_circuit_range_count` for every observed oriented
+strand word. Nonempty signed-circuit regressions, including `G=3<L=5`, are
+kernel-checked in `Section62Observation7Regression`; an independent
+extension-two skipped-window regression is in
+`scripts/verify_284_nontrivial_skipped_windows.py`.
 
 ### The circular seam itself (new module)
 

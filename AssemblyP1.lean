@@ -72,9 +72,17 @@ import AssemblyP1.Section62OverlapSuffix
 import AssemblyP1.Section62SourceSignedSeamAdapter
 -- #284: generic periodic-window/linear-spelling equality for genuine signed circuits.
 import AssemblyP1.Section62AnchoredWindowBridge
+-- #284: actual signed-circuit edge anchors equal their circular read words.
+import AssemblyP1.Section62AnchorSourceWords
+-- #284: full circular no-skipped-windows and read-occurrence theorem for reduced signed circuits.
+import AssemblyP1.Section62GlobalSkippedBridge
+-- #284: RC molecule-class occurrence counts, including palindromes.
+import AssemblyP1.Section62ObservedMoleculeCount
 -- #284: non-vacuity regression instantiating the signed-circuit adapter on
 -- concrete legal signed overlap circuits, including the G < readLen case.
 import AssemblyP1.Section62SignedAdapterRegression
+-- #284: concrete non-vacuity regressions, including genome shorter than read.
+import AssemblyP1.Section62Observation7Regression
 import AssemblyP1.Section62FullSpectrumIndexing
 import AssemblyP1.Section62VariableOverlap247e
 import AssemblyP1.FiniteSamplingCounterexample
