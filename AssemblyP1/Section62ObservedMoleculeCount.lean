@@ -5,8 +5,12 @@ Observed reverse-complement molecule-class occurrence counts from the proved
 oriented Observation 7 identity, with palindromic read words counted once.
 
 This is a derived theorem for *observed* strand classes of genuine reduced
-closed signed walks. It does not settle the entire unobserved molecule-class
-universe of MB09 section 6.1 or equate the implemented reduction to Myers.
+closed signed walks. The proof requires an involution on strand identifiers;
+calling its orbits biological reverse-complement classes additionally relies
+on the external model interpretation that rc actually reverse-complements
+the corresponding read words. That word-level RC law is not proved here.
+It does not settle the entire unobserved molecule-class universe of MB09
+section 6.1 or equate the implemented reduction to Myers.
 -/
 
 namespace AssemblyP1.Section62ObservedMoleculeCount

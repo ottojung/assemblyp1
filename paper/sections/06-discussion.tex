@@ -126,8 +126,10 @@ distinct strand-word counts, or count only once when the read word is its
 own reverse complement. This is independent of the strand chosen to
 represent the class
 (\texttt{Section62ObservedMoleculeCount.observation7\_observed\_rc\_class\_count}).
-It does not supply the counts of unobserved molecule classes in the full
-Section~6.1 likelihood.
+This biological interpretation assumes the strand involution supplied to
+the model really acts as DNA reverse complement on read words; the abstract
+count identity itself only needs an involution. It does not supply the
+counts of unobserved molecule classes in the full Section~6.1 likelihood.
 
 The finite-read recovery theorem (Theorem~\ref{thm:finite-recovery}) is a
 \emph{error-exponent} result rather than a structural
