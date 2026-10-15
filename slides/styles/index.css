@@ -1,0 +1,11 @@
+/*
+ * Slidev's default theme applies opacity-50 to h1 + p (the first
+ * paragraph after a heading). That unintentionally greys out the
+ * opening statement on almost every content slide.
+ *
+ * Use the normal foreground color without altering the theme's
+ * paragraph size, margins, or intentional muted elements elsewhere.
+ */
+.slidev-layout h1 + p {
+  opacity: 1 !important;
+}
