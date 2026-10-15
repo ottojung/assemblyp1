@@ -371,9 +371,9 @@ We have **two methods**:
 
 **Maximum likelihood:** choose whichever candidate makes the observed reads most probable.
 
-Shomorony and colleagues asked:
+Paraphrasing a question raised by Shomorony and colleagues (2016):
 
-> If the reconstruction conditions hold, **must the true genome also maximize ordinary likelihood**?
+**If the reconstruction conditions hold, must the true genome also maximize ordinary likelihood?**
 
 **Our answer is no.** We found a counterexample in which the competing assembly is one base longer.
 
@@ -394,6 +394,8 @@ mathematical statement; keep the explicit candidate-length scope.
 **True circular genome:** AAATT (length **5**).
 
 **Competing genome:** AAAATT (length **6**).
+
+**We haven't supplied the true genome's length to the assembler.** Candidates of different lengths are allowed.
 
 Sample six reads of length 3 from the true genome:
 
@@ -458,70 +460,137 @@ exclude this particular witness and is a distinct assumption.
 
 ---
 
-# What were the two methods asked to do?
+# Why the two methods do not contradict each other
 
-**Not-So-Greedy's guarantee** concerns a special set of experiments: the actual genome's repeats must be sufficiently bridged.
+**Not-So-Greedy** has a reconstruction guarantee for experiments in which coverage and repeat-bridging conditions hold.
 
-**Ordinary ML** compares candidate genomes from the observed read probabilities, **without being told that the reconstruction guarantee applies**.
+**Ordinary ML** scores genomes using the reads, without being told whether that guarantee holds for the actual source.
 
-Here the longer genome explains the unusually frequent AAA reads better, while the true genome satisfies the reconstruction conditions.
+Our example satisfies the reconstruction conditions, yet a different candidate makes the sampled reads more probable.
 
-**The proposed implication is false.** That suggests a different question: what if the structural guarantee itself becomes part of our statistical information?
+This doesn't contradict ML's **average-accuracy optimality**. We have asked two different questions—and discovered a gap between them.
 
 <!--
-The source's pointwise guarantee differs from prior-averaged
-Bayes optimality of ordinary ML. Do not claim one algorithm
-has statistically defeated the other under the same decision
-problem. No need to assert competitor failure of I_s
-under every interpretation. Truth S length 5, competitor D length 6.
+Not-So-Greedy is a read-only algorithm with a truth-dependent
+pointwise success theorem; ordinary ML is a likelihood ranking over
+its specified candidate class. Prior-averaged MAP/ML optimality is
+a distinct decision criterion. No algorithm has been proved inferior
+under the same conditioned decision problem.
 -->
 
 ---
 
-# What if we also know the guarantee holds?
+# A positive result: what if the genome length is known?
 
-Suppose we are told **one additional fact**:
+Suppose we know the true genome has **length 5**. Our six-letter competitor is excluded. But can **any** valid five-letter assembly beat the truth?
 
-> The actual genome and the observed reads satisfy Not-So-Greedy's reconstruction conditions.
+**We proved a general theorem:**
 
-Not-So-Greedy is a **function of the reads alone**. When those conditions hold, its theorem says that function returns the true genome.
+Under the coverage and bridging conditions, if **the truth and every competitor are genuine read-overlap assembly candidates of the same length**, each eligible competitor is merely a **rotation of the true circular genome**.
 
-If two different genomes both qualified for the **same reads**, it would have to return two different answers on identical input. Impossible.
-
-**Only one circular-genome class can remain.** Given both the reads and the promise, its Bayesian posterior probability is **100%**.
-
-**The promise does most of the work.** That's the point: this conditioned experiment gives the estimator information ordinary ML did not have.
+So **the truth is a maximum-likelihood answer**—indeed, every eligible answer reconstructs the same circle.
 
 <!--
-Given external source read-only unique decoder A satisfying
-F(g,r)->A(r)≈g, feasible-fibre uniqueness follows directly.
-Conditional joint K(g,r)=π(g)P_g(r)1_F(g,r) supports only
-[A(r)] for positive mass, giving posterior 1.
-Kernel consequences ConditionalIdentifiability.lean, with
-external original source theorem premise. For latent starts
-must marginalize feasible histories; don't substitute arbitrary
-placement-based predicates (W3/W6).
+This is not unrestricted same-length ML on all circular words.
+SameLength62Maximizer.informationFeasible_62_maximizer proves exact
+likelihood domination. Stronger:
+SameLength62Uniqueness.unique_62_maximizer_up_to_rotation says any
+genuine same-length Section 6.2 candidate is a rotation of the truth,
+assuming the full InformationFeasible event at the actual sampled
+starts, both truth and competitor genuine Section 6.2 certificates,
+and 2 <= L <= G. A rotation has identical circular window counts.
+Do not imply that just fixing lengths repairs the original
+unrestricted search over all circular strings.
 -->
 
 ---
 
+# But can we assume that length is known?
 
-# A new hypothesis: was finite sampling the problem?
+In some settings, genome length can be measured or estimated independently. **Our theorem needs its exact value in advance.**
 
-Our six-read sample contains **AAA twice**. But the true genome AAATT produces AAA at only **1 of 5** positions.
+We wanted something stronger: **a guarantee that does not require knowing the answer's length before reconstructing it.**
 
-The competitor AAAATT has **two AAA positions out of six**. In fact, the observed frequencies of **all five read types** match that competitor's predictions exactly.
+Could we instead restrict candidates using **properties we can check on each candidate itself**, such as the absence of repeats?
 
-**My hypothesis:** perhaps the disagreement was caused by **finite-sample fluctuations**. What happens with enough reads that the observed frequencies settle toward the true distribution?
-
-That motivated a new problem: **population likelihood**.
+That led us to investigate a different obstacle.
 
 <!--
-Human research director's deliberate pivot. True read law is
-uniform 1/5 over AAA,AAT,ATT,TTA,TAA; six observations have
-frequencies (2,1,1,1,1)/6 equal to D=AAAATT spectrum.
-This explanation stays oriented, consistent with the population
-theorem. It does not retroactively reverse the finite negative answer.
+A candidate-length restriction is additional knowledge about the
+true genome, not inherently a Bayesian extension. It can be expressed
+through a prior, but the finite same-length theorem is structural.
+The MB09 externally supplied N in its binomial objective is not by
+itself a proof that all candidate lengths equal the true length.
+The same-length theorem rules out the exhibited longer competitor,
+not every failure of ML with unknown length.
+-->
+
+---
+
+# Even genomes without repeats can fool finite ML
+
+Try a strong structural restriction: **neither genome has any repeated two-letter substring**.
+
+| | Genome |
+| --- | --- |
+| True circle | `AABBC` (length 5) |
+| Competing circle | `AABC` (length 4) |
+
+Two reads actually sampled from the truth: **AAB, BCA**. Together they cover the true circle.
+
+Each read occurs at **1 of 5** starts in the truth, but **1 of 4** in the competitor:
+
+$$
+\frac{P(R\mid\text{competitor})}{P(R\mid\text{truth})}
+=\frac{(1/4)^2}{(1/5)^2}=\frac{25}{16}>1.
+$$
+
+**Even with no repeats, a small sample may make the wrong genome appear more likely.**
+
+<!--
+This is the P1 counterexample in
+docs/maximum-likelihood-models-for-genome-assembly.md section 5.
+Here L=3 and the two distinct sampled start positions are 0 and 3.
+Truth AABBC has length-2 windows AA,AB,BB,BC,CA; D=AABC has
+AA,AB,BC,CA: each is P1 (no repeated length-2 substring).
+Both are primitive. Truth coverage holds; repeat clauses vacuous.
+This illustrates likelihood over a candidate-intrinsic no-repeat
+class, NOT the same Section 6.2 observed-support class of the
+preceding theorem. Do not present it as a counterexample to the
+same-length `6.2 theorem. Lengths differ here too: the point is
+that intrinsic no-repeat conditions do not alone repair finite ML.
+-->
+
+---
+
+# The clue: the wrong genome fits our six reads exactly
+
+Return to **AAATT** versus **AAAATT**. We observed **AAA twice** and each of the other four reads **once**:
+
+- Sample frequencies: **2/6** for AAA, **1/6** for each other read.
+- Those are **exactly the read probabilities of AAAATT**, the wrong genome.
+
+In fact, for any finite sample, **no read distribution has greater likelihood than its observed frequencies**. AAAATT therefore achieves the **best likelihood any read distribution could achieve on our six reads**.
+
+It was bound to beat the truth on that sample, not merely lucky to win against one particular competitor.
+
+**My next question:** Is the problem the noise in a small sample? What if the read frequencies settled toward their true values?
+
+<!--
+For counts x_w summing to n and any probability mass function q:
+log L(q) - log L(x/n)
+  = sum_w x_w log(q_w/(x_w/n))
+  = -n KL(x/n || q) <= 0,
+with the usual zero conventions. Equality iff q=x/n.
+This applies to ordered iid reads; the multinomial coefficient
+for unordered count observations is independent of q, so has the
+same maximizer. In this example x=(2,1,1,1,1), n=6,
+q_D=x/6 and q_S=(1,1,1,1,1)/5. Thus D achieves the
+global simplex optimum and S does not. This is separate from
+the combinatorial constraints of which q can be realized by
+a genome; here the optimal q happens to be realized by D.
+The hypothesis of finite-sampling noise was the human research
+director's conceptual pivot, not uncertainty about the negative answer.
 -->
 
 ---
@@ -530,47 +599,50 @@ theorem. It does not retroactively reverse the finite negative answer.
 
 Here **population** means the complete read distribution from **one fixed genome**, not a population of genomes.
 
-For our example, the full read distribution is:
+Compare our six observations with the read distributions of both genomes:
 
-| Read type | True AAATT | Competitor AAAATT | Six observed reads |
+| Read type | True AAATT | Competitor AAAATT | Six-read sample |
 | --- | ---: | ---: | ---: |
-| AAA | 1/5 | **2/6** | **2/6** |
-| AAT | 1/5 | 1/6 | 1/6 |
-| ATT | 1/5 | 1/6 | 1/6 |
-| TTA | 1/5 | 1/6 | 1/6 |
-| TAA | 1/5 | 1/6 | 1/6 |
+| AAA | **1/5** | 2/6 | **2/6** |
+| AAT | **1/5** | 1/6 | 1/6 |
+| ATT | **1/5** | 1/6 | 1/6 |
+| TTA | **1/5** | 1/6 | 1/6 |
+| TAA | **1/5** | 1/6 | 1/6 |
 
-Our small sample perfectly matches the **wrong genome's distribution**. More independent reads make the frequencies approach the **true column** instead.
+A small sample happens to match the **wrong column**. With more independent reads, observed frequencies approach the **true column**.
 
-Population likelihood compares predictions with that limiting read distribution.
+Population likelihood asks which genome best explains **those limiting frequencies**.
 
 <!--
-Expected log-likelihood, not infinite product of probabilities.
-No reverse-complement collapse in either finite witness or table.
-Gibbs inequality ensures truth's distribution is best;
-uniqueness of genome requires stronger structural arguments.
+Population is expected per-read log-likelihood, not an infinite
+product of probabilities. IID law of large numbers motivates
+empirical frequencies tending to p_S. Gibbs/KL says truth's
+distribution globally maximizes expected log likelihood;
+genome uniqueness is a separate structural problem.
 -->
 
 ---
 
 # When the exact read distribution is known
 
-**First:** the true genome always maximizes population likelihood. No different distribution explains the true long-run read frequencies better.
+**First:** the true genome always maximizes population likelihood. No different read distribution explains the true frequencies better.
 
-**Uniqueness is harder:** could a different genome generate exactly the same frequencies and tie?
+**But could two different genomes produce exactly the same distribution and tie?**
 
-**We proved uniqueness** for **primitive, P2-admissible** genomes under our read model. Only rotations of the true circular genome can tie.
+**We proved uniqueness** if the truth and competing genomes are **primitive and P2-admissible**. In this class, only rotations of the true circular genome can tie—even when candidate lengths are not fixed in advance.
 
-*Primitive* means the entire genome is not a shorter pattern repeated. **P2**, rooted in the repeat analysis of **Bresler, Bresler & Tse (2013)**, excludes certain long triple and interleaved-repeat patterns.
+*Primitive* means the whole genome is not a shorter pattern repeated. **P2**, rooted in the repeat analysis of **Bresler, Bresler & Tse (2013)**, excludes certain long triple and interleaved repeats.
 
 <!--
-PopulationGibbs.popLogLik_le_self' plus popTie_iff:
-any distribution has expected log likelihood <= truth,
-equal iff same law. Issue94Complete.population_unique_ML:
-kernel-checked for primitive P2 oriented genomes, L>=2,
-candidate classes up to rotation; no external Bresler axiom.
-P2 excludes triple repeats of length >= L-1 and a pair of
-interleaved maximal repeats both >= L-1.
+PopulationGibbs.popLogLik_le_self' and popTie_iff:
+ell_S(D)-ell_S(S)=-KL(p_S || p_D) <= 0, with equality
+iff p_S=p_D. Issue94Complete.population_unique_ML is checked
+for primitive P2 genomes, L>=2, candidates up to rotation;
+no external Bresler axiom. Candidate lengths need not agree.
+P2 excludes triple repeats of length >=L-1 and interleaved
+maximal-repeat pairs both of length >=L-1. Do not claim
+unrestricted population uniqueness: non-identifiable
+normalized spectra can tie.
 -->
 
 ---
@@ -579,41 +651,50 @@ interleaved maximal repeats both >= L-1.
 
 **No.** The population theorem motivates a result about **finite data**.
 
-Fix a finite collection of candidate genomes with **distinct read distributions**. As more independent reads arrive, the probability that a wrong candidate ties or beats the truth **falls exponentially**.
+For an identifiable **finite family** of candidate genomes, as more independent reads arrive, the probability that a wrong candidate ties or beats the truth **falls exponentially**.
 
-So for that identifiable finite family, sufficiently many reads can give **99% recovery probability**, or any other desired confidence.
+With enough reads, ML can therefore achieve **99% recovery probability**—or any other desired confidence—for such a family.
 
-The population model identifies the limiting answer; the finite theorem explains how more data approaches it.
+The population result says **what information identifies the genome**. The finite theorem tells us **how additional observations improve our chances**.
 
 <!--
-FiniteReadRecovery, FiniteReadRecoveryGenome,
-FiniteReadRecoveryP2Bridge, FiniteReadRecoveryP2Complete:
-for a finite distinguishable family C, error <= |C| rho_*^n,
-rho_* < 1. Primitive P2 supplies distinction modulo rotations.
-No universal constant sample count for unrestricted candidates.
+FiniteReadRecovery and FiniteReadRecoveryGenome, plus
+FiniteReadRecoveryP2Bridge and FiniteReadRecoveryP2Complete:
+error probability <= |C| rho_*^n for a finite distinguishable
+class C and rho_* < 1. P2/primitivity ensure distinction
+up to rotation under the relevant constraints. No universal
+constant read count for an unrestricted competitor universe.
+Probability here is over random reads from a fixed truth, not
+the earlier prior-averaged Bayes decision experiment.
 -->
 
 ---
 
-# Another finite theorem: restrict the candidates
+# Another extension: what if we are promised reconstruction works?
 
-We also proved a separate positive result about finite samples.
+There is a separate way to add information. Suppose we are explicitly told:
 
-Compare genomes of the **same length**, and require **both truth and competitor** to meet the specified read-overlap assembly constraints.
+> The actual genome and these reads satisfy Not-So-Greedy's reconstruction conditions.
 
-Then **no admissible competitor has higher likelihood than the truth**.
+Not-So-Greedy reads **only the reads** and, under that promise, returns the true circle.
 
-Under the stronger structural uniqueness hypotheses, every eligible competing genome is a **rotation of the same circle**.
+If two different genomes met the promise for the **same reads**, its single output would have to equal both. Impossible.
 
-This identifies the boundary that our **variable-length** counterexample does not satisfy.
+So with this additional promise, the **conditional Bayesian posterior is 100%** on one circular-genome class.
+
+**This is a different result.** The promise provides information that ordinary ML did not receive.
 
 <!--
-SameLength62Maximizer and SameLength62Uniqueness:
-truth and competitor both genuine same-length Section 6.2
-candidate certificates, oriented convention, full stated
-information-feasible hypotheses. Not a result for the
-unrestricted variable-length model or unconditional Bayes
-certainty; it is a distinct structural theorem.
+Source theorem is an external read-only unique-decoder premise:
+F(g,r) => A(r) ~ g. Therefore the feasible fibre at r is
+one rotation class. Conditional joint
+K(g,r)=π(g)P_g(r)1_F(g,r) has support on that class,
+so given (r,F) and positive mass, posterior=1.
+Kernel consequences ConditionalIdentifiability.lean.
+Do not substitute a placement-based predicate or ignore
+marginalization over latent read starts. Unlike same-length
+or population uniqueness, this uses a truth-dependent
+additional event supplied as external knowledge.
 -->
 
 ---
@@ -622,13 +703,12 @@ certainty; it is a distinct structural theorem.
 
 The project began with **the 2016 question**—not a predetermined answer.
 
-Three turns shaped the investigation:
+Four turns shaped the investigation:
 
-1. **Test the implication:** search for concrete counterexamples instead of assuming the two methods agree.
-2. **Explain the disagreement:** separate likelihood scoring from the information in a reconstruction promise.
-3. **Go further:** ask whether sampling noise explains the finite result, then investigate population uniqueness and finite-read recovery.
-
-**I chose the questions and redirected the research as the results arrived.**
+1. **Test the 2016 implication:** find a concrete counterexample.
+2. **Repair the failure:** prove the same-length theorem, then question whether knowing the true length is a satisfactory assumption.
+3. **Look deeper:** test candidate-intrinsic restrictions and identify the effect of finite-sample frequencies.
+4. **Ask what more reads buy us:** prove population uniqueness and finite-read recovery results.
 
 <!--
 The speaker directed the scientific goals and questions.

@@ -205,12 +205,58 @@ docs/bayes-optimality-conditional-feasibility-267.md,
 paper/sections/03-open-question.tex.
 
 
-## Presentation order after the October 14 review
+## Presentation order after the October 15 review
 
-Teach the problem in causal order: unordered read inputs, idealized
-mathematical model, actual reconstruction by overlapping, repeats creating
-ambiguous overlaps, a genuine ambiguity example, and Not-So-Greedy. Explain ML probability and optimality before presenting the 2016 question. That original non-Bayesian implication has a negative answer. Show the exact counterexample; explain that ordinary ML was tackling a broader candidate universe; now the audience has a reason to ask what happens when the unique-reconstruction promise is included as Bayesian information. The answer is posterior certainty under the source-faithful read-only decoder premise. Then follow the separate finite-to-population hypothesis and theorems, and only after that the independent restricted oriented same-length positive result. Do not title a slide with the phrase recovering optimality.
+Keep the accessible opening puzzle, overlap assembly and repeat ambiguity,
+Not-So-Greedy's reconstruction guarantee, then the concrete derivation of
+likelihood, Bayesian posterior, and the finite-decision counting proof.
+The 2016 question is **paraphrased**, not represented as a verbatim quote.
 
+After the exact AAATT/AAAATT counterexample, immediately present the
+positive same-length theorem (under actual sampled information feasibility
+and genuine Section 6.2 truth/competitor certificates). Emphasize the
+stronger rotation-uniqueness result, and explain that knowing the true
+length is extra information not always supplied to an assembler. This
+theorem is *not* for unrestricted same-length candidates.
+
+Next discuss a distinct structural experiment: even primitive P1
+(no repeated L-1-mer) genomes, AABBC versus AABC at L=3, can be ranked
+incorrectly by ordinary iid likelihood from the sample AAB,BCA, ratio
+25/16. This example is **not** asserted to meet the same §6.2
+observed-support candidate predicate as the preceding theorem; it
+tests a separate candidate-intrinsic no-repeat restriction.
+
+Return to the original six-read observation: x=(2,1,1,1,1), n=6
+matches the wrong genome D=AAAATT's read law exactly. For an arbitrary
+read law q, the ordered-read log-likelihood difference between q and
+q*=x/n is -n KL(q* || q) <= 0. Thus D attains the *global empirical
+likelihood optimum* across all read distributions, while the truth
+does not. The fact that this optimum is actually spelled by a genome
+is the distinctive construction; the statistical inequality is standard.
+This motivates the human research director's finite-sampling-noise
+hypothesis rather than treating population likelihood as a generic fix.
+
+Proceed through population read distributions, the (primitive/P2)
+genome-uniqueness theorem **without supplied candidate length**, and
+finite-read exponential recovery under identifiable finite-family
+assumptions. Only after that introduce conditional posterior certainty
+as a **different** way to supply extra information (the truth-dependent
+reconstruction-success promise). Finish with question selection,
+parallel agents, infrastructure, Lean, results and a genuine Questions
+slide. Avoid redundant lines about human leadership on adjacent slides.
+
+## Feedback corrections
+
+- Explain on the counterexample slide that exact true length was *not
+  supplied*, rather than suggesting biology can never know genome length.
+- Paraphrase the published 2016 question without blockquote formatting.
+- Do not claim the same-length result identifies the *only* boundary
+  between negative and positive theorems; it rules out the displayed
+  longer candidate under its other hypotheses.
+- Attribute the empirical-frequency likelihood optimum to the universal
+  finite multinomial/iid calculation, not a novel project theorem.
+- Keep details of read direction and alternate source models in notes
+  unless materially required to avoid an incorrect mathematical claim.
 
 ## Final review: oriented counterexample and executable details
 
