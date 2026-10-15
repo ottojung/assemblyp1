@@ -320,3 +320,5 @@ Source reading: [Medvedev–Brudno 2009, §§6.1–6.2](https://pmc.ncbi.nlm.nih
   `AAATT` non-spelled throughput), so the full image characterization and the
   spelled-maximal-but-not-flow-maximal question stay OPEN. The spelled sub-class
   is also limited to candidates whose every window is an observed graph vertex.
+  `flow_maximal_iff_spelled_maximal_of_image_eq` reduces sufficiency exactly to the
+  open identity `Θ(feasibleFlowSet) = spelledVisitSet`.

@@ -168,4 +168,23 @@ theorem spelled_truth_flow_not_maximal_of_spelled_witness
   rwa [show throughputVec rep (sp₀.flow rep readLen) edges = sp₀.visits rep from
     funext (fun v => throughput_eq_visits rep sp₀ edges hNodup hSteps₀ v)]
 
+/-- **Exact reduction of sufficiency to the image characterization.**  The
+spelled sub-class test is *sufficient* for flow-level maximality exactly when the
+spelled count vectors exhaust the feasible throughput image.  Since the spelled
+sub-class is a strict sub-class in general (`no_sequence_has_star_spectrum`), this
+identity is the precise extra hypothesis that sufficiency needs, and proving it is
+the open incidence/Graver problem.  Formally: if
+`Θ(feasibleFlowSet) = spelledVisitSet`, then ML maximality over the zero-terminal
+§6.2 feasible-flow set is equivalent to maximality over the spelled sub-class. -/
+theorem flow_maximal_iff_spelled_maximal_of_image_eq (rep : W → W) (readLen : Nat)
+    (verts : List W) (edges : List (BdEdge A W)) (score : (W → ℕ) → ℚ) (f₀ : BdFlow A W)
+    (hEq : Set.image (fun f => throughputVec rep f edges) (feasibleFlowSet rep verts edges)
+      = spelledVisitSet (A := A) rep readLen verts edges) :
+    Maximal (feasibleFlowSet rep verts edges)
+        (fun f => score (throughputVec rep f edges)) f₀ ↔
+      Maximal (spelledVisitSet (A := A) rep readLen verts edges) score
+        (throughputVec rep f₀ edges) := by
+  rw [← hEq]
+  exact (maximal_image_iff rep edges (feasibleFlowSet rep verts edges) score f₀).symm
+
 end AssemblyP1.Section62SpelledFlowMaximality

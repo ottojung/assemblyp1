@@ -91,6 +91,11 @@ What this does **not** prove, and what stays OPEN:
    candidate-set inclusion is proved" principle, here with the inclusion supplied by
    the #233 adapter.
 
+   *Sufficiency reduction.*  `flow_maximal_iff_spelled_maximal_of_image_eq` makes
+   the gap exact: the spelled test is sufficient for flow-level maximality **iff**
+   `Θ(feasibleFlowSet) = spelledVisitSet`.  Since that identity fails in general
+   (`AAATT`), sufficiency is precisely the open image-characterization problem.
+
    *Scope caveat (explicit).*  The spelled sub-class is **strict**: the `AAATT`
    obstruction `no_sequence_has_star_spectrum` is a feasible throughput that is no
    genome's spectrum.  So the spelled test is **necessary but not sufficient** for
