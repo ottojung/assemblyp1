@@ -1,5 +1,6 @@
 import AssemblyP1.GenomeOrbitAdapter
 import AssemblyP1.FiniteBayesianSideInformation
+import AssemblyP1.SourceFaithfulIs
 import Mathlib.Tactic.NormNum
 import Mathlib.Tactic.FinCases
 import Mathlib.Tactic.Positivity
@@ -8,7 +9,8 @@ import Mathlib.Tactic.Positivity
 # Genome-level adapter for the conditional-Bayes vs ordinary-ML separation (#271)
 
 **Status: Lean kernel-checked instantiation in the exact AssemblyP1 finite
-circular read model, with an explicitly EXTERNAL truth-dependent promise.**
+circular read model, with a candidate-specific latent-start information-feasibility
+predicate — not an externally supplied revelation.**
 
 The abstract separation of `AssemblyP1/ConditionalVsOrdinaryMLSeparation.lean`
 (#271) and the general orbit-class boundary
@@ -25,32 +27,41 @@ instantiated here on the concrete finite circular read model of
   rotation orbits;
 * prior: the uniform prior `1/3` over the three orbit classes (NOT over raw
   spellings);
-* promise: the truth-dependent, externally supplied side observation `E t g r`
-  that reveals the true genome's read-pmf **support**, `SupportEq t g`. It is a
-  predicate on the concrete read model, it is *not* a function of the read `r`
-  alone (`E_one_not_dataOnly`), so it must be supplied and cannot be inferred
-  from `R`.
+* promise: the candidate-specific latent-start information-feasibility predicate
+  `E i w`, defined **inside** the model from the exact source predicate
+  `SourceFaithfulIs.InformationFeasible` (the `I_s` of Shomorony et al. (2016),
+  Eq. (1)): candidate `i` admits a latent read-start set `T` that is
+  `I_s`-feasible and realizes the observed read string `w` at one of its starts.
+  It is *not* a function of the read `w` alone (`E_not_dataOnly`), and it is
+  *not* an externally supplied oracle: it is a function of the candidate and the
+  read only.
 
 The endpoints are the two-way separation, kernel-checked on this one shared
 generative model:
 
 * **separation (A ∧ ¬B).** With truth orbit `1` (`0011`) and observed read
-  string `00`: conditioning on `E 1` gives conditional posterior `1` on the true
-  orbit (`sep_posteriorMass_one`), while ordinary R-only ML strictly prefers the
-  wrong orbit `0` (`0001`, `1/2 > 1/4`, `sep_ml_strict`), so the truth is not a
-  maximizer (`sep_truth_not_ml`) and the ordinary posterior on the truth is not
-  certain (`sep_ordinary_not_certain`).
+  string `00`: conditioning on the latent-start feasibility event `E` gives
+  conditional posterior `1` on the true orbit (`sep_posteriorMass_one`), while
+  ordinary R-only ML strictly prefers the wrong orbit `0` (`0001`, `1/2 > 1/4`,
+  `sep_ml_strict`), so the truth is not a maximizer (`sep_truth_not_ml`) and the
+  ordinary posterior on the truth is not certain
+  (`sep_ordinary_not_certain`).
 * **converse (B ∧ ¬A).** With truth orbit `2` (`0101`) and observed read string
   `01`: ordinary ML *uniquely* selects the truth (`conv_ml_unique`), yet the
   ordinary posterior on the truth is not certain (`conv_ordinary_not_certain`).
 
-The promise `E` is deliberately external, in the exact sense of #271: it is
-*not* the source predicate `SourceFaithfulIs.InformationFeasible` and it is not
-claimed to be observable from `R`. The likelihood, candidate universe, orbit
-prior, and observation representation are the exact read model; only `E` is an
-attributed external input. Instantiating `E` by a source-faithful latent-start
-information-feasibility predicate is a separate, still-open adapter (see
-`docs/conditional-vs-ml-genome-adapter-271.md`).
+The predicate `E` is the candidate-specific latent-start information-feasibility
+predicate that the merged #271 handoff left open: it replaces the earlier
+external support-revealing oracle `SupportEq t g`. It is built from the exact
+source predicate `InformationFeasible`, so conditioning on `E(G, R)` is
+conditioning on "the true genome admits an `I_s`-feasible placement explaining
+the observed read", which is the source hypothesis, not an extra attributed
+input. The model boundary is still recorded honestly (see
+`docs/conditional-vs-ml-genome-adapter-271.md`): `E` is defined through the
+chosen orbit representatives, `E` uses the source predicate at the representative
+rather than descending it to orbits, and the read is a single observed string
+rather than the full sampled read set, so this is a bounded finite witness rather
+than the general source-level theorem.
 
 No `sorry`/`admit`/`axiom`/`native_decide`; `#print axioms` is clean (only the
 Mathlib foundations), audited in `AxiomAudit271.lean`.
@@ -60,6 +71,7 @@ namespace AssemblyP1.ConditionalVsMLGenomeAdapter271
 
 open AssemblyP1.GenomeOrbitAdapter
 open AssemblyP1.FiniteBayesianSideInformation
+open AssemblyP1.SourceFaithfulIs
 open Finset BigOperators
 
 /-- The binary symbol alphabet. -/
@@ -209,60 +221,89 @@ theorem orbit_injective : Function.Injective orbit := by
       | exact absurd hij (Ne.symm orbit_zero_ne_two)
       | exact absurd hij (Ne.symm orbit_one_ne_two)
 
-/-! ## The truth-dependent promise `E`
+/-! ## Candidate-specific latent-start information feasibility `E`
 
-`E t g r` is the externally supplied side observation that the candidate `g`
-has the same read-pmf **support** as the true genome `t`. It is a predicate on
-the concrete read model, it ignores `r` (so it is certainly not inferred from
-`r`), and it is truth-dependent. -/
+`E i w` is defined **inside** the model, from the exact source predicate
+`SourceFaithfulIs.InformationFeasible` (the `I_s` of Shomorony et al. (2016),
+Eq. (1)): candidate `i` admits a latent read-start set `T` that is `I_s`-feasible
+and that realizes the observed read string `w` at one of its starts. There is no
+externally supplied truth-dependent oracle. -/
 
-/-- Candidates `g` and `t` have the same read-pmf support. -/
-def SupportEq (t g : Fin 3) : Prop := ∀ w : Read, 0 < mult (rep g) w ↔ 0 < mult (rep t) w
+/-- The source-faithful circular genome of a `ZMod 4`-indexed word. -/
+abbrev toGenome (g : Word) : Genome Sym :=
+  ⟨4, by norm_num, fun d => g (d.val : ZMod 4)⟩
 
-/-- The truth-dependent promise, supplied externally, revealing the true
-genome's read-pmf support. -/
-def E (t : Fin 3) (g : Fin 3) (_ : Read) : Prop := SupportEq t g
+/-- Candidate `i`'s representative read as a source-faithful circular genome. -/
+abbrev genOf (i : Fin 3) : Genome Sym := toGenome (rep i)
 
-instance instDecidableSupportEq (t g : Fin 3) : Decidable (SupportEq t g) := by
-  unfold SupportEq
+/-- **Candidate-specific latent-start information feasibility.** Candidate `i`
+admits a latent read-start set `T` that is `I_s`-feasible and that realizes the
+observed read string `r` at one of its starts. This is a predicate of the
+candidate and the read only; it is not a function of the read alone
+(`E_not_dataOnly`) and it is not an externally supplied revelation. -/
+def E (i : Fin 3) (r : Read) : Prop :=
+  ∃ T : Finset (Fin 4),
+    (∃ s ∈ T, (genOf i).window 2 s = r) ∧
+      InformationFeasible (genOf i) 2 T
+
+instance instDecidableE (i : Fin 3) (r : Read) : Decidable (E i r) := by
+  unfold E
   infer_instance
 
-instance (t : Fin 3) : DecidableRel (E t) := fun g _ => instDecidableSupportEq t g
+instance : DecidableRel E := fun i r => instDecidableE i r
 
-theorem supportEq_refl (t : Fin 3) : SupportEq t t := fun _ => Iff.rfl
+/-- **Read length `2` makes bridging impossible for repeats of length `≥ 1`.**
+A bridged copy of length `e` satisfies `e + 2 ≤ 2` (`bridgesCopy_length`), while a
+repeat has `1 ≤ e`; hence an `I_s`-feasible placement has no triple repeat. -/
+theorem informationFeasible_two_no_tripleRepeat {S : Genome Sym}
+    {R : Finset (Fin S.len)} (h : InformationFeasible S 2 R)
+    {e a b c : Fin S.len} (ht : S.IsTripleRepeat e.val a b c) : False := by
+  obtain ⟨-, htri, -⟩ := h
+  have hb := htri e a b c ht
+  have hle := bridgesCopy_length hb.1
+  have h1 : 1 ≤ e.val := ht.1
+  omega
 
-theorem not_supportEq_one_zero : ¬ SupportEq 1 0 := by
-  intro h
-  have hw := h (r2 1 1)
-  rw [mult_rep0_11, mult_rep1_11] at hw
-  norm_num at hw
+/-- Candidate `1` (`0011`) is information-feasible: the reads at starts `{0,2}`
+cover the circle, and (read length `2`) there is no triple repeat. -/
+theorem feasible_genOf_one :
+    InformationFeasible (genOf 1) 2 ({0, 2} : Finset (Fin 4)) := by
+  decide
 
-theorem not_supportEq_one_two : ¬ SupportEq 1 2 := by
-  intro h
-  have hw := h (r2 0 0)
-  rw [mult_rep2_00, mult_rep1_00] at hw
-  norm_num at hw
+/-- The truth orbit `1` satisfies the feasibility event at read `00`: start `0`
+of `0011` spells `00`, and `{0,2}` is a feasible placement. -/
+theorem E_one_00 : E 1 (r2 0 0) :=
+  ⟨({0, 2} : Finset (Fin 4)), ⟨0, by decide, by decide⟩, feasible_genOf_one⟩
 
-/-- Under `E 1`, the only candidate satisfying the promise is the truth `1`. -/
-theorem E_one_eq (g : Fin 3) (h : E 1 g (r2 0 0)) : g = 1 := by
-  fin_cases g
-  · exact absurd (show SupportEq 1 0 from h) not_supportEq_one_zero
-  · rfl
-  · exact absurd (show SupportEq 1 2 from h) not_supportEq_one_two
+/-- Candidate `0` (`0001`) is **not** information-feasible at any placement: it
+has the triple repeat of length `1` at starts `{0,1,2}`, which read length `2`
+cannot bridge. -/
+theorem E_zero_00 : ¬ E 0 (r2 0 0) := by
+  rintro ⟨T, -, hfeas⟩
+  exact informationFeasible_two_no_tripleRepeat (S := genOf 0) (R := T) hfeas
+    (e := ⟨1, by norm_num⟩) (a := 0) (b := 1) (c := 2) (by decide)
 
-/-- `E 1` is genuinely truth-dependent and not a function of the read alone: at
-the SAME read `00` it holds for the truth `1` and fails for `0`. Hence it cannot
-be inferred from `R`. -/
+/-- Candidate `2` (`0101`) never spells the read `00` (its windows are only `01`
+and `10`), so it is infeasible for the observed read `00`. -/
+theorem no_window_two_00 (s : Fin 4) : (genOf 2).window 2 s ≠ r2 0 0 := by
+  fin_cases s <;> decide
+
+theorem E_two_00 : ¬ E 2 (r2 0 0) := by
+  rintro ⟨T, ⟨s, -, hs⟩, -⟩
+  exact no_window_two_00 s hs
+
+/-- `E` is not a function of the read alone: at the SAME read `00` it holds for
+candidate `1` and fails for candidate `0`. Hence it cannot be inferred from `R`. -/
 def DataOnly (E : Fin 3 → Read → Prop) : Prop :=
-  ∃ f : Read → Prop, ∀ g r, E g r ↔ f r
+  ∃ f : Read → Prop, ∀ i r, E i r ↔ f r
 
-theorem E_one_not_dataOnly : ¬ DataOnly (E 1) := by
+theorem E_not_dataOnly : ¬ DataOnly E := by
   rintro ⟨f, hf⟩
-  have h0 : E 1 1 (r2 0 0) := supportEq_refl 1
-  have h1 : ¬ E 1 0 (r2 0 0) := not_supportEq_one_zero
-  rw [hf 1 (r2 0 0)] at h0
-  rw [hf 0 (r2 0 0)] at h1
-  exact h1 h0
+  have h1 : E 1 (r2 0 0) := E_one_00
+  have h0 : ¬ E 0 (r2 0 0) := E_zero_00
+  rw [hf 1 (r2 0 0)] at h1
+  rw [hf 0 (r2 0 0)] at h0
+  exact h0 h1
 
 /-! ## Ordinary R-only maximum likelihood (prior- and `E`-free) -/
 
@@ -282,38 +323,46 @@ theorem sep_truth_not_ml : ¬ MLMax 1 (r2 0 0) := by
   intro h
   exact absurd (h 0) (not_le.mpr sep_ml_strict)
 
-/-- The promise-conditioned predictive mass at read `00` is positive (the
+/-- The feasibility-conditioned predictive mass at read `00` is positive (the
 truth orbit `1` alone contributes `1/3 · 1/4`). -/
-theorem sep_hZ : 0 < predictiveMass prior p (E 1) (r2 0 0) := by
-  have h1 : 0 < jointMass prior p (E 1) 1 (r2 0 0) := by
-    rw [jointMass_pos_iff prior p (E 1) prior_nonneg (fun g r => p_nonneg g r)]
-    exact ⟨prior_pos 1, by rw [p_1_00]; norm_num, supportEq_refl 1⟩
+theorem sep_hZ : 0 < predictiveMass prior p E (r2 0 0) := by
+  have h1 : 0 < jointMass prior p E 1 (r2 0 0) := by
+    rw [jointMass_pos_iff prior p E prior_nonneg (fun g r => p_nonneg g r)]
+    exact ⟨prior_pos 1, by rw [p_1_00]; norm_num, E_one_00⟩
   unfold predictiveMass
   exact lt_of_lt_of_le h1
     (Finset.single_le_sum
-      (fun h _ => jointMass_nonneg prior p (E 1) prior_nonneg (fun g r => p_nonneg g r) h (r2 0 0))
+      (fun h _ => jointMass_nonneg prior p E prior_nonneg (fun g r => p_nonneg g r) h (r2 0 0))
       (Finset.mem_univ 1))
 
-/-- **Conditional recovery is certain (A).** With the externally supplied
-truth-dependent promise `E 1`, the conditional posterior on the true orbit is
-exactly `1` — via the general #272 theorem `posteriorMass_eq_one_iff`. -/
+/-- **Conditional recovery is certain (A).** Under the candidate-specific
+latent-start feasibility event `E`, the conditional posterior on the true orbit
+is exactly `1` — via the general #272 theorem `posteriorMass_eq_one_iff`. The
+only candidate of positive prior and positive likelihood satisfying `E` at read
+`00` is the truth orbit `1`. -/
 theorem sep_posteriorMass_one :
-    posteriorMass prior p (E 1) orbit (r2 0 0) (orbit 1) = 1 := by
-  rw [posteriorMass_eq_one_iff prior p (E 1) orbit prior_nonneg
+    posteriorMass prior p E orbit (r2 0 0) (orbit 1) = 1 := by
+  rw [posteriorMass_eq_one_iff prior p E orbit prior_nonneg
     (fun g r => p_nonneg g r) (r2 0 0) (orbit 1) sep_hZ]
   intro g _ _ hE
-  rw [E_one_eq g hE]
+  fin_cases g
+  · exact absurd hE E_zero_00
+  · rfl
+  · exact absurd hE E_two_00
 
 /-- The same certainty in the **excluded-competitor** form of #272: every
 candidate of positive prior and positive likelihood outside the true orbit is
-excluded by `E 1`. This is the literal "`E` excludes every other orbit that `R`
-alone leaves possible" boundary. -/
+excluded by the latent-start feasibility event `E`. This is the literal "`E`
+excludes every other orbit that `R` alone leaves possible" boundary. -/
 theorem sep_posteriorMass_one_excluded :
-    posteriorMass prior p (E 1) orbit (r2 0 0) (orbit 1) = 1 := by
-  rw [posteriorMass_eq_one_iff_excluded prior p (E 1) orbit prior_nonneg
+    posteriorMass prior p E orbit (r2 0 0) (orbit 1) = 1 := by
+  rw [posteriorMass_eq_one_iff_excluded prior p E orbit prior_nonneg
     (fun g r => p_nonneg g r) (r2 0 0) 1 sep_hZ]
   intro g _ _ hne hE
-  exact hne (by rw [E_one_eq g hE])
+  fin_cases g
+  · exact absurd hE E_zero_00
+  · exact absurd rfl hne
+  · exact absurd hE E_two_00
 
 /-- The ordinary (no side information) posterior on the true orbit is NOT
 certain at read `00`, because the wrong orbit `0` retains positive prior and
@@ -335,14 +384,14 @@ theorem sep_ordinary_not_certain :
   exact orbit_zero_ne_one (hiff 0 (prior_pos 0) (by rw [p_0_00]; norm_num))
 
 /-- **Genome-level separation (A ∧ ¬B).** On the exact read model with the
-normalized orbit-class prior and the external truth-dependent promise `E 1`:
-the conditional posterior on the true orbit is `1`, ordinary R-only ML strictly
-prefers the wrong orbit `0`, and the ordinary posterior on the truth is not
-certain. -/
+normalized orbit-class prior and the candidate-specific latent-start
+information-feasibility event `E`: the conditional posterior on the true orbit is
+`1`, ordinary R-only ML strictly prefers the wrong orbit `0`, and the ordinary
+posterior on the truth is not certain. -/
 theorem separation_genome :
     (∀ i : Fin 3, 0 ≤ prior i) ∧ (∑ i : Fin 3, prior i = 1) ∧
       (∀ i : Fin 3, ∑ w : Read, p i w = 1) ∧
-      posteriorMass prior p (E 1) orbit (r2 0 0) (orbit 1) = 1 ∧
+      posteriorMass prior p E orbit (r2 0 0) (orbit 1) = 1 ∧
       p 1 (r2 0 0) < p 0 (r2 0 0) ∧ ¬ MLMax 1 (r2 0 0) ∧
       posteriorMass prior p (fun _ _ => True) orbit (r2 0 0) (orbit 1) ≠ 1 :=
   ⟨prior_nonneg, prior_sum_one, p_sum_one, sep_posteriorMass_one, sep_ml_strict,
