@@ -1,5 +1,28 @@
 # The conceptual story behind the programmers' talk
 
+
+## Approved opening: show the goal, model, and success before obstacles
+
+The first content slide must explain what genome assembly **aims to
+produce**, with concrete unordered read input and the recovered whole
+circular sequence. Do not replace the goal with a catalogue of
+difficulties or begin with repeated substrings.
+
+The second content slide establishes the **idealized mathematical
+problem**, including its assumptions and the fact that the input
+does not provide the true genome length. The third content slide
+works through an **actual successful overlap reconstruction** from
+the example reads. Only after the audience has seen the aim, model,
+and positive example should the deck discuss ambiguity, repeats,
+bridging, and guarantees. This ordering is a repeated explicit
+editorial requirement and must survive future content revisions.
+
+Do not focus attention on read-orientation qualifiers in these
+opening slides; preserve those exact conventions in speaker notes.
+Keep the rest of the research story and its proven mathematical
+assumptions unchanged.
+
+
 ## What this talk is about
 
 The project is not primarily a tutorial on genome assembly, a catalogue of
