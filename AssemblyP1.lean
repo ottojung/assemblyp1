@@ -261,6 +261,12 @@ import AssemblyP1.FiniteSampleIidEnvelopeAudit
 import AssemblyP1.FixedNBinomialEffectiveWeightsAudit
 import AssemblyP1.CoveredBinomialWeightsIff
 import AssemblyP1.CoveredBinomialWeightsIffAudit
+-- #259 sharpness: neither disjunct of the covered-sample iff is redundant.
+import AssemblyP1.CoveredBinomialWeightsIffSharpness
+import AssemblyP1.CoveredBinomialWeightsIffSharpnessAudit
+-- #259 power monotonicity: the exact-iid vs §6.1 ranking inversion holds for all n ≥ 1.
+import AssemblyP1.Section62BinomialPowerMonotonicity
+import AssemblyP1.Section62BinomialPowerMonotonicityAudit
 import AssemblyP1.FiniteSideInformationColoring
 import AssemblyP1.FiniteSideInformationColoringAudit
 import AssemblyP1.FiniteBayesianSideInformation
