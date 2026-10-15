@@ -184,6 +184,19 @@ and Brudno explicitly adopt for their algorithm. The two are not
 definitionally equal.}
 \end{definition}
 
+\paragraph{Uniform start sampling is not uniform read-type probability.}
+Two distinct uniformities must not be conflated. Start positions are sampled
+uniformly over the $|D|$ positions of the candidate, but the induced
+\emph{read-type} probabilities $d_w/|D|$ are in general nonuniform: a type
+occurring $d_w$ times has probability $d_w/|D|$, which can be much larger than
+$1/|\Alphabet|^L$. Uniformity is a property of the \emph{start} distribution,
+not of the read-type distribution, and it is the latter that enters the
+likelihood. A model with nonuniform read-type probabilities can arise from
+nonuniform start sampling, from a position-dependent coverage profile, or from
+a different read-type convention; each changes the objective
+(Appendix~\ref{app:modeling}). All exact-likelihood statements below are for
+uniform start sampling unless stated otherwise.
+
 \paragraph{Count dependence is not eliminated by larger samples.}
 In \cite[\S6.1]{medvedev2009}, the move from the exact multinomial
 to the product of per-type binomial probabilities is motivated by the claim
