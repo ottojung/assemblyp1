@@ -243,7 +243,14 @@ maximizer statement itself is routine.
 
 \paragraph{Finite-read error exponent.}
 The population theorem identifies when the exact read distribution separates
-candidates. A second positive theorem quantifies the finite sample. For a
+candidates. A particular finite sample carries no such guarantee: with
+finitely many reads the true genome need not win maximum likelihood, and the
+finite-sample counterexamples above exhibit read sets in which a competitor
+beats the truth under the exact objective. The resolution is a
+finite-sample identifiability/reliability statement --- a small
+\emph{error probability} for the exact-ML rule under an identifiability
+premise --- rather than a per-sample maximality claim. A second positive
+theorem quantifies the finite sample. For a
 finite candidate family whose members induce pairwise distinct read
 distributions, the probability that any wrong candidate ties or beats the
 truth under the exact iid likelihood is at most the sum of the pairwise
