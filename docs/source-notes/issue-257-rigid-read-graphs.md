@@ -1107,6 +1107,19 @@ lattice `L_0 = ker[M; 1ᵀ]` is not a single equation. The existence of a
 polynomial min-cut / max-flow closed form (§8.1) is likewise **OPEN**; §15 shows
 only that the bouquet obstruction is *not* the reason it would fail.
 
+**Remark (general supports, fixed cycle rank).** For a *fixed* cycle rank
+`r = |E| - |V| + c - 1 = rank L_0`, rigidity **is** decidable in polynomial time
+in the explicit graph size and `log G`. Choose a lattice basis `b_1, …, b_r` of
+`L_0` (its entries are bounded by the largest subdeterminant of `[M; 1ᵀ]`, which
+is `≤ |E|` because `M` is totally unimodular and the single all-ones row expands
+into `≤ |E|` unit minors). Then non-rigidity is the integer feasibility of the
+system `∑_j z_j b_j ≥ -s` in `r` integer variables; by Lenstra's theorem
+(integer programming in fixed dimension is polynomial), this is decidable in
+polynomial time for each fixed `r`. So the hardness, if any, is concentrated in
+the *uniform-in-`r`* regime, which stays **OPEN**. This is an external cited
+result (Lenstra 1983); it is not kernel-checked here and is recorded only to
+sharpen §8.2.
+
 ### 15.4 Cross-check
 
 `scripts/verify_257_target_cycle.py` is a self-contained, exact, deterministic
