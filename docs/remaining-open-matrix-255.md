@@ -673,6 +673,18 @@ Every material result is classified as one of:
   distinction (`spellingPushforward_eq_uniform_iff_constant_orbitSize`).
   `AssemblyP1/BayesValueMonotonicity.lean` (PR #231, merged `967db37`) proves
   `bayesValue_succ_ge` / `bayesValue_mono` (`V_{n+1} ≥ V_n`).
+- **Update (2026-10-16):** the §6.2 feasible-flow non-equivalence is LANDED as a
+  Lean separation theorem. `AssemblyP1/Section62FlowGenomeSeparation.lean` (+
+  `Section62FlowGenomeSeparationAudit.lean`) reuses
+  `AssemblyP1/Section62FlowCountVectorAdapter` (`throughputVec_congr`,
+  `maximal_image_iff`) to show every §6.2 objective factors through the
+  molecule-class throughput, then exhibits the reverse-complement pair `S0 = 00`,
+  `S1 = 11` with equal §6.2 visit vector but different exact oriented likelihood,
+  refuting `exactLikelihood = φ ∘ classCount` and hence
+  `section62_flow_objective_ne_genome_likelihood`. Verifier
+  `scripts/verify_269_flow_genome_separation.py`; see
+  `docs/section62-flow-genome-separation-269.md`. It does not touch #261's
+  throughput-image classification.
 - **Still OPEN:** the reverse-complement-orbit quotient (the adapter proves
   rotation invariance only; RC invariance is deliberately not claimed) and any
   source-historical endpoint. Board #269 remains OPEN.
