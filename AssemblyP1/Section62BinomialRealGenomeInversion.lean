@@ -160,4 +160,52 @@ theorem ranking_inversion :
 #print axioms surrogate_ranks_B
 #print axioms ranking_inversion
 
+
+/-! ## Likelihood functions applied to the actual circular genomes
+
+The formulas below use the computed oriented cyclic two-mer multiplicities of
+their genome argument, rather than disconnected numerical constants. -/
+
+/-- Exact iid likelihood of a single observed oriented read 00 under a genome. -/
+def exactSingle00 (s : List Bool) : ℚ :=
+  (circularTwoCount s false false : ℚ) / (s.length : ℚ)
+
+/-- MB09 §6.1 product of four marginal binomials for a single observed 00;
+the three zero-count read types contribute their (1-p) factors. -/
+def surrogateSingle00 (s : List Bool) : ℚ :=
+  exactSingle00 s *
+    (1 - (circularTwoCount s false true : ℚ) / (s.length : ℚ)) *
+    (1 - (circularTwoCount s true false : ℚ) / (s.length : ℚ)) *
+    (1 - (circularTwoCount s true true : ℚ) / (s.length : ℚ))
+
+theorem exactSingle00_A : exactSingle00 genomeA = 1 / 2 := by
+  simp only [exactSingle00, genomeA_counts.1, genomeA_len]
+  norm_num
+
+theorem exactSingle00_B : exactSingle00 genomeB = 49 / 100 := by
+  simp only [exactSingle00, genomeB_counts.1, genomeB_len]
+  norm_num
+
+theorem surrogateSingle00_A : surrogateSingle00 genomeA = 127413 / 500000 := by
+  simp only [surrogateSingle00, exactSingle00,
+    genomeA_counts.1, genomeA_counts.2.1,
+    genomeA_counts.2.2.1, genomeA_counts.2.2.2, genomeA_len]
+  norm_num
+
+theorem surrogateSingle00_B : surrogateSingle00 genomeB = 28017563 / 100000000 := by
+  simp only [surrogateSingle00, exactSingle00,
+    genomeB_counts.1, genomeB_counts.2.1,
+    genomeB_counts.2.2.1, genomeB_counts.2.2.2, genomeB_len]
+  norm_num
+
+/-- The *actual genomes*, not just standalone constants, exhibit strict ranking
+inversion between joint iid likelihood and the §6.1 product-binomial surrogate. -/
+theorem ranking_inversion_applied :
+    exactSingle00 genomeB < exactSingle00 genomeA ∧
+    surrogateSingle00 genomeA < surrogateSingle00 genomeB := by
+  rw [exactSingle00_A, exactSingle00_B, surrogateSingle00_A, surrogateSingle00_B]
+  constructor <;> norm_num
+
+#print axioms ranking_inversion_applied
+
 end AssemblyP1.Section62BinomialRealGenomeInversion
