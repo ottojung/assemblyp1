@@ -117,10 +117,19 @@ If the reads already contain enough information to reconstruct the genome...
 
 **...must the true genome also be the most likely explanation of those reads?**
 
-Those are not identical questions.
+Those are **two different questions**.
 
-- Reconstruction asks **which arrangements fit**.
-- Maximum likelihood asks **which arrangement best predicts the observed frequencies**.
+- **Question A (conditional):** restrict candidates to those that already pass the reconstruction conditions — then the answer is the true circle, a corollary of the guarantee.
+- **Question B (unconditional):** without that restriction, must the true genome be most likely? **No** — the next slides show a decoy winning.
+
+<!--
+Mirrors the whitepaper's two-question narrative (paper sec:intro:two-questions,
+sec:two-questions). Question A conditions on the truth-dependent feasible fiber
+{g : F(g,R)} and is largely a corollary of the published 2016 reconstruction
+theorem; Question B assumes only F(S,R) and maximizes the original unrestricted
+likelihood, which is the substantive comparison. Ordinary ML never observes the
+event E = F(S,R).
+-->
 
 ---
 
@@ -290,9 +299,9 @@ The general Graver-basis criterion (GraverRigidity) is a separate iff.
 
 # Three take-aways
 
-1. **Short reads contain structural information.** Overlaps and bridging resolve repeats; under precise conditions they determine a unique circular genome.
+1. **Short reads contain structural information.** Overlaps and bridging resolve repeats; under precise conditions they determine a unique circular genome (Question A, the conditional guarantee).
 2. **Likelihood is a beautifully simple probability calculation.** It uses *how often* different reads were sampled.
-3. **Finite and population likelihood differ.** Sampling luck can favor a decoy in a finite sample; with exact frequencies the truth always attains the maximum, and repeat structure decides whether it is unique. For our structural class the finite-sample error probability obeys an explicit kernel-checked exponential bound (backup).
+3. **Finite and population likelihood differ.** Sampling luck can favor a decoy in a finite sample (Question B, the unconditional comparison); with exact frequencies the truth always attains the maximum, and repeat structure decides whether it is unique. For our structural class the finite-sample error probability obeys an explicit kernel-checked exponential bound (backup).
 
 **One simple statistical idea illuminates an entire reconstruction problem.**
 

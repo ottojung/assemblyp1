@@ -19,7 +19,12 @@ limit-not-a-finite-n scope) to `paper/sections/05-population.tex`
 (`sec:strong-consistency`, `prop:strong-consistency`, classical not
 kernel-checked) and to both decks (new backup slides plus one-line main-arc
 pointers), with the exact checker
-`scripts/verify_strong_consistency_265.py`.
+`scripts/verify_strong_consistency_265.py`. A fourth 2026-10-16 addendum by
+agent `68d129da714f` mirrors the #268 **two-question narrative** (Question A
+conditional / Question B unconditional) in both decks, on base `main` @
+`a5b6e77`; the section-by-section mapping and the
+paper/claims-matrix/bibliography acceptance checks are in
+`docs/deck-arc-consistency-265.md`.
 
 This note records (i) the revised presentation arc, (ii) the claim labels and
 exact project endpoints behind every nontrivial slide claim, (iii) where the
@@ -71,6 +76,20 @@ problem settled.
   $a<n(2-\log_2 3)$ decision boundary, the paper's succ($n$) table through
   $n=8$, rotation ties, Hellinger summability). No main-arc slide was
   removed or restructured.
+- **Two-question narrative mirrored in both decks (2026-10-16 addendum by
+  agent `68d129da714f`).** The #268 refocus separated the 2016 sentence into
+  Question A (conditional: restrict to the feasible fiber, a corollary of the
+  reconstruction guarantee) and Question B (unconditional: maximize the
+  original unrestricted likelihood, the substantive comparison). The
+  programmers deck now names both questions at "The 2016 question: does the
+  guarantee imply ML?", maps Not-So-Greedy/ordinary ML to A/B at "Why the two
+  methods do not contradict each other", retitles the conditional-posterior
+  slide to "Question A: what if we are promised reconstruction works?", and
+  states the separation in "What the investigation established". The
+  biologists deck labels A/B at "But the paper left another question" and
+  annotates "Three take-aways". No slide was added or removed; the approved
+  #254 opening and the Lean/agent-proof-trust story are unchanged. See
+  `docs/deck-arc-consistency-265.md`.
 - **Explicit uniform error rate added to both decks (2026-10-15 addendum by
   agent `7b4df767b5fa`).** The kernel-checked primitive-P2 rate from #281,
   `Pr[∃ nonrotational admissible D : L_D ≥ L_S] ≤ N_C exp(-n/(8 B^4))` with
