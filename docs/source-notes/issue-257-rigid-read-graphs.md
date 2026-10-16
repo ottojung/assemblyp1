@@ -19,7 +19,9 @@ _Reproduce: `python3 scratch257/rigidity.py`, `python3 scratch257/two_cycle.py`
 `python3 scripts/verify_257_two_walk_iff.py` (§12 two-closed-walk cross-check,
 constructive n=3/4 and exhaustive search n=3),
 `python3 scripts/verify_257_bouquet.py` (§13 bouquet Diophantine criterion
-cross-check, exhaustive small scope).
+cross-check, exhaustive small scope),
+`python3 scripts/verify_257_bridge.py` (§14 antiparallel-bridge four-variable
+criterion cross-check, exhaustive small scope).
 Self-contained, exact integer arithmetic, deterministic._
 
 _Blocking-review repair (2026-10-10, branch `research/257-graver-lean-repair`):
@@ -137,6 +139,18 @@ map `B : E → ℤ` with `B ≥ 1` on every edge, balanced at every node, and
    A genuine circular DNA read-spectrum realization of the (2,3,3) bouquet
    is Lean-checked in RigidityBouquetGenomeWitness.lean.
    [mathematical proof + kernel-checked, section 13]
+
+9. **Antiparallel bridge: a genuinely coupled criterion beyond the bouquet.**
+   A single extra arc on a figure-eight cannot be positive (balance forces it to
+   0), so the minimal positive cross-connection is an antiparallel arc pair.
+   The resulting *bridge graph* has a 4-parameter circulation space with coupled
+   box constraints; non-rigidity is exactly
+   `∃ (a,c,p,q) ≠ 0, 2a+2c+p+q = 0, a ≥ 1-m1, a+q-p ≥ 1-m1, c ≥ 1-m2,
+   c+p-q ≥ 1-m2, p ≥ 1-f, q ≥ 1-f`, kernel-checked as `bridge_nonrigid_iff`.
+   Classification: the bridge is rigid **iff** all multiplicities are `1`
+   (`bridgeA_rigid_iff_trivial`); otherwise explicit witnesses. The bridge is an
+   abstract support (this exact shape is not a de Bruijn read-support).
+   [mathematical proof + kernel-checked, section 14]
 
 ---
 
@@ -431,8 +445,15 @@ exhaustive zeros are a sanity check on the proofs, not a substitute for them.
    `bouquet_nonrigid_iff`; a kernel-checked **real/integer gap**
    (`len233_mult211_real_integer_gap`) proves the rational/LP relaxation is
    **not** sufficient for that direct integer system. This does not rule out
-   other exact LP/extended formulations or polynomial graph algorithms. The
-   general complexity and graph-theoretic characterization remain **OPEN**. [open; bouquet case reduced, §13]
+   other exact LP/extended formulations or polynomial graph algorithms.
+   **Further partial progress (§14, 2026-10-15):** the antiparallel-bridge family
+   (a positively-realizable cross-connection of two cycles) has a genuinely
+   *coupled* four-variable criterion (`bridge_nonrigid_iff`) that is **not** of
+   the bouquet form, and is rigid **iff** all multiplicities are `1`
+   (`bridgeA_rigid_iff_trivial`); so the bridge topology yields no new rigid
+   repetitive supports. The general complexity and graph-theoretic
+   characterization remain **OPEN**. [open; bouquet case reduced, §13; bridge case
+   classified, §14]
 2. **The exact complexity** of the exact criterion (§7). [open]
 3. ~~**The two-closed-walk certificate** (§4)~~ **RESOLVED (2026-10-15).** The
    two-closed-walk certificate is necessary **and** sufficient for strongly
@@ -476,6 +497,10 @@ exhaustive zeros are a sanity check on the proofs, not a substitute for them.
 | §13 bouquet non-rigidity witness `len23_mult41_nonrigid` (`x = (-3, 2)`) | kernel-checked |
 | §13 bouquet real/integer gap `len233_mult211_real_integer_gap` (rational `(-1, 0, 2/3)`, no integer solution) | mathematical proof + kernel-checked |
 | §13 bouquet cross-check vs brute force (`scripts/verify_257_bouquet.py`: 3133 bouquets, 0 mismatches) | verified computation, exhaustive in scope |
+| §14 bridge exact criterion (`bridge_nonrigid_iff`: `∃ (a,c,p,q) ≠ 0, 2a+2c+p+q = 0` + coupled box) | mathematical proof + kernel-checked (`AssemblyP1/RigidityBridge.lean`) |
+| §14 bridge classification (`bridgeA_rigid_iff_trivial`: rigid iff `m1 = m2 = f = 1`) | mathematical proof + kernel-checked |
+| §14 bridge non-rigidity witnesses (`dM1`, `dM2`, `dF`) | kernel-checked |
+| §14 bridge cross-check vs brute force (`scripts/verify_257_bridge.py`: 880 bridges, 0 mismatches) | verified computation, exhaustive in scope |
 
 ---
 
@@ -837,3 +862,115 @@ Theorem 6 and the three worked instances are kernel-checked with only
 (`AssemblyP1/RigidityBouquetAudit`); no `sorry`/`admit`/`axiom`/`native_decide`.
 The residual — a *polynomial* min-cut/max-flow closed form for general supports,
 or a proof that none exists — remains **OPEN** (§8.1/§8.2).
+
+---
+
+## 14. The antiparallel bridge: a coupled criterion beyond the bouquet (§8.1 progress)
+
+This section advances open item §8.1 past the **bouquet** family of §13, with a
+topology whose circulation space is genuinely *coupled* rather than
+constant-on-cycles.
+
+### 14.1 Why a single extra arc is not enough
+
+Suppose the figure-eight (two cycles `C1, C2` through a hub `v`) is given one
+extra arc from an interior vertex `u1` of `C1` to an interior vertex `u2` of
+`C2`. At `u1` there is exactly one incoming `C1`-edge, one outgoing `C1`-edge,
+and the new arc. If `A` is a *positive* circulation (every support edge carries
+`≥ 1`), balance at `u1` is `A(C1 in) + A(arc in) = A(C1 out) + A(arc out)`; with
+`A(C1 in) = A(C1 out)` this forces the arc value to `0`, contradicting
+positivity. The same holds for any single arc incident to the interior of a
+cycle, and for an arc between two interior vertices. Hence the **minimal
+positively-realizable cross-connection between two cycles is an antiparallel arc
+pair**.
+
+### 14.2 The bridge graph
+
+Take the hub `v`, the two `2`-cycles `v → x → v` and `v → y → v`, and the
+antiparallel pair `x → y`, `y → x`. This is the *bridge graph*; it is an abstract
+oriented support graph (a switch `x`, `y` of in-degree and out-degree `2`). Its
+six arcs are
+
+```
+0: v→x   1: x→v   2: v→y   3: y→v   4: x→y   5: y→x
+```
+
+with multiplicities `A = (m1, m1, m2, m2, f, f)`, `m1, m2, f ≥ 1`, total mass
+`G = 2(m1 + m2 + f)`.
+
+Unlike a bouquet, a circulation is **not** constant on the cycles: the bridge
+couples the two cycle values. Balance at `x` and `y` gives the two independent
+equations
+
+```
+δ1 + δ4 = δ0 + δ5 ,      δ3 + δ5 = δ2 + δ4
+```
+
+(the hub balance `δ0 + δ2 = δ1 + δ3` is a consequence), so every circulation is
+
+```
+δ = φ(a, c, p, q) = ![a, a + q - p, c, c + p - q, p, q]
+```
+
+for `a = δ0`, `c = δ2`, `p = δ4`, `q = δ5`, with total mass
+`∑ δ = 2a + 2c + p + q`. This parameterization is kernel-checked
+(`AssemblyP1.RigidityBridge.phi_of_balanced`, `phi_balancedB`, `phi_sum`).
+
+### 14.3 Exact criterion
+
+**Theorem 7 (bridge criterion).** `A` is **not** rigid **iff** there are
+integers `a, c, p, q`, not all zero, with
+
+```
+2a + 2c + p + q = 0                        (zero total mass)
+a ≥ 1 - m1 ,   a + q - p ≥ 1 - m1          (x-cycle box)
+c ≥ 1 - m2 ,   c + p - q ≥ 1 - m2          (y-cycle box)
+p ≥ 1 - f ,    q ≥ 1 - f                   (bridge box)
+```
+
+_Proof._ Immediate from Theorem 1 together with the parameterization §14.2: the
+box `δ ≥ 1 - A` becomes the six inequalities above, and `δ ≠ 0` becomes
+`(a, c, p, q) ≠ 0`. ∎
+
+This is kernel-checked as `AssemblyP1.RigidityBridge.bridge_nonrigid_iff`. It is
+genuinely *coupled*: the box on arc `1 = x→v` involves `a + q - p`, and the box
+on arc `3 = y→v` involves `c + p - q`, so it is **not** a bouquet criterion
+(which has independent per-cycle bounds). The bouquet criterion of §13 is
+recovered only in the degenerate shared-cycle limit, not here.
+
+### 14.4 Rigidity classification: the bridge is rigid only when trivial
+
+**Corollary (bridge is rigid iff all multiplicities are 1).**
+`bridgeA_rigid_iff_trivial`: for `m1, m2, f ≥ 1`, `A` is rigid **iff**
+`m1 = m2 = f = 1`. In every other case an explicit non-rigidity witness is
+kernel-checked:
+
+* `m1 ≥ 2`: `δ = (-1, -1, 0, 0, 1, 1)` (`dM1`);
+* `m2 ≥ 2`: `δ = (0, 0, -1, -1, 1, 1)` (`dM2`);
+* `f ≥ 2`:  `δ = (0, 0, 1, 1, -1, -1)` (`dF`).
+
+For `m1 = m2 = f = 1` every box constraint is `δ_e ≥ 0`, and zero total mass
+forces `δ = 0`, so the instance is rigid (trivially). Thus the **minimal positive
+cross-connection between two cycles destroys rigidity except in the all-ones
+degenerate case** — a no-go for the tempting hypothesis that adding a bridge
+yields new *rigid* repetitive supports.
+
+### 14.5 Cross-check
+
+`scripts/verify_257_bridge.py` recomputes rigidity from scratch by enumerating
+**all** positive integer circulations of total `G` on the bridge graph and
+compares with the four-variable criterion of §14.3 and with the classification
+of §14.4, over an exhaustive scope (`1 ≤ m1, m2, f ≤ 10`, `G = 2(m1+m2+f) ≤ 44`:
+**880** bridges, **0** mismatches), and re-derives the three witnesses.
+[verified computation, exhaustive in scope]
+
+### 14.6 Epistemic status
+
+Theorem 7, the classification, and the three witnesses are kernel-checked with
+only `[propext, Classical.choice, Quot.sound]`
+(`AssemblyP1/RigidityBridgeAudit`); no `sorry`/`admit`/`axiom`/`native_decide`.
+The bridge is an **abstract** support graph; realizability of this exact shape as
+a de Bruijn read-support is **not** claimed (two distinct `2`-cycles through one
+hub cannot coexist in an order-`(L-1)` de Bruijn graph). The residual — a
+*polynomial* min-cut/max-flow closed form for general supports, or a proof that
+none exists — remains **OPEN** (§8.1/§8.2).
