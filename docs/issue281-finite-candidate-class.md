@@ -51,6 +51,43 @@ not merely an upper estimate. Independent exhaustive censuses found the
 maximum admissible length to be exactly `2·q^K` in every case enumerated
 (binary `K = 1,2,3`, ternary `K = 1`).
 
+### Tightness for every alphabet size at `K = 1`
+
+The single `1100` witness is generalized to a whole family in
+`AssemblyP1/PrimitiveP2FiniteClassTight.lean`. For every finite alphabet `α`
+with `q = |α| ≥ 2`, the **doubled alphabet** circular word
+
+    0 0 1 1 2 2 ... (q-1) (q-1)
+
+of length `2 * q` is primitive and P2-admissible at `L = 2`; the word is
+built from an arbitrary enumeration `α ≃ Fin q` (`Fintype.equivFin`), so no
+ordering or computability of `α` is assumed. Hence
+
+    `exists_primitive_P2_at_bound_K1` :
+      ∀ α, 2 ≤ |α| → ∃ S : Fin (2|α|) → α, IsPrimitive S ∧ P2 S at L = 2,
+
+with `maxLen_two : maxLen 2 = 2 * |α|`, so the bound `G ≤ 2·q^K` is attained
+at `K = 1` for every `q ≥ 2`, not just at `q = 2`.
+
+The two P2 clauses are checked on the source-faithful definitions:
+
+* the triple-repeat clause forbids maximal triple repeats of length `≥ 1`.
+  Each symbol occurs exactly twice, so no three starts share even a length-one
+  window, hence there is no triple repeat of any length (`no_triple`).
+* the interleaved-pair clause forbids interleaved maximal repeat pairs. Every
+  maximal repeat of the doubled word is an adjacent equal pair `(2k, 2k+1)`
+  (`repeat_consec`): the length-two window map is injective
+  (`window_two_injective`), so no repeat has length `≥ 2`, and the only
+  length-one repeats are the adjacent pairs. Consecutive starts span either the
+  empty open arc or the whole circle, so `InOpenArc` agrees on all other starts
+  and the alternation condition of `Interleaved` fails (`not_interleaved`).
+
+This is exactly the maximality point raised for this issue: P2 constrains
+*maximal* repeats, and the proof derives the multiplicity cap from the real
+two-sided maximality, not from the mere absence of equal windows. The `K = 1`
+bound is therefore exactly tight, and the exhaustive census is corroborated by
+a theorem for every `q ≥ 2`.
+
 ## Why the trap in the issue statement matters
 
 P2 forbids **maximal** triple repeats (preceding bases not all equal *and*
@@ -160,10 +197,32 @@ and the only new content is the finite family that makes it applicable.
 ```
 lake env lean -DautoImplicit=false AssemblyP1/PrimitiveP2FiniteClass.lean
 lake env lean -DautoImplicit=false AssemblyP1/PrimitiveP2FiniteClassAudit.lean
+lake env lean -DautoImplicit=false AssemblyP1/PrimitiveP2FiniteClassTight.lean
+lake env lean -DautoImplicit=false AssemblyP1/PrimitiveP2FiniteClassTightAudit.lean
 lake build --wfail
 lake env leanchecker AssemblyP1.PrimitiveP2FiniteClass
 lake env leanchecker AssemblyP1.PrimitiveP2FiniteClassAudit
+lake env leanchecker AssemblyP1.PrimitiveP2FiniteClassTight
+lake env leanchecker AssemblyP1.PrimitiveP2FiniteClassTightAudit
 ```
+
+## Independent verification of the finiteness obligation
+
+The finiteness obligation for this issue is discharged by the merged
+`AssemblyP1.PrimitiveP2FiniteClass` (`primitive_P2_len_le`,
+`primitiveP2Class_finite`, `all_primitiveP2_ML_confidence`). A fresh clone of
+`main` was built and kernel-replayed independently:
+
+* `lake build --wfail` succeeds for the whole library;
+* `lake env leanchecker AssemblyP1.PrimitiveP2FiniteClass` exits `0`;
+* `#print axioms` for `primitive_P2_len_le`, `primitiveP2Class_finite`,
+  `mem_primitiveP2Candidates`, and `all_primitiveP2_ML_confidence` reports only
+  `[propext, Classical.choice, Quot.sound]` — no `sorry`, `admit`, or
+  project-specific axiom;
+* `scripts/verify_281_window_cap.py 3 11 4` reports zero cap failures and zero
+  bound failures, with `120` attainments at `G = 2·q^K`;
+* the new `PrimitiveP2FiniteClassTight` endpoints likewise use only the
+  standard three axioms.
 
 ## Provenance
 
