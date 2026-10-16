@@ -10,15 +10,23 @@ enumeration repeats exactly the same strand. Consequently the constructed
 `overlapEdges` list can contain identical `BdEdge` values several times,
 even if `verts` contains the molecule class exactly once.
 
+**IMPORTANT:** `BdFlow A W := BdEdge A W → ℕ` assigns one flow value to
+each EDGE VALUE, not each list position. But `throughput` and `balCore`
+FOLD OVER THE EDGE LIST. Therefore an identical edge repeated four times
+contributes four copies of the SAME edge's assigned flow. This is a
+real representational difference in the implemented feasibility domain.
+
 This audit gives a concrete non-vacuous example in the repository's true
 two-base A/T alphabet (length four circular read ATAT, overlap length two),
 and introduces a NON-MUTATING canonical-edge-list variant that removes only
 literal duplicate edges. Its edge membership is exactly the same as that of
-the original, but list-based flow-index cardinalities need not be.
+the original, but `throughput`/feasibility for one shared `BdFlow`
+is observably different.
 
 It does NOT assert which multiplicity convention Myers/MB09 intends in
-palindromic overlap graphs. Any theorem using `Fin graph.length` as the
-set of flow channels should explicitly settle that modeling decision first.
+palindromic overlap graphs. Any proof identifying the duplicate-list
+implementation with a physical source flow should explicitly settle the
+intended edge-multiplicity convention first.
 -/
 
 namespace AssemblyP1.Section62PalindromeEdgeMultiplicityAudit
@@ -87,12 +95,72 @@ theorem mem_overlapEdgesDedup_iff
       e ∈ overlapEdges A W toList rep rc L oMin verts := by
   simp [overlapEdgesDedup]
 
-/-- The very same semantic edge set can have distinct list-level dimensions,
-which matter if a flow is indexed by `Fin graph.length`. -/
+/-- The same semantic edge set has different list lengths. Since `BdFlow`
+indexes by edge VALUE and `throughput` folds the list, these repetitions
+multiply the contributions of one shared edge flow. -/
 theorem palindrome_index_dimensions_differ :
     originalGraph.length ≠ dedupGraph.length := by
   rw [originalGraph_length, dedupGraph_length]
   decide
+
+
+/-- A unit flow on the ONE distinct edge type. The flow is keyed by the
+`BdEdge` VALUE, not any list index. -/
+def unitPalFlow : BdFlow Base (List Base) :=
+  fun e => if e = palindromicEdge then 1 else 0
+
+/-- The one-read candidate spectrum (one occurrence of the palindrome). -/
+def singletonSpectrum : List Base → ℕ :=
+  fun w => if w = pal4 then 1 else 0
+
+/-- The duplicated graph counts the SAME edge-value flow four times. -/
+theorem duplicate_graph_throughput_four :
+    throughput Base (List Base) id unitPalFlow originalGraph pal4 = 4 := by
+  decide
+
+/-- The canonical edge-list graph counts this flow once. -/
+theorem canonical_graph_throughput_one :
+    throughput Base (List Base) id unitPalFlow dedupGraph pal4 = 1 := by
+  decide
+
+/-- One unit through the palindrome self-loop is a feasible balanced circuit
+with ZERO terminal usage when the edge list is canonically deduplicated. -/
+theorem palindrome_dedup_feasible_one :
+    Feasible62 Base (List Base) id [pal4] dedupGraph
+      unitPalFlow (noTerminals (List Base)) singletonSpectrum := by
+  refine ⟨⟨?_, ?_, ?_, ?_⟩, noTerminals_usage_zero (List Base)⟩
+  · intro e he
+    exact Nat.zero_le _
+  · intro v hv
+    have h : v = pal4 := by simpa using hv
+    subst v
+    rw [canonical_graph_throughput_one]
+  · intro v hv
+    have h : v = pal4 := by simpa using hv
+    subst v
+    decide
+  · intro v hv
+    have h : v = pal4 := by simpa using hv
+    subst v
+    rw [canonical_graph_throughput_one]
+    simp [singletonSpectrum]
+
+/-- For exactly the SAME physical candidate copy number (one) and the SAME
+edge-value keyed flow, the original graph list is NOT feasible, because its
+`throughput` adds the single flow value four times and forces copy count 4.
+This is a concrete difference in the implemented feasibility predicate. -/
+theorem palindrome_original_not_feasible_one :
+    ¬ Feasible62 Base (List Base) id [pal4] originalGraph
+      unitPalFlow (noTerminals (List Base)) singletonSpectrum := by
+  intro h
+  have hthrough := h.1.2.2.2 pal4 (by simp)
+  rw [duplicate_graph_throughput_four] at hthrough
+  norm_num [singletonSpectrum] at hthrough
+
+#print axioms duplicate_graph_throughput_four
+#print axioms canonical_graph_throughput_one
+#print axioms palindrome_dedup_feasible_one
+#print axioms palindrome_original_not_feasible_one
 
 #print axioms pal4_is_rc_palindrome
 #print axioms palindrome_strands_duplicate

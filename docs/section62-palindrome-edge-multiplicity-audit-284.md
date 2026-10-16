@@ -30,6 +30,15 @@ and has a valid proper length-2 overlap with itself. It proves:
   for any alphabet, molecule type, involution and graph parameters.
 - `palindrome_index_dimensions_differ`: the original and deduplicated
   edge lists have lengths 4 and 1.
+- `duplicate_graph_throughput_four`, `canonical_graph_throughput_one`:
+  assigning **one** unit of flow to the ONE edge value gives throughput **4**
+  on the original edge list and **1** on the canonical list.
+- `palindrome_dedup_feasible_one`,
+  `palindrome_original_not_feasible_one`: the same unit edge-value flow and
+  the same one-copy observed palindrome spectrum, with zero terminal use,
+  are **feasible in the deduplicated graph and infeasible in the original**.
+  This is a concrete, kernel-checked difference in the current feasibility
+  semantics, not merely a hypothetical dimension discrepancy.
 
 All proofs use only Lean's standard permitted axioms (and some none); no
 `sorry`, `native_decide`, or extra axioms.
@@ -38,14 +47,20 @@ All proofs use only Lean's standard permitted axioms (and some none); no
 
 The source model distinguishes molecule classes and strand orientations,
 but does not automatically tell us whether four numerically equal
-`BdEdge` entries for a self-complementary molecule should be **four
-different flow channels**, one channel, or a weighted/multigraph
-representation. `BdFlow` and edge-indexed finite feasibility constraints
-may distinguish list positions even when the edge values are identical.
+`BdEdge` entries for a self-complementary molecule represent **four
+physical overlaps**, one overlap, or another weighted/multigraph convention.
 
-Therefore these theorems establish an **exact representation-level ambiguity**,
-not by themselves a falsification of MB09/Myers or of previously proved
-finite non-palindromic witnesses.
+**Crucial implementation fact:** `BdFlow A W` is a function **of the
+`BdEdge` value**, not of an edge-list position. Thus the four equal edge
+records cannot have independent flow assignments. The implemented
+`throughput` folds the list and counts the same edge's assigned value
+four times. The concrete zero-terminal `Feasible62` theorem above shows
+this can genuinely change whether a one-copy candidate is feasible.
+
+These results prove an **actual difference between the two implemented
+feasible sets**. They do *not* alone decide what multiplicities the original
+MB09/Myers physical graph intends, nor invalidate witnesses without RC
+palindromes.
 
 The additive `overlapEdgesDedup` is offered for comparison; the legacy
 `strandsOf`, `overlapEdges` and `Feasible62` semantics are not changed.
