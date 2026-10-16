@@ -636,6 +636,8 @@ normalized spectra can tie.
 
 For an identifiable **finite family** of candidate genomes, as more independent reads arrive, the probability that a wrong candidate ties or beats the truth **falls exponentially**.
 
+For our **primitive-P2** class the rate is now **explicit and kernel-checked**: with read length $L$, alphabet size $q$, and $B=2q^{L-1}$, the exact-ML error probability is at most $N_C\exp(-n/(8B^4))$, so $n\ge 8B^4\ln(N_C/\delta)$ reads suffice for error at most $\delta$ (full statement and caveats in backup B3).
+
 With enough reads, ML can therefore achieve **99% recovery probability**—or any other desired confidence—for such a family.
 
 The population result says **what information identifies the genome**. The finite theorem tells us **how additional observations improve our chances**.
@@ -894,6 +896,18 @@ $$
 
 One competitor with affinity $\rho_*=\sqrt3/2\approx0.87$ needs $n\ge 33$ reads for a $1\%$ bound.
 
+For the **primitive-P2** admissible class the abstract gap $\rho_*<1$ is now **explicit and kernel-checked**. With alphabet size $q=|\alpha|$, read length $L\ge2$, and $B=2q^{L-1}$, over the complete nonrotational primitive-P2 class:
+
+$$
+\Pr_S\!\left[\exists\,D\ \text{nonrotational admissible}:\ L_D(R_1,\dots,R_n)\ge L_S(R_1,\dots,R_n)\right]
+\;\le\; N_C\,\exp\!\left(-\frac{n}{8B^4}\right),
+\qquad N_C\le\sum_{g=1}^{B}q^{g},
+$$
+
+and $n\ge 8B^4\ln(N_C/\delta)$ reads suffice for error at most $\delta$.
+
+**Caveats.** The constants are deliberately loose and exponential in $L$; the bound controls the exact-ML **error probability**, not likelihood growth; and per-truth finite-sample success is **not monotone**. The class is primitive-P2, oriented, exact iid reads — not universal ML and not the MB09 product-binomial surrogate. Kernel endpoints: `AssemblyP1.PrimitiveP2UniformSeparation.primitiveP2_exponential_error_bound` and `primitiveP2_ML_confidence_explicit`.
+
 **What remains open:** one sharp, uniform sample-size guarantee over the unrestricted universe of genome candidates, especially across different lengths and models.
 
 <!--
@@ -906,6 +920,16 @@ FiniteReadRecovery, FiniteReadRecoveryGenome, FiniteReadRecoveryP2Bridge,
 FiniteReadRecoveryP2Complete. Do not claim sample complexity is wholly open;
 the finite-family confidence theorem is established. Finite family, positive
 separation, iid oriented reads, and the candidate model matter.
+The explicit uniform rate over the primitive-P2 class is #281, kernel-checked
+in PrimitiveP2UniformSeparation (endpoints primitiveP2_exponential_error_bound
+and primitiveP2_ML_confidence_explicit; B = maxLen L = 2 q^(L-1); N_C is the
+number of distinct competitor read laws, N_C <= sum_{g=1}^{B} q^g). It is a
+frequentist uniform-separation statement for the exact oriented iid
+multinomial likelihood, distinct from the Bayes/MAP rationale. State the three
+caveats: constants deliberately loose and exponential in L; it bounds the
+exact-ML ERROR PROBABILITY, not likelihood growth; and per-truth finite-sample
+success is NOT monotone. This is not universal ML over all genomes and not the
+MB09 product-binomial surrogate.
 -->
 
 ---

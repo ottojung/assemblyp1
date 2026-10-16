@@ -67,6 +67,8 @@ import AssemblyP1.Section62PeriodicSeam
 import AssemblyP1.Section62OverlapSuffix
 -- #284: actual signed overlap circuits yield an aligned periodic circular word.
 import AssemblyP1.Section62SourceSignedSeamAdapter
+-- #284: generic periodic-window/linear-spelling equality for genuine signed circuits.
+import AssemblyP1.Section62AnchoredWindowBridge
 -- #284: non-vacuity regression instantiating the signed-circuit adapter on
 -- concrete legal signed overlap circuits, including the G < readLen case.
 import AssemblyP1.Section62SignedAdapterRegression
@@ -76,6 +78,7 @@ import AssemblyP1.FiniteSamplingCounterexample
 import AssemblyP1.FiniteBayesDecision
 import AssemblyP1.IidMapMonotonicity
 import AssemblyP1.GenomeOrbitAdapter
+import AssemblyP1.PosteriorMAPEquivalence
 import AssemblyP1.ConditionalVsOrdinaryMLSeparation
 import AssemblyP1.ConditionalVsOrdinaryMLBoundary271
 import AssemblyP1.W1W2SeparationCompatibility
@@ -88,6 +91,11 @@ import AssemblyP1.FiniteRigidityDecider
 import AssemblyP1.FiniteRigidityDeciderAudit
 import AssemblyP1.TwoWalkRigidity
 import AssemblyP1.TwoWalkRigidityAudit
+import AssemblyP1.RigidityBouquet
+import AssemblyP1.RigidityBouquetAudit
+import AssemblyP1.RigidityBouquetGenomeWitness
+import AssemblyP1.RigidityBridge
+import AssemblyP1.RigidityBridgeAudit
 import AssemblyP1.RepeatAdapter
 import AssemblyP1.OrientedFinalRigidity
 import AssemblyP1.BridgingBridge
@@ -259,6 +267,12 @@ import AssemblyP1.FiniteSampleIidEnvelopeAudit
 import AssemblyP1.FixedNBinomialEffectiveWeightsAudit
 import AssemblyP1.CoveredBinomialWeightsIff
 import AssemblyP1.CoveredBinomialWeightsIffAudit
+-- #259 sharpness: neither disjunct of the covered-sample iff is redundant.
+import AssemblyP1.CoveredBinomialWeightsIffSharpness
+import AssemblyP1.CoveredBinomialWeightsIffSharpnessAudit
+-- #259 power monotonicity: the exact-iid vs §6.1 ranking inversion holds for all n ≥ 1.
+import AssemblyP1.Section62BinomialPowerMonotonicity
+import AssemblyP1.Section62BinomialPowerMonotonicityAudit
 import AssemblyP1.FiniteSideInformationColoring
 import AssemblyP1.FiniteSideInformationColoringAudit
 import AssemblyP1.FiniteBayesianSideInformation
@@ -288,6 +302,9 @@ import AssemblyP1.NonmonotonicityWitness281Audit
 -- theorem needs no caller-supplied finite candidate family.
 import AssemblyP1.PrimitiveP2FiniteClass
 import AssemblyP1.PrimitiveP2FiniteClassAudit
+-- #281 the length bound is attained for every alphabet size at K = 1.
+import AssemblyP1.PrimitiveP2FiniteClassTight
+import AssemblyP1.PrimitiveP2FiniteClassTightAudit
 import AssemblyP1.PrimitiveP2UniformSeparation
 import AssemblyP1.PrimitiveP2UniformSeparationAudit
 -- #263 separable-convex Graver optimality certificate (conditional core) + audit.
@@ -1131,3 +1148,7 @@ reading. Two finite checks anchor it: the refuted BBT premise's witness is not
 #print axioms AssemblyP1.RobustSameLengthIff.robust_iff_unique_spectrum
 #print axioms AssemblyP1.RobustSameLengthIff.F_eq_singleton_of_rigidity
 #print axioms AssemblyP1.RobustSameLengthIff.robust_of_rigidity
+
+-- #281 tightness of the primitive-P2 length bound at K = 1.
+#print axioms AssemblyP1.PrimitiveP2FiniteClassTight.exists_primitive_P2_at_bound_K1
+#print axioms AssemblyP1.PrimitiveP2FiniteClassTight.maxLen_two
