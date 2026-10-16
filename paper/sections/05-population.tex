@@ -301,6 +301,90 @@ interfaces.  Neither the theorem nor its proof conditions on the
 truth-dependent information-feasibility event, and neither contradicts the
 strict finite-sample counterexamples of Section~\ref{sec:finite}.
 
+\subsection{Strong consistency: eventual correctness almost surely}
+\label{sec:strong-consistency}
+
+The exponential bound controls the error probability at each fixed $n$.
+The classical strong law gives the complementary asymptotic statement
+directly, through the KL gap rather than through the affinity. We state it
+precisely because the phrase ``infinite reads'' invites misreading: it
+denotes a limit of finite samples, not an evaluation of an infinite product
+of probabilities.
+
+\begin{proposition}[Strong consistency of exact ML on a finite identifiable family]
+\label{prop:strong-consistency}
+Let $S$ be the true circular genome with uniform-start read law
+$p_S(w)=\spec_L(S)(w)/|S|$, let $\Theta$ be a finite set of circular genomes
+containing $S$ and closed under rotation, and assume every
+$D\in\Theta$ not rotation-equivalent to $S$ has $p_D\neq p_S$
+(identifiability modulo rotation).
+Let $R_1,R_2,\dots$ be independent reads drawn from $p_S$. Then with
+probability one there exists $N$ such that for all $n\ge N$,
+\[
+  L_S(R_1,\dots,R_n) \;>\; L_D(R_1,\dots,R_n)
+  \qquad\text{for every } D\in\Theta
+  \text{ not rotation-equivalent to } S.
+\]
+Consequently the exact-ML selection set over $\Theta$ is eventually exactly
+the rotation class of $S$ --- rotations tie the truth at every $n$, since
+identical laws give identical likelihoods --- and
+$\Pr_S\{\text{$S$ is the strict maximizer at $n$}\}\to 1$.
+\end{proposition}
+
+\begin{proof}
+Fix a wrong candidate $D$. The per-read log-likelihood ratio is a sample
+average of iid terms,
+\[
+  \frac1n\log\frac{L_S}{L_D}(R_1,\dots,R_n)
+  \;=\;\frac1n\sum_{i=1}^n \log\frac{p_S(R_i)}{p_D(R_i)},
+\]
+whose expectation is
+$\sum_w p_S(w)\log(p_S(w)/p_D(w))=\KL(p_S\|p_D)\ge0$
+(Lemma~\ref{lem:gibbs}). The strong law of large numbers
+gives almost-sure convergence of the average to $\KL(p_S\|p_D)$.
+Identifiability gives $p_D\neq p_S$, so $\KL(p_S\|p_D)>0$; hence almost
+surely the average is eventually positive, i.e.\ $L_S>L_D$ for all large
+$n$. There are finitely many wrong candidates, so almost surely all of them
+are beaten simultaneously eventually. Rotations of $S$ satisfy $p_D=p_S$ and
+therefore tie $S$ at every $n$; no other candidate can persist in a tie,
+because the same argument forces $L_S>L_D$ eventually whenever
+$p_D\neq p_S$. The last claim follows since the displayed event has
+probability one.
+\end{proof}
+
+\begin{remark}[Zero-probability reads and the support convention]
+\label{rem:support-convention}
+With the convention $0\log 0=0$, words with $p_S(w)=0$ never occur and
+contribute nothing to the KL sum or to the likelihood ratios; impossible
+reads are handled exactly as in the finite theorems, where they form
+zero-probability events. If instead $p_S(w)>0$ but $p_D(w)=0$ for some
+wrong candidate $D$, then $\KL(p_S\|p_D)=+\infty$: every sample containing
+$w$ has $L_D=0<L_S$, and such samples recur eventually almost surely, so
+$D$ is beaten eventually as well. This matches the population convention
+$\ellpop_S(D)=-\infty$ of Definition~\ref{def:population}.
+\end{remark}
+
+\begin{remark}[What the limit does and does not say]
+\label{rem:limit-scope}
+The statement is asymptotic: it supplies no finite $n$, no rate, and no
+per-sample guarantee, and it covers neither the unrestricted candidate
+universe nor non-identifiable families --- the sample-size question of
+Remark~\ref{rem:sample-complexity} remains open, and per-truth success need
+not be monotone (Proposition~\ref{prop:nonmonotone}). It is also distinct
+from population uniqueness (Theorem~\ref{thm:population}): that theorem
+fixes the exact read distribution and proves law-level separation with no
+sampling at all, whereas this proposition concerns a growing sample and
+concludes only eventual, almost-sure selection. The a.s.\ conclusion is
+also implied by the summable exponential bound of
+Theorem~\ref{thm:finite-recovery} via Borel--Cantelli; the strong-law route
+above exhibits the mechanism, the KL gap, directly.
+\end{remark}
+
+\statusline{\mathfact{} proved here from the strong law of large numbers and
+KL nonnegativity, both classical and cited (\cite{durrett2019,cover2006});
+not kernel-checked. The a.s.\ statement concerns a finite, identifiable
+candidate family and exact iid reads; it upgrades to no unrestricted or
+non-identifiable class and supplies no finite sample size.}
 
 \subsection{Primitive-P2 structure gives finite-read maximum-likelihood recovery}
 \label{sec:p2-finite-recovery}
