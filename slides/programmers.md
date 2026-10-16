@@ -356,20 +356,26 @@ We have **two methods**:
 
 **Maximum likelihood:** choose whichever candidate makes the observed reads most probable.
 
-Paraphrasing a question raised by Shomorony and colleagues (2016):
+The 2016 sentence hides **two different questions**:
 
-**If the reconstruction conditions hold, must the true genome also maximize ordinary likelihood?**
+- **Question A (conditional):** restrict candidates to those satisfying the reconstruction conditions. The guarantee then forces the answer to be the truth's circular class — a corollary of reconstruction, not a new likelihood result.
+- **Question B (unconditional):** without that restriction, must the true genome maximize **ordinary** likelihood?
 
-**Our answer is no.** We found a counterexample in which the competing assembly is one base longer.
+**Our answer to Question B is no.** We found a counterexample in which the competing assembly is one base longer.
 
 <!--
-This is the source's non-Bayesian implication from the true
-genome's structural event to unconditioned P(R|D) ranking.
-The exact 2016 MB09 objective is not named unambiguously, but
-oriented candidate-intrinsic exact likelihood is source-supported.
-The counterexample is kernel-checked in OrientedVariableLengthSe62.
-Do not suggest all readings have a model-independent identical
-mathematical statement; keep the explicit candidate-length scope.
+Two questions (paper sec:intro:two-questions, sec:two-questions):
+Question A conditions on the truth-dependent feasible fiber {g : F(g,R)}
+and is largely a corollary of the published 2016 reconstruction theorem.
+Question B assumes only F(S,R) and maximizes the ORIGINAL unrestricted
+likelihood; that is the substantive comparison, and the source's
+non-Bayesian implication from the true genome's structural event to
+unconditioned P(R|D) ranking. The exact 2016 MB09 objective is not named
+unambiguously, but oriented candidate-intrinsic exact likelihood is
+source-supported. The counterexample is kernel-checked in
+OrientedVariableLengthSe62. Do not suggest all readings have a
+model-independent identical mathematical statement; keep the explicit
+candidate-length scope. Ordinary ML never observes the event E=F(S,R).
 -->
 
 ---
@@ -445,20 +451,21 @@ exclude this particular witness and is a distinct assumption.
 
 # Why the two methods do not contradict each other
 
-**Not-So-Greedy** has a reconstruction guarantee for experiments in which coverage and repeat-bridging conditions hold.
+**Not-So-Greedy** answers **Question A**: given the reconstruction conditions, it returns the truth's circular class.
 
-**Ordinary ML** scores genomes using the reads, without being told whether that guarantee holds for the actual source.
+**Ordinary ML** answers **Question B**: it scores genomes using the reads, without being told whether the conditions hold for the actual source.
 
 Our example satisfies the reconstruction conditions, yet a different candidate makes the sampled reads more probable.
 
-This doesn't contradict ML's **average-accuracy optimality**. We have asked two different questions—and discovered a gap between them.
+This does not contradict ML's **average-accuracy optimality**. Question A and Question B are different experiments — the promise is information ordinary ML never receives.
 
 <!--
-Not-So-Greedy is a read-only algorithm with a truth-dependent
-pointwise success theorem; ordinary ML is a likelihood ranking over
-its specified candidate class. Prior-averaged MAP/ML optimality is
-a distinct decision criterion. No algorithm has been proved inferior
-under the same conditioned decision problem.
+Question A is the conditional/feasible-fiber reading; Question B is the
+unconditional ordinary-likelihood comparison. Not-So-Greedy is a read-only
+algorithm with a truth-dependent pointwise success theorem; ordinary ML is
+a likelihood ranking over its specified candidate class. Prior-averaged
+MAP/ML optimality is a distinct decision criterion. No algorithm has been
+proved inferior under the same conditioned decision problem.
 -->
 
 ---
@@ -657,7 +664,7 @@ the earlier prior-averaged Bayes decision experiment.
 
 ---
 
-# Another extension: what if we are promised reconstruction works?
+# Question A: what if we are promised reconstruction works?
 
 There is a separate way to add information. Suppose we are explicitly told:
 
@@ -669,11 +676,12 @@ If two different genomes met the promise for the **same reads**, its single outp
 
 So with this additional promise, the **conditional Bayesian posterior is 100%** on one circular-genome class.
 
-**This is a different result.** The promise provides information that ordinary ML did not receive.
+**This is Question A**, the conditional experiment from the earlier slide. The promise is a truth-dependent restriction — extra information ordinary ML (Question B) never receives.
 
 <!--
-Source theorem is an external read-only unique-decoder premise:
-F(g,r) => A(r) ~ g. Therefore the feasible fibre at r is
+This is the detailed Question A endpoint (paper sec:two-questions,
+Question A). Source theorem is an external read-only unique-decoder
+premise: F(g,r) => A(r) ~ g. Therefore the feasible fibre at r is
 one rotation class. Conditional joint
 K(g,r)=π(g)P_g(r)1_F(g,r) has support on that class,
 so given (r,F) and positive mass, posterior=1.
@@ -781,7 +789,7 @@ formal results. No sorry/admit in the completed proof modules.
 
 # What the investigation established
 
-**We answered the 2016 implication negatively.** The true genome can meet reconstruction conditions while a longer competing genome has greater ordinary likelihood.
+**We separated the 2016 sentence into two questions.** Question B (unconditional) is answered negatively: the true genome can meet reconstruction conditions while a longer competing genome has greater ordinary likelihood. Question A (conditional) is the reconstruction guarantee itself.
 
 We also clarified what this means statistically: a reconstruction promise is additional information. When it is explicitly given, the conditional posterior identifies the true circular genome class.
 
@@ -791,6 +799,8 @@ The results came from **human-led hypotheses**, parallel AI research, and **Lean
 
 
 <!--
+Question A = conditional feasible-fiber reading (corollary of the published
+reconstruction premise); Question B = unconditional ordinary likelihood.
 The negative witness has oriented reads, variable candidate length.
 Truth is I_s-feasible and ML can rank D higher. Ordinary ML's
 Bayes-optimality is prior-averaged; conditional posterior certainty

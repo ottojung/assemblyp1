@@ -587,6 +587,13 @@ Every material result is classified as one of:
   a positive operational arc (`22a6233`). Board #265 remains OPEN pending the
   #254/#268 review pass; the general non-equal-length ML characterization
   stays with #261/#284, not here.
+- **Update (2026-10-16):** the strong-law/KL limit statement landed in the
+  paper and both decks (`53f8c4d`) with `scripts/verify_strong_consistency_265.py`
+  wired into CI (`b9f0f47`), and both decks were re-centered on the #268
+  two-question narrative (Question A conditional / Question B unconditional) by
+  agent `68d129da714f`; see `docs/deck-arc-consistency-265.md`. Paper,
+  claims-matrix (`tab:claims`), and bibliography acceptance re-checked there
+  (all `\ref`/`\cite` resolve; build 0 undefined).
 
 ### #266 (board CLOSED; PARTIAL scope) — conditional identifiability from Not-So-Greedy information-feasibility
 
@@ -642,6 +649,13 @@ Every material result is classified as one of:
   Bayes prior-averaged scope, `#273`/`#274` likelihood convention). Board #268
   remains OPEN pending the #265 mirror in the decks and claims-matrix
   acceptance.
+- **Update (2026-10-16):** the pending #265 mirror is now in place: both decks
+  name the two questions (Question A conditional / Question B unconditional)
+  and the claims matrix (`tab:claims` row 1 vs row 3) and bibliography were
+  re-checked for consistency (agent `68d129da714f`,
+  `docs/deck-arc-consistency-265.md`). The remaining #268 question is whether
+  the human reviewer accepts the centered wording; no further deck/claims-matrix
+  gap is recorded.
 
 ### #269 (Lean: finite Bayes/MAP optimality and monotone prior-average success)
 
@@ -673,6 +687,18 @@ Every material result is classified as one of:
   distinction (`spellingPushforward_eq_uniform_iff_constant_orbitSize`).
   `AssemblyP1/BayesValueMonotonicity.lean` (PR #231, merged `967db37`) proves
   `bayesValue_succ_ge` / `bayesValue_mono` (`V_{n+1} ≥ V_n`).
+- **Update (2026-10-16):** the §6.2 feasible-flow non-equivalence is LANDED as a
+  Lean separation theorem. `AssemblyP1/Section62FlowGenomeSeparation.lean` (+
+  `Section62FlowGenomeSeparationAudit.lean`) reuses
+  `AssemblyP1/Section62FlowCountVectorAdapter` (`throughputVec_congr`,
+  `maximal_image_iff`) to show every §6.2 objective factors through the
+  molecule-class throughput, then exhibits the reverse-complement pair `S0 = 00`,
+  `S1 = 11` with equal §6.2 visit vector but different exact oriented likelihood,
+  refuting `exactLikelihood = φ ∘ classCount` and hence
+  `section62_flow_objective_ne_genome_likelihood`. Verifier
+  `scripts/verify_269_flow_genome_separation.py`; see
+  `docs/section62-flow-genome-separation-269.md`. It does not touch #261's
+  throughput-image classification.
 - **Still OPEN:** the reverse-complement-orbit quotient (the adapter proves
   rotation invariance only; RC invariance is deliberately not claimed) and any
   source-historical endpoint. Board #269 remains OPEN.
