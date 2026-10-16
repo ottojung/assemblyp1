@@ -640,6 +640,8 @@ For our **primitive-P2** class the rate is now **explicit and kernel-checked**: 
 
 With enough reads, ML can therefore achieve **99% recovery probability**—or any other desired confidence—for such a family.
 
+The **limit** behind both statements is exact: for a finite identifiable family, the per-read log-likelihood gap converges to the KL divergence, so almost surely the ML selection set is eventually exactly the truth's rotation class (strong law + KL; not kernel-checked here — backup B6). "Infinite reads" is a limit of finite samples; it supplies **no finite read count**.
+
 The population result says **what information identifies the genome**. The finite theorem tells us **how additional observations improve our chances**.
 
 <!--
@@ -982,3 +984,36 @@ monotone curve.
 - Tsybakov (2009), *Introduction to Nonparametric Estimation*.
 
 **[Research repository](https://github.com/ottojung/assemblyp1)**
+
+---
+
+# Backup B6: "Infinite reads" is a limit, not a large sample
+
+For a **finite identifiable family**, each per-read log-likelihood gap is an average of iid terms whose expectation is a KL divergence:
+
+$$
+\frac1n\log\frac{L_S}{L_D}(R_1,\dots,R_n)
+\;\xrightarrow{\text{a.s.}}\;
+D_{\mathrm{KL}}(p_S\|p_D)>0
+\quad\text{(strong law of large numbers).}
+$$
+
+Every wrong candidate has KL $>0$; there are finitely many of them, so almost surely there is an $N$ with $L_S>L_D$ for **all** wrong $D$ at every $n\ge N$. Rotations of the truth tie it at every $n$ (identical laws). Hence the exact-ML selection set is **eventually exactly the truth's rotation class**, and the probability of being correct at $n$ tends to $1$.
+
+**The limit is not an infinite product.** The claim is about finite samples growing without bound. It gives no finite $n$, no rate, and no guarantee for one particular sample, truth, or an unrestricted universe. Classical statistics (strong law + KL nonnegativity; Durrett 2019, Cover & Thomas 2006), **not kernel-checked**; the kernel-checked Hellinger bound reaches the same a.s. conclusion via Borel--Cantelli (summable $\rho^n$).
+
+<!--
+#265 item-5 limit statement, paper prop:strong-consistency (Section
+sec:strong-consistency): hypotheses = finite candidate family identifiable
+modulo rotation, iid exact reads, correct model; proof = strong law on the
+per-read log-likelihood average + KL positivity + finite union; rotations tie
+at every n by design; nonrotational ties are impossible eventually because
+the limit separates strictly (KL > 0). Support convention 0 log 0 = 0; if
+p_D(w) = 0 < p_S(w) then KL = +infinity and the competitor loses on every
+sample containing w, which recurs eventually. Distinct from population
+uniqueness (no sampling, law level) and from the sample-complexity problem
+(this limit supplies no finite n; the explicit kernel-checked bound is the
+rate statement). Witness numbers (AAC vs AAAC, L=2, binary): KL =
+(1/3)log(2/3)+(2/3)log(4/3) ~ 0.0566, Hellinger affinity ~ 0.9856,
+summable geometric series. Exact check: scripts/verify_strong_consistency_265.py.
+-->

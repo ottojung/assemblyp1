@@ -65,6 +65,8 @@ import AssemblyP1.Section62ReductionDependencyAudit
 import AssemblyP1.Section62FullSpectrumUnseenFactor
 -- #259 real circular-genome witness: exact iid and product-binomial rankings differ.
 import AssemblyP1.Section62BinomialRealGenomeInversion
+-- #261: exact fixed-n full-coverage extreme-sample iff for §6.1 count vectors.
+import AssemblyP1.Section62FiniteNExtremeSamples
 import AssemblyP1.Section62CircularWindowAdapter
 -- #284 seam periodicity, aligned circular genome prefix and tail rotation (kernel-audited).
 import AssemblyP1.Section62PeriodicSeam

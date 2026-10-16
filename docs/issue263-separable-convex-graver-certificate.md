@@ -85,6 +85,19 @@ source formulas are honest.  The abstract certificate `graver_optimal_iff_no_imp
 carries the box `l ≤ z ≤ u` explicitly, so any boundary policy is a modelling
 choice made by the caller, not an implicit assumption of the theorem.
 
+## Penalized solver cost vs pure ML
+
+The instantiated costs are the **pure maximum-likelihood** (negative-log)
+terms. A penalized solver cost `F_ML + P` — the likelihood plus a sparsity,
+balance, or other regularization penalty — is a *different objective*: the
+certificate `graver_optimal_iff_no_improving` applies to it only when the
+full penalized objective is itself discretely convex on the box. That must be
+verified for the specific penalty `P`; for a separable convex penalty the
+closure lemmas `DiscConvOn.add` / `DiscConvOn.const_mul` compose it with the
+pure-ML convexity proved here, but a non-separable or non-convex penalty is
+not covered. The pure-ML convexity lemmas certify the likelihood terms only
+and make no claim about penalized solver costs in general.
+
 ## Open / deferred
 
 * The direct discharge of `HasGraverDecomposition` from

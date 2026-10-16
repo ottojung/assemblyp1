@@ -282,8 +282,17 @@ arithmetic.
 - OPEN-4: **transitive reduction** interaction with ML.
 - OPEN-5: **orientation/RC class** interaction.
 - OPEN-6: **sample realizability** at arbitrary `o_min`.
-- OPEN-7: **fixed-`n` (non-uniform) extreme-sample iff** in Lean (currently
-  numerically audited by `scripts/verify_261_binomial_extreme_samples.py`).
+- OPEN-7: **fixed-`n` (non-uniform) extreme-sample iff** in Lean — **RESOLVED
+  on the full-count-vector side** (2026-10-16, `AssemblyP1.Section62FiniteNExtremeSamples.binomial_fixed_n_extreme_iff`,
+  kernel-checked, PR #279): for fixed `n = |I| + t`, full observed support `I`,
+  and positive truth effective `q`-weights over the whole molecule-type
+  universe, the candidate never beats the truth on any full-coverage sample
+  iff `P_B·q_B(k)^t ≤ P_A·q_A(k)^t` for every `k ∈ I`, where
+  `P_C = ∏_{i∈I} q_i(C)`; ties, `t = 0`, and zero candidate weights are
+  covered. Count-vector scope only: it does not settle the §6.2 flow-level
+  classification, flow realizability, or the unobserved-coordinate convention.
+  `scripts/verify_261_binomial_extreme_samples.py` remains as an independent
+  numerical regression.
 
 ## Remaining-open matrix
 
@@ -295,7 +304,7 @@ half added by `AssemblyP1.Section62FlowCountVectorAdapter`.
 |---|---|
 | Variable-length exact-multinomial criterion (§6.1 exact display) | **RESOLVED** (`varLengthCriterion`), project-defined objective |
 | Fixed-external-`N` multinomial-product criterion | **RESOLVED** (`flow_dominance_criterion`), correctly labelled |
-| Genuine §6.1 separable-binomial count-vector criterion | **RESOLVED at the count-vector layer** (`AssemblyP1.Section62BinomialCriterion.binomial_uniform_criterion`, kernel-checked): exact q-factorization `K(d;x)=∏ᵢqᵢ(d)^{xᵢ}` and the all-`n` interior-truth iff `∏ᵢqᵢ(B)=0 ∨ ∀i∈I, qᵢ(B)≤qᵢ(A)`. **Adjudicated 2026-10-16** (`AssemblyP1.Section62BinomialSupportAdjudication`): the criterion is full-support (unobserved terms appear as `(N-d_j)^n`); unobserved coordinates are not forced to zero and matter; the observed-only shortcut is refuted. The fixed-`n` extreme-sample iff remains **numerically audited** (`scripts/verify_261_binomial_extreme_samples.py`) but not yet kernel-checked |
+| Genuine §6.1 separable-binomial count-vector criterion | **RESOLVED at the count-vector layer** (`AssemblyP1.Section62BinomialCriterion.binomial_uniform_criterion`, kernel-checked): exact q-factorization `K(d;x)=∏ᵢqᵢ(d)^{xᵢ}` and the all-`n` interior-truth iff `∏ᵢqᵢ(B)=0 ∨ ∀i∈I, qᵢ(B)≤qᵢ(A)`. **Adjudicated 2026-10-16** (`AssemblyP1.Section62BinomialSupportAdjudication`): the criterion is full-support (unobserved terms appear as `(N-d_j)^n`); unobserved coordinates are not forced to zero and matter; the observed-only shortcut is refuted. **Fixed-`n` full-coverage extreme-sample iff RESOLVED 2026-10-16** (`AssemblyP1.Section62FiniteNExtremeSamples.binomial_fixed_n_extreme_iff`, kernel-checked, PR #279): `P_B·q_B(k)^t ≤ P_A·q_A(k)^t` for every `k∈I` at `n=|I|+t`; count-vector scope only |
 | §6.1 binomial over the §6.2 feasible flow set | **PARTIAL** — spelled half RESOLVED (`Section62SpelledFlowAdapter.spelling_flow_feasible`, 2026-10-15); the image identity `Θ(F)=spelledVisitSet` is **REFUTED** (2026-10-15, `Section62SpelledFlowImageRefutation`); general image characterization still OPEN |
 | Half-integral relaxation gap | **RESOLVED** (flow level: `Section62NonSpelledFlow`; arithmetic: `half_integral_gap`) |
 | Rescaling ties at variable length | **RESOLVED** (`rescaling_tie`) |
@@ -378,6 +387,15 @@ Source reading: [Medvedev–Brudno 2009, §§6.1–6.2](https://pmc.ncbi.nlm.nih
   refutation `ObservedOnly.observedOnly_insufficient` (24 vs 600), and the
   flow-vs-genome bound `flow_genome_gap`. Axioms
   `[propext, Classical.choice, Quot.sound]`; no `sorryAx`.
+- `AssemblyP1/Section62FiniteNExtremeSamples.lean`: kernel-checked exact
+  fixed-`n` full-coverage extreme-sample iff for §6.1 count vectors — the
+  general nonnegative-product extremal lemmas (`product_le_extreme`,
+  `rational_extreme_iff`, `weighted_extreme_iff`), the surplus decompositions
+  (`surplus_sum_of_fullcoverage`, `binomCoreNat_factor_surplus`), and
+  `binomial_fixed_n_extreme_iff`; plus nonvacuity regressions at `N=3`
+  (`fixed_two_reads_never_beat`, `fixed_three_reads_can_beat`,
+  `zero_candidate_weight_never_beats`). Count-vector scope only; no
+  flow-realizability claim. Axioms `[propext, Classical.choice, Quot.sound]`.
 - `scripts/verify_261_support_adjudication.py`: independent exact-integer audit
   of the adjudication identities and witnesses.
 - `scripts/verify_issue261_general_bidirected_flow_ml.py`: independent exact
