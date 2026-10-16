@@ -120,3 +120,59 @@ of actual genomic windows with the linearized spelling but does **not** yet
 identify the *j*-th linear read at its accumulated extension anchor or
 transport the reduced-edge no-skipped-observed-window property. Those
 remain necessary for unconditional Observation 7 occurrence equality.
+
+## Source-read anchor equality (new, kernel-checked)
+
+`Section62AnchorSourceWords.aligned_source_words` is a generic induction over
+honest suffix/prefix overlaps: at every cumulative edge-extension anchor, the
+linearized spelling's length-`L` window is exactly the source read for that
+edge. The source-specific corollaries
+`signed_circuit_anchors_linear` and
+`signed_circuit_anchors_are_read_words` discharge the
+`CircularSpelling.hAnchors` field **for any actual closed SignedPath of the
+complete overlap graph**, including repeated wraps when `G<L`.
+They derive both the exact tail-length equation and positivity of extensions
+from graph membership; anchor-bounds are proved, not assumed.
+
+The remaining independent `CircularSpelling` obligation is
+`hInteriorSkipped`: translate the implemented spelling-reduced graph's
+local no-observed-intermediate-window certificate into the periodic circular
+genome's internal windows. That source-specific translation is required
+before claiming unconditional Observation 7.
+
+## Full reduced-circuit Observation 7 (new, Lean-verified)
+
+`Section62GlobalSkippedBridge` now **discharges** the remaining
+`CircularSpelling.hInteriorSkipped` clause rather than assuming it.
+Its `aligned_interiors_no_observed` proves by induction that every internal
+window of a legal multi-edge linearized spelling is contained in its edge's
+direct spelling, or in the corresponding suffix subwalk.
+`reduced_graph_no_observed_steps` obtains the local premise directly from
+the *implemented* `transitivelyReducedSpelling` edge predicate and
+`surviving_edge_skips_no_observed_strand`.
+`reduced_signed_circuit_no_skipped_windows` then transports that fact to
+the genuinely **periodic circular** genome, including all seam crossings.
+
+The target theorem
+`observation7_reduced_signed_circuit_range_count` states directly in Lean
+that **for every observed strand word** the count among all circular read
+windows equals the number of visits to that strand as a signed circuit's
+departure read. Its `CircularSpelling` witness is *constructed* from the
+actual reduced signed path, not supplied as a hypothesis.
+
+`Section62Observation7Regression` instantiates this theorem on concrete
+nonempty reduced circuits for both `G=4,L=3` and `G=3,L=5` (multiple wraps),
+with all graph-membership, reduction and signed-circuit premises kernel-checked.
+Both examples have extension length one. An additional **independent
+computational** check, `python3 scripts/verify_284_nontrivial_skipped_windows.py`,
+exercises two reduced edges of extension length two on the circle `ABCD`:
+visited reads `ABC,CDA`, skipped windows `BCD,DAB`, neither observed.
+This check is not presented as an extra Lean theorem; the general Lean
+proof already covers all positive extension lengths.
+
+**Scope:** This proves the full oriented-strand word-count statement for the
+repository's spelling-preserving reduction. It does **not** prove that the
+implemented reduction is identical to Myers 2005 / the exact MB09 graph
+construction, nor that every feasible balanced integer flow is a single
+closed signed walk, nor the quotient treatment of reverse-complement molecule
+classes (especially palindromic reads). Those remain independent obligations.

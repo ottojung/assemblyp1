@@ -1,0 +1,29 @@
+import AssemblyP1.Section62SpelledFlowImageRefutation
+
+/-!
+# Independent axiom audit for the #261 spelled-throughput image refutation
+
+Audits the two general obstructions, the `decide`-checked §6.2 counterexample
+facts, and the image-inequality theorems.  The expected axiom set is a subset of
+`{propext, Classical.choice, Quot.sound}`.
+-/
+
+#print axioms AssemblyP1.Section62SpelledFlowImageRefutation.visits_eq_zero_of_no_arriving_maxEdge
+#print axioms AssemblyP1.Section62SpelledFlowImageRefutation.spelledVisitSet_eq_empty_of_no_maxEdge
+#print axioms AssemblyP1.Section62SpelledFlowImageRefutation.edges4_no_maxEdge
+#print axioms AssemblyP1.Section62SpelledFlowImageRefutation.edges4_eq
+#print axioms AssemblyP1.Section62SpelledFlowImageRefutation.flow4_feasible
+#print axioms AssemblyP1.Section62SpelledFlowImageRefutation.flow4_throughput_AAC
+#print axioms AssemblyP1.Section62SpelledFlowImageRefutation.flow4_throughput_CCA
+#print axioms AssemblyP1.Section62SpelledFlowImageRefutation.image_nonempty
+#print axioms AssemblyP1.Section62SpelledFlowImageRefutation.image_ne_spelledVisitSet
+#print axioms AssemblyP1.Section62SpelledFlowImageRefutation.exists_feasible_not_spelled
+#print axioms AssemblyP1.Section62SpelledFlowImageRefutation.edges4b_no_arriving_ACA
+#print axioms AssemblyP1.Section62SpelledFlowImageRefutation.edges4b_has_maxEdge
+#print axioms AssemblyP1.Section62SpelledFlowImageRefutation.flow4b_feasible
+#print axioms AssemblyP1.Section62SpelledFlowImageRefutation.flow4b_throughput_ACA
+#print axioms AssemblyP1.Section62SpelledFlowImageRefutation.flow4b_throughput_not_spelled
+#print axioms AssemblyP1.Section62SpelledFlowImageRefutation.image_ne_spelledVisitSet_of_maxEdge_instance
+
+#print axioms AssemblyP1.Section62SpelledFlowImageRefutation.rc4_spells_dna_complement
+#print axioms AssemblyP1.Section62SpelledFlowImageRefutation.rc4b_spells_dna_complement

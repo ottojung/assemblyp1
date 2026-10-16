@@ -90,6 +90,47 @@ overlap deletion from a genuinely spelling-preserving graph
 reduction. That distinction determines whether the optimized
 object even represents a sequence.
 
+A further result connects such a graph spelling to the actual
+\emph{multiplicities} of observed reads, rather than only to the existence
+of a spelling.
+
+\begin{theorem}[Circular occurrences in reduced signed circuits]
+\label{thm:reduced-circuit-occurrences}
+Let $p$ be a nonempty closed signed walk of the implemented
+spelling-preserving reduced overlap graph on equal-length oriented reads
+of length $L$. Let $D$ be its spelled circular genome, of length
+$G=\sum_{e\in p}(L-\ell_e)$, where $\ell_e$ is the overlap length of
+edge $e$. For every observed oriented read word $w$,
+\[
+  \#\{0\le s<G:\operatorname{window}_L(D,s)=w\}
+  =
+  \#\{e\in p:\operatorname{read}(\operatorname{sx}(e))=w\}.
+\]
+The equality also holds when $G<L$, so that a read wraps around the
+circular genome more than once.
+\end{theorem}
+\statusline{\kernelcheck{} in
+\texttt{AssemblyP1.Section62GlobalSkippedBridge}
+(\texttt{observation7\_reduced\_signed\_circuit\_range\_count});
+the circular spelling, anchors, and no-skipped-observed-window property
+are constructed from the actual reduced walk, not postulated.}
+
+This is the oriented read-word occurrence statement corresponding to
+Observation~7 for \emph{our explicitly defined reduction}. It does not
+identify that reduction with every step of Myers's approximate-overlap
+algorithm, equate reverse-complement molecule-class counts, or assert
+that every feasible balanced flow is realizable by one closed signed walk.
+For \emph{observed reverse-complement molecule classes}, the oriented
+identity also yields a kernel-checked class-count equality: add the two
+distinct strand-word counts, or count only once when the read word is its
+own reverse complement. This is independent of the strand chosen to
+represent the class
+(\texttt{Section62ObservedMoleculeCount.observation7\_observed\_rc\_class\_count}).
+This biological interpretation assumes the strand involution supplied to
+the model really acts as DNA reverse complement on read words; the abstract
+count identity itself only needs an involution. It does not supply the
+counts of unobserved molecule classes in the full Section~6.1 likelihood.
+
 The finite-read recovery theorem (Theorem~\ref{thm:finite-recovery}) is a
 \emph{error-exponent} result rather than a structural
 classification: it converts population identifiability of a finite candidate

@@ -45,8 +45,13 @@ import AssemblyP1.Section62SpelledFlowAdapterAudit
 -- #261 spelled sub-class maximality transfer (length universe + transfer) and audit.
 import AssemblyP1.Section62SpelledFlowMaximality
 import AssemblyP1.Section62SpelledFlowMaximalityAudit
+-- #261 refutation of the spelled-throughput image identity Θ(F) = spelledVisitSet.
+import AssemblyP1.Section62SpelledFlowImageRefutation
+import AssemblyP1.Section62SpelledFlowImageRefutationAudit
 import AssemblyP1.Section62ReductionVacuityAudit
 import AssemblyP1.Section62SpellingReductionCandidate
+-- #284 source fidelity: exact idealized two-hop transitivity iff spelling reduction.
+import AssemblyP1.Section62MyersIdealTransitivity
 -- #262 full-overlap counterexample transfer across overlap thresholds.
 import AssemblyP1.Section62FullOverlapLift
 import AssemblyP1.Section62FullOverlapLiftAudit
@@ -69,9 +74,17 @@ import AssemblyP1.Section62OverlapSuffix
 import AssemblyP1.Section62SourceSignedSeamAdapter
 -- #284: generic periodic-window/linear-spelling equality for genuine signed circuits.
 import AssemblyP1.Section62AnchoredWindowBridge
+-- #284: actual signed-circuit edge anchors equal their circular read words.
+import AssemblyP1.Section62AnchorSourceWords
+-- #284: full circular no-skipped-windows and read-occurrence theorem for reduced signed circuits.
+import AssemblyP1.Section62GlobalSkippedBridge
+-- #284: RC molecule-class occurrence counts, including palindromes.
+import AssemblyP1.Section62ObservedMoleculeCount
 -- #284: non-vacuity regression instantiating the signed-circuit adapter on
 -- concrete legal signed overlap circuits, including the G < readLen case.
 import AssemblyP1.Section62SignedAdapterRegression
+-- #284: concrete non-vacuity regressions, including genome shorter than read.
+import AssemblyP1.Section62Observation7Regression
 import AssemblyP1.Section62FullSpectrumIndexing
 import AssemblyP1.Section62VariableOverlap247e
 import AssemblyP1.FiniteSamplingCounterexample
@@ -82,6 +95,8 @@ import AssemblyP1.PosteriorMAPEquivalence
 import AssemblyP1.ConditionalVsOrdinaryMLSeparation
 import AssemblyP1.ConditionalVsOrdinaryMLBoundary271
 import AssemblyP1.W1W2SeparationCompatibility
+import AssemblyP1.ConditionalVsMLGenomeAdapter271
+import AssemblyP1.ConditionalBayesEImpliesB271
 import AssemblyP1.BayesValueMonotonicity
 import AssemblyP1.PopulationReduction
 import AssemblyP1.PopulationGibbsTest
@@ -1082,6 +1097,13 @@ graph content remains external. -/
 #print axioms AssemblyP1.Section62SpelledFlowMaximality.flow_not_maximal_of_spelled_witness
 #print axioms AssemblyP1.Section62SpelledFlowMaximality.spelled_truth_flow_not_maximal_of_spelled_witness
 #print axioms AssemblyP1.Section62SpelledFlowMaximality.flow_maximal_iff_spelled_maximal_of_image_eq
+-- #261 refutation of the spelled-throughput image identity Θ(F) = spelledVisitSet.
+#print axioms AssemblyP1.Section62SpelledFlowImageRefutation.visits_eq_zero_of_no_arriving_maxEdge
+#print axioms AssemblyP1.Section62SpelledFlowImageRefutation.spelledVisitSet_eq_empty_of_no_maxEdge
+#print axioms AssemblyP1.Section62SpelledFlowImageRefutation.image_ne_spelledVisitSet
+#print axioms AssemblyP1.Section62SpelledFlowImageRefutation.exists_feasible_not_spelled
+#print axioms AssemblyP1.Section62SpelledFlowImageRefutation.flow4b_throughput_not_spelled
+#print axioms AssemblyP1.Section62SpelledFlowImageRefutation.image_ne_spelledVisitSet_of_maxEdge_instance
 #print axioms AssemblyP1.Section62FullOverlapDisconnected.full_overlap_disconnected_optimum
 #print axioms AssemblyP1.Section62FullOverlapDisconnected.disc_support_disconnected
 #print axioms AssemblyP1.Section62FullOverlapDisconnected.dStar_argmax
