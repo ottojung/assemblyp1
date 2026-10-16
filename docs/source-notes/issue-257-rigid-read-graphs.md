@@ -14,7 +14,14 @@ theorem of `oriented-se62-rigidity-theorem.md` (Theorem A: vertex throughput
 
 _Reproduce: `python3 scratch257/rigidity.py`, `python3 scratch257/two_cycle.py`
 (n=3 exhaustive), `python3 scratch257/test_n4.py twocycle` (n=4 cross-check),
-`python3 scratch257/verify_counterexample.py` (the §4 counterexample).
+`python3 scratch257/verify_counterexample.py` (the §4 counterexample),
+`python3 scratch257/finite_decider.py` (§11 finite-decider cross-check),
+`python3 scripts/verify_257_two_walk_iff.py` (§12 two-closed-walk cross-check,
+constructive n=3/4 and exhaustive search n=3),
+`python3 scripts/verify_257_bouquet.py` (§13 bouquet Diophantine criterion
+cross-check, exhaustive small scope),
+`python3 scripts/verify_257_bridge.py` (§14 antiparallel-bridge four-variable
+criterion cross-check, exhaustive small scope).
 Self-contained, exact integer arithmetic, deterministic._
 
 _Blocking-review repair (2026-10-10, branch `research/257-graver-lean-repair`):
@@ -31,6 +38,32 @@ _Lean: the exact criterion (Theorem 1) is kernel-checked as
 only the standard axioms `[propext, Classical.choice, Quot.sound]`. Build with
 `lake build AssemblyP1.ExactRigidityCriterion`; audit with
 `lake env lean AxiomAudit257.lean`._
+
+_Lean (finite decider, 2026-10-14): the checkable decision procedure of §11 is
+kernel-checked as `AssemblyP1/FiniteRigidityDecider.lean`
+(`rigid_iff_forall_admissible`, `rigid_iff_decider`), with the same standard
+axioms. It imports — and does not duplicate — `GraverRigidity.lean`; the
+Graver criterion is `rigid_iff_forall_graver_not_feasible` there. Build with
+`lake build AssemblyP1.FiniteRigidityDecider`._
+
+_Lean (two-closed-walk criterion, 2026-10-15): §12's Theorem 5 is kernel-checked
+as `AssemblyP1/TwoWalkRigidity.lean` (`rigid_iff_no_two_nonneg_circ`,
+`nonrigid_of_two_nonneg_circ`, `exists_two_nonneg_circ_of_nonrigid`) with the
+same standard axioms, resolving §8.3. Build with
+`lake build AssemblyP1.TwoWalkRigidity`; audit with
+`lake env lean AxiomAudit257.lean`._
+
+_Lean (bouquet criterion, §8.1 progress, 2026-10-15): the bouquet reduction of
+§13 is kernel-checked as `AssemblyP1/RigidityBouquet.lean`
+(`bouquet_nonrigid_iff`, plus the rigid-repetitive instance
+`len24_mult21_rigid`, the non-rigidity witness `len23_mult41_nonrigid`, and the
+real/integer gap `len233_mult211_real_integer_gap`), with the same standard
+axioms. Build with `lake build AssemblyP1.RigidityBouquet`; audit with
+`lake env lean AxiomAudit257.lean`. This is a partial advance on §8.1: an exact,
+checkable graph-theoretic criterion for the whole bouquet family and a
+kernel-checked proof that the direct LP/fractional relaxation is **not** sufficient; a
+polynomial min-cut/max-flow form for general supports (or a proof that none
+exists) remains **OPEN**._
 
 ---
 
@@ -89,6 +122,35 @@ map `B : E → ℤ` with `B ≥ 1` on every edge, balanced at every node, and
    (c) "The support graph is a single directed cycle" is sufficient, not
    necessary (rigid graphs with `≥ 2` independent cycles exist; §5).
    [mathematical proof + verified computation]
+
+7. **The exact repeat-structural iff (two closed walks).** `A` is not rigid
+   **iff** two **closed walks** `W₁, W₂` (of unbounded length, `w₁=1, w₂=-1`,
+   equal length) satisfy `χ_{W₁} - χ_{W₂} ≥ -s` and `χ_{W₁} ≠ χ_{W₂}`. This is
+   necessary **and** sufficient for strongly connected supports, resolving open
+   item §8.3; it strictly extends the two-**cycle** certificate of item 3/4
+   (which is only sufficient). [mathematical proof + kernel-checked, §12]
+
+8. **Bouquet family: exact Diophantine criterion; direct LP relaxation fails.**
+   For an abstract directed bouquet (k cycles through one common vertex),
+   non-rigidity is equivalent to a nonzero integer vector x satisfying
+   sum_i len_i x_i = 0 and x_i >= 1 - mult_i. The kernel-checked real/integer
+   gap proves only that this direct rational relaxation is insufficient,
+   not that all exact LP/extended formulations or min-cut algorithms fail.
+   A genuine circular DNA read-spectrum realization of the (2,3,3) bouquet
+   is Lean-checked in RigidityBouquetGenomeWitness.lean.
+   [mathematical proof + kernel-checked, section 13]
+
+9. **Antiparallel bridge: a genuinely coupled criterion beyond the bouquet.**
+   A single extra arc on a figure-eight cannot be positive (balance forces it to
+   0), so the minimal positive cross-connection is an antiparallel arc pair.
+   The resulting *bridge graph* has a 4-parameter circulation space with coupled
+   box constraints; non-rigidity is exactly
+   `∃ (a,c,p,q) ≠ 0, 2a+2c+p+q = 0, a ≥ 1-m1, a+q-p ≥ 1-m1, c ≥ 1-m2,
+   c+p-q ≥ 1-m2, p ≥ 1-f, q ≥ 1-f`, kernel-checked as `bridge_nonrigid_iff`.
+   Classification: the bridge is rigid **iff** all multiplicities are `1`
+   (`bridgeA_rigid_iff_trivial`); otherwise explicit witnesses. The bridge is an
+   abstract support (this exact shape is not a de Bruijn read-support).
+   [mathematical proof + kernel-checked, section 14]
 
 ---
 
@@ -373,13 +435,30 @@ exhaustive zeros are a sanity check on the proofs, not a substitute for them.
 ## 8. Open questions (kept explicitly OPEN)
 
 1. **A closed-form graph-theoretic iff** for rigidity, beyond the algebraic
-   criterion of Theorem 1 (e.g. a min-cut / max-flow characterization of
-   `L_0 ∩ box ≠ {0}`). None is known; the §4 counterexample rules out the
-   two-cycle condition specifically, but see also item 4. [open]
+   criterion of Theorem 1 (e.g. a *polynomial-time* min-cut / max-flow
+   characterization of `L_0 ∩ box ≠ {0}`). None is known; the §4 counterexample
+   rules out the two-cycle condition specifically, and the two-**closed-walk**
+   iff proved in §12 is repeat-structural rather than a min-cut form (it still
+   searches over closed walks). **Partial progress (§13, 2026-10-15):** for the
+   bouquet family the exact criterion is the bounded linear Diophantine
+   condition `∃ x ≠ 0, ∑ len_i x_i = 0, x_i ≥ 1 - mult_i`, kernel-checked as
+   `bouquet_nonrigid_iff`; a kernel-checked **real/integer gap**
+   (`len233_mult211_real_integer_gap`) proves the rational/LP relaxation is
+   **not** sufficient for that direct integer system. This does not rule out
+   other exact LP/extended formulations or polynomial graph algorithms.
+   **Further partial progress (§14, 2026-10-15):** the antiparallel-bridge family
+   (a positively-realizable cross-connection of two cycles) has a genuinely
+   *coupled* four-variable criterion (`bridge_nonrigid_iff`) that is **not** of
+   the bouquet form, and is rigid **iff** all multiplicities are `1`
+   (`bridgeA_rigid_iff_trivial`); so the bridge topology yields no new rigid
+   repetitive supports. The general complexity and graph-theoretic
+   characterization remain **OPEN**. [open; bouquet case reduced, §13; bridge case
+   classified, §14]
 2. **The exact complexity** of the exact criterion (§7). [open]
-3. **The two-closed-walk certificate** (§4): whether it is necessary and
-   sufficient when walks of unbounded length are allowed. The `n = 3` evidence
-   is consistent with it, but no proof or counterexample is known. [open]
+3. ~~**The two-closed-walk certificate** (§4)~~ **RESOLVED (2026-10-15).** The
+   two-closed-walk certificate is necessary **and** sufficient for strongly
+   connected supports; see Theorem 5 in §12. The earlier `n = 3` evidence was
+   correct. [proved, §12]
 4. **The finite-`k` cycle question** (§4): whether for every fixed `k` there is
    a non-rigid instance whose every witness needs `≥ k` simple cycles. The
    §4 example gives `k = 3`; no family for general `k` is known. [open]
@@ -401,10 +480,27 @@ exhaustive zeros are a sanity check on the proofs, not a substitute for them.
 | §6 exhaustive `n = 3` two-cycle agreement | verified computation, exhaustive in scope |
 | §7 exact criterion is a finite integer feasibility problem | mathematical proof |
 | §7 LP relaxation not exact (real/integer gap witnessed, §7) | mathematical proof + verified computation |
-| §8.1 closed-form graph-theoretic iff | open |
+| §8.1 closed-form graph-theoretic iff (polynomial / min-cut form) | open |
 | §8.2 exact complexity | open |
-| §8.3 two-closed-walk certificate iff | open |
+| §8.3 two-closed-walk certificate iff | mathematical proof + kernel-checked (`TwoWalkRigidity.rigid_iff_no_two_nonneg_circ`, §12) |
 | §8.4 finite-`k` cycle question | open |
+| §12 Theorem 5: two-closed-walk iff (general `w₁,w₂` and equal-length `w=1` forms) | mathematical proof + kernel-checked |
+| §12 `ATATAT` has no two-closed-walk certificate | kernel-checked (`TwoWalkRigidity.atatat_no_two_nonneg_circ`) |
+| §12 figure-eight two-closed-walk witness (`f=(0,0,1,1)`, `g=(1,1,0,0)`) | kernel-checked (`by decide`) |
+| §12 exhaustive two-walk cross-check (constructive n=3: 389; n=4: 80864; search n=3: 389; 0 mismatches) | verified computation, exhaustive in scope |
+| §11 finite decider: `Rigid ↔ ∀ B : E→Fin(G+1), Admissible B → B = A` | mathematical proof + kernel-checked (`FiniteRigidityDecider.rigid_iff_forall_admissible`) |
+| §11 Boolean decider `decider` correctness | kernel-checked (`FiniteRigidityDecider.rigid_iff_decider`) |
+| §11 worked instances (`ATATAT` rigid, `AAAAB` non-rigid, figure-eight rigid/non-rigid) | kernel-checked (`by decide`) |
+| §11 finite-decider cross-check vs brute force (n=3: 255; n=4: 312; 0 mismatches) | verified computation, exhaustive in scope |
+| §13 bouquet exact criterion (`bouquet_nonrigid_iff`: non-rigid iff `∃ x ≠ 0, ∑ len_i x_i = 0, x_i ≥ 1 - mult_i`) | mathematical proof + kernel-checked (`AssemblyP1/RigidityBouquet.lean`) |
+| §13 bouquet rigid-repetitive instance `len24_mult21_rigid` | kernel-checked |
+| §13 bouquet non-rigidity witness `len23_mult41_nonrigid` (`x = (-3, 2)`) | kernel-checked |
+| §13 bouquet real/integer gap `len233_mult211_real_integer_gap` (rational `(-1, 0, 2/3)`, no integer solution) | mathematical proof + kernel-checked |
+| §13 bouquet cross-check vs brute force (`scripts/verify_257_bouquet.py`: 3133 bouquets, 0 mismatches) | verified computation, exhaustive in scope |
+| §14 bridge exact criterion (`bridge_nonrigid_iff`: `∃ (a,c,p,q) ≠ 0, 2a+2c+p+q = 0` + coupled box) | mathematical proof + kernel-checked (`AssemblyP1/RigidityBridge.lean`) |
+| §14 bridge classification (`bridgeA_rigid_iff_trivial`: rigid iff `m1 = m2 = f = 1`) | mathematical proof + kernel-checked |
+| §14 bridge non-rigidity witnesses (`dM1`, `dM2`, `dF`) | kernel-checked |
+| §14 bridge cross-check vs brute force (`scripts/verify_257_bridge.py`: 880 bridges, 0 mismatches) | verified computation, exhaustive in scope |
 
 ---
 
@@ -419,3 +515,462 @@ exhaustive zeros are a sanity check on the proofs, not a substitute for them.
   the uniqueness half that #256's `F = {A}` statement needs.
 * The `ATATAT` example and the "no triple repeat is sufficient not necessary"
   observation are from the issue statement; proved here as §5.1.
+
+---
+
+## 11. The finite decider (checkable criterion; kernel-checked)
+
+Theorem 1 is a *logical* iff; §11 turns it into a genuine terminating
+**decision procedure**. The unblock is the coordinate bound.
+
+**Proposition (coordinate bound).** If `B : E → ℤ` is a positive balanced
+circulation of total `G` (`B ≥ 1`, `M B = 0`, `∑ B = G`), then for every edge
+`e`,
+
+```
+1 ≤ B(e) ≤ G          (indeed B(e) ≤ G - (|E| - 1)).
+```
+
+_Proof._ `1 ≤ B(e)` is positivity. For the upper bound, every other coordinate
+is `≥ 1 > 0`, so `B(e) ≤ ∑_{e'} B(e') = G`. ∎
+
+Hence **every candidate `B` is already a function `E → Fin(G+1)`**, and the
+candidate set `F` is exactly the image of the admissible part of the finite type
+`E → Fin(G+1)`. This gives:
+
+**Theorem 4 (finite criterion, `FiniteRigidityDecider.rigid_iff_forall_admissible`).**
+
+```
+A rigid  ⟺  ∀ B : E → Fin(G+1),
+              (B ≥ 1) ∧ (M B = 0) ∧ (∑ B = G)  ⟹  ∀ e, B(e) = A(e).
+```
+
+Both directions are constructive. (⟸) encodes an arbitrary feasible integer
+circulation into `Fin(G+1)` using the coordinate bound; (⟹) is immediate.
+
+**Boolean decider (`decider`, `rigid_iff_decider`).** `decider A G` is the
+`Bool` obtained by `decide` of the finite universal statement; `rigid_iff_decider`
+proves `Rigid A G ↔ decider A G = true`. The search space has exactly
+`(G+1)^{|E|}` elements (`card_candidates`), so the decider is a **finite
+exhaustive exponential search**: for each *fixed* support size `|E|` it is
+polynomial in the numeric magnitude `G` (with degree depending on `|E|`), but it
+is exponential in the support size. It is **not** a general
+pseudopolynomial-time algorithm (and not polynomial in the bit length of `G` or
+in `|E|`). This resolves the "checkable, not merely a logical iff" gap without
+needing a sharp Graver-basis cardinality bound (§8.2 remains open for a
+polynomial classification).
+
+**Kernel-checked worked instances.** The module contains `by decide` proofs of:
+
+| instance | result |
+|---|---|
+| `S = ATATAT`, `L = 3` (`A = (3,3)`, `G = 6`) | rigid, though `AT`, `TA` each occur `3` times |
+| `S = AAAAB`, `L = 2` (`A = (3,1,1)`, `G = 5`) | non-rigid (`B = (1,2,2)`) |
+| figure-eight `0→1→0, 0→2→0`, `A = (1,1,1,1)`, `G = 4` | rigid |
+| same figure-eight, `A = (2,2,1,1)`, `G = 6` | non-rigid (`B = (1,1,2,2)`) |
+
+These are the exact witnesses of the failed simpler hypotheses recorded in §0.6
+and §5–§6: the first is rigid *despite* a triple `(L-1)`-mer repeat, so "no
+triple repeat" is not necessary; the third is rigid with two independent cycles,
+so "single directed cycle" is not necessary; the third and fourth share the same
+support but differ in rigidity, so topology alone does not determine `A`.
+
+**Independent cross-check (`scratch257/finite_decider.py`).** A from-scratch
+re-implementation of the decider (full `itertools.product(range(G+1), repeat=m)`
+sweep with zero-coordinate rejection, no pruning) is compared against the
+backtracking brute force `rigidity.is_rigid` on exhaustive small cases:
+
+| scope | tested | rigid | non-rigid | skipped (`(G+1)^m` too large) | mismatches |
+|---|---|---|---|---|---|
+| `n = 3`, all strongly connected supports, `m ≤ 6`, `G ≤ 3m` | 255 | 58 | 197 | 8 | **0** |
+| `n = 4`, all strongly connected supports, `m ≤ 5`, `G ≤ 2m` | 312 | 240 | 72 | 0 | **0** |
+
+The four worked instances are also re-derived by the script. This confirms the
+coordinate bound and the enumerated criterion on every instance in scope; it is
+evidence for, not a replacement for, the kernel proofs.
+
+**Epistemic status.** The decider theorems and the four worked instances are
+kernel-checked with only `[propext, Classical.choice, Quot.sound]` (see
+`AxiomAudit257.lean`); the cross-check is verified computation, exhaustive in
+the stated scope. The broader closed-form/complexity questions (§8.1, §8.2)
+remain **open**.
+
+---
+
+## 12. The two-closed-walk criterion is necessary and sufficient (resolves §8.3)
+
+The **two-cycle** certificate of §3–§4 (two *simple* directed cycles) is
+sufficient but **not** necessary. The natural weakening — allow the two
+obstructions to be **closed walks** of unbounded length — *is* an iff. This
+settles open item §8.3.
+
+### 12.1 Statement
+
+Let `D` be a strongly connected support graph (every edge on a directed cycle),
+`A : E → ℕ` a positive circulation of total `G`, and `s := A - 1 ≥ 0` the
+slack. A **closed walk** is a walk `W = e_1 ⋯ e_k` with `head(e_i) =
+tail(e_{i+1})` and `head(e_k) = tail(e_1)`; its **count vector** is
+`χ_W ∈ ℕ^E`, `χ_W(e) = #{i : e_i = e}`, and its **length** is
+`|W| = ∑_e χ_W(e) = k`. A count vector of a closed walk is exactly a
+**nonnegative integer circulation** whose support is connected; a nonnegative
+integer circulation is a finite sum of such, and a single one whenever its
+support is connected (Eulerian circuit in the multigraph with `f_e` parallel
+copies of `e`).
+
+**Theorem 5 (two-closed-walk criterion).** `A` is **not** rigid **iff** there
+exist two closed walks `W₁, W₂` and integers `w₁, w₂`, not both zero, with
+
+```
+(i)   w₁·|W₁| + w₂·|W₂| = 0,                          (zero-sum)
+(ii)  w₁·χ_{W₁} + w₂·χ_{W₂} ≥ -s   coordinatewise,     (inside the box)
+(iii) w₁·χ_{W₁} + w₂·χ_{W₂} ≠ 0.                       (nonzero)
+```
+
+Moreover the certificate can always be taken with `w₁ = 1`, `w₂ = -1` and
+`|W₁| = |W₂|`:
+
+**Corollary 5′ (equal-length form).** `A` is not rigid iff there are two closed
+walks `W₁, W₂` of **equal length** with `χ_{W₁} - χ_{W₂} ≥ -s` and
+`χ_{W₁} ≠ χ_{W₂}`.
+
+### 12.2 Proof
+
+**(⟸) of Theorem 5.** Put `δ := w₁·χ_{W₁} + w₂·χ_{W₂}`. Each `χ_{Wᵢ}` is a
+circulation (`M χ_{Wᵢ} = 0`) of total `|Wᵢ| = 1ᵀχ_{Wᵢ}`, so `M δ = 0` and
+`1ᵀδ = w₁|W₁| + w₂|W₂| = 0` by (i). Condition (ii) is the box condition and
+(iii) makes `δ` nonzero on the support. Theorem 1 gives that `A` is not rigid.
+∎
+
+**(⟹) of Theorem 5.** By Theorem 1 there is a nonzero `δ ∈ L₀` with
+`δ ≥ -s`. Write `δ = δ⁺ - δ⁻` with `δ⁺, δ⁻ ≥ 0` (coordinatewise positive and
+negative parts). Since `Mδ = 0`, the two parts have **equal divergence**
+`D := Mδ⁺ = Mδ⁻` (each is the divergence contributed to a node by the
+positive and the negative coordinates separately). The vector `D` has total
+`1ᵀD = 0`. Because `D` is strongly connected, every integer divergence of
+total `0` is realisable by a **nonnegative integer flow**: route each unit of
+supply `D(v)⁺` from `v` to a vertex of demand `D(w)⁻` along a directed path
+(strong connectivity supplies the path), accumulating an integer flow `h₀ ≥ 0`
+with `Mh₀ = -D`. Choose also a nonnegative integer circulation `γ` whose
+support is connected and spans all vertices (a closed walk visiting every
+vertex; exists because `D` is strongly connected). Set
+
+```
+h := h₀ + γ ≥ 0,    f := δ⁺ + h,    g := δ⁻ + h.
+```
+
+Then:
+
+* `Mf = Mδ⁺ + Mh = D - D = 0` and `Mg = Mδ⁻ + Mh = 0`: both are
+  circulations, and `f, g ≥ 0`;
+* `f - g = δ⁺ - δ⁻ = δ`, so `f - g ≥ -s` and `f ≠ g` (as `δ ≠ 0`);
+* `1ᵀf - 1ᵀg = 1ᵀδ = 0`, so `|W_f| = |W_g|`;
+* `supp(f) = supp(δ⁺) ∪ supp(h) ⊇ supp(γ)` is connected (every edge of `δ⁺`
+  is incident to a vertex of the connected spanning support of `γ`), and
+  likewise `supp(g)`.
+
+Hence `f` and `g` are nonnegative integer circulations with connected support,
+i.e. count vectors of closed walks `W_f`, `W_g` with `χ_{W_f} = f`,
+`χ_{W_g} = g`. Taking `w₁ = 1`, `w₂ = -1` gives `δ = χ_{W_f} - χ_{W_g}`,
+`|W_f| = |W_g|`, and (i)–(iii) hold. This proves both Theorem 5 and Corollary
+5′. ∎
+
+### 12.3 Relation to the two-cycle certificate
+
+The two-cycle certificate of §3 is the special case in which `W₁, W₂` are
+simple directed cycles (with the normalisation `w₁ = a|C₂|/g`,
+`w₂ = -a|C₁|/g`). Theorem 3 / §4 exhibits a non-rigid instance where **no**
+such pair exists, while its witness `δ = 2·χ_{0→1→2→0} - χ_W` is already a
+two-**closed-walk** combination (the second walk `W` has length `6`). So the
+closed-walk criterion is strictly more powerful than the two-cycle one, and by
+Theorem 5 it is exact. The distinction is exactly the distinction between
+*support topology* (simple cycles: not enough, §4) and *true multiplicities*
+(repeated use of edges: enough, Theorem 5).
+
+### 12.4 Worked instances
+
+* **`S = ATATAT`, `L = 3` (rigid, no certificate).** `A = (3,3)`, `G = 6`,
+  support a single directed `2`-cycle. Every nonnegative circulation is
+  `(k,k)`; two of them with equal total have equal `k`, hence are equal. So the
+  distinct equal-total pair required by Theorem 5 does not exist — consistent
+  with rigidity, and with the triple `(L-1)`-mer repeats. [mathematical proof +
+  kernel-checked `TwoWalkRigidity.atatat_no_two_nonneg_circ`]
+* **Figure-eight `0→1→0, 0→2→0` at `A = (2,2,1,1)`, `G = 6` (non-rigid).** The
+  two `2`-cycles `f = (0,0,1,1)`, `g = (1,1,0,0)` are nonnegative circulations
+  of equal total `2`, distinct, with `f - g = (-1,-1,1,1) ≥ 1 - A`; they are
+  the two closed walks. The *same support* at `A = (1,1,1,1)` has no such pair
+  (slack `0`), so rigidity is a multiplicity, not a topology, property.
+  [kernel-checked `TwoWalkRigidity.figureEight_two_walk_witness`]
+
+### 12.5 Exhaustive cross-check (`scripts/verify_257_two_walk_iff.py`)
+
+The script has two independent halves and exits non-zero on any failure.
+
+| check | scope | result |
+|---|---|---|
+| constructive (proof's construction: complete `δ⁺`, `δ⁻` to connected circulations, extract Eulerian circuits, verify two equal-length walks in the box) | `n = 3`, all strongly connected supports, `G ≤ 3m`: 389 non-rigid of 447 | **0** failures |
+| constructive | `n = 4`, all strongly connected supports, `G ≤ 2m`: 80864 non-rigid of 83532 | **0** failures |
+| exhaustive search (enumerate closed walks up to length `10`, all `(w₁,w₂)` normalisations, compare with brute-force rigidity) | `n = 3`, `G ≤ 3m`: 447 | **0** mismatches |
+
+The constructive half validates the *forward* direction of Theorem 5 on every
+non-rigid instance in scope; the search half validates the criterion as a
+predicate. Both are exhaustive in their stated scope. [verified computation]
+
+### 12.6 Lean kernel check
+
+`AssemblyP1/TwoWalkRigidity.lean` formalizes Theorem 5 in the equivalent
+"two nonnegative circulations" form (the count vectors of the two closed
+walks; see the module docstring for why the connected-support/Eulerian
+refinement is a packaging step). The single graph-theoretic input is the
+**routing property** `Routable` (`∀ p ≥ 0, ∃ h ≥ 0, p + h` is a circulation),
+which is exactly the transshipment-routing consequence of strong connectivity
+used in the proof; it is stated as a hypothesis rather than reproved from
+connectivity.
+
+* `isCirc_iff_balancedZ`: the explicit `IsCirc` predicate is `BalancedZ` on all
+  vertices.
+* `nonrigid_of_two_nonneg_circ`: the easy direction (no routing needed).
+* `exists_two_nonneg_circ_of_nonrigid`: the constructive direction, via
+  `δ⁺ + h`, `δ⁻ + h`.
+* `rigid_iff_no_two_nonneg_circ`: `Rigid A G ↔ ¬ ∃ f g, TwoNonnegCirc A f g`,
+  assuming `Routable`.
+* Worked instances: `atatat_no_two_nonneg_circ` (no certificate) and
+  `figureEight_two_walk_witness` (the two `2`-cycles), both kernel-checked with
+  only `[propext, Classical.choice, Quot.sound]` (`TwoWalkRigidityAudit.lean`,
+  `AxiomAudit257.lean`); no `sorry`, no `native_decide`.
+
+**Complexity.** The criterion is *checkable* but not (via this form)
+*polynomial*: enumerating closed walks is exponential, so §8.1 (a min-cut /
+max-flow polynomial form) and §8.2 (exact complexity) remain **open**. The
+contribution of §12 is an exact **repeat-structural** iff, not a complexity
+improvement over the finite decider of §11.
+
+**Epistemic status.** Theorem 5 and Corollary 5′ are [mathematical proof]; the
+kernel-checked Lean form is [kernel-checked, standard axioms]; the exhaustive
+cross-checks are [verified computation, exhaustive in scope]. §8.1, §8.2, §8.4
+remain **open**.
+
+---
+
+## 13. The bouquet family: an exact Diophantine criterion (§8.1 progress)
+
+This section advances open item §8.1 by giving an exact, checkable
+graph-theoretic criterion for the **bouquet** family, and a kernel-checked proof
+that this direct fractional (LP) relaxation is *not* exact.
+
+### 13.1 Definition
+
+A **bouquet** is an abstract strongly connected directed graph consisting of
+k cycles C_i through one common vertex, otherwise vertex-disjoint.
+It generalizes the figure-eight. Not every choice of cycle lengths and
+alphabet is automatically realizable as a de Bruijn/read-support graph;
+the concrete DNA realization in section 13.5 is checked separately.
+
+Let len_i >= 1 be the cycle lengths, and let a positive circulation A
+be constant on each cycle with multiplicity mult_i >= 1, giving slack
+s_i = mult_i - 1. When such a bouquet is realizable as a read-support
+graph, the circulation represents a circular walk traversing C_i
+exactly mult_i times. The algebraic criterion applies to abstract
+bouquets without a realizability assumption.
+
+### 13.2 Every circulation is constant on each cycle
+
+At an internal vertex of `C_i` there is exactly one in-edge and one out-edge
+(the two consecutive edges of `C_i`), so balance forces their values equal; by
+induction all `len_i` edges of `C_i` carry the same value `x_i`. Balance at the
+common vertex is then automatic (`∑_i x_i = ∑_i x_i`). Conversely every vector
+`x : ℤ^k` gives a circulation. Hence the circulation space is `ℤ^k`, and the
+total mass is `1ᵀδ = ∑_i len_i x_i`.
+
+### 13.3 Exact criterion
+
+**Theorem 6 (bouquet criterion).** `A` is **not** rigid **iff** there is a
+nonzero integer vector `x ∈ ℤ^k` with
+
+```
+∑_i len_i x_i = 0        (zero-sum)
+x_i ≥ 1 - mult_i         (box)         for every i.
+```
+
+_Proof._ Immediate from Theorem 1 together with §13.2: a nonzero
+`δ ∈ L_0 ∩ box` corresponds bijectively to a nonzero integer `x` with
+`∑ len_i x_i = 0` and `x_i ≥ 1 - mult_i`. ∎
+
+This specializes to the rank-one (`k = 2`) form of §3 and to the figure-eight,
+and is kernel-checked as `AssemblyP1.RigidityBouquet.bouquet_nonrigid_iff`.
+For `k ≥ 3` it is a genuinely two-dimensional lattice condition (e.g.
+`len = (2, 3, 3)`, `mult = (2, 1, 1)`), not reducible to the two-cycle check.
+
+### 13.4 Direct rational relaxation is not exact
+
+Replacing the integer vector in the bouquet criterion by a rational vector
+produces a direct linear relaxation. For cycle lengths (2,3,3) and
+multiplicities (2,1,1), the rational vector (-1,0,2/3) is nonzero,
+has weighted sum zero, and respects all lower bounds.
+
+The integer system, however, has only x=0: its equation is
+2*x1 + 3*(x2+x3) = 0, with x1 >= -1 and x2,x3 >= 0.
+If x1=0, both other coordinates vanish; if x1=-1, the equation
+would require 3*(x2+x3)=2, impossible over the integers.
+Positive x1 cannot cancel nonnegative x2,x3. This proves a rigid
+integer instance whose *direct* rational relaxation reports a witness,
+kernel-checked by len233_mult211_real_integer_gap.
+
+This example does not exclude other exact LP/extended formulations,
+integral network-flow formulations, or polynomial-time graph algorithms.
+
+### 13.5 Complexity and realizability caveats
+
+The bouquet criterion is a bounded linear Diophantine feasibility
+problem. With lengths encoded in binary it resembles numerical-semigroup
+membership: one cycle of length t with slack 1 and other cycles of
+length a_i with zero slack admits a nonzero integer perturbation exactly
+when t is a nonnegative combination of the a_i. But an *explicit*
+bouquet graph has size proportional to the sum of cycle lengths, not
+their binary bit lengths. Therefore this observation by itself is **not**
+an NP-hardness proof for rigidity on explicitly represented read graphs,
+nor does it rule out a polynomial min-cut/max-flow characterization.
+Those complexity questions remain OPEN.
+
+Abstract bouquets also need not be realizable as de Bruijn read-support
+graphs over a fixed alphabet. One concrete realization is checked in
+AssemblyP1/RigidityBouquetGenomeWitness.lean: the circular DNA genome
+ACACGACTAC with L=3 has the three cycles (2,3,3), multiplicities
+(2,1,1), at shared (L-1)-mer AC. The Lean regression checks all cyclic
+reads, their multiplicities, and the source/target 2-mers; the abstract
+integer rigidity theorem is a separate kernel-checked result.
+
+### 13.6 Kernel-checked instances and cross-check
+
+* `len24_mult21_rigid`: the bouquet `len = (2, 4)`, `mult = (2, 1)` — the
+  `2`-cycle is traversed **twice**, yet the instance is rigid (`x_1 ≥ -1`,
+  `x_2 ≥ 0`, `2x_1 + 4x_2 = 0` force `x = 0`). A rigid repetitive example.
+* `len23_mult41_nonrigid`: the bouquet `len = (2, 3)`, `mult = (4, 1)` — the
+  explicit witness `x = (-3, 2)` (`2·(-3) + 3·2 = 0`, `-3 ≥ -3`, `2 ≥ 0`).
+* `len233_mult211_real_integer_gap`: the real/integer gap of §13.4.
+* `scripts/verify_257_bouquet.py`: a self-contained, exact, deterministic
+  cross-check. It recomputes rigidity from scratch by enumerating **all**
+  positive integer circulations of total `G` on the actual support graph
+  (balance-guided backtracking) and compares with the Diophantine criterion over
+  an exhaustive small scope (`k ≤ 4`, cycle lengths `≤ 4`, multiplicities
+  `≤ 3`, `G ≤ 12`: **3133** bouquets, **0** mismatches), and re-derives the gap
+  and the worked instances. [verified computation, exhaustive in scope]
+
+### 13.7 Epistemic status
+
+Theorem 6 and the three worked instances are kernel-checked with only
+`[propext, Classical.choice, Quot.sound]`
+(`AssemblyP1/RigidityBouquetAudit`); no `sorry`/`admit`/`axiom`/`native_decide`.
+The residual — a *polynomial* min-cut/max-flow closed form for general supports,
+or a proof that none exists — remains **OPEN** (§8.1/§8.2).
+
+---
+
+## 14. The antiparallel bridge: a coupled criterion beyond the bouquet (§8.1 progress)
+
+This section advances open item §8.1 past the **bouquet** family of §13, with a
+topology whose circulation space is genuinely *coupled* rather than
+constant-on-cycles.
+
+### 14.1 Why a single extra arc is not enough
+
+Suppose the figure-eight (two cycles `C1, C2` through a hub `v`) is given one
+extra arc from an interior vertex `u1` of `C1` to an interior vertex `u2` of
+`C2`. At `u1` there is exactly one incoming `C1`-edge, one outgoing `C1`-edge,
+and the new arc. If `A` is a *positive* circulation (every support edge carries
+`≥ 1`), balance at `u1` is `A(C1 in) + A(arc in) = A(C1 out) + A(arc out)`; with
+`A(C1 in) = A(C1 out)` this forces the arc value to `0`, contradicting
+positivity. The same holds for any single arc incident to the interior of a
+cycle, and for an arc between two interior vertices. Hence the **minimal
+positively-realizable cross-connection between two cycles is an antiparallel arc
+pair**.
+
+### 14.2 The bridge graph
+
+Take the hub `v`, the two `2`-cycles `v → x → v` and `v → y → v`, and the
+antiparallel pair `x → y`, `y → x`. This is the *bridge graph*; it is an abstract
+oriented support graph (a switch `x`, `y` of in-degree and out-degree `2`). Its
+six arcs are
+
+```
+0: v→x   1: x→v   2: v→y   3: y→v   4: x→y   5: y→x
+```
+
+with multiplicities `A = (m1, m1, m2, m2, f, f)`, `m1, m2, f ≥ 1`, total mass
+`G = 2(m1 + m2 + f)`.
+
+Unlike a bouquet, a circulation is **not** constant on the cycles: the bridge
+couples the two cycle values. Balance at `x` and `y` gives the two independent
+equations
+
+```
+δ1 + δ4 = δ0 + δ5 ,      δ3 + δ5 = δ2 + δ4
+```
+
+(the hub balance `δ0 + δ2 = δ1 + δ3` is a consequence), so every circulation is
+
+```
+δ = φ(a, c, p, q) = ![a, a + q - p, c, c + p - q, p, q]
+```
+
+for `a = δ0`, `c = δ2`, `p = δ4`, `q = δ5`, with total mass
+`∑ δ = 2a + 2c + p + q`. This parameterization is kernel-checked
+(`AssemblyP1.RigidityBridge.phi_of_balanced`, `phi_balancedB`, `phi_sum`).
+
+### 14.3 Exact criterion
+
+**Theorem 7 (bridge criterion).** `A` is **not** rigid **iff** there are
+integers `a, c, p, q`, not all zero, with
+
+```
+2a + 2c + p + q = 0                        (zero total mass)
+a ≥ 1 - m1 ,   a + q - p ≥ 1 - m1          (x-cycle box)
+c ≥ 1 - m2 ,   c + p - q ≥ 1 - m2          (y-cycle box)
+p ≥ 1 - f ,    q ≥ 1 - f                   (bridge box)
+```
+
+_Proof._ Immediate from Theorem 1 together with the parameterization §14.2: the
+box `δ ≥ 1 - A` becomes the six inequalities above, and `δ ≠ 0` becomes
+`(a, c, p, q) ≠ 0`. ∎
+
+This is kernel-checked as `AssemblyP1.RigidityBridge.bridge_nonrigid_iff`. It is
+genuinely *coupled*: the box on arc `1 = x→v` involves `a + q - p`, and the box
+on arc `3 = y→v` involves `c + p - q`, so it is **not** a bouquet criterion
+(which has independent per-cycle bounds). The bouquet criterion of §13 is
+recovered only in the degenerate shared-cycle limit, not here.
+
+### 14.4 Rigidity classification: the bridge is rigid only when trivial
+
+**Corollary (bridge is rigid iff all multiplicities are 1).**
+`bridgeA_rigid_iff_trivial`: for `m1, m2, f ≥ 1`, `A` is rigid **iff**
+`m1 = m2 = f = 1`. In every other case an explicit non-rigidity witness is
+kernel-checked:
+
+* `m1 ≥ 2`: `δ = (-1, -1, 0, 0, 1, 1)` (`dM1`);
+* `m2 ≥ 2`: `δ = (0, 0, -1, -1, 1, 1)` (`dM2`);
+* `f ≥ 2`:  `δ = (0, 0, 1, 1, -1, -1)` (`dF`).
+
+For `m1 = m2 = f = 1` every box constraint is `δ_e ≥ 0`, and zero total mass
+forces `δ = 0`, so the instance is rigid (trivially). Thus the **minimal positive
+cross-connection between two cycles destroys rigidity except in the all-ones
+degenerate case** — a no-go for the tempting hypothesis that adding a bridge
+yields new *rigid* repetitive supports.
+
+### 14.5 Cross-check
+
+`scripts/verify_257_bridge.py` recomputes rigidity from scratch by enumerating
+**all** positive integer circulations of total `G` on the bridge graph and
+compares with the four-variable criterion of §14.3 and with the classification
+of §14.4, over an exhaustive scope (`1 ≤ m1, m2, f ≤ 10`, `G = 2(m1+m2+f) ≤ 44`:
+**880** bridges, **0** mismatches), and re-derives the three witnesses.
+[verified computation, exhaustive in scope]
+
+### 14.6 Epistemic status
+
+Theorem 7, the classification, and the three witnesses are kernel-checked with
+only `[propext, Classical.choice, Quot.sound]`
+(`AssemblyP1/RigidityBridgeAudit`); no `sorry`/`admit`/`axiom`/`native_decide`.
+The bridge is an **abstract** support graph; realizability of this exact shape as
+a de Bruijn read-support is **not** claimed (two distinct `2`-cycles through one
+hub cannot coexist in an order-`(L-1)` de Bruijn graph). The residual — a
+*polynomial* min-cut/max-flow closed form for general supports, or a proof that
+none exists — remains **OPEN** (§8.1/§8.2).

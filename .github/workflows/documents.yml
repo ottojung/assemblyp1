@@ -59,3 +59,22 @@ jobs:
           name: assemblyp1-white-paper-${{ github.sha }}
           path: paper/main.pdf
           if-no-files-found: error
+
+  publish:
+    name: Publish white paper PDF
+    needs: pdfs
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download verified PDF build
+        uses: actions/download-artifact@v4
+        with:
+          name: assemblyp1-white-paper-${{ github.sha }}
+          path: downloaded-paper
+      - name: Update rolling GitHub Release asset
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: bash scripts/publish-whitepaper-release.sh downloaded-paper/main.pdf

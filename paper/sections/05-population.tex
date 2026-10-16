@@ -30,9 +30,10 @@ The wrong genome wins because the realized sample consists only of reads to
 which the shorter candidate assigns probability $1/4$ while the truth assigns
 $1/5$. Structural admissibility has not failed; the empirical frequencies have
 fluctuated.
-\statusline{\computed{}, exact rational arithmetic. This is the project's
-finite witness for the sampling mechanism; it is not a counterexample to any
-historical statement, since the candidate restrictions are project-level.}
+\statusline{\kernelcheck{} in \texttt{FiniteSamplingCounterexample}
+for the finite witness and strict comparison; the arithmetic is also
+independently exact-checkable. This does not refute a historical statement,
+since its candidate restrictions are project-level.}
 \end{example}
 
 The lesson is that strengthening the repeat axioms again would target the wrong
@@ -163,15 +164,17 @@ uses P2 essentially, via the complete-spectrum uniqueness step.
 
 \subsection{The complete-spectrum uniqueness step}
 
-The remaining step is a complete-spectrum uniqueness statement. Historically it
-is the classical theorem of Bresler, Bresler, and Tse, which we record below as
-a source fact; the project's formal proof now discharges the step internally, so
-the theorem below is no longer an external premise of
+The remaining step is a complete-spectrum uniqueness statement. The classical spectrum-reconstruction analysis has roots in Ukkonen's
+condition and Pevzner's proof of the associated word-transformation
+conjecture \cite{ukkonen1992,pevzner1995}, with an assembly-oriented
+formulation in \cite{bresler2013}. The specialized Lean proof now
+discharges the needed step internally, so the theorem below is
+not an external premise of
 Theorem~\ref{thm:population}.
 
-\begin{theorem}[Bresler--Bresler--Tse complete-spectrum uniqueness]
+\begin{theorem}[Complete-spectrum uniqueness under Ukkonen's condition]
 \label{thm:BBT}
-\srcfact{} \cite{bresler2013}. Construct the $K$-mer graph from the complete
+\srcfact{} \cite{ukkonen1992,pevzner1995,bresler2013}. Construct the $K$-mer graph from the complete
 $(K+1)$-spectrum of a circular genome. If the genome satisfies Ukkonen's
 condition --- no triple repeat and no interleaved repeat pair of length at least
 $K$ --- then the graph has a unique Eulerian cycle, which spells the genome up
@@ -186,9 +189,7 @@ has a constituent of length at most $L-2$.
 \label{rem:internal-bbt}
 The kernel-checked result \popml{} proves long-window uniqueness for primitive
 P2 truths using a support-descent argument on the condensed graph, and its
-axiom audit reports only the three standard axioms. Theorem~\ref{thm:BBT}
-records the classical mathematical result underlying the same identifiability
-step. The finite same-length rotation theorem is also proved in Lean.
+axiom audit reports only the three standard axioms. Theorem~\ref{thm:BBT} records the classical identifiability step. The finite same-length rotation theorem is also proved in Lean.
 \end{remark}
 
 \subsection{Population uniqueness for the oriented primitive P2 class}
@@ -218,6 +219,319 @@ is kernel checked, with no unproved external BBT premise; its axiom audit
 contains only \texttt{propext}, \texttt{Classical.choice}, and
 \texttt{Quot.sound}.}
 
+
+\subsection{Finite-read reliability: an exponential recovery theorem}
+\label{sec:finite-recovery}
+
+The population theorem answers the structural question: when can the read
+distribution identify the genome?  A second positive theorem quantifies how
+reliably \emph{finite} iid read samples discriminate hypotheses once the
+candidate family is finite and identifiable.  This result directly connects
+the population and finite-sampling questions without claiming that a
+finite-sample ML estimator always selects the truth.
+
+\begin{theorem}[Exponential maximum-likelihood recovery for a finite family]
+\label{thm:finite-recovery}
+Fix a finite read alphabet $W$, a true probability distribution $p$ on $W$,
+and a finite set $\Theta$ of competing probability distributions $q$,
+each distinct from $p$.  Write
+\[
+  \rho(p,q)=\sum_{w\in W}\sqrt{p(w)q(w)}
+  \quad\text{and}\quad
+  \rho_*=\max_{q\in\Theta}\rho(p,q)<1
+\]
+when $\Theta$ is nonempty (otherwise the error event is empty).  For $n$
+independent reads drawn from $p$, let
+$L_q(r_1,\ldots,r_n)=\prod_{j=1}^{n}q(r_j)$.
+Then
+\[
+  \Pr_p\!\bigl\{\exists q\in\Theta:
+       L_q(R_1,\ldots,R_n)\ge L_p(R_1,\ldots,R_n)\bigr\}
+  \;\le\; \sum_{q\in\Theta}\rho(p,q)^n
+  \;\le\;|\Theta|\rho_*^n.
+\]
+In particular, for every target error tolerance $\delta>0$ there is an $N$
+such that the probability of any wrong candidate tying or beating the
+truth is at most $\delta$ for every $n\ge N$.
+\end{theorem}
+
+\begin{proof}
+For any read tuple $r$, set $a=L_p(r)$ and $b=L_q(r)$.  Both are
+nonnegative, and on the event $b\ge a$ we have
+$a\le\sqrt{ab}$, including when $a$ or $b$ vanishes.
+Summing over read tuples distributed according to $p$ bounds the
+pairwise event probability by
+\[
+ \sum_{r\in W^n}\sqrt{L_p(r)L_q(r)}
+ =\left(\sum_{w\in W}\sqrt{p(w)q(w)}\right)^n
+ =\rho(p,q)^n.
+\]
+The first displayed bound follows by the union bound.  For probability
+distributions, the squared-distance identity
+$\sum_w(\sqrt{p(w)}-\sqrt{q(w)})^2=2(1-\rho(p,q))$
+implies $\rho(p,q)<1$ exactly when $p\ne q$.
+Thus a finite identifiable competitor family has a uniform
+$\rho_*<1$, and its failure bound decays exponentially.
+\end{proof}
+
+\statusline{\kernelcheck{} for the finite-PMF pairwise, union, affinity, and
+consistency theorems in \texttt{AssemblyP1.FiniteReadRecovery}.  This is a
+finite-family theorem.  For the primitive-P2 class the finite-family
+hypothesis is discharged in Theorem~\ref{thm:p2-finite-class}, so the same
+bound applies to the entire unbounded-length candidate class; the general
+finite-PMF statement remains a finite-family statement.  The normalized uniform-start circular-genome read law, its
+read-occurrence equality, and finite-genome-family Hellinger bound are
+also kernel checked in \texttt{AssemblyP1.FiniteReadRecoveryGenome}.
+The primitive-P2 transport to strict separation is kernel-checked in
+Section~\ref{sec:p2-finite-recovery}.}
+
+For circular genomes with uniformly sampled start positions and oriented
+error-free length-$L$ reads, the intended distributions are
+$p_D(w)=\spec_L(D)(w)/|D|$.  The concrete read-law adapter and its finite-genome-family
+bound are now kernel checked, under an explicit Hellinger separation
+hypothesis. The completed primitive-P2 theorem above now supplies a fully proved
+read-law distinguishability criterion for nonrotational, primitive-P2
+admissible candidates, as formalized in
+Section~\ref{sec:p2-finite-recovery}.  The general finite-PMF recovery
+theorem still requires a finite competitor family, but for the complete
+primitive-P2 admissible class Theorem~\ref{thm:p2-finite-class} proves that
+this family is finite, without imposing an arbitrary shortlist.  The reverse-
+complement-collapsed and product-binomial models require their own read-law
+interfaces.  Neither the theorem nor its proof conditions on the
+truth-dependent information-feasibility event, and neither contradicts the
+strict finite-sample counterexamples of Section~\ref{sec:finite}.
+
+
+\subsection{Primitive-P2 structure gives finite-read maximum-likelihood recovery}
+\label{sec:p2-finite-recovery}
+
+The previous finite-sample theorem assumes that each wrong candidate has a
+distinct read distribution.  For the paper's main structural class, that
+\emph{informational} condition is not an independent assumption: it follows
+from the completed primitive-P2 population uniqueness theorem.
+
+\begin{corollary}[Finite-sample ML recovery in the primitive-P2 class]
+\label{cor:p2-finite-recovery}
+Let $S$ be a primitive oriented circular genome satisfying $P2$ at read
+length $L\ge 2$.  Fix \emph{any finite family} $\mathcal C$ of primitive
+$P2$-admissible oriented circular genomes, possibly of lengths different
+from $|S|$, none rotation-equivalent to $S$.  Observe $n$ independent
+length-$L$ error-free reads with uniformly sampled circular start
+positions in $S$.  Then there is a $\rho_*<1$ such that
+\[
+ \Pr_S\!\left\{
+   \exists D\in\mathcal C:
+       L_D(R_1,\dots,R_n)\ge L_S(R_1,\dots,R_n)
+ \right\}
+ \le |\mathcal C|\,\rho_*^{n},
+\]
+and for every $\delta>0$ there exists $N$ such that the displayed
+wrong-competitor event has probability at most $\delta$ for all $n\ge N$.
+Ties are counted as errors, so this covers every maximum-likelihood
+tie-breaking rule.  For maximum-likelihood selection over the augmented
+candidate family $\{S\}\cup\mathcal C$, the truth's rotation class therefore
+wins with probability tending to one.
+\end{corollary}
+
+\begin{proof}
+The uniform-start read distribution is exactly
+$p_D(w)=\spec_L(D)(w)/|D|$ for every circular genome $D$, including the
+case of multiple copies of a read, origin-crossing windows, and $L>|D|$.
+The population-uniqueness theorem
+(Theorem~\ref{thm:population}) says that equality of
+population likelihood between an admissible $D$ and $S$ forces rotation
+equivalence.  Gibbs equality says that two normalized read laws have
+equal population likelihood precisely when those laws agree.  Hence
+every $D\in\mathcal C$ has $p_D\neq p_S$.
+The finite-PMF Hellinger theorem then yields
+$\rho(p_S,p_D)<1$ for each such candidate.  Since $\mathcal C$ is
+finite, its affinities admit a common maximum $\rho_*<1$ (the empty
+family has zero error).  Applying the finite union bound above proves
+the displayed inequality and the confidence conclusion.
+\end{proof}
+
+\statusline{\kernelcheck{} for the source-faithful normalized-spectrum
+identity, the primitive-P2 read-law separation, the finite-family
+uniform Hellinger gap, and the confidence theorem in
+\texttt{AssemblyP1.FiniteReadRecoveryP2Bridge} and
+\texttt{AssemblyP1.FiniteReadRecoveryP2Complete}, with axiom audits.
+The result is conditional on a finite, primitive-P2 admissible,
+nonrotational family and the exact oriented iid read model.
+Corollary~\ref{cor:p2-finite-recovery-all} discharges the finiteness
+condition for the whole admissible class; the finite-family premise
+remains for caller-chosen families that are not covered by the length
+bound.}
+
+This closes the \emph{finite-class} population-to-sampling implication
+for caller-supplied families.  Theorem~\ref{thm:p2-finite-class} then shows
+that the whole primitive-P2 admissible class, over all unbounded genome
+lengths, is finite, so Corollary~\ref{cor:p2-finite-recovery-all} extends the
+exponential bound to it.  These results also do not classify ordinary finite
+likelihood maximizers for every observed sample, which can differ from
+the truth even under structural identifiability.  The RC-collapsed
+double-strand model and MB09's binomial surrogate remain separate.
+
+\subsection{Finiteness of the primitive-P2 class: the finite-family premise is discharged}
+\label{sec:p2-finite-class}
+
+Corollary~\ref{cor:p2-finite-recovery} requires the competitor family
+$\mathcal C$ to be finite, and requires the caller to supply it.  The
+following theorem constructs the complete primitive-P2 admissible family
+from an explicit genome-length bound, exponential in $L$.  Its finiteness
+does not imply that enumeration is computationally small.
+
+\begin{theorem}[Finiteness of the primitive-P2 admissible class]
+\label{thm:p2-finite-class}
+Fix a finite alphabet $\alpha$ with $|\alpha|=q$ and a read length
+$L\ge2$, and set $K=L-1$.  Let $D$ be an oriented circular genome over
+$\alpha$ of length $G$, primitive, with no maximal triple repeat of length
+$\ge K$.  Then
+\[
+  G\;\le\;2\,q^{K}.
+\]
+Consequently the class of primitive P2-admissible oriented circular genomes
+over $\alpha$, over \emph{all} positive lengths, is finite, and the bound is
+tight: at $q=2$, $L=2$ the circular word $1100$ attains $G=4=2\cdot2^{1}$.
+\end{theorem}
+
+\begin{proof}[Argument]
+Two regimes, both needed because a length-$K$ window wraps when $G<K$.
+
+\emph{Wrap-around regime $G<L$.}  A length-$K$ window with $K\ge G$ sees the
+whole circle, so two occurrences at distinct starts make the word
+shift-invariant by a nonzero shift below $G$, hence non-primitive.  Every
+$K$-window therefore occurs exactly once and $G\le q^{K}$.
+
+\emph{Ordinary regime $L\le G$.}  Three starts sharing a $K$-window are
+extended to a maximal common window: maximally backwards (a bounded maximum
+over the $G$ possible back-shifts) and then forwards.  Two things can
+happen.  Some extension phase reaches total length $\ge G$, which again
+forces shift-invariance and contradicts primitivity.  Or both flanks
+differ, and the extension is a maximal triple repeat of length $\ge K$,
+which P2 forbids.  Both alternatives are impossible, so no $K$-window occurs
+at three starts, and counting the fibers of the $K$-window map gives
+$G\le2\,q^{K}$.
+\end{proof}
+
+\statusline{\kernelcheck{} in \texttt{AssemblyP1.PrimitiveP2FiniteClass}.  The
+$K$-window cap is \texttt{P2RepeatResidual.P2.imp\_nodeCount\_le\_two},
+obtained by importing the shared two-sided maximal-extension engine
+(\texttt{RepeatAdapter.primitive\_nodeCount\_le\_two}) and the
+$P2$-to-repeat-theory conversion
+(\texttt{P2RepeatResidual.P2.imp\_noLongTripleRepeat}) rather than re-proving
+either; the wrap-around regime is
+\texttt{nodeWindow\_injective\_of\_short}; the bound is
+\texttt{primitive\_P2\_len\_le}.  Axiom audit reports only
+\texttt{propext}, \texttt{Classical.choice} and \texttt{Quot.sound}; the
+non-vacuity witness is in
+\texttt{AssemblyP1/PrimitiveP2FiniteClassAudit.lean}.  The two finite sets
+are classically, hence non-computably, defined; every membership statement
+about them is a proved theorem.}
+
+\begin{corollary}[Finite-sample ML recovery over the entire primitive-P2 class]
+\label{cor:p2-finite-recovery-all}
+Let $S$ be a primitive oriented circular genome satisfying $P2$ at read
+length $L\ge2$.  Observe $n$ independent length-$L$ error-free reads with
+uniformly sampled circular start positions in $S$.  Then the competitor
+family is a \emph{constructed} finite set --- the admissible genomes of
+length at most $2\,|\alpha|^{L-1}$, with the rotations of $S$ removed --- and
+there is a $\rho_*<1$ such that
+\[
+ \Pr_S\!\left\{\exists D\ \text{admissible, nonrotational}:
+       L_D(R_1,\dots,R_n)\ge L_S(R_1,\dots,R_n)\right\}
+ \;\le\;|\mathcal C_S|\,\rho_*^{n},
+\]
+and for every $\delta>0$ there exists $N$ such that the displayed
+wrong-competitor event has probability at most $\delta$ for all $n\ge N$.
+\end{corollary}
+
+\begin{proof}
+By Theorem~\ref{thm:p2-finite-class} every admissible candidate has length at
+most $2\,|\alpha|^{L-1}$, so the candidate class is a finite set
+$\mathcal C_S$ built from that bound.  Rotations of $S$ share $S$'s read law
+and are removed, so every remaining competitor is admissible and
+nonrotational.  Corollary~\ref{cor:p2-finite-recovery} applies to
+$\mathcal C_S$ with no finite-family hypothesis left.
+\end{proof}
+
+\statusline{\kernelcheck{} in \texttt{AssemblyP1.PrimitiveP2FiniteClass}:
+\texttt{all\_primitiveP2\_ML\_confidence} has as hypotheses only $L\ge2$, the
+primitivity and P2 of $S$, and $\delta>0$.  No finite-family premise, no
+small-multiplicity assumption and no generic likelihood argument is added.}
+
+This discharges the \emph{finite-family} premise of the primitive-P2
+population-to-sampling theorem.  It does not claim that the true genome is a
+finite-sample ML maximizer for every data realization, and it does not cover
+the reverse-complement-collapsed double-strand model or MB09's binomial
+surrogate, whose candidate classes and read laws differ.
+
+
+\subsection{An explicit uniform exponential rate for the primitive-P2 class}
+\label{sec:p2-uniform-rate}
+
+Corollary~\ref{cor:p2-finite-recovery-all} proves that a uniform
+$\rho_*<1$ exists but leaves it abstract.  For the primitive-P2 class the gap
+can be quantified from first principles, without invoking population
+uniqueness.
+
+\begin{theorem}[Explicit uniform separation and exponential error decay]
+\label{thm:p2-uniform-rate}
+Fix a finite alphabet $\alpha$ with $q=|\alpha|$ and read length $L\ge2$, and
+set $B=2q^{L-1}$.  Let $S$ be a primitive oriented circular genome satisfying
+$P2$ at read length $L$, with $G_S=|S|$.  Every nonrotational admissible
+competitor $D$ with $G_D=|D|$ has
+\[
+  1-\rho(p_S,p_D)\;\ge\;\frac{1}{8\,(G_S G_D)^2}\;\ge\;\frac{1}{8\,B^4}.
+\]
+Consequently, after $n$ independent oriented length-$L$ reads with uniform
+circular starts,
+\[
+  \Pr_S\!\left\{\exists D\ \text{nonrotational admissible}:
+       L_D(R_1,\dots,R_n)\ge L_S(R_1,\dots,R_n)\right\}
+  \;\le\; N_C\,\exp\!\Bigl(-\frac{n}{8B^4}\Bigr),
+\]
+where $N_C$ is the number of distinct competitor read laws,
+$N_C\le\sum_{g=1}^{B}q^{g}$; and
+$n\ge 8B^4\log(N_C/\delta)$ suffices for error at most $\delta$.
+\end{theorem}
+
+\begin{proof}[Argument]
+The read law of a genome of length $G$ is $p(w)=c_w/G$ with $c_w$ the number
+of circular starts spelling $w$, so a nonzero difference of two such laws has
+the form $(c_w G_D-c'_w G_S)/(G_S G_D)$ with a nonzero integer numerator, hence
+absolute value at least $1/(G_SG_D)$.  The squared-distance identity
+$\sum_w(\sqrt{p(w)}-\sqrt{q(w)})^2=2(1-\rho)$ and the coordinate inequality
+$|\sqrt p-\sqrt q|\ge|p-q|/2$ on $[0,1]$ turn this into
+$1-\rho\ge 1/(8(G_SG_D)^2)$.  The primitive-P2 length bound $G\le B$ of
+Theorem~\ref{thm:p2-finite-class} gives the uniform form, and the finite union
+bound of Theorem~\ref{thm:finite-recovery} yields the displayed exponential
+bound.
+\end{proof}
+
+\statusline{\kernelcheck{} in
+\texttt{AssemblyP1.PrimitiveP2UniformSeparation}: the integer-denominator
+separation \texttt{readLaw\_separation}, the square-root inequality
+\texttt{abs\_sub\_le\_two\_abs\_sqrt\_sub}, the gap lemma
+\texttt{one\_sub\_hellinger\_ge\_of\_gap}, the genome-level bound
+\texttt{primitiveP2\_exponential\_error\_bound}, the explicit threshold
+\texttt{primitiveP2\_ML\_confidence\_explicit}, and the class-size bound
+\texttt{readLawFamily\_card\_le}.  The axiom audit
+(\texttt{PrimitiveP2UniformSeparationAudit}) reports only \texttt{propext},
+\texttt{Classical.choice} and \texttt{Quot.sound}.  The constants are
+deliberately loose --- $B$ is exponential in $L$ and $N_C$ is enormous --- so
+this is a kernel-checked positive rate, not a tractability or efficiency
+claim.  It is a frequentist uniform-separation guarantee for the exact
+multinomial likelihood, distinct from any Bayes-optimality statement.}
+
+Unlike Corollary~\ref{cor:p2-finite-recovery-all}, this bound does not use the
+population uniqueness theorem: it is a direct finite-sample separation.  It is
+also compatible with the non-monotonicity of Section~\ref{sec:finite}: the
+exponential statement concerns the eventual rate, not a pointwise monotone
+success curve.  The competitor class here is restricted to primitive-P2
+admissible, oriented exact iid reads; it is not universal maximum likelihood
+over all genomes and not the MB09 product-binomial approximation.
+
+
 \subsection{Scope of the population theorem}
 
 The theorem concerns oriented read types. The corresponding question for
@@ -240,3 +554,82 @@ says nothing about uniqueness within a tie class. The two are related only
 through identifiability, which each needs in its own way, and neither is
 replaced by conditioning on information feasibility.
 \end{remark}
+
+\subsection{Finite-sample success is not monotone in the number of reads}
+\label{sec:nonmonotone}
+
+Theorem~\ref{thm:finite-recovery} bounds the \emph{error} of exact
+maximum-likelihood selection, and the bound decreases monotonically in $n$.
+The success probability itself need not: because the exact objective compares
+likelihoods on the realized sample, adding one more read can move the decision
+boundary and lower the chance that the truth is the strict maximizer. The
+following two-genome witness makes this exact. The qualitative
+sawtooth effect in discrete tests is well known
+\cite{chernick2002}; here the result instead concerns
+\emph{per-truth} exact-ML success for two circular genomes.
+The mechanisms are analogous but the decisions and losses differ.
+
+\begin{proposition}[Non-monotonicity of exact finite-sample ML success]
+\label{prop:nonmonotone}
+Let the read length be $L=2$ over the binary alphabet $\{A,C\}$, and let the
+candidate class consist of the two circular genomes
+\[
+  S = AAC \ (\text{truth, length }3), \qquad D = AAAC \ (\text{length }4),
+\]
+sampled with a uniformly random start. The uniform-start read laws are
+\[
+  p_S : AA\mapsto \tfrac13,\ AC\mapsto \tfrac13,\ CA\mapsto \tfrac13,\ CC\mapsto 0,
+\]
+\[
+  p_D : AA\mapsto \tfrac12,\ AC\mapsto \tfrac14,\ CA\mapsto \tfrac14,\ CC\mapsto 0,
+\]
+so the two distributions are distinct and Theorem~\ref{thm:finite-recovery}
+applies with affinity $\rho(p_S,p_D) = (1+\sqrt2)/\sqrt6 < 1$. Writing
+$\mathrm{succ}(n)=\Pr_S\{L_S(R_1,\dots,R_n) > L_D(R_1,\dots,R_n)\}$ for the
+probability that the truth is the strict exact-ML maximizer,
+\[
+  \mathrm{succ}(1) = \tfrac23, \qquad \mathrm{succ}(2) = \tfrac49,
+  \qquad\text{so}\qquad \mathrm{succ}(1) > \mathrm{succ}(2).
+\]
+The oscillation is repeated:
+\[
+\begin{array}{c|rrrrrrr}
+n & 1&2&3&4&5&6&7\\ \hline
+\mathrm{succ}(n)&\frac23&\frac49&\frac{20}{27}&\frac{16}{27}&
+\frac{64}{81}&\frac{496}{729}&\frac{416}{729}
+\end{array}
+\]
+Thus finite-sample success is not monotone in $n$, although it tends to $1$.
+\end{proposition}
+
+\begin{proof}
+On any read tuple containing $a$ copies of $AA$ and no $CC$, the exact
+likelihood ratio is
+\[
+  \frac{L_D}{L_S} = \frac{3^n}{2^{\,2n-a}},
+\]
+so $L_D > L_S$ exactly when $a > n\log_2(4/3)$. For $n\ge1$ no positive-probability tuple ties: the ratio is a positive
+power of $3$ divided by a power of $2$, so it cannot equal $1$.
+At $n=0$ the empty likelihoods tie, and tuples containing $CC$ have
+probability zero under $p_S$. Under $p_S$ each read is $AA$ with probability $1/3$. For $n=1$
+the truth wins exactly when the single read is not $AA$, with probability
+$2/3$. For $n=2$ the truth wins exactly when $a=0$, with probability
+$(2/3)^2 = 4/9$. The competitor rewards the $AA$ count, so a single read is
+more favorable to the truth than two.
+\statusline{\kernelcheck{} for $\mathrm{succ}(1)=2/3$, $\mathrm{succ}(2)=4/9$,
+and $\mathrm{succ}(1)>\mathrm{succ}(2)$ against the actual genome, read, and
+likelihood definitions
+(the Lean theorem \texttt{success\_not\_monotone}); \computed{} for an
+independent exact-rational cross-check over all read tuples
+(\texttt{scripts/verify\_nonmonotonicity\_witness\_281.py}).}
+\end{proof}
+
+This is the precise sense in which finite-sample ML success is not monotone:
+the exponentially small error bound of Theorem~\ref{thm:finite-recovery} is
+about the eventual rate, not a pointwise monotone curve. It also isolates why
+the population statement (Lemma~\ref{lem:gibbs}) and the finite statement have
+different shapes: the population maximizer is fixed, whereas a finite
+maximizer is a random variable whose law can move non-monotonically with the
+sample size. The affinity here, $(1+\sqrt2)/\sqrt6 \approx 0.9856$, is close
+to $1$, so the exponential bound is weak at small $n$ --- another reason the
+finite curve is not the population one.

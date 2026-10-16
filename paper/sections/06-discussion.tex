@@ -16,10 +16,12 @@ Without a repeat/read-length boundary the genome need not be identifiable at all
 Theorem~\ref{thm:rigidity} shows that on the same-length oriented Section~6.2
 slice they are strong enough to make the truth's spectrum the only positive
 circulation --- an exact rigidity, not just a reconstruction claim. Requiring
-candidate length equal to the true length is, however, a strong extra axiom. It
-is not supplied by Medvedev and Brudno's known-size parameter, and
-Theorem~\ref{thm:cex-variable-length} shows the conclusion fails as soon as it is
-dropped.
+the candidate's length to equal the true length and requiring the truth
+to be a genuine candidate are two independent extra assumptions, neither
+supplied by bridging alone. The same-length $AABB\to ABAB$ witness
+shows that truth candidacy matters, and
+Theorem~\ref{thm:cex-variable-length} shows that even truth-admissible
+full-support samples need the length restriction.
 
 \paragraph{Finite-sampling failure.}
 Even structurally admissible genomes can lose to the truth's competitors because
@@ -88,6 +90,26 @@ overlap deletion from a genuinely spelling-preserving graph
 reduction. That distinction determines whether the optimized
 object even represents a sequence.
 
+The finite-read recovery theorem (Theorem~\ref{thm:finite-recovery}) is a
+\emph{error-exponent} result rather than a structural
+classification: it converts population identifiability of a finite candidate
+family into an explicit exponential bound on the probability of an exact-ML
+error. Its hypotheses are deliberately minimal --- a finite, pairwise
+distinguishable family --- and its conclusion is about the error rate, not the
+likelihood, so it neither contradicts the finite counterexamples of
+Section~\ref{sec:finite} nor claims monotonicity of finite-sample success
+(Proposition~\ref{prop:nonmonotone}). Together with the population uniqueness theorem and the primitive-P2
+length bound (Theorem~\ref{thm:p2-finite-class}), it gives
+finite-read recovery for the \emph{entire} oriented primitive-P2
+class (Corollary~\ref{cor:p2-finite-recovery-all}), not merely
+an arbitrary finite shortlist. For this class the affinity is not merely
+existential: Theorem~\ref{thm:p2-uniform-rate} makes the rate explicit,
+bounding the exact-ML error probability by $N_C\,e^{-n/(8B^4)}$ with
+$B=2q^{L-1}$ and a matching sample-size threshold $n\ge8B^4\log(N_C/\delta)$.
+The candidate class may be enormous
+and the constants are exponential in the read length, so this is not a practical
+read-depth guarantee.
+
 Each proof therefore has its own mathematical claim, scope,
 and consequence. The central investigation remains the
 relationship between read information, feasible assembly,
@@ -109,7 +131,7 @@ The finite witnesses of Section~\ref{sec:finite} were first stated for the
 placement-based $\Is$. Under the source's own supplement-\S6.4 read-string
 predicate $\Is^{\mathrm{match}}$, the same-length molecule slice is likewise
 \emph{false}, with all historical predicates and both likelihood ratios
-kernel-checked on \texttt{main} (\S\ref{sec:finite:historical}): $W_1$ ($AAATAT\to AAAAAT$) and $W_2$
+kernel-checked (\S\ref{sec:finite:historical}): $W_1$ ($AAATAT\to AAAAAT$) and $W_2$
 ($ATATACAC\to ATACACAC$) satisfy historical coverage and matched-string bridging
 at full strength, are genuine Section~6.2 molecule flows of equal length, and
 beat the truth under both the exact multinomial and the fixed-$N$ binomial. This
@@ -142,14 +164,15 @@ with no external premise: \popml{}
 proves that, for $L\ge2$ and a primitive P2 truth, the truth maximizes the
 population log-likelihood over \emph{every} positive-length primitive P2
 candidate, and that every population tie is a cyclic rotation of the truth. The
-classical Bresler--Bresler--Tse complete-spectrum uniqueness theorem remains a
-source-faithful mathematical explanation of the identifiability step, but it
+classical complete-spectrum analysis of Ukkonen and Pevzner
+\cite{ukkonen1992,pevzner1995}, developed in
+\cite{bresler2013}, remains a mathematical explanation of the identifiability step, but it
 is no longer a required external premise of either the population theorem or
 the \emph{truth-candidate-conditional} finite rotation theorem
-(Corollary~\ref{cor:same-length-rotation}). Without
-truth candidacy the nonprimitive candidate case is positive,
-whereas the primitive candidate case is refuted by a certified
-nonrotation competitor. Neither is an unrestricted
+(Corollary~\ref{cor:same-length-rotation}). Without truth candidacy, a distinct result treats a
+\emph{nonprimitive truth} positively, while a primitive truth
+can have a certified nonrotation competitor. These cases concern
+the truth's primitivity, not the competitor's. Neither is an unrestricted
 finite likelihood result. The historical referent
 of the 2016 sentence remains a source gap. The population model for
 \emph{molecule} read types --- as opposed to oriented types --- is not addressed
@@ -167,7 +190,20 @@ kernel-checked and the source correspondence is documented.
 
 \subsection{Relation to the literature}
 
-The closest published result is older than the 2016 question:
+The classical spectrum-reconstruction foundations are Ukkonen's repeat
+condition and Pevzner's analysis of equivalent cyclic traversals
+\cite{ukkonen1992,pevzner1995}, subsequently adapted to modern
+assembly by Bresler, Bresler and Tse \cite{bresler2013}.
+Myers \cite{myers2005} developed the string-graph formulation for
+overlap-based assembly. Motahari, Bresler and Tse
+\cite{motahari2013} studied information-theoretic sequencing thresholds
+under stochastic genome models, and the variable-length overlap
+results of Hui et al.\ \cite{hui2016} are another adjacent
+contribution. These do not answer the finite-sample likelihood
+question here.
+
+The closest published result directly relating bridge
+conditions to reconstruction predates the 2016 question:
 Bresler, Bresler, and Tse prove a \emph{necessary} condition --- if a
 problematic interleaved pair or triple repeat has all copies unbridged, another
 same-length genome has the same read likelihood. Shomorony et al.\ strengthen
@@ -196,7 +232,12 @@ some read types, and a competitor can score higher even when the source is
 reconstructible. Exact counterexamples establish that boundary under
 several observation conventions. With the population distribution instead,
 the truth always maximizes expected likelihood; for primitive P2 genomes,
-complete-spectrum uniqueness makes that maximum unique up to rotation.
+complete-spectrum uniqueness makes that maximum unique up to rotation. On the entire finite oriented primitive-P2 class, the exact-ML
+error admits an exponential bound in the number of independent
+reads --- with an explicit, deliberately loose rate
+$N_C\,e^{-n/(8B^4)}$ (Theorem~\ref{thm:p2-uniform-rate}) --- even though its
+finite-sample success curve need not be monotone
+(Proposition~\ref{prop:nonmonotone}).
 The proofs and finite certificates are formalized in Lean. Together,
 these results explain what graph structure can determine, what read
 frequencies contribute, and how the two interact. Throughout, the

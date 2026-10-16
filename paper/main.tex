@@ -6,7 +6,9 @@
 
 \addbibresource{references.bib}
 
-\title{\bfseries The Most Likely Genome}
+\title{\bfseries The Most Likely Genome\\[0.35em]
+\large Structural reconstruction, statistical identifiability,\\
+and finite-sample likelihood reliability}
 
 \author{Vitaliy Mysak\\\href{mailto:assemblyp1@vau.place}{\texttt{assemblyp1@vau.place}}}
 
@@ -18,31 +20,32 @@
 
 \begin{abstract}
 \noindent
-A genome is a long string that a sequencer reveals only through short,
-overlapping reads. Reconstructing it is a combinatorial problem: overlapping
-reads form a graph, repeats create competing traversals, and sufficiently
-informative reads resolve those ambiguities. The Not-So-Greedy algorithm of
-Shomorony et al.\ (2016) turns such information into a unique Eulerian
-reconstruction. This paper investigates a related statistical question:
-\emph{when is the true genome also the most likely explanation of the
-observed reads?} Maximum likelihood is a natural benchmark because, with
-the correct sampling model and a uniform prior on a finite candidate class,
-it maximizes average reconstruction correctness among all decision rules.
-This decision-theoretic guarantee motivates the investigation; it does not
-answer the assembly-specific question. We separate a conditional reading, in
-which the candidate set is restricted to the feasible fiber, from the
-unconditional comparison the 2016 sentence actually poses.
+Maximum likelihood offers a natural way to infer a genome from sequencing
+data: choose the genome under which the observed reads are most probable.
+But is the genome that generated the reads necessarily the most likely one?
+We investigate this question in two settings: when only a finite sample
+of reads is available, and when the underlying distribution of reads is
+known exactly.
 
-We prove a positive rigidity theorem: under explicit bridging conditions the
-true length-$L$ spectrum is the unique positive integer circulation of its
-window-support graph. This yields a same-length oriented likelihood result
-under the stated candidate hypotheses. We also exhibit exact finite-sample
-counterexamples: because observed read counts fluctuate, another genome can
-assign them higher probability even when reconstruction is feasible.
-Finally, at the population level the true genome always maximizes expected
-log-likelihood, and the maximizer is unique up to rotation in the primitive
-P2-admissible class. These results connect graph reconstruction,
-repeat combinatorics, statistical optimization, and kernel-checked formal proof.
+For finite samples, we examine a question raised by Shomorony et al.\ (2016):
+do the conditions that guarantee genome reconstruction also guarantee that
+maximum likelihood selects the true genome? We establish conditions under
+which the answer is yes, but also construct counterexamples in which the reads
+satisfy the original reconstruction conditions and yet an incorrect genome
+has greater likelihood. Thus, the information needed to reconstruct a genome
+does not always make it the most likely explanation of the data.
+
+When the read distribution is known exactly, the true genome always maximizes
+expected log-likelihood. We establish conditions on genomic repeats under which
+this distribution uniquely identifies the true genome. We further prove, and
+kernel-check in the Lean proof assistant, an explicit quantitative guarantee for
+finite samples: over the identifiable primitive-P2 candidate class the
+probability that the exact maximum-likelihood rule errs decreases exponentially
+in the number of independent reads, with a rate that is explicit but
+deliberately loose (exponential in the read length). The theorem bounds the
+\emph{error} probability, not the likelihood, and it does not claim that
+per-truth finite-sample success is monotone in the sample size; we supply a
+kernel-checked two-genome witness to the contrary.
 \end{abstract}
 
 \clearpage

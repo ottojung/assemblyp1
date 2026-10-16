@@ -1,3 +1,37 @@
 import AssemblyP1.ExactRigidityCriterion
+import AssemblyP1.FiniteRigidityDecider
+import AssemblyP1.TwoWalkRigidity
+import AssemblyP1.RigidityBouquet
+import AssemblyP1.RigidityBridge
 open AssemblyP1.ExactRigidityCriterion
+open AssemblyP1.FiniteRigidityDecider
+open AssemblyP1.TwoWalkRigidity
+open AssemblyP1.RigidityBouquet
+open AssemblyP1.RigidityBridge
 #print axioms AssemblyP1.ExactRigidityCriterion.nonrigid_iff_exists_delta
+#print axioms AssemblyP1.FiniteRigidityDecider.le_total_of_feasible
+#print axioms AssemblyP1.FiniteRigidityDecider.admissible_iff
+#print axioms AssemblyP1.FiniteRigidityDecider.rigid_iff_forall_admissible
+#print axioms AssemblyP1.FiniteRigidityDecider.rigid_iff_decider
+#print axioms AssemblyP1.FiniteRigidityDecider.card_candidates
+#print axioms AssemblyP1.FiniteRigidityDecider.atatat_rigid
+#print axioms AssemblyP1.FiniteRigidityDecider.aaaab_nonrigid
+#print axioms AssemblyP1.FiniteRigidityDecider.figureEight_rigid
+#print axioms AssemblyP1.FiniteRigidityDecider.figureEight_nonrigid
+#print axioms AssemblyP1.TwoWalkRigidity.isCirc_iff_balancedZ
+#print axioms AssemblyP1.TwoWalkRigidity.IsCirc.add
+#print axioms AssemblyP1.TwoWalkRigidity.IsCirc.sub
+#print axioms AssemblyP1.TwoWalkRigidity.nonrigid_of_two_nonneg_circ
+#print axioms AssemblyP1.TwoWalkRigidity.exists_two_nonneg_circ_of_nonrigid
+#print axioms AssemblyP1.TwoWalkRigidity.rigid_iff_no_two_nonneg_circ
+#print axioms AssemblyP1.TwoWalkRigidity.atatat_no_two_nonneg_circ
+#print axioms AssemblyP1.TwoWalkRigidity.figureEight_two_walk_witness
+#print axioms AssemblyP1.RigidityBouquet.bouquet_nonrigid_iff
+#print axioms AssemblyP1.RigidityBouquet.len24_mult21_rigid
+#print axioms AssemblyP1.RigidityBouquet.len23_mult41_nonrigid
+#print axioms AssemblyP1.RigidityBouquet.len233_mult211_real_integer_gap
+#print axioms AssemblyP1.RigidityBridge.bridge_nonrigid_iff
+#print axioms AssemblyP1.RigidityBridge.bridgeA_rigid_iff_trivial
+#print axioms AssemblyP1.RigidityBridge.bridgeA_nonrigid_m1
+#print axioms AssemblyP1.RigidityBridge.bridgeA_nonrigid_m2
+#print axioms AssemblyP1.RigidityBridge.bridgeA_nonrigid_f

@@ -242,13 +242,17 @@ The adjudication below is kernel-checked in
    coordinates alone.
 3. **The flow-level §6.2 obligation is genuinely different and stays OPEN.** A
    §6.2 feasible flow's throughput is supported on the observed read vertices,
-   so it does not by itself specify the unobserved coordinates.
-   `flow_genome_gap` quantifies the discrepancy exactly: if a flow `d` agrees
-   with a genome `d'` on `I` and is `0` off `I`, then on any sample supported on
-   `I`, `K(d;x)·(∏_{j∉I}(N-d'_j))^n = K(d';x)·(∏_{j∉I} N)^n`, i.e. the flow is
+   so it does not by itself specify the unobserved coordinates.  This is exactly
+   where the spelled half of the adapter stops: `Section62SpelledFlowAdapter`
+   proves `throughput (sp.flow) edges v = sp.visits v`, i.e. a spelled circuit's
+   count vector is its **observed-vertex visit vector**, not its genome's
+   *complete* molecule spectrum.  `flow_genome_gap` quantifies the residual
+   discrepancy exactly: if a flow `d` agrees with a genome `d'` on `I` and is
+   `0` off `I`, then on any sample supported on `I`,
+   `K(d;x)·(∏_{j∉I}(N-d'_j))^n = K(d';x)·(∏_{j∉I} N)^n`, i.e. the flow is
    larger by `∏_{j∉I}(N/(N-d'_j))^n ≥ 1`. A flow does **not** pay for the
-   genome's unobserved mass. Constructing the source-faithful flow→count adapter
-   (and deciding the unobserved-coordinate convention) remains OPEN.
+   genome's unobserved mass. Deciding the unobserved-coordinate convention (and
+   the throughput-image characterization) remains OPEN.
 
 **Well-defined class covered by the theorem.** Candidates are count vectors
 `d : T → ℕ` over the *full* molecule-type universe with the observed support `I`
@@ -265,12 +269,15 @@ arithmetic.
 
 **Remaining OPEN subclaims (unchanged by this adjudication).**
 
-- OPEN-1: source-faithful §6.2 **flow → full count vector** adapter, including
-  the unobserved-coordinate convention (flow default `0` vs spelled-genome
-  spectrum); the discrepancy is exactly `∏_{j∉I}(N/(N-d'_j))^n`.
+- OPEN-1: **throughput-image characterization** of the §6.2 feasible set
+  (incidence/Graver); the spelled *inclusion* half is resolved by
+  `Section62SpelledFlowAdapter.spelling_flow_feasible`, but the converse and the
+  image remain OPEN.
 - OPEN-2: **spelled-circuit → genome spectrum** alignment (`d = Spelling.visits`
-  vs the genome's complete spectrum); the `AAATA` witness is a spelled circuit
-  whose observed throughput omits a positive unobserved type.
+  vs the genome's complete spectrum), equivalently the unobserved-coordinate
+  convention (flow default `0` vs spelled-genome spectrum). The `AAATA` witness
+  is a spelled circuit whose observed throughput omits a positive unobserved
+  type; the discrepancy is exactly `∏_{j∉I}(N/(N-d'_j))^n` (`flow_genome_gap`).
 - OPEN-3: general **non-spelled-flow** maximality criterion.
 - OPEN-4: **transitive reduction** interaction with ML.
 - OPEN-5: **orientation/RC class** interaction.
@@ -280,12 +287,16 @@ arithmetic.
 
 ## Remaining-open matrix
 
+See `docs/issue261-axis-matrix-20261014.md` for the independently audited matrix
+(current at `origin/main` `e024af2`), including the flow-to-count-vector adapter
+half added by `AssemblyP1.Section62FlowCountVectorAdapter`.
+
 | Axis | Status |
 |---|---|
 | Variable-length exact-multinomial criterion (§6.1 exact display) | **RESOLVED** (`varLengthCriterion`), project-defined objective |
 | Fixed-external-`N` multinomial-product criterion | **RESOLVED** (`flow_dominance_criterion`), correctly labelled |
 | Genuine §6.1 separable-binomial count-vector criterion | **RESOLVED at the count-vector layer** (`AssemblyP1.Section62BinomialCriterion.binomial_uniform_criterion`, kernel-checked): exact q-factorization `K(d;x)=∏ᵢqᵢ(d)^{xᵢ}` and the all-`n` interior-truth iff `∏ᵢqᵢ(B)=0 ∨ ∀i∈I, qᵢ(B)≤qᵢ(A)`. **Adjudicated 2026-10-16** (`AssemblyP1.Section62BinomialSupportAdjudication`): the criterion is full-support (unobserved terms appear as `(N-d_j)^n`); unobserved coordinates are not forced to zero and matter; the observed-only shortcut is refuted. The fixed-`n` extreme-sample iff remains **numerically audited** (`scripts/verify_261_binomial_extreme_samples.py`) but not yet kernel-checked |
-| §6.1 binomial over the §6.2 feasible flow set | **OPEN** |
+| §6.1 binomial over the §6.2 feasible flow set | **PARTIAL** — spelled half RESOLVED (`Section62SpelledFlowAdapter.spelling_flow_feasible`, 2026-10-15); image characterization still OPEN |
 | Half-integral relaxation gap | **RESOLVED** (flow level: `Section62NonSpelledFlow`; arithmetic: `half_integral_gap`) |
 | Rescaling ties at variable length | **RESOLVED** (`rescaling_tie`) |
 | Non-spelled-flow maximality criterion | **OPEN** (finite obstruction kernel-checked) |
@@ -311,11 +322,16 @@ The existing abstract count-vector theorems are useful and kernel-checked, but
    Myers (2005) and the MB09 §6.2 citation require spelling-preserving
    transitive reduction, not either current approximation.
 2. **Flow attached to spelling.** The project predicate `SpelledFeasible62`
-   checks a spelling alongside a feasible flow, but does not prove equality
-   `f = Spelling.flow sp` or `d = Spelling.visits sp`; the flow admissibility
-   conjunct is checked against the unreduced edge graph even when the spelling
-   checks a reduced graph. Do not infer that `d` is the spectrum of `sp`
-   without the missing alignment theorem.
+   checks a spelling alongside an explicitly handed-in feasible flow `f`, and does
+   not itself prove `f = Spelling.flow sp` or `d = Spelling.visits sp`; the flow
+   admissibility conjunct is checked against the unreduced edge graph even when the
+   spelling checks a reduced graph. The **general alignment theorem** is now
+   kernel-checked: `Section62SpelledFlowAdapter.spelling_flow_feasible` proves
+   that the walk flow `Spelling.flow` is `Feasible62` with
+   `d = Spelling.visits` on any `Nodup` graph containing its steps (given the
+   visits-observed hypothesis). What remains is the source-faithful reconciliation
+   of `SpelledFeasible62`'s unreduced-graph admissibility conjunct with the
+   reduced graph, and the interaction with transitive reduction.
 3. **Signed bidirected throughput.** The current `throughput` counts
    departures using the stored `sx` end of edges. A general bidirected
    traversal may use the reversed orientation; show its equality to the
@@ -367,3 +383,36 @@ Source reading: [Medvedev–Brudno 2009, §§6.1–6.2](https://pmc.ncbi.nlm.nih
 - `scripts/verify_issue261_general_bidirected_flow_ml.py`: independent exact
   recomputation (all checks pass), including the binomial counterexample.
 - `scratch261/Audit.lean`: axiom audit (only propext, Classical.choice, Quot.sound).
+- `AssemblyP1/Section62FlowCountVectorAdapter.lean`: the flow-to-count-vector
+  adapter half — `maximal_of_subset` / `not_maximal_of_subset` (candidate-set
+  inclusion transfers failures, not positive statements) and `throughputVec_congr`
+  / `maximal_image_iff` (ML maximality over a flow set equals maximality over its
+  throughput image). It does **not** characterize the throughput image, so the
+  §6.1-binomial-over-§6.2-flow row stays OPEN.
+- `AssemblyP1/Section62SpelledFlowAdapter.lean`: the spelled-circuit →
+  feasible-flow half of the §6.2 adapter (2026-10-15). `spelling_flow_feasible`
+  proves the cyclic walk flow of a bidirected-circuit spelling is a zero-terminal
+  §6.2 feasible flow with `d = Spelling.visits`, on any `Nodup` graph containing
+  its steps; `throughput_eq_visits` and `balCore_eq_zero` are the two
+  computational halves, `weighted_dedup` the de-duplication core, and
+  `visits_mem_throughput_image` places spelled visit vectors in the feasible
+  throughput image. Axioms: `[propext, Classical.choice, Quot.sound]`
+  (`AssemblyP1/Section62SpelledFlowAdapterAudit.lean`). It does **not**
+  characterize the image (the `AAATT` obstruction keeps that OPEN) and does not
+  touch the transitive-reduction axis.
+- `AssemblyP1/Section62SpelledFlowMaximality.lean`: the spelled sub-class
+  maximality transfer and length universe (2026-10-15). `sum_visits_eq_n` /
+  `sum_throughput_eq_n` fix the total mass of a spelled candidate to its number of
+  read positions `n`; `spelledVisitSet_subset_image` places the spelled count
+  vectors inside the feasible throughput image; `spelled_maximal_of_flow_maximal`
+  restricts flow-level maximality to the spelled sub-class and
+  `flow_not_maximal_of_spelled_witness` (plus its spelled-truth form) transfers a
+  spelled dominator upward to the full feasible-flow set. Axioms:
+  `[propext, Classical.choice, Quot.sound]`
+  (`AssemblyP1/Section62SpelledFlowMaximalityAudit.lean`). It is a **necessary,
+  not sufficient** criterion: the spelled sub-class is a strict sub-class (the
+  `AAATT` non-spelled throughput), so the full image characterization and the
+  spelled-maximal-but-not-flow-maximal question stay OPEN. The spelled sub-class
+  is also limited to candidates whose every window is an observed graph vertex.
+  `flow_maximal_iff_spelled_maximal_of_image_eq` reduces sufficiency exactly to the
+  open identity `Θ(feasibleFlowSet) = spelledVisitSet`.

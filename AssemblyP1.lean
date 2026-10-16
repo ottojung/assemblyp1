@@ -26,6 +26,7 @@ import AssemblyP1.Model
 import AssemblyP1.OpenProblem
 import AssemblyP1.SourceFaithfulIs
 import AssemblyP1.HistoricalCovers
+import AssemblyP1.ConditionalIdentifiability
 import AssemblyP1.ExactVariantECounterexample
 import AssemblyP1.FixedLengthExactCounterexample
 import AssemblyP1.FixedLengthBinomialCounterexample
@@ -35,20 +36,66 @@ import AssemblyP1.SameLengthSection62Parametric
 import AssemblyP1.PerOccurrenceSameLengthCounterexample
 import AssemblyP1.HistoricalCoverageSameLengthWitnesses
 import AssemblyP1.Section62BidirectedFlow
+-- #261 feasible-flow to throughput-count vector image adapter and axiom audit.
+import AssemblyP1.Section62FlowCountVectorAdapter
+import AssemblyP1.Section62FlowCountVectorAdapterAudit
+-- #261 spelled-circuit to zero-terminal feasible-flow adapter and axiom audit.
+import AssemblyP1.Section62SpelledFlowAdapter
+import AssemblyP1.Section62SpelledFlowAdapterAudit
+-- #261 spelled sub-class maximality transfer (length universe + transfer) and audit.
+import AssemblyP1.Section62SpelledFlowMaximality
+import AssemblyP1.Section62SpelledFlowMaximalityAudit
 import AssemblyP1.Section62ReductionVacuityAudit
 import AssemblyP1.Section62SpellingReductionCandidate
+-- #262 full-overlap counterexample transfer across overlap thresholds.
+import AssemblyP1.Section62FullOverlapLift
+import AssemblyP1.Section62FullOverlapLiftAudit
 import AssemblyP1.Section62CircularStarts
 import AssemblyP1.Section62ReductionMismatch
 import AssemblyP1.Section62SkippedWindowFactor
 import AssemblyP1.Section62GlobalSpellingPreservation
+import AssemblyP1.Section62GlobalCircularCorrespondence
+import AssemblyP1.Section62GlobalCircularAudit
+import AssemblyP1.Section62ReductionDependencyAudit
+import AssemblyP1.Section62FullSpectrumUnseenFactor
+-- #259 real circular-genome witness: exact iid and product-binomial rankings differ.
+import AssemblyP1.Section62BinomialRealGenomeInversion
+import AssemblyP1.Section62CircularWindowAdapter
+-- #284 seam periodicity, aligned circular genome prefix and tail rotation (kernel-audited).
+import AssemblyP1.Section62PeriodicSeam
+-- #284: legal overlap paths spell their last read, giving a closed circular seam.
+import AssemblyP1.Section62OverlapSuffix
+-- #284: actual signed overlap circuits yield an aligned periodic circular word.
+import AssemblyP1.Section62SourceSignedSeamAdapter
+-- #284: generic periodic-window/linear-spelling equality for genuine signed circuits.
+import AssemblyP1.Section62AnchoredWindowBridge
+-- #284: non-vacuity regression instantiating the signed-circuit adapter on
+-- concrete legal signed overlap circuits, including the G < readLen case.
+import AssemblyP1.Section62SignedAdapterRegression
+import AssemblyP1.Section62FullSpectrumIndexing
 import AssemblyP1.Section62VariableOverlap247e
 import AssemblyP1.FiniteSamplingCounterexample
 import AssemblyP1.FiniteBayesDecision
 import AssemblyP1.IidMapMonotonicity
+import AssemblyP1.GenomeOrbitAdapter
+import AssemblyP1.PosteriorMAPEquivalence
+import AssemblyP1.ConditionalVsOrdinaryMLSeparation
+import AssemblyP1.ConditionalVsOrdinaryMLBoundary271
+import AssemblyP1.W1W2SeparationCompatibility
+import AssemblyP1.BayesValueMonotonicity
 import AssemblyP1.PopulationReduction
 import AssemblyP1.PopulationGibbsTest
 import AssemblyP1.OrientedRigidity
 import AssemblyP1.GraverRigidityAudit
+import AssemblyP1.FiniteRigidityDecider
+import AssemblyP1.FiniteRigidityDeciderAudit
+import AssemblyP1.TwoWalkRigidity
+import AssemblyP1.TwoWalkRigidityAudit
+import AssemblyP1.RigidityBouquet
+import AssemblyP1.RigidityBouquetAudit
+import AssemblyP1.RigidityBouquetGenomeWitness
+import AssemblyP1.RigidityBridge
+import AssemblyP1.RigidityBridgeAudit
 import AssemblyP1.RepeatAdapter
 import AssemblyP1.OrientedFinalRigidity
 import AssemblyP1.BridgingBridge
@@ -202,6 +249,7 @@ import AssemblyP1.DoubleStrandBridgingTransfer
 import AssemblyP1.TwoDisjointCirclesDuplex
 import AssemblyP1.ImplicationLattice
 import AssemblyP1.OrientedVariableLengthSe62
+import AssemblyP1.ShortFiniteMLCounterexamples
 import AssemblyP1.Section62VarlenPerOccurrence
 import AssemblyP1.BreslerRemapCompatibility
 import AssemblyP1.Issue209EAudit
@@ -213,9 +261,49 @@ import AssemblyP1.FixedNConstructiveWitness
 import AssemblyP1.FixedNConstructiveWitnessAudit
 import AssemblyP1.FiniteStartCoverage
 import AssemblyP1.FiniteStartCoverageAudit
+-- #255 exact iid full-start-covered pointwise ML classification (envelope generalization).
+import AssemblyP1.FiniteSampleIidEnvelope
+import AssemblyP1.FiniteSampleIidEnvelopeAudit
 import AssemblyP1.FixedNBinomialEffectiveWeightsAudit
+import AssemblyP1.CoveredBinomialWeightsIff
+import AssemblyP1.CoveredBinomialWeightsIffAudit
+-- #259 sharpness: neither disjunct of the covered-sample iff is redundant.
+import AssemblyP1.CoveredBinomialWeightsIffSharpness
+import AssemblyP1.CoveredBinomialWeightsIffSharpnessAudit
+-- #259 power monotonicity: the exact-iid vs §6.1 ranking inversion holds for all n ≥ 1.
+import AssemblyP1.Section62BinomialPowerMonotonicity
+import AssemblyP1.Section62BinomialPowerMonotonicityAudit
 import AssemblyP1.FiniteSideInformationColoring
 import AssemblyP1.FiniteSideInformationColoringAudit
+import AssemblyP1.FiniteBayesianSideInformation
+import AssemblyP1.FiniteBayesianSideInformationAudit
+import AssemblyP1.FiniteSideInformationOrder
+import AssemblyP1.FiniteSideInformationOrderAudit
+-- #272 ordering of the source predicate `I_s` against the read-only `Unambiguous`.
+import AssemblyP1.FiniteSideInformationOrdering
+import AssemblyP1.FiniteSideInformationOrderingAudit
+-- #270 positive finite-family iid ML recovery via Hellinger affinity.
+import AssemblyP1.FiniteReadRecovery
+-- #270 concrete uniform-start cyclic read distribution and conditional genome bounds.
+import AssemblyP1.FiniteReadRecoveryGenome
+import AssemblyP1.FiniteReadRecoveryGenomeAudit
+-- #270 connect structural primitive-P2 uniqueness to iid finite-read ML.
+import AssemblyP1.FiniteReadRecoveryP2Bridge
+import AssemblyP1.FiniteReadRecoveryP2BridgeAudit
+import AssemblyP1.FiniteReadRecoveryP2Complete
+import AssemblyP1.FiniteReadRecoveryP2CompleteAudit
+-- #281 non-monotonicity of finite-sample exact-ML success (AAC vs AAAC).
+import AssemblyP1.NonmonotonicityWitness281
+import AssemblyP1.NonmonotonicityWitness281Audit
+-- #281 the whole primitive-P2 admissible class is finite, so the ML recovery
+-- theorem needs no caller-supplied finite candidate family.
+import AssemblyP1.PrimitiveP2FiniteClass
+import AssemblyP1.PrimitiveP2FiniteClassAudit
+import AssemblyP1.PrimitiveP2UniformSeparation
+import AssemblyP1.PrimitiveP2UniformSeparationAudit
+-- #263 separable-convex Graver optimality certificate (conditional core) + audit.
+import AssemblyP1.SeparableConvexGraver
+import AssemblyP1.SeparableConvexGraverAudit
 
 /-! ## `Issue94Transposition`: the Kotzig/Ukkonen/Pevzner descent, and an obstruction
 
@@ -974,6 +1062,20 @@ graph content remains external. -/
 #print axioms AssemblyP1.Section62NonSpelledFlow.half_integral_strictly_better
 #print axioms AssemblyP1.Section62NonSpelledFlow.no_sequence_has_star_spectrum
 #print axioms AssemblyP1.Section62NonSpelledFlow.spelled_subset_general
+-- #261 spelled-circuit -> §6.2 feasible-flow adapter (general, any o_min).
+#print axioms AssemblyP1.Section62SpelledFlowAdapter.spelling_flow_feasible
+#print axioms AssemblyP1.Section62SpelledFlowAdapter.throughput_eq_visits
+#print axioms AssemblyP1.Section62SpelledFlowAdapter.balCore_eq_zero
+#print axioms AssemblyP1.Section62SpelledFlowAdapter.weighted_dedup
+#print axioms AssemblyP1.Section62SpelledFlowAdapter.visits_mem_throughput_image
+-- #261 spelled sub-class maximality transfer (length universe + transfer).
+#print axioms AssemblyP1.Section62SpelledFlowMaximality.sum_visits_eq_n
+#print axioms AssemblyP1.Section62SpelledFlowMaximality.sum_throughput_eq_n
+#print axioms AssemblyP1.Section62SpelledFlowMaximality.spelledVisitSet_subset_image
+#print axioms AssemblyP1.Section62SpelledFlowMaximality.spelled_maximal_of_flow_maximal
+#print axioms AssemblyP1.Section62SpelledFlowMaximality.flow_not_maximal_of_spelled_witness
+#print axioms AssemblyP1.Section62SpelledFlowMaximality.spelled_truth_flow_not_maximal_of_spelled_witness
+#print axioms AssemblyP1.Section62SpelledFlowMaximality.flow_maximal_iff_spelled_maximal_of_image_eq
 #print axioms AssemblyP1.Section62FullOverlapDisconnected.full_overlap_disconnected_optimum
 #print axioms AssemblyP1.Section62FullOverlapDisconnected.disc_support_disconnected
 #print axioms AssemblyP1.Section62FullOverlapDisconnected.dStar_argmax
@@ -995,6 +1097,9 @@ graph content remains external. -/
 #print axioms AssemblyP1.ImplicationLattice.ConcretePanel.lambda1_A_tie
 #print axioms AssemblyP1.OrientedVariableLengthSe62.oriented_variable_length_se62_counterexample
 #print axioms AssemblyP1.OrientedVariableLengthSe62.oriented_variable_length_se62_counterexample'
+#print axioms AssemblyP1.ShortFiniteMLCounterexamples.short_finite_ml_counterexample_2
+#print axioms AssemblyP1.ShortFiniteMLCounterexamples.short_finite_ml_counterexample_3
+#print axioms AssemblyP1.ShortFiniteMLCounterexamples.short_finite_ml_counterexample_4
 #print axioms AssemblyP1.Section62VarlenPerOccurrence.truth_not_maximizer_in_general_flow_universe
 #print axioms AssemblyP1.Section62VarlenPerOccurrence.competitor_is_unique_optimizer
 #print axioms AssemblyP1.FibreCount.sum_antidiagonal_eq_sum_divisors

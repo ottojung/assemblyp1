@@ -598,3 +598,4 @@ if FAIL == 0:
     print("All independent rational checks PASSED.")
 else:
     print("SOME CHECKS FAILED - investigate!")
+    raise SystemExit(1)
