@@ -157,6 +157,68 @@ theorem palindrome_original_not_feasible_one :
   rw [duplicate_graph_throughput_four] at hthrough
   norm_num [singletonSpectrum] at hthrough
 
+
+/-! ## Constructive alternative: preserve *orientation tags* even for a
+self-reverse-complement DNA word.
+
+MB09 §3.3 defines overlaps by the positive/negative orientation of each
+read. A palindromic read has equal POSITIVE and NEGATIVE WORDS, but its
+two physical orientations need not collapse into the same graph vertex
+strand value. Here Bool explicitly stores that orientation bit. This is
+an additive comparison model; it is not a replacement for the current
+Section62Flow definitions, nor a full proof of source algorithm fidelity. -/
+
+/-- One physical molecule class, whose two strand orientation tags remain
+distinct even though their underlying DNA words are both ATAT. -/
+def taggedReadWord (_ : Bool) : List Base := pal4
+def taggedRc (s : Bool) : Bool := !s
+def taggedRep (_ : Bool) : Bool := false
+
+theorem tagged_rc_involutive : Function.Involutive taggedRc := by
+  intro s
+  cases s <;> rfl
+
+theorem tagged_strands_are_distinct :
+    strandsOf taggedRc [false] = [false,true] := by decide
+
+theorem tagged_words_same :
+    taggedReadWord false = taggedReadWord true := rfl
+
+def taggedGraph : List (BdEdge Base Bool) :=
+    overlapEdges Base Bool taggedReadWord taggedRep taggedRc 4 2 [false]
+
+/-- All four oriented overlaps have distinct edge VALUES because the
+strand TAG is retained, unlike the four identical legacy BdEdge records. -/
+theorem tagged_graph_four_edges :
+    taggedGraph =
+      [bdEdge taggedRep false false 2,
+       bdEdge taggedRep false true 2,
+       bdEdge taggedRep true false 2,
+       bdEdge taggedRep true true 2] := by decide
+
+theorem tagged_graph_nodup : taggedGraph.Nodup := by decide
+
+/-- These four labelled strands yield four distinct incidence SIGN PAIRS:
+(+,-), (+,+), (-,-), (-,+). -/
+theorem tagged_sign_pairs_distinct :
+    (taggedGraph.map fun e => (e.sgnX,e.sgnY)).Nodup := by decide
+
+def taggedUnitFlow : BdFlow Base Bool :=
+    fun e => if e = bdEdge taggedRep false false 2 then 1 else 0
+
+/-- Distinct orientation tags make one unit of edge-value flow count once,
+even though the underlying DNA word is self-complementary. -/
+theorem tagged_unit_throughput_one :
+    throughput Base Bool taggedRep taggedUnitFlow taggedGraph false = 1 := by
+  decide
+
+#print axioms tagged_rc_involutive
+#print axioms tagged_strands_are_distinct
+#print axioms tagged_graph_four_edges
+#print axioms tagged_graph_nodup
+#print axioms tagged_sign_pairs_distinct
+#print axioms tagged_unit_throughput_one
+
 #print axioms duplicate_graph_throughput_four
 #print axioms canonical_graph_throughput_one
 #print axioms palindrome_dedup_feasible_one

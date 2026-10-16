@@ -43,6 +43,32 @@ and has a valid proper length-2 overlap with itself. It proves:
 All proofs use only Lean's standard permitted axioms (and some none); no
 `sorry`, `native_decide`, or extra axioms.
 
+## Constructive comparison: keep orientation separate from its DNA word
+
+MB09 [§3.3](https://pmc.ncbi.nlm.nih.gov/articles/PMC3154397/)
+enumerates four possible combinations of positive/negative endpoint
+orientations and distinguishes overlap incidences even when the two DNA
+words coincide. This motivates a **second**, independent model, now
+kernel-checked in this audit:
+
+- `taggedReadWord : Bool → List Base` maps **both distinct** strand
+  orientation tags to the same palindrome `ATAT`.
+- `taggedRc : Bool → Bool` flips the tag, and `taggedRep` identifies
+  both orientations with one molecule class.
+- `taggedGraph` has four **distinct** bidirected edge values with all
+  four different incidence-sign pairs; Lean proves
+  `tagged_graph_nodup` and `tagged_sign_pairs_distinct`.
+- `tagged_unit_throughput_one` proves that one unit of flow on one
+  orientation-labelled edge contributes exactly **one** to throughput,
+  despite the DNA word itself being palindromic.
+
+This is an explicit **orientation-tagging alternative** to collapsing
+identical words via `eraseDups`, and illustrates what information the
+original `W := List Base` representation loses. It remains a
+comparison model, not an automatic correction of the historical source
+algorithm: whether symmetric orientation cases should be identified
+must be settled from its physical graph convention.
+
 ## What remains open
 
 The source model distinguishes molecule classes and strand orientations,
