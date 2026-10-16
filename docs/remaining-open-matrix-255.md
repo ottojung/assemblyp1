@@ -587,6 +587,13 @@ Every material result is classified as one of:
   a positive operational arc (`22a6233`). Board #265 remains OPEN pending the
   #254/#268 review pass; the general non-equal-length ML characterization
   stays with #261/#284, not here.
+- **Update (2026-10-16):** the strong-law/KL limit statement landed in the
+  paper and both decks (`53f8c4d`) with `scripts/verify_strong_consistency_265.py`
+  wired into CI (`b9f0f47`), and both decks were re-centered on the #268
+  two-question narrative (Question A conditional / Question B unconditional) by
+  agent `68d129da714f`; see `docs/deck-arc-consistency-265.md`. Paper,
+  claims-matrix (`tab:claims`), and bibliography acceptance re-checked there
+  (all `\ref`/`\cite` resolve; build 0 undefined).
 
 ### #266 (board CLOSED; PARTIAL scope) — conditional identifiability from Not-So-Greedy information-feasibility
 
@@ -642,6 +649,13 @@ Every material result is classified as one of:
   Bayes prior-averaged scope, `#273`/`#274` likelihood convention). Board #268
   remains OPEN pending the #265 mirror in the decks and claims-matrix
   acceptance.
+- **Update (2026-10-16):** the pending #265 mirror is now in place: both decks
+  name the two questions (Question A conditional / Question B unconditional)
+  and the claims matrix (`tab:claims` row 1 vs row 3) and bibliography were
+  re-checked for consistency (agent `68d129da714f`,
+  `docs/deck-arc-consistency-265.md`). The remaining #268 question is whether
+  the human reviewer accepts the centered wording; no further deck/claims-matrix
+  gap is recorded.
 
 ### #269 (Lean: finite Bayes/MAP optimality and monotone prior-average success)
 
