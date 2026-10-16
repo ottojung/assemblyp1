@@ -62,6 +62,21 @@ kernel-checked in this audit:
   orientation-labelled edge contributes exactly **one** to throughput,
   despite the DNA word itself being palindromic.
 
+A second source-relevant comparison is now checked in Lean: reversing a
+double-stranded overlap reverses the direction and complements both
+strand-orientation tags. Under this involution, the `false→false` and
+`true→true` edges form one two-element orbit, while the two mixed-tag
+edges are each fixed. Thus four distinct orientation-labelled overlap
+edges yield exactly **three bidirected reversal-orbit types**:
+`tagged_three_reversal_orbits` proves the canonical labels are
+`[0,1,2]`. Theorems `tagged_reverse_involutive`,
+`tagged_reverse_mem` and `tagged_orientation_class_reverse_invariant`
+prove the finite quotient is well-behaved.
+
+This mirrors the **three overlap edge types** described in Medvedev–Brudno
+Fig. 1C, but does not prove that every edge quotient in their full
+algorithm follows this exact construction.
+
 This is an explicit **orientation-tagging alternative** to collapsing
 identical words via `eraseDups`, and illustrates what information the
 original `W := List Base` representation loses. It remains a

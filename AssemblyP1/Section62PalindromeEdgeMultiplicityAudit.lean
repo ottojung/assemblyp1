@@ -212,6 +212,79 @@ theorem tagged_unit_throughput_one :
     throughput Base Bool taggedRep taggedUnitFlow taggedGraph false = 1 := by
   decide
 
+
+/-! ## Bidirected reversal symmetry on explicitly tagged orientations
+
+Reversing a *double-stranded* overlap reverses edge direction AND swaps
+the two strand orientations. For the palindrome, the 4 strand-pair choices
+have only 3 equivalence classes modulo that involution. This matches the
+three abstract incidence-edge types in MB09 Fig. 1C, but is not a theorem
+that the complete historical algorithm uses this particular quotient. -/
+
+def reverseTaggedEdge (e : BdEdge Base Bool) : BdEdge Base Bool :=
+  bdEdge taggedRep (taggedRc e.sy) (taggedRc e.sx) e.len
+
+/-- The both-positive-orientation overlap and its both-negative mirror
+spell the same double-stranded relation under full reversal. -/
+theorem tagged_reverse_pairs_both_same :
+    reverseTaggedEdge (bdEdge taggedRep false false 2) =
+      bdEdge taggedRep true true 2 ∧
+    reverseTaggedEdge (bdEdge taggedRep true true 2) =
+      bdEdge taggedRep false false 2 := by
+  decide
+
+/-- The two mixed-strand endpoint choices each return to themselves. -/
+theorem tagged_reverse_fixes_mixed :
+    reverseTaggedEdge (bdEdge taggedRep false true 2) =
+      bdEdge taggedRep false true 2 ∧
+    reverseTaggedEdge (bdEdge taggedRep true false 2) =
+      bdEdge taggedRep true false 2 := by
+  decide
+
+/-- On the valid graph, reversing an overlap twice is the identity. -/
+theorem tagged_reverse_involutive (e : BdEdge Base Bool)
+    (he : e ∈ taggedGraph) :
+    reverseTaggedEdge (reverseTaggedEdge e) = e := by
+  rw [tagged_graph_four_edges] at he
+  simp only [List.mem_cons, List.not_mem_nil, or_false] at he
+  rcases he with rfl | rfl | rfl | rfl <;> decide
+
+/-- Every graph edge stays a graph edge under double-strand reversal. -/
+theorem tagged_reverse_mem (e : BdEdge Base Bool)
+    (he : e ∈ taggedGraph) :
+    reverseTaggedEdge e ∈ taggedGraph := by
+  rw [tagged_graph_four_edges] at he
+  simp only [List.mem_cons, List.not_mem_nil, or_false] at he
+  rcases he with rfl | rfl | rfl | rfl <;> decide
+
+/-- Three purely representational orientation-orbit labels:
+both tags equal form one class, while the two unequal arrangements each
+form a reversal-fixed class. -/
+def taggedOrientationClass (e : BdEdge Base Bool) : Nat :=
+  if e.sx = e.sy then 0 else if e.sx = false then 1 else 2
+
+theorem tagged_orientation_class_reverse_invariant (e : BdEdge Base Bool)
+    (he : e ∈ taggedGraph) :
+    taggedOrientationClass (reverseTaggedEdge e) =
+      taggedOrientationClass e := by
+  rw [tagged_graph_four_edges] at he
+  simp only [List.mem_cons, List.not_mem_nil, or_false] at he
+  rcases he with rfl | rfl | rfl | rfl <;> decide
+
+/-- Four distinct tagged edges yield exactly THREE classes under the
+bidirected reversal symmetry. This is a finite, kernel-checked analogue
+of the 'three types' in MB09 Fig. 1C. -/
+theorem tagged_three_reversal_orbits :
+    (taggedGraph.map taggedOrientationClass).eraseDups = [0,1,2] := by
+  decide
+
+#print axioms tagged_reverse_pairs_both_same
+#print axioms tagged_reverse_fixes_mixed
+#print axioms tagged_reverse_involutive
+#print axioms tagged_reverse_mem
+#print axioms tagged_orientation_class_reverse_invariant
+#print axioms tagged_three_reversal_orbits
+
 #print axioms tagged_rc_involutive
 #print axioms tagged_strands_are_distinct
 #print axioms tagged_graph_four_edges
