@@ -80,6 +80,12 @@ import AssemblyP1.Section62AnchorSourceWords
 import AssemblyP1.Section62GlobalSkippedBridge
 -- #284: RC molecule-class occurrence counts, including palindromes.
 import AssemblyP1.Section62ObservedMoleculeCount
+-- #284: generic (graph-free) anchored-window spelling identity for legal closed
+-- overlap paths, the abstract content of CircularSpelling.hAnchors.
+import AssemblyP1.Section62GenericAnchorSpelling
+-- #284: word-level reverse-complement law for the implemented Strand3 witness,
+-- closing the external-interpretation gap in the RC class-count corollary.
+import AssemblyP1.Section62RcWordLaw
 -- #284: non-vacuity regression instantiating the signed-circuit adapter on
 -- concrete legal signed overlap circuits, including the G < readLen case.
 import AssemblyP1.Section62SignedAdapterRegression
