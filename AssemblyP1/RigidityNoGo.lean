@@ -4,7 +4,7 @@ set_option linter.unusedVariables false
 set_option linter.unusedSectionVars false
 
 /-!
-# The coin-problem obstruction to a polynomial rigidity criterion (issue #257, §8.1/§8.2)
+# The LP-relaxation no-go for a polynomial rigidity criterion (issue #257, §8.1/§8.2)
 
 This module advances the *genuinely open* residual of
 `docs/source-notes/issue-257-rigid-read-graphs.md`: §8.1 (a closed-form
@@ -18,61 +18,64 @@ complexity). The exact algebraic criterion
 (`AssemblyP1.RigidityBouquet`) and the antiparallel-bridge reduction
 (`AssemblyP1.RigidityBridge`) are already merged and are **not** redone here.
 
-## The obstruction
+## Headline result: the direct LP relaxation is always satisfiable
 
-The bouquet criterion (`bouquet_nonrigid_iff`) says that a bouquet of `k` cycles
-is non-rigid iff there is a nonzero integer vector `x` with
-`∑ i, len i * x i = 0` and `x i ≥ 1 - mult i`. This module exhibits the
-*arithmetic core* of general-support rigidity: it is exactly the **unbounded
-coin problem** (numerical-semigroup membership).
-
-Concretely, given coin values `coins : Fin k → ℕ` and a target `t`, build the
-**coin bouquet**: one *target* cycle of length `t` with multiplicity `2`
-(slack `1`), and `k` further cycles of lengths `coins i` with multiplicity `1`
-(slack `0`). Then:
-
-> `coin_bouquet_nonrigid_iff`: the coin bouquet is **not** rigid **iff** `t` is a
-> nonnegative integer combination of the `coins i`.
-
-_Proof._ The criterion becomes `t * x 0 + ∑ i, coins i * x (i+1) = 0` with
-`x 0 ≥ -1` and `x (i+1) ≥ 0`. Since `t ≥ 1` and `coins i ≥ 1`, the equation
-forces `x 0 ∈ {-1, 0}`; `x 0 = 0` forces `x = 0`, so a nonzero witness has
-`x 0 = -1` and `∑ i, coins i * x (i+1) = t` with `x (i+1) ≥ 0`. ∎
-
-This is a *reduction*: deciding general-support rigidity is at least as hard as
-the unbounded coin problem. The coin problem with binary-encoded coin values is
-NP-hard (Lueker 1975, unbounded knapsack), so no polynomial-time closed form is
-expected for general supports. See the note §15 for the precise encoding caveat
-(an explicitly represented support encodes the cycle lengths in unary).
-
-## The fractional (LP) no-go
-
-`coin_bouquet_real_nonrigid` shows that for the coin bouquet the **direct
-rational relaxation is always satisfiable** (take `x 0 = -1`,
-`x 1 = t / coins 0`): a nonzero rational point with zero weighted length sum and
-the same box always exists whenever `k ≥ 1`. Hence *no* criterion based only on
-the fractional relaxation of this integer system can certify rigidity: the
-real-valued problem never detects the rigid instances. This generalizes the
+`coin_bouquet_real_nonrigid` is the new result of this module. For the **coin
+bouquet** (one target `t`-cycle of multiplicity `2`, `k ≥ 1` coin cycles of
+lengths `coins i` of multiplicity `1`) the **direct rational/LP relaxation** of
+the bouquet criterion has a nonzero witness `x 0 = -1`, `x 1 = t / coins 0` for
+*every* instance — including the rigid ones. Hence **no decision procedure based
+only on that fractional relaxation can decide rigidity**: the relaxation admits a
+nonzero kernel vector on instances that are in fact rigid. This generalizes the
 single `len233_mult211_real_integer_gap` example of `RigidityBouquet` to the
-whole coin family.
+whole coin family, and is consistent with the polynomial Apéry-set algorithm of
+PR #283 (an Apéry computation is not a linear relaxation).
+
+## Independent crosscheck of the coin reduction (PR #283)
+
+The exact classification of this family is **already proved** in PR #283
+(`AssemblyP1.RigidityTargetCycle.targetCycle_nonrigid_iff_coin`, target cycle
+last, coin cycles first). This module contains an *independent kernel-checked
+crosscheck* of the same statement, `coin_bouquet_nonrigid_iff`, with the opposite
+index convention (target cycle `0`, coin cycles `i+1`): the coin bouquet is
+**not** rigid **iff** `t` is a nonnegative integer combination of the `coins i`
+(numerical-semigroup membership). It is retained only as a crosscheck of #283 and
+is **not** presented as a novel or competing claim; the worked instances
+`coins23_target1_rigid` / `coins23_target5_nonrigid` are likewise crosschecks of
+#283's `coin_rigid_23_1` / `coin_nonrigid_23_5`.
+
+## Complexity: compact encodings versus explicit supports
+
+The coin problem with **binary-encoded** denominations is NP-hard (Lueker 1975,
+unbounded knapsack), and under a *compact binary* encoding of the cycle lengths
+the reduction would make general-support rigidity NP-hard. **This does not apply
+to explicit support graphs.** An explicit support represents a cycle of length
+`t` by `t` distinct edges, so a binary coin instance with target `t` maps to a
+coin bouquet with `Θ(t + ∑ coins)` edges — a *pseudo-polynomial* reduction in the
+binary input size. It therefore establishes **no** NP-hardness and **no**
+conditional impossibility of a polynomial rigidity criterion for explicit
+supports. Indeed, PR #283 shows the whole target-cycle/bouquet family is
+decidable in polynomial time on explicit (unary) supports via the Apéry-set /
+residue-graph shortest-path algorithm. The uniform-in-support complexity (§8.2)
+stays **OPEN**; bounded cycle rank is the largest natural polynomial family
+identified here (see note §15.5).
 
 ## Main results
 
-* `coin_bouquet_nonrigid_iff`: the exact reduction to numerical-semigroup
-  membership.
 * `coin_bouquet_real_nonrigid`: the direct LP/fractional relaxation always has a
-  nonzero witness for `k ≥ 1`.
-* `coins23_target1_rigid`: a rigid coin bouquet (`2 x + 3 y = 1` impossible).
-* `coins23_target5_nonrigid`: a non-rigid coin bouquet (`5 = 2 + 3`).
+  nonzero witness for `k ≥ 1` (headline).
+* `coin_bouquet_nonrigid_iff`: independent crosscheck of #283's
+  `targetCycle_nonrigid_iff_coin`.
+* `coins23_target1_rigid` / `coins23_target5_nonrigid`: crosscheck instances.
 
 ## Epistemic status
 
 All theorems are kernel-checked with only `[propext, Classical.choice,
 Quot.sound]` (`AssemblyP1/RigidityNoGoAudit`); no `sorry`/`admit`/`axiom`/
-`native_decide`. The reduction and the LP no-go are [mathematical proof +
-kernel-checked]; the complexity consequence is stated in the note and depends on
-the external NP-hardness of the unbounded coin problem. The exact complexity of
-rigidity for **explicitly represented** supports remains **OPEN** (§8.2).
+`native_decide`. The LP no-go is [mathematical proof + kernel-checked]; the
+NP-hardness of the *binary* coin problem is an external cited result (Lueker
+1975). The exact complexity of rigidity for **explicitly represented** supports
+remains **OPEN** (§8.2).
 -/
 
 namespace AssemblyP1.RigidityNoGo
@@ -146,11 +149,15 @@ lemma coin_total (coins : Fin k → ℕ) (hc : ∀ i, 1 ≤ coins i) (t : ℕ) (
 
 /-! ## The exact reduction -/
 
-/-- **Coin-problem reduction for general-support rigidity.** The coin bouquet is
-non-rigid **iff** the target is a nonnegative integer combination of the coin
-values. This is the precise sense in which deciding rigidity of positive
-length-`G` circulations on general oriented supports is *at least as hard as* the
-unbounded coin problem. -/
+/-- **Independent crosscheck of the coin reduction (PR #283).** The coin bouquet
+is non-rigid **iff** the target is a nonnegative integer combination of the coin
+values. This is the same statement as PR #283's
+`AssemblyP1.RigidityTargetCycle.targetCycle_nonrigid_iff_coin` (same family; only
+the index convention differs — here the target is cycle `0`), proved here
+independently as a kernel-checked crosscheck, not as a novel or competing claim.
+It reduces deciding rigidity of positive length-`G` circulations on general
+oriented supports to the unbounded coin problem (numerical-semigroup
+membership). -/
 theorem coin_bouquet_nonrigid_iff (coins : Fin k → ℕ) (hc : ∀ i, 1 ≤ coins i)
     (t : ℕ) (ht : 1 ≤ t) :
     (¬ AssemblyP1.ExactRigidityCriterion.Rigid btail bhead (bnodes (coinLen coins t))
@@ -282,9 +289,9 @@ def coins23 : Fin 2 → ℕ := ![2, 3]
 
 lemma coins23_ge (i : Fin 2) : 1 ≤ coins23 i := by fin_cases i <;> decide
 
-/-- **Rigid coin bouquet.** Target `t = 1` is *not* a nonnegative integer
-combination of `{2, 3}` (the only equation is `2x + 3y = 1`), so the coin bouquet
-is rigid. -/
+/-- **Crosscheck instance (rigid).** Target `t = 1` is *not* a nonnegative
+integer combination of `{2, 3}` (the only equation is `2x + 3y = 1`), so the coin
+bouquet is rigid. Same instance as PR #283's `coin_rigid_23_1`. -/
 theorem coins23_target1_rigid :
     AssemblyP1.ExactRigidityCriterion.Rigid btail bhead (bnodes (coinLen coins23 1))
       (bedges (coinLen coins23 1) (coinM coins23 1))
@@ -296,9 +303,9 @@ theorem coins23_target1_rigid :
     simpa [coins23, Fin.sum_univ_two] using hy
   omega
 
-/-- **Non-rigid coin bouquet.** Target `t = 5 = 2 + 3` is a nonnegative integer
-combination of `{2, 3}` (witness `y = (1, 1)`), so the coin bouquet is
-non-rigid. -/
+/-- **Crosscheck instance (non-rigid).** Target `t = 5 = 2 + 3` is a nonnegative
+integer combination of `{2, 3}` (witness `y = (1, 1)`), so the coin bouquet is
+non-rigid. Same instance as PR #283's `coin_nonrigid_23_5`. -/
 theorem coins23_target5_nonrigid :
     ¬ AssemblyP1.ExactRigidityCriterion.Rigid btail bhead (bnodes (coinLen coins23 5))
       (bedges (coinLen coins23 5) (coinM coins23 5))

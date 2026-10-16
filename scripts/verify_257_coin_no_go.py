@@ -1,32 +1,39 @@
 #!/usr/bin/env python3
-"""Exhaustive small-case cross-check for the COIN-PROBLEM rigidity obstruction of
-Antonina board issue #257 (AssemblyP1, ``github.com/ottojung/assemblyp1``),
-scope §8.1/§8.2.
+"""Exhaustive small-case cross-check for the LP-RELAXATION no-go of Antonina
+board issue #257 (AssemblyP1, ``github.com/ottojung/assemblyp1``), scope
+§8.1/§8.2.
 
-Claim (proved and kernel-checked in ``AssemblyP1/RigidityNoGo.lean``, theorem
-``coin_bouquet_nonrigid_iff``):
+Headline claim (proved and kernel-checked in ``AssemblyP1/RigidityNoGo.lean``,
+theorem ``coin_bouquet_real_nonrigid``): the **direct rational/LP relaxation**
+of the bouquet criterion is satisfied by the *coin bouquet* (one target
+``t``-cycle of multiplicity ``2``, ``k >= 1`` coin cycles of lengths
+``coins i`` of multiplicity ``1``) for **every** instance, including the rigid
+ones. Hence no decision procedure based only on that fractional relaxation can
+decide rigidity.
 
-    Build the *coin bouquet* of a coin system ``coins : Fin k -> N`` and a target
-    ``t``: one *target* cycle of length ``t`` with multiplicity ``2`` (slack 1),
-    and ``k`` further cycles of lengths ``coins i`` with multiplicity ``1``
-    (slack 0). Then the bouquet is NOT rigid iff ``t`` is a nonnegative integer
-    combination of the ``coins i`` (numerical-semigroup membership).
+The exact integer classification of this same family is proved in PR #283
+(``AssemblyP1.RigidityTargetCycle.targetCycle_nonrigid_iff_coin``); the Lean
+theorem ``coin_bouquet_nonrigid_iff`` cross-checked here is an *independent*
+kernel-checked restatement of it with the opposite index convention (target
+cycle first), not a competing claim:
 
-This is the precise reduction showing general-support rigidity is *at least as
-hard as* the unbounded coin problem. The script is self-contained (no repository
-import), uses exact arithmetic, and is deterministic. It has three parts:
+    the coin bouquet is NOT rigid iff ``t`` is a nonnegative integer combination
+    of the ``coins i`` (numerical-semigroup membership).
+
+This script is self-contained (no repository import), uses exact arithmetic, and
+is deterministic. It has three parts:
 
 * ``bruteforce``: for every coin system in a small exhaustive scope, compute
   rigidity from scratch by enumerating *all* positive integer circulations of
   total ``G`` on the actual support graph (balance-guided backtracking), and
-  compare with semigroup membership. Exit non-zero on any mismatch.
-* ``lp``: confirm the *fractional/LP* no-go of ``coin_bouquet_real_nonrigid``:
-  the direct rational relaxation has a nonzero witness for every coin bouquet
-  with ``k >= 1`` -- in particular for the rigid instances, so no criterion
-  based only on the direct rational relaxation can certify rigidity.
-* ``instances``: re-derive the kernel-checked worked instances
-  ``coins23_target1_rigid`` (rigid) and ``coins23_target5_nonrigid`` (witness
-  ``y = (1, 1)``).
+  compare with semigroup membership. Exit non-zero on any mismatch. This
+  cross-checks the PR #283 / ``coin_bouquet_nonrigid_iff`` classification.
+* ``lp``: confirm the LP no-go ``coin_bouquet_real_nonrigid``: the direct
+  rational relaxation has a nonzero witness for every coin bouquet with
+  ``k >= 1`` -- in particular for the rigid instances, so no criterion based
+  only on the direct rational relaxation can certify rigidity.
+* ``instances``: re-derive the crosscheck instances ``coins23_target1_rigid``
+  (rigid) and ``coins23_target5_nonrigid`` (witness ``y = (1, 1)``).
 
 Exit code is non-zero if any check fails.
 """

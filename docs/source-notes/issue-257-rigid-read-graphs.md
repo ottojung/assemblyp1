@@ -22,8 +22,8 @@ constructive n=3/4 and exhaustive search n=3),
 cross-check, exhaustive small scope),
 `python3 scripts/verify_257_bridge.py` (§14 antiparallel-bridge four-variable
 criterion cross-check, exhaustive small scope),
-`python3 scripts/verify_257_coin_no_go.py` (§15 coin-problem reduction and
-direct-LP no-go cross-check, exhaustive small scope).
+`python3 scripts/verify_257_coin_no_go.py` (§15 direct-LP no-go and coin-iff
+crosscheck, exhaustive small scope).
 Self-contained, exact integer arithmetic, deterministic._
 
 _Blocking-review repair (2026-10-10, branch `research/257-graver-lean-repair`):
@@ -67,18 +67,24 @@ kernel-checked proof that the direct LP/fractional relaxation is **not** suffici
 polynomial min-cut/max-flow form for general supports (or a proof that none
 exists) remains **OPEN**._
 
-_Lean (coin-problem obstruction, §8.1/§8.2 no-go, 2026-10-16): the reduction of
-§15 is kernel-checked as `AssemblyP1/RigidityNoGo.lean`
-(`coin_bouquet_nonrigid_iff`: general-support rigidity is at least as hard as the
-unbounded coin problem; `coin_bouquet_real_nonrigid`: the direct rational/LP
-relaxation always has a witness, so it can never certify rigidity; plus the rigid
-instance `coins23_target1_rigid` and the non-rigid instance
-`coins23_target5_nonrigid`), with the same standard axioms. Build with
-`lake build AssemblyP1.RigidityNoGo`; audit with `lake env lean AxiomAudit257.lean`.
-This is a **no-go/reduction**, not a polynomial criterion: it proves the arithmetic
-core of general-support rigidity is numerical-semigroup membership, and that the
-direct LP relaxation fails for the whole family. The exact complexity for
-explicitly represented supports remains **OPEN** (§8.2)._
+_Lean (LP-relaxation no-go, §8.1/§8.2, 2026-10-16): `AssemblyP1/RigidityNoGo.lean`
+proves `coin_bouquet_real_nonrigid`: the **direct rational/LP relaxation** of the
+bouquet criterion always has a witness for the coin bouquet, so no criterion
+based only on that relaxation can decide general-support rigidity. This is the
+headline result. The exact coin/numerical-semigroup classification of the same
+family is proved in PR #283
+(`AssemblyP1.RigidityTargetCycle.targetCycle_nonrigid_iff_coin`); the Lean theorem
+`coin_bouquet_nonrigid_iff` here is an *independent kernel-checked crosscheck* of
+it (opposite index convention), with the crosscheck instances
+`coins23_target1_rigid` / `coins23_target5_nonrigid`. All with the same standard
+axioms. Build with `lake build AssemblyP1.RigidityNoGo`; audit with
+`lake env lean AxiomAudit257.lean`. This is a **no-go for the direct
+fractional/LP form**, not for polynomial rigidity criteria on explicit supports:
+because an explicit support encodes cycle lengths in unary, the reduction to the
+binary-encoded coin problem is pseudo-polynomial and yields no NP-hardness or
+impossibility statement for explicit supports (PR #283 gives a polynomial
+Apéry-set algorithm for the family). The exact complexity for explicitly
+represented supports remains **OPEN** (§8.2)._
 
 ---
 
@@ -167,18 +173,23 @@ map `B : E → ℤ` with `B ≥ 1` on every edge, balanced at every node, and
     abstract support (this exact shape is not a de Bruijn read-support).
     [mathematical proof + kernel-checked, section 14]
 
-10. **Coin-problem obstruction (no-go for a polynomial min-cut/LP closed form).**
+10. **Direct fractional/LP no-go (no-go for LP-based min-cut closed forms).**
     The **coin bouquet** (one target `t`-cycle with slack `1`, `k` coin cycles of
     lengths `coins i` with slack `0`) is non-rigid **iff** `t` is a nonnegative
-    integer combination of the `coins i` (numerical-semigroup membership,
-    kernel-checked `coin_bouquet_nonrigid_iff`). The direct rational/LP
-    relaxation has a witness for **every** such bouquet (`k ≥ 1`), including the
-    rigid ones (`coin_bouquet_real_nonrigid`), so **no direct fractional/min-cut
-    relaxation can decide general-support rigidity**. With binary-encoded cycle
-    lengths this reduction makes rigidity NP-hard (unbounded coin problem, Lueker
-    1975); for explicit graphs the encoding is unary and the exact complexity
-    remains OPEN. Bounded cycle rank is the largest natural family with a
-    polynomial criterion. [mathematical proof + kernel-checked, section 15]
+    integer combination of the `coins i` (numerical-semigroup membership; proved
+    in PR #283 as `targetCycle_nonrigid_iff_coin`, with the kernel-checked
+    `coin_bouquet_nonrigid_iff` here as an independent crosscheck). The direct
+    rational/LP relaxation has a witness for **every** such bouquet (`k ≥ 1`),
+    including the rigid ones (`coin_bouquet_real_nonrigid`), so **no direct
+    fractional/LP relaxation can decide general-support rigidity**. With
+    *compact binary-encoded* cycle lengths the reduction would make rigidity
+    NP-hard (unbounded coin problem, Lueker 1975); an **explicit** support
+    encodes lengths in unary, so the reduction is pseudo-polynomial and yields
+    **no** NP-hardness or impossibility statement for explicit supports (PR #283
+    gives a polynomial Apéry-set algorithm for this family). The exact
+    complexity for explicit supports remains OPEN. Bounded cycle rank is the
+    largest natural family with a polynomial criterion.
+    [mathematical proof + kernel-checked, section 15]
 
 ---
 
@@ -480,28 +491,32 @@ exhaustive zeros are a sanity check on the proofs, not a substitute for them.
    the bouquet form, and is rigid **iff** all multiplicities are `1`
    (`bridgeA_rigid_iff_trivial`); so the bridge topology yields no new rigid
    repetitive supports. The general complexity and graph-theoretic
-   characterization remain **OPEN**. **No-go progress (§15, 2026-10-16):** the
-   **coin bouquet** shows the arithmetic core of general-support rigidity is
-   exactly numerical-semigroup membership (kernel-checked
+   characterization remain **OPEN**. **LP no-go progress (§15, 2026-10-16):** the
+   **coin bouquet** reduces the arithmetic core of general-support rigidity to
+   numerical-semigroup membership (proved in PR #283 as
+   `targetCycle_nonrigid_iff_coin`; independent kernel-checked crosscheck
    `coin_bouquet_nonrigid_iff`), and the direct rational/LP relaxation has a
    witness for **every** coin bouquet with `k ≥ 1`, including all rigid ones
-   (`coin_bouquet_real_nonrigid`). So no direct fractional/min-cut relaxation can
-   decide general-support rigidity. With binary-encoded cycle lengths this makes
-   rigidity NP-hard (unbounded coin problem, Lueker 1975); the polynomial
-   closed-form question for **explicitly represented** supports stays OPEN.
-   [open; bouquet case reduced, §13; bridge case classified, §14; coin obstruction
+   (`coin_bouquet_real_nonrigid`). So no direct fractional/LP relaxation can
+   decide general-support rigidity. With *compact binary-encoded* cycle lengths
+   this would make rigidity NP-hard (unbounded coin problem, Lueker 1975), but for
+   **explicitly represented** supports the encoding is unary and the reduction is
+   pseudo-polynomial, so it proves no NP-hardness or impossibility; the polynomial
+   closed-form question for explicit supports stays OPEN.
+   [open; bouquet case reduced, §13; bridge case classified, §14; LP no-go
    proved, §15]
-2. **The exact complexity** of the exact criterion (§7). [open] **No-go progress
+2. **The exact complexity** of the exact criterion (§7). [open] **Partial
    (§15, 2026-10-16):** with the support described compactly by its cycle lengths
-   (binary encoding) rigidity is NP-hard via the unbounded coin problem
-   (`coin_bouquet_nonrigid_iff`), so no polynomial-time closed form exists for
-   compactly described general supports unless P = NP. For **explicitly
-   represented** supports the reduction is unary (a length-`t` cycle costs `t`
-   edges), so it does not by itself prove NP-hardness and the exact complexity
-   remains OPEN. Bounded cycle rank `r = |E| - |V| + c` is decidable in
-   polynomial time (fixed-dimension integer programming, Lenstra 1983) and is the
-   largest natural polynomial family identified here. [partial: conditional
-   NP-hardness for compact encodings; explicit-support classification open, §15]
+   (binary encoding) the coin reduction makes rigidity NP-hard via the unbounded
+   coin problem, so no polynomial-time closed form exists for compactly described
+   general supports unless P = NP. For **explicitly represented** supports the
+   reduction is unary (a length-`t` cycle costs `t` edges), so it is
+   pseudo-polynomial and proves no NP-hardness; PR #283 shows the bouquet family
+   itself is in P via the Apéry-set algorithm. Bounded cycle rank
+   `r = |E| - |V| + c` is decidable in polynomial time (fixed-dimension integer
+   programming, Lenstra 1983) and is the largest natural polynomial family
+   identified here. [partial: conditional NP-hardness for compact encodings;
+   explicit-support classification open, §15]
 3. ~~**The two-closed-walk certificate** (§4)~~ **RESOLVED (2026-10-15).** The
    two-closed-walk certificate is necessary **and** sufficient for strongly
    connected supports; see Theorem 5 in §12. The earlier `n = 3` evidence was
@@ -527,8 +542,8 @@ exhaustive zeros are a sanity check on the proofs, not a substitute for them.
 | §6 exhaustive `n = 3` two-cycle agreement | verified computation, exhaustive in scope |
 | §7 exact criterion is a finite integer feasibility problem | mathematical proof |
 | §7 LP relaxation not exact (real/integer gap witnessed, §7) | mathematical proof + verified computation |
-| §8.1 closed-form graph-theoretic iff (polynomial / min-cut form) | open (no-go for direct fractional/LP form proved, §15; compact-encoding NP-hard, §15) |
-| §8.2 exact complexity | open (conditional NP-hardness for compact encodings; explicit-support classification open, §15) |
+| §8.1 closed-form graph-theoretic iff (polynomial / min-cut form) | open (LP-relaxation no-go proved, §15; compact-encoding NP-hard, explicit supports not, §15) |
+| §8.2 exact complexity | open (conditional NP-hardness for compact encodings; explicit-support classification open; bouquet family in P via #283, §15) |
 | §8.3 two-closed-walk certificate iff | mathematical proof + kernel-checked (`TwoWalkRigidity.rigid_iff_no_two_nonneg_circ`, §12) |
 | §8.4 finite-`k` cycle question | open |
 | §12 Theorem 5: two-closed-walk iff (general `w₁,w₂` and equal-length `w=1` forms) | mathematical proof + kernel-checked |
@@ -548,10 +563,10 @@ exhaustive zeros are a sanity check on the proofs, not a substitute for them.
 | §14 bridge classification (`bridgeA_rigid_iff_trivial`: rigid iff `m1 = m2 = f = 1`) | mathematical proof + kernel-checked |
 | §14 bridge non-rigidity witnesses (`dM1`, `dM2`, `dF`) | kernel-checked |
 | §14 bridge cross-check vs brute force (`scripts/verify_257_bridge.py`: 880 bridges, 0 mismatches) | verified computation, exhaustive in scope |
-| §15 Theorem 8 coin-problem reduction (`coin_bouquet_nonrigid_iff`: non-rigid iff `t = ∑ coins_i y_i`, `y ≥ 0`) | mathematical proof + kernel-checked (`AssemblyP1/RigidityNoGo.lean`) |
-| §15 Theorem 9 LP no-go (`coin_bouquet_real_nonrigid`: direct rational witness exists for every `k ≥ 1`, including rigid instances) | mathematical proof + kernel-checked |
-| §15 worked instances (`coins23_target1_rigid` rigid; `coins23_target5_nonrigid` witness `y=(1,1)`) | kernel-checked |
-| §15 coin cross-check (`scripts/verify_257_coin_no_go.py`: 786 bouquets, 0 mismatches; LP witness 786/786) | verified computation, exhaustive in scope |
+| §15 LP no-go (`coin_bouquet_real_nonrigid`: direct rational witness exists for every `k ≥ 1`, including rigid instances) | mathematical proof + kernel-checked (`AssemblyP1/RigidityNoGo.lean`; headline) |
+| §15 coin-iff crosscheck (`coin_bouquet_nonrigid_iff`: non-rigid iff `t = ∑ coins_i y_i`, `y ≥ 0`; independent crosscheck of PR #283's `targetCycle_nonrigid_iff_coin`) | mathematical proof + kernel-checked |
+| §15 crosscheck instances (`coins23_target1_rigid` rigid; `coins23_target5_nonrigid` witness `y=(1,1)`; crosschecks of #283's `coin_rigid_23_1`/`coin_nonrigid_23_5`) | kernel-checked |
+| §15 coin crosscheck (`scripts/verify_257_coin_no_go.py`: 786 bouquets, 0 mismatches; LP witness 786/786) | verified computation, exhaustive in scope |
 | §15 bounded cycle rank `r` decidable in polynomial time (fixed-dimension integer programming, Lenstra 1983) | mathematical proof (external complexity reference; not kernel-checked) |
 
 ---
@@ -1029,12 +1044,15 @@ none exists — remains **OPEN** (§8.1/§8.2).
 
 ---
 
-## 15. The coin-problem obstruction: a no-go for direct min-cut / LP closed forms (§8.1/§8.2)
+## 15. The direct fractional/LP no-go for a polynomial rigidity criterion (§8.1/§8.2)
 
-This section advances the open residual §8.1/§8.2 by exhibiting the *arithmetic
-core* of general-support rigidity: it is exactly **numerical-semigroup
-membership**, the unbounded coin problem. It is a **reduction / no-go**, not a
-polynomial criterion.
+This section advances the open residual §8.1/§8.2 by isolating the *arithmetic
+core* of general-support rigidity — the **coin bouquet**, whose exact integer
+classification is numerical-semigroup membership — and by proving that its
+**direct fractional/LP relaxation is always satisfiable**. The headline result is
+the LP no-go (§15.2): no criterion based only on that relaxation can decide
+general-support rigidity. The exact integer classification itself is proved in
+PR #283 and is only *cross-checked* here (§15.3).
 
 ### 15.1 The coin bouquet
 
@@ -1046,12 +1064,32 @@ bouquet** is the bouquet of §13 with `k+1` cycles:
 
 Its total mass is `G = 2t + ∑ i, coins i`. The bouquet is a genuine abstract
 oriented support graph (a self-loop for `t = 1` or `coins i = 1`, which §1 allows).
+This is the same family as the *target-cycle bouquet* of PR #283
+(`AssemblyP1.RigidityTargetCycle.targetCycle_nonrigid_iff_coin`), only with the
+opposite index convention (target cycle first here, last in #283).
 
-### 15.2 Exact reduction to the unbounded coin problem
+### 15.2 The direct fractional (LP) relaxation always fails (headline)
 
-**Theorem 8 (coin-problem reduction, `coin_bouquet_nonrigid_iff`).** The coin
-bouquet is **not** rigid **iff** `t` is a nonnegative integer combination of the
-`coins i`:
+**Theorem 9 (LP no-go, `coin_bouquet_real_nonrigid`).** For every coin bouquet
+with `k ≥ 1` the direct rational relaxation has a nonzero witness
+`x₀ = -1`, `x₁ = t / coins 0`, all other coordinates `0`. In particular the
+relaxation reports *non-rigidity for every rigid instance* of the family. Hence
+**no criterion based only on the direct fractional / LP relaxation of the integer
+system can decide general-support rigidity.** This generalizes the single
+`len233_mult211_real_integer_gap` example of §13.4 to the whole coin family, and
+is consistent with PR #283's polynomial Apéry-set algorithm (an Apéry computation
+is not a linear relaxation).
+
+### 15.3 Crosscheck: exact reduction to the unbounded coin problem
+
+The exact integer classification of this family is **already proved in PR #283**
+as `targetCycle_nonrigid_iff_coin`. The following is an *independent
+kernel-checked crosscheck* with the opposite index convention; it is not a
+competing or novel claim.
+
+**Theorem 8 (coin-problem reduction, `coin_bouquet_nonrigid_iff`; crosscheck of
+#283).** The coin bouquet is **not** rigid **iff** `t` is a nonnegative integer
+combination of the `coins i`:
 
 ```
 ¬ Rigid  ⟺  ∃ y : Fin k → ℕ,  t = ∑ i, coins i * y i.
@@ -1066,35 +1104,27 @@ hence `x₀ ≤ 0`, and with `x₀ ≥ -1` we have `x₀ ∈ {-1, 0}`. If `x₀ 
 `∑ i, coins i·x_{i+1} = t` with `x_{i+1} ≥ 0`, which is exactly the claimed
 representation. ∎
 
-This is the precise sense in which deciding general-support rigidity is **at least
-as hard as** the unbounded coin problem (Lueker 1975). It generalizes the §13.5
-observation to all `k`, and is kernel-checked.
-
-### 15.3 The direct fractional (LP) relaxation always fails
-
-**Theorem 9 (LP no-go, `coin_bouquet_real_nonrigid`).** For every coin bouquet
-with `k ≥ 1` the direct rational relaxation has a nonzero witness
-`x₀ = -1`, `x₁ = t / coins 0`, all other coordinates `0`. In particular the
-relaxation reports *non-rigidity for every rigid instance* of the family. Hence
-**no criterion based only on the direct fractional / LP relaxation of the integer
-system can decide general-support rigidity.** This generalizes the single
-`len233_mult211_real_integer_gap` example of §13.4 to the whole coin family.
+This shows the arithmetic core of general-support rigidity is the unbounded coin
+problem (Lueker 1975); it generalizes the §13.5 observation to all `k`.
 
 ### 15.4 What this establishes for complexity
 
 * With the coin values encoded in **binary**, numerical-semigroup membership is
   NP-hard (Lueker 1975, unbounded knapsack / the coin problem). The reduction of
-  §15.2 is polynomial-time under the *compressed bouquet encoding* (the bouquet
+  §15.3 is polynomial-time under the *compressed bouquet encoding* (the bouquet
   is described by its `k+1` cycle lengths). Therefore **no polynomial-time
-  closed-form (min-cut / max-flow) criterion for general supports described
-  compactly exists unless P = NP.**
+  closed-form criterion for general supports described *compactly in binary*
+  exists unless P = NP.**
 * For an **explicitly represented** support graph the cycle lengths are encoded in
-  *unary* (a cycle of length `t` needs `t` edges), so the reduction is polynomial
-  only in the unary size and does **not** by itself prove NP-hardness for explicit
-  supports; under unary encoding the coin problem is pseudopolynomial. The exact
-  complexity of rigidity for explicitly represented supports remains **OPEN**
-  (§8.2). The reduction does show that the hardness is *arithmetic*
-  (numerical-semigroup), not topological.
+  *unary* (a cycle of length `t` needs `t` edges): a binary coin instance with
+  target `t` maps to a bouquet with `Θ(t + ∑ coins)` edges. The reduction is
+  therefore **pseudo-polynomial**, and establishes **no NP-hardness and no
+  conditional impossibility** of a polynomial rigidity criterion for explicit
+  supports. PR #283 shows the whole target-cycle/bouquet family is in fact in `P`
+  on explicit supports via the Apéry-set / residue-graph algorithm. The exact
+  complexity of rigidity for explicitly represented *general* supports remains
+  **OPEN** (§8.2). The reduction does show that the hardness (if any) is
+  *arithmetic* (numerical-semigroup), not topological.
 
 ### 15.5 Largest natural family with a polynomial criterion
 
@@ -1111,16 +1141,16 @@ strictly contains
 * the antiparallel bridge (`r = 4`, §14);
 
 and it does **not** contain the coin bouquet for unbounded `k` (rank `k+1`), whose
-rigidity is exactly numerical-semigroup membership (§15.2). This is the largest
+rigidity is exactly numerical-semigroup membership (§15.3). This is the largest
 natural *bounded-rank* family for which a polynomial criterion holds; whether some
 unbounded-rank families are nevertheless polynomial is **OPEN**.
 
 ### 15.6 Kernel-checked instances and cross-check
 
 * `coins23_target1_rigid`: coins `{2,3}`, target `1` — **rigid** (`2x + 3y = 1`
-  has no nonnegative integer solution).
+  has no nonnegative integer solution). Crosscheck of PR #283's `coin_rigid_23_1`.
 * `coins23_target5_nonrigid`: coins `{2,3}`, target `5 = 2 + 3` — **non-rigid**,
-  witness `y = (1,1)`.
+  witness `y = (1,1)`. Crosscheck of PR #283's `coin_nonrigid_23_5`.
 * `scripts/verify_257_coin_no_go.py`: self-contained exact cross-check. It
   recomputes rigidity from scratch on the actual support graph (all positive
   integer circulations of total `G`, balance-guided backtracking), compares with
@@ -1128,14 +1158,15 @@ unbounded-rank families are nevertheless polynomial is **OPEN**.
   `≤ 12`, `G ≤ 26`): **786** coin bouquets, **0** mismatches (135 rigid / 651
   non-rigid). It also verifies the LP no-go — the rational witness is present in
   **786/786** instances, including all 135 rigid ones — and re-derives the two
-  worked instances. [verified computation, exhaustive in scope]
+  crosscheck instances. [verified computation, exhaustive in scope]
 
 ### 15.7 Epistemic status
 
-Theorem 8, Theorem 9 and the two worked instances are kernel-checked with only
-`[propext, Classical.choice, Quot.sound]` (`AssemblyP1/RigidityNoGoAudit`); no
-`sorry`/`admit`/`axiom`/`native_decide`. The reduction and the LP no-go are
-[mathematical proof + kernel-checked]; the complexity consequence depends on the
-external NP-hardness of the unbounded coin problem (Lueker 1975) and is stated
-conditionally. A general polynomial criterion and the exact complexity for
-explicitly represented supports remain **OPEN** (§8.1/§8.2).
+The LP no-go (Theorem 9), the crosscheck reduction (Theorem 8) and the two
+crosscheck instances are kernel-checked with only `[propext, Classical.choice,
+Quot.sound]` (`AssemblyP1/RigidityNoGoAudit`); no
+`sorry`/`admit`/`axiom`/`native_decide`. The complexity consequence depends on the
+external NP-hardness of the *binary* coin problem (Lueker 1975) and is stated
+conditionally; it does not apply to explicit supports. A general polynomial
+criterion and the exact complexity for explicitly represented supports remain
+**OPEN** (§8.1/§8.2).
