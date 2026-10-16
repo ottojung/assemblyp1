@@ -439,7 +439,16 @@ source-oriented negative-log likelihood costs, with the optimization variable
 being the **candidate copy count** `d` (not the observed read count).  The
 domains are restricted to the positive interior so that `Real.log` is honest:
 `Real.log 0 = 0` would otherwise give a false finite value at impossible
-boundary candidates. -/
+boundary candidates.
+
+These are the **pure maximum-likelihood** costs.  A penalized solver cost
+`F_ML + P` is a different objective: the certificate
+`graver_optimal_iff_no_improving` transfers to it only when the *full*
+penalized objective is itself discretely convex on the box, a property that
+must be verified for the specific penalty `P` (e.g. a separable convex
+penalty).  The lemmas above certify the pure ML terms only; they make no
+claim about a penalized solver cost whose penalty is not separately shown to
+be discretely convex. -/
 
 /-- Discrete convexity is preserved by pointwise addition. -/
 theorem DiscConvOn.add {f g : ℤ → ℝ} {lo hi : ℤ} (hf : DiscConvOn f lo hi)
