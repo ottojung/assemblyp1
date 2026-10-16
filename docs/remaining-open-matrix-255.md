@@ -391,7 +391,11 @@ a full classification.
 
 ---
 
-## Mathematical proofs (human-readable; NOT kernel-checked, NOT merged)
+## Mathematical proofs (human-readable; kernel status per entry)
+
+One entry here (the exact iid full-start-covered classification) has since
+been **kernel-checked** and is cross-referenced to the LANDED section; the
+rest remain human-readable only, as labeled per entry.
 
 ### Exact iid finite-ML classification on the all-true-starts-sampled domain: NOW KERNEL-CHECKED (was elementary-only), posted 2026-10-13
 
