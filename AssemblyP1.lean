@@ -316,6 +316,10 @@ import AssemblyP1.FiniteSideInformationOrderingAudit
 -- #272 weakest sufficient source-defined (truth-only property) promise.
 import AssemblyP1.FiniteSideInformationSourcePromise
 import AssemblyP1.FiniteSideInformationSourcePromiseAudit
+-- #272 literal read-string adapter for the read-dependent `I_s` family, plus the
+-- `I_s` necessity obstructions (unbridged-triple witnesses ABXABYABZ / ABXABZABY).
+import AssemblyP1.FiniteSideInformationReadStringAdapter
+import AssemblyP1.FiniteSideInformationReadStringAdapterAudit
 -- #270 positive finite-family iid ML recovery via Hellinger affinity.
 import AssemblyP1.FiniteReadRecovery
 -- #270 concrete uniform-start cyclic read distribution and conditional genome bounds.
