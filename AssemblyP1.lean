@@ -282,6 +282,9 @@ import AssemblyP1.FiniteSideInformationOrderAudit
 -- #272 ordering of the source predicate `I_s` against the read-only `Unambiguous`.
 import AssemblyP1.FiniteSideInformationOrdering
 import AssemblyP1.FiniteSideInformationOrderingAudit
+-- #272 weakest sufficient source-defined (truth-only property) promise.
+import AssemblyP1.FiniteSideInformationSourcePromise
+import AssemblyP1.FiniteSideInformationSourcePromiseAudit
 -- #270 positive finite-family iid ML recovery via Hellinger affinity.
 import AssemblyP1.FiniteReadRecovery
 -- #270 concrete uniform-start cyclic read distribution and conditional genome bounds.
