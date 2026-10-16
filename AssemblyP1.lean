@@ -66,6 +66,8 @@ import AssemblyP1.Section62GlobalSpellingPreservation
 import AssemblyP1.Section62GlobalCircularCorrespondence
 import AssemblyP1.Section62GlobalCircularAudit
 import AssemblyP1.Section62ReductionDependencyAudit
+-- #284: RC-palindrome audit of duplicate edge-list multiplicities (no model rewrite).
+import AssemblyP1.Section62PalindromeEdgeMultiplicityAudit
 import AssemblyP1.Section62FullSpectrumUnseenFactor
 -- #259 real circular-genome witness: exact iid and product-binomial rankings differ.
 import AssemblyP1.Section62BinomialRealGenomeInversion
