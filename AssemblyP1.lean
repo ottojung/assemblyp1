@@ -299,6 +299,9 @@ import AssemblyP1.NonmonotonicityWitness281Audit
 -- theorem needs no caller-supplied finite candidate family.
 import AssemblyP1.PrimitiveP2FiniteClass
 import AssemblyP1.PrimitiveP2FiniteClassAudit
+-- #281 the length bound is attained for every alphabet size at K = 1.
+import AssemblyP1.PrimitiveP2FiniteClassTight
+import AssemblyP1.PrimitiveP2FiniteClassTightAudit
 import AssemblyP1.PrimitiveP2UniformSeparation
 import AssemblyP1.PrimitiveP2UniformSeparationAudit
 -- #263 separable-convex Graver optimality certificate (conditional core) + audit.
@@ -1142,3 +1145,7 @@ reading. Two finite checks anchor it: the refuted BBT premise's witness is not
 #print axioms AssemblyP1.RobustSameLengthIff.robust_iff_unique_spectrum
 #print axioms AssemblyP1.RobustSameLengthIff.F_eq_singleton_of_rigidity
 #print axioms AssemblyP1.RobustSameLengthIff.robust_of_rigidity
+
+-- #281 tightness of the primitive-P2 length bound at K = 1.
+#print axioms AssemblyP1.PrimitiveP2FiniteClassTight.exists_primitive_P2_at_bound_K1
+#print axioms AssemblyP1.PrimitiveP2FiniteClassTight.maxLen_two
