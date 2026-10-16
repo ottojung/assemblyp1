@@ -1,17 +1,25 @@
 # Presentation arc and reconciliation for #265
 
-Status: 2026-10-14, addenda 2026-10-15. Follow-up correction by agent
-`757b22c73e75`, branch `agent/757b22c73e75-issue265-restore-opening`. Base:
-`main` @ `b0a6e9f` (deck content unchanged since `22a6233`). The original #265
-presentation rebalance was by agent `74a003ebefb4` on base `157ad34`. The
-2026-10-15 addendum by agent `1da4e6282b15` records that the opening
-restoration (PR #239) is merged to `main` as `c8b4b21`, and adds the
-prior-average / per-truth monotonicity contrast (required item 4) as backup
-slides in both decks; see the audit `docs/audit-265-centering-2026-10-15.md`.
-A second 2026-10-15 addendum by agent `7b4df767b5fa` adds the kernel-checked
-explicit uniform exponential exact-ML error rate from #281 (primitive-P2 class)
-to the sample-complexity backup of both decks, with its caveats; see "What
-changed" and the claim table below.
+Status: 2026-10-14, addenda 2026-10-15 and 2026-10-16. Follow-up
+correction by agent `757b22c73e75`, branch
+`agent/757b22c73e75-issue265-restore-opening`. Base: `main` @ `b0a6e9f` (deck
+content unchanged since `22a6233`). The original #265 presentation rebalance
+was by agent `74a003ebefb4` on base `157ad34`. The 2026-10-15 addendum by
+agent `1da4e6282b15` records that the opening restoration (PR #239) is merged
+to `main` as `c8b4b21`, and adds the prior-average / per-truth monotonicity
+contrast (required item 4) as backup slides in both decks; see the audit
+`docs/audit-265-centering-2026-10-15.md`. A second 2026-10-15 addendum by
+agent `7b4df767b5fa` adds the kernel-checked explicit uniform exponential
+exact-ML error rate from #281 (primitive-P2 class) to the sample-complexity
+backup of both decks, with its caveats; see "What changed" and the claim
+table below. A third 2026-10-16 addendum by agent `1c9228ae31b4` adds the
+item-5 strong-law/KL limit statement (eventual a.s. exact-ML selection on a
+finite identifiable family, with the support convention and the
+limit-not-a-finite-n scope) to `paper/sections/05-population.tex`
+(`sec:strong-consistency`, `prop:strong-consistency`, classical not
+kernel-checked) and to both decks (new backup slides plus one-line main-arc
+pointers), with the exact checker
+`scripts/verify_strong_consistency_265.py`.
 
 This note records (i) the revised presentation arc, (ii) the claim labels and
 exact project endpoints behind every nontrivial slide claim, (iii) where the
@@ -44,6 +52,25 @@ problem settled.
   consecutive negative slides are merged into one aside; the extra
   "sample change" and "tie" slides are merged.
 - `slides/README.md` — deck descriptions updated to match.
+- **Strong-law/KL limit statement added to the paper and both decks
+  (2026-10-16 addendum by agent `1c9228ae31b4`).** New paper subsection
+  `sec:strong-consistency` in `05-population.tex`: for a finite identifiable
+  candidate family and iid exact reads, the per-read log-likelihood gap
+  converges a.s. to the KL divergence, so the exact-ML selection set is
+  eventually exactly the truth's rotation class (rotations tie at every $n$),
+  and P(correct at $n$)$\to 1$; the support convention ($0\log 0$, the
+  $p_D(w)=0<p_S(w)$ case) is explicit, and the statement is marked as a
+  limit that supplies no finite $n$. Label: classical SLLN + KL
+  (Durrett 2019; Cover & Thomas 2006), **not kernel-checked**. Decks: new
+  backup B6 (`programmers.md`) and backup "The limit is eventual - and gives
+  no finite number" (`biologists.md`), plus one-line pointers in the
+  programmers' "Do we actually need infinitely many reads?" and the
+  biologists' "What if we had infinitely many reads?" slides. Exact checks:
+  `scripts/verify_strong_consistency_265.py` (KL identity with exact
+  rational coefficients, zero-probability support handling, the
+  $a<n(2-\log_2 3)$ decision boundary, the paper's succ($n$) table through
+  $n=8$, rotation ties, Hellinger summability). No main-arc slide was
+  removed or restructured.
 - **Explicit uniform error rate added to both decks (2026-10-15 addendum by
   agent `7b4df767b5fa`).** The kernel-checked primitive-P2 rate from #281,
   `Pr[∃ nonrotational admissible D : L_D ≥ L_S] ≤ N_C exp(-n/(8 B^4))` with
@@ -83,8 +110,9 @@ by the merged PR #189 and the #268 revisions (see "Reconciliation" below).
 Backups: B1 complete finite reversal; B2 incomparable coverage definitions;
 B3 open sample-complexity (Hellinger bound); B4 prior-average monotonicity
 versus per-truth non-monotonicity (`succ(1)=2/3 > succ(2)=4/9`); B5 primary
-sources. The biologists deck carries the analogous monotonicity backup before
-its sources slide.
+sources; B6 the strong-law/KL limit (eventual a.s. selection, no finite n).
+The biologists deck carries the analogous monotonicity backup and the
+"The limit is eventual" backup before its sources slide.
 
 ## Preserving the approved opening
 
@@ -142,6 +170,7 @@ a textbook; not proved in Lean here), **COMPUTED** (exact rational certificate),
 | Sample complexity in this model | OPEN | no theorem in paper or Lean |
 | Coverage predicates incomparable | KERNEL | `HistoricalCovers.lean`; `HistoricalCoverageSameLengthWitnesses.lean` |
 | `AAATT`/`AAAATT` reversal (backup B1) | KERNEL | ratio `15625/11664`: `OrientedVariableLengthSe62.exact_ratio1`; restricted two-candidate illustration, not a source-faithful counterexample |
+| Strong-law/KL limit: on a finite identifiable family the exact-ML selection set is eventually exactly the truth's rotation class a.s.; P(correct at n) -> 1; support convention; limit supplies no finite n | EXTERNAL (classical, not kernel-checked) | paper `05-population.tex` `prop:strong-consistency` (Section `sec:strong-consistency`): SLLN + KL nonnegativity (Durrett 2019; Cover & Thomas 2006); exact mechanism check `scripts/verify_strong_consistency_265.py`; deck backups B6 (programmers) / "The limit is eventual - and gives no finite number" (biologists) |
 
 ## Negative-example disposition
 
@@ -181,5 +210,8 @@ ML-supremacy pitch.
 - `cd slides && npm ci && npm run build` — format check, math check, both decks
   built, portal assembled, `validate-dist` OK.
 - Both decks pass `scripts/check-format.mjs` and `scripts/check-math.mjs`.
-- Paper not rebuilt on this branch (unchanged); LaTeX toolchain is provided by
-  `paper/build.sh` via Guix.
+- `python3 scripts/verify_strong_consistency_265.py` — exact-rational checks of
+  the strong-law/KL limit mechanism on the `AAC`/`AAAC` witness.
+- Paper build via `paper/build.sh` (Guix): `sec:strong-consistency` compiles
+  with 0 LaTeX warnings (2026-10-16 addendum; earlier addenda did not touch
+  the paper).

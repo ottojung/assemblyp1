@@ -221,6 +221,8 @@ $$
 
 **The truth is always a population maximum-likelihood genome.**
 
+For a **finite identifiable family**, the same KL gap makes the limit *eventual and exact*: almost surely, the ML selection set is eventually exactly the truth's rotation class (strong law + KL; classical, not kernel-checked — backup). "Infinite reads" is a limit of finite samples; it supplies **no finite read count**.
+
 <!--
 This compares expected log likelihood under the true distribution. It assumes the
 candidate universe includes the truth, with the stated error-free, oriented,
@@ -228,7 +230,10 @@ fixed-length, uniform-start model. The inequality is KL nonnegativity (Cover &
 Thomas 2006); the kernel form is PopulationGibbs.popLogLik_le_self'. No special
 repeat assumption is needed just to attain the maximum; equality means the two
 genomes induce the same read distribution. "Infinite reads" is a limit, not an
-infinite product of probabilities.
+infinite product of probabilities. The eventual-exactness strengthening for a
+finite identifiable family (strong law + KL; classical, not kernel-checked;
+no finite n supplied) is paper prop:strong-consistency; see the backup
+slide "The limit is eventual - and gives no finite number".
 -->
 
 ---
@@ -396,6 +401,39 @@ need not be. Kernel endpoints: chooseMAP_success_monotone_under_refinement
 (average) and NonmonotonicityWitness281.success_not_monotone (per-genome),
 succ(1)=2/3 > succ(2)=4/9. No positive-probability ties for n>=1. This is the
 biologists-deck analogue of the programmers Backup B4.
+-->
+
+---
+
+# Backup: the limit is eventual - and gives no finite number
+
+For a **finite identifiable family**, each per-read log-likelihood gap is an average of independent terms whose expectation is a KL divergence. The strong law turns that into an almost-sure limit:
+
+$$
+\frac1n\log\frac{L_S}{L_D}(R_1,\dots,R_n)
+\;\xrightarrow{\text{a.s.}}\;
+D_{\mathrm{KL}}(p_S\|p_D)>0 .
+$$
+
+Every wrong candidate has KL $>0$; there are finitely many, so almost surely the truth beats **all** of them simultaneously from some read count $N$ onward. Rotations of the truth tie it at every count (identical read laws). The ML selection set is therefore **eventually exactly the truth's rotation class**, and the probability of being correct tends to $1$.
+
+**Limit, not an infinite product.** The statement is about finite samples growing without bound. It supplies no finite read count, no rate, and no guarantee for a particular sample, a fixed truth, or an unrestricted candidate universe. It is distinct from population uniqueness above, which involves no sampling at all. Classical statistics (strong law + KL nonnegativity; Durrett 2019, Cover & Thomas 2006), **not kernel-checked**; the kernel-checked Hellinger bound reaches the same conclusion because its series $\sum_n \rho^n$ is summable (Borel--Cantelli).
+
+<!--
+#265 item-5 limit statement, paper prop:strong-consistency (Section
+sec:strong-consistency). Hypotheses: finite candidate family identifiable
+modulo rotation, iid exact reads, correct model. Proof: strong law on the
+per-read log-likelihood average + KL positivity (equality iff read laws agree)
++ finite union over wrong candidates; rotations tie at every n by design;
+nonrotational ties impossible eventually since the limit separates strictly.
+Support convention 0 log 0 = 0; if p_D(w)=0 < p_S(w) then KL = +infinity
+and that competitor loses on every sample containing w, which recurs
+eventually. Witness numbers (AAC vs AAAC, L=2, binary alphabet): KL =
+(1/3)log(2/3)+(2/3)log(4/3) ~ 0.0566 > 0, Hellinger affinity
+(1+sqrt(2))/sqrt(6) ~ 0.9856 < 1, geometric series summable. Exact checks:
+scripts/verify_strong_consistency_265.py (success table, boundary
+a < n(2-log2 3), rotation ties, summability). Sample complexity remains
+open: the limit gives no finite n.
 -->
 
 ---
