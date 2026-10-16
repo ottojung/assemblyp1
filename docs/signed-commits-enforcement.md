@@ -1,6 +1,6 @@
 # Signed commit enforcement
 
-Status: **CI gate active and green on `main`; mandatory branch ruleset NOT active (repository-admin step required).**
+Status: **CI gate active and green on `main`; mandatory branch ruleset ACTIVE — `ruleset1` (id `23626350`) is `enforcement=active` on `~DEFAULT_BRANCH` since 2026-10-15T12:01:31Z.**
 Audit date: 2026-10-14. Audited revision: `origin/main` @ `b424c987edbde6282bc65ccdb71f65e6abcbe427`.
 
 ## Policy
@@ -69,7 +69,8 @@ id **`signed-commits`**.
 * Script: [`scripts/verify_signed_commits.py`](../scripts/verify_signed_commits.py)
 * CI: [`.github/workflows/signed-commits.yml`](../.github/workflows/signed-commits.yml)
   runs on every `push` and `pull_request` targeting `main`. It is currently
-  active and green on `main` (observed on `b424c987ed`, `b0a6e9ff11`).
+  active and green on `main` (observed on `b424c987ed`, `b0a6e9ff11`, and
+  current `main` `c581d1196` as of 2026-10-16).
 * Range: the gate checks exactly `git rev-list merge-base(base, head)..head` —
   only newly introduced commits, never ancestors of the base.
 * Selftest: [`scripts/test_signed_commits.sh`](../scripts/test_signed_commits.sh)
@@ -82,51 +83,50 @@ id **`signed-commits`**.
 * Operator check: [`scripts/check_ruleset_enforcement.py`](../scripts/check_ruleset_enforcement.py)
   reads the public GitHub rulesets API and reports whether the gate is
   actually mandatory (exit 0 = enforced, 1 = advisory, 2 = undetermined). It is
-  deliberately not part of CI.
+  deliberately not part of CI. Current result: **exit 0, `ENFORCED`** (live
+  check 2026-10-16).
 
-## Branch protection (repository-admin step required)
+## Branch protection (active)
 
-The CI gate verifies signatures on every push/PR, but a workflow alone is
-**advisory** — it can be bypassed by force-push, direct push, or by disabling
-the workflow. As of the audit date the repository ruleset **`ruleset1`
-(id `23626350`) is `enforcement=disabled`** and, even if merely enabled, its
-rules are only `deletion`, `non_fast_forward`, and `pull_request` — it contains
-**no `required_status_checks` rule**, so enabling it as-is would **not** require
-the signed-commit gate. This is observable without an admin token:
+The CI gate verifies signatures on every push/PR, and the repository ruleset
+**`ruleset1` (id `23626350`) is `enforcement=active`** on `~DEFAULT_BRANCH`
+(activated 2026-10-15T12:01:31Z; ruleset history version `53324683` reports
+`2026-10-15T05:01:31.882-07:00`, i.e. `12:01:31Z`), so enforcement is **mandatory**, not
+advisory. Observed live (2026-10-16) ruleset rules:
+
+* `required_status_checks` — exact context **`signed-commits`**, with
+  `strict_required_status_checks_policy=true`: the gate is required for merge.
+* `non_fast_forward` and `deletion` — force-pushes and branch deletion are
+  blocked, so the gate cannot be sidestepped by rewriting history.
+* `pull_request` — changes arrive via PR.
+* `bypass_actors=[]` and `current_user_can_bypass=never` — no bypass path.
+
+The ruleset contains **no native `signed_commits` rule** — deliberately, see
+the next section. This is observable without an admin token:
 
 ```sh
 curl -sS https://api.github.com/repos/ottojung/assemblyp1/rulesets/23626350
-python3 scripts/check_ruleset_enforcement.py            # exit 1 while advisory
+python3 scripts/check_ruleset_enforcement.py            # exit 0, prints ENFORCED
 python3 scripts/check_ruleset_enforcement.py --selftest # offline fixture checks
 ```
 
-To make enforcement **mandatory**, a repository admin must add a rule that
-requires the gate and blocks bypass:
-
-1. **Settings → Rules → Rulesets → `ruleset1`** (or a new branch ruleset
-   targeting the default branch).
-2. Add a **Require status checks to pass** rule and select the exact
-   **`signed-commits`** check context (see above). Mark it required for merge.
-3. Set the ruleset **Enforcement** to **Active** (not Disabled / Evaluate) and
-   enable **block force pushes** and **restrict deletions**; restrict direct
-   pushes to `main` so the check cannot be sidestepped.
-4. Do **not** rely on GitHub's native **Require signed commits** rule as the
-   sole gate — see the next section.
-5. Verify activation: `python3 scripts/check_ruleset_enforcement.py` must exit
-   0 and print `ENFORCED`.
-
-Until that admin step is completed, enforcement relies on the CI gate alone
-and must be considered **advisory, not mandatory**.
+No repository-admin step remains: a push or PR range containing any commit
+that fails the gate cannot merge.
 
 ### GitHub-native "Require signed commits" is not a safe substitute
 
 GitHub's own signature verification disagrees with a correct local
 cryptographic check on these agent commits, so the native rule must not be
-turned on as the primary gate. Live REST evidence (2026-10-14):
+turned on as the primary gate. Live evidence (REST `verification` 2026-10-14;
+re-measured 2026-10-16 via API signature states, which return the same
+values):
 
 | Commit | Local gate (`%G?`) | GitHub `verification` |
 |--------|--------------------|------------------------|
 | `7aba5d0` (agent slide commit, PR #254) | `U`, `verify-commit` exit 0 | `verified=false`, reason `bad_email` |
+| `5e1659f` (agent CI commit, PR #194) | `U`, `verify-commit` exit 0 | `verified=false`, reason `bad_email` |
+| `21fa90b` (agent docs commit, PR #191) | `U`, `verify-commit` exit 0 | `verified=false`, reason `bad_email` |
+| `332915c` (agent audit commit, PR #191) | `U`, `verify-commit` exit 0 | `verified=false`, reason `bad_email` |
 | `157ad34` (agent merge, #267) | `U`, `verify-commit` exit 0 | `verified=false`, reason `no_user` |
 | `9ca5c8f` (PR #189 merge, web-flow) | `U` | `verified=true`, reason `valid` |
 | `abbe728` (second parent of #189) | `N`, `verify-commit` fails | `verified=false`, reason `unsigned` |
@@ -134,7 +134,13 @@ turned on as the primary gate. Live REST evidence (2026-10-14):
 
 `bad_email` means the committer email is not among the signing key's identities
 — it is **not** an invalid signature — and `no_user` means GitHub has no user
-bound to the key. Both are properties of GitHub's verifier, not of the
+bound to the key. Measured distinction (2026-10-16): agent commits whose
+committer email is the maintainer's GitHub noreply address (`7aba5d0`,
+`5e1659f`, `21fa90b`, `332915c` — the signing key is bound to a GitHub user
+but the committer email is not in the key's identities) return `bad_email`;
+agent commits whose committer email is agent-local (`157ad34`, committed as
+`agent-7723b8c4b1c0@opencode.local` — no GitHub user bound to the key)
+return `no_user`. Both are properties of GitHub's verifier, not of the
 signature. Enabling native **Require signed commits** would therefore reject
 cryptographically valid agent commits. The `080b1b3`/`9ca5c8f` rows also show
 that a GitHub-verified merge head does **not** imply signed ancestry.
