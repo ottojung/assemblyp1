@@ -1,7 +1,7 @@
 # AssemblyP1 umbrella #255 — remaining-open matrix
 
 _Status: 2026-10-16, reconciled by agent b629762217b2 against current
-`origin/main` @ `aa24b18` (GitHub PR #282 merge; `git ls-remote
+`origin/main` @ `c581d11` (GitHub PR #287 merge; `git ls-remote
 https://github.com/ottojung/assemblyp1 refs/heads/main`). This supersedes
 the 2026-10-15 refresh at `b4071f5` (agent e05c947b4ab8, commit `9abb4e1`)
 and the 2026-10-14 refresh at `157ad34` (PR #196).
@@ -27,7 +27,7 @@ information `Is`-vs-unambiguous ordering for #272 (merge `41e5aec`); #258
 and #268 uniform exponential exact-ML error rate for #281 (merges
 `70c21b8`/`eaf5d38`); #280 strong-law/KL limit for #265 (merge `53f8c4d`);
 #282 generic anchored-window spelling identity and word-level RC law for
-#284 (merge `aa24b18`); #252 window alignment for #284 (merge `0b87b58`);
+#284 (merge `c581d11`); #252 window alignment for #284 (merge `0b87b58`);
 #281 GitHub PR for board #263 penalized-ML distinction (merge `e57e81f`).
 See "Post-#274 child-front landings" below.
 
@@ -342,9 +342,9 @@ Every material result is classified as one of:
   `4d4970c`), audit `AssemblyP1/FiniteSampleIidEnvelopeAudit.lean`.
 - **PR / merge:** GitHub PR #251, content commit `d3eb0a3`, merge
   `13411a620389d409306f93853086f6d3278898b0` (2026-10-15). Both new root
-  imports are present at head: `AssemblyP1.lean:288` (`import
-  AssemblyP1.FiniteSampleIidEnvelope`) and `:289`
-  (`AssemblyP1.FiniteSampleIidEnvelopeAudit`).
+   imports are present at head: `AssemblyP1.lean:292` (`import
+   AssemblyP1.FiniteSampleIidEnvelope`) and `:293`
+   (`import AssemblyP1.FiniteSampleIidEnvelopeAudit`).
 - **Statement:** `truth_maximizer_forall_covered_iff`
   (`AssemblyP1/FiniteSampleIidEnvelope.lean:197`) proves, for true oriented
   support `E`, positive true spectrum `A` (`A i > 0`), true iid probabilities
@@ -367,7 +367,7 @@ Every material result is classified as one of:
 
 ---
 
-## Post-#274 child-front landings (2026-10-16, head `aa24b18`)
+## Post-#274 child-front landings (2026-10-16, head `c581d11`)
 
 These are kernel-checked and/or CI-verified results merged to `origin/main`
 at or after the PR #274 integration (`149b85d`) and after the previous
@@ -386,7 +386,7 @@ a full classification.
 | #272 | `Is`-vs-unambiguous ordering classification: read-only sufficiency iff implication-of-unambiguity; truth-dependent and singleton promises incomparable | `AssemblyP1/FiniteSideInformationOrdering.lean` (`sufficient_readonly_iff_imp_unambiguous` `:91`, `truthdependent_sufficient_incomparable` `:146`, `ordering_verdict` `:272`) | `41e5aec` (GitHub PR #244) | Candidate-specific posterior weights and latent-placement `E(g,T)` adapter; bridge to a genome reconstruction theorem (#272 still OPEN) |
 | #281 | Explicit uniform exponential exact-ML error rate (`primitiveP2_ML_confidence_explicit`, `all_primitiveP2_ML_confidence`) surfaced in the paper and both decks | `AssemblyP1/PrimitiveP2UniformSeparation.lean` (`primitiveP2_ML_confidence_explicit` `:340`, `primitiveP2_exponential_error_bound` `:317`); `paper/sections/01-introduction.tex`; `slides/{biologists,programmers}.md` | `70c21b8` (GitHub PR #258), `eaf5d38` (GitHub PR #268) | Genome-level finite corollary and paper recentering still OPEN (#281 still OPEN) |
 | #265 | Strong-law / KL-limit statement for finite identifiable families + CI script | `scripts/verify_strong_consistency_265.py`; `paper/sections/05-population.tex`; `docs/presentation-arc-265.md` | `53f8c4d` (GitHub PR #280), `b9f0f47` (CI wiring, GitHub PR #284) | #265/#268 editorial review pass still OPEN |
-| #284 | Generic anchored-window spelling identity and word-level reverse-complement class-count law | `AssemblyP1/Section62GenericAnchorSpelling.lean` (`generic_anchors_window_eq_sources` `:70`, `generic_circular_spelling_anchors` `:99`); `AssemblyP1/Section62RcWordLaw.lean` (`classWordCount_eq_rc_class_count` `:72`) | `aa24b18` (GitHub PR #282), `0b87b58` (GitHub PR #252) | Exact Myers practical-algorithm fidelity and full unobserved RC class universe still OPEN (#284 still OPEN) |
+| #284 | Generic anchored-window spelling identity and word-level reverse-complement class-count law | `AssemblyP1/Section62GenericAnchorSpelling.lean` (`generic_anchors_window_eq_sources` `:70`, `generic_circular_spelling_anchors` `:99`); `AssemblyP1/Section62RcWordLaw.lean` (`classWordCount_eq_rc_class_count` `:72`) | `c581d11` (GitHub PR #282), `0b87b58` (GitHub PR #252) | Exact Myers practical-algorithm fidelity and full unobserved RC class universe still OPEN (#284 still OPEN) |
 | #263 | Conditional separable-convex Graver optimality certificate (file added by GitHub PR #249) plus the penalized-solver-cost vs pure-ML distinction | `AssemblyP1/SeparableConvexGraver.lean` (`graver_optimal_iff_no_improving` `:324`, `negLog_discConvOn` `:500`) | `9fa5a41` (GitHub PR #249), `e57e81f` (GitHub PR #281) | Full separable-convex discrete Graver certificate conditional on #264 still OPEN (#263 still OPEN) |
 
 ---
@@ -407,7 +407,7 @@ rest remain human-readable only, as labeled per entry.
   `AssemblyP1.FiniteSampleIidEnvelope.truth_maximizer_forall_covered_iff`
   (`AssemblyP1/FiniteSampleIidEnvelope.lean:197`), landed by GitHub PR #251
   (content `d3eb0a3`, merge `13411a6`). It is **root-imported** at
-  `AssemblyP1.lean:288`–`:289` (both the module and its
+  `AssemblyP1.lean:292–:293` (both the module and its
   `#print axioms` audit `FiniteSampleIidEnvelopeAudit.lean`), and the file is
   additionally compiled by the CI library glob (`lakefile.lean`
   `globs := #[.andSubmodules \`AssemblyP1]`). Axioms
@@ -415,7 +415,7 @@ rest remain human-readable only, as labeled per entry.
   the exact statement and scope. The earlier revision of this matrix wrongly
   recorded this item as OPEN and the artifact as "NOT imported by the root
   aggregator ... and no doc references it"; both statements were true at
-  `b4071f5` but are false at `aa24b18`.
+  `b4071f5` but are false at `c581d11`.
 - **Kernel predecessor artifact (still present):**
   `AssemblyP1/FiniteSampleIidEnvelope.lean` also proves
   `truth_maximizer_iff_envelope_le_one` (PR #172, merge `4d4970c`): for a
@@ -890,16 +890,16 @@ rest remain human-readable only, as labeled per entry.
 
 ---
 
-## Reconciliation at head `aa24b18` (2026-10-16)
+## Reconciliation at head `c581d11` (2026-10-16)
 
 This section is the reviewable index requested for umbrella #255: it maps
 each **frozen axis** to the **board child issues** that own it, states which
 sub-claims are now supported by a kernel-checked artifact or a CI test at
-`origin/main` @ `aa24b18`, and separates the two flag categories explicitly.
+`origin/main` @ `c581d11`, and separates the two flag categories explicitly.
 
 ### Frozen axes → child issues → current evidence
 
-| Frozen axis | Board children | Kernel-checked / test support at `aa24b18` | Genuinely OPEN at `aa24b18` |
+| Frozen axis | Board children | Kernel-checked / test support at `c581d11` | Genuinely OPEN at `c581d11` |
 |---|---|---|---|
 | Oriented vs reverse-complement molecule types | #256 (CLOSED), #260 (CLOSED), #261 (OPEN) | `RobustSameLengthIff.lean` (`robust_iff_unique_spectrum`), `FullOverlapMoleculeML.lean` (`robust_maximality_iff_unique`), `Section62RcWordLaw.lean` (`classWordCount_eq_rc_class_count`) | arbitrary-overlap oriented and RC flows (#261) |
 | Exact multinomial vs fixed-`N` binomial | #256/#258/#260 (CLOSED), #259 (OPEN), #261 (OPEN) | exact iid full-start-covered classification `FiniteSampleIidEnvelope.truth_maximizer_forall_covered_iff` (PR #251); `FixedXExactML.lean` (#258); `FixedNBinomialEffectiveWeights.lean`, `CoveredBinomialWeightsIff.lean`, `Section62FiniteNExtremeSamples.lean` (`binomial_fixed_n_extreme_iff`), `Section62BinomialSupportAdjudication.lean` (#259 partial) | full #259 (A)/(B) product-binomial classification; the §6.1 **surrogate** full-coverage `∀y` classification (see flag F-a) |
@@ -917,7 +917,7 @@ sub-claims are now supported by a kernel-checked artifact or a CI test at
   `supp(A)`: `F_B(A+y) ≤ F_A(A+y)` iff `[∃ i: b_i = 0] ∨ [∀ i: b_i ≤ a_i]`,
   with `a_i = q_i(A)`, `b_i = q_i(B)`) is recorded as PROVED only as an
   **elementary** post (Antonina #259, 2026-10-13T23:28:50Z) and is **not
-  kernel-checked** at `aa24b18`. The closest kernel artifacts are the
+  kernel-checked** at `c581d11`. The closest kernel artifacts are the
   *fixed-`n` extreme-sample* iff `Section62FiniteNExtremeSamples.lean`
   (`binomial_fixed_n_extreme_iff` `:195`, GitHub PR #279) and the
   *covered-sample weight* iff `CoveredBinomialWeightsIff.lean`
@@ -930,10 +930,10 @@ sub-claims are now supported by a kernel-checked artifact or a CI test at
   hence fixed-`x` finite ML = empirical KL projection) is a PROVED
   **elementary** observation (`docs/population-finite-gap-255.md`). It is
   **not kernel-checked**: the proposed `AssemblyP1/PopulationFiniteGap.lean`
-  is **absent** at `aa24b18` (verified: no such file). It restates the
+  is **absent** at `c581d11` (verified: no such file). It restates the
   (A)-regime comparison and is not claimed to classify anything.
 
-### Genuinely OPEN at `aa24b18` (board state, `antonina board show`)
+### Genuinely OPEN at `c581d11` (board state, `antonina board show`)
 
 Board-OPEN child issues: **#257, #259, #261, #263, #265, #268, #269, #271,
 #272, #281, #284, #300**. Board-CLOSED child issues: #247, #254, #256, #258,
@@ -948,7 +948,7 @@ classification in any of them is claimed. Conjectures remain OPEN.
 | Axis | Status | Detail |
 |---|---|---|
 | Oriented vs RC molecule types | PROVED (landed scopes) | Oriented + same-length + exact multinomial + sample-uniform PROVED (#256); RC + full-overlap + fixed-length + exact multinomial + sample-uniform PROVED (#260); oriented arbitrary-overlap and RC arbitrary-overlap OPEN (#261) |
-| Exact multinomial vs fixed-N binomial | PROVED (exact, landed scopes) / PARTIAL (binomial) | Exact multinomial PROVED in the landed scopes (#256, #258, #260); short variable-length exact counterexamples kernel-landed (#300, PR #229); **exact iid full-start-covered pointwise classification now KERNEL-CHECKED** (`FiniteSampleIidEnvelope.truth_maximizer_forall_covered_iff`, GitHub PR #251, merge `13411a6`, root-imported at `AssemblyP1.lean:288`; the earlier revision wrongly recorded this as OPEN/un-imported); fixed-`x` (A) remains halfspace inequalities; fixed-N binomial (MB09 §6.1) PARTIAL: effective weights, strict witness, start coverage, covered-sample weight iff (#211), fixed-`n` extreme-sample iff (#279), sample-uniform rigidity iff landed (#259); full (A)/(B) classification OPEN; the §6.1 surrogate full-coverage `∀y` classification is elementary-only (flag F-a) |
+| Exact multinomial vs fixed-N binomial | PROVED (exact, landed scopes) / PARTIAL (binomial) | Exact multinomial PROVED in the landed scopes (#256, #258, #260); short variable-length exact counterexamples kernel-landed (#300, PR #229); **exact iid full-start-covered pointwise classification now KERNEL-CHECKED** (`FiniteSampleIidEnvelope.truth_maximizer_forall_covered_iff`, GitHub PR #251, merge `13411a6`, root-imported at `AssemblyP1.lean:292`; the earlier revision wrongly recorded this as OPEN/un-imported); fixed-`x` (A) remains halfspace inequalities; fixed-N binomial (MB09 §6.1) PARTIAL: effective weights, strict witness, start coverage, covered-sample weight iff (#211), fixed-`n` extreme-sample iff (#279), sample-uniform rigidity iff landed (#259); full (A)/(B) classification OPEN; the §6.1 surrogate full-coverage `∀y` classification is elementary-only (flag F-a) |
 | Same vs variable length | PROVED (same) / OPEN (variable) | Same-length PROVED where landed; variable-length sufficiency REFUTED by short exact counterexamples (#300); general variable-length classification OPEN (fenced to #261) |
 | Spelled genomes vs MB09 §6.2 bidirected flows / overlap floor | PROVED (full-overlap and reduced-circuit occurrences) / OPEN (arbitrary flows) | Full-overlap RC molecule-spectrum ML proved (#260); spelled-circuit flow adapters landed (#201/#212/#233); signed integration PR #274 kernel-proves circular oriented read occurrences and observed RC class counts for genuine reduced circuits, but also refutes the general spelled-throughput image identity (#247). Arbitrary feasible-flow realization, full unobserved RC classes, and exact Myers practical-algorithm fidelity remain OPEN (#261/#284). |
 | Truth candidacy | PROVED (landed scopes) / OPEN (extended) | Truth genuinely admissible over spelled candidate universes PROVED in the landed scopes; extended candidate sets OPEN (#261) |
@@ -979,7 +979,7 @@ original Medvedev-Brudno 2009 source:
 ## #255 umbrella status
 
 **#255 remains OPEN.** Board-verified child states **2026-10-16** at
-`origin/main` @ `aa24b18` (`antonina board show --id <n>`): #247, #254, #256,
+`origin/main` @ `c581d11` (`antonina board show --id <n>`): #247, #254, #256,
 #258, #260, #262, #264, #266, #267, #270, #273, #274, #276, #277, and #282
 are CLOSED after scoped Lean results landed (or, for #254/#276, editorial
 delivery). #257, #259, #261, #263, #265, #268, #269, #271, #272, #281, #284,
@@ -995,10 +995,10 @@ classifications/endpoints remain OPEN.
 No conjecture is promoted to fact. **Corrected at this reconciliation:** the
 exact iid full-start-covered pointwise classification (posted 2026-10-13) is
 **now kernel-checked** — `FiniteSampleIidEnvelope.truth_maximizer_forall_covered_iff`
-(GitHub PR #251, merge `13411a6`, root-imported at `AssemblyP1.lean:288`) — and
+(GitHub PR #251, merge `13411a6`, root-imported at `AssemblyP1.lean:292`) — and
 is no longer an OPEN axis-(B) item; the earlier revision of this matrix
 recorded it as OPEN with the artifact "NOT imported by the root aggregator",
-which was already false at `aa24b18`. The population-to-finite bridge
+which was already false at `c581d11`. The population-to-finite bridge
 (2026-10-14) remains an elementary proof in a precisely stated cell and is
 **not** kernel-checked (`AssemblyP1/PopulationFiniteGap.lean` is absent; flag
 F-b). The §6.1 surrogate full-coverage `∀y` classification remains

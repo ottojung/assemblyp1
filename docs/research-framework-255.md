@@ -1,7 +1,7 @@
 # AssemblyP1 umbrella #255 — research framework
 
 _Status: 2026-10-16. Reconciled by agent b629762217b2 against current
-`origin/main` @ `aa24b18` (GitHub PR #282 merge; `git ls-remote` rechecked).
+`origin/main` @ `c581d11` (GitHub PR #282 merge; `git ls-remote` rechecked).
 This supersedes the 2026-10-15 refresh at `b4071f5` (agent e05c947b4ab8,
 commit `9abb4e1`, now an ancestor of `origin/main` via merge `92f9d87`),
 the 2026-10-14 refresh at `157ad34` (PR #196), and the later PR #259
@@ -130,11 +130,11 @@ stay OPEN.
   product-binomial ratio `65536/50625 > 1`, exact iid tie) and from the
   source-historical matched `I_s` domain. The fixed-`x` problem (A) remains
   halfspace inequalities; all broader conjectures remain OPEN.
-  **Reconciled 2026-10-16 (head `aa24b18`):** the pointwise all-sample
+  **Reconciled 2026-10-16 (head `c581d11`):** the pointwise all-sample
   statement is the kernel-checked theorem
   `AssemblyP1.FiniteSampleIidEnvelope.truth_maximizer_forall_covered_iff`
   (`AssemblyP1/FiniteSampleIidEnvelope.lean:197`, GitHub PR #251, content
-  `d3eb0a3`, merge `13411a6`), root-imported at `AssemblyP1.lean:288`–`:289`
+  `d3eb0a3`, merge `13411a6`), root-imported at `AssemblyP1.lean:292–:293`
   (predecessor envelope `truth_maximizer_iff_envelope_le_one`, PR #172 merge
   `4d4970c`, is the fixed-surplus-`m` specialization). The earlier text here
   ("not kernel-checked as stated ... not imported by the root aggregator") is
