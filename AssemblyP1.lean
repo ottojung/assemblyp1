@@ -300,6 +300,10 @@ import AssemblyP1.CoveredBinomialWeightsIffSharpnessAudit
 -- #259 power monotonicity: the exact-iid vs §6.1 ranking inversion holds for all n ≥ 1.
 import AssemblyP1.Section62BinomialPowerMonotonicity
 import AssemblyP1.Section62BinomialPowerMonotonicityAudit
+-- #259 necessity: sample-uniform maximality of the §6.1 product-binomial implies rigidity,
+-- and a rigid truth can still be beaten by a new-support candidate (sufficiency fails).
+import AssemblyP1.ProductBinomialRigidityNecessity
+import AssemblyP1.ProductBinomialRigidityNecessityAudit
 import AssemblyP1.FiniteSideInformationColoring
 import AssemblyP1.FiniteSideInformationColoringAudit
 import AssemblyP1.FiniteBayesianSideInformation
