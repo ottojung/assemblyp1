@@ -1,6 +1,6 @@
 # Signed commit enforcement
 
-Status: **CI gate active and green on `main`; mandatory branch ruleset ACTIVE — `ruleset1` (id `23626350`) is `enforcement=active` on `~DEFAULT_BRANCH` since 2026-10-15T05:01:31Z.**
+Status: **CI gate active and green on `main`; mandatory branch ruleset ACTIVE — `ruleset1` (id `23626350`) is `enforcement=active` on `~DEFAULT_BRANCH` since 2026-10-15T12:01:31Z.**
 Audit date: 2026-10-14. Audited revision: `origin/main` @ `b424c987edbde6282bc65ccdb71f65e6abcbe427`.
 
 ## Policy
@@ -70,7 +70,7 @@ id **`signed-commits`**.
 * CI: [`.github/workflows/signed-commits.yml`](../.github/workflows/signed-commits.yml)
   runs on every `push` and `pull_request` targeting `main`. It is currently
   active and green on `main` (observed on `b424c987ed`, `b0a6e9ff11`, and
-  current `main` `b9f0f4749`).
+  current `main` `c581d1196` as of 2026-10-16).
 * Range: the gate checks exactly `git rev-list merge-base(base, head)..head` —
   only newly introduced commits, never ancestors of the base.
 * Selftest: [`scripts/test_signed_commits.sh`](../scripts/test_signed_commits.sh)
@@ -90,7 +90,8 @@ id **`signed-commits`**.
 
 The CI gate verifies signatures on every push/PR, and the repository ruleset
 **`ruleset1` (id `23626350`) is `enforcement=active`** on `~DEFAULT_BRANCH`
-(activated 2026-10-15T05:01:31Z), so enforcement is **mandatory**, not
+(activated 2026-10-15T12:01:31Z; ruleset history version `53324683` reports
+`2026-10-15T05:01:31.882-07:00`, i.e. `12:01:31Z`), so enforcement is **mandatory**, not
 advisory. Observed live (2026-10-16) ruleset rules:
 
 * `required_status_checks` — exact context **`signed-commits`**, with

@@ -1,15 +1,21 @@
 # AssemblyP1 umbrella #255 — research framework
 
-_Status: 2026-10-15. Integration front (agent e05c947b4ab8): child-issue
-map refreshed against current board states and the exact landed scopes of
-merged PRs through #234 (current `origin/main` @ `b4071f5`), superseding the
-2026-10-14 refresh at `157ad34` (PR #196). Board states re-verified
-2026-10-15 via `antonina board show`: #262, #266, #267, and #270 have since
-CLOSED, and #281, #284, #300 are #255-relevant children not previously
-listed here. The exact iid finite-ML classification posted on the issue
-2026-10-13 and the population-to-finite bridge posted 2026-10-14 are
-recorded with their scope. Coordination front: agent 96b26e582cdf (rebased
-by agents 491a5de6e543, 3a1a51f8aef9, 4ba67d3247d8, and e05c947b4ab8).
+_Status: 2026-10-16. Reconciled by agent b629762217b2 against current
+`origin/main` @ `c581d11` (GitHub PR #282 merge; `git ls-remote` rechecked).
+This supersedes the 2026-10-15 refresh at `b4071f5` (agent e05c947b4ab8,
+commit `9abb4e1`, now an ancestor of `origin/main` via merge `92f9d87`),
+the 2026-10-14 refresh at `157ad34` (PR #196), and the later PR #259
+`fb51592` / PR #274 `27869e5` edits. Board states re-verified **2026-10-16**
+via `antonina board show`: board-CLOSED #247, #254, #256, #258, #260, #262,
+#264, #266, #267, #270, #273, #274, #276, #277, #282; board-OPEN #257,
+#259, #261, #263, #265, #268, #269, #271, #272, #281, #284, #300.
+**Correction:** the exact iid full-start-covered pointwise classification
+posted on the issue 2026-10-13 is **now kernel-checked** (GitHub PR #251,
+merge `13411a6`); earlier revisions of this framework recorded it as
+elementary-only. The population-to-finite bridge posted 2026-10-14 remains
+elementary-only (not kernel-checked). Coordination front: agent 96b26e582cdf
+(rebased by agents 491a5de6e543, 3a1a51f8aef9, 4ba67d3247d8, and
+e05c947b4ab8).
 This document organizes the classification axes of the #255 research
 program. It is a framework, not a result: every scoped claim below is
 labeled with its epistemic class, and every unproved claim remains OPEN.
@@ -116,20 +122,23 @@ stay OPEN.
   NOT settle the general §6.2 claim, #259(A), or #259(B) over the full
   candidate universe — see the matrix for exact scopes.
 - **Exact iid finite-ML classification on the all-true-starts-sampled
-  domain: PROVED (elementary), posted 2026-10-13, not kernel-checked as
-  stated; a related envelope theorem is kernel-checked but scoped.**
+  domain: NOW KERNEL-CHECKED (was elementary-only), posted 2026-10-13.**
   Candidate `D` is never strictly better than truth for any full-start-covered
   finite sample IFF some true type has `q_j = 0` OR `q_i ≤ p_i` for every
   true type; same-support normalized forces `p = q`. Distinct from the
   §6.1 surrogate (which the same sample `AAATT`/`AAATA` separates:
   product-binomial ratio `65536/50625 > 1`, exact iid tie) and from the
   source-historical matched `I_s` domain. The fixed-`x` problem (A) remains
-  halfspace inequalities; all broader conjectures remain OPEN. A kernel
-  partial artifact exists on main: `AssemblyP1/FiniteSampleIidEnvelope.lean`
-  (`truth_maximizer_iff_envelope_le_one`, added via PR #172, merge `4d4970c`;
-  compiled by the library glob but not imported by the root aggregator) states
-  the MAP envelope iff for a fixed surplus total `m`, not the pointwise
-  all-sample criterion above — see the matrix's exact-iid section.
+  halfspace inequalities; all broader conjectures remain OPEN.
+  **Reconciled 2026-10-16 (head `c581d11`):** the pointwise all-sample
+  statement is the kernel-checked theorem
+  `AssemblyP1.FiniteSampleIidEnvelope.truth_maximizer_forall_covered_iff`
+  (`AssemblyP1/FiniteSampleIidEnvelope.lean:197`, GitHub PR #251, content
+  `d3eb0a3`, merge `13411a6`), root-imported at `AssemblyP1.lean:292–:293`
+  (predecessor envelope `truth_maximizer_iff_envelope_le_one`, PR #172 merge
+  `4d4970c`, is the fixed-surplus-`m` specialization). The earlier text here
+  ("not kernel-checked as stated ... not imported by the root aggregator") is
+  superseded. See the matrix's LANDED section.
 - **Population-to-finite bridge (exact multinomial): PROVED (elementary),
   2026-10-14, not kernel-checked.** `∑_w x(w)·log p_D(w) =
   n·∑_w p̂(w)·log p_D(w)` with `p̂(w) = x(w)/n`; hence for fixed `x` the
