@@ -217,10 +217,15 @@ This is not a story comparing AI tools. It is the story of a research method des
 
 ## Editorial correction: the 2016 negative result and conditional Bayes
 
-The 2016 question is an ordinary non-Bayesian CONDITIONAL IMPLICATION: if the
-observed reads satisfy information feasibility for the true genome, must
-that genome maximize the UNCONDITIONED likelihood of the observed reads?
-The substantive answer is **NO** for the concrete likelihood models studied.
+The 2016 question is an ordinary non-Bayesian implication: if the observed
+reads satisfy information feasibility for the true genome, must that genome
+maximize the UNCONDITIONED likelihood of the observed reads? In the
+whitepaper's two-question terminology (`paper/sections/03-open-question.tex`,
+`sec:two-questions`) this is **Question B (unconditional)**, distinct from
+**Question A (conditional)**, which restricts the candidate set to the
+truth-dependent feasible fiber and is a corollary of the reconstruction
+guarantee. The substantive answer to Question B is **NO** for the concrete
+likelihood models studied.
 The main talk uses the AAATT versus AAAATT example, whose competitor is
 one base longer. A separate strict W5 molecule counterexample
 AAATAT versus AAAAAT provides another source-supported witness.
