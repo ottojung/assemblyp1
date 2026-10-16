@@ -123,6 +123,8 @@ import AssemblyP1.RigidityBouquetAudit
 import AssemblyP1.RigidityBouquetGenomeWitness
 import AssemblyP1.RigidityBridge
 import AssemblyP1.RigidityBridgeAudit
+import AssemblyP1.RigidityNoGo
+import AssemblyP1.RigidityNoGoAudit
 import AssemblyP1.RepeatAdapter
 import AssemblyP1.OrientedFinalRigidity
 import AssemblyP1.BridgingBridge
