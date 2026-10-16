@@ -201,6 +201,90 @@ length `N` is therefore a variable and the comparison acquires a length factor.
   and length `k·G`, so its normalized spectrum equals the truth's and it ties on
   every sample (`rescaling_tie`). No full-overlap analogue.
 
+## Adjudication (2026-10-16): unobserved molecule types and the count-vector criterion
+
+An open review objection on #261 (research-assistant, 2026-10-14) observed that
+MB09 §6.1's fixed-`N` separable product-binomial is a product over **all**
+`4^k` molecule types, *including* types with observed count `x_i = 0`, so a
+candidate that leaves an unobserved type at count `0` might avoid the
+`(1 - d_i/N)^n < 1` penalty that a spelled genome with a positive count there
+must pay, while the §6.2 overlap graph carries only *observed* read vertices.
+The adjudication below is kernel-checked in
+`AssemblyP1/Section62BinomialSupportAdjudication.lean`.
+
+**Verdict.**
+
+1. **Which `c_i(d_i)` terms the criterion includes.** At the count-vector layer
+   the criterion is *already* full-support. Write `n = ∑ x`, `T` for the whole
+   class universe, and `I` for the observed support. The literal §6.1 core is
+   `K(d;x) = ∏_{j∈T} d_j^{x_j}(N-d_j)^{n-x_j}`. `binomCoreNat_support_split`
+   proves the exact split
+   `K(d;x) = (∏_{j∈T∖I}(N-d_j))^n · ∏_{i∈I} d_i^{x_i}(N-d_i)^{n-x_i}`, so each
+   **unobserved** class contributes the full factor `(N-d_j)^n` and is *not*
+   dropped. Equivalently, by `binomCoreNat_eq_prod_qFac` and
+   `criterion_is_full_support`, the score is `∏_{i∈I} q_i(d)^{x_i}` with
+   `q_i(d) = d_i ∏_{j∈T, j≠i}(N-d_j)`, and `qFac_split` exhibits the unobserved
+   factors `(N-d_j)` inside every effective weight `q_i`.
+2. **Unobserved coordinates are neither forced to zero nor immaterial.** The
+   count-vector theorem places no restriction on the unobserved coordinates.
+   `unobserved_coord_matters` exhibits `wd = (2,1,0)` and `wd' = (2,1,1)` on
+   `I = {0,1}` with `x = (1,1,0)`, `N = 5`: they agree on `I` but score
+   `600 ≠ 384`. Worse, the naive **observed-only** shortcut
+   `q^I_i(d) = d_i ∏_{j∈I, j≠i}(N-d_j)` is a *wrong* criterion:
+   `observedOnly_insufficient` gives `oA = (2,1,4)` (truth carrying mass `4` on
+   the unobserved class `2`), `oB = (2,1,0)` (candidate leaving it at `0`), with
+   `x = (1,1,0)`, `N = 5`; the observed-only weights dominate (`q^I(oB) =
+   q^I(oA) = (8,3)`) yet the candidate strictly beats the truth (`24 < 600`).
+   `full_criterion_detects` confirms the full-support criterion detects the
+   defeat, and `exists_defeating_sample` recovers a defeating sample through the
+   kernel-checked `binomial_uniform_criterion`. Hence the full-support terms are
+   indispensable and the criterion is **not** a function of observed
+   coordinates alone.
+3. **The flow-level §6.2 obligation is genuinely different and stays OPEN.** A
+   §6.2 feasible flow's throughput is supported on the observed read vertices,
+   so it does not by itself specify the unobserved coordinates.  This is exactly
+   where the spelled half of the adapter stops: `Section62SpelledFlowAdapter`
+   proves `throughput (sp.flow) edges v = sp.visits v`, i.e. a spelled circuit's
+   count vector is its **observed-vertex visit vector**, not its genome's
+   *complete* molecule spectrum.  `flow_genome_gap` quantifies the residual
+   discrepancy exactly: if a flow `d` agrees with a genome `d'` on `I` and is
+   `0` off `I`, then on any sample supported on `I`,
+   `K(d;x)·(∏_{j∉I}(N-d'_j))^n = K(d';x)·(∏_{j∉I} N)^n`, i.e. the flow is
+   larger by `∏_{j∉I}(N/(N-d'_j))^n ≥ 1`. A flow does **not** pay for the
+   genome's unobserved mass. Deciding the unobserved-coordinate convention (and
+   the throughput-image characterization) remains OPEN.
+
+**Well-defined class covered by the theorem.** Candidates are count vectors
+`d : T → ℕ` over the *full* molecule-type universe with the observed support `I`
+and the unobserved coordinates *explicitly specified* — not §6.2 flows, not
+spelled circuits, not circular genomes. The truth is admitted (any full count
+vector `A` with `q_i(A) > 0` on `I`). The likelihood is the MB09 §6.1
+fixed-external-`N` separable product-binomial; the length universe is fixed
+external `N`.
+
+**Independent audit.** `scripts/verify_261_support_adjudication.py` re-derives
+the q-factorization, the support split, the qFac split, the unobserved witness,
+the observed-only refutation, and the ratio identity in exact integer
+arithmetic.
+
+**Remaining OPEN subclaims (unchanged by this adjudication).**
+
+- OPEN-1: **throughput-image characterization** of the §6.2 feasible set
+  (incidence/Graver); the spelled *inclusion* half is resolved by
+  `Section62SpelledFlowAdapter.spelling_flow_feasible`, but the converse and the
+  image remain OPEN.
+- OPEN-2: **spelled-circuit → genome spectrum** alignment (`d = Spelling.visits`
+  vs the genome's complete spectrum), equivalently the unobserved-coordinate
+  convention (flow default `0` vs spelled-genome spectrum). The `AAATA` witness
+  is a spelled circuit whose observed throughput omits a positive unobserved
+  type; the discrepancy is exactly `∏_{j∉I}(N/(N-d'_j))^n` (`flow_genome_gap`).
+- OPEN-3: general **non-spelled-flow** maximality criterion.
+- OPEN-4: **transitive reduction** interaction with ML.
+- OPEN-5: **orientation/RC class** interaction.
+- OPEN-6: **sample realizability** at arbitrary `o_min`.
+- OPEN-7: **fixed-`n` (non-uniform) extreme-sample iff** in Lean (currently
+  numerically audited by `scripts/verify_261_binomial_extreme_samples.py`).
+
 ## Remaining-open matrix
 
 See `docs/issue261-axis-matrix-20261014.md` for the independently audited matrix
@@ -211,7 +295,7 @@ half added by `AssemblyP1.Section62FlowCountVectorAdapter`.
 |---|---|
 | Variable-length exact-multinomial criterion (§6.1 exact display) | **RESOLVED** (`varLengthCriterion`), project-defined objective |
 | Fixed-external-`N` multinomial-product criterion | **RESOLVED** (`flow_dominance_criterion`), correctly labelled |
-| Genuine §6.1 separable-binomial count-vector criterion | **RESOLVED at the count-vector layer** (`AssemblyP1.Section62BinomialCriterion.binomial_uniform_criterion`, kernel-checked): exact q-factorization `K(d;x)=∏ᵢqᵢ(d)^{xᵢ}` and the all-`n` interior-truth iff `∏ᵢqᵢ(B)=0 ∨ ∀i∈I, qᵢ(B)≤qᵢ(A)`. The fixed-`n` extreme-sample iff remains **numerically audited** (`scripts/verify_261_binomial_extreme_samples.py`) but not yet kernel-checked |
+| Genuine §6.1 separable-binomial count-vector criterion | **RESOLVED at the count-vector layer** (`AssemblyP1.Section62BinomialCriterion.binomial_uniform_criterion`, kernel-checked): exact q-factorization `K(d;x)=∏ᵢqᵢ(d)^{xᵢ}` and the all-`n` interior-truth iff `∏ᵢqᵢ(B)=0 ∨ ∀i∈I, qᵢ(B)≤qᵢ(A)`. **Adjudicated 2026-10-16** (`AssemblyP1.Section62BinomialSupportAdjudication`): the criterion is full-support (unobserved terms appear as `(N-d_j)^n`); unobserved coordinates are not forced to zero and matter; the observed-only shortcut is refuted. The fixed-`n` extreme-sample iff remains **numerically audited** (`scripts/verify_261_binomial_extreme_samples.py`) but not yet kernel-checked |
 | §6.1 binomial over the §6.2 feasible flow set | **PARTIAL** — spelled half RESOLVED (`Section62SpelledFlowAdapter.spelling_flow_feasible`, 2026-10-15); the image identity `Θ(F)=spelledVisitSet` is **REFUTED** (2026-10-15, `Section62SpelledFlowImageRefutation`); general image characterization still OPEN |
 | Half-integral relaxation gap | **RESOLVED** (flow level: `Section62NonSpelledFlow`; arithmetic: `half_integral_gap`) |
 | Rescaling ties at variable length | **RESOLVED** (`rescaling_tie`) |
@@ -286,6 +370,16 @@ Source reading: [Medvedev–Brudno 2009, §§6.1–6.2](https://pmc.ncbi.nlm.nih
   `binomial_uniform_criterion`; plus the `A=(1,2)`, `B=(1,1)`, `N=3` witness.
   Its axioms are `[propext, Classical.choice, Quot.sound]`. It does **not**
   provide the §6.2 flow adapter, so the flow-level rows stay OPEN.
+- `AssemblyP1/Section62BinomialSupportAdjudication.lean`: kernel-checked
+  adjudication of the unobserved-molecule-type objection: the exact support
+  split `binomCoreNat_support_split`, the effective-weight split `qFac_split`,
+  the full-support restatement `criterion_is_full_support`, the unobserved
+  witness `Witness.unobserved_coord_matters` (600 vs 384), the observed-only
+  refutation `ObservedOnly.observedOnly_insufficient` (24 vs 600), and the
+  flow-vs-genome bound `flow_genome_gap`. Axioms
+  `[propext, Classical.choice, Quot.sound]`; no `sorryAx`.
+- `scripts/verify_261_support_adjudication.py`: independent exact-integer audit
+  of the adjudication identities and witnesses.
 - `scripts/verify_issue261_general_bidirected_flow_ml.py`: independent exact
   recomputation (all checks pass), including the binomial counterexample.
 - `scratch261/Audit.lean`: axiom audit (only propext, Classical.choice, Quot.sound).
