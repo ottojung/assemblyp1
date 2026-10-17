@@ -2,7 +2,6 @@ import Mathlib
 import AssemblyP1.FiniteBayesDecision
 import AssemblyP1.IidMapMonotonicity
 import AssemblyP1.GenomeOrbitAdapter
-import AssemblyP1.PosteriorMAPEquivalence
 
 /-!
 # A necessary-and-sufficient certificate for finite Bayes/MAP optimality (#269)
@@ -57,11 +56,13 @@ This is a finite Bayesian decision theorem for a fixed observation model; it is
 feasible-flow objective, and not a global "ML is best" claim.  It preserves a
 clean separation from the event-conditional inference of #266
 (`AssemblyP1.ConditionalIdentifiability`): nothing here conditions the prior or
-the likelihood on a truth-dependent event.  The posterior-one boundary is also
-distinct from the more general event-weighted orbit-class theorem
-`AssemblyP1.FiniteBayesianSideInformation.posteriorMass_eq_one_iff` (#272),
-which uses `jointMass π p E g r` and an explicit `orbit` map; here the object is
-the merged #269 point-candidate `GenomeOrbitAdapter.PosteriorMAP.posterior`.
+the likelihood on a truth-dependent event.  The posterior-one boundary is the
+#269-scoped form of the more general #272 endpoint
+`AssemblyP1.FiniteBayesianSideInformation.readOnly_posterior_eq_one_iff`
+(the `π ≡ 1`, `orbit = id`, `E ≡ True` specialization, restated for the merged
+#269 point-candidate `GenomeOrbitAdapter.PosteriorMAP.posterior` and used to
+instantiate the genome rotation-class model); it is not claimed to be a new
+mathematical fact beyond that specialization.
 
 No `sorry`, `admit`, `axiom`, or `native_decide`.
 -/

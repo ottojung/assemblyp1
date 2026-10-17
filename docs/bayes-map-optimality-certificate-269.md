@@ -88,15 +88,16 @@ a tie there, so the MAP tie choice is irrelevant).  This is a theorem about
 conditioning on the observation alone — it is **not** the truth-dependent
 event-conditional inference of #266.
 
-This is also distinct from the more general #272 endpoint
-`AssemblyP1.FiniteBayesianSideInformation.posteriorMass_eq_one_iff`, which is
-stated for the *event-weighted* orbit-class mass `jointMass π p E g r` (a
-prior-times-likelihood-times-promise-indicator sum over an explicit
-`orbit : Genome → Θ` map).  Here the object is the merged #269 point-candidate
-posterior `GenomeOrbitAdapter.PosteriorMAP.posterior J x _ θ` for an arbitrary
-real joint mass `J : Θ → X → ℝ`, and the rotation-class instantiation uses
-`GenomeOrbitAdapter`'s quotient and `orbitReadPmf` directly; neither module
-redefines the other's objects.
+This is also a specialization of the more general #272 endpoint
+`AssemblyP1.FiniteBayesianSideInformation.readOnly_posterior_eq_one_iff`: taking
+`π ≡ 1`, `orbit = id`, and the trivial promise `E ≡ True` there recovers exactly
+the statement above (up to the object-level identity
+`posteriorMass 1 J True id x θ = posterior J x _ θ`).  The contribution here is
+therefore the #269-scoped statement for the merged point-candidate
+`GenomeOrbitAdapter.PosteriorMAP.posterior` and its rotation-class instantiation
+`orbit_posterior_eq_one_iff_singleton_support`, not a new mathematical fact
+beyond that specialization; the genuinely new target-B content is the necessity
+half `bayesOptimal_imp_pointwiseMAP`.
 
 ### Instantiation to the AssemblyP1 read model
 
