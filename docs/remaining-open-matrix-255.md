@@ -834,17 +834,30 @@ rest remain human-readable only, as labeled per entry.
   positive-weight fiber `C(r,z)` has cardinality 1; for a deterministic
   promise `E(g,r)` replace `P(z|g,r)` with its indicator. "Weakest" side
   information may be unique (incomparable minimal colorings, PR #164).
-- **Additional landed (PR #195 `b0a6e9f`, PR #204 `c312cbb`):**
+- **Additional landed (PR #195 `b0a6e9f`, PR #204 `c312cbb`, PR #262 `654ed0c`):**
   `FiniteBayesianSideInformation.lean` (independent reviews of the ordering
   blocker and the normalized positive-support incomparability) and
   `FiniteSideInformationOrder.lean` (the `Stronger` preorder on side channels,
   `sufficient_of_stronger`, `sufficient_and`, `false_strongest`, and
-  incomparable minimal channels).
-- **Still OPEN:** candidate-specific posterior weights and the
-  latent-placement event `E(g,T)` adapter; the bridge to a specific genome
-  assembly reconstruction theorem supplying the auxiliary label; the full
-  classification of weakest side information for certain finite Bayesian
-  recovery.
+  incomparable minimal channels), plus `FiniteSideInformationSourcePromise.lean`
+  (truth-only source-property family: weakest exists iff every read is already
+  unambiguous).
+- **Additional landed (literal read-string adapter, #272):**
+  `FiniteSideInformationReadStringAdapter.lean` + audit.  Defines the adapter
+  `isPromiseReadString` (observation = distinct read-string set, promise =
+  `HistoricalInformationFeasibleLiteral` marginalised over compatible
+  placements), proves it is read-dependent (outside both `AdmReadOnly` and
+  `AdmTruthOnly`), applies `weakest_admissible_iff_union` to the read-dependent
+  `I_s` family (`weakest_readStringIS_iff_sufficient`,
+  `weakest_readStringIS_of_fibreUnique`), and kernel-checks the `I_s` necessity
+  obstructions (general coverage/triple/interleaved projection lemmas and the
+  unbridged-triple witnesses `ABXABYABZ` / `ABXABZABY`).  See
+  [`issue272-read-string-adapter.md`](issue272-read-string-adapter.md).
+- **Still OPEN:** the bridge to a specific genome assembly reconstruction
+  theorem supplying the auxiliary label; the decoder-level certainty endpoint
+  (external Not-So-Greedy guarantee remains an attributed premise); `I_s`
+  necessity for the *particular* 2016 decoder; the full classification of
+  weakest side information for certain finite Bayesian recovery.
 
 ### #276 (CLOSED) — reframe paper around comparable information and recovery guarantees
 
