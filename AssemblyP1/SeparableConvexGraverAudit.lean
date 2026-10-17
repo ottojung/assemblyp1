@@ -16,3 +16,12 @@ open AssemblyP1.SeparableConvexGraver
 #print axioms AssemblyP1.SeparableConvexGraver.negLog_sub_discConvOn
 #print axioms AssemblyP1.SeparableConvexGraver.multinomialTerm_discConvOn
 #print axioms AssemblyP1.SeparableConvexGraver.binomTerm_discConvOn
+#print axioms AssemblyP1.SeparableConvexGraver.affineExtend_of_le
+#print axioms AssemblyP1.SeparableConvexGraver.affineExtend_of_ge
+#print axioms AssemblyP1.SeparableConvexGraver.affineExtend_of_mid
+#print axioms AssemblyP1.SeparableConvexGraver.affineExtend_of_le_U
+#print axioms AssemblyP1.SeparableConvexGraver.inc_affineExtend
+#print axioms AssemblyP1.SeparableConvexGraver.affineExtend_discConvOn
+#print axioms AssemblyP1.SeparableConvexGraver.multinomialTerm_ext_discConvOn
+#print axioms AssemblyP1.SeparableConvexGraver.binomTerm_ext_discConvOn
+#print axioms AssemblyP1.SeparableConvexGraver.binomTerm_degenerate_discConvOn
