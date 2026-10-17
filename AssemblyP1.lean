@@ -126,6 +126,8 @@ import AssemblyP1.RigidityBouquetAudit
 import AssemblyP1.RigidityBouquetGenomeWitness
 import AssemblyP1.RigidityBridge
 import AssemblyP1.RigidityBridgeAudit
+import AssemblyP1.RigidityLength3Bridge
+import AssemblyP1.RigidityLength3BridgeAudit
 import AssemblyP1.RigidityTargetCycle
 import AssemblyP1.RigidityTargetCycleAudit
 import AssemblyP1.RigidityNoGo
