@@ -3,6 +3,7 @@ import AssemblyP1.FiniteRigidityDecider
 import AssemblyP1.TwoWalkRigidity
 import AssemblyP1.RigidityBouquet
 import AssemblyP1.RigidityBridge
+import AssemblyP1.RigidityLength3Bridge
 import AssemblyP1.RigidityTargetCycle
 import AssemblyP1.RigidityNoGo
 open AssemblyP1.ExactRigidityCriterion
@@ -10,6 +11,7 @@ open AssemblyP1.FiniteRigidityDecider
 open AssemblyP1.TwoWalkRigidity
 open AssemblyP1.RigidityBouquet
 open AssemblyP1.RigidityBridge
+open AssemblyP1.RigidityLength3Bridge
 open AssemblyP1.RigidityTargetCycle
 open AssemblyP1.RigidityNoGo
 #print axioms AssemblyP1.ExactRigidityCriterion.nonrigid_iff_exists_delta
@@ -39,6 +41,12 @@ open AssemblyP1.RigidityNoGo
 #print axioms AssemblyP1.RigidityBridge.bridgeA_nonrigid_m1
 #print axioms AssemblyP1.RigidityBridge.bridgeA_nonrigid_m2
 #print axioms AssemblyP1.RigidityBridge.bridgeA_nonrigid_f
+#print axioms AssemblyP1.RigidityLength3Bridge.length3Bridge_nonrigid_iff
+#print axioms AssemblyP1.RigidityLength3Bridge.length3Bridge_nonrigid_m1
+#print axioms AssemblyP1.RigidityLength3Bridge.length3Bridge_nonrigid_m2
+#print axioms AssemblyP1.RigidityLength3Bridge.length3Bridge_nonrigid_f
+#print axioms AssemblyP1.RigidityLength3Bridge.length3Bridge_rigid_repetitive
+#print axioms AssemblyP1.RigidityLength3Bridge.length3Bridge_rigid_iff
 #print axioms AssemblyP1.RigidityTargetCycle.targetCycle_nonrigid_iff_coin
 #print axioms AssemblyP1.RigidityTargetCycle.targetCycle_rigid_iff_not_coin
 #print axioms AssemblyP1.RigidityTargetCycle.coin_nonrigid_23_5
