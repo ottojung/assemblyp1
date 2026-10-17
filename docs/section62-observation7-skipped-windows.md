@@ -1,6 +1,6 @@
 # Observation 7: exact skipped-window criterion
 
-**Status (2026-10-13):** proved here as an elementary combinatorial argument for an *oriented, error-free, fixed-read-length, circular-spelling model*. A separate exhaustive finite regression checks all 3,456 valid edges arising from all nonempty subsets of binary length-3 words. **Not yet a Lean-kernel theorem.** A strand/reverse-complement adapter, general circular-walk certificate, and exact source-algorithm equivalence remain open (Antonina #284, #261, #285).
+**Current status correction (2026-10-17):** the paper argument below and its finite regression were subsequently **formalized in Lean and merged by PR #265**. The kernel-checked `Section62GlobalSkippedBridge.observation7_reduced_signed_circuit_range_count` proves read-occurrence/vertex-visit equality for genuine closed `SignedPath` circuits with all edges in the repository’s `transitivelyReducedSpelling` graph, including circular seam and periodic wrapping. `Section62SkippedWindowFactor` supplies the local no-skipped-observed-window theorem. A separate already-merged `Section62MyersIdealTransitivity` establishes the implemented two-hop reduction iff the *idealized* same-spelling detour. **Still OPEN** are correspondence to the original MB09 physical RC bidirected multigraph, the full practical Myers 2005 reduction policy, and unrestricted genome/flow realizability. The remainder of this note is the original 2026-10-13 mathematical derivation, retained for provenance.
 
 ## What the original papers actually say
 

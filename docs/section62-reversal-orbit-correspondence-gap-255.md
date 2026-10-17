@@ -1,5 +1,46 @@
 # Reversal-orbit source-model correspondence: precise remaining gap (#255/#261 front)
 
+
+## Updated status — 2026-10-17 (supersedes the historical snapshot below)
+
+At current `main` after PR #307, the **abstract orbit flow discipline and
+representation-invariant incidence algebra ARE formally implemented**:
+`AssemblyP1.Section62PhysicalEdgeOrbit` defines a reversal Setoid quotient
+of tagged signed edges, physical positive/negative half-incidence functions,
+and edge-orbit-indexed visit/flow totals. The `ATAT` witness kernel-checks
+three orbits and a mixed-sign loop with one physical visit; blindly copying
+the orbit flow onto both oriented representatives yields inherited departure
+throughput TWO rather than one. Different overlap lengths remain distinct.
+
+Consequently the old statement below, "no quotient-flow definition exists on
+main", is a **historical fact at f338cdf, not a current open lemma**.
+Likewise, MB09 Observation 7 for genuine closed signed circuits of the
+repository's *implemented* spelling-preserving reduction has already been
+kernel-proved in merged PR #265, via
+`AssemblyP1.Section62GlobalSkippedBridge.observation7_reduced_signed_circuit_range_count`.
+The idealized same-spelling two-hop reduction equivalence is also merged in
+`Section62MyersIdealTransitivity`.
+
+**Actual remaining gaps:** (i) identify the constructed quotient edge IDs,
+including genuinely parallel edges, with MB09's **physical** RC overlap
+multigraph and its transitive-reduction contract; (ii) transport source
+vertex-splitting bounds, read-copy counts, and the exact ML objective to
+those physical edge-orbit flow totals; (iii) transport repo Observation 7
+across the source model and justify any contig/single-genome Eulerian
+realizability hypotheses. Reversal quotient alone does not give these.
+
+PR #304 (in CI as of this update, being integrated via signed PR #313)
+is an intentionally *experimental tagged-overlap* theorem about RC reversal
+and three palindrome edge orbits; its older departure-based feasible-flow
+domain is explicitly **not** a faithful physical MB09 model.
+Do not conflate the already-merged #307 physical edge-orbit abstraction with
+a complete source-graph/optimizer equivalence theorem.
+
+---
+
+### Historical snapshot below (as of `f338cdf`)
+
+
 _Status: gap-pinning note at `origin/main` `f338cdfe34442d6bc1767e59c577b284d60d66a3`
 (2026-10-17). The #295 source-fidelity blocker is **OPEN**. This note records exactly
 which lemmas merged work delivers and which correspondence lemma remains unproved.
