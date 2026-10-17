@@ -4,12 +4,14 @@ import AssemblyP1.TwoWalkRigidity
 import AssemblyP1.RigidityBouquet
 import AssemblyP1.RigidityBridge
 import AssemblyP1.RigidityTargetCycle
+import AssemblyP1.RigidityNoGo
 open AssemblyP1.ExactRigidityCriterion
 open AssemblyP1.FiniteRigidityDecider
 open AssemblyP1.TwoWalkRigidity
 open AssemblyP1.RigidityBouquet
 open AssemblyP1.RigidityBridge
 open AssemblyP1.RigidityTargetCycle
+open AssemblyP1.RigidityNoGo
 #print axioms AssemblyP1.ExactRigidityCriterion.nonrigid_iff_exists_delta
 #print axioms AssemblyP1.FiniteRigidityDecider.le_total_of_feasible
 #print axioms AssemblyP1.FiniteRigidityDecider.admissible_iff
@@ -42,3 +44,9 @@ open AssemblyP1.RigidityTargetCycle
 #print axioms AssemblyP1.RigidityTargetCycle.coin_nonrigid_23_5
 #print axioms AssemblyP1.RigidityTargetCycle.coin_rigid_23_1
 #print axioms AssemblyP1.RigidityTargetCycle.coin_rigid_33_2
+
+-- §16: direct fractional-relaxation insufficiency, independently checked.
+#print axioms AssemblyP1.RigidityNoGo.coin_bouquet_nonrigid_iff
+#print axioms AssemblyP1.RigidityNoGo.coin_bouquet_real_nonrigid
+#print axioms AssemblyP1.RigidityNoGo.coins23_target1_rigid
+#print axioms AssemblyP1.RigidityNoGo.coins23_target5_nonrigid
