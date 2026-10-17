@@ -137,6 +137,7 @@ Module `AssemblyP1.ShortFiniteMLCounterexamples`:
 | Repeat-clause vacuity / bridging | Lean `no_triple_repeat_2/3`, `no_interleaved_2/3/4`, `triple_repeat_4`, `triple_repeat_all_bridged_4` |
 | §6.2 feasibility, all three readings | Lean `*_perVertex_*`, `*_spelled_*`, `*_section62_*` (closed walks `walkS2…walkD4`) |
 | Exact likelihoods and strict ratios | Lean `lik_*`, `ratio_*`, `candidate_strictly_better_*` |
+| Independent exact-rational re-derivation | [`scripts/verify_short_finite_ml_300.py`](../../scripts/verify_short_finite_ml_300.py) (imports no repository or Lean output; `fractions.Fraction` throughout) |
 | Multinomial-count ratio | Lean `multinomLik_ratio`, `multinom_ratio_2/3/4` |
 | No `sorry`/`axiom`/`admit`/`native_decide` | `grep` over the module returns no matches |
 | Axioms | `#print axioms` on the endpoint theorems returns exactly `[propext, Classical.choice, Quot.sound]` |
