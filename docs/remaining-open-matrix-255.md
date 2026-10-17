@@ -722,6 +722,17 @@ rest remain human-readable only, as labeled per entry.
   agent `68d129da714f`; see `docs/deck-arc-consistency-265.md`. Paper,
   claims-matrix (`tab:claims`), and bibliography acceptance re-checked there
   (all `\ref`/`\cite` resolve; build 0 undefined).
+- **Update (2026-10-17):** the whitepaper now cites the newly merged
+  kernel-checked **necessary-and-sufficient** finite Bayes/MAP optimality
+  certificate (paper `rem:bayes-certificate`;
+  `AssemblyP1/BayesOptimalityCertificate.lean`, PR #310): the converse to
+  `thm:bayes-optimal` (`pointwiseMAP_iff_bayesOptimal`), the tie witness
+  (`TieWitness.both_optimal`), forced choice at a strict maximizer, and the
+  conditional-posterior-one boundary (`posterior_eq_one_iff_singleton_support`).
+  `tab:claims` row 2 and `docs/verification.md` were updated to cite it. This
+  closes the item-3 "limits/ties" citation gap; the genuinely open items are
+  unchanged: the general (non-equal-length) finite-ML characterization and a
+  sharp uniform sample size over the unrestricted genome universe.
 
 ### #266 (board CLOSED; PARTIAL scope) — conditional identifiability from Not-So-Greedy information-feasibility
 
