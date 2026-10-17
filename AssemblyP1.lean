@@ -36,6 +36,9 @@ import AssemblyP1.SameLengthSection62Parametric
 import AssemblyP1.PerOccurrenceSameLengthCounterexample
 import AssemblyP1.HistoricalCoverageSameLengthWitnesses
 import AssemblyP1.Section62BidirectedFlow
+import AssemblyP1.Section62OrientedMLClassification
+import AssemblyP1.Section62ReversalInvolution
+import AssemblyP1.Section62OrientedStrandFlowAudit
 -- #261 feasible-flow to throughput-count vector image adapter and axiom audit.
 import AssemblyP1.Section62FlowCountVectorAdapter
 import AssemblyP1.Section62FlowCountVectorAdapterAudit
