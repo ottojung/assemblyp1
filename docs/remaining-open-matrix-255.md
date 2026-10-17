@@ -21,13 +21,19 @@ authoritative list of currently absent Lean theorems. Always cross-check
 * **Already proved:** PR #312 generalized the p,q long-bridge rigidity
   classification; PR #310 proved the scoped finite Bayes/MAP certificate.
   These are not pending research tasks.
-* **Integration pending at this update:** signed aggregate PR #313 groups
-  distinct #304 experimental RC-overlap reversal/three palindrome orbits,
-  #305 interior-matching **finite convex surrogate**, and #309 independent
-  exact-rational finite-sample ML verifier without its blocked GitHub-workflow
-  edit. All original exact PR heads were green; only the aggregate exact-head
-  CI and branch protection authorize its merge. PR #311 was closed as a
-  tree-identical no-op. Test PR #242 stays deliberately unmerged.
+* **Integrated since the older snapshot:** signed aggregate PR #313 is
+  **MERGED** at `23881843a37d9e2a50d07c23b519058f3baddf51`,
+  incorporating bounded experimental #304 RC-overlap/three palindrome orbits,
+  #305 interior-matching finite convex surrogate (not exact source ML on
+  zero-probability endpoints), and the independent exact-rational #309
+  verifier/doc. Original PRs #295 and #304 are superseded by this signed
+  integration; #305 is GitHub-marked merged. The #309 workflow YAML edit
+  was intentionally **not** included because the GitHub OAuth credential
+  lacks workflow-write scope, but its verifier was independently run and
+  its script and documentation were preserved byte-for-byte.
+  PR #311 was closed as a tree-identical no-op. Probe PR #242 remains
+  intentionally unmerged.
+
 * **Genuinely open:** a source-faithful edge-indexed physical RC bidirected
   graph correspondence (including parallel overlaps and practical transitive
   reduction); transport of signed balance, physical incidence *visit counts*,

@@ -29,7 +29,7 @@ those physical edge-orbit flow totals; (iii) transport repo Observation 7
 across the source model and justify any contig/single-genome Eulerian
 realizability hypotheses. Reversal quotient alone does not give these.
 
-PR #304 (in CI as of this update, being integrated via signed PR #313)
+PR #304 (merged as content through signed PR #313, merge `23881843a`)
 is an intentionally *experimental tagged-overlap* theorem about RC reversal
 and three palindrome edge orbits; its older departure-based feasible-flow
 domain is explicitly **not** a faithful physical MB09 model.
