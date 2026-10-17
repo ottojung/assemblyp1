@@ -1,3 +1,4 @@
+import AssemblyP1.Section62ReversalInvolution
 import AssemblyP1.Section62OrientedMLClassification
 
 /-!
@@ -54,3 +55,12 @@ none), with no `sorryAx`.  No `sorry` / `admit` / `axiom` / `native_decide`.
 #print axioms AssemblyP1.Section62OrientedMLClassification.oriented_spelled_maximal_of_flow_maximal
 #print axioms AssemblyP1.Section62OrientedMLClassification.oriented_flow_not_maximal_of_spelled_witness
 #print axioms AssemblyP1.Section62OrientedMLClassification.oriented_maximal_iff_spelled_maximal_of_image_eq
+
+-- Bounded representation-reversal / overlap-orbit audit (#261).
+#print axioms AssemblyP1.Section62ReversalInvolution.revPair_involutive
+#print axioms AssemblyP1.Section62ReversalInvolution.orientPairs_orbit_count
+#print axioms AssemblyP1.Section62ReversalInvolution.orientPairs_orbit_exact
+#print axioms AssemblyP1.Section62ReversalInvolution.orientPairs_orbit_cover
+#print axioms AssemblyP1.Section62ReversalInvolution.oOverlap_revEdge
+#print axioms AssemblyP1.Section62ReversalInvolution.oOverlap_revEdge_rcB
+#print axioms AssemblyP1.Section62ReversalInvolution.atat_orbit_count_eq_orientPairs

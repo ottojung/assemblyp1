@@ -3,6 +3,19 @@
 Child of #255; extends #260 from full overlap to genuine MB09 §6.2 bidirected
 overlap graphs at arbitrary `o_min ≤ L − 1`.
 
+
+**2026-10-17 clarification on tagged orientation:** The 2026-10-16
+`Section62OrientedStrandFlow` proves a representation-level palindrome
+tag fix only. Its experimental directed-tagged graph has four ordered
+ATAT overlap representations, while the physical reversal quotient
+has three edge-orbits. The inherited ordered-departure throughput is
+representation dependent; no correspondence to MB09's physical
+bidirected-flow feasible set, length, or ML optimum has been proved.
+`Section62ReversalInvolution` proves overlap reversal and finite-orbit
+facts, not orbit-flow transport. Accordingly all claims of a
+'corrected' domain below refer solely to the explicitly formalized
+experimental domain, and the physical model remains OPEN.
+
 ## Source audit
 
 Primary source: Medvedev & Brudno, *Maximum Likelihood Genome Assembly*,

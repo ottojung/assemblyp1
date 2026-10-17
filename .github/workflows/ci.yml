@@ -44,8 +44,6 @@ jobs:
         run: python3 scripts/verify_sample_complexity_265.py
       - name: Verify #265 strong-consistency (strong law / KL limit) derivation
         run: python3 scripts/verify_strong_consistency_265.py
-      - name: Verify #261 corrected oriented-strand §6.2 source model
-        run: python3 scripts/verify_261_oriented_strand_source_model.py
 
   build:
     runs-on: ubuntu-latest

@@ -1,6 +1,19 @@
 import AssemblyP1.Section62SpelledFlowMaximality
 
 /-!
+# Epistemic scope (2026-10-17)
+This is an **experimental tagged ordered-overlap representation**, NOT a
+proof of a faithful physical MB09 bidirected multigraph. In particular,
+reversal-equivalent ordered overlaps are still distinct edge variables
+and inherited `throughput` counts ordered departures, not invariant physical
+read visits. Merged `Section62PhysicalHalfIncidence` and the bounded
+`Section62ReversalInvolution` prove necessary incidence/orbit facts, but
+physical edge-orbit flows, vertex bounds, contig/genome realization and ML
+transport remain OPEN. All following 'corrected' descriptions refer only
+to distinguishing RC-palindromic *orientation tags* within this model.
+-/
+
+/-!
 # The corrected oriented-strand source model for the MB09 §6.2 bidirected graph (#261)
 
 ## The defect this module repairs
@@ -435,5 +448,115 @@ historical graph. -/
 theorem nonpal_corrected_nodup : corrNpGraph.Nodup := by decide
 
 theorem nonpal_historical_nodup : histNpGraph.Nodup := by decide
+
+/-! ## Physical reversal of tagged edges (finite ATAT witness)
+
+The physical reversal of a tagged overlap edge `e = (sx → sy, len)` is the same
+overlap read from the opposite strand, `revEdge e = (oRc sy → oRc sx, len)`,
+with the two signed endpoint incidences exchanged.  This is the bounded
+source-specific finite edge witness for the reversal orbit count; the general
+overlap anti-morphism is in `AssemblyP1.Section62ReversalInvolution`.
+
+`revEdge` is defined here so the ATAT witness is self-contained; the
+general overlap anti-morphism it satisfies is in
+`AssemblyP1.Section62ReversalInvolution`. -/
+
+/-- The tagged suffix/prefix overlap predicate. -/
+def oOverlap {A W : Type} (toListW : W → List A) (rcW : W → W) (sx sy : OStrand W)
+    (len : Nat) : Prop :=
+  sufOf (oTo toListW rcW sx) len = preOf (oTo toListW rcW sy) len
+
+/-- The physical reversal of a tagged overlap edge. -/
+def revEdge {A W : Type} [DecidableEq W] (e : BdEdge A (OStrand W)) :
+    BdEdge A (OStrand W) where
+  sx := oRc e.sy
+  sy := oRc e.sx
+  len := e.len
+  sgnX := e.sgnY
+  sgnY := e.sgnX
+
+/-- **The reversal is an involution.** -/
+theorem revEdge_involutive {A W : Type} [DecidableEq W] :
+    Function.Involutive (revEdge (A := A) (W := W)) := by
+  intro e
+  obtain ⟨sx, sy, len, sgnX, sgnY⟩ := e
+  simp [revEdge, oRc]
+
+/-- **Reversal swaps the signed endpoint incidences.** -/
+theorem revEdge_bdEdge {A W : Type} [DecidableEq W] (sx sy : OStrand W) (len : Nat) :
+    revEdge (bdEdge (A := A) oRep sx sy len) = bdEdge (A := A) oRep (oRc sy) (oRc sx) len := by
+  obtain ⟨cx, bx⟩ := sx
+  obtain ⟨cy, bsy⟩ := sy
+  cases bx <;> cases bsy <;> simp [revEdge, bdEdge, oRc, sgnRep, sgnTgt, oRep]
+
+/-- Reversal preserves the overlap length, so genuine parallel overlaps are
+never identified. -/
+theorem revEdge_len {A W : Type} [DecidableEq W] (e : BdEdge A (OStrand W)) :
+    (revEdge e).len = e.len := by
+  simp [revEdge]
+
+/-- The four tagged edges of the corrected ATAT graph, in generation order. -/
+def atatE1 : BdEdge Bool (OStrand (List Bool)) :=
+  bdEdge (A := Bool) oRep ((pal4, false) : OStrand (List Bool)) ((pal4, false) : OStrand (List Bool)) 2
+
+def atatE2 : BdEdge Bool (OStrand (List Bool)) :=
+  bdEdge (A := Bool) oRep ((pal4, false) : OStrand (List Bool)) ((pal4, true) : OStrand (List Bool)) 2
+
+def atatE3 : BdEdge Bool (OStrand (List Bool)) :=
+  bdEdge (A := Bool) oRep ((pal4, true) : OStrand (List Bool)) ((pal4, false) : OStrand (List Bool)) 2
+
+def atatE4 : BdEdge Bool (OStrand (List Bool)) :=
+  bdEdge (A := Bool) oRep ((pal4, true) : OStrand (List Bool)) ((pal4, true) : OStrand (List Bool)) 2
+
+/-- The corrected ATAT graph is exactly the four tagged edges. -/
+theorem atat_graph_eq :
+    oEdges (A := Bool) (W := List Bool) id rcB 4 2 [pal4] = [atatE1, atatE2, atatE3, atatE4] := by
+  decide
+
+/-- The reversal swaps the two same-orientation loops. -/
+theorem atat_rev_E1 : revEdge atatE1 = atatE4 :=
+  revEdge_bdEdge (pal4, false) (pal4, false) 2
+
+theorem atat_rev_E4 : revEdge atatE4 = atatE1 :=
+  revEdge_bdEdge (pal4, true) (pal4, true) 2
+
+/-- The reversal fixes the two opposite-orientation loops. -/
+theorem atat_rev_E2 : revEdge atatE2 = atatE2 :=
+  revEdge_bdEdge (pal4, false) (pal4, true) 2
+
+theorem atat_rev_E3 : revEdge atatE3 = atatE3 :=
+  revEdge_bdEdge (pal4, true) (pal4, false) 2
+
+/-- The unordered reversal orbit of an edge: the Finset `{e, revEdge e}`. -/
+def revOrbit (e : BdEdge Bool (OStrand (List Bool))) :
+    Finset (BdEdge Bool (OStrand (List Bool))) := {e, revEdge e}
+
+/-- **The four ATAT tagged edges fall under exactly three reversal orbits.** -/
+theorem atat_orbit_count :
+    (([atatE1, atatE2, atatE3, atatE4].map revOrbit).dedup).length = 3 := by
+  decide
+
+/-- The exact Finset orbit equalities. -/
+theorem atat_orbit_exact :
+    revOrbit atatE1 = {atatE1, atatE4} ∧ revOrbit atatE2 = {atatE2} ∧
+      revOrbit atatE3 = {atatE3} ∧ revOrbit atatE4 = {atatE1, atatE4} := by
+  decide
+
+/-- The three orbits are distinct and cover all four tagged edges. -/
+theorem atat_orbit_cover :
+    ∀ e ∈ [atatE1, atatE2, atatE3, atatE4],
+      ∃ o ∈ [revOrbit atatE1, revOrbit atatE2, revOrbit atatE3],
+        e ∈ o ∧ ∀ o' ∈ [revOrbit atatE1, revOrbit atatE2, revOrbit atatE3],
+          o' ≠ o → e ∉ o' := by
+  decide
+
+/-- Each ATAT edge is a genuine suffix/prefix overlap of length `2`. -/
+theorem atat_edge_overlap : ∀ e ∈ oEdges (A := Bool) (W := List Bool) id rcB 4 2 [pal4],
+    oOverlap id rcB e.sx e.sy e.len := by
+  rw [atat_graph_eq]
+  intro e he
+  simp only [List.mem_cons, List.not_mem_nil, or_false] at he
+  simp only [oOverlap, oTo]
+  rcases he with rfl | rfl | rfl | rfl <;> decide
 
 end AssemblyP1.Section62OrientedStrandFlow

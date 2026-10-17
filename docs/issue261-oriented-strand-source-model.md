@@ -1,4 +1,16 @@
-# The corrected oriented-strand §6.2 source model and its ML classification (#261)
+# Tagged-strand orientation experiment and scoped likelihood image result (#261)
+
+**Scientific status correction (2026-10-17): NOT a faithful physical source model.**
+This document is a study of an *ordered tagged-overlap representation*. Its
+four tagged ATAT edge representations include a reversal-symmetric pair and
+therefore do not constitute four independent physical bidirected edge types.
+Furthermore the inherited departure-based `throughput` changes vertex class
+under reversal. Thus the present `Feasible62` and ML image theorem refer only
+to this experimental domain, not MB09's corrected physical graph. The separate
+kernel-checked `Section62PhysicalHalfIncidence` module gives invariant
+half-incidence counts, and `Section62ReversalInvolution` gives a bounded
+reversal-orbit construction; **neither** supplies orbit-flow feasibility,
+vertex-visit bounds or genome-spelling correspondence. These remain open.
 
 _Status: representation repair + scoped ML classification, kernel-checked
 2026-10-16 (agent `dc33fee413ff`).  Independent exact-arithmetic verifier:

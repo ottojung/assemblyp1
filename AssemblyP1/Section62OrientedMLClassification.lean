@@ -1,6 +1,18 @@
 import AssemblyP1.Section62OrientedStrandFlow
 
 /-!
+# Epistemic scope
+This theorem family refers ONLY to scores and feasible flows defined by
+the tagged ordered-edge experiment of Section62OrientedStrandFlow. It
+does NOT classify genuine physical MB09 §6.2 flows: the inherited
+ordered-departure throughput is not invariant under representing a
+bidirected edge by its reverse-complement. Physical edge-orbit
+normalization and positive-half-incidence visit counts remain OPEN.
+The image maximality theorem is a formal image-pullback equivalence,
+not a structural characterization of the attainable image.
+-/
+
+/-!
 # ML maximality classification in the corrected general bidirected-flow domain (#261)
 
 This module classifies maximum-likelihood maximality for the **corrected**
