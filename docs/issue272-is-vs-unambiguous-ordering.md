@@ -1,6 +1,7 @@
 # Issue #272: `I_s` versus `Unambiguous` — the ordering question
 
-_Status: 2026-10-15. Mathematical formalization front. Companion Lean module:
+_Status: 2026-10-17 (literal read-string adapter landed, PR #297). Mathematical
+formalization front. Companion Lean module:
 [`AssemblyP1/FiniteSideInformationOrdering.lean`](../AssemblyP1/FiniteSideInformationOrdering.lean),
 audited by
 [`AssemblyP1/FiniteSideInformationOrderingAudit.lean`](../AssemblyP1/FiniteSideInformationOrderingAudit.lean).
@@ -45,7 +46,7 @@ truth-dependent promise never forces it below `Unambiguous`.
 | Combined neither-implication, one model | kernel-checked | `truthdependent_sufficient_incomparable` |
 | Concrete three-candidate witness | kernel-checked | `ThreeCandidate.neither_implication` |
 | `I_s` is **not** a read-only promise | kernel-checked | `IsTruthDependence.informationFeasible_not_readOnly` |
-| Literal read-string adapter for `I_s` as one observation type | **OPEN** | §"Remaining open work" |
+| Literal read-string adapter for `I_s` as one observation type | kernel-checked (PR #297) | [`FiniteSideInformationReadStringAdapter`](../AssemblyP1/FiniteSideInformationReadStringAdapter.lean) / [adapter note](issue272-read-string-adapter.md) |
 
 All endpoints depend only on `propext`, `Classical.choice`, `Quot.sound`
 (`#print axioms` audit); no `sorry`, `admit`, `axiom`, or `native_decide`.
@@ -127,18 +128,25 @@ candidate-dependent. This is exactly the placement/string gap analysed in
 [`AssemblyP1/ConditionalIdentifiability.lean`](../AssemblyP1/ConditionalIdentifiability.lean)
 (#266): the source event must be expressed at the placement level as
 `E g T` and marginalised over compatible placements, not read as a function of a
-single observation type. Until that adapter fixes one observation type for both
-`I_s` and `Unambiguous`, the ordering question is not a well-typed promise
-implication — which is why the honest verdict is "neither, pending the adapter"
-rather than a claimed implication.
+single observation type. That adapter is now provided by
+[`FiniteSideInformationReadStringAdapter`](../AssemblyP1/FiniteSideInformationReadStringAdapter.lean)
+(PR #297): it fixes the distinct read-string set as one observation type and
+makes `I_s` a well-typed truth-dependent promise, but proves that promise is
+read-dependent (outside both `AdmReadOnly` and `AdmTruthOnly`). The verdict
+therefore remains "neither" — now for the well-typed promise, since sufficiency
+alone still does not order a truth-dependent promise against `Unambiguous`.
 
 ## 5. Remaining open work
 
-1. **Concrete historical read-string adapter.** Choose one observation type
-   (read-string set or placement multiset), define the source-faithful
-   truth-dependent promise `E g (observed data)`, and re-ask the ordering
-   question in that model. The external Not-So-Greedy decoder guarantee remains
-   an attributed premise. OPEN.
+1. **Concrete historical read-string adapter.** LANDED (PR #297; see
+   [`issue272-read-string-adapter.md`](issue272-read-string-adapter.md)): the
+   adapter fixes the distinct read-string set as one observation type, defines
+   the source-faithful truth-dependent promise by marginalising
+   `HistoricalInformationFeasibleLiteral` over the compatible placements,
+   proves it is read-dependent, and applies `weakest_admissible_iff_union` to
+   the resulting read-dependent `I_s` family. A *decoder-level* certainty
+   endpoint still requires the external Not-So-Greedy guarantee and remains an
+   attributed premise. OPEN (decoder-level endpoint only).
 2. **`I_s` necessity for the specific Not-So-Greedy decoder.** Still OPEN and
    source-level; the order results here do not address it.
 3. **Weakest source-defined bridging promise.** Still reduced by
