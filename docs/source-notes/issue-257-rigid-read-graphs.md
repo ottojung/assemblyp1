@@ -25,7 +25,9 @@ criterion cross-check, exhaustive small scope),
 `python3 scripts/verify_257_target_cycle.py` (§15 target-cycle coin reduction
 and Apéry-set polynomial cross-check),
 `python3 scripts/verify_257_length3_bridge.py` (§17 length-3 antiparallel-bridge
-four-variable criterion and classification cross-check, exhaustive small scope).
+four-variable criterion and classification cross-check, exhaustive small scope),
+`python3 scripts/verify_257_general_bridge.py` (§18 general `p,q` long-bridge
+four-variable criterion cross-check, exhaustive small scope).
 Self-contained, exact integer arithmetic, deterministic._
 
 _Blocking-review repair (2026-10-10, branch `research/257-graver-lean-repair`):
@@ -490,9 +492,14 @@ exhaustive zeros are a sanity check on the proofs, not a substitute for them.
    **Further partial progress (§17, 2026-10-17):** the length-3 antiparallel
    bridge has an exact four-variable criterion and classification, and it
    *refutes* the bridge pattern (rigid **iff** all multiplicities `1`): the
-   instance `(m₁, m₂, f) = (1, 1, 2)` is a rigid repetitive support. [open;
-   bouquet case reduced and shown poly-time, §13/§15; bridge case classified, §14;
-   length-3 bridge classified and bridge pattern refuted, §17]
+   instance `(m₁, m₂, f) = (1, 1, 2)` is a rigid repetitive support.
+   **Further partial progress (§18, 2026-10-17):** the *general* `p,q`
+   long-bridge criterion (arbitrary cycle lengths `p, q ≥ 2`) is proved and
+   kernel-checked; it is genuinely `p,q`-dependent — `(p,q,m₁,m₂,f) = (3,4,2,1,1)`
+   is a rigid repetitive instance, so `m₁ ≥ 2` alone does not force
+   non-rigidity. [open; bouquet case reduced and shown poly-time, §13/§15;
+   bridge case classified, §14; length-3 bridge classified and bridge pattern
+   refuted, §17; general `p,q` long bridge classified, §18]
 2. **The exact complexity** of the exact criterion (§7). **Partial (§15,
    2026-10-16):** the bouquet family (hence the target-cycle family) is in `P`
    via the Apéry-set / residue-graph shortest-path algorithm; the
@@ -553,6 +560,10 @@ exhaustive zeros are a sanity check on the proofs, not a substitute for them.
 | §17 length-3 bridge rigid repetitive instance `length3Bridge_rigid_repetitive` (`f = 2`) — refutes "bridge rigid iff all mult `1`" | kernel-checked |
 | §17 length-3 bridge non-rigidity witnesses (`length3Bridge_nonrigid_m1/m2/f`) | kernel-checked |
 | §17 length-3 bridge cross-check vs brute force (`scripts/verify_257_length3_bridge.py`: 255 bridges, 0 mismatches) | verified computation, exhaustive in scope |
+| §18 general `p,q` long-bridge criterion (`generalBridge_nonrigid_iff`: `∃ (a,c,u,w) ≠ 0, p·a+q·c+(q-p+1)·u+(p-q+1)·w = 0` + six coupled boxes) | mathematical proof + kernel-checked (`AssemblyP1/RigidityGeneralBridge.lean`) |
+| §18 general `p,q` non-rigidity witnesses (`generalBridge_nonrigid_m2_large` `(q,-p,0,0)`, `generalBridge_nonrigid_m1_large` `(-q,p,0,0)`, `generalBridge_nonrigid_eq_m1/m2`, `generalBridge_nonrigid_q3_f` `(1,0,-1,-2)`) | kernel-checked |
+| §18 `p,q`-dependent rigid repetitive instance `generalBridge_rigid_repetitive` (`(p,q,m₁,m₂,f) = (3,4,2,1,1)`) — `m₁ ≥ 2` does not force non-rigidity | kernel-checked |
+| §18 general `p,q` long-bridge cross-check vs brute force (`scripts/verify_257_general_bridge.py`: 448 bridges, 0 mismatches) | verified computation, exhaustive in scope |
 
 ---
 
@@ -1306,5 +1317,108 @@ support graph, as for the merged bridge; realizability as a de Bruijn
 read-support is not claimed. The residual — a *polynomial* min-cut/max-flow
 closed form for general supports, or a proof that none exists — remains
 **OPEN** (§8.1/§8.2). The general `p, q` long-bridge criterion (arbitrary cycle
-lengths) is recorded as a next step but is not needed for the classification
-refutation above.
+lengths) is **resolved** in §18 below (kernel-checked `generalBridge_nonrigid_iff`).
+
+
+## 18. The general `p, q` long bridge: an exact criterion beyond the length-3 case (§8.1 progress)
+
+This section advances open item **§8.1** past the length-3 antiparallel bridge
+(§17) by allowing the two cycles to have arbitrary lengths `p, q ≥ 2`. It builds
+on — and does not redo — the merged `2`-cycle bridge criterion
+`bridge_nonrigid_iff` (§14) and the length-3 criterion `length3Bridge_nonrigid_iff`
+(§17); both are special cases. [mathematical proof + kernel-checked]
+
+### 18.1 The topology
+
+The *general `p,q` long bridge* is the hub `v` with a `p`-cycle and a `q`-cycle
+through it, joined by an antiparallel arc pair between their interior vertices:
+
+```
+C1 : v → x → a₂ → … → a_{p-1} → v      (p arcs)
+C2 : v → y → b₂ → … → b_{q-1} → v      (q arcs)
+bridge : x → y , y → x                 (antiparallel arc pair)
+```
+
+on `1 + (p-1) + (q-1)` vertices and `p + q + 2` arcs. The base circulation `A`
+has multiplicity `m₁` on every `C1` arc, `m₂` on every `C2` arc, and `f` on each
+bridge arc; its total mass is `G = p·m₁ + q·m₂ + 2·f`. At `p = q = 2` this is
+the merged bridge; at `p = q = 3` the length-3 bridge.
+
+### 18.2 The four-variable exact criterion
+
+Balance at the interior vertices `a₂, …, a_{p-1}` (resp. `b₂, …, b_{q-1}`)
+forces the consecutive `C1` (resp. `C2`) arc values to be constant; the balance
+at `x` and `y` couples the two cycle values with the bridge values. Hence every
+integral circulation is determined by four integers `(a, c, u, w)` — the values
+of `v → x`, `v → y`, `x → y`, `y → x` — and equals
+
+```
+φ(a, c, u, w) = ( a, (a-u+w)^{× (p-1)}, c, (c-w+u)^{× (q-1)}, u, w )
+```
+
+(kernel-checked as `AssemblyP1.RigidityGeneralBridge.phi_of_balanced`). Its total
+mass is
+
+```
+Σ φ(a, c, u, w) = p·a + q·c + (q-p+1)·u + (p-q+1)·w
+```
+
+(kernel-checked `phi_sum`). The coefficients `(p, q, q-p+1, p-q+1)` specialise to
+`(2,2,1,1)` at `p = q = 2` and `(3,3,1,1)` at `p = q = 3`, recovering the merged
+criteria.
+
+**Theorem 11 (general `p,q` long-bridge criterion).** For `p, q ≥ 2` and
+`m₁, m₂, f ≥ 1`, the base circulation `A` is non-rigid **iff** there are integers
+`a, c, u, w`, not all zero, with
+
+```
+p·a + q·c + (q-p+1)·u + (p-q+1)·w = 0            (zero total mass)
+a ≥ 1-m₁,  a-u+w ≥ 1-m₁,                          (C1 box)
+c ≥ 1-m₂,  c-w+u ≥ 1-m₂,                          (C2 box)
+u ≥ 1-f,   w ≥ 1-f.                               (bridge box)
+```
+
+This is kernel-checked as
+`AssemblyP1.RigidityGeneralBridge.generalBridge_nonrigid_iff`, obtained from
+Theorem 1 (`nonrigid_iff_exists_delta`) exactly as the merged criteria were.
+
+### 18.3 Non-rigidity witnesses and a `p,q`-dependent rigid repetitive instance
+
+The criterion is non-vacuous in several explicit families
+(`AssemblyP1/RigidityGeneralBridge.lean`):
+
+* `generalBridge_nonrigid_m2_large` (`m₂ ≥ p+1`): witness `(a,c,u,w) = (q, -p, 0, 0)`
+  — the relation `q·C1 - p·C2` has zero total mass;
+* `generalBridge_nonrigid_m1_large` (`m₁ ≥ q+1`): witness `(-q, p, 0, 0)`;
+* `generalBridge_nonrigid_eq_m1` (`p = q`, `m₁ ≥ 2`): witness `(-1, 1, 0, 0)`;
+* `generalBridge_nonrigid_eq_m2` (`p = q`, `m₂ ≥ 2`): witness `(1, -1, 0, 0)`;
+* `generalBridge_nonrigid_q3_f` (`q = 3`, `m₁ = m₂ = 1`, `f ≥ 3`): witness
+  `(1, 0, -1, -2)`, generalising `length3Bridge_nonrigid_f` to arbitrary `p`.
+
+Unlike the merged `2`-cycle bridge, the general classification is genuinely
+`p,q`-dependent. The kernel-checked instance `generalBridge_rigid_repetitive`
+shows that `(p,q,m₁,m₂,f) = (3,4,2,1,1)` is **rigid** even though the first
+cycle is traversed twice (`m₁ = 2`). Hence *no* hypothesis of the form
+"`m₁ ≥ 2`" alone forces non-rigidity: the relevant quantity is the
+`p,q`-weighted Diophantine feasibility of Theorem 11.
+
+### 18.4 Cross-check (`scripts/verify_257_general_bridge.py`)
+
+The script `scripts/verify_257_general_bridge.py` is self-contained, exact, and
+deterministic. It recomputes rigidity from scratch by enumerating **all**
+positive integer circulations of total `G` on the `p+q+2` arcs and compares with
+the four-variable criterion over an exhaustive scope (`2 ≤ p, q ≤ 4`,
+`1 ≤ m₁, m₂ ≤ 4`, `1 ≤ f ≤ 5`, `G ≤ 22`: **448** general bridges, **0**
+mismatches), and re-derives all eight worked witnesses plus the rigid repetitive
+instance. [verified computation, exhaustive in scope]
+
+### 18.5 Epistemic status
+
+Theorems and instances are kernel-checked with only
+`[propext, Classical.choice, Quot.sound]`
+(`AssemblyP1/RigidityGeneralBridgeAudit`, and `AxiomAudit257.lean`); no
+`sorry`/`admit`/`axiom`/`native_decide`. The topology is an *abstract* oriented
+support graph, as for the merged bridge; realizability as a de Bruijn
+read-support is not claimed. The residual — a *polynomial* min-cut/max-flow
+closed form for general supports, or a proof that none exists — remains
+**OPEN** (§8.1/§8.2).
