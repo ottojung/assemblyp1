@@ -22,7 +22,7 @@ open AssemblyP1.Section62PhysicalHalfIncidence
 variable {A W : Type} [DecidableEq W]
 
 abbrev SignedState (W : Type) := W × ℤ
-abbrev SignedEdge (A W : Type) := BdEdge A (Tagged W)
+abbrev SignedEdge (A W : Type) [DecidableEq W] := BdEdge A (Tagged W)
 abbrev LiftedArc (ι : Type) := ι × Bool
 
 /-- On a tagged edge, the two orientations of the directed double cover are
