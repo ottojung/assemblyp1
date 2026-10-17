@@ -1,5 +1,57 @@
 # AssemblyP1 umbrella #255 — remaining-open matrix
 
+
+## Addendum — verified 2026-10-17 (avoid duplicate research)
+
+The dated matrix below is a **historical 2026-10-16 snapshot**, not an
+authoritative list of currently absent Lean theorems. Always cross-check
+`origin/main` and the exact GitHub PR merge statuses before assigning work.
+
+* **Already proved:** PR #265 merged the unconditional, repository-specific
+  Observation 7 signed-circuit statement in
+  `Section62GlobalSkippedBridge.observation7_reduced_signed_circuit_range_count`,
+  with the local `Section62SkippedWindowFactor` and idealized Myers
+  `Section62MyersIdealTransitivity` source spelling lemmas on main.
+  No new agent should reprove these.
+* **Already proved:** PR #300 separately counted positive/negative signed
+  half-incidences invariant under edge reversal; PR #307 merged a **stronger**
+  physical tagged-edge reversal-quotient and one-physical-visit vs
+  two-inherited-departures `ATAT` counterexample. Duplicate PR #306 was closed
+  without merge.
+* **Already proved:** PR #312 generalized the p,q long-bridge rigidity
+  classification; PR #310 proved the scoped finite Bayes/MAP certificate.
+  These are not pending research tasks.
+* **Integrated since the older snapshot:** signed aggregate PR #313 is
+  **MERGED** at `23881843a37d9e2a50d07c23b519058f3baddf51`,
+  incorporating bounded experimental #304 RC-overlap/three palindrome orbits,
+  #305 interior-matching finite convex surrogate (not exact source ML on
+  zero-probability endpoints), and the independent exact-rational #309
+  verifier/doc. Original PRs #295 and #304 are superseded by this signed
+  integration; #305 is GitHub-marked merged. The #309 workflow YAML edit
+  was intentionally **not** included because the GitHub OAuth credential
+  lacks workflow-write scope, but its verifier was independently run and
+  its script and documentation were preserved byte-for-byte.
+  PR #311 was closed as a tree-identical no-op. Probe PR #242 remains
+  intentionally unmerged.
+
+* **Genuinely open:** a source-faithful edge-indexed physical RC bidirected
+  graph correspondence (including parallel overlaps and practical transitive
+  reduction); transport of signed balance, physical incidence *visit counts*,
+  vertex bounds, and ML objective into that source graph; sufficiently strong
+  contig/single-genome realization hypotheses; exact extended-real ML
+  support/Graver optimizer equivalence (not the finite affine surrogate).
+
+Model execution/liveness as of this check: both host OpenCode Console
+providers (OpenCode and OpenCode Go) reject requests due **expired API keys**,
+so Antonina's managed agents cannot execute until credentials are renewed.
+Their saved task prompts are not evidence of running workers. Manual signed
+GitHub integration remains possible.
+
+---
+
+### Historical 2026-10-16 matrix follows
+
+
 _Status: 2026-10-16, reconciled by agent b629762217b2 against current
 `origin/main` @ `c581d11` (GitHub PR #287 merge; `git ls-remote
 https://github.com/ottojung/assemblyp1 refs/heads/main`). This supersedes
