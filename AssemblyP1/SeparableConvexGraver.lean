@@ -61,12 +61,20 @@ conformal decomposition may repeat a Graver move.
   unit step `g` to improve.
 * `affineExtend`, `affineExtend_discConvOn`: the secant-slope affine-tail
   extension of an interval-convex cost to the whole integer line, which is
-  discretely convex on any interval enclosing the exact domain.
+  discretely convex on any interval enclosing the exact domain.  This is a
+  **finite regularized extension** that agrees with the interior cost; it is
+  *not* the extended-real likelihood at zero-probability boundaries.
 * `multinomialTerm_ext_discConvOn`, `binomTerm_ext_discConvOn`,
-  `binomTerm_degenerate_discConvOn`: the source likelihood costs extended to the
-  **full** candidate box `[0, G]` / `[0, N]` including the boundary candidates
-  `d = 0` and `d = N`, so the certificate applies without silently using the
-  false totalized value `Real.log 0 = 0`.
+  `binomTerm_degenerate_discConvOn`: those finite extensions of the source
+  likelihood costs on the full candidate box `[0, G]` / `[0, N]`.  They prove
+  discrete convexity of the **finite extension**, not of the genuine
+  extended-real ML objective: at a zero-probability endpoint (`d = 0` with
+  `x > 0`, or `d = N` with `n - x > 0`) the true negative log is `+∞`, while
+  `affineExtend` assigns a finite secant value.  Applying the Graver minimizer
+  certificate to the extension certifies a minimizer of the *extension*;
+  transferring optimality to the true full-box ML objective needs a separate
+  optimizer-preservation argument (or an exact extended-real treatment), which
+  is left explicitly OPEN.
 -/
 
 namespace AssemblyP1.SeparableConvexGraver
@@ -608,6 +616,21 @@ integer box `0 ≤ d ≤ G` (fixed total) or `0 ≤ d ≤ N` (fixed external tot
 including the boundary candidates `d = 0` and `d = N`, the cost must be extended
 to a function that is *globally* discretely convex on that box.
 
+**Source-fidelity caveat.**  This extension is a *finite regularized surrogate*
+that agrees with the genuine likelihood cost only on the positive interior.  At
+a zero-probability endpoint the true extended-real negative log is `+∞`: for the
+multinomial term, `d = 0` with `x > 0` gives `-x · log 0 = +∞`; for the
+product-binomial term, `d = 0` with `x > 0` or `d = N` with `n - x > 0` gives a
+`log 0` factor and hence `+∞`.  The `affineExtend` values at those endpoints are
+finite secant values, so the lemmas below prove discrete convexity of the
+extension, **not** of the true full-box ML objective.  Consequently plugging
+`affineExtend` into `graver_optimal_iff_no_improving` certifies a minimizer of
+the extension; recovering the true full-box ML optimizer requires a separate
+optimizer-preservation argument (or an exact extended-real `+∞` treatment),
+which is left explicitly OPEN.  What is gained here is an honest boundary policy
+for the *finite* surrogate, replacing the incorrect totalized value
+`Real.log 0 = 0`.
+
 The naive totalized extension `d ↦ -x · log(max d 1 / G)` is **not** discretely
 convex at the boundary: its slope on `[0,1]` is `0` (because `max 0 1 = max 1 1`)
 while its slope on `[1,2]` is negative, so the discrete second difference at
@@ -717,8 +740,9 @@ theorem affineExtend_discConvOn {f : ℤ → ℝ} {L U lo hi : ℤ}
 /-- The fixed-total multinomial negative-log term, extended by the secant-slope
 affine tail, is discretely convex on the **full** candidate box `[0, G]`
 (`G ≥ 2`).  The interior `[1, G]` is the exact cost; the boundary candidate
-`d = 0` takes the secant value `x · log (2G)`, which keeps the second difference
-nonnegative instead of the false `log (max d 1 / G)` extension. -/
+`d = 0` takes the finite secant value `x · log (2G)`.  This is a finite
+regularized extension, **not** the true extended-real cost: for `x > 0` the
+genuine `-x · log 0` is `+∞`.  Convexity is claimed for the extension only. -/
 theorem multinomialTerm_ext_discConvOn (G : ℤ) (hG : 2 ≤ G) (x : ℤ) (hx : 0 ≤ x) :
     DiscConvOn (affineExtend (fun d : ℤ => -(x:ℝ) * Real.log ((d:ℝ) / (G:ℝ))) 1 G) 0 G :=
   affineExtend_discConvOn (multinomialTerm_discConvOn G (by omega) x hx G)
@@ -727,8 +751,9 @@ theorem multinomialTerm_ext_discConvOn (G : ℤ) (hG : 2 ≤ G) (x : ℤ) (hx : 
 /-- The fixed-external-`N` product-binomial negative-log term, extended by the
 secant-slope affine tails, is discretely convex on the **full** candidate box
 `[0, N]` (`N ≥ 3`).  The interior `[1, N-1]` is the exact cost; the boundary
-candidates `d = 0` and `d = N` take the secant values, which is exactly the
-minimal discrete-convex extension of the interior cost. -/
+candidates `d = 0` and `d = N` take the finite secant values.  This is a finite
+regularized extension, **not** the true extended-real cost: for `x > 0` at
+`d = 0`, or `n - x > 0` at `d = N`, the genuine negative log is `+∞`. -/
 theorem binomTerm_ext_discConvOn (N : ℤ) (hN : 3 ≤ N) (x n : ℤ) (hx : 0 ≤ x)
     (hxn : x ≤ n) :
     DiscConvOn (affineExtend (fun d : ℤ => -(x:ℝ) * Real.log ((d:ℝ) / (N:ℝ))
@@ -739,10 +764,12 @@ theorem binomTerm_ext_discConvOn (N : ℤ) (hN : 3 ≤ N) (x n : ℤ) (hx : 0 �
 /-- Degenerate external totals `N ≤ 2`: the strict interior `0 < d < N` is empty
 (`N = 1`) or the single point `d = 1` (`N = 2`), so there is no interior second
 difference to preserve.  The exact interior cost therefore admits a discretely
-convex extension to the full box `[0, N]`: the constant extension taking the
-interior value `n · log N`, which equals the exact cost at `d = 1` when `N = 2`.
-This makes the certificate's convexity hypothesis satisfiable in the degenerate
-case without pretending the interior has a second difference to check. -/
+convex **finite** extension to the full box `[0, N]`: the constant extension
+taking the interior value `n · log N`, which equals the exact cost at `d = 1`
+when `N = 2`.  As above this is a finite regularized extension, **not** the
+genuine extended-real cost at zero-probability endpoints.  It makes the
+certificate's convexity hypothesis satisfiable in the degenerate case without
+pretending the interior has a second difference to check. -/
 theorem binomTerm_degenerate_discConvOn (N : ℤ) (hN1 : 1 ≤ N) (hN2 : N ≤ 2)
     (x n : ℤ) :
     ∃ F : ℤ → ℝ,

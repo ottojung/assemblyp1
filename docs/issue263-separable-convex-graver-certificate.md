@@ -46,9 +46,11 @@ Supporting results:
   **secant-slope affine-tail extension** of an interval-convex cost to the whole
   integer line, discretely convex on any enclosing interval.
 * `multinomialTerm_ext_discConvOn`, `binomTerm_ext_discConvOn`,
-  `binomTerm_degenerate_discConvOn` — the source likelihood costs extended to
-  the **full** candidate box, including the boundary candidates `d = 0` and
-  `d = N`.
+  `binomTerm_degenerate_discConvOn` — **finite regularized extensions** of the
+  source likelihood costs to the full candidate box `[0, G]` / `[0, N]`, with
+  the boundary candidates `d = 0` and `d = N`.  These prove convexity of the
+  finite extension only; they are **not** the true extended-real ML objective at
+  zero-probability endpoints (see the source-fidelity caveat below).
 
 ## Mathematical source
 
@@ -111,14 +113,27 @@ via the first-difference identity `inc_affineExtend`).  Instantiating this:
   `[0, G]` for `G ≥ 2`, with the boundary candidate `d = 0` taking the finite
   secant value `x · log (2G)`;
 * `binomTerm_ext_discConvOn` proves discrete convexity on the full box `[0, N]`
-  for `N ≥ 3`, with `d = 0` and `d = N` taking the secant values;
+  for `N ≥ 3`, with `d = 0` and `d = N` taking the finite secant values;
 * `binomTerm_degenerate_discConvOn` records the degenerate totals `N ≤ 2`, where
   the strict interior `0 < d < N` has at most the single point `d = 1`, so there
   is no interior second difference and the constant extension is already
   discretely convex.
 
-These are the minimal honest finite convex extensions; they are a modelling
-choice about the boundary, not an implicit assumption of the abstract theorem.
+**Source-fidelity caveat (important).**  These are *finite regularized
+extensions*, not the genuine extended-real ML objective on the full box.  At a
+zero-probability endpoint the true negative log is `+∞`: for the multinomial
+term, `d = 0` with `x > 0` gives `-x · log 0 = +∞`; for the product-binomial
+term, `d = 0` with `x > 0`, or `d = N` with `n - x > 0`, gives a `log 0` factor
+and hence `+∞`.  `affineExtend` instead assigns a *finite* secant value there.
+Therefore the lemmas prove discrete convexity of the **extension**, and plugging
+`affineExtend` into `graver_optimal_iff_no_improving` certifies a minimizer of
+the extension; recovering the true full-box ML optimizer requires a separate
+optimizer-preservation argument (or an exact extended-real `+∞` treatment),
+which is left **OPEN**.  What these lemmas provide is an honest boundary policy
+for the finite surrogate, replacing the incorrect totalized value
+`Real.log 0 = 0`.  The abstract certificate `graver_optimal_iff_no_improving`
+carries the box `l ≤ z ≤ u` explicitly, so the boundary policy remains a
+modelling choice made by the caller, not an implicit assumption of the theorem.
 
 ## Penalized solver cost vs pure ML
 
