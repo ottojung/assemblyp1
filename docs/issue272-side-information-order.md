@@ -180,9 +180,12 @@ equivalence-closed admissible) family.
    and a sufficient truth-dependent promise need not imply `Unambiguous`
    (`truthdependent_sufficient_incomparable`). The read-only boundary theorem
    `sufficient_readonly_iff_imp_unambiguous` therefore does not order `I_s`.
-   The literal read-string adapter that would make the question a well-typed
-   implication about one observation type remains OPEN. See
-   [`issue272-is-vs-unambiguous-ordering.md`](issue272-is-vs-unambiguous-ordering.md)
+   The literal read-string adapter that makes the question a well-typed
+   implication about one observation type is now provided (see item 4); it is
+   read-dependent, and sufficiency still does not order it against
+   `Unambiguous`. See
+   [`issue272-is-vs-unambiguous-ordering.md`](issue272-is-vs-unambiguous-ordering.md),
+   [`issue272-read-string-adapter.md`](issue272-read-string-adapter.md),
    and [`AssemblyP1/FiniteSideInformationOrdering.lean`](../AssemblyP1/FiniteSideInformationOrdering.lean).
 3. **Weakest source-defined bridging promise.** OPEN, but now reduced by
    `weakest_admissible_iff_union` to the single question of whether the union of
@@ -190,11 +193,18 @@ equivalence-closed admissible) family.
    sufficient. The negative full-family result of §5 shows this cannot be
    discharged for the unrestricted family; the source-defined subfamily is not
    covered by either the negative or the positive result.
-4. **Concrete historical read-string adapter.** OPEN. A kernel-checked
-   instantiation of the posterior bridge on the full historical read-string
-   model requires the external Not-So-Greedy guarantee; the abstract bridge is
-   proved in the merged module, and the concrete endpoint remains attributed.
-   This module adds no historical adapter.
+4. **Concrete historical read-string adapter.** LANDED (see
+   [`issue272-read-string-adapter.md`](issue272-read-string-adapter.md)): the
+   literal read-string adapter
+   [`AssemblyP1/FiniteSideInformationReadStringAdapter.lean`](../AssemblyP1/FiniteSideInformationReadStringAdapter.lean)
+   marginalises `HistoricalInformationFeasibleLiteral` over the placements
+   compatible with the observed distinct read-string set, proves the adapter is
+   read-dependent (outside both `AdmReadOnly` and `AdmTruthOnly`), applies
+   `weakest_admissible_iff_union` to the resulting read-dependent `I_s` family,
+   and kernel-checks the `I_s` necessity obstructions (general coverage /
+   triple / interleaved projection lemmas plus the unbridged-triple witnesses
+   `ABXABYABZ` / `ABXABZABY`).  A *decoder-level* certainty endpoint still
+   requires the external Not-So-Greedy guarantee and remains attributed/OPEN.
 
 ## 7. Relationship to sibling fronts (no duplication)
 
