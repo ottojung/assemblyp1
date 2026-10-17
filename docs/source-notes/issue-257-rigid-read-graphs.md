@@ -1152,3 +1152,30 @@ numerical-semigroup result, proved above and re-verified by
 problem is an external cited result (Lueker 1975), used only to explain why the
 unary/explicit distinction matters. The uniform-in-support complexity (§8.2) and
 the general min-cut/max-flow closed form (§8.1) remain **OPEN**.
+
+
+---
+
+## 16. Why the direct rational/LP relaxation is insufficient
+
+The added kernel-checked module `AssemblyP1/RigidityNoGo.lean` proves
+`coin_bouquet_real_nonrigid`: for **every** coin bouquet with at least one
+coin cycle, the direct rational relaxation of the bouquet's integer-kernel
+criterion admits a nonzero witness, namely `x₀ = -1` at the target cycle,
+`x₁ = t / a₁` at the first coin cycle, and zero elsewhere.
+For example, the coin system `{2,3}` with target `1` is rigid over integer
+circulations (the target is not a nonnegative combination of the coins) yet
+its direct rational relaxation accepts the witness. Thus **feasibility of that
+specific LP relaxation cannot characterize rigidity**, even on the coin-bouquet
+family. This says **nothing against** more powerful polynomial procedures
+such as the Apéry algorithm of §15; general-support complexity remains open.
+
+The module also independently kernel-checks the §15 coin-membership iff in an
+opposite indexing convention (`coin_bouquet_nonrigid_iff`) and two concrete
+instances. The independent exact-arithmetic
+`scripts/verify_257_coin_no_go.py` checks 786 small bouquets, finding no
+integer-criterion mismatches and confirming the LP witness in all cases,
+including 135 rigid examples. The `RigidityNoGoAudit` and `AxiomAudit257`
+files audit the proof's standard-axiom dependencies. This is deliberately a
+**bounded direct-LP no-go**, not a binary-input NP-hardness or general
+non-existence-of-polynomial-algorithm theorem.
