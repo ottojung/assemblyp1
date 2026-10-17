@@ -112,7 +112,11 @@ likelihood maximizers.
 \end{proof}
 
 \statusline{\kernelcheck{} for deterministic and randomized finite decisions
-and the iid specialization in \texttt{AssemblyP1.FiniteBayesDecision}, and,
+(\texttt{AssemblyP1.FiniteBayesDecision.pointwise\_MAP\_optimal},
+\texttt{AssemblyP1.FiniteBayesDecision.pointwise\_MAP\_optimal\_randomized})
+and the iid specialization
+(\texttt{AssemblyP1.FiniteBayesDecision.finite\_iid\_MAP\_optimal}) in
+\texttt{AssemblyP1.FiniteBayesDecision}, and,
 in the standalone model-level evaluator \texttt{AssemblyP1.FiniteMapOptimality},
 for the same optimality derived from the explicit finite maximum
 \texttt{Finset.exists\_max\_image}, together with the concrete $2\times2$
@@ -126,7 +130,11 @@ proportion to its orbit size, which is $n$ for a primitive length-$n$ word but
 smaller for a word with a shorter period; that asymmetry is an artifact of the
 representation, not of the data (Remark~\ref{rem:cyclic}). We therefore take the
 uniform prior over rotation classes, the symmetric choice under which ML is the
-prior-average optimum. This is a modeling choice, not a theorem: with a
+prior-average optimum. That MAP and ML coincide for the exact iid read
+likelihood under the uniform prior on rotation classes is kernel-checked
+(\texttt{AssemblyP1.GenomeOrbitAdapter.uniform\_orbit\_prior\_ML}); the
+circular oriented read model and the uniform start sampling are external
+modeling inputs. This is a modeling choice, not a theorem: with a
 nonuniform prior or a different loss the prior-average optimum is MAP for that
 prior and loss, and the ML rule is no longer claimed optimal. The theorem says
 nothing about a \emph{fixed} truth, where the relevant question is instead
@@ -161,6 +169,18 @@ Additional independent observations cannot reduce the \emph{optimal
 prior-average} reconstruction probability, because the decision rule can
 ignore them \cite{berger1985}. Per-truth success can nevertheless oscillate,
 as Proposition~\ref{prop:nonmonotone} demonstrates.
+
+\statusline{\kernelcheck{} for the monotonicity of optimal prior-average
+success at every finite $n$ (including $n=0$) in
+\texttt{AssemblyP1.IidMapMonotonicity.iid\_map\_success\_monotone}, in the
+explicit form $V_n\le V_{n+1}$ in
+\texttt{AssemblyP1.BayesValueMonotonicity.bayesValue\_succ\_ge}, and
+instantiated for the AssemblyP1 circular oriented genome rotation-class read
+model in \texttt{AssemblyP1.GenomeOrbitAdapter.orbit\_map\_success\_monotone};
+the per-truth success-drop counterexample is kernel-checked in
+\texttt{AssemblyP1.GenomeOrbitAdapter.PerTruthDrop.perTruth\_true\_drops}.
+The circular read model and the uniform start sampling are external modeling
+inputs; the monotonicity statement itself is the kernel-checked theorem.}
 
 \begin{remark}[Finite-sample consistency and the scope of an error bound]
 \label{rem:sample-complexity}
