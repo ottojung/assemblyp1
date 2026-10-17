@@ -42,6 +42,13 @@ Supporting results:
 * `negLog_discConvOn`, `negLog_sub_discConvOn`, `multinomialTerm_discConvOn`,
   `binomTerm_discConvOn` — the source likelihood costs are discretely convex in
   the **candidate copy count** `d` on the positive interior.
+* `affineExtend`, `affineExtend_discConvOn`, `inc_affineExtend` — the
+  **secant-slope affine-tail extension** of an interval-convex cost to the whole
+  integer line, discretely convex on any enclosing interval.
+* `multinomialTerm_ext_discConvOn`, `binomTerm_ext_discConvOn`,
+  `binomTerm_degenerate_discConvOn` — the source likelihood costs extended to
+  the **full** candidate box, including the boundary candidates `d = 0` and
+  `d = N`.
 
 ## Mathematical source
 
@@ -84,6 +91,34 @@ multinomial term, `d ∈ [1, N-1]` for the product-binomial term), where the
 source formulas are honest.  The abstract certificate `graver_optimal_iff_no_improving`
 carries the box `l ≤ z ≤ u` explicitly, so any boundary policy is a modelling
 choice made by the caller, not an implicit assumption of the theorem.
+
+To apply the certificate on the **whole** box — including the boundary
+candidates `d = 0` and `d = N` — the cost must be a *globally* discretely convex
+function on that box.  The naive totalized extension `d ↦ -x · log(max d 1 / G)`
+is **not** discretely convex at the boundary: its slope on `[0,1]` is `0`
+(because `max 0 1 = max 1 1`) while its slope on `[1,2]` is negative, so the
+discrete second difference at `d = 1` is **negative** (the extension is concave
+there).  The
+correct minimal extension is the **secant-slope affine tail**
+`affineExtend f L U`: exact on `[L, U]` and affine outside `[L, U]` with the
+boundary secant slopes `f(L+1) - f(L)` (below `L`) and `f(U) - f(U-1)` (above
+`U`).  Because those slopes coincide with the first interior differences
+`inc f L` and `inc f (U-1)`, and `inc f` is nondecreasing, `affineExtend f L U`
+is discretely convex on any interval enclosing `[L, U]` (`affineExtend_discConvOn`,
+via the first-difference identity `inc_affineExtend`).  Instantiating this:
+
+* `multinomialTerm_ext_discConvOn` proves discrete convexity on the full box
+  `[0, G]` for `G ≥ 2`, with the boundary candidate `d = 0` taking the finite
+  secant value `x · log (2G)`;
+* `binomTerm_ext_discConvOn` proves discrete convexity on the full box `[0, N]`
+  for `N ≥ 3`, with `d = 0` and `d = N` taking the secant values;
+* `binomTerm_degenerate_discConvOn` records the degenerate totals `N ≤ 2`, where
+  the strict interior `0 < d < N` has at most the single point `d = 1`, so there
+  is no interior second difference and the constant extension is already
+  discretely convex.
+
+These are the minimal honest finite convex extensions; they are a modelling
+choice about the boundary, not an implicit assumption of the abstract theorem.
 
 ## Penalized solver cost vs pure ML
 

@@ -59,6 +59,14 @@ conformal decomposition may repeat a Graver move.
   Graver optimality certificate (minimization form, `F z ≤ F (z + g)`).
 * `multiplier_improving`: an improving integer Graver ray `α • g` forces the
   unit step `g` to improve.
+* `affineExtend`, `affineExtend_discConvOn`: the secant-slope affine-tail
+  extension of an interval-convex cost to the whole integer line, which is
+  discretely convex on any interval enclosing the exact domain.
+* `multinomialTerm_ext_discConvOn`, `binomTerm_ext_discConvOn`,
+  `binomTerm_degenerate_discConvOn`: the source likelihood costs extended to the
+  **full** candidate box `[0, G]` / `[0, N]` including the boundary candidates
+  `d = 0` and `d = N`, so the certificate applies without silently using the
+  false totalized value `Real.log 0 = 0`.
 -/
 
 namespace AssemblyP1.SeparableConvexGraver
@@ -590,6 +598,170 @@ theorem binomTerm_discConvOn (N : ℤ) (hN : 2 ≤ N) (x n : ℤ) (hx : 0 ≤ x)
   have hsub : 1 - (d:ℝ) / (N:ℝ) = ((N:ℝ) - (d:ℝ)) / (N:ℝ) := one_sub_div hN0
   rw [Real.log_div hd0 hN0, hsub, Real.log_div hNd0 hN0]
   push_cast
+  ring
+
+/-! ## Secant-slope affine-tail extension to the full integer box
+
+The positive-interior lemmas above restrict the source costs to `d ∈ [1, hi]`,
+where `Real.log` is honest.  To instantiate the certificate on the **full**
+integer box `0 ≤ d ≤ G` (fixed total) or `0 ≤ d ≤ N` (fixed external total),
+including the boundary candidates `d = 0` and `d = N`, the cost must be extended
+to a function that is *globally* discretely convex on that box.
+
+The naive totalized extension `d ↦ -x · log(max d 1 / G)` is **not** discretely
+convex at the boundary: its slope on `[0,1]` is `0` (because `max 0 1 = max 1 1`)
+while its slope on `[1,2]` is negative, so the discrete second difference at
+`d = 1` is **negative** (the extension is concave there).  The correct minimal
+extension is
+the **secant-slope affine tail**: exact on `[L, U]`, and affine outside `[L, U]`
+with the boundary secant slopes `f(L+1) - f(L)` (below `L`) and
+`f(U) - f(U-1)` (above `U`).  Because those slopes coincide with the first
+interior differences `inc f L` and `inc f (U-1)`, and `inc f` is nondecreasing,
+the extension is discretely convex on any interval enclosing `[L, U]`. -/
+
+/-- Secant-slope affine extension of `f` from the interval `[L, U]` to all of
+`ℤ`: exact on `[L, U]`, and affine outside with the boundary secant slopes. -/
+def affineExtend (f : ℤ → ℝ) (L U : ℤ) (d : ℤ) : ℝ :=
+  if d ≤ L then f L + ((d - L : ℤ) : ℝ) * (f (L + 1) - f L)
+  else if U ≤ d then f U + ((d - U : ℤ) : ℝ) * (f U - f (U - 1))
+  else f d
+
+/-- Value of the secant extension below `L`. -/
+theorem affineExtend_of_le {f : ℤ → ℝ} {L U d : ℤ} (hd : d ≤ L) :
+    affineExtend f L U d = f L + ((d - L : ℤ) : ℝ) * (f (L + 1) - f L) := by
+  unfold affineExtend
+  rw [ite_eq_left hd]
+
+/-- Value of the secant extension above `U`. -/
+theorem affineExtend_of_ge {f : ℤ → ℝ} {L U d : ℤ} (hdL : ¬ d ≤ L) (hd : U ≤ d) :
+    affineExtend f L U d = f U + ((d - U : ℤ) : ℝ) * (f U - f (U - 1)) := by
+  unfold affineExtend
+  rw [ite_eq_right hdL, ite_eq_left hd]
+
+/-- Value of the secant extension on the exact interval `[L, U]`. -/
+theorem affineExtend_of_mid {f : ℤ → ℝ} {L U d : ℤ} (hdL : ¬ d ≤ L) (hdU : ¬ U ≤ d) :
+    affineExtend f L U d = f d := by
+  unfold affineExtend
+  rw [ite_eq_right hdL, ite_eq_right hdU]
+
+/-- On the exact interval `[L, U]` (including the right endpoint) the secant
+extension is the original value. -/
+theorem affineExtend_of_le_U {f : ℤ → ℝ} {L U d : ℤ} (hLd : L < d) (hdU : d ≤ U) :
+    affineExtend f L U d = f d := by
+  rcases eq_or_lt_of_le hdU with h | h
+  · rw [h, affineExtend_of_ge (by omega) (le_refl U)]
+    simp
+  · rw [affineExtend_of_mid (by omega) (by omega)]
+
+/-- The first difference of the secant extension equals the boundary secant
+slope outside `[L, U]` and the original difference inside. -/
+theorem inc_affineExtend {f : ℤ → ℝ} {L U : ℤ} (hLU : L < U) (k : ℤ) :
+    inc (affineExtend f L U) k =
+      (if k + 1 ≤ L then f (L + 1) - f L
+       else if U ≤ k then f U - f (U - 1)
+       else inc f k) := by
+  unfold inc
+  by_cases h1 : k + 1 ≤ L
+  · have hkL : k ≤ L := by omega
+    rw [affineExtend_of_le hkL, affineExtend_of_le h1, ite_eq_left h1]
+    push_cast
+    ring
+  · rw [ite_eq_right h1]
+    by_cases h3 : U ≤ k
+    · rw [affineExtend_of_ge (by omega) h3,
+        affineExtend_of_ge (by omega) (by omega), ite_eq_left h3]
+      push_cast
+      ring
+    · rw [ite_eq_right h3]
+      rcases eq_or_lt_of_le (by omega : L ≤ k) with hk | hk
+      · rw [← hk, affineExtend_of_le (le_refl L),
+          affineExtend_of_le_U (by omega) (by omega)]
+        simp only [Int.sub_self, Int.cast_zero, zero_mul, add_zero]
+      · rw [affineExtend_of_le_U hk (by omega),
+          affineExtend_of_le_U (by omega) (by omega)]
+
+/-- Discrete convexity transfers from `[L, U]` to the secant-slope affine
+extension on any interval `[lo, hi]` enclosing `[L, U]`. -/
+theorem affineExtend_discConvOn {f : ℤ → ℝ} {L U lo hi : ℤ}
+    (hf : DiscConvOn f L U) (hLU : L < U) (_hlo : lo ≤ L) (_hhi : U ≤ hi) :
+    DiscConvOn (affineExtend f L U) lo hi := by
+  intro a b _ hab hb
+  rw [inc_affineExtend hLU a, inc_affineExtend hLU b]
+  have hsL : f (L + 1) - f L = inc f L := rfl
+  have hsU : f U - f (U - 1) = inc f (U - 1) := by
+    simp only [inc, Int.sub_add_cancel]
+  by_cases hbL : b + 1 ≤ L
+  · rw [ite_eq_left hbL, ite_eq_left (show a + 1 ≤ L by omega)]
+  · rw [ite_eq_right hbL]
+    by_cases hUb : U ≤ b
+    · rw [ite_eq_left hUb]
+      by_cases haL : a + 1 ≤ L
+      · rw [ite_eq_left haL, hsL, hsU]
+        exact hf L (U - 1) (by omega) (by omega) (by omega)
+      · rw [ite_eq_right haL]
+        by_cases hUa : U ≤ a
+        · rw [ite_eq_left hUa]
+        · rw [ite_eq_right hUa, hsU]
+          exact hf a (U - 1) (by omega) (by omega) (by omega)
+    · rw [ite_eq_right hUb]
+      by_cases haL : a + 1 ≤ L
+      · rw [ite_eq_left haL, hsL]
+        exact hf L b (by omega) (by omega) (by omega)
+      · rw [ite_eq_right haL]
+        by_cases hUa : U ≤ a
+        · rw [ite_eq_left hUa]
+          omega
+        · rw [ite_eq_right hUa]
+          exact hf a b (by omega) (by omega) (by omega)
+
+/-- The fixed-total multinomial negative-log term, extended by the secant-slope
+affine tail, is discretely convex on the **full** candidate box `[0, G]`
+(`G ≥ 2`).  The interior `[1, G]` is the exact cost; the boundary candidate
+`d = 0` takes the secant value `x · log (2G)`, which keeps the second difference
+nonnegative instead of the false `log (max d 1 / G)` extension. -/
+theorem multinomialTerm_ext_discConvOn (G : ℤ) (hG : 2 ≤ G) (x : ℤ) (hx : 0 ≤ x) :
+    DiscConvOn (affineExtend (fun d : ℤ => -(x:ℝ) * Real.log ((d:ℝ) / (G:ℝ))) 1 G) 0 G :=
+  affineExtend_discConvOn (multinomialTerm_discConvOn G (by omega) x hx G)
+    (by omega) (by omega) (le_refl G)
+
+/-- The fixed-external-`N` product-binomial negative-log term, extended by the
+secant-slope affine tails, is discretely convex on the **full** candidate box
+`[0, N]` (`N ≥ 3`).  The interior `[1, N-1]` is the exact cost; the boundary
+candidates `d = 0` and `d = N` take the secant values, which is exactly the
+minimal discrete-convex extension of the interior cost. -/
+theorem binomTerm_ext_discConvOn (N : ℤ) (hN : 3 ≤ N) (x n : ℤ) (hx : 0 ≤ x)
+    (hxn : x ≤ n) :
+    DiscConvOn (affineExtend (fun d : ℤ => -(x:ℝ) * Real.log ((d:ℝ) / (N:ℝ))
+        - ((n - x : ℤ) : ℝ) * Real.log (1 - (d:ℝ) / (N:ℝ))) 1 (N - 1)) 0 N :=
+  affineExtend_discConvOn (binomTerm_discConvOn N (by omega) x n hx hxn)
+    (by omega) (by omega) (by omega)
+
+/-- Degenerate external totals `N ≤ 2`: the strict interior `0 < d < N` is empty
+(`N = 1`) or the single point `d = 1` (`N = 2`), so there is no interior second
+difference to preserve.  The exact interior cost therefore admits a discretely
+convex extension to the full box `[0, N]`: the constant extension taking the
+interior value `n · log N`, which equals the exact cost at `d = 1` when `N = 2`.
+This makes the certificate's convexity hypothesis satisfiable in the degenerate
+case without pretending the interior has a second difference to check. -/
+theorem binomTerm_degenerate_discConvOn (N : ℤ) (hN1 : 1 ≤ N) (hN2 : N ≤ 2)
+    (x n : ℤ) :
+    ∃ F : ℤ → ℝ,
+      (∀ d, 0 < d → d < N →
+        F d = -(x:ℝ) * Real.log ((d:ℝ) / (N:ℝ))
+          - ((n - x : ℤ) : ℝ) * Real.log (1 - (d:ℝ) / (N:ℝ))) ∧
+      DiscConvOn F 0 N := by
+  refine ⟨fun _ => (n:ℝ) * Real.log (N:ℝ), ?_, DiscConvOn.const⟩
+  intro d hd0 hdN
+  have hN : N = 2 := by omega
+  have hd : d = 1 := by omega
+  subst hN
+  subst hd
+  have hlog : Real.log ((1:ℝ) / 2) = -Real.log 2 := by
+    rw [Real.log_div (by norm_num) (by norm_num), Real.log_one]
+    ring
+  have hsub : (1:ℝ) - 1 / 2 = (1:ℝ) / 2 := by norm_num
+  push_cast
+  rw [hsub, hlog]
   ring
 
 end AssemblyP1.SeparableConvexGraver
