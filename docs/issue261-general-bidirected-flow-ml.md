@@ -280,7 +280,12 @@ arithmetic.
   type; the discrepancy is exactly `∏_{j∉I}(N/(N-d'_j))^n` (`flow_genome_gap`).
 - OPEN-3: general **non-spelled-flow** maximality criterion.
 - OPEN-4: **transitive reduction** interaction with ML.
-- OPEN-5: **orientation/RC class** interaction.
+- OPEN-5: **orientation/RC class** interaction.  The *representation* defect
+  (palindrome orientations collapsing under word-equality signs) is repaired and
+  kernel-checked in `AssemblyP1/Section62OrientedStrandFlow` (2026-10-16); what
+  remains OPEN is the interaction of the corrected incidence signs with the
+  transitive reduction and the RC-quotient of candidate genomes.  See
+  `docs/issue261-oriented-strand-source-model.md`.
 - OPEN-6: **sample realizability** at arbitrary `o_min`.
 - OPEN-7: **fixed-`n` (non-uniform) extreme-sample iff** in Lean — **RESOLVED
   on the full-count-vector side** (2026-10-16, `AssemblyP1.Section62FiniteNExtremeSamples.binomial_fixed_n_extreme_iff`,
@@ -310,7 +315,7 @@ half added by `AssemblyP1.Section62FlowCountVectorAdapter`.
 | Rescaling ties at variable length | **RESOLVED** (`rescaling_tie`) |
 | Non-spelled-flow maximality criterion | **OPEN** (finite obstruction kernel-checked) |
 | Transitive reduction interaction with ML | **OPEN** |
-| Orientation/RC class interaction | **OPEN** |
+| Orientation/RC class interaction | **PARTIAL** — the palindrome representation defect is repaired and kernel-checked (`Section62OrientedStrandFlow`: bit-derived incidences, palindrome and non-palindrome graph/throughput/balance/feasibility, 2026-10-16); the ML classification in the corrected domain reduces exactly to the corrected throughput image (`Section62OrientedMLClassification`), with the image identity still OPEN; transitive-reduction interaction remains OPEN |
 | Sample realizability at arbitrary overlap | **OPEN** |
 
 ## Source-faithfulness and remaining proof blockers (explicit)
@@ -471,3 +476,25 @@ Source reading: [Medvedev–Brudno 2009, §§6.1–6.2](https://pmc.ncbi.nlm.nih
   *every* edge is maximal (so the obstruction above cannot occur) remains OPEN;
   there the spelled sub-class and the feasible set can still differ by
   connectivity and strand-consistency.
+- `AssemblyP1/Section62OrientedStrandFlow.lean` +
+  `AssemblyP1/Section62OrientedMLClassification.lean` (+
+  `Section62OrientedStrandFlowAudit.lean`): the **corrected oriented-strand
+  source model and its ML classification** (2026-10-16).  The historical
+  `strandsOf rc verts = verts ++ verts.map rc` + word-equality signs collapse a
+  palindrome's two physical orientations to one edge value and one sign pair;
+  the corrected model keeps an explicit orientation bit (`OStrand W = W × Bool`)
+  separate from the nucleotide word, derives the signed incidences from the bit
+  (`sgnRep_oRep`, `sgnTgt_oRep`), and reuses the historical `overlapEdges`/
+  `Feasible62`/`throughput`/`balance` at the tagged strand type.  Palindrome
+  semantics, non-palindrome agreement, balancing and throughput are
+  kernel-checked (`corrected_pal_*`, `nonpal_*`,
+  `historical_pal_not_feasible_one`).  In the corrected domain, ML maximality for
+  any throughput-factoring score reduces exactly to maximality over the corrected
+  throughput image (`oriented_maximal_iff_image`), with the spelled test
+  necessary (`oriented_spelled_maximal_of_flow_maximal`) and sufficient exactly
+  under image equality (`oriented_maximal_iff_spelled_maximal_of_image_eq`).
+  Independent verifier `scripts/verify_261_oriented_strand_source_model.py`
+  (18 exact checks).  Axioms `[propext, Classical.choice, Quot.sound]`.  See
+  `docs/issue261-oriented-strand-source-model.md`.  The historical
+  `Section62Flow` construction is labelled **bounded / non-faithful on
+  RC-palindromic classes**.
