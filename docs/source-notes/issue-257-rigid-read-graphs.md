@@ -23,7 +23,9 @@ cross-check, exhaustive small scope),
 `python3 scripts/verify_257_bridge.py` (§14 antiparallel-bridge four-variable
 criterion cross-check, exhaustive small scope),
 `python3 scripts/verify_257_target_cycle.py` (§15 target-cycle coin reduction
-and Apéry-set polynomial cross-check).
+and Apéry-set polynomial cross-check),
+`python3 scripts/verify_257_length3_bridge.py` (§17 length-3 antiparallel-bridge
+four-variable criterion and classification cross-check, exhaustive small scope).
 Self-contained, exact integer arithmetic, deterministic._
 
 _Blocking-review repair (2026-10-10, branch `research/257-graver-lean-repair`):
@@ -166,6 +168,17 @@ map `B : E → ℤ` with `B ≥ 1` on every edge, balanced at every node, and
     **refutes** the tempting "the bouquet encodes an NP-hard problem" reading
     for explicit supports; the uniform-in-support complexity remains **OPEN**.
     [mathematical proof + kernel-checked + verified computation, section 15]
+
+11. **Length-3 bridge: the bridge classification does not generalise.** Replacing
+    each `2`-cycle of the antiparallel bridge by a `3`-cycle gives a new topology
+    whose circulation is `δ = φ(a,c,u,w)`, zero mass `3a+3c+u+w=0`, and a coupled
+    box (kernel-checked `length3Bridge_nonrigid_iff`). Its exact classification is
+    rigid **iff** `m₁ = 1 ∧ m₂ = 1 ∧ f ≤ 2` (`length3Bridge_rigid_iff`). In
+    particular `(m₁, m₂, f) = (1, 1, 2)` is a **rigid repetitive** support
+    (`length3Bridge_rigid_repetitive`), so the merged bridge rule "rigid iff all
+    multiplicities `1`" is **false** for longer cycles. This is a committed
+    counterexample to that tempting generalisation. [mathematical proof +
+    kernel-checked, section 17]
 
 ---
 
@@ -473,8 +486,13 @@ exhaustive zeros are a sanity check on the proofs, not a substitute for them.
    explicit support graphs give **unary** lengths the family is decidable in
    **polynomial time** via the Apéry-set algorithm. This is a positive §8.2
    upper bound and refutes the naive NP-hardness reading; the uniform-in-support
-   complexity and any general polynomial min-cut form remain **OPEN**. [open;
-   bouquet case reduced and shown poly-time, §13/§15; bridge case classified, §14]
+   complexity and any general polynomial min-cut form remain **OPEN**.
+   **Further partial progress (§17, 2026-10-17):** the length-3 antiparallel
+   bridge has an exact four-variable criterion and classification, and it
+   *refutes* the bridge pattern (rigid **iff** all multiplicities `1`): the
+   instance `(m₁, m₂, f) = (1, 1, 2)` is a rigid repetitive support. [open;
+   bouquet case reduced and shown poly-time, §13/§15; bridge case classified, §14;
+   length-3 bridge classified and bridge pattern refuted, §17]
 2. **The exact complexity** of the exact criterion (§7). **Partial (§15,
    2026-10-16):** the bouquet family (hence the target-cycle family) is in `P`
    via the Apéry-set / residue-graph shortest-path algorithm; the
@@ -530,6 +548,11 @@ exhaustive zeros are a sanity check on the proofs, not a substitute for them.
 | §15 target-cycle worked instances (`coin_nonrigid_23_5`, `coin_rigid_23_1`, `coin_rigid_33_2`) | kernel-checked |
 | §15 Apéry-set polynomial representability algorithm (bouquet rigidity ∈ P; explicit/unary lengths) | mathematical proof + verified computation (`scripts/verify_257_target_cycle.py`) |
 | §15 target-cycle cross-check vs brute force (`scripts/verify_257_target_cycle.py`: 435 bouquets, 10320 Apéry cases, 0 mismatches) | verified computation, exhaustive in scope |
+| §17 length-3 bridge exact criterion (`length3Bridge_nonrigid_iff`: `∃ (a,c,u,w) ≠ 0, 3a+3c+u+w = 0` + coupled box) | mathematical proof + kernel-checked (`AssemblyP1/RigidityLength3Bridge.lean`) |
+| §17 length-3 bridge classification (`length3Bridge_rigid_iff`: rigid iff `m₁ = 1 ∧ m₂ = 1 ∧ f ≤ 2`) | mathematical proof + kernel-checked |
+| §17 length-3 bridge rigid repetitive instance `length3Bridge_rigid_repetitive` (`f = 2`) — refutes "bridge rigid iff all mult `1`" | kernel-checked |
+| §17 length-3 bridge non-rigidity witnesses (`length3Bridge_nonrigid_m1/m2/f`) | kernel-checked |
+| §17 length-3 bridge cross-check vs brute force (`scripts/verify_257_length3_bridge.py`: 255 bridges, 0 mismatches) | verified computation, exhaustive in scope |
 
 ---
 
@@ -1179,3 +1202,109 @@ including 135 rigid examples. The `RigidityNoGoAudit` and `AxiomAudit257`
 files audit the proof's standard-axiom dependencies. This is deliberately a
 **bounded direct-LP no-go**, not a binary-input NP-hardness or general
 non-existence-of-polynomial-algorithm theorem.
+
+---
+
+## 17. The length-3 antiparallel bridge: the bridge classification does not generalise (§8.1 progress)
+
+This section advances open item **§8.1** past both the *bouquet* family (§13)
+and the *antiparallel bridge* (§14), by replacing each `2`-cycle of the bridge
+by a `3`-cycle. It builds on — and does not redo — the merged bridge criterion
+`bridge_nonrigid_iff` and classification `bridgeA_rigid_iff_trivial` of §14.
+
+### 17.1 The topology
+
+The merged bridge (§14) is the complete digraph `K₃*`: two `2`-cycles through a
+hub `v`, joined by an antiparallel arc pair between their interior vertices. Its
+classification says it is rigid **iff** every edge has multiplicity `1`; every
+repetitive bridge is non-rigid. The *length-3 antiparallel bridge* keeps the
+same shape but lengthens each cycle:
+
+```
+C1 : v → x → a₂ → v          C2 : v → y → b₂ → v
+bridge : x → y , y → x
+```
+
+on five vertices `v, x, a₂, y, b₂` and eight arcs. It has the same cycle rank
+`4` as the merged bridge but is a genuinely different topology, and it is **not**
+covered by the merged `2`-cycle classification.
+
+### 17.2 The four-variable exact criterion
+
+At the interior vertices `a₂`, `b₂` balance forces the two consecutive `C1` (resp.
+`C2`) arcs to be equal; the balance at `x` and `y` then couples the two cycle
+values with the bridge values. Every circulation is determined by four integers
+`(a, c, u, w)` — the values of `v → x`, `v → y`, `x → y`, `y → x` — and equals
+
+```
+δ = φ(a, c, u, w) = ![a, a-u+w, a-u+w, c, c-w+u, c-w+u, u, w].
+```
+
+The total mass is `∑ δ = 3a + 3c + u + w` (the coefficients are `3, 3, 1, 1`,
+not the bridge's `2, 2, 1, 1`). **Theorem 9 (length-3 bridge criterion).** With
+multiplicities `m₁, m₂, f ≥ 1` (`m₁` on the `C1` arcs, `m₂` on the `C2` arcs,
+`f` on the bridge arcs), the base circulation `A` is **not** rigid **iff** there
+are integers `a, c, u, w`, not all zero, with
+
+```
+3a + 3c + u + w = 0,                       (zero total mass)
+a ≥ 1 - m₁,   a - u + w ≥ 1 - m₁,          (C1 box)
+c ≥ 1 - m₂,   c - w + u ≥ 1 - m₂,          (C2 box)
+u ≥ 1 - f,    w ≥ 1 - f.                   (bridge box)
+```
+
+_Proof._ Immediate from Theorem 1 together with the parameterisation above: the
+box `δ ≥ 1 - A` becomes the six inequalities, and `δ ≠ 0` becomes
+`(a, c, u, w) ≠ 0`. ∎ This is kernel-checked as
+`AssemblyP1.RigidityLength3Bridge.length3Bridge_nonrigid_iff`. The box
+genuinely couples `a` with `w - u` and `c` with `u - w`.
+
+### 17.3 Classification and the refutation of the bridge pattern
+
+**Theorem 10 (length-3 bridge classification).** For `m₁, m₂, f ≥ 1`, the base
+circulation is rigid **iff** `m₁ = 1 ∧ m₂ = 1 ∧ f ≤ 2`; kernel-checked as
+`length3Bridge_rigid_iff`. The non-rigidity witnesses are explicit:
+
+* `m₁ ≥ 2`: `(a, c, u, w) = (-1, 1, 0, 0)`, i.e. `δ = (-1,-1,-1,1,1,1,0,0)`
+  (`length3Bridge_nonrigid_m1`);
+* `m₂ ≥ 2`: `(a, c, u, w) = (1, -1, 0, 0)`, i.e. `δ = (1,1,1,-1,-1,-1,0,0)`
+  (`length3Bridge_nonrigid_m2`);
+* `m₁ = m₂ = 1, f ≥ 3`: `(a, c, u, w) = (1, 0, -1, -2)`, i.e.
+  `δ = (1,0,0,0,1,1,-1,-2)` (`length3Bridge_nonrigid_f`).
+
+The two remaining cases are rigid: `m₁ = m₂ = f = 1` (every box is `δ ≥ 0`, so
+zero total mass forces `δ = 0`), and — the point of this section —
+`m₁ = m₂ = 1, f = 2`, kernel-checked as `length3Bridge_rigid_repetitive`.
+
+**Consequence (failed simpler hypothesis, committed witness).** The natural
+generalisation of the merged bridge classification — *"an antiparallel bridge is
+rigid iff all multiplicities are `1`"* — is **FALSE**. The length-3 bridge with
+`(m₁, m₂, f) = (1, 1, 2)` traverses both bridge arcs **twice** and is
+nevertheless **rigid**. So "rigid iff all multiplicities `1`" is specific to the
+`2`-cycle bridge; longer cycles can absorb repetitions without losing rigidity.
+This is a rigid *repetitive* support beyond the bouquet (`len24_mult21_rigid`)
+and bridge families.
+
+### 17.4 Cross-check
+
+`scripts/verify_257_length3_bridge.py` is self-contained, exact, and
+deterministic. It recomputes rigidity from scratch by enumerating **all**
+positive integer circulations of total `G` on the eight-arc graph and compares
+with (i) the four-variable criterion and (ii) the classification
+`m₁ = 1 ∧ m₂ = 1 ∧ f ≤ 2`, over an exhaustive scope (`1 ≤ m₁, m₂ ≤ 6`,
+`1 ≤ f ≤ 8`, `G ≤ 40`: **255** length-3 bridges, **0** mismatches), and
+re-derives all four worked instances. [verified computation, exhaustive in
+scope]
+
+### 17.5 Epistemic status
+
+Theorems 9–10 and the four instances are kernel-checked with only
+`[propext, Classical.choice, Quot.sound]`
+(`AssemblyP1/RigidityLength3BridgeAudit`, and `AxiomAudit257.lean`); no
+`sorry`/`admit`/`axiom`/`native_decide`. The topology is an *abstract* oriented
+support graph, as for the merged bridge; realizability as a de Bruijn
+read-support is not claimed. The residual — a *polynomial* min-cut/max-flow
+closed form for general supports, or a proof that none exists — remains
+**OPEN** (§8.1/§8.2). The general `p, q` long-bridge criterion (arbitrary cycle
+lengths) is recorded as a next step but is not needed for the classification
+refutation above.
