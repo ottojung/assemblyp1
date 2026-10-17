@@ -10,7 +10,7 @@ It changes no merged claim and edits no classification._
 PR #295 (head `dc6419d1481475aee04ad9db45195ce12b61851d`, OPEN, blocked) claims a
 "corrected MB09 §6.2 source model" via explicit orientation tags
 (`OStrand W = W × Bool`, `AssemblyP1/Section62OrientedStrandFlow.lean`). Reviewer
-objections (PR #295 comments `6226733092`, `626803094`, `627270544`, all
+objections (PR #295 comments `6226733092`, `6226803094`, `627270544`, all
 2026-10-16/17): MB09 §1.1/Fig. 1 identify **three** bidirected endpoint-orientation
 edge types up to symmetry, while the tagged model enumerates **four** ordered
 orientation pairs as distinct `BdEdge` values; and the inherited departure-based
@@ -23,9 +23,11 @@ orientation pairs as distinct `BdEdge` values; and the inherited departure-based
    `AssemblyP1/Section62PalindromeEdgeMultiplicityAudit.lean:277`
    (`tagged_three_reversal_orbits`), with the involution at `:224`
    (`reverseTaggedEdge`), the swap/fix pattern at `:229`/`:237`, and orbit
-   canonicity at `:266`. Merged via PR #282 (merge `aa24b18`, branch
-   `research/284-palindrome-edge-multiplicity-20261016`), integrated by PR #296
-   (`c56166b`), root-imported at `AssemblyP1.lean:70`. This is a finite comparison
+   canonicity at `:266`. Integrated by PR #296 (`c56166b`), the #284
+   workstream's palindrome-audit piece (the same workstream's PR #282, merge
+   `aa24b18`, branch `research/284-generic-anchors-rc-law-20261016`, delivered
+   its generic anchored-window spelling identity and word-level RC law),
+   root-imported at `AssemblyP1.lean:70`. This is a finite comparison
    model only: the module docstring (`:216-222`) states it "is not a theorem that
    the complete historical algorithm uses this particular quotient".
 
@@ -71,7 +73,7 @@ layer, none of which exists on `main`:
 
 ## Verdict
 
-**OPEN.** Merged work (#282/#284 audit, #300 half-incidence) resolves the count
+**OPEN.** Merged work (#284 audit via #296, #300 half-incidence) resolves the count
 question and the invariance lemma, but the #295 source-fidelity blocker — the
 orientation-preserving correspondence to MB09's physical graph together with the
 quotient-flow discipline and the `Feasible62`/throughput revisit — is not resolved
