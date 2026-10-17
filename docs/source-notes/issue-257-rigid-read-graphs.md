@@ -21,7 +21,9 @@ constructive n=3/4 and exhaustive search n=3),
 `python3 scripts/verify_257_bouquet.py` (§13 bouquet Diophantine criterion
 cross-check, exhaustive small scope),
 `python3 scripts/verify_257_bridge.py` (§14 antiparallel-bridge four-variable
-criterion cross-check, exhaustive small scope).
+criterion cross-check, exhaustive small scope),
+`python3 scripts/verify_257_target_cycle.py` (§15 target-cycle coin reduction
+and Apéry-set polynomial cross-check).
 Self-contained, exact integer arithmetic, deterministic._
 
 _Blocking-review repair (2026-10-10, branch `research/257-graver-lean-repair`):
@@ -151,6 +153,19 @@ map `B : E → ℤ` with `B ≥ 1` on every edge, balanced at every node, and
    (`bridgeA_rigid_iff_trivial`); otherwise explicit witnesses. The bridge is an
    abstract support (this exact shape is not a de Bruijn read-support).
    [mathematical proof + kernel-checked, section 14]
+
+10. **Target-cycle bouquet: exact coin reduction; bouquet rigidity is in P.**
+    The bouquet with `n` coin cycles (lengths `a_i`, traversed once) and one
+    target cycle (length `t`, traversed twice) is not rigid **iff** `t` is a
+    nonnegative integer combination of the `a_i` (kernel-checked
+    `targetCycle_nonrigid_iff_coin`). This is exactly the unbounded coin /
+    numerical-semigroup problem. Because an *explicit* support graph encodes the
+    coin lengths in **unary**, representability — hence bouquet rigidity — is
+    decidable in polynomial time by the Apéry-set / residue-graph shortest-path
+    algorithm (`O(m·n)` ops). This is a genuine §8.2 **upper bound** and it
+    **refutes** the tempting "the bouquet encodes an NP-hard problem" reading
+    for explicit supports; the uniform-in-support complexity remains **OPEN**.
+    [mathematical proof + kernel-checked + verified computation, section 15]
 
 ---
 
@@ -452,9 +467,18 @@ exhaustive zeros are a sanity check on the proofs, not a substitute for them.
    the bouquet form, and is rigid **iff** all multiplicities are `1`
    (`bridgeA_rigid_iff_trivial`); so the bridge topology yields no new rigid
    repetitive supports. The general complexity and graph-theoretic
-   characterization remain **OPEN**. [open; bouquet case reduced, §13; bridge case
-   classified, §14]
-2. **The exact complexity** of the exact criterion (§7). [open]
+   characterization remain **OPEN**. **Further partial progress (§15,
+   2026-10-16):** the bouquet family is *exactly* the unbounded coin /
+   numerical-semigroup problem (`targetCycle_nonrigid_iff_coin`), and because
+   explicit support graphs give **unary** lengths the family is decidable in
+   **polynomial time** via the Apéry-set algorithm. This is a positive §8.2
+   upper bound and refutes the naive NP-hardness reading; the uniform-in-support
+   complexity and any general polynomial min-cut form remain **OPEN**. [open;
+   bouquet case reduced and shown poly-time, §13/§15; bridge case classified, §14]
+2. **The exact complexity** of the exact criterion (§7). **Partial (§15,
+   2026-10-16):** the bouquet family (hence the target-cycle family) is in `P`
+   via the Apéry-set / residue-graph shortest-path algorithm; the
+   uniform-in-support case is **OPEN**. [open]
 3. ~~**The two-closed-walk certificate** (§4)~~ **RESOLVED (2026-10-15).** The
    two-closed-walk certificate is necessary **and** sufficient for strongly
    connected supports; see Theorem 5 in §12. The earlier `n = 3` evidence was
@@ -501,6 +525,11 @@ exhaustive zeros are a sanity check on the proofs, not a substitute for them.
 | §14 bridge classification (`bridgeA_rigid_iff_trivial`: rigid iff `m1 = m2 = f = 1`) | mathematical proof + kernel-checked |
 | §14 bridge non-rigidity witnesses (`dM1`, `dM2`, `dF`) | kernel-checked |
 | §14 bridge cross-check vs brute force (`scripts/verify_257_bridge.py`: 880 bridges, 0 mismatches) | verified computation, exhaustive in scope |
+| §15 target-cycle coin reduction (`targetCycle_nonrigid_iff_coin`: non-rigid iff `∃ y ≥ 0, ∑ a_i y_i = t`) | mathematical proof + kernel-checked (`AssemblyP1/RigidityTargetCycle.lean`) |
+| §15 rigid dual (`targetCycle_rigid_iff_not_coin`) | mathematical proof + kernel-checked |
+| §15 target-cycle worked instances (`coin_nonrigid_23_5`, `coin_rigid_23_1`, `coin_rigid_33_2`) | kernel-checked |
+| §15 Apéry-set polynomial representability algorithm (bouquet rigidity ∈ P; explicit/unary lengths) | mathematical proof + verified computation (`scripts/verify_257_target_cycle.py`) |
+| §15 target-cycle cross-check vs brute force (`scripts/verify_257_target_cycle.py`: 435 bouquets, 10320 Apéry cases, 0 mismatches) | verified computation, exhaustive in scope |
 
 ---
 
@@ -974,3 +1003,152 @@ a de Bruijn read-support is **not** claimed (two distinct `2`-cycles through one
 hub cannot coexist in an order-`(L-1)` de Bruijn graph). The residual — a
 *polynomial* min-cut/max-flow closed form for general supports, or a proof that
 none exists — remains **OPEN** (§8.1/§8.2).
+
+---
+
+## 15. The target-cycle bouquet: an exact coin / numerical-semigroup reduction and a §8.2 polynomial upper bound
+
+This section advances open items **§8.1** and **§8.2** by isolating the exact
+sub-problem encoded by the bouquet family and by giving a genuine
+polynomial-time decision procedure for it. It builds on — and does not redo —
+the merged bouquet criterion `bouquet_nonrigid_iff` of §13.
+
+### 15.1 Definition: the target-cycle bouquet
+
+Fix coin cycle lengths `a 0, …, a (n-1) ≥ 1` and a **target** cycle length
+`t ≥ 1`. The *target-cycle bouquet* is the bouquet of §13 with `n + 1` cycles
+through a common vertex:
+
+* the `n` **coin** cycles, each traversed **once** (`mult_i = 1`);
+* the **target** cycle, traversed **twice** (`mult_last = 2`).
+
+Its circulation space is `ℤ^{n+1}` and the exact criterion §13.3 reads: `A` is
+not rigid iff there is a nonzero integer vector `x` with
+`∑_i len_i x_i = 0` and `x_i ≥ 1 - mult_i`. For the target-cycle bouquet the box
+is `x_i ≥ 0` on each coin cycle and `x_last ≥ -1` on the target, and the
+zero-sum equation is `∑_i a_i x_i + t·x_last = 0`.
+
+### 15.2 The reduction
+
+**Theorem 8 (target-cycle / coin reduction).** The target-cycle bouquet is
+**not** rigid **iff** `t` is a nonnegative integer combination of the coin
+lengths `a_i`:
+
+```
+not rigid  ⟺  ∃ y : ℕ^n,  ∑_i a_i y_i = t.
+```
+
+Equivalently, the bouquet is **rigid** iff `t ∉ ⟨a_0, …, a_{n-1}⟩`, the
+numerical semigroup generated by the coin lengths.
+
+_Proof._ Let `x` be a witness of the bouquet criterion. Since `a_i > 0` and
+`x_i ≥ 0`, the coin part `S := ∑_i a_i x_i` is `≥ 0`. The zero-sum equation is
+`S + t·x_last = 0`, so `t·x_last = -S ≤ 0`; with `t > 0` this gives
+`x_last ≤ 0`, and the target box `x_last ≥ -1` then gives `x_last ∈ {-1, 0}`.
+If `x_last = 0`, then `S = 0` and every term `a_i x_i ≥ 0` vanishes, so
+`x_i = 0` for all `i` (as `a_i ≠ 0`) and `x = 0`, contradicting `x ≠ 0`. Hence
+`x_last = -1`, and then `S = t` with all `x_i ≥ 0`: `y_i := x_i` is the required
+nonnegative combination. Conversely, given `y ≥ 0` with `∑ a_i y_i = t`, set
+`x_i := y_i` on the coins and `x_last := -1`; then `∑ len_i x_i = t - t = 0`,
+`x_i ≥ 0 = 1 - 1`, `x_last = -1 = 1 - 2`, and `x ≠ 0`, so the criterion yields
+non-rigidity. ∎
+
+This is kernel-checked as
+`AssemblyP1.RigidityTargetCycle.targetCycle_nonrigid_iff_coin` (and its rigid
+dual `targetCycle_rigid_iff_not_coin`). The whole "target + coins" family is
+therefore *precisely* the **unbounded coin / change-making problem**. Worked
+instances are kernel-checked: `coin_nonrigid_23_5` (coins `(2,3)`, target `5`
+representable), `coin_rigid_23_1` (target `1` not representable), and
+`coin_rigid_33_2` (coins `(3,3)`, target `2`, the length-`(2,3,3)`
+multiplicity-`(2,1,1)` real/integer-gap bouquet of §13 re-read with the
+length-`2` cycle as the target; that bouquet is genome-realizable, see
+`AssemblyP1/RigidityBouquetGenomeWitness.lean`).
+
+### 15.3 §8.2: the target-cycle bouquet is decidable in polynomial time
+
+The coin problem with **binary** denominations is NP-complete (Lueker 1975,
+"Two NP-complete problems in nonnegative integer programming"). It is tempting
+to read §13.5 and Theorem 8 as an NP-hardness proof for rigidity. **That reading
+is wrong for explicit support graphs**, and recording the exact reason is the
+content of this subsection.
+
+An *explicit* support graph has one edge per unit of cycle length: a cycle of
+length `a` is `a` distinct edges. Hence the coin lengths `a_i` are encoded in
+**unary** (`a_i ≤ M`, the edge bound, is part of the graph size), while the
+multiplicities (and the target total) may be binary. For unary denominations,
+representability is decidable in polynomial time by the **Apéry set** /
+**residue-graph shortest-path** algorithm:
+
+> Let `m := min_i a_i`. In the directed graph on the residue classes
+> `ℤ / m`, put an edge `r → (r + a_i) mod m` of weight `a_i` for every coin
+> `a_i`. Compute the shortest distance `dist(r)` from `0`. Then `dist(r)` is the
+> smallest representable number `≡ r (mod m)`, and
+> ```
+> t  is representable  ⟺  t ≥ dist(t mod m).
+> ```
+
+_Proof._ (`⇐`) `t = dist(t mod m) + k·m` with `k = (t - dist(t mod m))/m ≥ 0`,
+and both `dist(t mod m)` (a path sum of denominations) and `m` are representable,
+so `t` is. (`⇒`) A representation `t = ∑ a_i y_i` reduces mod `m` to a walk
+`0 → t mod m` of total weight `t`, so `dist(t mod m) ≤ t`. ∎
+
+The algorithm costs `O(m · n)` arithmetic operations (`m ≤ M`, `n ≤ |E|`), with
+numbers of `O(log t)` bits: **polynomial in the explicit graph size and the bit
+length of the multiplicities**. Therefore the target-cycle bouquet — and, by the
+same argument, the entire bouquet family — is decidable in polynomial time, and
+the naive "the bouquet encodes an NP-hard problem" reading is **refuted**. This
+is a genuine §8.2 *upper* bound for a nontrivial family (a positive complexity
+result), and it explains why the earlier §13.5 caution was right.
+
+**What this does *not* settle.** The uniform-in-support complexity of the exact
+criterion (Theorem 1) for arbitrary support graphs remains **OPEN** (§8.2): the
+reduction covers bouquets, not general supports, and the general circulation
+lattice `L_0 = ker[M; 1ᵀ]` is not a single equation. The existence of a
+polynomial min-cut / max-flow closed form (§8.1) is likewise **OPEN**; §15 shows
+only that the bouquet obstruction is *not* the reason it would fail.
+
+**Remark (general supports, fixed cycle rank).** For a *fixed* cycle rank
+`r = |E| - |V| + c - 1 = rank L_0`, rigidity **is** decidable in polynomial time
+in the explicit graph size and `log G`. Choose a lattice basis `b_1, …, b_r` of
+`L_0` (its entries are bounded by the largest subdeterminant of `[M; 1ᵀ]`, which
+is `≤ |E|` because `M` is totally unimodular and the single all-ones row expands
+into `≤ |E|` unit minors). Then non-rigidity is the integer feasibility of the
+system `∑_j z_j b_j ≥ -s` in `r` integer variables; by Lenstra's theorem
+(integer programming in fixed dimension is polynomial), this is decidable in
+polynomial time for each fixed `r`. So the hardness, if any, is concentrated in
+the *uniform-in-`r`* regime, which stays **OPEN**. This is an external cited
+result (Lenstra 1983); it is not kernel-checked here and is recorded only to
+sharpen §8.2.
+
+### 15.4 Cross-check
+
+`scripts/verify_257_target_cycle.py` is a self-contained, exact, deterministic
+cross-check with four parts, exiting non-zero on any failure:
+
+* `bruteforce`: for every target-cycle bouquet in an exhaustive scope
+  (`k ≤ 3` coin cycles, lengths `≤ 4`, target `≤ 8`, total support `≤ 12` edges,
+  `G ≤ 20`: **435** bouquets), compute rigidity from scratch by enumerating
+  **all** positive integer circulations of total `G` on the actual support graph
+  and compare with coin representability — **0** mismatches;
+* `apery`: the Apéry-set algorithm agrees with a bounded brute-force
+  representability oracle on **10320** small cases (**0** mismatches) and is
+  exercised on binary-sized targets (`10^9`, `10^9 + 1`, `12345678901234567890`)
+  and on the `(6,9,20)` Frobenius instance (Frobenius number `43`);
+* `instances`: re-derives `coin_nonrigid_23_5`, `coin_rigid_23_1`,
+  `coin_rigid_33_2`;
+* `gap`: re-derives the §13 `(2,3,3)`/`(2,1,1)` real/integer-gap bouquet and
+  its target-cycle re-reading.
+
+[verified computation, exhaustive in scope]
+
+### 15.5 Epistemic status
+
+Theorem 8 and its three worked instances are kernel-checked with only
+`[propext, Classical.choice, Quot.sound]`
+(`AssemblyP1/RigidityTargetCycleAudit`); no `sorry`/`admit`/`axiom`/
+`native_decide`. The polynomial Apéry-set algorithm (§15.3) is a standard
+numerical-semigroup result, proved above and re-verified by
+`scripts/verify_257_target_cycle.py`; the NP-completeness of the *binary* coin
+problem is an external cited result (Lueker 1975), used only to explain why the
+unary/explicit distinction matters. The uniform-in-support complexity (§8.2) and
+the general min-cut/max-flow closed form (§8.1) remain **OPEN**.

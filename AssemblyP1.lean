@@ -66,6 +66,8 @@ import AssemblyP1.Section62GlobalSpellingPreservation
 import AssemblyP1.Section62GlobalCircularCorrespondence
 import AssemblyP1.Section62GlobalCircularAudit
 import AssemblyP1.Section62ReductionDependencyAudit
+-- #284: RC-palindrome audit of duplicate edge-list multiplicities (no model rewrite).
+import AssemblyP1.Section62PalindromeEdgeMultiplicityAudit
 import AssemblyP1.Section62FullSpectrumUnseenFactor
 -- #259 real circular-genome witness: exact iid and product-binomial rankings differ.
 import AssemblyP1.Section62BinomialRealGenomeInversion
@@ -103,6 +105,7 @@ import AssemblyP1.FiniteSamplingCounterexample
 import AssemblyP1.FiniteBayesDecision
 import AssemblyP1.IidMapMonotonicity
 import AssemblyP1.GenomeOrbitAdapter
+import AssemblyP1.GenomeOrbitAdapterAudit
 import AssemblyP1.PosteriorMAPEquivalence
 import AssemblyP1.ConditionalVsOrdinaryMLSeparation
 import AssemblyP1.ConditionalVsOrdinaryMLBoundary271
@@ -123,6 +126,8 @@ import AssemblyP1.RigidityBouquetAudit
 import AssemblyP1.RigidityBouquetGenomeWitness
 import AssemblyP1.RigidityBridge
 import AssemblyP1.RigidityBridgeAudit
+import AssemblyP1.RigidityTargetCycle
+import AssemblyP1.RigidityTargetCycleAudit
 import AssemblyP1.RepeatAdapter
 import AssemblyP1.OrientedFinalRigidity
 import AssemblyP1.BridgingBridge
