@@ -775,6 +775,22 @@ rest remain human-readable only, as labeled per entry.
   `scripts/verify_269_flow_genome_separation.py`; see
   `docs/section62-flow-genome-separation-269.md`. It does not touch #261's
   throughput-image classification.
+- **Update (2026-10-17):** the necessary-and-sufficient finite Bayes/MAP
+  optimality certificate is LANDED.
+  `AssemblyP1/BayesOptimalityCertificate.lean` (+
+  `AssemblyP1/BayesOptimalityCertificateAudit.lean`) closes the **necessary**
+  half of target B: a deterministic policy is Bayes-optimal iff it is pointwise
+  MAP (`pointwiseMAP_iff_bayesOptimal`), with the strict-loss and tie witnesses
+  `StrictLossWitness.strict_loss`/`TieWitness.both_optimal`. It also proves the
+  conditional-posterior-one boundary `posterior_eq_one_iff_singleton_support`
+  and its rotation-class instantiation
+  `orbit_posterior_eq_one_iff_singleton_support`. Verifier
+  `scripts/verify_269_bayes_optimality_certificate.py`; see
+  `docs/bayes-map-optimality-certificate-269.md`. The prior-averaged scope is
+  checked against the merged `PerTruthDrop` (`16/25 < 4/5` while the
+  prior-average rises `13/20 → 139/200`). It does not touch #266's
+  event-conditional theorem, #261's throughput-image classification, or the
+  merged A/C/D/E endpoints (PRs #174/#193/#200/#231/#261).
 - **Still OPEN:** the reverse-complement-orbit quotient (the adapter proves
   rotation invariance only; RC invariance is deliberately not claimed) and any
   source-historical endpoint. Board #269 remains OPEN.
