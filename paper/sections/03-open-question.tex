@@ -1,536 +1,466 @@
-\section{The question, mathematically}
+\section{The reconstruction question and the likelihood question}
 \label{sec:open}
 
-The 2016 Not-So-Greedy theorem turns sufficiently informative reads into
-a unique Eulerian reconstruction of a circular genome. The likelihood
-question is what happens if, instead of following the reconstruction graph,
-we rank candidate genomes by the probability they assign to the
-\emph{observed counts} of each read type. In this section we give the
-bridging and likelihood definitions, state a positive same-length result,
-exhibit exact finite likelihood reversals, and show why the population
-version admits a stronger uniqueness theorem.
+Shomorony et al.\ ask whether their bridging conditions ensure that the
+maximum-likelihood sequence is the true sequence
+\cite[Discussion]{shomorony2016}. The answer depends on which candidates and
+read types the likelihood compares. The distinction between a reconstruction
+guarantee and a likelihood ranking is particularly important.
 
-Shomorony et al.\ explicitly asked whether bridging can guarantee that
-the maximum-likelihood sequence is the true sequence
-\cite[Discussion, p.~i501]{shomorony2016}. The answer depends on the
-chosen likelihood objective and admissible candidate class; the precise
-source-to-model correspondence is retained in
-Appendix~\ref{app:referents}.
-
-\subsection{The bridging hypothesis}
-
-The hypothesis side of the question is the source's own coverage-and-bridging
-predicate, quantified over observed read \emph{strings} matched at any genomic
-position rather than over hidden sampled placements
-\cite[Supplement, \S6.4, Definitions~1--2]{shomorony2016}.
+\subsection{Historical bridging and reconstruction}
 
 \begin{definition}[Historical coverage and matched-string bridging]
 \label{def:historical-match}
-Let $S$ be a circular genome of length $G$, let $2\le L\le G$ be a read
-length, and let $\mathcal{W}$ be the set of distinct observed read strings. The
-predicate $I_s^{\mathrm{match}}$ holds if and only if
+Let $S$ be a circular genome of length $G$, let $2\le L\le G$, and let
+$\mathcal W$ be the set of distinct observed read strings. The historical
+predicate $I_s^{\mathrm{match}}(S,\mathcal W)$ requires:
 \begin{enumerate}[label=(H\arabic*),leftmargin=*]
-  \item \emph{(coverage, Definition~1)} for every start $t$ there is a string
-        $w\in\mathcal{W}$ with $w=W_{(t+\delta)\bmod G}(S)$ for some
-        $\delta\in\{0,1,\dots,L-2\}$;
-  \item \emph{(bridging, Definition~2)} every triple repeat of $S$ has
-        \emph{every} copy strictly straddled by some observed string matched at
-        a position in the source's straddling interval, and every interleaved
-        repeat pair has a copy so straddled.
+  \item for every start $t$, some $w\in\mathcal W$ matches
+  $W_{(t+\delta)\bmod G}(S)$ for $\delta\in\{0,\ldots,L-2\}$;
+  \item every copy of each triple repeat is strictly straddled by a matched
+  observed read string, and of any two interleaved repeats at least one is
+  bridged, as in the source's Definition~2.
 \end{enumerate}
+The source quantifies over \emph{matching read strings}, not hidden sampled
+start positions \cite[Supplement, \S6.4, Definitions~1--2]{shomorony2016}.
+The sampled-placement predicate $\Is$ in Definition~\ref{def:Is} is different;
+the two are incomparable (Proposition~\ref{prop:historical-source}).
 \end{definition}
 
-The placement-based predicate $\Is$ of Definition~\ref{def:Is} formalizes the
-same three-clause shape at the latent sampled starts. The two predicates are
-incomparable, and no theorem is stated for one and silently attributed to the
-other (Proposition~\ref{prop:historical-source}).
-
-\subsection{Not-So-Greedy as structural reconstruction}
-
-The 2016 paper is not primarily a scoring method. Its Not-So-Greedy construction
-is a \emph{structural reconstruction} procedure: from the observed reads it
-builds an overlap multigraph, removes spurious edges, adjusts edge
-multiplicities, and reads off an Eulerian cycle. The bridging conditions are a
-\emph{sufficient} theorem for that procedure to spell the truth exactly, and we
-record the published result as an external premise, because the two-question
-distinction below turns on exactly what it does and does not guarantee.
-
-\begin{theorem}[Not-So-Greedy exact reconstruction; published 2016 result]
+\begin{theorem}[Not-So-Greedy reconstruction; published result]
 \label{thm:notso-greedy}
-\srcfact{}. Let $S$ be a circular genome and suppose the observed read set
-satisfies the source's coverage-and-bridging predicate
-$I_s^{\mathrm{match}}$ of Definition~\ref{def:historical-match}
-(Supplement~\S6.4, Definitions~1--2). Then the Not-So-Greedy construction
-produces an overlap multigraph of the observed reads whose unique Eulerian
-cycle spells $S$ up to cyclic shift \cite[Supplement]{shomorony2016}.
+Under the source's full assumptions, if the observed reads satisfy
+$I_s^{\mathrm{match}}(S,\mathcal W)$, the Not-So-Greedy overlap-graph
+construction has a unique Eulerian spelling equal to $S$ up to rotation
+\cite{shomorony2016}.
 \end{theorem}
 
-Three features of this premise matter for everything that follows. First, its
-conclusion is about the \emph{feasible set}: within the full fixed source
-assumptions, at most one genome up to cyclic rotation satisfies the strong
-guarantee for the same observations. Second, its hypothesis is much stronger
-than read-generation consistency: many genomes generate the \emph{same} reads
---- Example~\ref{ex:ABAB} exhibits two with identical read distributions --- so
-bridging feasibility is a strictly stronger property than inducing the same
-likelihood, and the theorem is \emph{not} the claim ``only one candidate genome
-can generate the reads''. Third, the theorem says nothing about the likelihood
-ranking of candidates outside the feasible set; that gap is the 2016 question.
+This is a structural reconstruction theorem, not an assertion that no other
+genome can produce the reads. A candidate with positive sampling probability
+for the data can fail the historical bridging predicate.
 
-\subsection{Two questions, not one}
+\subsection{Two different statistical questions}
 \label{sec:two-questions}
 
-Read literally, the published sentence names one question; mathematically there
-are two, and conflating them is the central error this paper guards against.
-Fix a finite candidate universe $\cands$ containing the truth $S$, a prior
-$\pi$ on $\cands$, zero-one loss on equivalence classes, and the common
-correctly specified observation model of Definitions~\ref{def:reads}
-and~\ref{def:likelihoods}. Let $F(\cdot,R)$ be a \emph{feasibility predicate}:
-for the 2016 question, $F(g,R)$ is the source's coverage-and-bridging predicate
-$I_s^{\mathrm{match}}$ evaluated on candidate $g$ against the observed read set
-$R$ --- a property of $g$ and $R$ alone.
-
-\paragraph{Question A: the conditional question.}
-Constrain the candidate set to the \emph{feasible fiber}
-$\cands_F(R)=\{\,g\in\cands : F(g,R)\,\}$ and assume the truth is feasible,
-$F(S,R)$. By the uniqueness content of Theorem~\ref{thm:notso-greedy}, the only
-feasible candidate is the truth up to rotation: $\cands_F(R)=[S]$. The
-conditional posterior $\pi(\cdot\mid R)$ restricted to $\cands_F(R)$ is
-therefore a singleton on $[S]$, and \emph{any} valid conditional MAP rule ---
-any rule maximizing the conditional posterior, equivalently the conditional
-likelihood under the restricted prior --- returns the truth. This is largely a
-corollary of the reconstruction theorem plus the definition of conditional
-probability; it is \emph{not} a new unconditional ML result and licenses no
-statement about the likelihood ranking outside the fiber. Issue~\#266 tracks the
-conditional-reconstruction analysis that formalizes this fiber-singleton result;
-the present paper adopts it as a corollary and does not claim it as a new ML
-theorem.
-
-\paragraph{Question B: the unconditional question.}
-Assume only $F(S,R)$ --- the truth is feasible --- and maximize the
-\emph{original, unrestricted} likelihood $\Lik$ over the \emph{original}
-universe $\cands$. The maximizer need not be the truth: the strict
-counterexamples of Section~\ref{sec:finite} exhibit truths that satisfy the
-relevant feasibility predicate while a competitor scores strictly higher.
-\emph{This} is the genuinely nontrivial published comparison, and it is the
-reading the rest of the paper adopts when it speaks of ``the 2016 question''.
-
-\paragraph{The hinge.}
-Questions A and B differ in exactly one place: whether the optimization is
-restricted to the feasible fiber. Inside the fiber the truth is the unique
-conditional maximizer, by the uniqueness content of the reconstruction theorem,
-so Question~A returns the truth; outside it --- that is, under the original
-unrestricted likelihood of Question~B --- likelihood can and does prefer other
-candidates, as the strict counterexamples of Section~\ref{sec:finite} show. Each
-witness is checked against its own feasibility predicate: the placement
-witnesses use the project's $\Is$, and $W_1,W_2$ are certified under the
-source's own $I_s^{\mathrm{match}}$. We do not read one predicate as the other
-(Proposition~\ref{prop:historical-source}).
-
-\paragraph{The conditioning is truth-dependent.}
-The event $E=F(S,R)$ --- ``the truth is feasible'' --- is defined through the
-truth, not through $R$ alone: seeing the reads, one cannot in general tell
-whether the genome that generated them satisfies the bridging predicate.
-Conditioning on $E$ and restricting to $\cands_F(R)$ is therefore a different
-experiment from the unconditional one, not a refinement available to every
-likelihood algorithm. An algorithm that sees only $R$ need not know whether $E$
-holds. A fiber-perfect rule can be worse than the unconstrained ML rule on
-prior-averaged success (worked Example~\ref{ex:five-notions} below).
-
-\subsection{The objectives}
-
-The conclusion side of the question is a likelihood score. Medvedev and Brudno
-name two sequence-level objectives \cite[\S6.1]{medvedev2009}. The
-\emph{exact multinomial} scores a circular candidate $D$ by its
-candidate-intrinsic length,
+Let $\mathcal C$ be a finite set of candidate genome rotation classes containing
+$S$, with prior $\pi(g)$, and let $r$ be the observed data.
+Write $F(g,r)$ for the historical bridging predicate evaluated on $g$ against
+the observed read strings. The precise conditional experiment has weights
 \[
-  \Lik_{\mathrm{ex}}(D;x)
-  = \frac{n!}{\prod_w x(w)!}
-    \prod_{w\,:\,\spec_L(D)(w)>0}
-    \Bigl(\frac{\spec_L(D)(w)}{|D|}\Bigr)^{x(w)},
+  \Pr(g,r,F) \;=\;
+  \pi(g)\,P_g(r)\,\mathbf 1_{\{F(g,r)\}}.
 \]
-with value $0$ if some observed word has zero multiplicity in $D$. The
-\emph{fixed-$N$ binomial} replaces the candidate length by an external genome
-size $N$, assumed known, and scores a separable product of per-type marginals
-(Definition~\ref{def:likelihoods}); it is defined only where every type count
-lies strictly between $0$ and $N$. Their algorithm's feasible set is a third
-object, the \emph{Section~6.2 read-overlap flow}: vertices are observed DNA
-molecules (a strand together with its reverse complement), edges are overlaps
-of length at least $o_{\min}$, the transitively reduced graph imposes
-vertex-flow lower bound $1$, and a feasible flow may decompose into several
-walks rather than spell one circular genome \cite[\S6.2]{medvedev2009}. On this
-object the phrase ``the maximum-likelihood sequence'' can fail to denote
-anything, because the score-maximizing object may be a non-sequence flow. The
-read-type convention and the genome equivalence are coupled
-(Appendix~\ref{app:referents}, Table~\ref{tab:axes}): molecule read types force
-dihedral equivalence, oriented read types force only cyclic shift.
+These weights encode \emph{both} structural feasibility and the requirement
+that the candidate could generate the reads. It would be incorrect to infer
+from the reconstruction theorem that the bare predicate $F(g,r)$ has a
+singleton fiber: a genome inconsistent with an observed read may satisfy $F$.
 
-\subsection{Why likelihood? Optimality as a decision rule}
+\paragraph{Question A (conditional).}
+Condition on $E=\{F(S,R)\}$ in the generative experiment. For a realized
+$r$ of positive conditional probability, restrict posterior support to
+\[
+ \mathcal C^+(r)
+ =\{g\in\mathcal C:\pi(g)P_g(r)>0,\ F(g,r)\}.
+\]
+If every $g\in\mathcal C^+(r)$ satisfies the source theorem's model
+assumptions, Not-So-Greedy applied to those very reads spells each such $g$.
+Its deterministic output is unique, hence $\mathcal C^+(r)\subseteq[S]$.
+As $S$ has positive conditional weight on its realized event, the support is
+exactly the truth's rotation class. Every MAP rule for this conditional model
+therefore reconstructs that class. This conclusion relies on
+$P_g(r)>0$ and is \emph{not} an unrestricted likelihood result.
+
+\paragraph{Question B (unconditional).}
+Assume $F(S,r)$ and compare $P_D(r)$ with $P_S(r)$ across the original
+unrestricted candidate universe, without multiplying by $\mathbf 1_F$.
+The truth can lose strictly, including under the source's own matched-string
+bridging predicate. This is the substantive finite-sample question addressed
+by Section~\ref{sec:finite}. The event $E$ depends on the unknown truth and
+must not be treated as an observable filter available to ordinary ML.
+
+\subsection{Why study maximum likelihood?}
 \label{sec:bayes-rationale}
 
-The attraction of maximum likelihood is not merely that it supplies a numerical
-score. Under a correct statistical model it is an optimal reconstruction rule
-for a precise and important notion of correctness probability.
+The optimality of ML under a uniform prior motivates the comparison, but
+does not prove that it selects the true genome for each sample.
 
 \begin{theorem}[Bayes-optimal reconstruction; ML under a uniform prior]
 \label{thm:bayes-optimal}
-Let $\Theta$ be a nonempty finite set of possible true genomes (with any
-appropriate rotation or reverse-complement equivalence already incorporated),
-and let $X$ be a finite set of possible read observations. Fix a prior
-$\pi(\theta)$ and a conditional sampling distribution
-$P(x\mid\theta)$. Let $\widehat\theta_{\mathrm{MAP}}(x)$ maximize
-$\pi(\theta)P(x\mid\theta)$. For every deterministic or randomized
-reconstruction algorithm $A$,
-\[
-  \Pr_{\theta\sim\pi,\;x\sim P(\cdot\mid\theta)}
-       [A(x)=\theta]
-  \ \le\
-  \Pr_{\theta\sim\pi,\;x\sim P(\cdot\mid\theta)}
-       [\widehat\theta_{\mathrm{MAP}}(x)=\theta].
-\]
-For a uniform prior, MAP is maximum likelihood, so ML is optimal by this
-same correctness-probability criterion. This holds for every finite sample
-size, without requiring coverage or repeat-bridging conditions.
+Let $\Theta$ be a nonempty finite set of candidate equivalence classes ---
+for us, cyclic-rotation classes of circular genomes --- let $X$ be a finite
+observation space, let $\pi$ be a prior on $\Theta$, and let $P(x\mid\theta)$
+be the correct sampling model. Under \emph{zero-one loss}, in which a rule
+succeeds exactly when it returns the truth's class, a rule choosing
+$\widehat\theta_{\rm MAP}(x)\in\arg\max_\theta\pi(\theta)P(x\mid\theta)$
+maximizes the prior-averaged probability of exact reconstruction among
+all deterministic and randomized rules. If instead $\pi$ is uniform on the
+equivalence classes, MAP and maximum likelihood coincide. When the observation
+is $n$ independent reads from a common model, the conclusion holds at every
+finite sample size $n$.
 \end{theorem}
 
 \begin{proof}
-Put $J(\theta,x)=\pi(\theta)P(x\mid\theta)$. For a deterministic
-decision $d$, its total success probability is
-$\sum_x J(d(x),x)$, which is at most
-$\sum_x \max_\theta J(\theta,x)$ by pointwise maximization. For a
-randomized rule with output weights $q(\theta\mid x)\ge0$ summing to one,
-its success probability is
+Put $J(\theta,x)=\pi(\theta)P(x\mid\theta)$. Any randomized rule has
+conditional decision weights $q(\theta\mid x)$ and success probability
 \[
-  \sum_x\sum_\theta q(\theta\mid x)J(\theta,x)
-  \le \sum_x\max_\theta J(\theta,x).
+ \sum_x\sum_\theta q(\theta\mid x)J(\theta,x)
+ \le \sum_x\max_\theta J(\theta,x),
 \]
-A MAP choice attains the right-hand side at every $x$. A uniform prior
-does not change the maximizers of $P(x\mid\theta)$.
+with equality for MAP. Deterministic rules are the special case in which
+$q(\cdot\mid x)$ is a point mass. A uniform prior does not alter the
+likelihood maximizers.
 \end{proof}
 
-\statusline{\kernelcheck{} for the finite deterministic and randomized
-decision inequalities, the existence of a finite MAP maximizer, and the
-iid finite-observation specialization:
-\texttt{AssemblyP1/FiniteBayesDecision.lean}
-(\texttt{chooseMAP\_optimal},
-\texttt{chooseMAP\_optimal\_randomized},
-\texttt{finite\_iid\_MAP\_optimal}). This is a formalization of a
-standard decision-theoretic result, not a new assembly theorem.}
+\statusline{\kernelcheck{} for deterministic and randomized finite decisions
+(\texttt{AssemblyP1.FiniteBayesDecision.pointwise\_MAP\_optimal},
+\texttt{AssemblyP1.FiniteBayesDecision.pointwise\_MAP\_optimal\_randomized})
+and the iid specialization
+(\texttt{AssemblyP1.FiniteBayesDecision.finite\_iid\_MAP\_optimal}) in
+\texttt{AssemblyP1.FiniteBayesDecision}, and,
+in the standalone model-level evaluator \texttt{AssemblyP1.FiniteMapOptimality},
+for the same optimality derived from the explicit finite maximum
+\texttt{Finset.exists\_max\_image}, together with the concrete $2\times2$
+witness of Remark~\ref{rem:map-vs-infallible}; the decision principle itself is
+classical \cite{berger1985}.}
 
-The theorem compares \emph{average} recovery probabilities over the stated
-prior and the sampling experiment. It makes no claim that ML has the highest
-success probability separately for every fixed true genome, nor that any
-finite observation uniquely identifies its source. Nor does it confer this
-guarantee on the independent-binomial surrogate of
-Definition~\ref{def:likelihoods}: that surrogate need not rank genomes like
-the true joint distribution. Thus Bayes optimality is the \emph{entrance}
-to our investigation, not its central answer. The next sections study the
-substantial, assembly-specific questions of when the true genome is a
-maximizer for a realized read sample, when a counterexample exists, and when
-the read distribution determines the genome uniquely.
+\paragraph{Rotation classes and the choice of prior.}
+The prior is a prior on \emph{equivalence classes}, not on literal spellings.
+A uniform prior over circular words would instead weight each class in
+proportion to its orbit size, which is $n$ for a primitive length-$n$ word but
+smaller for a word with a shorter period; that asymmetry is an artifact of the
+representation, not of the data (Remark~\ref{rem:cyclic}). We therefore take the
+uniform prior over rotation classes, the symmetric choice under which ML is the
+prior-average optimum. That MAP and ML coincide for the exact iid read
+likelihood under the uniform prior on rotation classes is kernel-checked
+(\texttt{AssemblyP1.GenomeOrbitAdapter.uniform\_orbit\_prior\_ML}); the
+circular oriented read model and the uniform start sampling are external
+modeling inputs. This is a modeling choice, not a theorem: with a
+nonuniform prior or a different loss the prior-average optimum is MAP for that
+prior and loss, and the ML rule is no longer claimed optimal. The theorem says
+nothing about a \emph{fixed} truth, where the relevant question is instead
+identifiability (Section~\ref{sec:population}) and its finite-sample
+approximation (Section~\ref{sec:finite}).
 
-The guarantee is precise, and its limits are part of its content.
-\begin{itemize}[leftmargin=*]
-  \item \emph{Prior-averaged, not per-truth.} The average is over the prior and
-        the sampling experiment. For a fixed truth $G$, the success probability
-        can be arbitrarily small when $G$'s read distribution nearly coincides
-        with a decoy's; no rule is uniformly optimal for every fixed truth
-        unless $|\cands|=1$.
-  \item \emph{Uniform prior and zero-one loss are used essentially.} Under a
-        nonuniform prior the Bayes rule is the MAP rule for that prior, not ML;
-        under a different loss it minimizes posterior expected loss instead.
-        Uniformity is sufficient for the maximizer sets to coincide, but it is a
-        hypothesis of the theorem, not a consequence of it.
-  \item \emph{Rotation classes are the canonical tie class.} Rotations are
-        observationally equivalent (Remark~\ref{rem:cyclic}), so the prior is
-        placed on rotation classes and the strong schema of
-        Definition~\ref{def:schemas} is the satisfiable one. Within a tie class
-        of size $m$, exact identification is limited to probability $1/m$.
-  \item \emph{The MB09 binomial is not exact Bayes ML.} The fixed-$N$ binomial
-        of Definition~\ref{def:likelihoods} is a separable pseudo-likelihood
-        with an external $N$; optimizing it is not optimizing the Bayes rule of
-        the sampling model. Section~\ref{sec:open} keeps the objectives
-        distinct.
-\end{itemize}
-
-\begin{remark}[Prior-average success is nondecreasing; per-truth monotonicity is separate]
-\label{rem:mono-avg}
-Prior-average success is nondecreasing in $n$ --- the Bayes-optimal value at
-$n+1$ is at least its value at $n$, for every prior --- because the rule that at
-$n+1$ reads applies the optimal $n$-read rule to the first $n$ reads achieves
-the $n$-read optimum \cite{berger1985,durrett2019}. The kernel-checked finite
-statement is \texttt{chooseMAP\_\allowbreak success\_\allowbreak monotone\_\allowbreak under\_\allowbreak refinement}
-in \texttt{AssemblyP1/\allowbreak FiniteBayesDecision.\allowbreak lean}. No corresponding per-truth
-monotonicity is asserted: the theorem is prior-averaged, and the finite
-counterexamples of Section~\ref{sec:finite} are precisely pointwise failures at
-a fixed truth. Separating the two is the paper's central distinction.
+\begin{remark}[Infallibility on a truth-dependent event is not Bayes optimality]
+\label{rem:map-vs-infallible}
+Let $E=\{(S,a),(D,b)\}$ be a truth-dependent event and let a rule $\delta_E$ be
+\emph{correct by construction} on $E$ ($a\mapsto S$, $b\mapsto D$). With a
+uniform prior and $P_S(a)=\tfrac14$, $P_S(b)=\tfrac34$, $P_D(a)=\tfrac34$,
+$P_D(b)=\tfrac14$, the rule $\delta_E$ has prior-averaged success
+$\tfrac14$, whereas the unconstrained MAP rule --- which returns $D$ on $a$ and
+$S$ on $b$ --- succeeds with probability $\tfrac34$. Being infallible on $E$ is
+a conditional guarantee, not a prior-average one, and an $R$-only rule need not
+know that $E=F(S,R)$. This is precisely how the finite counterexamples coexist
+with Theorem~\ref{thm:bayes-optimal}. The two accuracies $\tfrac14$ and
+$\tfrac34$, and the strict inequality between them, are kernel-checked in
+\texttt{AssemblyP1.FiniteMapOptimality}
+(\texttt{accuracy\_deltaE}, \texttt{accuracy\_deltaMap},
+\texttt{map\_beats\_infallible\_on\_E}).
 \end{remark}
 
-\begin{remark}[A scoped $99\%$ finite-sample bound]
+The theorem concerns the \emph{prior average}, not optimality for every
+fixed truth. It applies to the true joint likelihood, not automatically to
+the independent-binomial surrogate of Definition~\ref{def:likelihoods}.
+A uniform positive prior is sufficient for ML and MAP to coincide, but not
+necessary: on a restricted observation family the candidate-dependent
+likelihood ratios may never cross prior thresholds, so nonuniform priors can
+share the ML argmax on every observable sample.
+Additional independent observations cannot reduce the \emph{optimal
+prior-average} reconstruction probability, because the decision rule can
+ignore them \cite{berger1985}. Per-truth success can nevertheless oscillate,
+as Proposition~\ref{prop:nonmonotone} demonstrates.
+
+\statusline{\kernelcheck{} for the monotonicity of optimal prior-average
+success at every finite $n$ (including $n=0$) in
+\texttt{AssemblyP1.IidMapMonotonicity.iid\_map\_success\_monotone}, in the
+explicit form $V_n\le V_{n+1}$ in
+\texttt{AssemblyP1.BayesValueMonotonicity.bayesValue\_succ\_ge}, and
+instantiated for the AssemblyP1 circular oriented genome rotation-class read
+model in \texttt{AssemblyP1.GenomeOrbitAdapter.orbit\_map\_success\_monotone};
+the per-truth success-drop counterexample is kernel-checked in
+\texttt{AssemblyP1.GenomeOrbitAdapter.PerTruthDrop.perTruth\_true\_drops}.
+The circular read model and the uniform start sampling are external modeling
+inputs; the monotonicity statement itself is the kernel-checked theorem.}
+
+\begin{remark}[Finite-sample consistency and the scope of an error bound]
 \label{rem:sample-complexity}
-For a finite family of $M$ candidates whose read distributions are pairwise
-distinct, the per-truth error probability of the ML rule decays exponentially:
+For a truth $S$ and finite competitor family $\mathcal C_S$ with iid
+read laws $p_D$ distinct from $p_S$, let
+$\rho(p,q)=\sum_w\sqrt{p(w)q(w)}$. The Hellinger union bound gives
 \[
-  P_S(\text{ML errs at } n)\;\le\;\sum_{G'\ne S}\rho(P_S,P_{G'})^n
-  \;\le\;(M-1)\,\rho_{\max}^{\,n},
+ \Pr_S\{\exists D\in\mathcal C_S:L_D(R_1,\ldots,R_n)
+                                  \ge L_S(R_1,\ldots,R_n)\}
+ \le \sum_{D\in\mathcal C_S}\rho(p_S,p_D)^n
+ \le |\mathcal C_S|\,\rho_*^{\,n}.
 \]
-where $\rho(P,Q)=\sum_w\sqrt{P(w)Q(w)}$ is the Hellinger affinity
-\cite{cover2006,tsybakov2009}. Hence $(M-1)\rho_{\max}^{\,n}\le 0.01$ holds once
-$n\ge \ln(100(M-1))/\ln(1/\rho_{\max})$; for example $M=10$, $\rho_{\max}=0.9$
-gives $n\ge 65$, and $M=100$, $\rho_{\max}=0.95$ gives $n\ge 180$. The bound
-needs $\rho_{\max}<1$ --- every decoy distinguishable from the truth --- and is
-vacuous across rotations ($\rho=1$). The inequality is a textbook result; the
-value of $\rho_{\max}$ for any candidate class studied here (all circular words
-of a given length, the oriented primitive P2 class, or the MB09~\S6.2 flow
-domain) is \emph{open}, so no finite rate for the project's own classes is
-claimed. We state the template and record the constants as open rather than
-quietly asserting an unproved rate.
+Here $\rho_*<1$ when the competitor family is nonempty and identifiable.
+It proves an exponential \emph{rate}, not necessarily a practical sample
+size: the class may be enormous and $\rho_*$ close to one.
+
+For arbitrary same-length circular genomes the uniform strict-separation
+assumption fails: at $L=2$, $AAABAB$ and $AABAAB$ have identical read laws
+(Example~\ref{ex:ABAB}), giving $\rho=1$ for a family containing both.
+In contrast, Theorem~\ref{thm:p2-finite-class} proves that the entire
+primitive-P2 candidate class is finite for fixed alphabet and read length,
+and Theorem~\ref{thm:population} proves separation modulo rotation.
+Consequently Corollary~\ref{cor:p2-finite-recovery-all} applies the bound
+to that complete class, not merely to an arbitrarily truncated shortlist.
+Numerical values of its worst-case affinity are not computed here.
+See Theorem~\ref{thm:finite-recovery} for the kernel-checked proof.
 \end{remark}
 
-\subsection{The finite answer}
+\begin{corollary}[Explicit sufficient sample size]
+\label{cor:explicit-sample-size}
+In the setting of Remark~\ref{rem:sample-complexity}, suppose
+$\mathcal C_S$ is finite and nonempty with uniform affinity
+$\rho_*=\max_{D\in\mathcal C_S}\rho(p_S,p_D)<1$. Then for every
+$\delta\in(0,1]$,
+\[
+  n\;\ge\;
+  \left\lceil\frac{\ln(|\mathcal C_S|/\delta)}{\ln(1/\rho_*)}\right\rceil
+  \quad\Longrightarrow\quad
+  \Pr_S\!\left\{\exists D\in\mathcal C_S:
+      L_D(R_1,\dots,R_n)\ge L_S(R_1,\dots,R_n)\right\}
+  \;\le\;\delta .
+\]
+For ML selection over $\{S\}\cup\mathcal C_S$, the truth's rotation class is
+then the strict maximizer with probability at least $1-\delta$.
+\end{corollary}
+\begin{proof}
+The choice of $n$ gives
+$|\mathcal C_S|\,\rho_*^{\,n}
+=|\mathcal C_S|\,e^{-n\ln(1/\rho_*)}\le\delta$, which inserted into the union
+bound of Remark~\ref{rem:sample-complexity} proves the display.
+\end{proof}
+The threshold is a \emph{sufficient}, conservative sample size: it inverts a
+union bound, is not necessary or minimax-optimal, and inherits the
+finite-family and uniform-separation hypotheses. Replacing $-\ln\rho_*$ by the
+optimal Chernoff exponent gives a bound at least as strong
+\cite{cover2006,tsybakov2009}; the Hellinger constant is the one kernel-checked
+in \texttt{AssemblyP1.FiniteReadRecovery}, whose concrete instance
+\texttt{il\_confidence\_99} is kernel-checked there.
 
-At finite sample, several natural same-length versions of the implication
-are false, including under the source's own bridging predicate. A more
-restricted oriented slice is positive under explicit extra premises.
-These are not contradictory statements: the candidate class, read-type
-convention, and bridging predicate differ.
+\begin{corollary}[Conditional error while bridging holds]
+\label{cor:conditional-bridging-error}
+Let $B_n$ be the event that the true genome satisfies a specified bridging
+predicate on $n$ iid reads, with $\Pr_S(B_n)>0$. For any finite candidate
+family $\mathcal C_S$ as in Remark~\ref{rem:sample-complexity},
+\[
+ \Pr_S(\text{a wrong candidate ties or beats }S\mid B_n)
+ \le
+ \frac{\sum_{D\in\mathcal C_S}\rho(p_S,p_D)^n}
+      {\Pr_S(B_n)}.
+\]
+\end{corollary}
+\begin{proof}
+For any event $E$, $\Pr(E\mid B_n)\le\Pr(E)/\Pr(B_n)$.
+Apply this to the wrong-candidate event and use the preceding union bound.
+\end{proof}
+The conditioning here is on the \emph{truth's} bridging event. It is not
+a switch to Question~A's restricted posterior, and it becomes informative
+only after bounding the denominator and the pairwise affinities.
 
-\paragraph{These failures are not a paradox.}
-Each witness below is a \emph{pointwise finite-sample failure}: at a fixed truth
-and a fixed unrepresentative sample, the ML rule errs strictly. Such failures
-are fully consistent with the prior-averaged Bayes guarantee of
-Theorem~\ref{thm:bayes-optimal} --- which averages over the prior, not over a
-single truth --- and with limiting consistency for an identifiable finite family
-(Remark~\ref{rem:sample-complexity}). They are also consistent with Question~A
-of Section~\ref{sec:two-questions}: that question restricts the candidate set to
-the feasible fiber and asks for the conditional maximizer there, a different
-experiment from the unrestricted maximization the witnesses refute. The finite
-landscape is therefore not a contradiction but a map of where each of the five
-notions of Section~\ref{sec:five-notions} applies, and we preserve each
-witness's exact scope --- observation model, candidate membership, historical
-read-string versus placement-based coverage, candidate lengths, prior family,
-and likelihood formula --- rather than reading one row as another.
+\subsection{A worked example, and five claims that must not be conflated}
+\label{sec:five-claims}
 
-\begin{counterexample}[Strict historical counterexamples $W_1$ and $W_2$]
-\label{ex:W1W2}
-Let $L=3$ and let the alphabet carry the DNA involution. Under the source
-predicate $I_s^{\mathrm{match}}$ of Definition~\ref{def:historical-match}:
-\begin{enumerate}[label=(\roman*),leftmargin=*]
-  \item $S=AAATAT$ against $D=AAAAAT$ ($G=6$): $I_s^{\mathrm{match}}$ holds at
-        full strength --- historical coverage, every literal three-occurrence
-        triple repeat all-bridged, every interleaved pair bridged --- and $S$
-        and $D$ are genuine Section~6.2 bidirected molecule flows of equal
-        length at the full overlap $o_{\min}=L-1=2$; the competitor strictly
-        wins,
-        \[
-          \Lik_{\mathrm{ex}}(D)/\Lik_{\mathrm{ex}}(S)=3,\qquad
-          \Lik_{\mathrm{bin}}(D)/\Lik_{\mathrm{bin}}(S)=5,
-        \]
-        at external $N=6$ with the zero-count factors retained;
-  \item $S=ATATACAC$ against $D=ATACACAC$ ($G=8$): the same scope, additionally
-        per-occurrence feasible, with exact ratio $3/2$ and binomial ratio
-        $9/5$ at $N=8$.
-\end{enumerate}
-Both inequalities are strict, so both the maximizer and uniqueness schemas fail
-under every equivalence and tie convention.
-\end{counterexample}
+The statements above are logically independent, and a small example makes the
+independence vivid before the assembly-specific instances.
 
-Coordinate-level spectra, the flow certificates, and the kernel-checked Lean
-endpoints are in Section~\ref{sec:finite:historical}
-(Theorems~\ref{thm:cex-historical-W1}--\ref{thm:cex-historical-W2}). The failure is not an artifact of
-the flow restriction: $AAABB\to AAAAB$ beats the exact multinomial by $2$ and
-$AAACC\to AAAAC$ beats the fixed-$N$ binomial by $1125/512$, both under full
-$\Is$ at the realized placements
-(Theorems~\ref{thm:cex-exact}--\ref{thm:cex-binomial}), and each same-length
-witness transfers to every superclass of candidates
-(Lemma~\ref{lem:negative-transfer}).
-
-The positive statement is conditional, and its premises are strict and
-project-level rather than the source's.
-
-\begin{theorem}[Conditional same-length rigidity and uniqueness]
-\label{thm:open-rigidity}
-Let $S$ be a circular truth of length $G$, let the realized read placement set
-satisfy the project's sampled-placement $\Is$, and suppose the truth is a genuine
-Section~6.2 candidate of the observed reads. Among same-length genuine
-Section~6.2 candidates with \emph{oriented} read types, the truth is the unique
-maximizer of both the exact multinomial and the fixed-$N$ binomial at $N=G$, up
-to cyclic rotation.
-\end{theorem}
-
-Full statement, proof, and kernel-checked status: Section~\ref{sec:finite}
-(Theorems~\ref{thm:maximizer} and~\ref{thm:rigidity},
-Corollary~\ref{cor:same-length-rotation}). The premises are exactly: oriented (not
-molecule) read types, the placement-based $\Is$ (not $I_s^{\mathrm{match}}$),
-equal candidate length, and truth admissibility. Dropping truth candidacy makes
-the statement false at equal length ($AABB\to ABAB$); dropping equal length
-restores strict counterexamples in infinite families
-(Theorem~\ref{thm:cex-variable-length}). No strict same-length counterexample
-exists for any $G$, $L$, or alphabet on this row.
-
-\subsection{The population answer}
-
-Replacing empirical read frequencies by the exact population read distribution
-removes the sampling mechanism. A Gibbs/KL identity then makes the truth a
-population maximizer over \emph{every} candidate class with no repeat hypothesis,
-and uniqueness reduces to spectrum identifiability.
-
-\begin{theorem}[Population uniqueness]
-\label{thm:open-population}
-For $L\ge2$, the true genome $S$ is a population maximum-likelihood genome over
-every candidate class containing it (Lemma~\ref{lem:gibbs}); among
-primitive P2-admissible oriented circular candidates it is the unique such
-maximizer up to cyclic rotation (Theorem~\ref{thm:population}).
-\end{theorem}
-
-\sloppy
-Both directions are kernel-checked with no external premise:
-\popml. This repaired population model does not settle the finite 2016
-question; it isolates the identifiability content that the finite
-counterexamples show is not automatic.
-
-\subsection{Five notions, a worked example, and the theorem/assumption matrix}
-\label{sec:five-notions}
-
-Five properties of the ML rule circulate in this literature. They are
-independent, and conflating any two produces a false headline.
-
-\begin{enumerate}[label=(\alph*),leftmargin=*]
-  \item \textbf{Conditional guaranteed reconstruction} (Question~A): given
-        $F(S,R)$, the feasible fiber is a singleton up to rotation and any
-        valid conditional MAP returns the truth. A corollary of the
-        reconstruction theorem; silent about the unrestricted ranking.
-  \item \textbf{Prior-average Bayes optimality}: with a uniform prior over
-        equivalence classes and zero-one loss on a finite universe, ML
-        maximizes prior-averaged success at every $n$
-        (Theorem~\ref{thm:bayes-optimal}).
-  \item \textbf{Pointwise finite-sample failure}: at a fixed truth and an
-        unrepresentative sample, ML can err strictly
-        (Section~\ref{sec:finite}).
-  \item \textbf{Identifiability}: distinct candidates have distinct read
-        distributions. It fails in general (Example~\ref{ex:ABAB}) and is
-        proved for the oriented primitive P2 class
-        (Section~\ref{sec:population}).
-  \item \textbf{Limiting consistency}: for a finite identifiable family,
-        per-truth success tends to $1$ as $n\to\infty$. This is an external
-        theorem about finite families (Remark~\ref{rem:sample-complexity}),
-        distinct from the population theorem, which involves no sampling and
-        allows arbitrarily large candidate classes
-        (Remark~\ref{rem:consistency-distinction}).
-\end{enumerate}
-
-\begin{example}[One $2\times2$ universe, all five notions]
-\label{ex:five-notions}
-Take two genomes $g_1,g_2$, two observations $a,b$, equal prior $1/2$, and
-$P(g_1,a)=1/4$, $P(g_1,b)=3/4$, $P(g_2,a)=3/4$, $P(g_2,b)=1/4$; reads are
-i.i.d. All arithmetic below is exact and instantiates the kernel-checked finite
-MAP-optimality theorem (\texttt{chooseMAP\_\allowbreak optimal} in
-\texttt{AssemblyP1/\allowbreak FiniteBayesDecision.\allowbreak lean}) at this family.
-\begin{itemize}[leftmargin=*]
-  \item the two genomes are \emph{identifiable}: their read distributions
-        differ, so limiting consistency applies and the ML rule selects the
-        truth with probability tending to $1$;
-  \item the event $E=\{(g_1,a),(g_2,b)\}$ --- the truth is ``feasible'' in this
-        toy sense --- has prior probability $1/4$; the rule that is infallible
-        on $E$ is a \emph{conditional guaranteed reconstruction}, perfect on
-        the fiber;
-  \item yet that rule has prior-averaged accuracy exactly $1/4$, while the
-        unconstrained ML rule has accuracy $3/4$: \emph{prior-average Bayes
-        optimality} prefers ML, not the fiber-perfect rule;
-  \item off $E$ the conditional rule errs --- a \emph{pointwise failure} with
-        no contradiction anywhere.
-\end{itemize}
-The assembly-level counterpart is Example~\ref{ex:frequencies} and
-Theorem~\ref{thm:cex-exact}: there the fiber-perfect intuition is the
-conditional guarantee of Theorem~\ref{thm:rigidity}, the pointwise failure is
-the strict ratio $2$, and prior-average optimality is untouched.
+\begin{example}[Prior-average optimality without pointwise success]
+\label{ex:worked-bayes}
+Let $\Theta=\{S,D\}$ with uniform prior $\pi(S)=\pi(D)=\tfrac12$, and let a
+single observed read type take values in $\{a,b\}$ with $P_S(a)=\tfrac34$ and
+$P_D(a)=\tfrac12$. Then $\pi(S)P_S(a)=\tfrac38$ and
+$\pi(D)P_D(a)=\tfrac14$, so MAP --- and, by uniformity of the prior, ML ---
+returns $S$ on $a$ and $D$ on $b$. Its prior-averaged success is
+$\tfrac12\cdot\tfrac34+\tfrac12\cdot\tfrac12=\tfrac58$, which is optimal
+(Theorem~\ref{thm:bayes-optimal}). Yet when the truth is $S$ and the
+observation is $b$ --- an event of probability $\tfrac14$ --- the rule returns
+$D$ and is wrong. Prior-average optimality therefore coexists with a
+positive-probability pointwise failure. This is an elementary direct
+computation, not a new theorem.
 \end{example}
+
+The assembly analogues of the two directions are: Example~\ref{ex:ABAB}
+realizes the stronger failure in which two candidates have \emph{identical}
+read laws, so no rule can beat chance (a failure of identifiability), whereas
+the historical witnesses $W_1,W_2$ realize strict pointwise failure while the
+population laws remain identifiable. The five notions are collected below with
+their exact quantifiers, hypotheses, and evidence.
 
 \begin{table}[t]
 \centering
 \small
-\begin{tabular}{@{}p{0.34\textwidth}p{0.31\textwidth}p{0.08\textwidth}p{0.19\textwidth}@{}}
+\setlength{\tabcolsep}{4pt}
+\caption{Five notions that the phrase ``the maximum-likelihood sequence is the
+true sequence'' can denote.}
+\label{tab:claims}
+\begin{tabular}{@{}>{\raggedright\arraybackslash}p{0.14\textwidth}>{\raggedright\arraybackslash}p{0.19\textwidth}>{\raggedright\arraybackslash}p{0.17\textwidth}>{\raggedright\arraybackslash}p{0.23\textwidth}>{\raggedright\arraybackslash}p{0.14\textwidth}@{}}
 \toprule
-Headline claim & Key assumptions & Class & Evidence \\
+Notion & Scope / quantifier & Hypothesis & Conclusion & Evidence\\
 \midrule
-MAP minimizes prior-averaged risk &
-finite candidates and observations, arbitrary prior, zero-one loss &
-(i) & \texttt{FiniteBayesDecision.\allowbreak chooseMAP\_\allowbreak optimal} \\
-MAP $\ne$ ML under a nonuniform prior &
-finite family, stated prior &
-(iii) & \cite{berger1985} \\
-Fiber-perfect rule can lose to ML &
-$2\times2$ family of Example~\ref{ex:five-notions} &
-(ii) & Example~\ref{ex:five-notions} \\
-ML maximizes prior-averaged success at every $n$ &
-finite universe, correct common model, uniform prior over classes, zero-one loss &
-(i)/(iii) & Thm.~\ref{thm:bayes-optimal}, \cite{berger1985} \\
-Finite iid MAP specialization for observed reads &
-finite candidate universe, iid reads, uniform prior &
-(i) & \texttt{FiniteBayesDecision.\allowbreak finite\_\allowbreak iid\_\allowbreak MAP\_\allowbreak optimal} \\
-$99\%$ finite bound via Hellinger affinity &
-finite family, pairwise-distinct distributions, computed $\rho_{\max}$ &
-(iii)/(v) & Rem.~\ref{rem:sample-complexity} \\
-Not-So-Greedy exact reconstruction &
-source predicate $I_s^{\mathrm{match}}$, full source assumptions &
-(iv) & Thm.~\ref{thm:notso-greedy}, \cite{shomorony2016} \\
-Conditional fiber is a singleton &
-$F(S,R)$ and uniqueness content of Thm.~\ref{thm:notso-greedy} &
-(ii)/(iv) & \S\ref{sec:two-questions} \\
-Two-question distinction &
-$F$ candidate-intrinsic; $E=F(S,R)$ truth-dependent &
-(ii) & \S\ref{sec:two-questions} \\
-Fixed-$N$ binomial is a separable surrogate, not exact Bayes ML &
-stated sampling model &
-(ii) & Def.~\ref{def:likelihoods}, \S\ref{sec:open} \\
-Same-length oriented rigidity and rotation uniqueness &
-project $I_s$, oriented reads, equal length, truth admissibility &
-(i) & Thm.~\ref{thm:rigidity}, Cor.~\ref{cor:same-length-rotation} \\
-Strict finite counterexamples ($W_1$, $W_2$, \dots) &
-per-theorem scopes of \S\ref{sec:finite} &
-(i) & Thms.~\ref{thm:cex-exact}--\ref{thm:cex-historical-W2} \\
-Population truth maximality (KL/Gibbs), any included truth &
-any candidate class containing the truth &
-(i) & Lem.~\ref{lem:gibbs} \\
-Population uniqueness, oriented primitive P2 &
-primitivity, P2, oriented reads &
-(i) & Thm.~\ref{thm:population}, \texttt{Issue94Complete.\allowbreak population\_\allowbreak unique\_\allowbreak ML} \\
-$\rho_{\max}$ / $99\%$ constants for project classes &
-finite distinguishable family &
-(v) & Rem.~\ref{rem:sample-complexity} \\
+Conditional reconstruction (Question~A)
+  & each realized $R$ with $F(S,R)$ and $P_S(R)>0$
+  & candidate set restricted to the feasible fiber; source model assumptions
+  & positive-weight feasible fiber is one rotation class; conditional MAP returns truth
+  & 2016 reconstruction premise \cite{shomorony2016}; kernel-checked\\
+\addlinespace
+Prior-average Bayes optimality
+  & for every finite $n$, averaged over truth $\sim\pi$ and data $\sim P_\theta$
+  & finite classes, correct model, specified prior, zero-one loss
+  & MAP/ML maximizes prior-average success
+  & kernel-checked (\texttt{FiniteBayesDecision},
+    \texttt{FiniteMapOptimality}); classical \cite{berger1985}\\
+\addlinespace
+Pointwise finite-sample failure
+  & exists a truth $S$, realized $R$, competitor $D$
+  & historical bridging predicate; source read types
+  & $\Lik(D;R)>\Lik(S;R)$
+  & kernel-checked $W_1,W_2$ (Thm.~\ref{thm:cex-historical-W1}--\ref{thm:cex-historical-W2})\\
+\addlinespace
+Identifiability
+  & law level; $n\to\infty$
+  & primitive-P2, rigidity, or nonbranching hypotheses
+  & read laws distinct modulo rotation; spectrum unique
+  & kernel-checked (Thm.~\ref{thm:population}, Thm.~\ref{thm:rigidity},
+    Thm.~\ref{thm:identifiable-iff-nonbranching}, Thm.~\ref{thm:fibre-count})\\
+\addlinespace
+Limiting consistency
+  & as $n\to\infty$ over $n$ iid reads
+  & finite, pairwise-distinguishable candidate family
+  & exact-ML error $\le\sum_{D}\rho(p_S,p_D)^n\to0$
+  & kernel-checked; explicit size Cor.~\ref{cor:explicit-sample-size}\\
 \bottomrule
 \end{tabular}
-\caption{The theorem/assumption matrix. Proof-to-claim classes: (i)
-kernel-checked exact Lean theorem; (ii) proof in this paper, not yet in Lean;
-(iii) textbook external theorem with citation; (iv) published 2016
-reconstruction result used as an external premise; (v) open. Each headline
-claim carries one primary class (or an explicit pair), and conditional residues
-are named rather than hidden.}
-\label{tab:claims}
 \end{table}
 
-\paragraph{Companion kernel-statistics work.}
-The finite Bayes/MAP core used above is kernel-checked on \texttt{main} in
-\texttt{AssemblyP1/\allowbreak FiniteBayesDecision.\allowbreak lean}
-(\texttt{chooseMAP\_\allowbreak optimal},
-\texttt{chooseMAP\_\allowbreak optimal\_\allowbreak randomized},
-\texttt{finite\_\allowbreak iid\_\allowbreak MAP\_\allowbreak optimal},
-\texttt{chooseMAP\_\allowbreak success\_\allowbreak monotone\_\allowbreak under\_\allowbreak refinement}),
-and the population maximality and uniqueness layer in
-\texttt{AssemblyP1/\allowbreak PopulationMaximizerUnrestricted.\allowbreak lean} and
-\texttt{AssemblyP1/\allowbreak PopulationUniqueness.\allowbreak lean}. The
-conditional fiber-singleton statement of Section~\ref{sec:two-questions} and the
-reconciliation of the finite counterexamples with Bayes optimality are tracked
-by issues \#266 and \#267; this paper cites their endpoints only where they are
-already on \texttt{main} and does not assume any unproved companion result.
+\begin{sloppypar}
+The kernel-checked endpoints referenced in the last column are
+\texttt{ConditionalVsOrdinaryMLSeparation} (row~1),
+\texttt{FiniteBayesDecision} and \texttt{FiniteMapOptimality} (row~2), the
+$W_1,W_2$ certificates (row~3), the
+population and rigidity theorems (row~4), and \texttt{FiniteReadRecovery}
+(row~5); the complete claim-to-proof index is \path{docs/verification.md}.
+Section~\ref{sec:structural-landmarks} adds the variable-length primitive
+classification \texttt{identifiable\_iff\_nonbranching} and the same-length
+fibre-count criterion of Theorem~\ref{thm:fibre-count}.
+\end{sloppypar}
 
-\subsection{What remains open}
+The rows are independent at the level of their quantifiers: prior-average
+optimality (row~2) does not exclude pointwise failure (row~3); identifiability
+(row~4) is a law-level statement that neither forbids finite-sample reversals
+nor follows from a reconstruction guarantee (row~1); and limiting consistency
+(row~5) is an asymptotic statement over an identifiable family, distinct from
+the population theorem's distribution-level maximizer claim. Row~5 does use
+identifiability (row~4) as a hypothesis, so it is not independent of that row;
+what it adds is the finite- and infinite-sample link that neither row~4 nor
+row~2 supplies.
 
-Three items stay open and are settled by no theorem above: which of the three
-objectives --- or which broader maximum-likelihood principle --- the sentence
-denotes (Appendix~\ref{app:referents}); the general-$o_{\min}$ Section~6.2 flow
-domain below full overlap, where the score-maximizing object can be a
-non-sequence flow (Remark~\ref{rem:flow-domain}); and the population model
-for molecule read types. Two further residues are recorded in the matrix
-(Table~\ref{tab:claims}): the $99\%$ sample-size constants $\rho_{\max}$ for the
-project's own candidate classes, and per-truth (as opposed to prior-averaged)
-monotonicity in $n$.
+\subsection{Finite and population conclusions}
+
+\begin{counterexample}[Two historical same-length likelihood reversals]
+\label{ex:W1W2}
+Under the historical $I_s^{\mathrm{match}}$ predicate and the source's
+reverse-complement molecule read types, $S=AAATAT$ loses to $D=AAAAAT$
+at $L=3$ under the exact and fixed-$N$ binomial objectives (ratios $3$
+and $5$), while $S=ATATACAC$ loses to $D=ATACACAC$
+(ratios $3/2$ and $9/5$). All are same-length Section~6.2 flows, and
+the latter witness also satisfies per-occurrence feasibility. These are
+strict finite-sample statements, not failures of population identifiability.
+The certificates and exact observations are in
+Theorems~\ref{thm:cex-historical-W1}--\ref{thm:cex-historical-W2}.
+\end{counterexample}
+
+\begin{theorem}[Conditional same-length structural rigidity]
+\label{thm:open-rigidity}
+Under the project's placement-based $\Is$, oriented read types, equal
+candidate length, and genuine Section~6.2 candidacy of the truth and
+competitor, every candidate has the truth's complete spectrum and is
+a cyclic rotation of it. Every spectrum-based score therefore ties.
+\end{theorem}
+This is a rigidity and identifiability theorem
+(Theorem~\ref{thm:rigidity}, Corollary~\ref{cor:same-length-rotation}),
+not a likelihood-specific inequality. Truth candidacy is necessary:
+$AABB\to ABAB$ is a same-length strict counterexample without it.
+Equal length is independently necessary: $AAATT\to AAAATT$ is a
+variable-length counterexample even with full observed support
+(Theorem~\ref{thm:cex-variable-length}).
+
+\begin{theorem}[Population uniqueness]
+\label{thm:open-population}
+The true genome maximizes population expected log-likelihood over
+every class containing it. Within the primitive-P2 oriented class
+the maximizer is unique up to rotation
+(Lemma~\ref{lem:gibbs}, Theorem~\ref{thm:population}).
+\end{theorem}
+
+The population theorem does not assert that every finite sample favours
+the truth. Conversely, the finite counterexamples do not contradict
+Bayes-optimality or asymptotic recovery on the identifiable primitive-P2
+class. The modeling and source-referent distinctions are documented in
+Appendices~\ref{app:modeling} and~\ref{app:referents}.
+
+\subsection{Structural identifiability landmarks}
+\label{sec:structural-landmarks}
+
+Two structural results sharpen the identifiability landscape beyond the
+primitive-P2 population theorem. The first is kernel-checked in full; the
+second has a kernel-checked divisor-sum core and a paper-level count whose
+BEST premise is external. Both are conditional on the oriented
+complete-spectrum model and do not by themselves settle which candidate
+universe the 2016 sources intended.
+
+\begin{theorem}[Variable-length primitive identifiability iff nonbranching]
+\label{thm:identifiable-iff-nonbranching}
+Let $S$ be a primitive circular genome of length $G$ and read length $L>1$.
+Then $S$ is identifiable among primitive candidates of arbitrary length from
+its normalized complete $L$-spectrum if and only if its spectrum-support
+graph has no vertex with two distinct outgoing edge types.
+\end{theorem}
+\statusline{\kernelcheck{} in
+\texttt{AssemblyP1.ScalarPrimitiveSpellings.identifiable\_iff\_nonbranching};
+no external complete-spectrum uniqueness premise.}
+
+\begin{theorem}[Same-length complete-spectrum fibre count and singleton criterion]
+\label{thm:fibre-count}
+Let $S$ be a circular genome of length $G$ and read length $L\ge2$, and let
+$c=\spec_L(S)$ be its complete $L$-spectrum viewed as a balanced capacity.
+Write $g=\gcd\{c(e):0<c(e)\}$. The number of same-length rotation classes
+with spectrum $c$ is
+\[
+  N(c)=\sum_{h\mid g}P_h,\qquad
+  P_h=\sum_{d\mid h}\frac{\mu(d)}{d}\,B_{h/d},
+\]
+where $B_h=\tau_r(c_h)\prod_u(d_u(h)-1)!/\prod_e c_h(e)!$ is the weighted
+BEST quantity at level $h$ ($\tau_r$ the weighted in-arborescence count and
+$d_u$ the out-degree for the gcd-one capacity $c_0=c/g$), and $\mu$ is the
+M\"obius function. Equivalently $N(c)=\sum_{k\mid g}\varphi(g/k)/(g/k)\cdot B_k$.
+The fibre is a singleton modulo rotation iff the support is nonbranching,
+or it branches with $g=1$ and $B_1=1$; if it branches and $g>1$ then
+$N(c)\ge2$. The precise statement, conventions, and proof are in
+\path{docs/exact-fibre-count-theorem-219.md}.
+\end{theorem}
+\statusline{Lean status: partial. \kernelcheck{} for the
+divisor-sum core in \texttt{AssemblyP1.FibreCountArithmetic}
+(\texttt{fibre\_mobius\_inversion}, \texttt{fibre\_totient}); the full count
+is a \mathfact{} whose weighted BEST double-counting rests on the external
+BEST theorem (van Aardenne-Ehrenfest--de~Bruijn 1951; Tutte 1975), with the
+branching construction kernel-checked in
+\texttt{AssemblyP1.ScalarPrimitiveSpellings}.}
+
+\begin{remark}[Robust same-length and molecule full-overlap iff criteria]
+\label{rem:robust-iff-criteria}
+The paper states the beatability direction of the robust same-length
+criterion (Proposition~\ref{prop:beatability}) and the negative molecule
+witnesses (Theorem~\ref{thm:cex-molecule}). The complete iff statements are
+kernel-checked: \texttt{AssemblyP1.RobustSameLengthIff.robust\_iff\_unique\_spectrum}
+characterizes exact multinomial robustness over all positive samples by
+uniqueness of the truth spectrum among positive balanced circulations, and
+\texttt{AssemblyP1.FullOverlapMoleculeML.robust\_maximality\_iff\_unique}
+characterizes robust maximality in the full-overlap molecule domain by
+uniqueness of the normalized count vector. Both are conditional on their
+respective model domains and do not transfer across the oriented/molecule
+boundary.
+\end{remark}
+\statusline{\kernelcheck{} for both iff endpoints; the paper text states
+only the directional parts.}

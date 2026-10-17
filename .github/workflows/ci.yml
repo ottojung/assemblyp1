@@ -28,6 +28,22 @@ jobs:
         run: python3 scripts/verify_247c_historical_witnesses.py
       - name: Verify #261 binomial finite-n and transitive-reduction regressions
         run: python3 scripts/verify_261_binomial_extreme_samples.py
+      - name: Verify #261 spelled-circuit to §6.2 feasible-flow adapter
+        run: python3 scripts/verify_261_spelled_flow_adapter.py
+      - name: Verify #261 spelled sub-class maximality transfer and length universe
+        run: python3 scripts/verify_261_spelled_flow_maximality.py
+      - name: Verify #261 spelled-throughput image identity refutation
+        run: python3 scripts/verify_261_spelled_flow_image_refutation.py
+      - name: Verify #259 covered-sample binomial weight criterion
+        run: python3 scripts/verify_covered_binomial_weights_259.py
+      - name: Verify #259 circular-genome exact-iid vs §6.1 ranking inversion
+        run: python3 scripts/verify_real_genome_inversion_259.py
+      - name: Verify #281 primitive-P2 (L-1)-window multiplicity cap
+        run: python3 scripts/verify_281_window_cap.py 3 11 4
+      - name: Verify #265 scoped finite-family sample-complexity bound
+        run: python3 scripts/verify_sample_complexity_265.py
+      - name: Verify #265 strong-consistency (strong law / KL limit) derivation
+        run: python3 scripts/verify_strong_consistency_265.py
 
   build:
     runs-on: ubuntu-latest

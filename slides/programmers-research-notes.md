@@ -1,5 +1,42 @@
 # The conceptual story behind the programmers' talk
 
+
+## Shared presentation layout rules
+
+Slidev's default theme fades the first \`h1 + p\` paragraph to 50%
+opacity. The explicit project-wide override in \`slides/styles/index.css\`
+restores full opacity for that paragraph while retaining all other
+theme styles. Do not remove this override unless the theme is changed
+and the introductory paragraph color is checked again.
+
+The six-read counterexample must be vertically compact: group the
+four read types that have identical multiplicities into a single
+table row, labeling the values as applying to **each** read type.
+Do not expand the table back to five data rows without first checking
+that the slide fits inside Slidev's 16:9 content area.
+
+## Approved opening: show the goal, model, and success before obstacles
+
+The first content slide must explain what genome assembly **aims to
+produce**, with concrete unordered read input and the recovered whole
+circular sequence. Do not replace the goal with a catalogue of
+difficulties or begin with repeated substrings.
+
+The second content slide establishes the **idealized mathematical
+problem**, including its assumptions and the fact that the input
+does not provide the true genome length. The third content slide
+works through an **actual successful overlap reconstruction** from
+the example reads. Only after the audience has seen the aim, model,
+and positive example should the deck discuss ambiguity, repeats,
+bridging, and guarantees. This ordering is a repeated explicit
+editorial requirement and must survive future content revisions.
+
+Do not focus attention on read-orientation qualifiers in these
+opening slides; preserve those exact conventions in speaker notes.
+Keep the rest of the research story and its proven mathematical
+assumptions unchanged.
+
+
 ## What this talk is about
 
 The project is not primarily a tutorial on genome assembly, a catalogue of
@@ -26,6 +63,30 @@ of those observed reads. It is wrong to replace that antecedent with a generic
 claim that the reads contain information; it is wrong to portray the
 consequent simply as a vague "principled score."
 
+### Editorial guidance: optimal ML needs no second counting apparatus
+
+The two-read calculation already shows that if the reads are
+[AAA,AAA], P(B|reads)=80% and P(A|reads)=20%. Use this directly:
+guessing B succeeds in 80% of experiments *with those reads*;
+guessing A in just 20%.
+
+Then prove optimality by comparing **any** rival rule pointwise
+over all observations. For each pair of observed reads a rival
+either agrees with ML (same correctness) or disagrees (no higher
+conditional correctness). Because the priors are equal, likelihood
+ranking equals posterior ranking. Averaging these pointwise
+inequalities gives the overall Bayes optimality theorem.
+There is no compensating gain on other observations: ML was already
+the best there too. Randomization cannot exceed the pointwise maximum.
+
+Do NOT reintroduce the 50-history counting table, n_A(r)/n_B(r)
+notation or a second sample-enumeration argument: those
+were mathematically valid but cognitively unnecessary here.
+The exact sum-of-conditional-success proof and randomized
+extension belong in speaker notes and FiniteBayesDecision.lean.
+Show the audience clearly that high average success does not
+mean guaranteed success for every true genome.
+
 ### Why likelihood can be called optimal, precisely
 
 For finite hypotheses H, finite observations X, a prior π and read model
@@ -46,9 +107,11 @@ R=[AAA,AAA,AAT,ATT,TTA,TAA] at L=3:
 - with equal priors ONLY over these two candidates,
   posterior(D|R)=15625/(15625+11664)≈0.5726.
 Thus a statistically optimal rule can select a genome other than the
-constructed source for a particular finite sample. That example illustrates
-a variable-length mechanism; it is not by itself a certificate about every
-historical candidate universe.
+constructed source for a particular finite sample. The oriented variable-length
+example also has kernel-checked truth information-feasibility and genuine
+oriented Section 6.2 candidate certificates, in
+AssemblyP1/OrientedVariableLengthSe62.lean. It does not require
+reverse-complement-collapsed read classes.
 
 ## How the inquiry actually developed
 
@@ -136,7 +199,7 @@ This is not a story comparing AI tools. It is the story of a research method des
 
 ## Editorial guards
 
-- Preserve the original opening three slides; explain overlaps and bridging
+- Open with the read puzzle and model; explain overlaps and bridging
   before moving to probability.
 - Explain **posterior genome probability** via Bayes, not just read likelihood.
 - State exact MAP optimality and uniform-prior ML relation *before*
@@ -150,3 +213,143 @@ This is not a story comparing AI tools. It is the story of a research method des
   it as a separate model only when motivated.
 - For a research talk, explain who chooses questions, who explores,
   what persists, and what the kernel checks.
+
+
+## Editorial correction: the 2016 negative result and conditional Bayes
+
+The 2016 question is an ordinary non-Bayesian implication: if the observed
+reads satisfy information feasibility for the true genome, must that genome
+maximize the UNCONDITIONED likelihood of the observed reads? In the
+whitepaper's two-question terminology (`paper/sections/03-open-question.tex`,
+`sec:two-questions`) this is **Question B (unconditional)**, distinct from
+**Question A (conditional)**, which restricts the candidate set to the
+truth-dependent feasible fiber and is a corollary of the reconstruction
+guarantee. The substantive answer to Question B is **NO** for the concrete
+likelihood models studied.
+The main talk uses the AAATT versus AAAATT example, whose competitor is
+one base longer. A separate strict W5 molecule counterexample
+AAATAT versus AAAAAT provides another source-supported witness.
+Do not turn the main presentation into a catalogue of model variants or
+suggest that the concrete finite question remains open.
+
+The counterexamples do NOT show maximum likelihood is a statistically
+inferior algorithm. Ordinary ML optimizes a different, broader candidate
+task than the truth-conditional Not-So-Greedy success guarantee. The main
+talk's competitor differs in length; the separate W5 molecule witness
+uses a different read model. Keep those distinctions in technical notes,
+not as repetitive qualifications on the audience-facing slides.
+
+We separately studied **conditional Bayesian inference** under the actual
+structural promise. The joint law of genome,
+reads, and the event E must be conditioned, rather than simply reusing
+ordinary likelihood. Under the original read-only unique-reconstruction
+guarantee F(g,r) => A(r) equivalent to g, the possible feasible true
+genomes for the same observed read strings are one equivalence class.
+Conditional posterior mass on that class is one; conditional MAP is
+correct and optimal for the conditioned experiment. E is truth-dependent
+and extra side information, not determined by reads alone. This is a
+corollary of the published deterministic guarantee with an external NSG
+premise, and the consequences are checked in
+AssemblyP1/ConditionalIdentifiability.lean.
+
+Do not overextend this conditional result to arbitrary placement-based
+predicates or reverse-complement molecule variants: certain W3/W6
+counterexamples satisfy the differently defined placement feasibility.
+Failing a specific placement test does not automatically make the entire
+marginalized P(R,E | D) equal to zero. Presenter notes must keep the event,
+observations, and model conventions consistent.
+
+The oriented same-length restricted positive result and the primitive-P2
+population uniqueness theorem are independent discoveries, not
+qualifications of the negative original answer. The later population
+model was motivated by the research director hypothesizing finite-sample
+noise, not by uncertainty about the already negative finite answer.
+
+Primary internal sources: docs/issue266-conditional-identifiability.md,
+docs/audit-267-finite-ml-vs-conditional-bayes.md,
+docs/bayes-optimality-conditional-feasibility-267.md,
+paper/sections/03-open-question.tex.
+
+
+## Presentation order after the October 15 review
+
+Keep the accessible opening puzzle, overlap assembly and repeat ambiguity,
+Not-So-Greedy's reconstruction guarantee, then the concrete derivation of
+likelihood, Bayesian posterior, and the finite-decision counting proof.
+The 2016 question is **paraphrased**, not represented as a verbatim quote.
+
+After the exact AAATT/AAAATT counterexample, immediately present the
+positive same-length theorem (under actual sampled information feasibility
+and genuine Section 6.2 truth/competitor certificates). Emphasize the
+stronger rotation-uniqueness result, and explain that knowing the true
+length is extra information not always supplied to an assembler. This
+theorem is *not* for unrestricted same-length candidates.
+
+Next discuss a distinct structural experiment: even primitive P1
+(no repeated L-1-mer) genomes, AABBC versus AABC at L=3, can be ranked
+incorrectly by ordinary iid likelihood from the sample AAB,BCA, ratio
+25/16. This example is **not** asserted to meet the same §6.2
+observed-support candidate predicate as the preceding theorem; it
+tests a separate candidate-intrinsic no-repeat restriction.
+
+Return to the original six-read observation: x=(2,1,1,1,1), n=6
+matches the wrong genome D=AAAATT's read law exactly. For an arbitrary
+read law q, the ordered-read log-likelihood difference between q and
+q*=x/n is -n KL(q* || q) <= 0. Thus D attains the *global empirical
+likelihood optimum* across all read distributions, while the truth
+does not. The fact that this optimum is actually spelled by a genome
+is the distinctive construction; the statistical inequality is standard.
+This motivates the human research director's finite-sampling-noise
+hypothesis rather than treating population likelihood as a generic fix.
+
+Proceed through population read distributions, the (primitive/P2)
+genome-uniqueness theorem **without supplied candidate length**, and
+finite-read exponential recovery under identifiable finite-family
+assumptions. Only after that introduce conditional posterior certainty
+as a **different** way to supply extra information (the truth-dependent
+reconstruction-success promise). Finish with question selection,
+parallel agents, infrastructure, Lean, results and a genuine Questions
+slide. Avoid redundant lines about human leadership on adjacent slides.
+
+## Feedback corrections
+
+- Explain on the counterexample slide that exact true length was *not
+  supplied*, rather than suggesting biology can never know genome length.
+- Paraphrase the published 2016 question without blockquote formatting.
+- Do not claim the same-length result identifies the *only* boundary
+  between negative and positive theorems; it rules out the displayed
+  longer candidate under its other hypotheses.
+- Attribute the empirical-frequency likelihood optimum to the universal
+  finite multinomial/iid calculation, not a novel project theorem.
+- Keep details of read direction and alternate source models in notes
+  unless materially required to avoid an incorrect mathematical claim.
+
+## Final review: oriented counterexample and executable details
+
+For the programmers' main talk use the **oriented** variable-length
+AAATT (length 5) versus AAAATT (length 6) example at L=3, six
+reads AAA,AAA,AAT,ATT,TTA,TAA from starts 0,0,1,2,3,4. It avoids
+reverse-complement equivalence entirely and has exact likelihood ratio
+15625/11664 > 1, source-feasible truth and both genuine oriented
+Section 6.2 candidates. Exact supporting Lean:
+AssemblyP1/OrientedVariableLengthSe62.lean. Its candidate-length
+difference is explicit; the 2016 source does not pin down an exact
+likelihood referent or impose fixed competitor length. Never claim
+this witness contradicts an equal-length theorem.
+
+The six sample frequencies exactly equal AAAATT's oriented spectrum:
+(2,1,1,1,1)/6. The truth's oriented law is (1,1,1,1,1)/5.
+This supplies a single consistent illustration for both finite
+reversal and population convergence. Backup B1 now shows the
+likelihood ratio flipping upon just one extra AAA. The older RC
+molecule AAATAT/AAAAAT witness remains important research evidence
+but is not the main pedagogical counterexample.
+
+Reviewer corrections: TypeScript rounds displayed floating output;
+Lean uses anonymous example to avoid redefining and_comm; the
+ML optimality proof spans one concrete and one general slide;
+conditional certainty is from an external read-only decoder premise
+and the promise does most of the work; historical coverage concerns
+a matching read START within each L-1 window; Antonina is introduced
+as the persistent agent/task orchestrator; BBT 2013 is attributed;
+a real closing Questions slide precedes the backup divider.

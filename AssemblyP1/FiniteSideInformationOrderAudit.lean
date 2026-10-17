@@ -1,0 +1,27 @@
+import AssemblyP1.FiniteSideInformationOrder
+
+/-! Axiom audit for the #272 side-information order results. -/
+
+#print axioms AssemblyP1.FiniteSideInformationOrder.Stronger.refl
+#print axioms AssemblyP1.FiniteSideInformationOrder.Stronger.trans
+#print axioms AssemblyP1.FiniteSideInformationOrder.stronger_antisymm
+#print axioms AssemblyP1.FiniteSideInformationOrder.sufficient_congr
+#print axioms AssemblyP1.FiniteSideInformationOrder.sufficient_of_stronger
+#print axioms AssemblyP1.FiniteSideInformationOrder.sufficient_false
+#print axioms AssemblyP1.FiniteSideInformationOrder.false_strongest
+#print axioms AssemblyP1.FiniteSideInformationOrder.sufficient_and
+#print axioms AssemblyP1.FiniteSideInformationOrder.sufficient_iInter
+#print axioms AssemblyP1.FiniteSideInformationOrder.weakest_iff_union
+#print axioms AssemblyP1.FiniteSideInformationOrder.weakest_unique
+#print axioms AssemblyP1.FiniteSideInformationOrder.weakest_admissible_iff_union
+#print axioms AssemblyP1.FiniteSideInformationOrder.weakest_admissible_unique
+#print axioms AssemblyP1.FiniteSideInformationOrder.admReadOnly_congr
+#print axioms AssemblyP1.FiniteSideInformationOrder.unionReadOnly_eq_unambiguous
+#print axioms AssemblyP1.FiniteSideInformationOrder.unambiguous_isWeakest_readonly
+#print axioms AssemblyP1.FiniteSideInformationOrder.weakest_readonly_exists
+#print axioms AssemblyP1.FiniteSideInformationOrder.weakest_readonly_unique
+#print axioms AssemblyP1.FiniteSideInformationOrder.NoWeakestProb.sufficient_iff_sufficientOn
+#print axioms AssemblyP1.FiniteSideInformationOrder.NoWeakestProb.no_weakest_sufficient
+#print axioms AssemblyP1.FiniteSideInformationOrder.NoWeakestProb.unionAllSufficient_not_sufficient
+#print axioms AssemblyP1.FiniteSideInformationOrder.NoWeakestProb.union_e1_e2_not_sufficient
+#print axioms AssemblyP1.FiniteSideInformationOrder.NoWeakestProb.order_failure_bundle

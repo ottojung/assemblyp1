@@ -23,8 +23,10 @@ mdc: true
 <HomeLink label="Choose another audience" />
 
 <!--
-Start with likelihood, not the intricacies of an overlap algorithm.
-The core example uses only five possible read types.
+Lead with the sequencing model and the reconstruction story, then the
+likelihood question. The core example uses only five possible read types. The
+negative "decoy wins" example is a single short aside; the positive results
+(unique spelling, population maximality, identifiability) carry the main arc.
 -->
 
 ---
@@ -45,7 +47,7 @@ If we read three bases at a time, the possible read types are:
 
 We do not observe the starting positions — only reads drawn from them.
 
-*Assume error-free reads, with each start position equally likely.*
+*Assume error-free, oriented reads, with each start position equally likely and independent.*
 
 ---
 
@@ -82,8 +84,29 @@ Under precise coverage and bridging conditions, a reconstruction algorithm can r
 *Shomorony et al. (2016) prove such a guarantee.*
 
 <!--
-Do not teach Not-So-Greedy implementation in this talk.
-The key takeaway is that there is a structural reconstruction result.
+Do not teach the Not-So-Greedy implementation in this talk. The key takeaway is
+that there is a structural reconstruction result: bridging reads supply the
+context that tells repeat copies apart.
+-->
+
+---
+
+# The 2016 algorithm connects reads into a graph
+
+A useful way to see the reconstruction: make a **graph whose nodes are the reads**.
+
+- Draw an edge when two reads share a suffix–prefix overlap.
+- Not-So-Greedy keeps the strongest overlap **and the first genuine alternative**.
+- It removes misleading links and adjusts edge multiplicities.
+
+Under the coverage and bridging conditions, that graph has a **unique Eulerian tour**, and the tour spells the true circular genome.
+
+<!--
+Cite Shomorony, Kim, Courtade & Tse (2016), Bioinformatics, DOI
+10.1093/bioinformatics/btw450, Theorem 1 and its supplement. Present the idea,
+not the internals: nodes are reads, edges are overlaps, and a unique Eulerian
+tour spells the genome. This is distinct from the didactic de Bruijn graph
+(where nodes are short k-mers).
 -->
 
 ---
@@ -94,10 +117,19 @@ If the reads already contain enough information to reconstruct the genome...
 
 **...must the true genome also be the most likely explanation of those reads?**
 
-Those are not identical questions.
+Those are **two different questions**.
 
-- Reconstruction asks **which arrangements fit**.
-- Maximum likelihood asks **which arrangement best predicts the observed frequencies**.
+- **Question A (conditional):** restrict candidates to those that already pass the reconstruction conditions — then the answer is the true circle, a corollary of the guarantee.
+- **Question B (unconditional):** without that restriction, must the true genome be most likely? **No** — the next slides show a decoy winning.
+
+<!--
+Mirrors the whitepaper's two-question narrative (paper sec:intro:two-questions,
+sec:two-questions). Question A conditions on the truth-dependent feasible fiber
+{g : F(g,R)} and is largely a corollary of the published 2016 reconstruction
+theorem; Question B assumes only F(S,R) and maximizes the original unrestricted
+likelihood, which is the substantive comparison. Ordinary ML never observes the
+event E = F(S,R).
+-->
 
 ---
 
@@ -113,7 +145,9 @@ Imagine testing a proposed genome by repeating the sequencing experiment in your
 
 <!--
 This is likelihood P(data | genome), not posterior probability P(genome | data).
-Searching over all candidate genomes is a separate problem.
+Searching over all candidate genomes is a separate problem. Because a finite
+sample fluctuates, the most likely genome need not be the true one; the next
+slides make that precise.
 -->
 
 ---
@@ -138,34 +172,19 @@ Each genome predicts these read frequencies:
 
 ---
 
-# Now look at the observed sample
+# The likelihood is just multiplication
 
-Suppose six reads came from the true genome:
+Suppose six reads came from the true genome, and `AAA` happened twice:
 
 ```text
 AAA   AAA   AAT   ATT   TTA   TAA
 ```
 
-- `AAA` happened twice.
-- Each other read type happened once.
-
-This is a completely possible random sample from `AAATT`.
-
-**But the random sample over-represents AAA.**
-
----
-
-# The likelihood is just multiplication
-
-Under the true genome, every observed read has probability $1/5$:
+Under the true genome every observed read has probability $1/5$; under the decoy, `AAA` has probability $2/6$ and the others $1/6$:
 
 $$
 P(R\mid S)=(1/5)^6
-$$
-
-Under the decoy, `AAA` has probability $2/6$ and the other reads have probability $1/6$:
-
-$$
+\qquad
 P(R\mid D)=(2/6)^2(1/6)^4
 $$
 
@@ -173,44 +192,26 @@ We have multiplied **six ordinary sampling probabilities**.
 
 ---
 
-# Surprise: the decoy wins
+# A finite aside: the decoy can win
 
 $$
 \frac{P(R\mid D)}{P(R\mid S)}
 =\frac{15625}{11664}\approx1.34
 $$
 
-The wrong genome gives this sample **about 34% more probability**.
-
-It benefits from the extra `AAA` reads in this particular sample.
+The wrong genome gives **this** sample about **34% more probability**, because the sample over-represents `AAA`.
 
 **Most likely is not the same as certainly true.**
 
-*The exact comparison is certified by Lean.*
+With enough idealized sampling, the over- and under-representation disappears, and the truth wins (next slides). The exact likelihood ratio is certified by Lean.
 
----
-
-# The sample can change the verdict
-
-If we observe each possible read type once instead:
-
-```text
-AAA   AAT   ATT   TTA   TAA
-```
-
-then the truth wins:
-
-$$
-\frac{P(R_5\mid D)}{P(R_5\mid S)}=\frac{3125}{3888}<1
-$$
-
-Repeat just one `AAA`, and the decoy wins:
-
-$$
-\frac{P(R_6\mid D)}{P(R_6\mid S)}=\frac{15625}{11664}>1
-$$
-
-**Same candidates. Same likelihood rule. Different read counts.**
+<!--
+This is the one negative aside in the main deck. If every read type is observed
+once instead, the truth wins (ratio 3125/3888 < 1); repeat one AAA and the decoy
+wins. Same candidates, same rule, different read counts. An optimal estimator is
+not an infallible estimator. The full finite reversal calculation is in backup.
+The source-faithful same-length witness is AAATAT vs AAAAAT (exact ratio 3).
+-->
 
 ---
 
@@ -218,72 +219,61 @@ $$
 
 With enough idealized sampling, the observed frequencies approach the **true read distribution**.
 
-Random over- and under-representation disappear in that limit.
+Random over- and under-representation disappear in that limit, and a candidate that predicts the true distribution cannot be outscored **on average** by one that predicts different probabilities.
 
-A candidate that predicts the true distribution cannot be outscored **on average** by one that predicts different probabilities.
-
-**This is the great positive result behind population maximum likelihood.**
-
----
-
-# Why is that result so general?
-
-Maximum likelihood is based on a **proper scoring rule**: in the long run, you do best by predicting the probabilities that actually generate the data.
-
-Mathematically:
+Mathematically, the expected log-likelihood gap is a KL divergence:
 
 $$
 \ell_S(S)-\ell_S(D)
 =D_{\mathrm{KL}}(p_S\|p_D)\geq0
 $$
 
-The right side is a nonnegative penalty for predicting the wrong read frequencies.
-
 **The truth is always a population maximum-likelihood genome.**
 
-No special repeat assumption is needed **just to attain the maximum**.
+For a **finite identifiable family**, the same KL gap makes the limit *eventual and exact*: almost surely, the ML selection set is eventually exactly the truth's rotation class (strong law + KL; classical, not kernel-checked — backup). "Infinite reads" is a limit of finite samples; it supplies **no finite read count**.
 
 <!--
-This compares expected log likelihood under the true distribution.
-It assumes the candidate universe includes the truth, with the stated
-error-free, oriented, fixed-length, uniform-start model.
+This compares expected log likelihood under the true distribution. It assumes the
+candidate universe includes the truth, with the stated error-free, oriented,
+fixed-length, uniform-start model. The inequality is KL nonnegativity (Cover &
+Thomas 2006); the kernel form is PopulationGibbs.popLogLik_le_self'. No special
+repeat assumption is needed just to attain the maximum; equality means the two
+genomes induce the same read distribution. "Infinite reads" is a limit, not an
+infinite product of probabilities. The eventual-exactness strengthening for a
+finite identifiable family (strong law + KL; classical, not kernel-checked;
+no finite n supplied) is paper prop:strong-consistency; see the backup
+slide "The limit is eventual - and gives no finite number".
 -->
 
 ---
 
-# But two genomes can make a tie
+# When can the truth be identified?
 
-Consider two different circular genomes:
+Two different circular genomes can still make a tie. Consider:
 
 ```text
 AAACAC
 AACAAC
 ```
 
-Their length-2 reads occur with the same frequencies:
-
-| Read | `AA` | `AC` | `CA` |
-|:---|---:|---:|---:|
-| Count in each genome | 2 | 2 | 2 |
-
-Unlimited two-base reads **still cannot tell these genomes apart**.
+Their length-2 read frequencies agree exactly, so unlimited two-base reads cannot tell them apart.
 
 **A unique best distribution need not imply a unique genome.**
 
----
+Our population theorem gives uniqueness under a precise repeat condition: oriented circular genomes that are
 
-# When can the truth be identified?
-
-Our population theorem gives uniqueness under a precise repeat condition.
-
-It considers oriented circular genomes that are:
-
-- **Primitive:** the whole genome is not a shorter block repeated.
+- **primitive:** the whole genome is not a shorter block repeated;
 - **P2-admissible:** certain ambiguous repeat arrangements are excluded for the read length.
 
-Within this class, the true genome is the **unique population maximum up to circular rotation**.
+Within this class the true genome is the **unique population maximum up to circular rotation**.
 
-**Likelihood supplies maximality; repeat structure supplies uniqueness.**
+<!--
+Kernel endpoint: Issue94Complete.population_unique_ML, fully kernel-checked with
+no external premise, under primitive + P2 + the admissible candidate class +
+L >= 2; the equality characterization is PopulationGibbs.popTie_iff. Likelihood
+supplies maximality; repeat structure supplies uniqueness. State the qualifiers;
+without them distinct non-rotation genomes can tie.
+-->
 
 ---
 
@@ -291,38 +281,41 @@ Within this class, the true genome is the **unique population maximum up to circ
 
 Our research also proves a useful **finite-sample** structural result.
 
-Under stronger hypotheses involving read bridging, an admissible truth, and **same-length oriented competitors**, the feasible read spectra are tightly constrained.
+Under stronger hypotheses involving read bridging, an admissible truth, and **same-length oriented competitors**, the feasible read spectra are tightly constrained: the truth's window spectrum is the **unique positive integer circulation** of its support graph.
 
-In that setting, the true genome is a maximum-likelihood solution, uniquely up to rotation under the theorem's stated conditions.
+In that setting the true genome is a maximum-likelihood solution, uniquely up to rotation under the theorem's stated conditions.
 
-These are **restricted guarantees**, not claims about all finite samples or arbitrary candidates.
+**These are restricted guarantees** — not claims about all finite samples or arbitrary candidates.
 
----
-
-# What has been proved?
-
-The project has machine-checked results for:
-
-- A concrete **finite likelihood reversal**.
-- A positive **structural rigidity** theorem.
-- **Population maximum-likelihood uniqueness** in the primitive P2 class.
-
-The mathematics is formulated and checked in **Lean**.
-
-Our practical conclusions apply first to a deliberately simple sequencing model: circular genomes, equal-length error-free reads, and uniformly random starts.
+<!--
+Kernel endpoints: OrientedRigidity.unique_positive_circulation;
+SameLength62Uniqueness.unique_62_maximizer_up_to_rotation (unconditional
+rotation); OrientedFinal.oriented_same_length_spectrum_rigidity. The equal-length
+restriction is essential: dropping it restores strict finite counterexamples.
+The general Graver-basis criterion (GraverRigidity) is a separate iff.
+-->
 
 ---
 
 # Three take-aways
 
-1. **Short reads contain structural information.** Repeats can hide where fragments belong.
+1. **Short reads contain structural information.** Overlaps and bridging resolve repeats; under precise conditions they determine a unique circular genome (Question A, the conditional guarantee).
 2. **Likelihood is a beautifully simple probability calculation.** It uses *how often* different reads were sampled.
-3. **Finite and population likelihood differ.** Sampling luck can favor a decoy; with exact frequencies the truth always attains the maximum, and repeat structure decides whether it is unique.
+3. **Finite and population likelihood differ.** Sampling luck can favor a decoy in a finite sample (Question B, the unconditional comparison); with exact frequencies the truth always attains the maximum, and repeat structure decides whether it is unique. For our structural class the finite-sample error probability obeys an explicit kernel-checked exponential bound (backup).
 
 **One simple statistical idea illuminates an entire reconstruction problem.**
 
----
+<!--
+The project's machine-checked results span: a concrete finite likelihood
+reversal (SameLengthSection62Counterexample), positive structural rigidity
+(OrientedRigidity), and population maximum-likelihood uniqueness in the
+primitive P2 class (Issue94Complete.population_unique_ML). The practical
+conclusions apply first to a deliberately simple sequencing model: circular
+genomes, equal-length error-free reads, and uniformly random starts. Sample
+complexity ("how many reads for 99%?") remains open.
+-->
 
+---
 layout: end
 ---
 
@@ -357,6 +350,100 @@ With reverse-complement-collapsed molecule read types, another finite example us
 The competitor's **exact likelihood is three times larger** under the specified molecule model.
 
 The detailed hypotheses and the other likelihood objective are in the whitepaper.
+
+---
+
+# Backup: how many reads for 99% recovery?
+
+The limit theorem gives convergence, not a finite sample size. For a finite distinguishable family, the exact iid likelihood obeys a Hellinger/union bound:
+
+$$
+\Pr_\theta[\text{a wrong genome ties or beats the truth}]
+\;\le\; |\mathcal C|\,\rho_*^{\,n},
+\qquad 0\le\rho_*<1 .
+$$
+
+Inverting it gives a **sufficient** number of reads for a target bound $\delta$:
+
+$$
+n \;\ge\; \frac{\ln(|\mathcal C|/\delta)}{\ln(1/\rho_*)} .
+$$
+
+This bound is kernel-checked for a finite family.
+
+For our **primitive-P2** class the abstract gap is now **explicit and kernel-checked**. With alphabet size $q$, read length $L\ge2$, and $B=2q^{L-1}$:
+
+$$
+\Pr_S[\exists\,D\ \text{nonrotational admissible}:\ L_D\ge L_S]
+\;\le\; N_C\,\exp\!\left(-\frac{n}{8B^4}\right),
+\qquad N_C\le\sum_{g=1}^{B}q^{g},
+$$
+
+where $N_C$ counts the distinct competitor read laws. A sufficient read count is $n\ge 8B^4\ln(N_C/\delta)$ for error at most $\delta$.
+
+**Caveats.** The constants are deliberately loose and exponential in $L$; the bound controls the exact-ML **error probability**, not likelihood growth; and per-truth finite-sample success is **not monotone**. Kernel endpoints: `AssemblyP1.PrimitiveP2UniformSeparation.primitiveP2_exponential_error_bound`, `primitiveP2_ML_confidence_explicit`.
+
+A sharp uniform sample size over all genome candidates (all lengths and models) remains an open quantitative problem.
+
+---
+
+# Backup: more reads help on average, not always
+
+More reads cannot lower the **average** chance of guessing the genome correctly: an algorithm may simply ignore the extra read.
+
+But for one **fixed** true genome, the chance of being the maximum-likelihood answer can go **down** when a read is added.
+
+Two circular genomes, read length 2, alphabet `{A, C}`:
+
+| | `AA` | `AC` | `CA` | `CC` |
+| --- | ---: | ---: | ---: | ---: |
+| Truth `AAC` | $1/3$ | $1/3$ | $1/3$ | $0$ |
+| Competitor `AAAC` | $1/2$ | $1/4$ | $1/4$ | $0$ |
+
+The truth wins strictly with probability $2/3$ after **one** read but only $4/9$ after **two**. With many reads the probability still returns to $1$.
+
+**More reads guarantee eventual success, not a steady climb.**
+
+<!--
+Prior-averaged success is nondecreasing in the read count; per-truth success
+need not be. Kernel endpoints: chooseMAP_success_monotone_under_refinement
+(average) and NonmonotonicityWitness281.success_not_monotone (per-genome),
+succ(1)=2/3 > succ(2)=4/9. No positive-probability ties for n>=1. This is the
+biologists-deck analogue of the programmers Backup B4.
+-->
+
+---
+
+# Backup: the limit is eventual - and gives no finite number
+
+For a **finite identifiable family**, each per-read log-likelihood gap is an average of independent terms whose expectation is a KL divergence. The strong law turns that into an almost-sure limit:
+
+$$
+\frac1n\log\frac{L_S}{L_D}(R_1,\dots,R_n)
+\;\xrightarrow{\text{a.s.}}\;
+D_{\mathrm{KL}}(p_S\|p_D)>0 .
+$$
+
+Every wrong candidate has KL $>0$; there are finitely many, so almost surely the truth beats **all** of them simultaneously from some read count $N$ onward. Rotations of the truth tie it at every count (identical read laws). The ML selection set is therefore **eventually exactly the truth's rotation class**, and the probability of being correct tends to $1$.
+
+**Limit, not an infinite product.** The statement is about finite samples growing without bound. It supplies no finite read count, no rate, and no guarantee for a particular sample, a fixed truth, or an unrestricted candidate universe. It is distinct from population uniqueness above, which involves no sampling at all. Classical statistics (strong law + KL nonnegativity; Durrett 2019, Cover & Thomas 2006), **not kernel-checked**; the kernel-checked Hellinger bound reaches the same conclusion because its series $\sum_n \rho^n$ is summable (Borel--Cantelli).
+
+<!--
+#265 item-5 limit statement, paper prop:strong-consistency (Section
+sec:strong-consistency). Hypotheses: finite candidate family identifiable
+modulo rotation, iid exact reads, correct model. Proof: strong law on the
+per-read log-likelihood average + KL positivity (equality iff read laws agree)
++ finite union over wrong candidates; rotations tie at every n by design;
+nonrotational ties impossible eventually since the limit separates strictly.
+Support convention 0 log 0 = 0; if p_D(w)=0 < p_S(w) then KL = +infinity
+and that competitor loses on every sample containing w, which recurs
+eventually. Witness numbers (AAC vs AAAC, L=2, binary alphabet): KL =
+(1/3)log(2/3)+(2/3)log(4/3) ~ 0.0566 > 0, Hellinger affinity
+(1+sqrt(2))/sqrt(6) ~ 0.9856 < 1, geometric series summable. Exact checks:
+scripts/verify_strong_consistency_265.py (success table, boundary
+a < n(2-log2 3), rotation ties, summability). Sample complexity remains
+open: the limit gives no finite n.
+-->
 
 ---
 

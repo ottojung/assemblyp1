@@ -10,6 +10,8 @@
 #                                              -> merge in checked range, PASS
 #   4. range isolation: unsigned commit in ancestors of base is NOT checked
 #   5. known signed commits from the real repository (U + web-flow merge) -> PASS
+#   6. real PR #189 merge topology (signed merge head, unsigned second-parent
+#      commits) -> gate must FAIL, proving the merge-commit gap is closed
 set -euo pipefail
 
 REPO_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
@@ -165,6 +167,22 @@ expect_exit "real signed PR #161 commit 96a5a7b accepted" 0 \
 # PR #160 range: 10 commits (incl. merges), every one cryptographically signed.
 expect_exit "real all-signed PR #160 range accepted" 0 \
   python3 "$SCRIPT" --repo "$REAL" --base 080b1b3 --head e70257b
+
+echo "== 6. real PR #189 merge topology: signed merge head, UNSIGNED second parent =="
+# PR #189 merged to main as 9ca5c8f (parents 39386230 and abbe7284). GitHub
+# reports the MERGE COMMIT itself verified=true, but the PR branch introduced
+# 14 UNSIGNED commits reachable only through the second parent abbe7284. The
+# gate must reject the range that the merge introduced; checking only the
+# merge-head signature (or the PR head) is insufficient.
+PR189_HEAD=9ca5c8fde36466650a2f0ff6a2182bf9cfb2baa0
+PR189_BASE=393862304a656cbdbb1bdb309d1b189629e52a43
+if git -C "$REAL" cat-file -e "$PR189_HEAD" 2>/dev/null && \
+   git -C "$REAL" cat-file -e "$PR189_BASE" 2>/dev/null; then
+  expect_exit "real PR #189 unsigned second-parent range rejected" 1 \
+    python3 "$SCRIPT" --repo "$REAL" --base "$PR189_BASE" --head "$PR189_HEAD"
+else
+  echo "SKIP: PR #189 commits absent from $REAL (shallow clone?)"
+fi
 
 echo
 echo "selftest summary: $pass passed, $fail failed"

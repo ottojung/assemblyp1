@@ -32,8 +32,8 @@ Indeed $S$ has windows $AA,AA,AB,BA,AB,BA$ and $D$ has windows
 $AA,AB,BA,AA,AB,BA$. Under uniform-start error-free sampling the observed read
 distribution is the same for both genomes, so \emph{no} likelihood objective
 --- exact, approximate, or flow-based --- can prefer $S$ to $D$ here.
-\statusline{\srcfact{} for the spectra and the rotation claim;
-\mathfact{} for the resulting tie.}
+\statusline{\computed{} for the explicit spectra and nonrotation;
+\mathfact{} for the resulting equal read distributions.}
 \end{example}
 
 \subsection{From reads to a graph algorithm}
@@ -133,14 +133,16 @@ largest probability to the \emph{observed read-type counts}. A finite sample
 can exhibit uneven frequencies even when its overlaps determine the source,
 so a reconstruction theorem does not automatically rank the source highest.
 
-Conflating the two produces a false headline, because ``the maximum-likelihood
+These two statements cannot be identified, because ``the maximum-likelihood
 sequence is the true sequence'' names \emph{two} inequivalent questions. Let
 $F(g,R)$ be a feasibility predicate --- for the 2016 question, the source's
 coverage-and-bridging condition evaluated on candidate $g$ against the observed
 read set $R$. \emph{Question~A (conditional)} restricts the candidate set to the
 feasible fiber $\{\,g : F(g,R)\,\}$ and assumes the truth is in it; the
-uniqueness content of the reconstruction theorem then makes that fiber a
-singleton up to rotation, so any conditional MAP rule returns the truth. This is
+reconstruction theorem makes the positive-weight feasible fiber
+$\{g:\pi(g)P_g(R)>0,\ F(g,R)\}$ a singleton up to rotation,
+so conditional MAP returns the truth. The bare predicate $F$ can admit a
+genome incapable of generating the observed reads. This is
 largely a corollary of the reconstruction theorem, not a new likelihood result.
 \emph{Question~B (unconditional)} assumes only that the truth is feasible,
 $F(S,R)$, and maximizes the \emph{original, unrestricted} likelihood over the
@@ -163,9 +165,11 @@ and~\ref{app:referents}.
 This manuscript proves positive and negative results about when the true
 genome is a likelihood maximizer, and clarifies how those results relate to the
 deterministic reconstruction guarantee of Shomorony et al.\ (2016). The
-results below have different proof content and deserve to be read on their own
-terms, rather than ranked by how closely they resemble a general optimality
-slogan.
+unifying thread is \emph{identifiability}: whether the read distribution
+distinguishes a genome from its competitors, at the structural, population,
+and finite-sample levels. The results below have different proof content and
+deserve to be read on their own terms, rather than ranked by how closely they
+resemble a general optimality slogan.
 
 \paragraph{Motivation: optimal average reconstruction.}
 The finite Bayes/MAP theorem (Theorem~\ref{thm:bayes-optimal}) establishes the
@@ -173,11 +177,12 @@ correctness-probability benchmark: MAP dominates every deterministic and
 randomized reconstruction rule on prior-average zero-one success, and ML
 coincides with MAP under a uniform prior. Its Lean formalization also proves
 that optimal average success cannot decrease when genuinely additional
-information is observed. These are general decision-theoretic facts, not
+information is observed
+(\kernelcheck{} \texttt{AssemblyP1.IidMapMonotonicity.iid\_map\_success\_monotone}). These are general decision-theoretic facts, not
 novel assembly-specific identifiability results; they explain \emph{why}
 the likelihood question is worth asking.
 
-\paragraph{Positive: circulation rigidity.}
+\paragraph{Structural: circulation rigidity.}
 Under the bridging condition of Definition~\ref{def:Is}, the truth's length-$L$
 spectrum is the unique positive circulation of its window-support graph
 (Theorem~\ref{cor:same-length-zero}): no other assignment of positive
@@ -189,11 +194,13 @@ or alphabet. With the complete-spectrum uniqueness step, every such candidate
 is in fact a cyclic rotation of the truth (Corollary~\ref{cor:same-length-rotation}).
 The extra assumptions this theorem needs --- oriented reads, equal candidate
 length, the full-overlap support restriction, and truth candidature --- are
-project-level restrictions, honestly labelled in Section~\ref{sec:finite};
+explicit assumptions, stated in Section~\ref{sec:finite};
 they do not follow from the published sentence.
 
 \paragraph{Negative: finite-sample reweighting.}
-The equal-length restriction is essential. We exhibit finite observations in
+Two separate restrictions are essential to the positive theorem:
+truth candidacy (lost in the same-length $AABB\to ABAB$ witness) and
+equal length (lost in $AAATT\to AAAATT$). We exhibit finite observations in
 which the truth satisfies the bridging conditions and a competitor still has
 strictly greater likelihood, under the exact multinomial over all circular
 candidates (Theorem~\ref{thm:cex-exact}), under its fixed-length binomial
@@ -235,20 +242,51 @@ repeat condition (P2) it is proved in full, with no external premise
 step that this theorem needs is the deep combinatorial ingredient; the
 maximizer statement itself is routine.
 
+\paragraph{Finite-read error exponent.}
+The population theorem identifies when the exact read distribution separates
+candidates. A second positive theorem quantifies the finite sample. For a
+finite candidate family whose members induce pairwise distinct read
+distributions, the probability that any wrong candidate ties or beats the
+truth under the exact iid likelihood is at most the sum of the pairwise
+Hellinger affinities $\rho(p_S,p_D)=\sum_w\sqrt{p_S(w)p_D(w)}$ raised to the
+number of reads (Theorem~\ref{thm:finite-recovery}). Each affinity is strictly
+below one under identifiability, so the probability of an exact-ML error
+decays exponentially, and any target confidence is reached after finitely many
+reads. This bounds the \emph{error} rate, not the likelihood, and it is a
+statement about a \emph{finite} candidate class. This premise holds for
+the entire primitive-P2 class: Theorem~\ref{thm:p2-finite-class} gives the
+intrinsic bound $|D|\le2q^{L-1}$, so
+Corollary~\ref{cor:p2-finite-recovery-all} applies without an artificial
+length cutoff. The abstract affinity can moreover be made explicit:
+Theorem~\ref{thm:p2-uniform-rate} derives from the integer-denominator
+structure of the uniform-start read law the uniform gap
+$1-\rho(p_S,p_D)\ge1/(8B^4)$ with $B=2q^{L-1}$, hence the kernel-checked bound
+\[
+  \Pr_S\!\bigl\{\exists D\ \text{nonrotational admissible}:
+    L_D(R_1,\dots,R_n)\ge L_S(R_1,\dots,R_n)\bigr\}
+  \;\le\; N_C\,e^{-n/(8B^4)},
+\]
+where $N_C\le\sum_{g=1}^{B}q^{g}$ counts the distinct competitor read laws and
+$n\ge8B^4\log(N_C/\delta)$ suffices for error at most $\delta$. The constants
+are deliberately loose and exponential in the read length $L$: this is a
+positive rate, not a tractability claim. Exact finite-sample success is not even monotone
+in sample size (Proposition~\ref{prop:nonmonotone}); the exponential guarantee
+is asymptotic, not a monotone curve.
+
 \subsection{How to read this paper}
 
 Section~\ref{sec:model} fixes the sequencing and bridging model and the
 objectives. Section~\ref{sec:open} states the mathematical question precisely.
 Section~\ref{sec:finite} reports the finite-sample results: the positive
 rigidity theorem, the finite counterexamples, and the source-predicate
-witnesses. Section~\ref{sec:population} introduces the population model and
-its uniqueness theorem. Section~\ref{sec:discussion} draws the two failure
+witnesses. Section~\ref{sec:population} introduces the population model, its
+uniqueness theorem, and the finite-read exponential error bound together with
+the non-monotonicity caveat. Section~\ref{sec:discussion} draws the failure
 modes together and lists what remains open.
 
-Appendices~\ref{app:modeling} and~\ref{app:ledger} explain the modeling
-choices and consolidate the status of each claim;
-Appendix~\ref{app:reproduction} records how to rebuild the paper and re-run
-every computational certificate; Appendix~\ref{app:referents} records the
-source-referent audit behind Section~\ref{sec:open}. A reader who wants only
+Appendix~\ref{app:modeling} explains the modeling choices;
+Appendix~\ref{app:ledger} distinguishes source facts, proofs and computations;
+Appendix~\ref{app:reproduction} points to the repository verification guide;
+Appendix~\ref{app:referents} records the source-referent audit. A reader who wants only
 the mathematical story can read Sections~\ref{sec:model}--\ref{sec:discussion}
 and treat the appendices as reference.

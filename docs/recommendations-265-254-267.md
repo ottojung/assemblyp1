@@ -27,13 +27,13 @@ _Status: 2026-10-12. Grounded in `docs/bayes-optimality-conditional-feasibility-
 
 **With:** "The MB09 fixed-$N$ product-binomial is a separable pseudo-likelihood with an external $N$; optimizing it is not optimizing the Bayes rule of the sampling model."
 
-**Theorem basis:** Proposition `prop:multinomial-iid` (paper §3): the exact multinomial equals the i.i.d. likelihood up to a constant; the binomial does not. **Label: mathematical proof + source fact (MB09 §6.1).**
+**Theorem basis:** Definition `def:likelihoods` (paper §2): the exact multinomial equals the i.i.d. likelihood up to a constant; the binomial does not. **Label: mathematical proof + source fact (MB09 §6.1).**
 
 ### R3 — State the tie limitation explicitly
 
 **Add:** "When $m$ candidates tie, every maximizer is Bayes-optimal for prior-averaged success, but exact identification *within* the tie class is limited by $1/m$."
 
-**Theorem basis:** Paper §3, ties bullet. Rotations are the canonical tie class: they are observationally equivalent (Remark `rem:rotations-equiv`), so the prior is placed on rotation classes, not sequences. **Label: standard statistics.**
+**Theorem basis:** Paper §3, ties bullet. Rotations are the canonical tie class: they are observationally equivalent (Remark `rem:cyclic`), so the prior is placed on rotation classes, not sequences. **Label: standard statistics.**
 
 ### R4 — Distinguish "a maximizer" from "the unique maximizer"
 
@@ -75,7 +75,7 @@ A "five-notions" diagram (already in paper §3, suitable for a slide):
   Conflating any two → false headline
 ```
 
-Each box carries its proof-to-claim label (\claimK, \claimT, \claimP, \claimS, or \claimO).
+Each box carries its proof-to-claim label in the convention of this note (**mathematical proof**, **kernel-checked**, **standard statistics**, or **open**).
 
 ---
 
@@ -84,7 +84,7 @@ Each box carries its proof-to-claim label (\claimK, \claimT, \claimP, \claimS, o
 | Recommendation | Grounding | Label |
 |---|---|---|
 | R1: No "universally best" | Thm 1 + no-uniform-optimality | standard statistics + kernel-checked |
-| R2: No "MB09 = Bayes posterior" | Prop `prop:multinomial-iid` | mathematical proof + source fact |
+| R2: No "MB09 = Bayes posterior" | Def. `def:likelihoods` | mathematical proof + source fact |
 | R3: Tie limitation $1/m$ | Paper §3 ties bullet | standard statistics |
 | R4: "A maximizer" vs "unique" | `\popml` vs. W1–W6 | kernel-checked |
 | R5: Conditional vs unconditional | Props 2–3 | mathematical proof |
