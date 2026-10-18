@@ -975,6 +975,16 @@ rest remain human-readable only, as labeled per entry.
   obstructions (general coverage/triple/interleaved projection lemmas and the
   unbridged-triple witnesses `ABXABYABZ` / `ABXABZABY`).  See
   [`issue272-read-string-adapter.md`](issue272-read-string-adapter.md).
+- **Additional landed (read-only decoder certainty, target 3, 2026-10-18):**
+  `FiniteReadOnlyDecoderCertainty.lean` + audit.  Some read-only decoder reaches
+  posterior one at `r` iff the supported truth-fibre of `r` is a single nonempty
+  orbit class (`exists_readOnly_decoder_certain_iff_support_singleton`), which is
+  exactly the weakest read-only promise `Unambiguous`
+  (`readOnly_certain_set_eq_weakest`); "inferable from the read iff read-only" is
+  formalized by `admReadOnly_iff_factorable` / `truthDependent_not_factorable`;
+  and the bounded target-4 distinction "minimum sufficient promise always exists,
+  weakest need not" by `minimum_exists_unique` / `minimum_without_weakest`.  See
+  [`issue272-readonly-decoder-certainty.md`](issue272-readonly-decoder-certainty.md).
 - **Still OPEN:** the bridge to a specific genome assembly reconstruction
   theorem supplying the auxiliary label; the decoder-level certainty endpoint
   (external Not-So-Greedy guarantee remains an attributed premise); `I_s`
