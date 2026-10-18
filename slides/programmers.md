@@ -995,7 +995,8 @@ multinomial likelihood, distinct from the Bayes/MAP rationale. State the three
 caveats: constants deliberately loose and exponential in L; it bounds the
 exact-ML ERROR PROBABILITY, not likelihood growth; and per-truth finite-sample
 success is NOT monotone. This is not universal ML over all genomes and not the
-MB09 product-binomial surrogate.
+MB09 objective: §6.1's fixed-N product-binomial surrogate and §6.2's flow
+likelihood are distinct source readings, neither kernel-checked here.
 #265 Chernoff refinement (2026-10-18): replace -ln rho_* by
 C_* = min_D C(p_S,p_D), C(p,q) = sup_{t in [0,1]} -ln sum_{w:p(w)>0}
 p(w)^(1-t) q(w)^t >= -ln rho(p,q). Termwise the Chernoff union bound
