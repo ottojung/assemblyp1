@@ -37,8 +37,16 @@ reads and `x` observed copies, is the binomial kernel
 `P(d) = (d / N)^x (1 - d / N)^(n - x)`, whose numerator is
 `binomKernel N n x d = d^x (N - d)^(n - x)`.  This is a product of the
 *increasing* factor `d^x` and the *decreasing* factor `(N - d)^(n - x)`, hence
-**nonmonotone** in `d`: the board's "8-vs-4" example.  With `N = 12`, `n = 3`,
-`x = 1`,
+**nonmonotone** in `d`.  The coordinatewise-nonmonotonicity of this kernel is
+**not new here**: it is already kernel-checked as
+`AssemblyP1.GeneralBidirectedFlowML.binomial_not_coordinatewise` (truth
+`(1, 2)`, candidate `(1, 1)`, external `N = 3`, sample `(2, 1)`, core `8 > 4`;
+see `docs/issue261-general-bidirected-flow-ml.md`), not a fact first established
+on this board.  What is genuinely new on this front is the failure of the
+**single-coordinate sign-compatible Positive Sum Property** (`HasPSS`), the
+one-dimensional superadditivity step of a monotone separable Graver certificate,
+which the coordinatewise failure alone does **not** establish.  With `N = 12`,
+`n = 3`, `x = 1`,
 
 ```text
 P(8) = 8 · 4² = 128   <   256 = 4 · 8² = P(4),       4 ≤ 8,
@@ -111,13 +119,23 @@ def HasPSS (f : ℕ → ℤ) : Prop :=
 value at copy count `4` (external `N = 12`, `n = 3` reads, `x = 1` observed),
 even though `4 ≤ 8`: `8 · 4² = 128 < 256 = 4 · 8²`.  The increasing `d^x` factor
 is defeated by the decreasing `(N - d)^(n - x)` factor.  Exact ratio
-`P(4) / P(8) = 2`. -/
+`P(4) / P(8) = 2`.  This is a *re-instantiation* of the already-merged
+coordinatewise-nonmonotonicity witness
+`AssemblyP1.GeneralBidirectedFlowML.binomial_not_coordinatewise` (core `8 > 4`,
+`docs/issue261-general-bidirected-flow-ml.md`), not a new coordinatewise result;
+the new content of this file is the sign-compatible Positive Sum Property
+failure `binomKernel_pss_fails` below. -/
 theorem binomKernel_eight_lt_four :
     binomKernel 12 3 1 8 < binomKernel 12 3 1 4 := by
   norm_num [binomKernel]
 
 /-- The §6.1 product-binomial objective is **not** coordinatewise monotone: the
-copy count `4` strictly beats the larger copy count `8`. -/
+copy count `4` strictly beats the larger copy count `8`.  Cross-reference: the
+same failure is already kernel-checked as
+`AssemblyP1.GeneralBidirectedFlowML.binomial_not_coordinatewise`; this
+re-instantiation is kept only to separate the two domain hypotheses `CoordMono`
+and `HasPSS`, and the genuinely new part of the file is the `HasPSS` failure
+`binomKernel_pss_fails`. -/
 theorem binomKernel_not_coordMono :
     ¬ CoordMono (binomKernel 12 3 1) := by
   intro h

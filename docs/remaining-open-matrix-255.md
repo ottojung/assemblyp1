@@ -47,6 +47,39 @@ so Antonina's managed agents cannot execute until credentials are renewed.
 Their saved task prompts are not evidence of running workers. Manual signed
 GitHub integration remains possible.
 
+## Addendum — 2026-10-18 (reversal-orbit transport, #255/#261 front)
+
+* **Stale premises corrected.** The docs-only gap note is **already merged**:
+  PR #301 (`docs/section62-reversal-orbit-correspondence-gap-255.md`, head
+  `ba3e6bc`, base `f338cdf`) is `state=closed, merged=true` — it is not open.
+  PR #315 ("directed double-cover signed-incidence balance", head `21264cf`)
+  is also merged. Current `origin/main` at this check is
+  `230eca1cbe0bdb4c1a4375b7a13b3dabc679d379`.
+* **Newly kernel-checked (branch
+  `agent/b5e5c7634f3b-issue255-reversal-orbit-transport`, not yet merged):**
+  `AssemblyP1.Section62ReversalOrbitTransport` **refutes the first disjunct of
+  the pinned L2 flow-transport discipline**. The legacy `throughput` counts an
+  oriented edge as departing the class of its stored `sx` end; for a self-loop
+  its reverse-complement representation departs the *same* class, so
+  `throughput_pair_selfloop` gives
+  `throughput cls f [e, reverseEdge e] v = f e + f (reverseEdge e)`, and any
+  reversal-symmetric flow (`f e = f (reverseEdge e)`) has **even** inherited
+  departure throughput (`throughput_pair_selfloop_symm`). The unit mixed-sign
+  loop orbit has physical visit count **one**
+  (`mixed_physical_visit_one`), so
+  `no_revsymm_flow_realizes_unit_loop` proves no reversal-symmetric oriented
+  flow realizes it. The `f e = f (rev e)` symmetrization therefore does **not**
+  leave the physical feasible set unchanged; the correct route is the
+  quotient-orbit flow of `Section62PhysicalEdgeOrbit`. Axioms
+  `⊆ {propext, Quot.sound}`; no `sorry`/`admit`/`axiom`/`native_decide`.
+  Minimal witness: the length-`1` `mixedLoop` on `Tagged Bool`, not `ATAT`.
+  Independent verifier `scripts/verify_261_reversal_orbit_transport.py`
+  (86 exact-integer assertions, exit 0).
+* **Still genuinely OPEN on this front:** the quotient model is not identified
+  with MB09's physical RC overlap multigraph (edge multiplicity,
+  transitive-reduction contract), and the exact ML objective is not transported
+  to physical orbit totals. Only the incidence-level transport is settled.
+
 ---
 
 ### Historical 2026-10-16 matrix follows
@@ -672,6 +705,15 @@ rest remain human-readable only, as labeled per entry.
   reduced signed circuit, plus its observed RC molecule-class corollary.
   This replaces the old no-skipped-window proof strategy, now discharged.
   It does not identify all feasible flow throughputs with spelled genomes.
+- **New kernel-checked scope (2026-10-18, branch
+  `agent/b5e5c7634f3b-issue255-reversal-orbit-transport`):** reversal-orbit
+  **incidence transport** is settled at the negative end —
+  `AssemblyP1.Section62ReversalOrbitTransport` proves the legacy departure
+  `throughput` is even on every reversal-symmetric oriented flow over a
+  self-loop orbit, so the `f e = f (rev e)` symmetrization cannot represent the
+  unit physical mixed-sign loop flow (physical visit count one). The
+  quotient-orbit flow (`physPos`/`physNeg`, merged #307) is the correct route.
+  The source-graph/objective transport (L1 and the L3 remainder) stays OPEN.
 - **OPEN sub-axes:** arbitrary overlap floor, transitive reduction, vertex
   lower bound 1, orientation/RC classes, integer vs half-integral flows,
   flows not spelling one circular genome, candidate-set choice, truth
