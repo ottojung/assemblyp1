@@ -124,7 +124,7 @@ under `0 <-> 1`, for any prior `pi` the symmetrised prior
 concave in the prior), so the maximum is attained at a **symmetric** prior
 `pi = (1-2 gamma, gamma, gamma)`, `gamma in [0, 1/2]`. The Bayes error
 `R_n(gamma)` is concave and piecewise linear in `gamma`, changing slope only
-where the `A`-versus-`B` boundary moves, i.e. at
+where the `A`-versus-`B` or `A`-versus-`C` Bayes boundary moves, i.e. at
 
 ```
 gamma_k = P_A(k) / ( P_B(k) + 2 P_A(k) ),   k = 0, ..., n,
@@ -159,11 +159,12 @@ max_t error(t) = 0.00973853... = R_87(pi*) = V^mm_87's complement.
 - **Upper bound:** the exhibited tie-split Bayes rule attains
   `max_t error(t) = 0.00973853...`.
 
-The two bounds coincide, so `n*_minimax = 87` is exact. Note that the *plain*
-Bayes rule for `pi*` (without the optimal tie split) has a strictly larger
-worst-case per-truth error (`0.01375...`); the tie split is what makes it
-minimax. This is why ties must be handled explicitly rather than counted
-uniformly as errors.
+The two bounds coincide, so `n*_minimax = 87` is exact. Note that any
+*deterministic* tie-break of the Bayes rule for `pi*` has a strictly larger
+worst-case per-truth error (`0.009775...`, `0.013750...`, or `0.017828...`
+depending on the break); the optimal tie split is what makes the rule minimax.
+This is why ties must be handled explicitly rather than counted uniformly as
+errors.
 
 ## Zero-mass cases
 
