@@ -156,6 +156,24 @@ exp_family = -math.log(float(error_big)) / N_EXP
 check(abs(exp_family - C_STAR) < 1.5e-2,
       f"family exponent {exp_family} does not approach C_* = {C_STAR}")
 
+# The bound columns of the docs table at n = 64, 256, 512 must agree with the
+# exact q1 term 3^(n/2)/2^n (the q2 terms are negligible there).  This pins the
+# large-n rows that floating-point evaluation of rho^n or exp(-n C) could spoil.
+DOC_BOUNDS = {64: 1.004524e-04, 256: 1.018220e-16, 512: 1.036772e-32}
+DOC_RATIOS = {64: 6.896, 256: 13.483, 512: 18.988}
+for n, recorded in DOC_BOUNDS.items():
+    exact_q1 = float(Fraction(3) ** (n // 2) / Fraction(2) ** n)
+    check(abs(exact_q1 / recorded - 1.0) < 1e-4,
+          f"docs bound at n={n} ({recorded}) disagrees with 3^(n/2)/2^n")
+    check(abs(math.exp(-n * C_PQ1) / exact_q1 - 1.0) < 1e-9,
+          f"exp(-n C(q1)) disagrees with the exact 3^(n/2)/2^n at n={n}")
+    check(abs(RHO_PQ1 ** n / exact_q1 - 1.0) < 1e-9,
+          f"rho(q1)^n disagrees with the exact 3^(n/2)/2^n at n={n}")
+    ratio = (math.exp(-n * C_PQ1) + math.exp(-n * C_PQ2)) / float(exact_error(n))
+    check(abs(ratio / DOC_RATIOS[n] - 1.0) < 0.01,
+          f"docs bound/exact ratio at n={n} ({ratio:.3f}) disagrees with "
+          f"{DOC_RATIOS[n]}")
+
 
 def exact_binary_error(n: int, p: tuple[Fraction, ...],
                        q: tuple[Fraction, ...]) -> Fraction:
