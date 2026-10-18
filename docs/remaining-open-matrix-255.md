@@ -206,6 +206,17 @@ CI verifier), #94 (`#318` docs), plus integration `#322` and this matrix PR
     in open PR #325; only the board closure remains. **Priority LOW.**
 12. **#265 / #268 editorial acceptance** — human review, not research.
 
+_Re-verified 2026-10-18 by agent 9a6462b52854 (this increment): every merge SHA
+above is an ancestor of `origin/main` `aedc836` (`git merge-base
+--is-ancestor`); every cited Lean endpoint is present on `main` (`git show`);
+the board OPEN set above matches `antonina board list` (all OPEN children carry
+a scheduler-assigned resource agent); the open PRs listed as live owners
+(#318/#320/#322/#323/#324/#325) are confirmed open via the GitHub API; CI is
+green at merges `3e902b6` (#315) and `15c8c19` (#321). The #263 and #284
+section bodies above were stale and are updated in this increment (landed
+conditional convex core; landed palindrome edge-multiplicity audit;
+`:324`→`:340` line drift). #255 remains OPEN; no conjecture is promoted._
+
 ### Board child states at this reconciliation
 
 Board-OPEN: **#257, #259, #261, #263, #265, #268, #269, #271, #272, #281, #284,
@@ -675,7 +686,7 @@ a full classification.
 | #265 | Strong-law / KL-limit statement for finite identifiable families + CI script | `scripts/verify_strong_consistency_265.py`; `paper/sections/05-population.tex`; `docs/presentation-arc-265.md` | `53f8c4d` (GitHub PR #280), `b9f0f47` (CI wiring, GitHub PR #284) | #265/#268 editorial review pass still OPEN |
 | #265 | Chernoff refinement of the finite-family recovery bound: `Σ_D exp(-n C(p_S,p_D)) ≤ \|C_S\| exp(-n C_*)`, `C_* ≥ ln(1/ρ_*)`; `C_*` is the exact finite-family exact-ML error exponent (classical Chernoff/Sanov, EXTERNAL); the bound stays loose at finite `n` (~3.7× exact at `n=16`, ratio `≈√n`) | `paper/sections/03-open-question.tex` (`prop:chernoff-refinement`, `rem:chernoff-sharp`); `docs/chernoff-exponent-finite-recovery-265.md`; `scripts/verify_chernoff_finite_recovery_265.py`; both decks' speaker notes | `15c8c19` (GitHub PR #321; exact-head CI green at `448072c`; supersedes the earlier "pending" row) | Tight/minimax finite-`n` bound and the unrestricted-universe uniform sample size remain OPEN |
 | #284 | Generic anchored-window spelling identity and word-level reverse-complement class-count law | `AssemblyP1/Section62GenericAnchorSpelling.lean` (`generic_anchors_window_eq_sources` `:70`, `generic_circular_spelling_anchors` `:99`); `AssemblyP1/Section62RcWordLaw.lean` (`classWordCount_eq_rc_class_count` `:72`) | `c581d11` (GitHub PR #282), `0b87b58` (GitHub PR #252) | Exact Myers practical-algorithm fidelity and full unobserved RC class universe still OPEN (#284 still OPEN) |
-| #263 | Conditional separable-convex Graver optimality certificate (file added by GitHub PR #249) plus the penalized-solver-cost vs pure-ML distinction | `AssemblyP1/SeparableConvexGraver.lean` (`graver_optimal_iff_no_improving` `:324`, `negLog_discConvOn` `:500`) | `9fa5a41` (GitHub PR #249), `e57e81f` (GitHub PR #281) | Full separable-convex discrete Graver certificate conditional on #264 still OPEN (#263 still OPEN) |
+| #263 | Conditional separable-convex Graver optimality certificate (file added by GitHub PR #249; secant-slope affine-tail extension landed by PR #305/#313) plus the penalized-solver-cost vs pure-ML distinction | `AssemblyP1/SeparableConvexGraver.lean` (`graver_optimal_iff_no_improving` `:340`, `negLog_discConvOn` `:500`) | `9fa5a41` (GitHub PR #249), `e57e81f` (GitHub PR #281), `2388184` (GitHub PR #313) | Full separable-convex discrete Graver certificate conditional on #264 still OPEN (#263 still OPEN) |
 
 ---
 
@@ -929,6 +940,18 @@ rest remain human-readable only, as labeled per entry.
   conformal decomposition. Connects #257 rigidity certificates to
   #259/#261 likelihood maximizers; must not duplicate the #257 integer-kernel
   proof or the #261 likelihood analysis.
+- **Update (2026-10-18):** the conditional separable-convex core is LANDED.
+  `AssemblyP1/SeparableConvexGraver.lean` proves
+  `graver_optimal_iff_no_improving` (`:340`) — the necessary-and-sufficient
+  no-improving-direction criterion — plus the secant-slope affine-tail convex
+  extension of ML costs to the full box (`affineExtend`,
+  `affineExtend_discConvOn`, `negLog_discConvOn`), landed by GitHub PR #305
+  (GitHub-marked merged) and signed integration PR #313 (`2388184`), exact-head
+  CI green. The certificate is **explicitly conditional**: the module
+  docstring records that transfer to the full box holds only when the #264
+  conformal Graver decomposition is integrated, and the penalized-solver-cost
+  vs pure-ML distinction (PR #281 `e57e81f`) stands. The unconditional
+  certificate is not claimed; board #263 remains OPEN.
 
 ### #265 (whitepaper/presentations: finite-read inference and ML guarantees)
 
@@ -1201,7 +1224,19 @@ rest remain human-readable only, as labeled per entry.
   two-hop reduction iff, signed global walk-language preservation,
   full oriented circular read-occurrence identity, and observed RC
   molecule-class counting including palindromes.
-- **Still OPEN:** exact Myers practical algorithm correspondence,
+- **Update (2026-10-18):** the RC-palindrome edge-multiplicity audit is
+  LANDED. `AssemblyP1/Section62PalindromeEdgeMultiplicityAudit.lean` (+
+  `docs/section62-palindrome-edge-multiplicity-audit-284.md`, GitHub PR #285,
+  integrated via signed PR #296 `c56166b`, GitHub PR #296 merge) kernel-checks,
+  on the repository's actual two-base DNA `Base`/`comp` operations, that a
+  literal reading of the §6.2 graph generates an RC-palindrome
+  self-overlap four times as an identical edge-list value even though its
+  complete `BdEdge` structure (endpoint incidences included) is identical — a
+  representation audit with no reinterpretation of the historical flow graph
+  asserted. The transitive-reduction/spelling-fidelity question itself is
+  untouched by this audit.
+- **Still OPEN:** exact Myers practical algorithm correspondence
+  (including simultaneous-removal order/termination),
   the full unobserved section-6.1 class universe and 4^k ambiguity,
   and characterization of which general feasible balanced flows spell
   a single circular genome.
