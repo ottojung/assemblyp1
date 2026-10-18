@@ -666,6 +666,14 @@ up to rotation under the relevant constraints. No universal
 constant read count for an unrestricted competitor universe.
 Probability here is over random reads from a fixed truth, not
 the earlier prior-averaged Bayes decision experiment.
+#265 refinement (2026-10-18): the Hellinger constant -ln rho_* can be replaced
+by the Chernoff information C_* >= ln(1/rho_*), and C_* is the exact
+large-deviation exponent of the finite-family exact-ML error (external
+Chernoff/Sanov, NOT kernel-checked). The bound is still not tight at finite n
+(~3.7x the exact error at n=16 on the worked family). Paper
+prop:chernoff-refinement / rem:chernoff-sharp; see backup B3 and
+docs/chernoff-exponent-finite-recovery-265.md. Do not claim a tight finite-n
+bound or that C_* is kernel-checked.
 -->
 
 ---
@@ -948,6 +956,18 @@ caveats: constants deliberately loose and exponential in L; it bounds the
 exact-ML ERROR PROBABILITY, not likelihood growth; and per-truth finite-sample
 success is NOT monotone. This is not universal ML over all genomes and not the
 MB09 product-binomial surrogate.
+#265 Chernoff refinement (2026-10-18): replace -ln rho_* by
+C_* = min_D C(p_S,p_D), C(p,q) = sup_{t in [0,1]} -ln sum_{w:p(w)>0}
+p(w)^(1-t) q(w)^t >= -ln rho(p,q). Termwise the Chernoff union bound
+sum_D exp(-n C(p_S,p_D)) is no larger, and C_* is the EXACT exponent of the
+finite-family exact-ML error (standard Chernoff/Sanov; EXTERNAL, not
+kernel-checked). It is still not tight at finite n: on p=(3/4,1/4) with
+competitors (1/4,3/4), (0,1), the bound is ~3.7x the exact error at n=16 and
+the bound/exact ratio grows ~sqrt(n). Paper prop:chernoff-refinement /
+rem:chernoff-sharp; note docs/chernoff-exponent-finite-recovery-265.md; exact
+check scripts/verify_chernoff_finite_recovery_265.py. The kernel-checked
+constant remains rho_* (FiniteReadRecovery). No tight or minimax finite-n
+claim.
 -->
 
 ---
