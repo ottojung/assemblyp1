@@ -1,7 +1,7 @@
 # §6.2 transitive reduction: dependent-conclusion reevaluation (#284)
 
 **Status:** kernel-checked dependency audit. This note records, for issue #284
-requirement (6), exactly which existing §6.2 conclusions referenced the old
+requirement (6), the §6.2 conclusions that referenced the old
 literal predicate `Section62Flow.transitivelyReduced` and whether each survives
 under the corrected spelling-preserving reduction
 `Section62SpellingReductionCandidate.transitivelyReducedSpelling`. It adds no
@@ -24,16 +24,41 @@ the unreduced `overlapEdges` graph".
 
 ## Dependents of the old predicate and their verdicts
 
+The table lists the load-bearing dependents (the finite §6.2 witnesses and the
+non-spelled-flow countermodel). It is illustrative rather than exhaustive: any
+other theorem concluding the old `SpelledFeasible62` also depends on the old
+predicate. All such dependents are covered uniformly by the general transfer
+below, so none is falsified and none needs a bespoke re-proof.
+
 | dependent | uses old predicate as | verdict | kernel bridge |
 |---|---|---|---|
 | `Section62BridgingCounterexample.truth_steps_survive_reduction`, `.competitor_steps_survive_reduction`, `.truth_spelled_feasible62`, `.competitor_spelled_feasible62` | `StepsSurviveReduction` / `SpelledFeasible62` | **survives verbatim** (`oMin = readLen − 1 = 2`; graph already reduced) | `Section62ReductionWitnessAudit.bridging_*` |
 | `SameLengthSection62Counterexample.truth_steps_survive_reduction`, `.competitor_steps_survive_reduction`, `.truth_spelled_feasible62`, `.competitor_spelled_feasible62` | `StepsSurviveReduction` / `SpelledFeasible62` | **survives verbatim** | `Section62ReductionWitnessAudit.sameLength_*` |
 | `PerOccurrenceSameLengthCounterexample.truth_steps_survive_reduction`, `.competitor_steps_survive_reduction`, `.truth_spelled_feasible62`, `.competitor_spelled_feasible62` | `StepsSurviveReduction` / `SpelledFeasible62` | **survives verbatim** | `Section62ReductionWitnessAudit.perOccurrence_*` |
+| every other theorem concluding the old `SpelledFeasible62` (e.g. `HistoricalCoverageSameLengthWitnesses`, `SameLengthExactMLCounterexample`, `SameLength62Maximizer`, `SameLength62TieUniqueness`, `OrientedVariableLengthSe62`, `MLEscape`) | `SpelledFeasible62` (hence `StepsSurviveReduction`) | **survives uniformly** | `Section62ReductionWitnessAudit.spelledFeasible62_old_implies_spelling` |
 | `Section62NonSpelledFlow` `Feasible62` certificates on `reducedList` (`star21_feasible62_reduced`, `truth_feasible62`, `star31_feasible62`) | longer-overlap `reducedList`, plus literal vacuity | **survives**; at `oMin = 1` the corrected reduction equals the repository's longer-overlap reduction `reducedList` | `Section62ReductionDependencyAudit.nonspelled_reduction_spelling_eq`, `.star21_feasible62_spelling_reduced`, `.truth_feasible62_spelling_reduced`, `.star31_feasible62_spelling_reduced` |
 | `Section62BidirectedFlow.SpelledFeasible62` / `StepsSurviveReduction` definitions | definition site | **retained as the audited model** (requirement 1); corrected analogues `SpelledFeasible62Spelling` / `StepsSurviveReductionSpelling` added alongside | `Section62ReductionWitnessAudit` |
 
 No dependent conclusion is falsified by the correction; no conclusion requires
 re-proving beyond the bridges above.
+
+## The general transfer that closes requirement (6)
+
+A spelling walk's steps are always maximal proper overlaps
+(`Section62ReductionDependencyAudit.spelling_step_len`), and maximal-overlap
+edges always survive the corrected reduction (`fullOverlap_survives`). Therefore
+the survival conjunct of the corrected predicate follows from the old
+certificate's `StepsInGraph` conjunct, and the remaining four conjuncts are
+literally identical. The kernel-checked general transfer
+
+```
+Section62ReductionWitnessAudit.spelledFeasible62_old_implies_spelling :
+  SpelledFeasible62 … sp f t d → SpelledFeasible62Spelling … sp f t d
+```
+
+holds for an arbitrary walk and edge list (axioms `{propext, Quot.sound}`), so it
+subsumes the three witness-specific proofs and covers every other
+`SpelledFeasible62` dependent as well.
 
 ## The uniform reason the `oMin = readLen − 1` witnesses survive
 
