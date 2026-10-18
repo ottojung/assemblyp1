@@ -153,11 +153,18 @@ Imagine testing a proposed genome by repeating the sequencing experiment in your
 
 **Nothing more complicated than a set of probabilities and a product.**
 
+**Why the highest-probability candidate?** If the candidates start out equally likely and every wrong answer costs the same, the most likely candidate is also the one that is right most often *on average*.
+
 <!--
 This is likelihood P(data | genome), not posterior probability P(genome | data).
 Searching over all candidate genomes is a separate problem. Because a finite
 sample fluctuates, the most likely genome need not be the true one; the next
 slides make that precise.
+Uniform start positions are not uniform read-type probabilities: the likelihood
+scores each observed read string by the fraction of starts that produce it
+(paper 02-model). The source's own objective is ambiguous — MB09 §6.1 uses a
+fixed-N product-binomial surrogate and §6.2 a flow likelihood — and neither is
+the exact iid multinomial used here; none of these is kernel-checked.
 Bayes-optimality is prior-averaged: with a uniform prior and 0-1 loss, MAP/ML
 maximizes the average chance of being right, and the kernel-checked certificate
 (BayesOptimalityCertificate) adds that a rule missing a per-observation
@@ -335,8 +342,10 @@ reversal (SameLengthSection62Counterexample), positive structural rigidity
 (OrientedRigidity), and population maximum-likelihood uniqueness in the
 primitive P2 class (Issue94Complete.population_unique_ML). The practical
 conclusions apply first to a deliberately simple sequencing model: circular
-genomes, equal-length error-free reads, and uniformly random starts. Sample
-complexity ("how many reads for 99%?") remains open.
+genomes, equal-length error-free reads, and uniformly random starts. A sharp
+uniform sample size ("how many reads for 99%?") over the unrestricted genome
+universe remains open; the finite-family Hellinger/Chernoff bound in backup is a
+scoped sufficient answer.
 -->
 
 ---
