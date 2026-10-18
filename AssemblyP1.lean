@@ -359,6 +359,9 @@ import AssemblyP1.PrimitiveP2FiniteClassTight
 import AssemblyP1.PrimitiveP2FiniteClassTightAudit
 import AssemblyP1.PrimitiveP2UniformSeparation
 import AssemblyP1.PrimitiveP2UniformSeparationAudit
+-- #263 MB09 §6.1 product-binomial is not coordinatewise monotone (8-vs-4 kernel) + audit.
+import AssemblyP1.ProductBinomialMonotonicityCounterexample
+import AssemblyP1.ProductBinomialMonotonicityCounterexampleAudit
 -- #263 separable-convex Graver optimality certificate (conditional core) + audit.
 import AssemblyP1.SeparableConvexGraver
 import AssemblyP1.SeparableConvexGraverAudit
