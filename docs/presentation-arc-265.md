@@ -284,9 +284,9 @@ decks. For the one explicit finite family of binary read laws
   (`V_84<0.99<=V_85=0.99006833`);
 - minimax-over-truths 99% recovery is `n*=87`
   (`error_86=0.01051594>0.01>=error_87=0.00973853`);
-- the kernel-checked Hellinger union bound is the conservative **sufficient**
-  `153 = ceil(ln(2/0.01)/ln(1/rho_*))`, about `6.4x` the exact per-truth error
-  of the middle truth at `n=85`;
+- the kernel-checked Hellinger union bound gives a conservative **sufficient**
+  size `153 = ceil(ln(2/0.01)/ln(1/rho_*))`; evaluated at `n=85` that bound
+  value is about `6.4x` the exact per-truth error of the middle truth;
 - the numbers are **prior-averaged**: at `n=85` the per-truth successes are
   `A=0.983491 < B=C=0.993357` (average `V_85`), so "99% recovery" describes the
   average, not each truth, and per-truth success is not monotone.

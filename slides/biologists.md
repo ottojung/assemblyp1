@@ -415,9 +415,10 @@ binary read laws A=(1/2,1/2), B=(3/4,1/4), C=(1/4,3/4) the tight 99% recovery
 sizes are EXACT (standard decision theory + exact arithmetic; NOT Lean): n*=85
 for the uniform-prior Bayes optimum (V_84<0.99<=V_85=0.99006833) and n*=87 for
 the minimax-over-truths optimum (error_86=0.01051594>0.01>=error_87=
-0.00973853). The kernel-checked Hellinger bound above is the conservative
-SUFFICIENT 153, about 6.4x the exact per-truth error of the middle truth at
-n=85. This is prior-AVERAGED: at n=85 the per-truth successes are A=0.983491 <
+0.00973853). The kernel-checked Hellinger bound above gives a conservative
+sufficient size 153; evaluated at n=85 that bound value is about 6.4x the
+exact per-truth error of the middle truth.
+This is prior-AVERAGED: at n=85 the per-truth successes are A=0.983491 <
 B=C=0.993357 (average V_85), so "99% recovery" is about the average, not each
 truth, and per-truth success is not monotone. Scope: one explicit finite family
 under the iid read-law model, not the unrestricted genome universe and not
