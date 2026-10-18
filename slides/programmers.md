@@ -344,6 +344,12 @@ Lean: AssemblyP1/FiniteBayesDecision.lean.
 All algorithms get the same reads, prior, candidate set and
 0-1 correctness measure. No truth-by-truth guarantee or extra
 reconstruction-success promise is assumed.
+Kernel-checked converse and tie refinement: a deterministic rule is
+optimal exactly when it is pointwise MAP (BayesOptimalityCertificate
+pointwiseMAP_iff_bayesOptimal); a rule missing a per-observation
+maximizer strictly loses; on a tie two distinct rules can both be
+optimal, while a strict maximizer forces the unique choice. The scope
+remains prior-averaged, not per-truth.
 -->
 
 ---

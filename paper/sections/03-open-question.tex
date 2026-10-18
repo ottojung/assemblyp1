@@ -123,6 +123,43 @@ for the same optimality derived from the explicit finite maximum
 witness of Remark~\ref{rem:map-vs-infallible}; the decision principle itself is
 classical \cite{berger1985}.}
 
+\begin{remark}[The converse, tie handling, and posterior certainty]
+\label{rem:bayes-certificate}
+Theorem~\ref{thm:bayes-optimal} is an exact \emph{certificate}, not merely a
+sufficiency statement: for finite real joint mass $J(\theta,x)$, a deterministic
+rule is Bayes-optimal precisely when it is \emph{pointwise} MAP, returning a
+joint-mass maximizer at every sample. A rule that is not pointwise MAP strictly
+loses prior-averaged success; on a tie two distinct rules can both be optimal, so
+optimality does not by itself force a unique answer, while at a sample with a
+\emph{strict} maximizer the optimal choice is forced and unique. For nonnegative
+joint mass and positive predictive probability, the conditional posterior
+equals $1$ at a candidate exactly when every candidate of positive joint mass
+equals it; the positive-mass hypothesis is essential, and zero-mass samples are
+handled separately.
+\end{remark}
+\statusline{\kernelcheck{} for the necessary-and-sufficient certificate and its
+converse
+(\texttt{AssemblyP1.BayesOptimalityCertificate.pointwiseMAP\_iff\_bayesOptimal},
+\texttt{AssemblyP1.BayesOptimalityCertificate.bayesOptimal\_imp\_pointwiseMAP},
+\texttt{AssemblyP1.BayesOptimalityCertificate.not\_pointwiseMAP\_imp\_strict\_loss}),
+the tie witness
+(\texttt{AssemblyP1.BayesOptimalityCertificate.TieWitness.both\_optimal},
+\texttt{AssemblyP1.BayesOptimalityCertificate.TieWitness.policies\_distinct}),
+forced choice at a strict maximizer
+(\texttt{AssemblyP1.BayesOptimalityCertificate.pointwiseMAP\_forces\_strictMax},
+\texttt{AssemblyP1.BayesOptimalityCertificate.strictMax\_unique}), and the
+posterior-one boundary
+(\texttt{AssemblyP1.BayesOptimalityCertificate.posterior\_eq\_one\_iff\_singleton\_support};
+rotation-class instantiation
+\texttt{AssemblyP1.BayesOptimalityCertificate.orbit\_posterior\_eq\_one\_iff\_singleton\_support}).
+The algebraic statements hold for arbitrary real joint mass with no positivity
+or normalization; the probabilistic reading substitutes $J=\pi P$, and the
+nonnegativity and predictive-mass hypotheses enter only there. Zero-mass samples
+are handled by
+\texttt{AssemblyP1.PosteriorMAPEquivalence.zeroMass\_all\_joint\_max}. The
+circular read model and the uniform start sampling remain external modeling
+inputs.}
+
 \paragraph{Rotation classes and the choice of prior.}
 The prior is a prior on \emph{equivalence classes}, not on literal spellings.
 A uniform prior over circular words would instead weight each class in
@@ -308,9 +345,11 @@ Conditional reconstruction (Question~A)
 Prior-average Bayes optimality
   & for every finite $n$, averaged over truth $\sim\pi$ and data $\sim P_\theta$
   & finite classes, correct model, specified prior, zero-one loss
-  & MAP/ML maximizes prior-average success
+  & MAP/ML maximizes prior-average success (and every optimal deterministic rule is pointwise MAP)
   & kernel-checked (\texttt{FiniteBayesDecision},
-    \texttt{FiniteMapOptimality}); classical \cite{berger1985}\\
+    \texttt{FiniteMapOptimality},
+    \texttt{Bayes\-Optimality\-Certificate});
+    classical \cite{berger1985}\\
 \addlinespace
 Pointwise finite-sample failure
   & exists a truth $S$, realized $R$, competitor $D$

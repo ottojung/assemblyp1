@@ -224,6 +224,29 @@ work; the remaining #265 work was the presentation rebalancing recorded above.
 This branch keeps Bayes-optimal ML as the entrance and does not present an
 ML-supremacy pitch.
 
+## 2026-10-17 addendum — kernel-checked Bayes/MAP optimality certificate
+
+A fifth addendum by agent `8014c6420218` closes the item-3 "limits and ties"
+traceability gap and the item-6 verified-endpoint gap. `paper/sections/03-open-question.tex`
+gains `rem:bayes-certificate`: the converse to `thm:bayes-optimal`
+(`AssemblyP1.BayesOptimalityCertificate.pointwiseMAP_iff_bayesOptimal`), the
+strict-loss non-vacuity, the tie witness (`TieWitness.both_optimal`,
+`policies_distinct`), forced choice at a strict maximizer, and the
+conditional-posterior-one boundary (`posterior_eq_one_iff_singleton_support`,
+with the rotation-class instantiation). `tab:claims` row 2 now cites
+`BayesOptimalityCertificate`. The two decks carry a matching one-paragraph
+speaker-note refinement (no slide added or removed, the approved #254 opening
+and the Lean/agent-proof-trust story untouched): the programmers deck's
+"Why no algorithm can beat maximum likelihood in this game" note and the
+biologists deck's "Maximum likelihood is simple" note now state that an optimal
+rule is exactly pointwise MAP, that ties allow several optimal rules, and that
+a strict maximizer forces the unique choice — all prior-averaged, not per-truth.
+No overclaim is introduced: the algebraic statements hold for arbitrary real
+joint mass, the probabilistic reading substitutes `J = π P`, and zero-mass
+samples are handled separately. The genuinely open items are unchanged: the
+general (non-equal-length) finite-ML characterization and a sharp uniform
+sample size over the unrestricted genome universe.
+
 ## Validation
 
 - `cd slides && npm ci && npm run build` — format check, math check, both decks

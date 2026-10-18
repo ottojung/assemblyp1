@@ -148,6 +148,11 @@ This is likelihood P(data | genome), not posterior probability P(genome | data).
 Searching over all candidate genomes is a separate problem. Because a finite
 sample fluctuates, the most likely genome need not be the true one; the next
 slides make that precise.
+Bayes-optimality is prior-averaged: with a uniform prior and 0-1 loss, MAP/ML
+maximizes the average chance of being right, and the kernel-checked certificate
+(BayesOptimalityCertificate) adds that a rule missing a per-observation
+maximizer is strictly worse, ties allow several optimal rules, and a strict
+maximizer forces the choice. This still says nothing for one fixed truth.
 -->
 
 ---
