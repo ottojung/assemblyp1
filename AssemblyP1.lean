@@ -127,6 +127,8 @@ import AssemblyP1.PopulationReduction
 import AssemblyP1.PopulationGibbsTest
 import AssemblyP1.OrientedRigidity
 import AssemblyP1.GraverRigidityAudit
+import AssemblyP1.GraverThroughputBridge
+import AssemblyP1.GraverThroughputBridgeAudit
 import AssemblyP1.FiniteRigidityDecider
 import AssemblyP1.FiniteRigidityDeciderAudit
 import AssemblyP1.TwoWalkRigidity
