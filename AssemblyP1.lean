@@ -70,6 +70,9 @@ import AssemblyP1.Section62GlobalSpellingPreservation
 import AssemblyP1.Section62GlobalCircularCorrespondence
 import AssemblyP1.Section62GlobalCircularAudit
 import AssemblyP1.Section62ReductionDependencyAudit
+-- #284: simultaneous (global) language preservation of the spelling reduction,
+-- via the well-founded extension-length decrease.
+import AssemblyP1.Section62SimultaneousReduction
 -- #284: RC-palindrome audit of duplicate edge-list multiplicities (no model rewrite).
 import AssemblyP1.Section62PalindromeEdgeMultiplicityAudit
 import AssemblyP1.Section62FullSpectrumUnseenFactor
