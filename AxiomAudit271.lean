@@ -1,6 +1,7 @@
 import AssemblyP1.ConditionalVsOrdinaryMLSeparation
 import AssemblyP1.ConditionalVsOrdinaryMLBoundary271
 import AssemblyP1.W1W2SeparationCompatibility
+import AssemblyP1.W1W2SharedObservableSeparation
 import AssemblyP1.ConditionalVsMLGenomeAdapter271
 import AssemblyP1.ConditionalBayesEImpliesB271
 
@@ -30,6 +31,23 @@ open AssemblyP1.ConditionalVsOrdinaryMLSeparation
 #print axioms AssemblyP1.W1W2SeparationCompatibility.w1_truth_not_maximizer_exact
 #print axioms AssemblyP1.W1W2SeparationCompatibility.w2_truth_not_maximizer_binomial
 #print axioms AssemblyP1.W1W2SeparationCompatibility.w2_truth_not_maximizer_exact
+
+-- W1/W2 two-sided separation on ONE shared observable model (#271 goal 3):
+-- reverse-complement-collapsed molecule-class observation, normalized exact
+-- multinomial pmf, uniform prior, truth-dependent promise E; (A) certain under
+-- E, (B) fails; E- and prior-ablations.
+#print axioms AssemblyP1.W1W2SharedObservableSeparation.postE_truth_eq_one
+#print axioms AssemblyP1.W1W2SharedObservableSeparation.truth_not_ml_of_comp_strict
+#print axioms AssemblyP1.W1W2SharedObservableSeparation.noE_post_lt_one
+#print axioms AssemblyP1.W1W2SharedObservableSeparation.w1_A
+#print axioms AssemblyP1.W1W2SharedObservableSeparation.w1_B
+#print axioms AssemblyP1.W1W2SharedObservableSeparation.w1_noE_post
+#print axioms AssemblyP1.W1W2SharedObservableSeparation.w1_noE_post'
+#print axioms AssemblyP1.W1W2SharedObservableSeparation.w1_premise_sensitivity
+#print axioms AssemblyP1.W1W2SharedObservableSeparation.w2_A
+#print axioms AssemblyP1.W1W2SharedObservableSeparation.w2_B
+#print axioms AssemblyP1.W1W2SharedObservableSeparation.w2_noE_post
+#print axioms AssemblyP1.W1W2SharedObservableSeparation.w2_premise_sensitivity
 
 -- Genome-level adapter in the exact AssemblyP1 finite read model (#271):
 -- normalized per-candidate read pmf, orbit-class prior, and the candidate-specific
