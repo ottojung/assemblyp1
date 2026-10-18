@@ -70,6 +70,9 @@ import AssemblyP1.Section62GlobalSpellingPreservation
 import AssemblyP1.Section62GlobalCircularCorrespondence
 import AssemblyP1.Section62GlobalCircularAudit
 import AssemblyP1.Section62ReductionDependencyAudit
+-- #284: explicit kernel survival of the §6.2 finite witnesses under the corrected
+-- spelling-preserving transitive reduction (requirement-6 close-out).
+import AssemblyP1.Section62ReductionWitnessAudit
 -- #284: RC-palindrome audit of duplicate edge-list multiplicities (no model rewrite).
 import AssemblyP1.Section62PalindromeEdgeMultiplicityAudit
 import AssemblyP1.Section62FullSpectrumUnseenFactor
@@ -1214,3 +1217,16 @@ reading. Two finite checks anchor it: the refuted BBT premise's witness is not
 -- #281 tightness of the primitive-P2 length bound at K = 1.
 #print axioms AssemblyP1.PrimitiveP2FiniteClassTight.exists_primitive_P2_at_bound_K1
 #print axioms AssemblyP1.PrimitiveP2FiniteClassTight.maxLen_two
+
+-- #284 requirement (6): explicit survival of the §6.2 finite witnesses under the
+-- corrected spelling-preserving transitive reduction.
+#print axioms AssemblyP1.Section62ReductionWitnessAudit.stepsSurviveReductionSpelling_iff_stepsInGraph_of_full
+#print axioms AssemblyP1.Section62ReductionWitnessAudit.bridging_graph_spelling_reduction_eq_self
+#print axioms AssemblyP1.Section62ReductionWitnessAudit.bridging_truth_spelled_feasible62_spelling
+#print axioms AssemblyP1.Section62ReductionWitnessAudit.bridging_competitor_spelled_feasible62_spelling
+#print axioms AssemblyP1.Section62ReductionWitnessAudit.sameLength_graph_spelling_reduction_eq_self
+#print axioms AssemblyP1.Section62ReductionWitnessAudit.sameLength_truth_spelled_feasible62_spelling
+#print axioms AssemblyP1.Section62ReductionWitnessAudit.sameLength_competitor_spelled_feasible62_spelling
+#print axioms AssemblyP1.Section62ReductionWitnessAudit.perOccurrence_graph_spelling_reduction_eq_self
+#print axioms AssemblyP1.Section62ReductionWitnessAudit.perOccurrence_truth_spelled_feasible62_spelling
+#print axioms AssemblyP1.Section62ReductionWitnessAudit.perOccurrence_competitor_spelled_feasible62_spelling
