@@ -9,62 +9,204 @@ choices. The claim-to-proof index in \path{docs/verification.md} records
 exact Lean namespaces, theorem hypotheses and independent check scripts,
 without embedding development history in the manuscript.
 
-\begin{center}
-\small
-\begin{tabular}{@{}p{0.48\textwidth}p{0.40\textwidth}@{}}
+\paragraph{Proof-to-claim support classes.}
+Every headline below is labelled by the kind of support it has, so that a
+conditional derivation never inherits a stronger label from a neighbouring
+result:
+\begin{enumerate}[label=\textbf{(\roman*)},leftmargin=2.2em,itemsep=1pt,topsep=2pt]
+\item a kernel-checked exact Lean theorem, with its source path;
+\item a proof given in this paper that is not (yet) kernel-checked;
+\item a textbook or classical external theorem, with a precise citation;
+\item the published 2016 reconstruction result, used as an external premise;
+\item open.
+\end{enumerate}
+A conditional Lean theorem whose key historical premise is imported is listed
+under both that premise and its own conditional statement; it is \emph{never}
+labelled kernel-checked for the imported step. Table~\ref{tab:ledger} is the
+resulting theorem/assumption matrix.
+
+\begin{table}[t]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\caption{Proof-to-claim support matrix. ``Class'' is the strongest honest
+support of the headline \emph{as stated}, using classes (i)--(v) above.
+Endpoints are module and declaration names; the complete index is
+\texttt{docs/verification.md}.}
+\label{tab:ledger}
+\begin{tabular}{@{}>{\raggedright\arraybackslash}p{0.29\textwidth}>{\raggedright\arraybackslash}p{0.07\textwidth}>{\raggedright\arraybackslash}p{0.56\textwidth}@{}}
 \toprule
-Result & Evidence and qualification\\
+Headline (with its stated scope) & Class & Evidence and qualification\\
 \midrule
-Not-So-Greedy reconstruction &
-Published theorem \cite{shomorony2016}, for the source's matched-string
-coverage and bridging predicate.\\
-Same-length circulation rigidity and rotation uniqueness &
-Kernel-checked, under placement-based $\Is$, oriented full-overlap
-support, same length and truth candidacy
-(Theorem~\ref{thm:rigidity}; Corollary~\ref{cor:same-length-rotation}).\\
-Bayes/MAP optimal average reconstruction &
-Classical decision result, formalized in
-\texttt{FiniteBayesDecision}; true likelihood and specified prior.\\
-Historical witnesses $W_1$ and $W_2$ &
-Kernel-checked historical predicate, Section~6.2 flow feasibility,
-and strict likelihood comparisons
-(Theorems~\ref{thm:cex-historical-W1}--\ref{thm:cex-historical-W2}).\\
-$AAABB\to AAAAB$; $AAACC\to AAAAC$ &
-Kernel-checked exact and binomial finite counterexamples.
-The $AAABCBC\to AAAAABC$ instance is an independently verified
-exact computation, not stated as a Lean theorem.\\
-$AABB\to ABAB$ and $AAATT\to AAAATT$ &
-Kernel-checked truth-candidacy and variable-length boundaries.\\
-$AABBC\to AABC$ finite sampling &
-Kernel-checked in \texttt{FiniteSamplingCounterexample}.\\
-Ukkonen condition and spectrum uniqueness &
-Classical combinatorial work \cite{ukkonen1992,pevzner1995,bresler2013};
-the needed specialized P2 result is also proved in Lean.\\
-Primitive-P2 population identifiability and class finiteness &
-Unconditional theorem \texttt{population\_unique\_ML}
-and \texttt{PrimitiveP2FiniteClass}; length bound $2q^{L-1}$.
-The cited endpoint has no separate Eulerian-cycle obstruction premise.\\
-Finite-family Hellinger error bound and complete P2 recovery &
-Kernel-checked in \texttt{FiniteReadRecovery} and
-\texttt{PrimitiveP2FiniteClass}; exact iid multinomial, ties counted as
-errors, finite identifiable family.\\
-Explicit uniform exponential exact-ML error rate over the primitive-P2 class &
-Kernel-checked in \texttt{PrimitiveP2UniformSeparation}:
-\texttt{primitiveP2\_exponential\_error\_bound} and
-\texttt{primitiveP2\_ML\_confidence\_explicit}. Bound
-$N_C\,e^{-n/(8B^4)}$ with $B=2q^{L-1}$; the constants are deliberately
-loose (exponential in $L$), the scope is oriented exact iid reads, and it is
-neither universal maximum likelihood nor the MB09 product-binomial
-surrogate.\\
-Non-monotonic exact-ML per-truth success &
-Kernel-checked two-genome theorem \texttt{success\_not\_monotone},
-with exact namespace in \path{docs/verification.md}.\\
-Graver rigidity and binomial effective weights &
-Kernel-checked general criteria, with the restricted flow
-and surrogate likelihood domains stated in the body.\\
+Bayes/MAP prior-average optimality
+(\ref{thm:bayes-optimal}; finite classes, correct model, uniform prior on
+rotation classes, zero-one loss)
+& (i),(iii)
+& \path{FiniteBayesDecision.chooseMAP_optimal},
+\path{chooseMAP_optimal_randomized}, \path{finite_iid_MAP_optimal};
+classical \cite{berger1985}. Not per-truth ML optimality.\\
+\addlinespace
+Uniform rotation-class prior makes ML and MAP coincide
+& (i)
+& \path{GenomeOrbitAdapter.uniform_orbit_prior_ML}; circular model and
+uniform start sampling are external modeling inputs.\\
+\addlinespace
+Not-So-Greedy reconstruction
+(\ref{thm:notso-greedy}; matched-string coverage and bridging)
+& (iv)
+& Published theorem \cite{shomorony2016}, for the source's matched-string
+predicate.\\
+\addlinespace
+Certificate singleton / strong guarantee
+(\ref{prop:strong-guarantee-singleton}; at most one rotation class satisfies
+the strong guarantee for the same observations)
+& (ii)
+& Paper-level corollary of the (iv) reconstruction premise; not
+kernel-checked, and it does not claim that only one genome can
+\emph{generate} the reads.\\
+\addlinespace
+Conditional posterior and constrained MAP (Question~A)
+& (i) conditional on (iv)
+& \path{ConditionalIdentifiability.ReadModel.conditional_posterior_eq_one},
+\path{constrained_MAP_mem_orbit}; assumes the external
+decoder-correctness interface, which it does not prove.\\
+\addlinespace
+Same-length oriented circulation rigidity (\ref{thm:rigidity})
+& (i)
+& \path{OrientedFinalRigidity.oriented_same_length_spectrum_rigidity};
+\path{OrientedRigidity.rigidity_same_spectrum}.\\
+\addlinespace
+Same-length maximizer and rotation uniqueness
+(\ref{cor:same-length-rotation}; realized placements, truth and competitor
+candidacy)
+& (i)
+& \path{SameLength62Maximizer.informationFeasible_62_maximizer_of_exact_R};
+\path{SameLength62Uniqueness.unique_62_maximizer_up_to_rotation}.\\
+\addlinespace
+Robust same-length oriented ML iff (\ref{rem:robust-iff-criteria})
+& (i)
+& \path{RobustSameLengthIff.robust_iff_unique_spectrum}; the paper states
+only the beatability direction.\\
+\addlinespace
+Full-overlap molecule ML maximality iff (\ref{rem:robust-iff-criteria})
+& (i)
+& \path{FullOverlapMoleculeML.robust_maximality_iff_unique}; a distinct
+molecule domain, not interchangeable with the oriented one.\\
+\addlinespace
+Graver-basis rigidity criterion (\ref{thm:graver-rigidity})
+& (i)
+& \path{GraverRigidity.GraverBasis.rigid_iff_forall_graver_not_inbox},
+for the specified finite positive-circulation domain.\\
+\addlinespace
+Fixed-$N$ binomial effective-weight criterion
+(\ref{thm:binomial-weights}; surrogate objective)
+& (i)
+& \path{FixedNBinomialEffectiveWeights.every_observation_effectiveProduct_le_iff};
+this is the product-binomial surrogate, not exact iid ML.\\
+\addlinespace
+Historical strict counterexamples $W_1,W_2$
+(\ref{thm:cex-historical-W1}--\ref{thm:cex-historical-W2})
+& (i)
+& \path{HistoricalCoverageSameLengthWitnesses.W1.w1_historical_literal_se62_flow_counterexample},
+\path{W2.w2_historical_literal_se62_flow_counterexample}.\\
+\addlinespace
+Exact finite counterexamples $AABB\to ABAB$, $AAATT\to AAAATT$,
+$AAABB\to AAAAB$, $AAACC\to AAAAC$, $AABBC\to AABC$
+& (i)
+& \path{SameLengthExactMLCounterexample.same_length_exact_ML_refutation_62},
+\path{OrientedVariableLengthSe62.oriented_variable_length_se62_counterexample},
+\path{FixedLengthExactCounterexample.fixed_length_exact_counterexample},
+\path{FixedLengthBinomialCounterexample.fixed_length_binomial_counterexample},
+\path{FiniteSamplingCounterexample.finite_sampling_counterexample}.\\
+\addlinespace
+Read-tiled counterexample $AAABCBC\to AAAAABC$
+& (ii)
+& Exact independent computation
+\path{scripts/verify_readtiled_exact_counterexample.py}; not stated as a Lean
+theorem.\\
+\addlinespace
+Gibbs/KL population maximality (\ref{lem:gibbs})
+& (i)
+& \path{PopulationGibbs.truth_is_population_maximizer};
+\path{PopulationMaximizerUnrestricted.population_maximizer_unrestricted}.
+Maximality alone does not give uniqueness.\\
+\addlinespace
+Primitive-P2 population uniqueness (\ref{thm:population})
+& (i)
+& \path{AssemblyP1.Issue94Complete.population_unique_ML}; no separate
+Eulerian-obstruction premise; long-window obligation discharged internally.\\
+\addlinespace
+Primitive-P2 class finiteness and length bound (\ref{thm:p2-finite-class})
+& (i)
+& \path{PrimitiveP2FiniteClass.primitive_P2_len_le},
+\path{primitiveP2Class_finite}; bound $2q^{L-1}$.\\
+\addlinespace
+Finite-family Hellinger error bound (\ref{thm:finite-recovery})
+& (i)
+& \path{FiniteReadRecovery.eventProb_wrong_le_sum}; iid exact read laws,
+finite distinguishable family, ties counted as errors.\\
+\addlinespace
+Explicit uniform exponential exact-ML rate (\ref{thm:p2-uniform-rate})
+& (i)
+& \path{PrimitiveP2UniformSeparation.primitiveP2_exponential_error_bound},
+\path{primitiveP2_ML_confidence_explicit}; constants deliberately loose
+(exponential in $L$), exact oriented iid only.\\
+\addlinespace
+Per-truth non-monotonicity (\ref{prop:nonmonotone})
+& (i)
+& \path{NonmonotonicityWitness281.success_not_monotone}; the $n=1,2$ step
+is kernel-checked.\\
+\addlinespace
+Variable-length primitive identifiability iff nonbranching
+(\ref{thm:identifiable-iff-nonbranching})
+& (i)
+& \path{ScalarPrimitiveSpellings.identifiable_iff_nonbranching}; no
+external complete-spectrum uniqueness premise.\\
+\addlinespace
+Same-length fibre count (\ref{thm:fibre-count})
+& (ii),(iii)
+& Divisor-sum core kernel-checked
+(\path{FibreCountArithmetic.fibre_mobius_inversion},
+\path{fibre_totient}); full count proved in
+\path{docs/exact-fibre-count-theorem-219.md}, using the external BEST theorem
+(van Aardenne-Ehrenfest--de~Bruijn 1951; Tutte 1975).\\
+\addlinespace
+Reduced signed-circuit occurrence count
+(\ref{thm:reduced-circuit-occurrences})
+& (i)
+& \path{Section62GlobalSkippedBridge.observation7_reduced_signed_circuit_range_count},
+for the paper's explicitly defined reduction.\\
+\addlinespace
+Bridging-conditioned error bound (\ref{cor:conditional-bridging-error})
+& (ii)
+& Paper-level corollary of the Hellinger union bound; no dedicated Lean
+formalization claimed.\\
+\addlinespace
+Strong consistency on a finite family (\ref{prop:strong-consistency})
+& (ii),(iii)
+& Paper-level strong law and KL argument; classical
+\cite{durrett2019,cover2006}. No finite $n$ supplied.\\
+\addlinespace
+Chernoff refinement (\ref{prop:chernoff-refinement})
+& (ii),(iii)
+& Paper-level Chernoff/Sanov bound; classical \cite{cover2006,tsybakov2009}.
+Kernel-checked constant remains the Hellinger $\rho_*$.\\
+\addlinespace
+Exact finite-$n$ $99\%$ minimax sizes (\ref{rem:minimax-sample-size})
+& (ii),(iii)
+& Exact computation
+\path{scripts/verify_minimax_finite_recovery_265.py}; classical decision
+theory \cite{berger1985,lehmann1998}. One explicit family only.\\
+\addlinespace
+Referent of the 2016 sentence (MB09 object, read-type convention, candidate
+length, maximizer versus uniqueness); exactness of the MB09 \S6.1
+product-binomial objective
+& (v)
+& Open; see Appendix~\ref{app:referents}. The product-binomial objective is
+not asserted to be exact Bayes ML.\\
 \bottomrule
 \end{tabular}
-\end{center}
+\end{table}
 
 The source's historical matched-string predicate and the manuscript's
 sampled-placement predicate are not interchangeable. Likewise, oriented
