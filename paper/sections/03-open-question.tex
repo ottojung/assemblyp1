@@ -271,11 +271,82 @@ bound of Remark~\ref{rem:sample-complexity} proves the display.
 \end{proof}
 The threshold is a \emph{sufficient}, conservative sample size: it inverts a
 union bound, is not necessary or minimax-optimal, and inherits the
-finite-family and uniform-separation hypotheses. Replacing $-\ln\rho_*$ by the
-optimal Chernoff exponent gives a bound at least as strong
-\cite{cover2006,tsybakov2009}; the Hellinger constant is the one kernel-checked
-in \texttt{AssemblyP1.FiniteReadRecovery}, whose concrete instance
-\texttt{il\_confidence\_99} is kernel-checked there.
+finite-family and uniform-separation hypotheses. The Hellinger constant is the
+one kernel-checked in \texttt{AssemblyP1.FiniteReadRecovery}, whose concrete
+instance \texttt{il\_confidence\_99} is kernel-checked there. The next
+proposition sharpens the rate from the Hellinger constant to the Chernoff
+exponent, and the remark after it records how far the resulting bound remains
+from the exact finite-sample error.
+
+\begin{proposition}[Chernoff refinement of the finite-family bound]
+\label{prop:chernoff-refinement}
+In the setting of Remark~\ref{rem:sample-complexity}, for distributions $p,q$
+on $W$ define the Chernoff information
+\[
+  C(p,q)
+  = -\inf_{t\in[0,1]}\ln\sum_{w:\,p(w)>0}p(w)^{1-t}q(w)^t
+  = \sup_{t\in[0,1]}\Bigl(-\ln\sum_{w:\,p(w)>0}p(w)^{1-t}q(w)^t\Bigr)\ge 0 ,
+\]
+and set $C_*=\min_{D\in\mathcal C_S}C(p_S,p_D)$, with $C_*=\infty$ when
+$\mathcal C_S$ is empty. Then $C(p,q)\ge-\ln\rho(p,q)$ for all $p,q$, with
+equality if and only if the supremum is attained at $t=\tfrac12$; hence
+$C_*\ge\ln(1/\rho_*)>0$, and for every $n$,
+\[
+  \Pr_S\{\exists D\in\mathcal C_S:L_D(R_1,\dots,R_n)\ge L_S(R_1,\dots,R_n)\}
+  \;\le\;\sum_{D\in\mathcal C_S}e^{-n\,C(p_S,p_D)}
+  \;\le\;|\mathcal C_S|\,e^{-n\,C_*} .
+\]
+In particular, for every $\delta\in(0,1]$,
+$n\ge\lceil\ln(|\mathcal C_S|/\delta)/C_*\rceil$ implies that the error is at
+most $\delta$.
+\end{proposition}
+\begin{proof}
+Fix $D$ and $t\in[0,1]$. Since the reads are iid, each factor contributes
+$p_S(w)\,(p_D(w)/p_S(w))^t=p_S(w)^{1-t}p_D(w)^t$, so the expectation of
+$(L_D/L_S)^t$ over the product law $p_S^{\otimes n}$ is
+$\bigl(\sum_{w:\,p_S(w)>0}p_S(w)^{1-t}p_D(w)^t\bigr)^n$. Under $p_S$ we have
+$L_S>0$ almost surely; on the event $L_D\ge L_S$ the ratio $(L_D/L_S)^t$ is at
+least $1$, and it is nonnegative on the complement, so Markov's inequality
+gives $\Pr_S(L_D\ge L_S)\le\bigl(\sum_w p_S^{1-t}p_D^t\bigr)^n$. Taking the
+infimum over $t$ yields $e^{-n\,C(p_S,p_D)}$, and the union bound yields the
+first inequality. The second is $C(p_S,p_D)\ge C_*$. Because $t=\tfrac12$ is
+admissible, $C(p,q)\ge-\ln\rho(p,q)$; equality forces the infimum to be
+attained at $t=\tfrac12$. Finally $\rho_*<1$ by
+Remark~\ref{rem:sample-complexity}, so $C_*\ge\ln(1/\rho_*)>0$ and the
+displayed inversion follows.
+\end{proof}
+\statusline{External standard statistics
+(\cite{cover2006,tsybakov2009}); this refinement is \emph{not}
+kernel-checked. The kernel-checked constant remains the Hellinger $\rho_*$ of
+\texttt{AssemblyP1.FiniteReadRecovery}.}
+
+\begin{remark}[The Chernoff exponent is sharp; the finite-$n$ prefactor is not]
+\label{rem:chernoff-sharp}
+The exponent $C_*$ is not merely an artefact of the union bound. For a finite
+read alphabet and pairwise-distinct laws the exact maximum-likelihood error
+has the large-deviation exponent $C_*$:
+\[
+  \lim_{n\to\infty}-\frac1n\ln\Pr_S\{\exists D\in\mathcal C_S:
+      L_D(R_1,\dots,R_n)\ge L_S(R_1,\dots,R_n)\}=C_* ,
+\]
+where the binary rate
+$\lim_n-\tfrac1n\ln\Pr_p(L_q\ge L_p)=C(p,q)$ is the classical Chernoff
+bound / Sanov theorem \cite{cover2006,tsybakov2009}, whose I-projection is the
+tilted law $r^*\propto p^{\,1-t^*}q^{\,t^*}$ at the optimising $t^*$. The
+Hellinger exponent $\ln(1/\rho_*)$ can be \emph{strictly smaller} than $C_*$,
+so Proposition~\ref{prop:chernoff-refinement} can genuinely improve the rate;
+when $q$ is obtained from $p$ by exchanging two symbols the two coincide
+(the sum is then symmetric about $t=\tfrac12$). The
+bound is nevertheless not exact at finite $n$: the prefactor $|\mathcal C_S|$
+overcounts overlapping error events, and the large-deviation expansion's
+lower-order terms are dropped. A worked two-symbol family quantifies the gap:
+the bound is about $3.7$ times the exact error at $n=16$ while sharing its
+exponent
+(\path{docs/chernoff-exponent-finite-recovery-265.md}, checked by
+\path{scripts/verify_chernoff_finite_recovery_265.py}). This is external
+standard statistics, not a Lean result; only the Hellinger constant $\rho_*$
+is kernel-checked here, and no finite $n$ is claimed to be optimal.
+\end{remark}
 
 \begin{corollary}[Conditional error while bridging holds]
 \label{cor:conditional-bridging-error}
