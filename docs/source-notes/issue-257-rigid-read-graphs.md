@@ -186,17 +186,17 @@ map `B : E → ℤ` with `B ≥ 1` on every edge, balanced at every node, and
     kernel-checked, section 17]
 
 12. **Coupling begins at cycle rank 3; the double theta is minimal.** Every
-    strongly connected support of cycle rank `≤ 2` is a single cycle or a theta
-    graph, whose shared path carries the *sum* of the two private path values, so
-    the shared box is redundant and the exact criterion is the **bouquet
-    criterion** (no coupling). The smallest genuinely coupled support is the
-    **double-theta graph** (rank `3`): two hubs joined by one arc and one
-    length-`2` path in each direction. Its exact criterion is a four-variable
-    integer system coupled by an **extra hub-balance equation**
-    (`doubleTheta_nonrigid_iff`); the instance `(m₁,m₂,n₁,n₂) = (2,1,2,1)` is a
-    **rigid repetitive** support, and dropping the coupling equation is **not
-    sound** (`relaxed_not_sound`). [mathematical proof + kernel-checked, section
-    19]
+    strongly connected support of cycle rank `≤ 2` is a single cycle, a
+    figure-eight (the `k = 2` bouquet) or a theta graph, whose shared path
+    carries the *sum* of the two private path values, so the shared box is
+    redundant and the exact criterion is the **bouquet criterion** (no coupling).
+    The smallest genuinely coupled support is the **double-theta graph**
+    (rank `3`): two hubs joined by one arc and one length-`2` path in each
+    direction. Its exact criterion is a four-variable integer system coupled by an
+    **extra hub-balance equation** (`doubleTheta_nonrigid_iff`); the instance
+    `(m₁,m₂,n₁,n₂) = (2,1,2,1)` is a **rigid repetitive** support, and dropping
+    the coupling equation is **not sound** (`relaxed_not_sound`). [mathematical
+    proof + kernel-checked, section 19]
 
 ---
 
@@ -1464,20 +1464,18 @@ bridge (§18). [mathematical proof + kernel-checked]
 ### 19.1 Rank `≤ 2` is not coupled: the shared path is a sum
 
 Recall the cycle rank `r = |E| - |V| + c` (so `L₀` has rank `r - 1`). A strongly
-connected support of rank `r ≤ 2` is either a single directed cycle (`r = 1`) or
-a **theta graph** (`r = 2`): two vertices `u, v` joined by three internally
-disjoint directed paths. Since every edge must lie on a directed cycle, one of
-the three paths is traversed "back" (`v → u`) and the other two "forward"
-(`u → v`); equivalently the theta is **two directed cycles sharing one directed
-path `P`**.
-
-At the shared endpoints `u, v` the balance equation forces the value on `P` to
-be the **sum** of the values on the two private return paths. For the base
-circulation `A` (positive, multiplicity `m_P` on `P`, `m₁`, `m₂` on the private
-paths) this reads `m_P = m₁ + m₂`, so the shared box `x + y ≥ 1 - m_P` is
-*implied* by the private boxes `x ≥ 1 - m₁`, `y ≥ 1 - m₂`. Hence the exact
-criterion of the theta collapses to the **bouquet criterion** of §13 on the two
-cycles `C₁ = P + Q₁` (length `L₁`) and `C₂ = P + Q₂` (length `L₂`):
+connected support of rank `r ≤ 2` is either a single directed cycle (`r = 1`), a
+**figure-eight** (two cycles sharing one vertex, i.e. the `k = 2` bouquet), or a
+**theta graph** (`r = 2`): two cycles sharing a directed path of length `≥ 1`.
+For a theta graph the shared path `P` carries the **sum** of the two private
+return-path values: at the shared endpoints `u, v` the balance equation forces
+`value(P) = value(Q₁) + value(Q₂)`. For the base circulation `A` (positive,
+multiplicity `m_P` on `P`, `m₁`, `m₂` on the private paths) this reads
+`m_P = m₁ + m₂`, so the shared box `x + y ≥ 1 - m_P` is *implied* by the private
+boxes `x ≥ 1 - m₁`, `y ≥ 1 - m₂`; a figure-eight has no shared edge and is
+already a bouquet. Hence in both cases the exact criterion collapses to the
+**bouquet criterion** of §13 on the cycles `C₁` (length `L₁`) and `C₂` (length
+`L₂`):
 
 ```
 not rigid  ⟺  ∃ (x,y) ≠ 0,  L₁·x + L₂·y = 0,  x ≥ 1-m₁,  y ≥ 1-m₂.

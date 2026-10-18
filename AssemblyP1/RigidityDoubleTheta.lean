@@ -21,10 +21,11 @@ here.
 The merged criteria cover the *bouquet* family (all cycle rank `≥ 2`, but with
 edge-disjoint cycles, so the box is diagonal) and the *antiparallel bridge*
 family (cycle rank `4`, coupling through the bridge box). Every strongly
-connected support of cycle rank `≤ 2` is a *theta graph* (two cycles sharing a
-directed path) or a figure-eight; in all of these the shared-path/vertex balance
-forces the shared value to be the **sum** of the two cycle values, so the shared
-box is implied by the per-cycle boxes and the instance satisfies the **bouquet
+connected support of cycle rank `≤ 2` is either a single cycle, a figure-eight
+(two cycles sharing one vertex, already a bouquet), or a *theta graph* (two
+cycles sharing a directed path). For a theta graph the shared path carries the
+**sum** of the two private path values, so the shared box is implied by the
+per-cycle boxes; in all three cases the instance satisfies the **bouquet
 criterion** (`bouquet_nonrigid_iff`). Coupling therefore cannot start below rank
 `3`.
 
