@@ -168,7 +168,7 @@ theorem jointE_nonneg (π : C → 𝕜) (p : C → O → 𝕜) (truth : C)
   unfold jointE
   split
   · exact mul_nonneg (mul_nonneg (hπ g) (hp g r)) (by norm_num)
-  · rw [mul_zero]; exact le_refl 0
+  · rw [mul_zero]
 
 /-- **E-ablation (general).**  The no-`E` posterior on the truth is `< 1`
 whenever some competitor has positive prior and positive likelihood: the
