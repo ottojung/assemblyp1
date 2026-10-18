@@ -1,0 +1,18 @@
+import AssemblyP1.FiniteReadOnlyDecoderCertainty
+
+/-! Axiom audit for the #272 target-3 read-only decoder certainty results. -/
+
+#print axioms AssemblyP1.FiniteReadOnlyDecoderCertainty.readOnly_predictive_pos_iff
+#print axioms AssemblyP1.FiniteReadOnlyDecoderCertainty.readOnly_decoder_certain_implies_unambiguous
+#print axioms AssemblyP1.FiniteReadOnlyDecoderCertainty.exists_readOnly_decoder_certain_iff_support_singleton
+#print axioms AssemblyP1.FiniteReadOnlyDecoderCertainty.readOnly_certain_set_eq_weakest
+#print axioms AssemblyP1.FiniteReadOnlyDecoderCertainty.admReadOnly_iff_factorable
+#print axioms AssemblyP1.FiniteReadOnlyDecoderCertainty.truthDependent_not_factorable
+#print axioms AssemblyP1.FiniteReadOnlyDecoderCertainty.twoCandidate_E_not_admReadOnly
+#print axioms AssemblyP1.FiniteReadOnlyDecoderCertainty.TwoCandidateDecoder.no_readOnly_decoder_certain
+#print axioms AssemblyP1.FiniteReadOnlyDecoderCertainty.TwoCandidateDecoder.side_information_must_be_supplied
+#print axioms AssemblyP1.FiniteReadOnlyDecoderCertainty.empty_isMinimumSufficient
+#print axioms AssemblyP1.FiniteReadOnlyDecoderCertainty.minimum_unique
+#print axioms AssemblyP1.FiniteReadOnlyDecoderCertainty.minimum_exists_unique
+#print axioms AssemblyP1.FiniteReadOnlyDecoderCertainty.weakest_isMaximal
+#print axioms AssemblyP1.FiniteReadOnlyDecoderCertainty.minimum_without_weakest

@@ -29,6 +29,9 @@ supplied promise `E`) are inherited verbatim from the merged module.
 | Read-only family: unique weakest is `Unambiguous` | kernel-checked | `unambiguous_isWeakest_readonly`, `weakest_readonly_exists`, `weakest_readonly_unique` |
 | Full truth-dependent family: no weakest (union insufficient) | kernel-checked | `NoWeakestProb.no_weakest_sufficient`, `NoWeakestProb.unionAllSufficient_not_sufficient` |
 | Sufficiency is **not** closed under binary union | kernel-checked | `NoWeakestProb.union_e1_e2_not_sufficient` |
+| Read-only decoder certainty iff singleton supported fibre (target 3) | kernel-checked | [`FiniteReadOnlyDecoderCertainty.lean`](../AssemblyP1/FiniteReadOnlyDecoderCertainty.lean) `exists_readOnly_decoder_certain_iff_support_singleton` |
+| "Side information must be supplied": inferable-from-read iff read-only | kernel-checked | `admReadOnly_iff_factorable`, `truthDependent_not_factorable` |
+| Minimum sufficient promise exists and is unique; minimum ≠ weakest | kernel-checked | `minimum_exists_unique`, `minimum_without_weakest` |
 | `I_s` necessity for the specific Not-So-Greedy decoder | **OPEN** | §6 |
 | Ordering of `I_s` against `Unambiguous` / arbitrary sufficient promises | **neither** at promise level; read-string adapter OPEN | [`FiniteSideInformationOrdering.lean`](../AssemblyP1/FiniteSideInformationOrdering.lean), §6 |
 | Weakest sufficient inside the source-defined bridging subfamily | **OPEN** (reduced to a concrete criterion) | §6 |
@@ -203,8 +206,19 @@ equivalence-closed admissible) family.
    `weakest_admissible_iff_union` to the resulting read-dependent `I_s` family,
    and kernel-checks the `I_s` necessity obstructions (general coverage /
    triple / interleaved projection lemmas plus the unbridged-triple witnesses
-   `ABXABYABZ` / `ABXABZABY`).  A *decoder-level* certainty endpoint still
+   `ABXABYABZ` / `ABXABZABY`).     A *decoder-level* certainty endpoint still
    requires the external Not-So-Greedy guarantee and remains attributed/OPEN.
+5. **Read-only decoder certainty (target 3).** LANDED separately in
+   [`issue272-readonly-decoder-certainty.md`](issue272-readonly-decoder-certainty.md):
+   some read-only decoder reaches posterior one at `r` **iff** the supported
+   truth-fibre of `r` is a single nonempty orbit class
+   (`exists_readOnly_decoder_certain_iff_support_singleton`), which is exactly
+   the weakest read-only promise `Unambiguous`
+   (`readOnly_certain_set_eq_weakest`).  The same module formalizes "inferable
+   from the read iff read-only" (`admReadOnly_iff_factorable`,
+   `truthDependent_not_factorable`) and the bounded target-4 distinction
+   "minimum sufficient promise always exists, weakest need not"
+   (`minimum_exists_unique`, `minimum_without_weakest`).
 
 ## 7. Relationship to sibling fronts (no duplication)
 

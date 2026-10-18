@@ -352,6 +352,10 @@ import AssemblyP1.FiniteSideInformationSourcePromiseAudit
 -- `I_s` necessity obstructions (unbridged-triple witnesses ABXABYABZ / ABXABZABY).
 import AssemblyP1.FiniteSideInformationReadStringAdapter
 import AssemblyP1.FiniteSideInformationReadStringAdapterAudit
+-- #272 target 3: read-only decoder certainty characterization, "side information
+-- must be supplied", and the minimum-versus-weakest sufficient-promise distinction.
+import AssemblyP1.FiniteReadOnlyDecoderCertainty
+import AssemblyP1.FiniteReadOnlyDecoderCertaintyAudit
 -- #270 positive finite-family iid ML recovery via Hellinger affinity.
 import AssemblyP1.FiniteReadRecovery
 -- #270 concrete uniform-start cyclic read distribution and conditional genome bounds.
