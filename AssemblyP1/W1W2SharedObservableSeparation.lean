@@ -85,6 +85,8 @@ No `sorry`/`admit`/`axiom`/`native_decide`; the axiom audit is in
 
 namespace AssemblyP1.W1W2SharedObservableSeparation
 
+set_option linter.unusedSectionVars false
+
 /-! ## General shared observable model over a finite candidate type -/
 
 section General
@@ -94,10 +96,7 @@ variable {C O : Type*} [Fintype C] [DecidableEq C] [DecidableEq O]
 
 /-- The truth-dependent promise: "candidate `g` is the true genome".  Constant
 in the read; a function of the candidate and the read, not of the read alone. -/
-def truthE (truth : C) (g : C) (_ : O) : Prop := g = truth
-
-instance {truth : C} : DecidableRel (truthE truth) := fun g _ =>
-  inferInstanceAs (Decidable (g = truth))
+abbrev truthE (truth : C) (g : C) (_ : O) : Prop := g = truth
 
 /-- The joint distribution with the `E` indicator made explicit:
 `J(g, r) = π g · p_g(r) · 1_E(g, r)`.  Both the prior and the likelihood
@@ -109,10 +108,10 @@ def jointE (π : C → 𝕜) (p : C → O → 𝕜) (truth : C) (g : C) (r : O) 
 def predE (π : C → 𝕜) (p : C → O → 𝕜) (truth : C) (r : O) : 𝕜 :=
   ∑ g, jointE π p truth g r
 
-/-- Conditional posterior on the truth under `E`:
-`P(g = truth | r, E) = J(truth, r) / ∑_g J(g, r)`. -/
-def postE (π : C → 𝕜) (p : C → O → 𝕜) (truth : C) (r : O) : 𝕜 :=
-  jointE π p truth truth r / predE π p truth r
+/-- Conditional posterior on a candidate `g` under `E`:
+`P(g | r, E) = J(g, r) / ∑_h J(h, r)`. -/
+def postE (π : C → 𝕜) (p : C → O → 𝕜) (truth : C) (r : O) (g : C) : 𝕜 :=
+  jointE π p truth g r / predE π p truth r
 
 /-- Ordinary maximum-likelihood maximizer (ties allowed).  The prior and the
 side information do not enter. -/
@@ -129,7 +128,7 @@ vanishes. -/
 theorem jointE_eq_zero_of_ne (π : C → 𝕜) (p : C → O → 𝕜) (truth : C) {g : C} {r : O}
     (h : g ≠ truth) : jointE π p truth g r = 0 := by
   unfold jointE
-  simp only [truthE, if_neg h, mul_zero]
+  rw [ite_eq_right h, mul_zero]
 
 /-- **(A) Conditional recovery is certain under the truth-dependent `E`.**  The
 only candidate of positive joint mass satisfying `E` at `r` is the truth, so
@@ -139,17 +138,19 @@ theorem postE_truth_eq_one (π : C → 𝕜) (p : C → O → 𝕜) (truth : C) 
     (hπ : 0 < π truth) (hp : 0 < p truth r) : postE π p truth r truth = 1 := by
   have hj : jointE π p truth truth r = π truth * p truth r := by
     unfold jointE
-    simp only [truthE, if_pos rfl]
+    rw [ite_eq_left rfl]
     ring
   have hsum : predE π p truth r = π truth * p truth r := by
     unfold predE
     rw [Finset.sum_eq_single truth]
     · exact hj
     · intro g _ hne
-      exact jointE_eq_zero_of_ne π p truth g r hne
+      exact jointE_eq_zero_of_ne π p truth hne
     · intro h
       exact absurd (Finset.mem_univ truth) h
-  rw [postE, hsum, hj, div_self (ne_of_gt (by exact mul_pos hπ hp))]
+  unfold postE
+  rw [hsum, hj]
+  exact div_self (ne_of_gt (mul_pos hπ hp))
 
 /-- **(B) Ordinary ML strictly prefers a wrong candidate.**  If the competitor
 scores strictly higher than the truth at `r`, the truth is not an ML
@@ -166,8 +167,8 @@ theorem jointE_nonneg (π : C → 𝕜) (p : C → O → 𝕜) (truth : C)
     0 ≤ jointE π p truth g r := by
   unfold jointE
   split
-  · exact mul_nonneg (mul_nonneg (hπ g) (hp g r)) (le_of_lt (by norm_num))
-  · exact le_refl 0
+  · exact mul_nonneg (mul_nonneg (hπ g) (hp g r)) (by norm_num)
+  · rw [mul_zero]; exact le_refl 0
 
 /-- **E-ablation (general).**  The no-`E` posterior on the truth is `< 1`
 whenever some competitor has positive prior and positive likelihood: the
@@ -179,27 +180,28 @@ theorem noE_post_lt_one (π : C → 𝕜) (p : C → O → 𝕜) (truth : C) (r 
     (hc : ∃ c, c ≠ truth ∧ 0 < π c ∧ 0 < p c r) :
     postNoE π p truth r < 1 := by
   obtain ⟨c, hne, hπc, hpc⟩ := hc
-  have hnum : 0 < π truth * p truth r := mul_pos hπt hpt
   have hden_pos : 0 < ∑ g, π g * p g r := by
     have hle : π truth * p truth r ≤ ∑ g, π g * p g r :=
       Finset.single_le_sum (f := fun g => π g * p g r)
         (fun g _ => mul_nonneg (hπ g) (hp g r)) (Finset.mem_univ truth)
-    have hterm : 0 < π c * p c r := mul_pos hπc hpc
-    linarith
+    linarith [mul_pos hπt hpt]
   have hstrict : π truth * p truth r < ∑ g, π g * p g r := by
     have hcC : π c * p c r ≤ ∑ g ∈ Finset.univ.erase truth, π g * p g r :=
       Finset.single_le_sum (f := fun g => π g * p g r)
         (fun g _ => mul_nonneg (hπ g) (hp g r))
         (Finset.mem_erase.mpr ⟨hne, Finset.mem_univ c⟩)
+    have hcpos : 0 < π c * p c r := mul_pos hπc hpc
     have hdecomp : ∑ g, π g * p g r
         = π truth * p truth r + ∑ g ∈ Finset.univ.erase truth, π g * p g r := by
-      have := Finset.sum_erase_add (s := Finset.univ)
-        (f := fun g => π g * p g r) (Finset.mem_univ truth)
-      simpa using this
+      rw [← Finset.sum_erase_add (s := Finset.univ)
+        (f := fun g => π g * p g r) (Finset.mem_univ truth)]
+      ring
     linarith
   unfold postNoE
-  rw [div_lt_iff hden_pos, one_mul]
-  exact hstrict
+  calc π truth * p truth r / (∑ g, π g * p g r)
+      < (∑ g, π g * p g r) / (∑ g, π g * p g r) :=
+        div_lt_div_of_pos_right hstrict hden_pos
+    _ = 1 := div_self (ne_of_gt hden_pos)
 
 end General
 
@@ -237,7 +239,7 @@ candidate spectrum `d`.  With `n = 5` iid reads each uniform over the `G = 6`
 cyclic starts, `p_d(obs) = (5! / ∏_c obs c!) · ∏_c (d c / 6)^{obs c}`.  The
 four relevant classes are `0,1,2,4` with `obs = 2,1,1,1`, so the coefficient
 is `5!/(2!1!1!1!) = 60`. -/
-def w1pmf (d : Fin 8 → Nat) : ℝ :=
+noncomputable def w1pmf (d : Fin 8 → Nat) : ℝ :=
   60 * ((d 0 : ℝ) / 6) ^ (SameLengthSection62Counterexample.obs 0) *
     ((d 1 : ℝ) / 6) ^ (SameLengthSection62Counterexample.obs 1) *
     ((d 2 : ℝ) / 6) ^ (SameLengthSection62Counterexample.obs 2) *
@@ -245,16 +247,16 @@ def w1pmf (d : Fin 8 → Nat) : ℝ :=
 
 /-- The W1 observation model on the two-point space: the exact multinomial
 probability at `obs`, and the remaining mass at `other`. -/
-def w1p (g : W1Cand) (r : W1Obs) : ℝ :=
+noncomputable def w1p (g : W1Cand) (r : W1Obs) : ℝ :=
   match r with
   | .obs => w1pmf (w1spec g)
   | .other => 1 - w1pmf (w1spec g)
 
 /-- The uniform prior over the two W1 candidates. -/
-def w1prior (_ : W1Cand) : ℝ := 1 / 2
+noncomputable def w1prior (_ : W1Cand) : ℝ := 1 / 2
 
 /-- A skewed prior over the two W1 candidates (for the prior-ablation). -/
-def w1prior' : W1Cand → ℝ
+noncomputable def w1prior' : W1Cand → ℝ
   | .truth => 1 / 4
   | .competitor => 3 / 4
 
@@ -323,7 +325,10 @@ theorem w1prior_pos (g : W1Cand) : 0 < w1prior g := by
 theorem w1prior_nonneg (g : W1Cand) : 0 ≤ w1prior g := le_of_lt (w1prior_pos g)
 
 theorem w1prior_sum_one : ∑ g : W1Cand, w1prior g = 1 := by
-  unfold w1prior; simp
+  have h1 : (Finset.univ : Finset W1Cand) = {W1Cand.truth, W1Cand.competitor} := by
+    ext x; cases x <;> simp
+  rw [h1, Finset.sum_insert (by simp), Finset.sum_singleton]
+  unfold w1prior; norm_num
 
 theorem w1prior'_pos (g : W1Cand) : 0 < w1prior' g := by
   cases g <;> unfold w1prior' <;> norm_num
@@ -331,7 +336,10 @@ theorem w1prior'_pos (g : W1Cand) : 0 < w1prior' g := by
 theorem w1prior'_nonneg (g : W1Cand) : 0 ≤ w1prior' g := le_of_lt (w1prior'_pos g)
 
 theorem w1prior'_sum_one : ∑ g : W1Cand, w1prior' g = 1 := by
-  unfold w1prior'; simp
+  have h1 : (Finset.univ : Finset W1Cand) = {W1Cand.truth, W1Cand.competitor} := by
+    ext x; cases x <;> simp
+  rw [h1, Finset.sum_insert (by simp), Finset.sum_singleton]
+  unfold w1prior'; norm_num
 
 /-- The likelihood of the W1 observation under the truth, as a positive real. -/
 theorem w1_p_truth_obs_pos : 0 < w1p W1Cand.truth W1Obs.obs := by
@@ -363,7 +371,6 @@ theorem w1_sum (f : W1Cand → ℝ) :
       · exact Finset.mem_univ _
       · exact Finset.mem_univ _
   rw [h1, Finset.sum_insert (by simp), Finset.sum_singleton]
-  ring
 
 /-! ### W1 separation on the shared model -/
 
@@ -377,8 +384,9 @@ theorem w1_A : postE w1prior w1p W1Cand.truth W1Obs.obs W1Cand.truth = 1 :=
 /-- **(B) W1: ordinary R-only ML strictly prefers the wrong candidate.**  The
 true spectrum is not an ML maximizer at `obs`. -/
 theorem w1_B : ¬ mlMax (fun g r => w1p g r) W1Cand.truth W1Obs.obs :=
-  truth_not_ml_of_comp_strict (fun g r => w1p g r) W1Cand.truth W1Cand.competitor
-    W1Obs.obs w1_p_truth_lt_comp_obs
+  truth_not_ml_of_comp_strict (p := fun g r => w1p g r)
+    (truth := W1Cand.truth) (competitor := W1Cand.competitor)
+    (r := W1Obs.obs) (h := w1_p_truth_lt_comp_obs)
 
 /-- **W1 E-ablation.**  Without `E`, the ordinary posterior on the truth is
 `1/4 ≠ 1`: the competitor retains positive prior and positive likelihood. -/
@@ -460,7 +468,7 @@ candidate spectrum `d`.  With `n = 6` iid reads each uniform over the `G = 8`
 cyclic starts, `p_d(obs) = (6! / ∏_c obs c!) · ∏_c (d c / 8)^{obs c}`.  The
 five relevant classes are `4,12,14,17,44` with `obs = 2,1,1,1,1`, so the
 coefficient is `6!/(2!1!1!1!1!) = 360`. -/
-def w2pmf (d : Fin 64 → Nat) : ℝ :=
+noncomputable def w2pmf (d : Fin 64 → Nat) : ℝ :=
   360 * ((d 4 : ℝ) / 8) ^ (PerOccurrenceSameLengthCounterexample.obs 4) *
     ((d 12 : ℝ) / 8) ^ (PerOccurrenceSameLengthCounterexample.obs 12) *
     ((d 14 : ℝ) / 8) ^ (PerOccurrenceSameLengthCounterexample.obs 14) *
@@ -468,13 +476,13 @@ def w2pmf (d : Fin 64 → Nat) : ℝ :=
     ((d 44 : ℝ) / 8) ^ (PerOccurrenceSameLengthCounterexample.obs 44)
 
 /-- The W2 observation model on the two-point space. -/
-def w2p (g : W2Cand) (r : W2Obs) : ℝ :=
+noncomputable def w2p (g : W2Cand) (r : W2Obs) : ℝ :=
   match r with
   | .obs => w2pmf (w2spec g)
   | .other => 1 - w2pmf (w2spec g)
 
 /-- The uniform prior over the two W2 candidates. -/
-def w2prior (_ : W2Cand) : ℝ := 1 / 2
+noncomputable def w2prior (_ : W2Cand) : ℝ := 1 / 2
 
 /-- The W2 multinomial coefficient, computed from the observed counts, is
 `360 = 6!/(2!1!1!1!1!)`. -/
@@ -585,7 +593,6 @@ theorem w2_sum (f : W2Cand → ℝ) :
       · exact Finset.mem_univ _
       · exact Finset.mem_univ _
   rw [h1, Finset.sum_insert (by simp), Finset.sum_singleton]
-  ring
 
 /-! ### W2 separation on the shared model -/
 
@@ -596,8 +603,9 @@ theorem w2_A : postE w2prior w2p W2Cand.truth W2Obs.obs W2Cand.truth = 1 :=
 
 /-- **(B) W2: ordinary R-only ML strictly prefers the wrong candidate.** -/
 theorem w2_B : ¬ mlMax (fun g r => w2p g r) W2Cand.truth W2Obs.obs :=
-  truth_not_ml_of_comp_strict (fun g r => w2p g r) W2Cand.truth W2Cand.competitor
-    W2Obs.obs w2_p_truth_lt_comp_obs
+  truth_not_ml_of_comp_strict (p := fun g r => w2p g r)
+    (truth := W2Cand.truth) (competitor := W2Cand.competitor)
+    (r := W2Obs.obs) (h := w2_p_truth_lt_comp_obs)
 
 /-- **W2 E-ablation.**  Without `E`, the ordinary posterior on the truth is
 `2/5 ≠ 1`. -/
