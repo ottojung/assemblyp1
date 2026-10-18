@@ -29,9 +29,10 @@ per-cycle boxes; in all three cases the instance satisfies the **bouquet
 criterion** (`bouquet_nonrigid_iff`). Coupling therefore cannot start below rank
 `3`.
 
-This module exhibits the **minimal coupled support**: the *double-theta graph*,
-of cycle rank `3`, obtained by taking two hubs `u, v` and joining them by two
-parallel arcs in each direction, one of length `1` and one of length `2`:
+This module exhibits the **minimal coupled support among de Bruijn-realizable
+supports**: the *double-theta graph*, of cycle rank `3`, obtained by taking two
+hubs `u, v` and joining them by two parallel arcs in each direction, one of
+length `1` and one of length `2`:
 
 ```
 u → v                 (P1, one arc)          u → w → v   (P2, two arcs)
@@ -66,12 +67,16 @@ mass is `α₁ + 2·α₂ + β₁ + 2·β₂ = 0`.
 
 All theorems are kernel-checked with only `[propext, Classical.choice,
 Quot.sound]` (`AssemblyP1/RigidityDoubleThetaAudit.lean`); no
-`sorry`/`admit`/`axiom`/`native_decide`. The double-theta is an *abstract*
-oriented support graph (two hubs of degree `4`, two of degree `2`); realizability
-of this exact shape as a de Bruijn read-support is not claimed (a de Bruijn graph
-has at most one arc between any ordered pair of vertices). The residual — a
-*polynomial* min-cut/max-flow closed form for general supports, or a proof that
-none exists — remains **OPEN** (§8.1/§8.2).
+`sorry`/`admit`/`axiom`/`native_decide`. The double-theta **is** realizable as a
+de Bruijn read-support (two hubs of degree `4`, two of degree `2`): at `L = 3`
+take `u = AB`, `v = BA`, `w = BB`, `z = AA`, so the six arcs are the distinct
+length-`3` words `ABA, ABB, BBA, BAB, BAA, AAB` (six distinct ordered pairs); the
+circular genome `ABABBA` has exactly this read spectrum (each arc once), and
+`AABABABB` realizes the multiplicity tuple `(2,1,2,1)`. The genuinely
+**non-realizable** coupled support is instead the smaller `3`-vertex
+`K3`-minus-an-arc (also rank `3`). The residual — a *polynomial* min-cut/max-flow
+closed form for general supports, or a proof that none exists — remains **OPEN**
+(§8.1/§8.2).
 -/
 
 namespace AssemblyP1.RigidityDoubleTheta

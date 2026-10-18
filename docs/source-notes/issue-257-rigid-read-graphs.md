@@ -185,15 +185,18 @@ map `B : E → ℤ` with `B ≥ 1` on every edge, balanced at every node, and
     counterexample to that tempting generalisation. [mathematical proof +
     kernel-checked, section 17]
 
-12. **Coupling begins at cycle rank 3; the double theta is minimal.** Every
-    strongly connected support of cycle rank `≤ 2` is a single cycle, a
-    figure-eight (the `k = 2` bouquet) or a theta graph, whose shared path
-    carries the *sum* of the two private path values, so the shared box is
-    redundant and the exact criterion is the **bouquet criterion** (no coupling).
-    The smallest genuinely coupled support is the **double-theta graph**
-    (rank `3`): two hubs joined by one arc and one length-`2` path in each
-    direction. Its exact criterion is a four-variable integer system coupled by an
-    **extra hub-balance equation** (`doubleTheta_nonrigid_iff`); the instance
+12. **Coupling begins at cycle rank 3; the double theta is minimal among
+    realizable supports.** Every strongly connected support of cycle rank `≤ 2`
+    is a single cycle, a figure-eight (the `k = 2` bouquet) or a theta graph,
+    whose shared path carries the *sum* of the two private path values, so the
+    shared box is redundant and the exact criterion is the **bouquet criterion**
+    (no coupling). The smallest genuinely coupled support **that is realizable as
+    a de Bruijn read-support** is the **double-theta graph** (rank `3`): two hubs
+    joined by one arc and one length-`2` path in each direction. (Category
+    distinction: among *abstract* supports the `3`-vertex `K3`-minus-an-arc is
+    also rank `3` and coupled but is **not** realizable; see §19.6.) Its exact
+    criterion is a four-variable integer system coupled by an **extra
+    hub-balance equation** (`doubleTheta_nonrigid_iff`); the instance
     `(m₁,m₂,n₁,n₂) = (2,1,2,1)` is a **rigid repetitive** support, and dropping
     the coupling equation is **not sound** (`relaxed_not_sound`). [mathematical
     proof + kernel-checked, section 19]
@@ -513,16 +516,18 @@ exhaustive zeros are a sanity check on the proofs, not a substitute for them.
    long-bridge criterion (arbitrary cycle lengths `p, q ≥ 2`) is proved and
     kernel-checked; it is genuinely `p,q`-dependent — `(p,q,m₁,m₂,f) = (3,4,2,1,1)`
     is a rigid repetitive instance, so `m₁ ≥ 2` alone does not force
-    non-rigidity. **Further partial progress (§19, 2026-10-18):** coupling begins
-    at cycle rank `3`; every rank-`≤ 2` support satisfies the bouquet criterion,
-    and the **double-theta graph** (rank `3`) is the minimal genuinely coupled
-    support, with an exact four-variable criterion coupled by an extra
-    hub-balance equation, a rigid repetitive instance `(2,1,2,1)`, and a
-    kernel-checked refutation of the coupling-dropped relaxation.
+     non-rigidity. **Further partial progress (§19, 2026-10-18):** coupling begins
+     at cycle rank `3`; every rank-`≤ 2` support satisfies the bouquet criterion,
+     and the **double-theta graph** (rank `3`) is the minimal genuinely coupled
+     support **among realizable supports** (the abstract `3`-vertex
+     `K3`-minus-an-arc is smaller and coupled but not realizable), with an exact
+     four-variable criterion coupled by an extra
+     hub-balance equation, a rigid repetitive instance `(2,1,2,1)`, and a
+     kernel-checked refutation of the coupling-dropped relaxation.
     [open; bouquet case reduced and shown poly-time, §13/§15;
     bridge case classified, §14; length-3 bridge classified and bridge pattern
-    refuted, §17; general `p,q` long bridge classified, §18; coupling begins at
-    rank `3`, double theta minimal, §19]
+     refuted, §17; general `p,q` long bridge classified, §18; coupling begins at
+     rank `3`, double theta minimal among realizable supports, §19]
 2. **The exact complexity** of the exact criterion (§7). **Partial (§15,
    2026-10-16):** the bouquet family (hence the target-cycle family) is in `P`
    via the Apéry-set / residue-graph shortest-path algorithm; the
@@ -1455,9 +1460,9 @@ closed form for general supports, or a proof that none exists — remains
 
 ## 19. The double theta: coupling begins at cycle rank 3 (§8.1 progress)
 
-This section advances open item **§8.1** by isolating the *smallest* support on
-which the exact criterion is genuinely **coupled**, and by explaining why no
-smaller support can be. It builds on — and does not redo — the bouquet (§13), the
+This section advances open item **§8.1** by isolating the *smallest realizable*
+support on which the exact criterion is genuinely **coupled**, and by explaining why no
+smaller realizable support can be. It builds on — and does not redo — the bouquet (§13), the
 antiparallel bridge (§14), the length-3 bridge (§17) and the general `p,q` long
 bridge (§18). [mathematical proof + kernel-checked]
 
@@ -1490,10 +1495,11 @@ theta graph on `≤ 3` vertices per path with `G ≤ 12` agrees with the bouquet
 criterion — see the `[rank2]` part of `scripts/verify_257_double_theta.py`,
 §19.5]
 
-### 19.2 The double theta: the minimal coupled support
+### 19.2 The double theta: the minimal coupled support among realizable supports
 
 Coupling requires **two** independent hub balance equations. The smallest such
-support is the **double-theta graph** (rank `3`): two hubs `u, v`, joined in each
+support **that is realizable as a de Bruijn read-support** is the
+**double-theta graph** (rank `3`): two hubs `u, v`, joined in each
 direction by one arc and by one length-`2` path,
 
 ```
@@ -1575,9 +1581,16 @@ scope]
 Theorem 12 and the instances are kernel-checked with only
 `[propext, Classical.choice, Quot.sound]`
 (`AssemblyP1/RigidityDoubleThetaAudit`, and `AxiomAudit257.lean`); no
-`sorry`/`admit`/`axiom`/`native_decide`. The double-theta is an *abstract*
-oriented support graph (two hubs of degree `4`, two vertices of degree `2`); a
-de Bruijn graph has at most one arc between any ordered pair of vertices, so this
-exact shape is not realizable as a read-support, consistent with the merged
-bridge families. The residual — a *polynomial* min-cut/max-flow closed form for
-general supports, or a proof that none exists — remains **OPEN** (§8.1/§8.2).
+`sorry`/`admit`/`axiom`/`native_decide`. The double-theta **is** realizable as a
+de Bruijn read-support (two hubs of degree `4`, two vertices of degree `2`): at
+`L = 3` take `u = AB`, `v = BA`, `w = BB`, `z = AA`, so the six arcs are the
+distinct length-`3` words `ABA, ABB, BBA, BAB, BAA, AAB`; the circular genome
+`ABABBA` has exactly this read spectrum (each arc once), and `AABABABB` realizes
+the multiplicity tuple `(2,1,2,1)`. (This corrects an earlier note that claimed
+the double-theta was non-realizable: the stated reason — a de Bruijn graph has at
+most one arc between any ordered pair — does not apply, since the six arcs are
+six distinct ordered pairs.) The genuinely **non-realizable** coupled support is
+instead the smaller `3`-vertex `K3`-minus-an-arc (rank `3`), whose de Bruijn
+overlap constraints are unsatisfiable. The residual — a *polynomial*
+min-cut/max-flow closed form for general supports, or a proof that none exists —
+remains **OPEN** (§8.1/§8.2).
