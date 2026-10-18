@@ -248,6 +248,12 @@ infinite product of probabilities. The eventual-exactness strengthening for a
 finite identifiable family (strong law + KL; classical, not kernel-checked;
 no finite n supplied) is paper prop:strong-consistency; see the backup
 slide "The limit is eventual - and gives no finite number".
+#265 exact finite-n pointer (2026-10-18): the limit above gives no finite n, but
+for one explicit finite read-law family the tight 99% sizes are n*=85
+(prior-averaged) and n*=87 (minimax-over-truths), against the kernel-checked
+Hellinger sufficient 153; see the sample-complexity backup and
+docs/minimax-finite-recovery-265.md. The exact numbers are external decision
+theory, not Lean.
 -->
 
 ---
@@ -404,6 +410,21 @@ docs/chernoff-exponent-finite-recovery-265.md; exact check
 scripts/verify_chernoff_finite_recovery_265.py. Do NOT claim a tight or minimax
 finite-n bound, and do NOT claim C_* is kernel-checked; the kernel-checked
 constant remains rho_* (FiniteReadRecovery).
+#265 exact finite-n numbers (2026-10-18): for one explicit finite family of
+binary read laws A=(1/2,1/2), B=(3/4,1/4), C=(1/4,3/4) the tight 99% recovery
+sizes are EXACT (standard decision theory + exact arithmetic; NOT Lean): n*=85
+for the uniform-prior Bayes optimum (V_84<0.99<=V_85=0.99006833) and n*=87 for
+the minimax-over-truths optimum (error_86=0.01051594>0.01>=error_87=
+0.00973853). The kernel-checked Hellinger bound above is the conservative
+SUFFICIENT 153, about 6.4x the exact per-truth error of the middle truth at
+n=85. This is prior-AVERAGED: at n=85 the per-truth successes are A=0.983491 <
+B=C=0.993357 (average V_85), so "99% recovery" is about the average, not each
+truth, and per-truth success is not monotone. Scope: one explicit finite family
+under the iid read-law model, not the unrestricted genome universe and not
+MB09. Only the abstract Bayes-optimality (FiniteBayesDecision /
+FiniteMapOptimality) and the Hellinger union bound (FiniteReadRecovery) are
+kernel-checked. Verifier scripts/verify_minimax_finite_recovery_265.py; paper
+rem:minimax-sample-size; note docs/minimax-finite-recovery-265.md.
 -->
 
 ---
