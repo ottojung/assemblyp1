@@ -1,11 +1,14 @@
 # AssemblyP1 umbrella #255 — remaining-open matrix
 
 
-## Addendum — verified 2026-10-17 (avoid duplicate research)
+## Addendum — verified 2026-10-18 (current `origin/main` `15c8c19`) (avoid duplicate research)
 
 The dated matrix below is a **historical 2026-10-16 snapshot**, not an
 authoritative list of currently absent Lean theorems. Always cross-check
 `origin/main` and the exact GitHub PR merge statuses before assigning work.
+This addendum was re-verified by execution at `origin/main`
+`15c8c19c5eb8348b8b61faaabc453c801eaf7bbd` (PR #321 merge) on 2026-10-18;
+see the reconciliation section at the end of this addendum.
 
 * **Already proved:** PR #265 merged the unconditional, repository-specific
   Observation 7 signed-circuit statement in
@@ -21,6 +24,24 @@ authoritative list of currently absent Lean theorems. Always cross-check
 * **Already proved:** PR #312 generalized the p,q long-bridge rigidity
   classification; PR #310 proved the scoped finite Bayes/MAP certificate.
   These are not pending research tasks.
+* **Already proved:** PR #315 (merge `3e902b66ba01db17498dd32f393496863ecb7730`,
+  exact-head CI green at `21264cf174204d11b332db04b870beef58e0d7ef`) kernel-checked
+  the directed-double-cover signed-incidence algebra in
+  `AssemblyP1/Section62SignedDoubleCover.lean` (`signedLift_balanced`,
+  `projected_use_twice`, `liftOut_pos`/`liftIn_neg`), plus
+  `docs/issue261-directed-double-cover.md` and
+  `scripts/verify_261_directed_cover.py`. This is an **abstract incidence
+  step only**: it does NOT prove source-graph edge-ID enumeration, double-cover
+  descent to an integer circuit decomposition, genome realization, vertex
+  bounds, or ML transport. Those remain OPEN.
+* **Already proved:** PR #321 (merge `15c8c19c5eb8348b8b61faaabc453c801eaf7bbd`,
+  exact-head CI green at `448072c`) landed the Chernoff refinement of the
+  finite-family recovery bound: `paper/sections/03-open-question.tex`
+  (`prop:chernoff-refinement`, `rem:chernoff-sharp`),
+  `docs/chernoff-exponent-finite-recovery-265.md`,
+  `scripts/verify_chernoff_finite_recovery_265.py`, both decks' speaker notes.
+  The table row that previously read "pending (branch
+  `agent/df84a657ae4a-issue265-chernoff-exponent`)" is now **resolved**.
 * **Integrated since the older snapshot:** signed aggregate PR #313 is
   **MERGED** at `23881843a37d9e2a50d07c23b519058f3baddf51`,
   incorporating bounded experimental #304 RC-overlap/three palindrome orbits,
@@ -40,12 +61,81 @@ authoritative list of currently absent Lean theorems. Always cross-check
   vertex bounds, and ML objective into that source graph; sufficiently strong
   contig/single-genome realization hypotheses; exact extended-real ML
   support/Graver optimizer equivalence (not the finite affine surrogate).
+  PR #315's abstract double-cover incidence algebra is a *partial* step toward
+  the second item only; it is not a source-faithful correspondence and does not
+  bound vertices or realize genomes. PR #312 generalizes the #257 rigidity
+  criterion but does not close the broader read-graph taxonomy.
 
-Model execution/liveness as of this check: both host OpenCode Console
+Model execution/liveness as of the last check: both host OpenCode Console
 providers (OpenCode and OpenCode Go) reject requests due **expired API keys**,
 so Antonina's managed agents cannot execute until credentials are renewed.
 Their saved task prompts are not evidence of running workers. Manual signed
-GitHub integration remains possible.
+GitHub integration remains possible. This is an operational note, not a
+research status; treat every "live owner" below as a scheduler assignment, not
+a running process.
+
+---
+
+## Reconciliation at current `origin/main` `15c8c19` (2026-10-18)
+
+Verified by execution on 2026-10-18: `git ls-remote
+https://github.com/ottojung/assemblyp1 refs/heads/main` =
+`15c8c19c5eb8348b8b61faaabc453c801eaf7bbd` (PR #321 merge). All merge SHAs below
+were confirmed ancestors of `origin/main` with `git merge-base --is-ancestor`;
+all exact-head CI was queried with the GitHub check-runs API.
+
+**Delta from the 2026-10-16 snapshot (`c581d11`).**
+
+| Newly landed since `c581d11` | Merge | Exact endpoint / verifier | Status |
+|---|---|---|---|
+| #261 directed-double-cover signed-incidence algebra | `3e902b6` (PR #315) | `AssemblyP1/Section62SignedDoubleCover.lean` (`signedLift_balanced`, `projected_use_twice`); `scripts/verify_261_directed_cover.py` | RESOLVED scoped claim; source-faithful graph/realization/ML transport still OPEN |
+| #257 general p,q long-bridge rigidity | `7c0a632` (PR #312) | `AssemblyP1/RigidityGeneralBridge.lean` (`generalBridge_nonrigid_iff` `:687`); `scripts/verify_257_general_bridge.py` | RESOLVED scoped claim; broader taxonomy OPEN |
+| #269 scoped finite Bayes/MAP optimality certificate | `3f0202e` (PR #310) | `AssemblyP1/BayesOptimalityCertificate.lean` (`pointwiseMAP_iff_bayesOptimal`); `scripts/verify_269_bayes_optimality_certificate.py` | RESOLVED scoped claim; RC-orbit quotient + genome endpoint OPEN |
+| #265 Chernoff refinement of finite-family recovery | `15c8c19` (PR #321) | `paper/sections/03-open-question.tex` (`prop:chernoff-refinement`, `rem:chernoff-sharp`); `scripts/verify_chernoff_finite_recovery_265.py` | RESOLVED (was "pending" in the 2026-10-16 snapshot); tight finite-`n`/unrestricted-universe bound OPEN |
+
+No previously LANDED row was found stale or inaccurate at `15c8c19`: every
+artifact named in the LANDED section exists on `origin/main` (existence checked
+by path), and the cited merge SHAs resolve. The only stale row was the #265
+Chernoff entry, corrected above. Board child states re-checked with
+`antonina board show`: OPEN = #257, #259, #261, #263, #265, #268, #269, #271,
+#272, #281, #284, #300; CLOSED = #247, #254, #256, #258, #260, #262, #264, #266,
+#267, #270, #273, #274, #276, #277, #282. This matches the snapshot's lists.
+
+### Prioritized genuinely-open scoped claims with NO live owner
+
+A "live owner" below means a scheduler-assigned agent in the most recent
+`[scheduler-turn]` for the owning board issue, not a running process. Every
+open child issue except #268 currently has such an assignment; the following
+scoped claims are open and have no dedicated owner.
+
+1. **#266 residual — instance/multiset-preserving (duplicate-invariance) decoder
+   adapter.** Board #266 is CLOSED (2026-10-14) but records a residual OPEN
+   scope: the `Finset`-of-distinct-read-types decoder premise is stronger than
+   NSG Corollary 1's `N`-read-instance guarantee, so an
+   instance/multiset-preserving adapter (or duplicate-invariance theorem) is
+   still missing. No agent has been assigned since the issue closed. Endpoint:
+   `AssemblyP1/ConditionalIdentifiability.lean`
+   (`historical_feasible_fibre_unique_of_instance_decoder`). **Priority HIGH**
+   (bounded, kernel-checked, unowned).
+2. **Kernel-check the §6.1 surrogate full-coverage `∀y` classification (flag
+   F-a).** Recorded PROVED as an elementary post only; no kernel artifact. The
+   #259 live agent's current packet targets the fixed-`x` module, not this `(B)`
+   surrogate statement, so it has no dedicated owner. Closest artifacts:
+   `AssemblyP1/Section62FiniteNExtremeSamples.lean` (`binomial_fixed_n_extreme_iff`)
+   and `AssemblyP1/CoveredBinomialWeightsIff.lean`. **Priority MEDIUM.**
+3. **Kernel-check the population-to-finite bridge (flag F-b).** `∑ x log p_D =
+   n ∑ p̂ log p_D` is an elementary observation; `AssemblyP1/PopulationFiniteGap.lean`
+   is absent on `origin/main` (verified). No owner. **Priority LOW** (it restates
+   the (A)-regime comparison and does not classify).
+4. **#268 board closure.** The structural landmarks (`thm:identifiable-iff-nonbranching`,
+   `thm:fibre-count`) were verified present in the whitepaper main text by
+   agent-89421dfb0bf8 on 2026-10-18; no further agent is assigned. Remaining
+   work is human editorial acceptance, not research. **Priority LOW.**
+
+The umbrella's remaining axis-(B) classification (finite-ML maximality over
+general candidate universes) is not listed here: it is owned collectively by
+the open child agents (#257/#259/#261/#263/#271/#272/#281/#284), each with a
+live scheduler assignment.
 
 ---
 
@@ -438,7 +528,7 @@ a full classification.
 | #272 | `Is`-vs-unambiguous ordering classification: read-only sufficiency iff implication-of-unambiguity; truth-dependent and singleton promises incomparable | `AssemblyP1/FiniteSideInformationOrdering.lean` (`sufficient_readonly_iff_imp_unambiguous` `:91`, `truthdependent_sufficient_incomparable` `:146`, `ordering_verdict` `:272`) | `41e5aec` (GitHub PR #244) | Candidate-specific posterior weights and latent-placement `E(g,T)` adapter; bridge to a genome reconstruction theorem (#272 still OPEN) |
 | #281 | Explicit uniform exponential exact-ML error rate (`primitiveP2_ML_confidence_explicit`, `all_primitiveP2_ML_confidence`) surfaced in the paper and both decks | `AssemblyP1/PrimitiveP2UniformSeparation.lean` (`primitiveP2_ML_confidence_explicit` `:340`, `primitiveP2_exponential_error_bound` `:317`); `paper/sections/01-introduction.tex`; `slides/{biologists,programmers}.md` | `70c21b8` (GitHub PR #258), `eaf5d38` (GitHub PR #268) | Genome-level finite corollary and paper recentering still OPEN (#281 still OPEN) |
 | #265 | Strong-law / KL-limit statement for finite identifiable families + CI script | `scripts/verify_strong_consistency_265.py`; `paper/sections/05-population.tex`; `docs/presentation-arc-265.md` | `53f8c4d` (GitHub PR #280), `b9f0f47` (CI wiring, GitHub PR #284) | #265/#268 editorial review pass still OPEN |
-| #265 | Chernoff refinement of the finite-family recovery bound: `Σ_D exp(-n C(p_S,p_D)) ≤ \|C_S\| exp(-n C_*)`, `C_* ≥ ln(1/ρ_*)`; `C_*` is the exact finite-family exact-ML error exponent (classical Chernoff/Sanov, EXTERNAL); the bound stays loose at finite `n` (~3.7× exact at `n=16`, ratio `≈√n`) | `paper/sections/03-open-question.tex` (`prop:chernoff-refinement`, `rem:chernoff-sharp`); `docs/chernoff-exponent-finite-recovery-265.md`; `scripts/verify_chernoff_finite_recovery_265.py`; both decks' speaker notes | pending (branch `agent/df84a657ae4a-issue265-chernoff-exponent`) | Tight/minimax finite-`n` bound and the unrestricted-universe uniform sample size remain OPEN |
+| #265 | Chernoff refinement of the finite-family recovery bound: `Σ_D exp(-n C(p_S,p_D)) ≤ \|C_S\| exp(-n C_*)`, `C_* ≥ ln(1/ρ_*)`; `C_*` is the exact finite-family exact-ML error exponent (classical Chernoff/Sanov, EXTERNAL); the bound stays loose at finite `n` (~3.7× exact at `n=16`, ratio `≈√n`) | `paper/sections/03-open-question.tex` (`prop:chernoff-refinement`, `rem:chernoff-sharp`); `docs/chernoff-exponent-finite-recovery-265.md`; `scripts/verify_chernoff_finite_recovery_265.py`; both decks' speaker notes | `15c8c19` (GitHub PR #321; exact-head CI green at `448072c`; supersedes the earlier "pending" row) | Tight/minimax finite-`n` bound and the unrestricted-universe uniform sample size remain OPEN |
 | #284 | Generic anchored-window spelling identity and word-level reverse-complement class-count law | `AssemblyP1/Section62GenericAnchorSpelling.lean` (`generic_anchors_window_eq_sources` `:70`, `generic_circular_spelling_anchors` `:99`); `AssemblyP1/Section62RcWordLaw.lean` (`classWordCount_eq_rc_class_count` `:72`) | `c581d11` (GitHub PR #282), `0b87b58` (GitHub PR #252) | Exact Myers practical-algorithm fidelity and full unobserved RC class universe still OPEN (#284 still OPEN) |
 | #263 | Conditional separable-convex Graver optimality certificate (file added by GitHub PR #249) plus the penalized-solver-cost vs pure-ML distinction | `AssemblyP1/SeparableConvexGraver.lean` (`graver_optimal_iff_no_improving` `:324`, `negLog_discConvOn` `:500`) | `9fa5a41` (GitHub PR #249), `e57e81f` (GitHub PR #281) | Full separable-convex discrete Graver certificate conditional on #264 still OPEN (#263 still OPEN) |
 
