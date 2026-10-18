@@ -421,7 +421,7 @@ $$
 
 where $N_C$ counts the distinct competitor read laws. A sufficient read count is $n\ge 8B^4\ln(N_C/\delta)$ for error at most $\delta$.
 
-**Caveats.** The constants are deliberately loose and exponential in $L$; the bound controls the exact-ML **error probability**, not likelihood growth; and per-truth finite-sample success is **not monotone**. Kernel endpoints: `AssemblyP1.PrimitiveP2UniformSeparation.primitiveP2_exponential_error_bound`, `primitiveP2_ML_confidence_explicit`.
+**Caveats.** The constants are deliberately loose and exponential in $L$; the bound controls the exact-ML **error probability**, not likelihood growth; and per-truth finite-sample success is **not monotone**. Kernel endpoints: `AssemblyP1.PrimitiveP2UniformSeparation.primitiveP2_exponential_error_bound`, `primitiveP2_ML_confidence_explicit` (paper `thm:p2-uniform-rate`).
 
 A sharp uniform sample size over all genome candidates (all lengths and models) remains an open quantitative problem.
 
