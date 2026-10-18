@@ -39,16 +39,21 @@ separation, under this shared observable data model:
   #271 kernel standard demands before any genome-level conditional-recovery
   claim is made. No such adapter is claimed here.
 
-Representation warnings (per `docs/bridging-source-semantics.md` and the
-#266/#267 corrections): W1/W2 are **oriented read-string** witnesses — the
-observable is built from the oriented windows `SourceFaithfulIs.window` — and
-must NOT be coerced into the reverse-complement-collapsed molecule
-representation of #260, which is a different observable representation with a
-different likelihood. Likewise the historical coverage predicates come in two
-variants that must not be silently identified: `HistoricalCovers` (matched
-observed read strings, #247) versus `SourceFaithfulIs.InformationFeasible`
-(latent sampled starts); the W1/W2 likelihood statements are independent of
-that distinction, since they concern the count vector `obs`, not coverage.
+Representation warnings (per `docs/bridging-source-semantics.md`, the #266/#267
+corrections, and the kernel-checked
+`AssemblyP1/W1W2RcOrientedRepresentation271.lean`): the historical W1/W2
+witnesses reused here are **reverse-complement molecule** witnesses — their
+observable is the molecule-class count `obs`, obtained by collapsing the
+oriented windows through the molecule class `cls` — and must NOT be identified
+with the **oriented read-string** representation (`SourceFaithfulIs.window`)
+that the Not-So-Greedy model uses, which is a different observable with a
+different likelihood (`cls` is non-injective, so the molecule observable is a
+strict quotient of the oriented one). Likewise the historical coverage
+predicates come in two variants that must not be silently identified:
+`HistoricalCovers` (matched observed read strings, #247) versus
+`SourceFaithfulIs.InformationFeasible` (latent sampled starts); the W1/W2
+likelihood statements are independent of that distinction, since they concern
+the count vector `obs`, not coverage.
 
 Connection to the abstract comparison: the (B)-boundary predicate
 `AssemblyP1.ConditionalVsOrdinaryMLSeparation.isMLMaximizer` is a statement

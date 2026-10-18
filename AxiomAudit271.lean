@@ -1,6 +1,7 @@
 import AssemblyP1.ConditionalVsOrdinaryMLSeparation
 import AssemblyP1.ConditionalVsOrdinaryMLBoundary271
 import AssemblyP1.W1W2SeparationCompatibility
+import AssemblyP1.W1W2RcOrientedRepresentation271
 import AssemblyP1.ConditionalVsMLGenomeAdapter271
 import AssemblyP1.ConditionalBayesEImpliesB271
 
@@ -30,6 +31,24 @@ open AssemblyP1.ConditionalVsOrdinaryMLSeparation
 #print axioms AssemblyP1.W1W2SeparationCompatibility.w1_truth_not_maximizer_exact
 #print axioms AssemblyP1.W1W2SeparationCompatibility.w2_truth_not_maximizer_binomial
 #print axioms AssemblyP1.W1W2SeparationCompatibility.w2_truth_not_maximizer_exact
+
+-- W1/W2 reverse-complement molecule vs oriented read-string representation
+-- (#271 goal 3): the collapse cls is non-injective and RC-invariant, so the
+-- molecule likelihood is a function of a strict quotient of the oriented
+-- read-string observable.
+#print axioms AssemblyP1.W1W2RcOrientedRepresentation271.rc_involutive
+#print axioms AssemblyP1.W1W2RcOrientedRepresentation271.cls_rc
+#print axioms AssemblyP1.W1W2RcOrientedRepresentation271.cls_not_injective
+#print axioms AssemblyP1.W1W2RcOrientedRepresentation271.exists_rc_pair_same_class
+#print axioms AssemblyP1.W1W2RcOrientedRepresentation271.window2_ne_window3
+#print axioms AssemblyP1.W1W2RcOrientedRepresentation271.window3_eq_rc_window2
+#print axioms AssemblyP1.W1W2RcOrientedRepresentation271.window_cls_eq
+#print axioms AssemblyP1.W1W2RcOrientedRepresentation271.molCount_map_rc
+#print axioms AssemblyP1.W1W2RcOrientedRepresentation271.obs_eq_molCount
+#print axioms AssemblyP1.W1W2RcOrientedRepresentation271.orientedReads_ne_rc
+#print axioms AssemblyP1.W1W2RcOrientedRepresentation271.molCount_orientedReadsRc_eq
+#print axioms AssemblyP1.W1W2RcOrientedRepresentation271.lik_rc_blind
+#print axioms AssemblyP1.W1W2RcOrientedRepresentation271.rc_vs_oriented_verdict
 
 -- Genome-level adapter in the exact AssemblyP1 finite read model (#271):
 -- normalized per-candidate read pmf, orbit-class prior, and the candidate-specific
