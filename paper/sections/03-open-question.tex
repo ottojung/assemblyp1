@@ -348,6 +348,29 @@ standard statistics, not a Lean result; only the Hellinger constant $\rho_*$
 is kernel-checked here, and no finite $n$ is claimed to be optimal.
 \end{remark}
 
+\begin{remark}[Exact finite-$n$ sample size for one explicit family]
+\label{rem:minimax-sample-size}
+The union bounds above are sufficient, not tight. For the single explicit
+family $A=(\tfrac12,\tfrac12)$, $B=(\tfrac34,\tfrac14)$, $C=(\tfrac14,\tfrac34)$
+on the binary read alphabet, the exact finite-$n$ optima can be computed in
+closed form. Under the uniform prior the Bayes-optimal (prior-averaged) success
+$V_n=\sum_k\max_t\tfrac13 P_t(k)$ is non-decreasing and reaches $99\%$ exactly
+at $n=85$ ($V_{84}<0.99\le V_{85}$); the minimax-over-truths error
+$\min_d\max_t P_t(d\text{ wrong})$, equal to the maximum Bayes error over
+priors, falls to $1\%$ exactly at $n=87$. Both are tight: the Bayes risk is the
+minimum possible prior-averaged error, and the minimax value is certified by
+the least favourable symmetric prior together with the optimally tie-split
+Bayes rule. The per-truth success at $n=85$ is $0.98349\ldots$ for the middle
+truth $A$ and $0.99336\ldots$ for $B,C$, so the $99\%$ figure is prior-averaged,
+not per-truth. The kernel-checked Hellinger union bound instead gives the
+sufficient size $153$, about $1.8\times$ the exact optimum. These numbers are
+exact finite arithmetic for this one family, not a Lean result and not a
+uniform sample size over the genome universe; the decision-theoretic
+ingredients are standard \cite{berger1985,lehmann1998}. See
+\path{docs/minimax-finite-recovery-265.md}, checked by
+\path{scripts/verify_minimax_finite_recovery_265.py}.
+\end{remark}
+
 \begin{corollary}[Conditional error while bridging holds]
 \label{cor:conditional-bridging-error}
 Let $B_n$ be the event that the true genome satisfies a specified bridging
