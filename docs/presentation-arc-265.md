@@ -185,6 +185,7 @@ a textbook; not proved in Lean here), **COMPUTED** (exact rational certificate),
 | Population uniqueness up to rotation (primitive, P2, admissible class) | KERNEL | `Issue94Complete.population_unique_ML` |
 | Limiting consistency / `P(correct at n) -> 1` | EXTERNAL | standard SLLN + ML consistency (Lehmann & Casella 1998); not kernel-checked here |
 | Hellinger/union `99%` bound | EXTERNAL | Tsybakov 2009, Thm 2.4; not kernel-checked here |
+| Chernoff refinement `Σ_D exp(-n C(p_S,p_D)) ≤ \|C\| exp(-n C_*)`, `C_* ≥ ln(1/ρ_*)`; `C_*` is the exact finite-family exact-ML error exponent; bound still loose at finite `n` (~3.7× exact at `n=16`) | EXTERNAL (classical Chernoff/Sanov, not kernel-checked) | paper `03-open-question.tex` `prop:chernoff-refinement`, `rem:chernoff-sharp`; note `docs/chernoff-exponent-finite-recovery-265.md`; exact check `scripts/verify_chernoff_finite_recovery_265.py`; kernel-checked constant remains the Hellinger `ρ_*` (`FiniteReadRecovery`) |
 | Explicit uniform primitive-P2 exponential exact-ML error rate `N_C exp(-n/(8 B^4))`, `B = 2 q^(L-1)`, threshold `n >= 8 B^4 log(N_C/δ)` | KERNEL | `AssemblyP1/PrimitiveP2UniformSeparation.lean`: `primitiveP2_exponential_error_bound`, `primitiveP2_ML_confidence_explicit`; paper `05-population.tex` `thm:p2-uniform-rate`; caveats: loose constants exponential in `L`, bounds error probability not likelihood growth, per-truth success not monotone; oriented primitive-P2 exact iid only, not universal ML and not the MB09 product-binomial surrogate |
 | Sample complexity in this model | OPEN | no theorem in paper or Lean |
 | Coverage predicates incomparable | KERNEL | `HistoricalCovers.lean`; `HistoricalCoverageSameLengthWitnesses.lean` |
@@ -247,6 +248,30 @@ samples are handled separately. The genuinely open items are unchanged: the
 general (non-equal-length) finite-ML characterization and a sharp uniform
 sample size over the unrestricted genome universe.
 
+## 2026-10-18 addendum — Chernoff refinement and the finite-`n` gap
+
+A sixth addendum by agent `df84a657ae4a` sharpens the #265 sample-complexity
+statement and records its precise gap. `paper/sections/03-open-question.tex`
+gains `prop:chernoff-refinement` (the explicit finite-`n` Chernoff union bound
+`Σ_D exp(-n C(p_S,p_D)) ≤ |C_S| exp(-n C_*)`, with
+`C(p,q) = sup_{t∈[0,1]} -ln Σ_{w:p(w)>0} p(w)^{1-t} q(w)^t ≥ -ln ρ(p,q)` and
+the resulting sufficient sample size `⌈ln(|C_S|/δ)/C_*⌉`) and
+`rem:chernoff-sharp` (the exponent `C_*` is the exact large-deviation exponent
+of the finite-family exact-ML error — classical Chernoff/Sanov, **EXTERNAL, not
+kernel-checked** — while the bound stays loose at finite `n` because of its
+prefactor). The `n = 16` worked-family gap (`≈3.7×`, ratio growing `≈√n`) and
+the exact-exponent data are in `docs/chernoff-exponent-finite-recovery-265.md`,
+checked by `scripts/verify_chernoff_finite_recovery_265.py` and wired into CI.
+Both decks' speaker notes (programmers' "Do we actually need infinitely many
+reads?" and Backup B3; biologists' "how many reads for 99% recovery?" backup)
+carry the refinement and its non-claims; **no slide was added or removed**, the
+approved #254 opening and the Lean/agent-proof-trust story are untouched. The
+kernel-checked constant remains the Hellinger `ρ_*` of
+`AssemblyP1.FiniteReadRecovery`; the Chernoff/large-deviation facts are cited
+standard statistics and are **not** upgraded to Lean. The genuinely open items
+are unchanged: the general (non-equal-length) finite-ML characterization and a
+sharp uniform sample size over the unrestricted genome universe.
+
 ## Validation
 
 - `cd slides && npm ci && npm run build` — format check, math check, both decks
@@ -254,6 +279,11 @@ sample size over the unrestricted genome universe.
 - Both decks pass `scripts/check-format.mjs` and `scripts/check-math.mjs`.
 - `python3 scripts/verify_strong_consistency_265.py` — exact-rational checks of
   the strong-law/KL limit mechanism on the `AAC`/`AAAC` witness.
+- `python3 scripts/verify_chernoff_finite_recovery_265.py` — exact-rational
+  checks of the Chernoff refinement: both union bounds and the termwise
+  ordering for `n = 1..16`, the `n = 16` gap ratio (`≈3.7`), `C ≥ -ln ρ`
+  (equality symmetric, strict non-symmetric), and the exponent convergence to
+  `C_*` through `n = 512`.
 - Paper build via `paper/build.sh` (Guix): `sec:strong-consistency` compiles
   with 0 LaTeX warnings (2026-10-16 addendum; earlier addenda did not touch
   the paper).

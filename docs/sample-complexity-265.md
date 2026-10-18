@@ -85,7 +85,12 @@ class is the separate identifiability step of Corollary `cor:p2-finite-recovery`
   Chernoff exponent `C(p,q) = −min_{0≤t≤1} ln Σ_w p(w)^t q(w)^{1−t} ≥ −ln ρ(p,q)`
   (Cover & Thomas 2006, §11.9; Tsybakov 2009, Thm 2.4). Substituting a uniform
   `C_*` for `ln(1/ρ_*)` gives a bound at least as strong, but `C_*` is not the
-  quantity kernel-checked here.
+  quantity kernel-checked here. The refined statement, the fact that `C_*` is
+  the exact large-deviation exponent of the finite-family exact-ML error, and
+  the finite-`n` prefactor gap (about `3.7×` at `n = 16`) are recorded in
+  `docs/chernoff-exponent-finite-recovery-265.md`; the paper statements are
+  Proposition `prop:chernoff-refinement` and Remark `rem:chernoff-sharp` in
+  `paper/sections/03-open-question.tex`.
 - It applies **only** to a finite family with a uniform separation `ρ_* < 1`.
   It does **not** cover the unrestricted universe of genome candidates (all
   lengths, all models); a sharp uniform sample-size guarantee there remains the
@@ -139,7 +144,10 @@ A second kernel-checked instance already in the library is
   (2006), *Elements of Information Theory*, §11.9; Tsybakov (2009),
   *Introduction to Nonparametric Estimation*, Thm 2.4; Lehmann & Casella (1998)
   for the underlying consistency framework.
-- Verifier: `scripts/verify_sample_complexity_265.py`.
+- Verifier: `scripts/verify_sample_complexity_265.py`; the Chernoff refinement
+  and its finite-`n` gap are checked by
+  `scripts/verify_chernoff_finite_recovery_265.py` (see
+  `docs/chernoff-exponent-finite-recovery-265.md`).
 
 ## Non-claims
 

@@ -390,6 +390,22 @@ where $N_C$ counts the distinct competitor read laws. A sufficient read count is
 
 A sharp uniform sample size over all genome candidates (all lengths and models) remains an open quantitative problem.
 
+<!--
+#265 Chernoff refinement (2026-10-18): the Hellinger constant -ln rho_* can be
+replaced by the Chernoff information C_* = min_D C(p_S,p_D), with
+C(p,q) = sup_{t in [0,1]} -ln sum_{w:p(w)>0} p(w)^(1-t) q(w)^t >= -ln rho(p,q).
+The Chernoff union bound sum_D exp(-n C(p_S,p_D)) is termwise no larger, and
+C_* is the exact large-deviation exponent of the finite-family exact-ML error
+(standard Chernoff/Sanov; EXTERNAL, not kernel-checked). It is still not tight
+at finite n: on the worked family p=(3/4,1/4), competitors (1/4,3/4) and (0,1),
+the bound is ~3.7x the exact error at n=16 and the ratio grows ~sqrt(n). Paper
+prop:chernoff-refinement / rem:chernoff-sharp; note
+docs/chernoff-exponent-finite-recovery-265.md; exact check
+scripts/verify_chernoff_finite_recovery_265.py. Do NOT claim a tight or minimax
+finite-n bound, and do NOT claim C_* is kernel-checked; the kernel-checked
+constant remains rho_* (FiniteReadRecovery).
+-->
+
 ---
 
 # Backup: more reads help on average, not always
