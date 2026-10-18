@@ -36,6 +36,7 @@ import AssemblyP1.SameLengthSection62Parametric
 import AssemblyP1.PerOccurrenceSameLengthCounterexample
 import AssemblyP1.HistoricalCoverageSameLengthWitnesses
 import AssemblyP1.Section62BidirectedFlow
+import AssemblyP1.Section62SignedDoubleCoverAudit
 import AssemblyP1.Section62OrientedMLClassification
 import AssemblyP1.Section62ReversalInvolution
 import AssemblyP1.Section62OrientedStrandFlowAudit
