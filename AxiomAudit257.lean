@@ -5,6 +5,7 @@ import AssemblyP1.RigidityBouquet
 import AssemblyP1.RigidityBridge
 import AssemblyP1.RigidityLength3Bridge
 import AssemblyP1.RigidityGeneralBridge
+import AssemblyP1.RigidityDoubleTheta
 import AssemblyP1.RigidityTargetCycle
 import AssemblyP1.RigidityNoGo
 open AssemblyP1.ExactRigidityCriterion
@@ -14,6 +15,7 @@ open AssemblyP1.RigidityBouquet
 open AssemblyP1.RigidityBridge
 open AssemblyP1.RigidityLength3Bridge
 open AssemblyP1.RigidityGeneralBridge
+open AssemblyP1.RigidityDoubleTheta
 open AssemblyP1.RigidityTargetCycle
 open AssemblyP1.RigidityNoGo
 #print axioms AssemblyP1.ExactRigidityCriterion.nonrigid_iff_exists_delta
@@ -57,6 +59,12 @@ open AssemblyP1.RigidityNoGo
 #print axioms AssemblyP1.RigidityGeneralBridge.generalBridge_nonrigid_eq_m2
 #print axioms AssemblyP1.RigidityGeneralBridge.generalBridge_nonrigid_q3_f
 #print axioms AssemblyP1.RigidityGeneralBridge.generalBridge_rigid_repetitive
+-- §19: the double-theta graph (coupling begins at cycle rank 3).
+#print axioms AssemblyP1.RigidityDoubleTheta.doubleTheta_nonrigid_iff
+#print axioms AssemblyP1.RigidityDoubleTheta.phi_of_balanced
+#print axioms AssemblyP1.RigidityDoubleTheta.doubleTheta_nonrigid_witness
+#print axioms AssemblyP1.RigidityDoubleTheta.doubleTheta_rigid_repetitive
+#print axioms AssemblyP1.RigidityDoubleTheta.relaxed_not_sound
 #print axioms AssemblyP1.RigidityTargetCycle.targetCycle_nonrigid_iff_coin
 #print axioms AssemblyP1.RigidityTargetCycle.targetCycle_rigid_iff_not_coin
 #print axioms AssemblyP1.RigidityTargetCycle.coin_nonrigid_23_5
