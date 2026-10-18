@@ -1,14 +1,15 @@
 # AssemblyP1 umbrella #255 — remaining-open matrix
 
 
-## Addendum — verified 2026-10-18 (current `origin/main` `15c8c19`) (avoid duplicate research)
+## Addendum — verified 2026-10-18 (current `origin/main` `aedc836`) (avoid duplicate research)
 
 The dated matrix below is a **historical 2026-10-16 snapshot**, not an
 authoritative list of currently absent Lean theorems. Always cross-check
 `origin/main` and the exact GitHub PR merge statuses before assigning work.
 This addendum was re-verified by execution at `origin/main`
-`15c8c19c5eb8348b8b61faaabc453c801eaf7bbd` (PR #321 merge) on 2026-10-18;
-see the reconciliation section at the end of this addendum.
+`aedc836cfcbdac2fd0f2abcb493a87bbb9a265ac` (PR #326 merge, 2026-10-18T06:03:39Z)
+on 2026-10-18 by agent a512b29b9ac0; see the authoritative reconciliation
+section immediately below (which supersedes the `15c8c19` reconciliation).
 
 * **Already proved:** PR #265 merged the unconditional, repository-specific
   Observation 7 signed-circuit statement in
@@ -76,7 +77,151 @@ a running process.
 
 ---
 
-## Reconciliation at current `origin/main` `15c8c19` (2026-10-18)
+## Authoritative reconciliation at current `origin/main` `aedc836` (2026-10-18, agent a512b29b9ac0)
+
+This section **supersedes** the `15c8c19` reconciliation that follows (agent
+b499974ad618, PR #323) and is the current status record for umbrella #255.
+Verified by execution on 2026-10-18: a fresh clone of
+`https://github.com/ottojung/assemblyp1` with
+`git ls-remote … refs/heads/main` = `aedc836cfcbdac2fd0f2abcb493a87bbb9a265ac`
+(PR #326 merge, 2026-10-18T06:03:39Z). Every merge SHA below was confirmed an
+ancestor of `origin/main` (`git merge-base --is-ancestor`); every cited GitHub
+PR was confirmed `merged: true` through the GitHub API; and every cited exact
+head reports 7/7 green check-runs (build + kernel replay + axiom audit,
+research-docs, signed commits, pdfs, Slides; publish/deploy skipped as
+designed). Every cited Lean theorem name was verified present by grep on the
+current tree.
+
+### Delta from the 2026-10-16 snapshot (`c581d11`) — all landings
+
+| Board scope | Merged PR (merge SHA) | Exact head | Endpoint / verifier | Class |
+|---|---|---|---|---|
+| #259 same-support sample-uniform iff of §6.1 surrogate | #293 (`1a43543`) | `cd6425b` | `AssemblyP1/ProductBinomialRigidityNecessity.lean` (`robust_iff_unique` `:464`, `effectiveWeight_le_imp_eq` `:315`, `newsupport_rigid_not_maximal` `:537`); `scripts/verify_product_binomial_rigidity_259.py` | RESOLVED scoped claim; full-candidate-universe (new support, variable length, §6.2) OPEN |
+| #257 target-cycle / numerical-semigroup criterion | #296 (`c56166b`, via GitHub #283) | `c34cab3` | `AssemblyP1/RigidityTargetCycle.lean` (`targetCycle_nonrigid_iff_coin` `:147`); `scripts/verify_257_target_cycle.py` | RESOLVED scoped claim; broader taxonomy OPEN |
+| #284 palindrome edge-multiplicity audit | #296 (`c56166b`, via GitHub #285) | `c34cab3` | `AssemblyP1/Section62PalindromeEdgeMultiplicityAudit.lean`; `docs/section62-palindrome-edge-multiplicity-audit-284.md` | RESOLVED scoped claim; Myers fidelity OPEN |
+| #269 MAP-orbit adapter axiom audit | #296 (`c56166b`, via GitHub #294) | `c34cab3` | `AssemblyP1/GenomeOrbitAdapterAudit.lean`; `scripts/verify_269_genome_orbit_adapter.py` | RESOLVED scoped claim; RC-orbit quotient OPEN |
+| #259 real-genome ranking inversion | #298 (`8ba5dc5`) | `040a5f3` | `AssemblyP1/Section62BinomialRealGenomeInversion.lean` (extended); `scripts/verify_real_genome_inversion_259.py`; `docs/ranking-inversion-259.md` | RESOLVED scoped claim |
+| #272 literal read-string `I_s` adapter | #298 (`8ba5dc5`) | `040a5f3` | `AssemblyP1/FiniteSideInformationReadStringAdapter.lean`; `docs/issue272-read-string-adapter.md` | RESOLVED scoped claim; genome-level bridge OPEN |
+| #257 LP-relaxation no-go | #299 (`2b8f94c`) | `29c7712` | `AssemblyP1/RigidityNoGo.lean` (`coin_bouquet_real_nonrigid` `:248`); `scripts/verify_257_coin_no_go.py` | REFUTED (direct LP relaxation cannot decide rigidity) |
+| #261 physical signed half-incidence | #300 (`f338cdf`) | `39c5514` | `AssemblyP1/Section62PhysicalHalfIncidence.lean`; `scripts/verify_261_signed_half_incidence.py` | RESOLVED scoped claim; source graph OPEN |
+| #255 reversal-orbit correspondence gap (docs pin) | #301 (`6289731`) | `ba3e6bc` | `docs/section62-reversal-orbit-correspondence-gap-255.md` | RESOLVED doc; underlying gap OPEN |
+| #272 is-vs-unambiguous docs reconcile | #302 (`6926893`) | `0ad8e1b` | `docs/issue272-is-vs-unambiguous-ordering.md` | RESOLVED doc |
+| #257 length-3 antiparallel bridge | #303 (`1773e14`) | `781b07d` | `AssemblyP1/RigidityLength3Bridge.lean` (`length3Bridge_rigid_iff` `:325`); `scripts/verify_257_length3_bridge.py` | RESOLVED scoped claim (refutes "rigid iff all mult `1`") |
+| #261 physical edge-orbit quotient | #307 (`d740ff4`) | `8726705` | `AssemblyP1/Section62PhysicalEdgeOrbit.lean` (`ATAT` 4→3 orbit; `inherited_throughput_not_physical`); `scripts/verify_261_physical_edge_orbit.py` | RESOLVED scoped claim; source graph OPEN |
+| #269 whitepaper citation | #308 (`6cb747f`) | `152d4b8` | `paper/` citation of exact endpoints | RESOLVED doc |
+| #269 finite Bayes/MAP optimality certificate | #310 (`3f0202e`) | `79d4406` | `AssemblyP1/BayesOptimalityCertificate.lean` (`pointwiseMAP_iff_bayesOptimal` `:133`); `scripts/verify_269_bayes_optimality_certificate.py` | RESOLVED scoped claim; RC-orbit quotient + genome endpoint OPEN |
+| #257 general p,q long-bridge criterion | #312 (`7c0a632`) | `cdd71df` | `AssemblyP1/RigidityGeneralBridge.lean` (`generalBridge_nonrigid_iff` `:687`); `scripts/verify_257_general_bridge.py` | RESOLVED scoped claim |
+| #261 oriented-strand source model + ML classification; #263 separable-convex Graver; #300 verifier | #313 (`2388184`) | `09d949d` | `Section62OrientedStrandFlow.lean`, `Section62ReversalInvolution.lean`, `Section62OrientedMLClassification.lean`, `SeparableConvexGraver.lean` (`graver_optimal_iff_no_improving` `:340`); `scripts/verify_short_finite_ml_300.py`, `scripts/verify_261_oriented_strand_source_model.py` | RESOLVED scoped claims; physical source graph and the Graver-decomposition condition OPEN |
+| #255 provenance matrix refresh | #314 (`7107840`) | `6a70518` | this addendum | RESOLVED doc |
+| #261 directed double-cover incidence | #315 (`3e902b6`) | `21264cf` | `AssemblyP1/Section62SignedDoubleCover.lean`; `scripts/verify_261_directed_cover.py` | RESOLVED scoped claim; source graph OPEN |
+| #265 Bayes certificate citation | #316 (`65f5e83`) | `41e1acd` | `paper/`, `docs/presentation-arc-265.md` | RESOLVED doc |
+| #265 Chernoff refinement | #321 (`15c8c19`) | `448072c` | `paper/sections/03-open-question.tex` (`prop:chernoff-refinement`, `rem:chernoff-sharp`); `scripts/verify_chernoff_finite_recovery_265.py` | RESOLVED scoped claim (was "pending"); tight finite-`n` bound OPEN |
+| #265 exact finite-`n` minimax recovery (one read family) | #326 (`aedc836`) | `21c27b4` | `docs/minimax-finite-recovery-265.md`; `scripts/verify_minimax_finite_recovery_265.py` (CI step) | RESOLVED scoped claim (explicitly no Lean theorem) |
+
+Every LANDED row of the historical snapshot was re-checked: each named artifact
+exists on `origin/main` and each cited merge SHA resolves. The only stale row
+was the #265 Chernoff entry, whose merge column is corrected below.
+
+### Flag corrections
+
+- **F-a — now RESOLVED (kernel-checked).** The §6.1 surrogate full-coverage
+  `∀y` classification is **not** elementary-only.
+  `AssemblyP1.CoveredBinomialWeightsIff.covered_ambient_effectiveProduct_le_iff`
+  (`AssemblyP1/CoveredBinomialWeightsIff.lean:310`, PR #211, merge `298682b`)
+  proves, for truth `A` and competitor `B` on a finite universe, that the sample
+  domain `(∀ i, A i ≤ x i) ∧ (∀ j, A j = 0 → x j = 0)` — exactly `x = A + y`
+  with `y ≥ 0` on `supp A` — satisfies
+  `effectiveProduct N B x ≤ effectiveProduct N A x` for **every** such `x`
+  **iff** `(∃ i, 0 < A i ∧ effectiveWeight N B i = 0) ∨
+  (∀ i, 0 < A i → effectiveWeight N B i ≤ effectiveWeight N A i)`. That is
+  precisely the flagged statement (`[∃ i ∈ S: b_i = 0] ∨ [∀ i ∈ S: b_i ≤ a_i]`
+  with `a_i = q_i(A)`, `b_i = q_i(B)`). Root-imported at `AssemblyP1.lean:312–313`
+  and axiom-audited (`CoveredBinomialWeightsIffAudit.lean`). The 2026-10-16
+  matrix's F-a reasoning ("neither of which is the general `∀y` surrogate
+  statement") was incorrect; **no remaining lemma**. Independently, PR #293
+  (`robust_iff_unique`) resolves the *sample-uniform* same-support counterpart.
+- **F-b — still no kernel artifact.** The population-to-finite bridge
+  `∑_w x(w)·log p_D(w) = n·∑_w p̂(w)·log p_D(w)` remains an elementary
+  observation (`docs/population-finite-gap-255.md`);
+  `AssemblyP1/PopulationFiniteGap.lean` is still **absent** on `origin/main`
+  (verified). Remaining lemma: formalize the trivial `x(w) = n·p̂(w)` reindexing
+  if a kernel artifact is wanted. It restates the (A)-regime comparison and
+  classifies nothing.
+
+### Frozen axes → status at `aedc836`
+
+| Frozen axis | Status | Evidence on `origin/main` | Remaining lemma |
+|---|---|---|---|
+| Oriented vs reverse-complement molecule types | PROVED (landed scopes) / OPEN (arbitrary) | #256 `RobustSameLengthIff.robust_iff_unique_spectrum`; #260 `FullOverlapMoleculeML.robust_maximality_iff_unique`; #284 `Section62RcWordLaw.classWordCount_eq_rc_class_count`; #307/#315 physical orbit/double-cover | arbitrary-overlap physical RC source graph (#261) |
+| Exact multinomial vs fixed-`N` binomial | PROVED (exact + §6.1 same-support) / OPEN (full binomial) | exact iid `FiniteSampleIidEnvelope.truth_maximizer_forall_covered_iff` (#251); #258 `FixedXExactML.fixedX_classification_iff`; §6.1 full-coverage `∀y` F-a (#211) and same-support sample-uniform `robust_iff_unique` (#293) | full #259 (A)/(B) over the full candidate universe |
+| Same vs variable length | PROVED (same) / REFUTED (variable sufficiency) / OPEN (general) | same-length iffs (#256/#260); `ShortFiniteMLCounterexamples.lean` + `AxiomAudit300.lean` (#229), `verify_short_finite_ml_300.py` (#313) | general variable-length classification (#261); #300 board closure |
+| Spelled genomes vs MB09 §6.2 bidirected flows / overlap floor | PROVED (full-overlap + reduced-circuit) / OPEN (arbitrary flows) | #260 full-overlap; `Section62FullOverlapLift.lean` (#262); `Section62SpelledFlowImageRefutation.exists_feasible_not_spelled`; #300/#307/#313/#315 bounded incidence/orbit steps | source-faithful physical edge-indexed graph, visit-count transport, genome realization (#261/#284) |
+| Truth candidacy | PROVED (landed scopes) / OPEN (extended) | truth admissibility in #256/#260; `robust_iff_unique` same-support | extended candidate sets (#261) |
+| Literal historical read-string `I_s` vs project placement `I_s` | PROVED (placement) / REFUTED (literal bridging) / OPEN (remaining) | #256 iff needs no `I_s`; W1/W2 `HistoricalCoverageSameLengthWitnesses.lean` (#142); #272 `FiniteSideInformationReadStringAdapter.lean` (#298) | W1/W2 (A)-side adapter (#271); particular 2016 decoder |
+| Population vs finite sample | PROVED (population) / PROVED-elementary (bridge) | `PopulationUniqueness.population_maximizer_unrestricted` (#154), `PopulationGibbs`; exact iid finite classification (#251) | finite-sample classification outside landed cells; F-b kernel artifact |
+| Finite-read reliability / sample complexity | PROVED (scoped) / OPEN (full) | `PrimitiveP2FiniteClass.lean` (#214), `PrimitiveP2UniformSeparation.primitiveP2_ML_confidence_explicit` (#234), `NonmonotonicityWitness281.lean` (#208); #265 Chernoff (#321), minimax one-family (#326) | genome-level finite corollary (#281); unrestricted-universe sharp sample size |
+| Bayes/MAP and conditional inference | PARTIAL / OPEN | `FiniteBayesDecision` (#174), `IidMapMonotonicity` (#193), `GenomeOrbitAdapter` (#200), `BayesValueMonotonicity` (#231), `PosteriorMAPEquivalence` (#261), `BayesOptimalityCertificate` (#310), `ConditionalVsOrdinaryMLSeparation` (#232) | RC-orbit quotient + genome-level conditional recovery (#269/#271); latent-placement adapter (#272); #266 duplicate-invariance residual |
+
+### Prioritized genuinely-open scoped claims lacking a live owner
+
+A "live owner" here means a current open PR/branch on the specific scoped claim
+(checked through the GitHub API on 2026-10-18). Open PRs currently own: #257
+(`#320` double-theta criterion), #271 (`#324` W1/W2 separation), #300 (`#325`
+CI verifier), #94 (`#318` docs), plus integration `#322` and this matrix PR
+`#323`. The following open scoped claims have **no** current branch/PR:
+
+1. **#261 — source-faithful physical edge-indexed RC bidirected graph
+   correspondence** (parallel overlaps, practical transitive reduction) and
+   transport of signed balance, physical visit counts, vertex bounds, and the ML
+   objective into it; sufficiently strong contig/single-genome realization.
+   Merged #300/#307/#313/#315 are bounded incidence/orbit steps only and each
+   explicitly disclaims source equivalence. **Priority HIGH.**
+2. **#269 — reverse-complement-orbit quotient and any genome-level conditional
+   recovery endpoint** (`GenomeOrbitAdapter` proves rotation invariance only).
+   **Priority HIGH.**
+3. **#272 — latent-placement `E(g,T)` adapter and the bridge to a genome
+   reconstruction theorem** (read-string adapter landed; genome-level bridge
+   OPEN). **Priority MEDIUM.**
+4. **#259 — full (A)/(B) product-binomial classification over the full candidate
+   universe** (arbitrary bidirected flows, RC molecules, variable genome length);
+   the same-support and full-coverage `∀y` cells are now kernel-checked
+   (#211/#293). **Priority MEDIUM.**
+5. **#257 — general closed-form/§8.2 complexity classification beyond the landed
+   target-cycle, bouquet, length-3, and general p,q bridge families** (the LP
+   relaxation is refuted as a decider, #299). **Priority MEDIUM.**
+6. **#263 — unconditional separable-convex Graver certificate**: the landed
+   `graver_optimal_iff_no_improving` is explicitly conditional on a conformal
+   Graver decomposition. **Priority MEDIUM.**
+7. **#284 — exact Myers practical-algorithm fidelity and the full unobserved
+   §6.1 RC class universe / `4^k` indexing.** **Priority MEDIUM.**
+8. **#281 — genome-level finite corollary and the unrestricted-universe sharp
+   sample size** (Chernoff #321 and one-family minimax #326 are scoped only).
+   **Priority LOW.**
+9. **#266 residual — instance/multiset-preserving (duplicate-invariance) decoder
+   adapter** (`historical_feasible_fibre_unique_of_instance_decoder`); board
+   #266 is CLOSED but records this residual. **Priority LOW.**
+10. **F-b kernel artifact** (`AssemblyP1/PopulationFiniteGap.lean`). **Priority
+    LOW.**
+11. **#300 board closure** — witnesses landed (#229/#313) and a CI verifier is
+    in open PR #325; only the board closure remains. **Priority LOW.**
+12. **#265 / #268 editorial acceptance** — human review, not research.
+
+### Board child states at this reconciliation
+
+Board-OPEN: **#257, #259, #261, #263, #265, #268, #269, #271, #272, #281, #284,
+#300** (plus umbrella #255). Board-CLOSED: #247, #254, #256, #258, #260, #262,
+#264, #266, #267, #270, #273, #274, #276, #277, #282, and the later editorial
+children #285, #288, #290, #291, #292. This matches the snapshot's lists; no
+child state changed since `c581d11`. Umbrella #255 remains **OPEN**.
+
+---
+
+## Reconciliation at `origin/main` `15c8c19` (2026-10-18, agent b499974ad618) — SUPERSEDED by the section above
+
+> Superseded: this section was based on `15c8c19` (one commit behind current
+> `main` `aedc836`) and its "no live owner" item 2 wrongly records flag F-a as
+> un-kernel-checked; F-a is in fact proved by `covered_ambient_effectiveProduct_le_iff`
+> (PR #211). Kept for provenance.
 
 Verified by execution on 2026-10-18: `git ls-remote
 https://github.com/ottojung/assemblyp1 refs/heads/main` =
@@ -1094,7 +1239,17 @@ sub-claims are now supported by a kernel-checked artifact or a CI test at
 | Finite-read reliability / sample complexity | #281 (OPEN), #265 (OPEN) | `PrimitiveP2FiniteClass.lean`, `PrimitiveP2UniformSeparation.lean` (`primitiveP2_ML_confidence_explicit`), `NonmonotonicityWitness281.lean`; `scripts/verify_strong_consistency_265.py` | genome-level finite corollary (#281); #265/#268 editorial pass |
 | Bayes/MAP and conditional inference | #266/#267/#270 (CLOSED), #269/#271/#272 (OPEN) | `FiniteBayesDecision.lean`, `IidMapMonotonicity.lean`, `GenomeOrbitAdapter.lean`, `BayesValueMonotonicity.lean`, `PosteriorMAPEquivalence.lean`, `ConditionalVsOrdinaryMLSeparation.lean`, `FiniteSideInformationColoring.lean`, `FiniteSideInformationOrdering.lean` | RC-orbit quotient and genome-level conditional recovery (#269/#271); latent-placement adapter (#272); duplicate-invariance adapter (#266 residual) |
 
-### Flag F-a — RESOLVED scoped claim that lacks a kernel-checked artifact
+### Flag F-a — CORRECTED 2026-10-18: now kernel-checked (see authoritative reconciliation above)
+
+> **Correction (agent a512b29b9ac0, 2026-10-18, `origin/main` `aedc836`).** The
+> text below was the 2026-10-16 assessment and is **wrong**: the general `∀y`
+> surrogate statement *is* kernel-checked, by
+> `AssemblyP1.CoveredBinomialWeightsIff.covered_ambient_effectiveProduct_le_iff`
+> (`AssemblyP1/CoveredBinomialWeightsIff.lean:310`, PR #211, merge `298682b`).
+> Its domain `(∀ i, A i ≤ x i) ∧ (∀ j, A j = 0 → x j = 0)` is exactly `x = A+y`
+> with `y ≥ 0` on `supp A`, and its conclusion is exactly
+> `[∃ i ∈ supp A: b_i = 0] ∨ [∀ i ∈ supp A: b_i ≤ a_i]`. F-a is **RESOLVED**; the
+> paragraph below is retained only as historical record.
 
 - The **§6.1 surrogate full-coverage `∀y` classification** (`∀ y ≥ 0` on
   `supp(A)`: `F_B(A+y) ≤ F_A(A+y)` iff `[∃ i: b_i = 0] ∨ [∀ i: b_i ≤ a_i]`,
@@ -1131,7 +1286,7 @@ classification in any of them is claimed. Conjectures remain OPEN.
 | Axis | Status | Detail |
 |---|---|---|
 | Oriented vs RC molecule types | PROVED (landed scopes) | Oriented + same-length + exact multinomial + sample-uniform PROVED (#256); RC + full-overlap + fixed-length + exact multinomial + sample-uniform PROVED (#260); oriented arbitrary-overlap and RC arbitrary-overlap OPEN (#261) |
-| Exact multinomial vs fixed-N binomial | PROVED (exact, landed scopes) / PARTIAL (binomial) | Exact multinomial PROVED in the landed scopes (#256, #258, #260); short variable-length exact counterexamples kernel-landed (#300, PR #229); **exact iid full-start-covered pointwise classification now KERNEL-CHECKED** (`FiniteSampleIidEnvelope.truth_maximizer_forall_covered_iff`, GitHub PR #251, merge `13411a6`, root-imported at `AssemblyP1.lean:292`; the earlier revision wrongly recorded this as OPEN/un-imported); fixed-`x` (A) remains halfspace inequalities; fixed-N binomial (MB09 §6.1) PARTIAL: effective weights, strict witness, start coverage, covered-sample weight iff (#211), fixed-`n` extreme-sample iff (#279), sample-uniform rigidity iff landed (#259); full (A)/(B) classification OPEN; the §6.1 surrogate full-coverage `∀y` classification is elementary-only (flag F-a) |
+| Exact multinomial vs fixed-N binomial | PROVED (exact, landed scopes) / PARTIAL (binomial) | Exact multinomial PROVED in the landed scopes (#256, #258, #260); short variable-length exact counterexamples kernel-landed (#300, PR #229); **exact iid full-start-covered pointwise classification now KERNEL-CHECKED** (`FiniteSampleIidEnvelope.truth_maximizer_forall_covered_iff`, GitHub PR #251, merge `13411a6`, root-imported at `AssemblyP1.lean:292`; the earlier revision wrongly recorded this as OPEN/un-imported); fixed-`x` (A) remains halfspace inequalities; fixed-N binomial (MB09 §6.1) PARTIAL: effective weights, strict witness, start coverage, covered-sample weight iff (#211), fixed-`n` extreme-sample iff (#279), sample-uniform rigidity iff landed (#259); full (A)/(B) classification OPEN; the §6.1 surrogate full-coverage `∀y` classification is **kernel-checked** by `CoveredBinomialWeightsIff.covered_ambient_effectiveProduct_le_iff` (PR #211, merge `298682b`; flag F-a corrected 2026-10-18), and its same-support sample-uniform counterpart is `ProductBinomialRigidityNecessity.robust_iff_unique` (PR #293, merge `1a43543`) |
 | Same vs variable length | PROVED (same) / OPEN (variable) | Same-length PROVED where landed; variable-length sufficiency REFUTED by short exact counterexamples (#300); general variable-length classification OPEN (fenced to #261) |
 | Spelled genomes vs MB09 §6.2 bidirected flows / overlap floor | PROVED (full-overlap and reduced-circuit occurrences) / OPEN (arbitrary flows) | Full-overlap RC molecule-spectrum ML proved (#260); spelled-circuit flow adapters landed (#201/#212/#233); signed integration PR #274 kernel-proves circular oriented read occurrences and observed RC class counts for genuine reduced circuits, but also refutes the general spelled-throughput image identity (#247). Arbitrary feasible-flow realization, full unobserved RC classes, and exact Myers practical-algorithm fidelity remain OPEN (#261/#284). |
 | Truth candidacy | PROVED (landed scopes) / OPEN (extended) | Truth genuinely admissible over spelled candidate universes PROVED in the landed scopes; extended candidate sets OPEN (#261) |
@@ -1184,8 +1339,10 @@ recorded it as OPEN with the artifact "NOT imported by the root aggregator",
 which was already false at `c581d11`. The population-to-finite bridge
 (2026-10-14) remains an elementary proof in a precisely stated cell and is
 **not** kernel-checked (`AssemblyP1/PopulationFiniteGap.lean` is absent; flag
-F-b). The §6.1 surrogate full-coverage `∀y` classification remains
-elementary-only (flag F-a). Neither flag closes any child issue. #255 closes
+F-b). The §6.1 surrogate full-coverage `∀y` classification is **kernel-checked**
+by `CoveredBinomialWeightsIff.covered_ambient_effectiveProduct_le_iff` (PR #211,
+merge `298682b`) — flag F-a corrected 2026-10-18; the historical F-a note above
+is superseded. Neither remaining flag closes any child issue. #255 closes
 only when every scoped claim is proved or refuted to the issue's evidence
 standard (audited proof, direct Lean theorem where feasible, green CI/merge)
 and this matrix is updated to match.
