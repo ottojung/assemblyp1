@@ -1,5 +1,17 @@
 # Issue #89 / board 94, front `94real`: the converse bridge is closed
 
+> **Status update — 2026-10-18.** The converse bridge documented
+> below is not the final #94 proof. A subsequent, independently
+> kernel-checked component-antiderivative route proves the population
+> endpoint: `Issue94ConcreteAntiderivative.concrete_p2LongUnique`
+> plus `Issue94LongWindowSplit.shortRangeUnique` are composed
+> in `Issue94Complete.population_unique_ML`. The latter theorem
+> needs no external BBT premise and has only standard Lean axioms.
+> The older claim below that #94 population uniqueness remains
+> conditional is historical. The *stronger unrestricted* BBTUniqueAt
+> statement remains open.
+
+
 Branch `proof/94-eulerian-realize`. Module
 `AssemblyP1/Issue94EulerianRealize.lean`. Namespace
 `AssemblyP1.Issue94Realize`.
