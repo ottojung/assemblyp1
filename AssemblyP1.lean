@@ -70,8 +70,15 @@ import AssemblyP1.Section62GlobalSpellingPreservation
 import AssemblyP1.Section62GlobalCircularCorrespondence
 import AssemblyP1.Section62GlobalCircularAudit
 import AssemblyP1.Section62ReductionDependencyAudit
+-- #284: explicit kernel survival of the §6.2 finite witnesses under the corrected
+-- spelling-preserving transitive reduction (requirement-6 close-out).
+import AssemblyP1.Section62ReductionWitnessAudit
 -- #284: RC-palindrome audit of duplicate edge-list multiplicities (no model rewrite).
 import AssemblyP1.Section62PalindromeEdgeMultiplicityAudit
+-- #255/#261: the symmetric-oriented-flow discipline (`f e = f (rev e)`) fails to
+-- transport physical loop visit counts; the quotient orbit flow is the correct route.
+import AssemblyP1.Section62ReversalOrbitTransport
+import AssemblyP1.Section62ReversalOrbitTransportAudit
 import AssemblyP1.Section62FullSpectrumUnseenFactor
 -- #259 real circular-genome witness: exact iid and product-binomial rankings differ.
 import AssemblyP1.Section62BinomialRealGenomeInversion
@@ -114,6 +121,7 @@ import AssemblyP1.PosteriorMAPEquivalence
 import AssemblyP1.ConditionalVsOrdinaryMLSeparation
 import AssemblyP1.ConditionalVsOrdinaryMLBoundary271
 import AssemblyP1.W1W2SeparationCompatibility
+import AssemblyP1.W1W2RcOrientedRepresentation271
 import AssemblyP1.ConditionalVsMLGenomeAdapter271
 import AssemblyP1.ConditionalBayesEImpliesB271
 import AssemblyP1.BayesValueMonotonicity
@@ -361,6 +369,9 @@ import AssemblyP1.PrimitiveP2FiniteClassTight
 import AssemblyP1.PrimitiveP2FiniteClassTightAudit
 import AssemblyP1.PrimitiveP2UniformSeparation
 import AssemblyP1.PrimitiveP2UniformSeparationAudit
+-- #263 MB09 §6.1 product-binomial is not coordinatewise monotone (8-vs-4 kernel) + audit.
+import AssemblyP1.ProductBinomialMonotonicityCounterexample
+import AssemblyP1.ProductBinomialMonotonicityCounterexampleAudit
 -- #263 separable-convex Graver optimality certificate (conditional core) + audit.
 import AssemblyP1.SeparableConvexGraver
 import AssemblyP1.SeparableConvexGraverAudit
@@ -1213,3 +1224,16 @@ reading. Two finite checks anchor it: the refuted BBT premise's witness is not
 -- #281 tightness of the primitive-P2 length bound at K = 1.
 #print axioms AssemblyP1.PrimitiveP2FiniteClassTight.exists_primitive_P2_at_bound_K1
 #print axioms AssemblyP1.PrimitiveP2FiniteClassTight.maxLen_two
+
+-- #284 requirement (6): explicit survival of the §6.2 finite witnesses under the
+-- corrected spelling-preserving transitive reduction.
+#print axioms AssemblyP1.Section62ReductionWitnessAudit.stepsSurviveReductionSpelling_iff_stepsInGraph_of_full
+#print axioms AssemblyP1.Section62ReductionWitnessAudit.bridging_graph_spelling_reduction_eq_self
+#print axioms AssemblyP1.Section62ReductionWitnessAudit.bridging_truth_spelled_feasible62_spelling
+#print axioms AssemblyP1.Section62ReductionWitnessAudit.bridging_competitor_spelled_feasible62_spelling
+#print axioms AssemblyP1.Section62ReductionWitnessAudit.sameLength_graph_spelling_reduction_eq_self
+#print axioms AssemblyP1.Section62ReductionWitnessAudit.sameLength_truth_spelled_feasible62_spelling
+#print axioms AssemblyP1.Section62ReductionWitnessAudit.sameLength_competitor_spelled_feasible62_spelling
+#print axioms AssemblyP1.Section62ReductionWitnessAudit.perOccurrence_graph_spelling_reduction_eq_self
+#print axioms AssemblyP1.Section62ReductionWitnessAudit.perOccurrence_truth_spelled_feasible62_spelling
+#print axioms AssemblyP1.Section62ReductionWitnessAudit.perOccurrence_competitor_spelled_feasible62_spelling

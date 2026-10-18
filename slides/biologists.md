@@ -101,12 +101,22 @@ A useful way to see the reconstruction: make a **graph whose nodes are the reads
 
 Under the coverage and bridging conditions, that graph has a **unique Eulerian tour**, and the tour spells the true circular genome.
 
+The tour is a function of the reads alone. So for one fixed set of reads, **at most one rotation class** can satisfy the reconstruction conditions — a *certificate about the observations*, not a claim that only one genome can produce the reads.
+
 <!--
 Cite Shomorony, Kim, Courtade & Tse (2016), Bioinformatics, DOI
 10.1093/bioinformatics/btw450, Theorem 1 and its supplement. Present the idea,
 not the internals: nodes are reads, edges are overlaps, and a unique Eulerian
 tour spells the genome. This is distinct from the didactic de Bruijn graph
 (where nodes are short k-mers).
+Certificate multiplicity vs generative multiplicity: many genomes
+(including nonrotational ones) can produce the SAME reads — see the
+AAACAC/AACAAC example later in this talk, and the paper's extreme
+case ex:ABAB (AAABAB vs AABAAB, identical 2-mer spectra). The
+2016 guarantee constrains only which rotation class passes the
+conditions on fixed observations. Honest labels: the unique-spelling
+fact is the published 2016 premise (external); the at-most-one-class
+conclusion is a paper-level corollary, not Lean-proved.
 -->
 
 ---
@@ -119,7 +129,7 @@ If the reads already contain enough information to reconstruct the genome...
 
 Those are **two different questions**.
 
-- **Question A (conditional):** restrict candidates to those that already pass the reconstruction conditions — then the answer is the true circle, a corollary of the guarantee.
+- **Question A (conditional):** restrict candidates to those that already pass the reconstruction conditions — then the answer is the true circle, a corollary of the guarantee. (The conditions act as a *certificate about the reads*: for fixed observations, at most one rotation class can pass.)
 - **Question B (unconditional):** without that restriction, must the true genome be most likely? **No** — the next slides show a decoy winning.
 
 <!--
@@ -143,11 +153,18 @@ Imagine testing a proposed genome by repeating the sequencing experiment in your
 
 **Nothing more complicated than a set of probabilities and a product.**
 
+**Why the highest-probability candidate?** If the candidates start out equally likely and every wrong answer costs the same, the most likely candidate is also the one that is right most often *on average*.
+
 <!--
 This is likelihood P(data | genome), not posterior probability P(genome | data).
 Searching over all candidate genomes is a separate problem. Because a finite
 sample fluctuates, the most likely genome need not be the true one; the next
 slides make that precise.
+Uniform start positions are not uniform read-type probabilities: the likelihood
+scores each observed read string by the fraction of starts that produce it
+(paper 02-model). The source's own objective is ambiguous — MB09 §6.1 uses a
+fixed-N product-binomial surrogate and §6.2 a flow likelihood — and neither is
+the exact iid multinomial used here; none of these is kernel-checked.
 Bayes-optimality is prior-averaged: with a uniform prior and 0-1 loss, MAP/ML
 maximizes the average chance of being right, and the kernel-checked certificate
 (BayesOptimalityCertificate) adds that a rule missing a per-observation
@@ -248,6 +265,12 @@ infinite product of probabilities. The eventual-exactness strengthening for a
 finite identifiable family (strong law + KL; classical, not kernel-checked;
 no finite n supplied) is paper prop:strong-consistency; see the backup
 slide "The limit is eventual - and gives no finite number".
+#265 exact finite-n pointer (2026-10-18): the limit above gives no finite n, but
+for one explicit finite read-law family the tight 99% sizes are n*=85
+(prior-averaged) and n*=87 (minimax-over-truths), against the kernel-checked
+Hellinger sufficient 153; see the sample-complexity backup and
+docs/minimax-finite-recovery-265.md. The exact numbers are external decision
+theory, not Lean.
 -->
 
 ---
@@ -263,7 +286,7 @@ AACAAC
 
 Their length-2 read frequencies agree exactly, so unlimited two-base reads cannot tell them apart.
 
-**A unique best distribution need not imply a unique genome.**
+**A unique best distribution need not imply a unique genome.** This is **generative multiplicity**: the rotation class of any genome always produces the same distribution, and nonrotational genomes can too, as here.
 
 Our population theorem gives uniqueness under a precise repeat condition: oriented circular genomes that are
 
@@ -277,7 +300,10 @@ Kernel endpoint: Issue94Complete.population_unique_ML, fully kernel-checked with
 no external premise, under primitive + P2 + the admissible candidate class +
 L >= 2; the equality characterization is PopulationGibbs.popTie_iff. Likelihood
 supplies maximality; repeat structure supplies uniqueness. State the qualifiers;
-without them distinct non-rotation genomes can tie.
+without them distinct non-rotation genomes can tie. Keep this generative
+multiplicity (what can produce the same reads) distinct from certificate
+multiplicity (which rotation class satisfies the 2016 guarantee on fixed
+observations — at most one, per the algorithm slide).
 -->
 
 ---
@@ -316,8 +342,10 @@ reversal (SameLengthSection62Counterexample), positive structural rigidity
 (OrientedRigidity), and population maximum-likelihood uniqueness in the
 primitive P2 class (Issue94Complete.population_unique_ML). The practical
 conclusions apply first to a deliberately simple sequencing model: circular
-genomes, equal-length error-free reads, and uniformly random starts. Sample
-complexity ("how many reads for 99%?") remains open.
+genomes, equal-length error-free reads, and uniformly random starts. A sharp
+uniform sample size ("how many reads for 99%?") over the unrestricted genome
+universe remains open; the finite-family Hellinger/Chernoff bound in backup is a
+scoped sufficient answer.
 -->
 
 ---
@@ -404,6 +432,22 @@ docs/chernoff-exponent-finite-recovery-265.md; exact check
 scripts/verify_chernoff_finite_recovery_265.py. Do NOT claim a tight or minimax
 finite-n bound, and do NOT claim C_* is kernel-checked; the kernel-checked
 constant remains rho_* (FiniteReadRecovery).
+#265 exact finite-n numbers (2026-10-18): for one explicit finite family of
+binary read laws A=(1/2,1/2), B=(3/4,1/4), C=(1/4,3/4) the tight 99% recovery
+sizes are EXACT (standard decision theory + exact arithmetic; NOT Lean): n*=85
+for the uniform-prior Bayes optimum (V_84<0.99<=V_85=0.99006833) and n*=87 for
+the minimax-over-truths optimum (error_86=0.01051594>0.01>=error_87=
+0.00973853). The kernel-checked Hellinger bound above gives a conservative
+sufficient size 153; evaluated at n=85 that bound value is about 6.4x the
+exact per-truth error of the middle truth.
+This is prior-AVERAGED: at n=85 the per-truth successes are A=0.983491 <
+B=C=0.993357 (average V_85), so "99% recovery" is about the average, not each
+truth, and per-truth success is not monotone. Scope: one explicit finite family
+under the iid read-law model, not the unrestricted genome universe and not
+MB09. Only the abstract Bayes-optimality (FiniteBayesDecision /
+FiniteMapOptimality) and the Hellinger union bound (FiniteReadRecovery) are
+kernel-checked. Verifier scripts/verify_minimax_finite_recovery_265.py; paper
+rem:minimax-sample-size; note docs/minimax-finite-recovery-265.md.
 -->
 
 ---
