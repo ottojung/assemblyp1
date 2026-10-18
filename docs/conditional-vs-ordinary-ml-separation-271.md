@@ -126,12 +126,17 @@ marginals `lik` and the exact same-length multinomial score `exactLik`):
   conditional-recovery claim; none is claimed here.
 * **Full two-sided separation: NOT instantiated** by existing W1/W2 under this
   shared model — only the (B)-failure half is.
-* **Representation warnings.** W1/W2 are oriented read-string witnesses
-  (`SourceFaithfulIs.window`); they must not be coerced into the RC-collapsed
-  molecule representation (#260), a different observable with a different
-  likelihood. The historical matched read-string coverage (`HistoricalCovers`,
-  #247) versus latent-start (`InformationFeasible`) variants do not affect the
-  likelihood comparison, which concerns the count vector `obs`, not coverage.
+* **Representation warnings.** The historical W1/W2 witnesses are
+  **reverse-complement molecule** witnesses: their observable is the
+  molecule-class count `obs` (oriented windows collapsed through the molecule
+  class `cls`), not the oriented read-string representation
+  (`SourceFaithfulIs.window`) that the Not-So-Greedy model uses. `cls` is
+  non-injective, so the molecule observable is a strict quotient of the oriented
+  one; the two must not be identified (kernel-checked in
+  `AssemblyP1/W1W2RcOrientedRepresentation271.lean`). The historical matched
+  read-string coverage (`HistoricalCovers`, #247) versus latent-start
+  (`InformationFeasible`) variants do not affect the likelihood comparison,
+  which concerns the count vector `obs`, not coverage.
 * **Necessary conditions do not guarantee (B).** The weaker
   information-theoretic necessary conditions (coverage, repeat bridging) do
   not guarantee ordinary ML recovery: W1/W2 satisfy their source certificates
