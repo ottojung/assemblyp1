@@ -272,6 +272,43 @@ standard statistics and are **not** upgraded to Lean. The genuinely open items
 are unchanged: the general (non-equal-length) finite-ML characterization and a
 sharp uniform sample size over the unrestricted genome universe.
 
+## 2026-10-18 addendum — exact finite-`n` numbers in the speaker notes
+
+A seventh addendum by agent `6ec3ab838521` (bounded follow-up to the merged
+PR #326 / main `aedc836`) adds the **exact** finite-`n` recovery numbers of
+`docs/minimax-finite-recovery-265.md` to the **speaker notes only** of both
+decks. For the one explicit finite family of binary read laws
+`A=(1/2,1/2)`, `B=(3/4,1/4)`, `C=(1/4,3/4)`:
+
+- uniform-prior Bayes-optimal 99% recovery is `n*=85`
+  (`V_84<0.99<=V_85=0.99006833`);
+- minimax-over-truths 99% recovery is `n*=87`
+  (`error_86=0.01051594>0.01>=error_87=0.00973853`);
+- the kernel-checked Hellinger union bound gives a conservative **sufficient**
+  size `153 = ceil(ln(2/0.01)/ln(1/rho_*))`; evaluated at `n=85` that bound
+  value is about `6.4x` the exact per-truth error of the middle truth;
+- the numbers are **prior-averaged**: at `n=85` the per-truth successes are
+  `A=0.983491 < B=C=0.993357` (average `V_85`), so "99% recovery" describes the
+  average, not each truth, and per-truth success is not monotone.
+
+The additions are confined to existing HTML speaker-note comments: the
+programmers deck's "Do we actually need infinitely many reads?" note (full
+statement) and Backup B3 note (pointer); the biologists deck's "Backup: how
+many reads for 99% recovery?" note (full statement) and "What if we had
+infinitely many reads?" note (pointer). **No slide was added, removed, or
+restructured**, the approved #254 opening and the Lean/agent-proof-trust story
+are untouched, and the visible slide text is unchanged. Provenance is kept
+honest: the exact finite arithmetic is external standard decision theory
+(Berger 1985; Lehmann & Casella 1998) checked by
+`scripts/verify_minimax_finite_recovery_265.py`, **not** Lean; the only
+kernel-checked ingredients cited are the abstract Bayes-optimality of
+`FiniteBayesDecision` / `FiniteMapOptimality` and the Hellinger union bound of
+`FiniteReadRecovery`. Scope: one explicit finite family under the i.i.d.
+read-law model, not the unrestricted genome universe and not MB09. The
+genuinely open items are unchanged: the general (non-equal-length) finite-ML
+characterization and a sharp uniform sample size over the unrestricted genome
+universe.
+
 ## Validation
 
 - `cd slides && npm ci && npm run build` — format check, math check, both decks
@@ -284,6 +321,10 @@ sharp uniform sample size over the unrestricted genome universe.
   ordering for `n = 1..16`, the `n = 16` gap ratio (`≈3.7`), `C ≥ -ln ρ`
   (equality symmetric, strict non-symmetric), and the exponent convergence to
   `C_*` through `n = 512`.
+- `python3 scripts/verify_minimax_finite_recovery_265.py` — exact-rational
+  checks of the tight finite-`n` optima (prior-averaged `n*=85`, minimax
+  `n*=87`, per-truth breakdown, the least-favourable prior and tie-split
+  certificate, and the conservative Hellinger sufficient `153`).
 - Paper build via `paper/build.sh` (Guix): `sec:strong-consistency` compiles
   with 0 LaTeX warnings (2026-10-16 addendum; earlier addenda did not touch
   the paper).

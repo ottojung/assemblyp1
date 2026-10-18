@@ -688,6 +688,23 @@ Chernoff/Sanov, NOT kernel-checked). The bound is still not tight at finite n
 prop:chernoff-refinement / rem:chernoff-sharp; see backup B3 and
 docs/chernoff-exponent-finite-recovery-265.md. Do not claim a tight finite-n
 bound or that C_* is kernel-checked.
+#265 exact finite-n numbers (2026-10-18): for one explicit finite family of
+binary read laws A=(1/2,1/2), B=(3/4,1/4), C=(1/4,3/4) the finite-n optima are
+EXACT (standard decision theory + exact arithmetic; NOT Lean). Uniform-prior
+Bayes-optimal 99% recovery is n*=85 (V_84<0.99<=V_85=0.99006833); the
+minimax-over-truths 99% recovery is n*=87 (error_86=0.01051594>0.01>=
+error_87=0.00973853). The kernel-checked Hellinger union bound gives a
+conservative sufficient size 153 = ceil(ln(2/0.01)/ln(1/rho_*)); evaluated at
+n=85 that bound value is about 6.4x the exact per-truth error of the middle
+truth. This is prior-AVERAGED: at
+n=85 the per-truth successes are A=0.983491 < B=C=0.993357 (average V_85), so
+"99% recovery" is a statement about the average, not each truth, and per-truth
+success is not monotone. Scope: this one explicit finite family under the iid
+read-law model, not the unrestricted genome universe and not MB09. Only the
+abstract Bayes-optimality (FiniteBayesDecision / FiniteMapOptimality) and the
+Hellinger union bound (FiniteReadRecovery) are kernel-checked. Exact verifier
+scripts/verify_minimax_finite_recovery_265.py; paper rem:minimax-sample-size;
+note docs/minimax-finite-recovery-265.md.
 -->
 
 ---
@@ -991,6 +1008,12 @@ rem:chernoff-sharp; note docs/chernoff-exponent-finite-recovery-265.md; exact
 check scripts/verify_chernoff_finite_recovery_265.py. The kernel-checked
 constant remains rho_* (FiniteReadRecovery). No tight or minimax finite-n
 claim.
+#265 exact finite-n refinement (2026-10-18): for the explicit family
+A=(1/2,1/2), B=(3/4,1/4), C=(1/4,3/4) the tight 99% sizes are n*=85
+(prior-averaged) and n*=87 (minimax-over-truths), so the Hellinger sufficient
+153 stated here is conservative (about 1.8x). See the "Do we actually need
+infinitely many reads?" note and docs/minimax-finite-recovery-265.md; the exact
+numbers are external decision theory, not Lean.
 -->
 
 ---
