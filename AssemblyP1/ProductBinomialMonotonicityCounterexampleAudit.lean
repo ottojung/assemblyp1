@@ -1,0 +1,16 @@
+import AssemblyP1.ProductBinomialMonotonicityCounterexample
+
+open AssemblyP1.ProductBinomialMonotonicityCounterexample
+
+-- Axiom audit for the MB09 §6.1 product-binomial non-monotonicity counterexample
+-- (board #263).  Every endpoint must depend only on
+-- {propext, Classical.choice, Quot.sound}.
+#print axioms AssemblyP1.ProductBinomialMonotonicityCounterexample.binomKernel_eight_lt_four
+#print axioms AssemblyP1.ProductBinomialMonotonicityCounterexample.binomKernel_not_coordMono
+#print axioms AssemblyP1.ProductBinomialMonotonicityCounterexample.binomKernel_pss_fails
+#print axioms AssemblyP1.ProductBinomialMonotonicityCounterexample.binomKernel_zero
+#print axioms AssemblyP1.ProductBinomialMonotonicityCounterexample.binomKernel_at_N
+#print axioms AssemblyP1.ProductBinomialMonotonicityCounterexample.binomKernelTwo_dominance_fails
+#print axioms AssemblyP1.ProductBinomialMonotonicityCounterexample.id_coordMono
+#print axioms AssemblyP1.ProductBinomialMonotonicityCounterexample.id_hasPSS
+#print axioms AssemblyP1.ProductBinomialMonotonicityCounterexample.product_binomial_separation
