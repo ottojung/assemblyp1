@@ -1,6 +1,40 @@
 # Reversal-orbit source-model correspondence: precise remaining gap (#255/#261 front)
 
 
+## Update — 2026-10-18: the first L2 disjunct is REFUTED (kernel-checked)
+
+The L2 flow-transport discipline below offered two alternatives: (a) require
+`f e = f (reverseEdge e)` on tagged edge values, or (b) define the flow directly
+on quotient edge orbits, "with a proof that the physical feasible set is
+unchanged". Alternative **(a) is refuted** by
+`AssemblyP1.Section62ReversalOrbitTransport` (kernel-checked, no
+`sorry`/`admit`/`axiom`/`native_decide`, axioms `⊆ {propext, Quot.sound}`):
+
+* `throughput_pair_selfloop` — for a self-loop `e` and any flow `f`,
+  `throughput cls f [e, reverseEdge e] v = f e + f (reverseEdge e)`;
+* `throughput_pair_selfloop_symm` — for a reversal-symmetric flow the inherited
+  departure throughput is `2 * f e`, hence **even**;
+* `no_revsymm_flow_realizes_unit_loop` — no reversal-symmetric oriented flow
+  realizes the physical visit count **one** of the unit mixed-sign loop orbit;
+* `mixed_physical_visit_one` — the quotient model (`physPos` on `PhysEdge`)
+  *does* realize it, by representation invariance of `posHalf`/`negHalf`.
+
+The **smallest witness** is the length-`1` mixed-sign self-loop `mixedLoop` on
+`Tagged Bool` (`AssemblyP1.Section62PhysicalHalfIncidence`), not the length-`4`
+`ATAT` palindrome. So the `f e = f (rev e)` symmetrization does not leave the
+physical feasible set unchanged; the correct route is alternative (b), the
+quotient-orbit flow already merged in `Section62PhysicalEdgeOrbit`.
+
+**Still OPEN (L1 and the L3 remainder).** The quotient model is *not* yet
+identified with MB09's physical RC overlap multigraph (edge multiplicity,
+transitive-reduction contract), and the exact ML objective is *not* yet
+transported to physical orbit totals. Reversal-orbit transport of *incidences*
+is settled; source-graph and objective transport are not.
+
+Independent exact-integer verifier:
+`scripts/verify_261_reversal_orbit_transport.py` (86 assertions, exit 0).
+
+
 ## Updated status — 2026-10-17 (supersedes the historical snapshot below)
 
 At current `main` after PR #307, the **abstract orbit flow discipline and

@@ -75,6 +75,10 @@ import AssemblyP1.Section62ReductionDependencyAudit
 import AssemblyP1.Section62ReductionWitnessAudit
 -- #284: RC-palindrome audit of duplicate edge-list multiplicities (no model rewrite).
 import AssemblyP1.Section62PalindromeEdgeMultiplicityAudit
+-- #255/#261: the symmetric-oriented-flow discipline (`f e = f (rev e)`) fails to
+-- transport physical loop visit counts; the quotient orbit flow is the correct route.
+import AssemblyP1.Section62ReversalOrbitTransport
+import AssemblyP1.Section62ReversalOrbitTransportAudit
 import AssemblyP1.Section62FullSpectrumUnseenFactor
 -- #259 real circular-genome witness: exact iid and product-binomial rankings differ.
 import AssemblyP1.Section62BinomialRealGenomeInversion
