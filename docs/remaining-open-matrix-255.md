@@ -1,6 +1,45 @@
 # AssemblyP1 umbrella #255 — remaining-open matrix
 
 
+## Verified ledger — 2026-10-18 (PR #322/#323 content audit)
+
+Compact verified status for umbrella #255 and its rigidity child #257,
+recorded after a content-based audit of PR #322 (integration of
+#318/#319/#320) and PR #323 against `origin/main` `bb74541`. Every status
+below was checked with `git merge-base --is-ancestor` and exact file
+content; this ledger summarizes — it does not replace — the detailed
+sections beneath.
+
+**CLOSED / merged (already on `origin/main`):**
+- **#94 population uniqueness — CLOSED.** `Issue94Complete.population_unique_ML`
+  (finite alphabets, L ≥ 2, primitive P2) is kernel-landed; PR #351 corrects
+  the stale "still missing" residuals in `BBTLadder.lean` and the #94 docs.
+- **#257 double-theta exact rigidity criterion — MERGED** (`43c714f`, PR #320).
+- #313 count-vector / oriented-strand source model + `verify_short_finite_ml_300.py` — MERGED.
+- #315 directed double-cover signed-incidence — MERGED (scoped, abstract incidence only).
+- #321 Chernoff refinement — MERGED (`15c8c19`); #265 matrix row corrected here.
+- #326 exact finite-`n` minimax (one read family) — MERGED.
+
+**OPEN (genuinely not yet landed):**
+- **#261 source-faithful physical edge-indexed RC bidirected graph + ML
+  transport — OPEN (HIGH).** #300/#307/#313/#315 are bounded incidence/orbit
+  steps only; none is source-faithful or transports the ML objective.
+- **#269 RC-orbit quotient + genome-level conditional recovery — OPEN (HIGH).**
+- #259 full (A)/(B) product-binomial classification — OPEN (MED).
+- #257 general taxonomy beyond the landed families (target-cycle, bouquet,
+  length-3, general p,q bridge, double-theta) — OPEN (MED).
+- #263 unconditional separable-convex Graver — OPEN (MED; conditional core landed).
+- #284 exact Myers practical-algorithm fidelity — OPEN (MED).
+
+**This resolution:** PR #350 (this PR) salvages the verified #255-matrix
+corrections from superseded PR #323; PR #351 salvages the verified #94
+status docs from unsigned PR #318 as a signed commit. Closed as
+stale/redundant: #322 (stale integration), #318 (unsigned, superseded by
+#351), #319 (CI step already in main), #323 (superseded by #350). Test #242
+(signed probe) left unmerged.
+
+---
+
 ## Addendum — verified 2026-10-17 (avoid duplicate research)
 
 The dated matrix below is a **historical 2026-10-16 snapshot**, not an
