@@ -25,19 +25,25 @@ under both that premise and its own conditional statement; it is \emph{never}
 labelled kernel-checked for the imported step. Table~\ref{tab:ledger} is the
 resulting theorem/assumption matrix.
 
-\begin{table}[t]
-\centering
+\begingroup
 \footnotesize
 \setlength{\tabcolsep}{4pt}
+\begin{longtable}{@{}>{\raggedright\arraybackslash}p{0.29\textwidth}>{\raggedright\arraybackslash}p{0.07\textwidth}>{\raggedright\arraybackslash}p{0.56\textwidth}@{}}
 \caption{Proof-to-claim support matrix. ``Class'' is the strongest honest
 support of the headline \emph{as stated}, using classes (i)--(v) above.
 Endpoints are module and declaration names; the complete index is
 \texttt{docs/verification.md}.}
-\label{tab:ledger}
-\begin{tabular}{@{}>{\raggedright\arraybackslash}p{0.29\textwidth}>{\raggedright\arraybackslash}p{0.07\textwidth}>{\raggedright\arraybackslash}p{0.56\textwidth}@{}}
+\label{tab:ledger}\\
 \toprule
 Headline (with its stated scope) & Class & Evidence and qualification\\
 \midrule
+\endfirsthead
+\toprule
+Headline (with its stated scope) & Class & Evidence and qualification\\
+\midrule
+\endhead
+\bottomrule
+\endlastfoot
 Bayes/MAP prior-average optimality
 (\ref{thm:bayes-optimal}; finite classes, correct model, uniform prior on
 rotation classes, zero-one loss)
@@ -204,9 +210,8 @@ product-binomial objective
 & (v)
 & Open; see Appendix~\ref{app:referents}. The product-binomial objective is
 not asserted to be exact Bayes ML.\\
-\bottomrule
-\end{tabular}
-\end{table}
+\end{longtable}
+\endgroup
 
 The source's historical matched-string predicate and the manuscript's
 sampled-placement predicate are not interchangeable. Likewise, oriented
