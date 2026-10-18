@@ -164,7 +164,14 @@ Uniform start positions are not uniform read-type probabilities: the likelihood
 scores each observed read string by the fraction of starts that produce it
 (paper 02-model). The source's own objective is ambiguous — MB09 §6.1 uses a
 fixed-N product-binomial surrogate and §6.2 a flow likelihood — and neither is
-the exact iid multinomial used here; none of these is kernel-checked.
+the exact iid multinomial used here; none of these is kernel-checked. One
+specific transport discipline for the §6.2 flow likelihood is now kernel-checked
+and refuted (#338): a reversal-symmetric flow on the minimal length-1
+mixed-sign self-loop always has even inherited departure throughput, so it
+cannot realize the unit physical loop flow (quotient-orbit visit count one);
+`AssemblyP1.Section62ReversalOrbitTransport.symmetric_discipline_refuted`
+(audit: `AssemblyP1.Section62ReversalOrbitTransportAudit`). The full §6.2
+source-graph correspondence remains open.
 Bayes-optimality is prior-averaged: with a uniform prior and 0-1 loss, MAP/ML
 maximizes the average chance of being right, and the kernel-checked certificate
 (BayesOptimalityCertificate) adds that a rule missing a per-observation

@@ -23,8 +23,16 @@ numerator; the denominator `N^n` is candidate-independent, so all comparisons
 are unchanged.
 
 The kernel is the product of an **increasing** factor `d^x` and a **decreasing**
-factor `(N - d)^(n - x)`, hence **nonmonotone** in `d`. This is the "0 and `N-d`
-factors are nonmonotone" warning on the board.
+factor `(N - d)^(n - x)`, hence **nonmonotone** in `d`. The coordinatewise
+nonmonotonicity is **not new here**: it is already kernel-checked as
+`AssemblyP1.GeneralBidirectedFlowML.binomial_not_coordinatewise` (truth `(1, 2)`,
+candidate `(1, 1)`, external `N = 3`, sample `(2, 1)`, core `8 > 4`; see
+[`docs/issue261-general-bidirected-flow-ml.md`](issue261-general-bidirected-flow-ml.md)),
+and the earlier "0 and `N-d` factors are nonmonotone" attribution to the board is
+corrected accordingly. The genuinely new content of this module is the failure of
+the **single-coordinate sign-compatible Positive Sum Property** (`HasPSS`), the
+one-dimensional superadditivity step of a monotone separable Graver certificate,
+which the coordinatewise failure alone does not establish.
 
 ## The theorem(s) and the exact ratio
 
@@ -33,7 +41,7 @@ Instance: `N = 12`, `n = 3`, `x = 1`.
 | theorem | statement |
 |---|---|
 | `binomKernel_eight_lt_four` | `P(8) = 8 · 4² = 128 < 256 = 4 · 8² = P(4)` with `4 ≤ 8`; exact ratio `P(4) / P(8) = 2`. |
-| `binomKernel_not_coordMono` | the §6.1 objective is **not** coordinatewise monotone (`¬ CoordMono`). |
+| `binomKernel_not_coordMono` | the §6.1 objective is **not** coordinatewise monotone (`¬ CoordMono`); re-instantiation of the already-merged `AssemblyP1.GeneralBidirectedFlowML.binomial_not_coordinatewise`. |
 | `binomKernel_pss_fails` | on the sign-compatible path `4 → 6 → 8`, `P(8) − P(4) = −128 < −80 = 2·(P(6) − P(4))`; the sign-compatible Positive Sum Property **fails**. |
 | `binomKernelTwo_dominance_fails` | on two types, the dominated spectrum `(4, 4)` beats the dominating spectrum `(8, 8)` (`256² = 65536 > 16384 = 128²`). |
 | `binomKernel_zero`, `binomKernel_at_N` | boundary kernels vanish (`P(0) = P(12) = 0`), so the true extended-real negative log is `+∞` there. |

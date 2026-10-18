@@ -39,7 +39,11 @@ The reason is uniform and kernel-checked: every edge of these graphs has the
 maximal proper overlap length `readLen − 1 = 2`, and
 `fullOverlap_not_reducible` shows no such edge is spelling-preservingly
 reducible.  Hence the old and corrected reductions coincide on these graphs, so
-the old conclusions survive verbatim.  Nothing here re-proves
+the old conclusions survive verbatim.  `spelledFeasible62_old_implies_spelling`
+states the general fact behind the three special cases: *every* old
+`SpelledFeasible62` certificate lifts to `SpelledFeasible62Spelling`, because a
+spelling walk's steps are maximal overlaps and the other conjuncts are unchanged.
+Nothing here re-proves
 `spellPath_eq_spellDirect`, `replacement_overlaps_longer`, or the
 `Section62ReductionDependencyAudit` bridges; nothing here changes any existing
 symbol.  This module is the requirement-(6) close-out for the corrected graph
@@ -85,6 +89,34 @@ def SpelledFeasible62Spelling (A : Type) (W : Type) [DecidableEq A] [DecidableEq
       (overlapEdges A W toList rep rc readLen oMin verts) ∧
     BidirectedCircuit rep readLen sp ∧
     Feasible62 A W rep verts (overlapEdges A W toList rep rc readLen oMin verts) f t d
+
+/-! ## General requirement-(6) transfer
+
+The three witness proofs below are explicit instantiations of a single general
+fact: a spelling walk's steps are always maximal overlaps, so they always survive
+the corrected reduction, and the other four conjuncts of `SpelledFeasible62` are
+unchanged.  Hence *every* §6.2 conclusion stated with the old vacuous
+`SpelledFeasible62` — not only the three named witnesses — lifts to the corrected
+spelling-preserving analogue. -/
+
+/-- **General requirement-(6) transfer.**  Every §6.2 conclusion stated with the
+old (vacuous) `Section62Flow.SpelledFeasible62` lifts to the corrected
+`SpelledFeasible62Spelling`, for an arbitrary spelling walk and arbitrary edge
+list.  The survival conjunct is discharged by
+`Section62ReductionDependencyAudit.stepsSurviveReductionSpelling_of_maximal`; the
+other four conjuncts are literally unchanged. -/
+theorem spelledFeasible62_old_implies_spelling
+    {A W : Type} [DecidableEq A] [DecidableEq W] {n : Nat}
+    (toList : W → List A) (rep rc : W → W) (readLen oMin : Nat) (verts : List W)
+    (sp : Spelling A W n) (f : BdFlow A W) (t : SuperTerminals W) (d : W → ℕ)
+    (h : SpelledFeasible62 A W toList rep rc readLen oMin verts sp f t d) :
+    SpelledFeasible62Spelling A W toList rep rc readLen oMin verts sp f t d := by
+  rcases h with ⟨hv, hg, _hs, hc, hf⟩
+  exact ⟨hv, hg,
+    Section62ReductionDependencyAudit.stepsSurviveReductionSpelling_of_maximal
+      toList rep rc readLen oMin verts sp
+      (overlapEdges A W toList rep rc readLen oMin verts) hg,
+    hc, hf⟩
 
 /-! ## The uniform reason: a full-overlap graph is already reduced -/
 
@@ -278,6 +310,7 @@ end PerOccurrenceAudit
 /-! ## Axiom audit -/
 
 #print axioms stepsSurviveReductionSpelling_iff_stepsInGraph_of_full
+#print axioms spelledFeasible62_old_implies_spelling
 #print axioms bridging_graph_spelling_reduction_eq_self
 #print axioms bridging_truth_spelled_feasible62_spelling
 #print axioms bridging_competitor_spelled_feasible62_spelling

@@ -131,6 +131,8 @@ import AssemblyP1.PopulationReduction
 import AssemblyP1.PopulationGibbsTest
 import AssemblyP1.OrientedRigidity
 import AssemblyP1.GraverRigidityAudit
+import AssemblyP1.GraverThroughputBridge
+import AssemblyP1.GraverThroughputBridgeAudit
 import AssemblyP1.FiniteRigidityDecider
 import AssemblyP1.FiniteRigidityDeciderAudit
 import AssemblyP1.TwoWalkRigidity
@@ -331,6 +333,11 @@ import AssemblyP1.Section62BinomialPowerMonotonicityAudit
 -- and a rigid truth can still be beaten by a new-support candidate (sufficiency fails).
 import AssemblyP1.ProductBinomialRigidityNecessity
 import AssemblyP1.ProductBinomialRigidityNecessityAudit
+-- #259 axis A: at a fixed observed count x the §6.1 product-binomial objective is
+-- separable per read type; the exact fixed-x criterion, its coordinatewise sufficient
+-- inequality, and the strict separation from sample-uniform maximality.
+import AssemblyP1.FixedXProductBinomialMaximality
+import AssemblyP1.FixedXProductBinomialMaximalityAudit
 import AssemblyP1.FiniteSideInformationColoring
 import AssemblyP1.FiniteSideInformationColoringAudit
 import AssemblyP1.FiniteBayesianSideInformation

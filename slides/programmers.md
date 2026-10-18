@@ -860,6 +860,12 @@ Truth is I_s-feasible and ML can rank D higher. Ordinary ML's
 Bayes-optimality is prior-averaged; conditional posterior certainty
 uses extra truth-dependent source-decoder event. P2 population and
 same-length rigidity are distinct independent contributions.
+Also kernel-checked (#338): the reversal-symmetric flow-transport discipline
+for the MB09 §6.2 reading fails on the minimal length-1 mixed-sign self-loop
+(AssemblyP1.Section62ReversalOrbitTransport.symmetric_discipline_refuted) —
+a source-fidelity negative on one specific transport disjunct, with the full
+§6.2 source-graph/objective correspondence open (L1) and no claim that a
+physical orbit flow is a spelled genome.
 -->
 
 ---
@@ -997,6 +1003,22 @@ exact-ML ERROR PROBABILITY, not likelihood growth; and per-truth finite-sample
 success is NOT monotone. This is not universal ML over all genomes and not the
 MB09 objective: §6.1's fixed-N product-binomial surrogate and §6.2's flow
 likelihood are distinct source readings, neither kernel-checked here.
+#338 (kernel-checked, merged in PR #338): one specific discipline for the §6.2
+flow likelihood is now settled negatively. Transporting the legacy departure
+throughput to physical reversal orbits by reversal-symmetric flows
+(f e = f (rev e)) fails on the smallest possible witness — the length-1
+mixed-sign self-loop: the inherited throughput is always even
+(throughput_pair_selfloop_symm_even) while the quotient-orbit physical visit
+count is one (mixed_physical_visit_one), so no reversal-symmetric flow realizes
+the unit physical loop flow (no_revsymm_flow_realizes_unit_loop;
+symmetric_discipline_refuted, AssemblyP1/Section62ReversalOrbitTransport.lean;
+axiom audit AssemblyP1/Section62ReversalOrbitTransportAudit.lean: propext,
+Classical.choice, Quot.sound only, no sorryAx). The identified correct route is
+a flow defined directly on quotient edge orbits (physPos/physNeg). Scope: only
+the first disjunct of the pinned L2 flow-transport question — the full §6.2
+source-graph correspondence and any transport of the exact ML objective to
+physical orbits stay OPEN, and no physical orbit flow is claimed to be a
+spelled genome.
 #265 Chernoff refinement (2026-10-18): replace -ln rho_* by
 C_* = min_D C(p_S,p_D), C(p,q) = sup_{t in [0,1]} -ln sum_{w:p(w)>0}
 p(w)^(1-t) q(w)^t >= -ln rho(p,q). Termwise the Chernoff union bound
