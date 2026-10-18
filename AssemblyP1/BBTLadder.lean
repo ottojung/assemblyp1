@@ -59,26 +59,29 @@ The audit (`e89b1d42`) and the exhaustive search recorded in
   extends to a maximal repeat of length `≥ L - 1`, and two *crossing* support
   chords do not have *crossing* maximal extensions.  Both are `P2` alone.
 
-## What is still missing
+## Research-status correction (2026-10-18)
 
-`#89` reduces to two `Prop`s with **no inhabitant**, §7:
+The two missing goals below describe the HISTORICAL state of this ladder
+packet. Current main has since proved the coalescence direction at every
+read length L ≥ 2 in Issue94TW4Coalesce.crossingChordsCoalesce_of_two_le
+(and Issue94CrossingChords.CrossingChordsCoalesce_ge2). The unrestricted
+CrossingChordsCoalesce statement is false at L = 1; this degenerate case
+lies outside the population theorem's range.
 
-* `CrossingChordsCoalesce` --- the repeat-theoretic core: two crossing support
-  chords must carry the **same** deterministic maximal extension.  This is the
-  direction that was missing.  The earlier formulation made coalescence an
-  *assumption*; it has to be *derived*, because the support need not be a single
-  ladder: over binary `G ≤ 10` there are genuine traversals whose support spans
-  **two** maximal repeats.
-* `LadderVertexCycle` --- the global block lemma: a laminar family of ladder
-  blocks, each vertex-invisible, forces the vertex listing to be a rotation.
-  This replaces the previous `LadderRotationGap`, which was stated with a
-  *local* antecedent (one pair of coalescing orbits) and a *global* conclusion,
-  and so could not be applied to a support that does not coalesce.
+The stronger global LadderVertexCycle statement remains unproved as a
+standalone Prop. It is NOT an unproved premise of the finished
+primitive-P2 population-uniqueness endpoint. In the separate
+Issue94ConcreteAntiderivative module, component antiderivatives prove
+P2LongUnique directly by a supported component-deletion/descent argument;
+Issue94LongWindowSplit handles short genomes and Issue94Complete proves
+population_unique_ML for finite alphabets, L ≥ 2, P2 and primitive truth.
+Its full Lean kernel replay and standard axiom audit passed in CI on
+main 65f5e83bb2e860bffda71e95f6bc60eb95d5e84f.
 
-§4--§6 make both precise; the combinatorial core that is *not* proved is that
-the traversal walks the laminar blocks in the geometric order.  Note the target
-is `VertexCycleEq`, never start-level equality and never `AltF = id`: `S = 00101`
-has `f = (1 3)(2 4) ≠ id` and a correct `VertexCycleEq`.
+The unrestricted BBTUniqueAt and the stronger standalone LadderVertexCycle
+are still distinct questions. The statements in §7 remain useful for
+understanding this alternate ladder proof route, not as prerequisites
+for the already complete #94 population endpoint.
 
 Exhaustive search (`scripts/verify_ladder_blocks_89.py`) over all primitive
 binary words of length `≤ 10` and ternary words of length `≤ 7`, all

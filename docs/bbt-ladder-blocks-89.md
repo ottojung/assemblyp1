@@ -1,5 +1,21 @@
 # `#89`: the ladder route, the block decomposition, and four refuted invariants
 
+> **Status update — 2026-10-18.** The material below records the
+> 2026-09-27 proof frontier; its open-problem claims are historical, not
+> the present project status. Coalescence under 2 ≤ L has since been
+> kernel-proved in `Issue94TW4Coalesce.crossingChordsCoalesce_of_two_le`
+> (while the unrestricted L = 1 claim is refuted). The separate
+> `LadderVertexCycle` remains an unproved stronger proposition,
+> **but the population theorem no longer depends on this route**:
+> `Issue94ConcreteAntiderivative.concrete_p2LongUnique` proves the
+> required long-genome case, `Issue94Split.shortRangeUnique` proves
+> the short case, and `Issue94Complete.population_unique_ML`
+> supplies the full finite-alphabet primitive-P2 population
+> uniqueness conclusion without an external BBT axiom. Exact full
+> library kernel replay and standard-axiom audit passed in GitHub
+> CI run 39082113540. Unrestricted `BBTUniqueAt` remains separate.
+
+
 _Status: 2026-09-27. Kernel-checked partial results plus **finite refutations**.
 Nothing here is a proof of `thm:BBT`; `AssemblyP1.P2.BBTUniqueAt` is still
 unproved, and `AssemblyP1.PopulationUniqueness` still takes it as a hypothesis.
