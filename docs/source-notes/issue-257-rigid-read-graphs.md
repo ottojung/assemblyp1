@@ -27,7 +27,10 @@ and Apéry-set polynomial cross-check),
 `python3 scripts/verify_257_length3_bridge.py` (§17 length-3 antiparallel-bridge
 four-variable criterion and classification cross-check, exhaustive small scope),
 `python3 scripts/verify_257_general_bridge.py` (§18 general `p,q` long-bridge
-four-variable criterion cross-check, exhaustive small scope).
+four-variable criterion cross-check, exhaustive small scope),
+`python3 scripts/verify_257_double_theta.py` (§19 double-theta four-variable
+coupled criterion, rigid repetitive instance and coupling refutation cross-check,
+exhaustive small scope).
 Self-contained, exact integer arithmetic, deterministic._
 
 _Blocking-review repair (2026-10-10, branch `research/257-graver-lean-repair`):
@@ -181,6 +184,19 @@ map `B : E → ℤ` with `B ≥ 1` on every edge, balanced at every node, and
     multiplicities `1`" is **false** for longer cycles. This is a committed
     counterexample to that tempting generalisation. [mathematical proof +
     kernel-checked, section 17]
+
+12. **Coupling begins at cycle rank 3; the double theta is minimal.** Every
+    strongly connected support of cycle rank `≤ 2` is a single cycle or a theta
+    graph, whose shared path carries the *sum* of the two private path values, so
+    the shared box is redundant and the exact criterion is the **bouquet
+    criterion** (no coupling). The smallest genuinely coupled support is the
+    **double-theta graph** (rank `3`): two hubs joined by one arc and one
+    length-`2` path in each direction. Its exact criterion is a four-variable
+    integer system coupled by an **extra hub-balance equation**
+    (`doubleTheta_nonrigid_iff`); the instance `(m₁,m₂,n₁,n₂) = (2,1,2,1)` is a
+    **rigid repetitive** support, and dropping the coupling equation is **not
+    sound** (`relaxed_not_sound`). [mathematical proof + kernel-checked, section
+    19]
 
 ---
 
@@ -495,11 +511,18 @@ exhaustive zeros are a sanity check on the proofs, not a substitute for them.
    instance `(m₁, m₂, f) = (1, 1, 2)` is a rigid repetitive support.
    **Further partial progress (§18, 2026-10-17):** the *general* `p,q`
    long-bridge criterion (arbitrary cycle lengths `p, q ≥ 2`) is proved and
-   kernel-checked; it is genuinely `p,q`-dependent — `(p,q,m₁,m₂,f) = (3,4,2,1,1)`
-   is a rigid repetitive instance, so `m₁ ≥ 2` alone does not force
-   non-rigidity. [open; bouquet case reduced and shown poly-time, §13/§15;
-   bridge case classified, §14; length-3 bridge classified and bridge pattern
-   refuted, §17; general `p,q` long bridge classified, §18]
+    kernel-checked; it is genuinely `p,q`-dependent — `(p,q,m₁,m₂,f) = (3,4,2,1,1)`
+    is a rigid repetitive instance, so `m₁ ≥ 2` alone does not force
+    non-rigidity. **Further partial progress (§19, 2026-10-18):** coupling begins
+    at cycle rank `3`; every rank-`≤ 2` support satisfies the bouquet criterion,
+    and the **double-theta graph** (rank `3`) is the minimal genuinely coupled
+    support, with an exact four-variable criterion coupled by an extra
+    hub-balance equation, a rigid repetitive instance `(2,1,2,1)`, and a
+    kernel-checked refutation of the coupling-dropped relaxation.
+    [open; bouquet case reduced and shown poly-time, §13/§15;
+    bridge case classified, §14; length-3 bridge classified and bridge pattern
+    refuted, §17; general `p,q` long bridge classified, §18; coupling begins at
+    rank `3`, double theta minimal, §19]
 2. **The exact complexity** of the exact criterion (§7). **Partial (§15,
    2026-10-16):** the bouquet family (hence the target-cycle family) is in `P`
    via the Apéry-set / residue-graph shortest-path algorithm; the
@@ -564,6 +587,12 @@ exhaustive zeros are a sanity check on the proofs, not a substitute for them.
 | §18 general `p,q` non-rigidity witnesses (`generalBridge_nonrigid_m2_large` `(q,-p,0,0)`, `generalBridge_nonrigid_m1_large` `(-q,p,0,0)`, `generalBridge_nonrigid_eq_m1/m2`, `generalBridge_nonrigid_q3_f` `(1,0,-1,-2)`) | kernel-checked |
 | §18 `p,q`-dependent rigid repetitive instance `generalBridge_rigid_repetitive` (`(p,q,m₁,m₂,f) = (3,4,2,1,1)`) — `m₁ ≥ 2` does not force non-rigidity | kernel-checked |
 | §18 general `p,q` long-bridge cross-check vs brute force (`scripts/verify_257_general_bridge.py`: 448 bridges, 0 mismatches) | verified computation, exhaustive in scope |
+| §19 rank `≤ 2` supports satisfy the bouquet criterion (shared path value is a sum; shared box redundant) | mathematical proof |
+| §19 double-theta exact criterion (`doubleTheta_nonrigid_iff`: `∃ (α₁,α₂,β₁,β₂) ≠ 0, α₁+α₂ = β₁+β₂, α₁+2α₂+β₁+2β₂ = 0` + four boxes) | mathematical proof + kernel-checked (`AssemblyP1/RigidityDoubleTheta.lean`) |
+| §19 double-theta non-rigidity witness `doubleTheta_nonrigid_witness` (`(1,2,1,2)`, `(2,-1,2,-1)`) | kernel-checked |
+| §19 double-theta rigid repetitive instance `doubleTheta_rigid_repetitive` (`(2,1,2,1)`) | kernel-checked |
+| §19 coupling-dropped relaxation not sound `relaxed_not_sound` (`(2,1,2,1)` relaxed-satisfied yet rigid) | kernel-checked |
+| §19 double-theta cross-check vs brute force (`scripts/verify_257_double_theta.py`: 33 double thetas, 0 mismatches) | verified computation, exhaustive in scope |
 
 ---
 
@@ -1422,3 +1451,135 @@ support graph, as for the merged bridge; realizability as a de Bruijn
 read-support is not claimed. The residual — a *polynomial* min-cut/max-flow
 closed form for general supports, or a proof that none exists — remains
 **OPEN** (§8.1/§8.2).
+
+
+## 19. The double theta: coupling begins at cycle rank 3 (§8.1 progress)
+
+This section advances open item **§8.1** by isolating the *smallest* support on
+which the exact criterion is genuinely **coupled**, and by explaining why no
+smaller support can be. It builds on — and does not redo — the bouquet (§13), the
+antiparallel bridge (§14), the length-3 bridge (§17) and the general `p,q` long
+bridge (§18). [mathematical proof + kernel-checked]
+
+### 19.1 Rank `≤ 2` is not coupled: the shared path is a sum
+
+Recall the cycle rank `r = |E| - |V| + c` (so `L₀` has rank `r - 1`). A strongly
+connected support of rank `r ≤ 2` is either a single directed cycle (`r = 1`) or
+a **theta graph** (`r = 2`): two vertices `u, v` joined by three internally
+disjoint directed paths. Since every edge must lie on a directed cycle, one of
+the three paths is traversed "back" (`v → u`) and the other two "forward"
+(`u → v`); equivalently the theta is **two directed cycles sharing one directed
+path `P`**.
+
+At the shared endpoints `u, v` the balance equation forces the value on `P` to
+be the **sum** of the values on the two private return paths. For the base
+circulation `A` (positive, multiplicity `m_P` on `P`, `m₁`, `m₂` on the private
+paths) this reads `m_P = m₁ + m₂`, so the shared box `x + y ≥ 1 - m_P` is
+*implied* by the private boxes `x ≥ 1 - m₁`, `y ≥ 1 - m₂`. Hence the exact
+criterion of the theta collapses to the **bouquet criterion** of §13 on the two
+cycles `C₁ = P + Q₁` (length `L₁`) and `C₂ = P + Q₂` (length `L₂`):
+
+```
+not rigid  ⟺  ∃ (x,y) ≠ 0,  L₁·x + L₂·y = 0,  x ≥ 1-m₁,  y ≥ 1-m₂.
+```
+
+This is the same "shared value is a sum" mechanism that makes a *book* of cycles
+collapse to a bouquet: balance at a shared vertex/path turns the shared box into
+a redundant inequality. Consequently **no support of cycle rank `≤ 2` exhibits
+box coupling**, and the naive "independent per-cycle" (bouquet) relaxation is
+*exact* on all of them. [mathematical proof; exhaustive cross-check: every
+theta graph on `≤ 3` vertices per path with `G ≤ 12` agrees with the bouquet
+criterion — see the `[rank2]` part of `scripts/verify_257_double_theta.py`,
+§19.5]
+
+### 19.2 The double theta: the minimal coupled support
+
+Coupling requires **two** independent hub balance equations. The smallest such
+support is the **double-theta graph** (rank `3`): two hubs `u, v`, joined in each
+direction by one arc and by one length-`2` path,
+
+```
+P1 : u → v            (1 arc)        P2 : u → w → v   (2 arcs)
+Q1 : v → u            (1 arc)        Q2 : v → z → u   (2 arcs)
+```
+
+on four vertices `u, v, w, z` and six arcs. Its degree-`2` vertices force each
+path to carry a **constant** value, and the two hubs give the single independent
+coupling equation
+
+```
+α₁ + α₂ = β₁ + β₂        (total flow out of u equals total flow into u),
+```
+
+where `α₁, α₂` are the values on `P1, P2` and `β₁, β₂` on `Q1, Q2`. Thus every
+circulation is `δ = (α₁, α₂, α₂, β₁, β₂, β₂)`, of total mass
+`α₁ + 2·α₂ + β₁ + 2·β₂`. Note the contrast with the bridge (§14): there the
+coupling sits in the *box* (`a` with `q - p`); here it sits in an **extra
+balance equation** between the four free parameters.
+
+### 19.3 The exact criterion and a rigid repetitive instance
+
+**Theorem 12 (double-theta criterion).** For multiplicities `m₁, m₂, n₁, n₂ ≥ 1`
+with `m₁ + m₂ = n₁ + n₂`, the base circulation `A` is non-rigid **iff** there are
+integers `α₁, α₂, β₁, β₂`, not all zero, with
+
+```
+α₁ + α₂ = β₁ + β₂                       (hub balance — the coupling)
+α₁ + 2·α₂ + β₁ + 2·β₂ = 0               (zero total mass)
+α₁ ≥ 1-m₁,  α₂ ≥ 1-m₂,                  (P1, P2 boxes)
+β₁ ≥ 1-n₁,  β₂ ≥ 1-n₂.                  (Q1, Q2 boxes)
+```
+
+This is kernel-checked as
+`AssemblyP1.RigidityDoubleTheta.doubleTheta_nonrigid_iff` (obtained from
+Theorem 1, `nonrigid_iff_exists_delta`, exactly as the merged criteria were).
+
+* **Non-rigidity witness** (`doubleTheta_nonrigid_witness`): at
+  `(m₁,m₂,n₁,n₂) = (1,2,1,2)` the parameters `(2,-1,2,-1)` give
+  `δ = (2,-1,-1,2,-1,-1)`, which is balanced, zero-sum and inside the box.
+* **Rigid repetitive instance** (`doubleTheta_rigid_repetitive`): at
+  `(m₁,m₂,n₁,n₂) = (2,1,2,1)` the `P1` and `Q1` arcs are each traversed **twice**,
+  yet the instance is **rigid** — the hub-balance coupling forces every
+  admissible perturbation to be zero.
+
+### 19.4 The coupling equation is essential (failed simpler hypothesis)
+
+The *relaxed* predicate obtained by **dropping** the hub-balance equation
+`α₁ + α₂ = β₁ + β₂` — i.e. the naive independent-per-path / bouquet-style
+relaxation that treats the four path values as free — is **not sound**:
+
+> At `(m₁,m₂,n₁,n₂) = (2,1,2,1)` the relaxed predicate is satisfied (witness
+> `(α₁,α₂,β₁,β₂) = (-1,1,-1,0)`, `δ = (-1,1,1,-1,0,0)`), while the instance is
+> **rigid**.
+
+This is kernel-checked as `AssemblyP1.RigidityDoubleTheta.relaxed_not_sound`, a
+committed counterexample to the tempting generalisation "the four path values
+may be treated independently". So the double-theta criterion is *genuinely*
+coupled and is **not** reducible to the bouquet criterion; this is the first
+exact coupled criterion below the bridge's cycle rank `4`.
+
+### 19.5 Cross-check (`scripts/verify_257_double_theta.py`)
+
+The script `scripts/verify_257_double_theta.py` is self-contained, exact, and
+deterministic. It recomputes rigidity from scratch by enumerating **all** positive
+integer circulations of total `G` on the six arcs and compares with the
+four-variable criterion over an exhaustive scope
+(`1 ≤ m₁,m₂,n₁,n₂ ≤ 5`, `m₁+m₂ = n₁+n₂`, `G ≤ 16`: **33** double thetas, **0**
+mismatches); it re-derives the kernel witness, two explicit non-rigidity families
+and the rigid repetitive instance, and confirms that the relaxed predicate is
+satisfied at the rigid instance `(2,1,2,1)`. Its `[rank2]` part additionally
+checks that **81** rank-`2` theta graphs agree with the bouquet criterion
+(`0` mismatches), substantiating §19.1. [verified computation, exhaustive in
+scope]
+
+### 19.6 Epistemic status
+
+Theorem 12 and the instances are kernel-checked with only
+`[propext, Classical.choice, Quot.sound]`
+(`AssemblyP1/RigidityDoubleThetaAudit`, and `AxiomAudit257.lean`); no
+`sorry`/`admit`/`axiom`/`native_decide`. The double-theta is an *abstract*
+oriented support graph (two hubs of degree `4`, two vertices of degree `2`); a
+de Bruijn graph has at most one arc between any ordered pair of vertices, so this
+exact shape is not realizable as a read-support, consistent with the merged
+bridge families. The residual — a *polynomial* min-cut/max-flow closed form for
+general supports, or a proof that none exists — remains **OPEN** (§8.1/§8.2).
