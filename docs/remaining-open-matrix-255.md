@@ -347,6 +347,38 @@ Every material result is classified as one of:
   fixed modeled read-type universe; does NOT classify the general §6.2 flow
   domain or the exact iid objective.
 
+### #259 (PARTIAL) — fixed-`x` (axis A) product-binomial criterion: LANDED
+
+- **Artifact:** `AssemblyP1/FixedXProductBinomialMaximality.lean` +
+  `AssemblyP1/FixedXProductBinomialMaximalityAudit.lean`,
+  `docs/fixedx-product-binomial-maximality-259.md`,
+  `scripts/verify_fixedx_product_binomial_259.py`.
+- **Kernel-checked:** at a fixed observation `x` (`n = ∑ x`) the MB09 §6.1
+  product-binomial objective is **separable**,
+  `F_B(x) = ∏_e B e ^ (x e) (N - B e) ^ (n - x e)`
+  (`fixedX_eq_separable`); the exact necessary-and-sufficient fixed-`x`
+  criterion is the product inequality (`fixedX_le_iff`), with coordinatewise
+  (`fixedX_le_of_coordwise`) and pointwise effective-weight
+  (`fixedX_le_of_effectiveWeight_le`) sufficient strengthenings; a
+  concentrated-sample iff (`fixedX_concentrated_iff`); and a full-class
+  fixed-`x` classification on the smallest instance `Fin 2`, `N = 4`,
+  `x = (2,2)` (`fixedX_fin2_full_class`).
+- **Axis-A-to-axis-B bridge:** `sampleUniform_iff_pointwise` shows the
+  sample-uniform maximality of `robust_iff_unique` is exactly the pointwise
+  special case of the fixed-`x` criterion.
+- **Strict separation:** `fixedX_weaker_than_pointwise` exhibits positive
+  equal-total `A = (2,2)`, `B = (3,1)` over `Fin 2`, `N = 4`, with `A` winning
+  at the covered sample `x = (2,2)` while `q_0(B) = 9 > 4 = q_0(A)`.  Hence
+  pointwise effective-weight domination is sufficient but **not necessary** for
+  fixed-`x` maximality: fixed-`x` maximality is strictly weaker than
+  sample-uniform maximality.
+- **Axioms:** `{propext, Classical.choice, Quot.sound}` (kernel-checked).
+- **Residual OPEN:** a full-class fixed-`x` maximizer classification when the
+  empirical frequency `x_e N / n` is non-integral (the integer program's
+  maximizer need not be the real-relaxation MLE); variable genome length; the
+  §6.2 bidirected-flow domain (`#260`/`#261`).  This entry does not close any
+  of those.
+
 ### #266 (CLOSED on board; PARTIAL scope) — conditional identifiability from the NSG premise: LANDED
 
 - **Artifacts:** `AssemblyP1/ConditionalIdentifiability.lean` (PR #198 merged
@@ -596,7 +628,11 @@ rest remain human-readable only, as labeled per entry.
 - **Owner:** agent a569f93c31a7 (active since 2026-10-13T22:05); prior
   owners agent c1ffc5ad4930 and agent 8270b79a96d7 (failed with an upstream
   endpoint outage).
-- **Status:** PARTIAL results landed (see LANDED above); full (A)/(B) classification OPEN.
+- **Status:** PARTIAL results landed (see LANDED above).  Axis **A** (fixed
+  `x`) now has a kernel-checked necessary-and-sufficient criterion plus the
+  strict separation from axis B (see the `#259 (PARTIAL) — fixed-`x` (axis A)`
+  entry above).  The full-class fixed-`x` classification at non-integral
+  empirical frequency, and the full axis-B candidate universe, remain OPEN.
 - **Landed (PRs #163 `#386c470`, #165 `#908754f`, #166 `#ec52da3`, #167
   `#9002ef6`, merged 2026-10-11/12):** q factorization
   (`∏ q_i(B)^{x_i}`); all-count effectiveWeight coordinatewise iff; explicit
@@ -628,7 +664,16 @@ rest remain human-readable only, as labeled per entry.
   `FixedNBinomialAAATTClassification.lean`) reproduces the EXACT merged PR
   #182 witness (`S=AAATT`, `n=4`, ratio `65536/50625`); no independent new
   #259 classification, no PR created, branch preserved remotely only.
-- **Still OPEN:** the complete #259(A) fixed-x classification and #259(B)
+- **Axis A landed (kernel-checked):** the fixed-`x` criterion
+  (`AssemblyP1/FixedXProductBinomialMaximality.lean`,
+  `docs/fixedx-product-binomial-maximality-259.md`,
+  `scripts/verify_fixedx_product_binomial_259.py`): separability, the exact
+  product criterion, coordinatewise/pointwise sufficient inequalities, the
+  concentrated-sample iff, the smallest-instance full-class classification, and
+  the strict separation from sample-uniform maximality.  See the LANDED entry
+  above.
+- **Still OPEN:** a full-class #259(A) fixed-`x` maximizer classification when
+  the empirical frequency `x_e N / n` is non-integral, and the #259(B)
   sample-uniform iff for the product-binomial over the full candidate
   universe (including arbitrary bidirected flows, RC molecules, and
   variable genome length). The landed covered-sample iff does NOT prove the
