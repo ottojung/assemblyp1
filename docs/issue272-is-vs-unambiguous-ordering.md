@@ -144,9 +144,13 @@ alone still does not order a truth-dependent promise against `Unambiguous`.
    the source-faithful truth-dependent promise by marginalising
    `HistoricalInformationFeasibleLiteral` over the compatible placements,
    proves it is read-dependent, and applies `weakest_admissible_iff_union` to
-   the resulting read-dependent `I_s` family. A *decoder-level* certainty
-   endpoint still requires the external Not-So-Greedy guarantee and remains an
-   attributed premise. OPEN (decoder-level endpoint only).
+   the resulting read-dependent `I_s` family. The *decoder-level* certainty
+   endpoint is now LANDED as an attributed-premise bridge
+   ([`AssemblyP1.FiniteSideInformationDecoderEndpoint.lean`](../AssemblyP1/FiniteSideInformationDecoderEndpoint.lean)):
+   a read-only decoder `A` carrying the external 2016 Not-So-Greedy guarantee as
+   an explicit hypothesis implies conditional posterior one on the true orbit
+   class. The external guarantee itself remains attributed, not proved. OPEN
+   (external premise only).
 2. **`I_s` necessity for the specific Not-So-Greedy decoder.** Still OPEN and
    source-level; the order results here do not address it.
 3. **Weakest source-defined bridging promise.** Still reduced by

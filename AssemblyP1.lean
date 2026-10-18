@@ -341,6 +341,10 @@ import AssemblyP1.FiniteSideInformationSourcePromiseAudit
 -- `I_s` necessity obstructions (unbridged-triple witnesses ABXABYABZ / ABXABZABY).
 import AssemblyP1.FiniteSideInformationReadStringAdapter
 import AssemblyP1.FiniteSideInformationReadStringAdapterAudit
+-- #272 concrete decoder-level conditional-certainty endpoint on the read-string
+-- adapter, with the external 2016 Not-So-Greedy guarantee as an attributed hypothesis.
+import AssemblyP1.FiniteSideInformationDecoderEndpoint
+import AssemblyP1.FiniteSideInformationDecoderEndpointAudit
 -- #270 positive finite-family iid ML recovery via Hellinger affinity.
 import AssemblyP1.FiniteReadRecovery
 -- #270 concrete uniform-start cyclic read distribution and conditional genome bounds.
