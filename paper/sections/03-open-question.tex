@@ -37,7 +37,37 @@ construction has a unique Eulerian spelling equal to $S$ up to rotation
 
 This is a structural reconstruction theorem, not an assertion that no other
 genome can produce the reads. A candidate with positive sampling probability
-for the data can fail the historical bridging predicate.
+for the data can fail the historical bridging predicate. Two multiplicities
+must be kept apart. \emph{Generative} multiplicity counts the genomes that can
+produce the observed reads with positive probability: the whole rotation class
+always can, and nonrotational genomes can as well whenever the read law fails
+to separate them (Example~\ref{ex:ABAB} is the extreme case of identical read
+laws). \emph{Certificate} multiplicity counts the rotation classes on which the
+source's strong guarantee holds for those same observations, and the
+reconstruction theorem forces this to be a singleton: the construction is a
+function of the observed reads alone, so its output is fixed by the data.
+
+\begin{proposition}[The strong guarantee is a property of the observations]
+\label{prop:strong-guarantee-singleton}
+Fix an observed read set $R$ with distinct read strings $\mathcal W$, and
+suppose the Not-So-Greedy construction applied to $R$ has a unique Eulerian
+spelling up to rotation; write $[G^\ast(R)]$ for that class. If a circular
+genome $g$ satisfies the source's full model assumptions and
+$I_s^{\mathrm{match}}(g,\mathcal W)$, then $[g]=[G^\ast(R)]$. Consequently at
+most one rotation class satisfies the strong guarantee for the same
+observations.
+\end{proposition}
+\begin{proof}
+The construction is a deterministic function of $\mathcal W$ alone, and its
+unique Eulerian spelling up to rotation is $[G^\ast(R)]$. Applying the source
+theorem with $g$ as the truth identifies $[G^\ast(R)]$ with $[g]$. Hence any
+two genomes satisfying the predicate have equal rotation classes.
+\end{proof}
+\statusline{The unique-spelling guarantee is the \srcfact{} published 2016
+reconstruction result \cite{shomorony2016}, an external premise; the singleton
+conclusion is a paper-level corollary of that premise, not a kernel-checked
+theorem, and it constrains certificate multiplicity only --- it does not claim
+that only one genome can \emph{generate} the reads.}
 
 \subsection{Two different statistical questions}
 \label{sec:two-questions}
@@ -434,7 +464,8 @@ Conditional reconstruction (Question~A)
   & each realized $R$ with $F(S,R)$ and $P_S(R)>0$
   & candidate set restricted to the feasible fiber; source model assumptions
   & positive-weight feasible fiber is one rotation class; conditional MAP returns truth
-  & 2016 reconstruction premise \cite{shomorony2016}; kernel-checked\\
+  & 2016 reconstruction premise \cite{shomorony2016} (singleton guarantee
+    Prop.~\ref{prop:strong-guarantee-singleton}); kernel-checked\\
 \addlinespace
 Prior-average Bayes optimality
   & for every finite $n$, averaged over truth $\sim\pi$ and data $\sim P_\theta$
