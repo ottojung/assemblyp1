@@ -104,10 +104,42 @@ holds, but no length-`4` read straddles any copy (`abxab_not_allBridged`,
    single-observation-type promise and is read-dependent (§2), but no implication
    `I_s ⇒ Unambiguous` or `Unambiguous ⇒ I_s` is claimed: sufficiency alone does
    not order promises (merged `Incomparable.sufficient_promises_incomparable`).
-3. **A concrete decoder-level certainty endpoint.** A kernel-checked
-   instantiation on the full historical read-string model still requires the
-   external Not-So-Greedy guarantee; the abstract bridge is proved, the concrete
-   endpoint remains attributed.
+3. **A concrete decoder-level certainty endpoint.** LANDED (see §6): the
+   kernel-checked endpoint
+   [`AssemblyP1.FiniteSideInformationDecoderEndpoint.lean`](../AssemblyP1/FiniteSideInformationDecoderEndpoint.lean)
+   takes a read-only decoder `A` on the read-string observation type, attributes
+   the published Not-So-Greedy correctness guarantee to it as an explicit
+   hypothesis `hA` (`IsCorrectReadStringDecoder`), derives feasible-fibre
+   uniqueness via the merged `fibreUnique_of_decoder`, and concludes that the
+   conditional posterior on the true orbit class equals one via
+   `conditional_certain_of_fibreUnique`.  The external guarantee remains an
+   attributed premise (not proved here); what is kernel-checked is the exact
+   decoder-to-certainty bridge on the literal adapter.
+
+## 6. The concrete decoder-level certainty endpoint
+
+`AssemblyP1/FiniteSideInformationDecoderEndpoint.lean` (axiom audit
+`FiniteSideInformationDecoderEndpointAudit.lean`) supplies the endpoint whose
+absence the earlier status rows recorded.  The external guarantee is stated as
+the hypothesis, not asserted:
+
+```
+IsCorrectReadStringDecoder hn orbit A :=
+  ∀ w Y, isPromiseReadStringSpelling n L hn w Y → orbit (A Y) = orbit w
+```
+
+| statement | status | theorem |
+|---|---|---|
+| Correct decoder ⇒ adapter fibre uniqueness | kernel-checked | `fibreUnique_readStringIS_of_decoder` |
+| Correct decoder ⇒ adapter sufficient | kernel-checked | `sufficient_readStringIS_of_decoder` |
+| Correct decoder ⇒ weakest admissible sufficient promise exists | kernel-checked | `weakest_readStringIS_of_decoder` |
+| Correct decoder ⇒ conditional posterior on true orbit = 1 | kernel-checked | `conditional_certain_readStringIS_of_decoder` |
+| Bundled weakest-existence and pointwise certainty | kernel-checked | `weakest_and_certain_readStringIS_of_decoder` |
+
+The correctness hypothesis `hA` is the published Shomorony--Kim--Courtade--Tse
+(2016) Not-So-Greedy guarantee, attributed and not proved; it is
+hypothesis-essential (deleting it makes the proof fail to typecheck).  Every
+endpoint depends only on `propext`, `Classical.choice`, `Quot.sound`.
 
 See also
 [`issue272-side-information-order.md`](issue272-side-information-order.md),

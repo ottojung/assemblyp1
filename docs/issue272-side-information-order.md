@@ -203,8 +203,13 @@ equivalence-closed admissible) family.
    `weakest_admissible_iff_union` to the resulting read-dependent `I_s` family,
    and kernel-checks the `I_s` necessity obstructions (general coverage /
    triple / interleaved projection lemmas plus the unbridged-triple witnesses
-   `ABXABYABZ` / `ABXABZABY`).  A *decoder-level* certainty endpoint still
-   requires the external Not-So-Greedy guarantee and remains attributed/OPEN.
+   `ABXABYABZ` / `ABXABZABY`).  The concrete *decoder-level* certainty endpoint
+   (a read-only decoder `A` with the attributed 2016 Not-So-Greedy correctness
+   guarantee, concluding conditional posterior one via the merged
+   `fibreUnique_of_decoder` / `conditional_certain_of_fibreUnique` chain) is now
+   kernel-checked in
+   [`AssemblyP1/FiniteSideInformationDecoderEndpoint.lean`](../AssemblyP1/FiniteSideInformationDecoderEndpoint.lean);
+   the external guarantee itself remains an attributed premise, not proved.
 
 ## 7. Relationship to sibling fronts (no duplication)
 
