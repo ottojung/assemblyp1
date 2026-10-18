@@ -145,12 +145,20 @@ The genomes are **not rotations** of one another. Yet they produce exactly the *
 
 **No algorithm can distinguish them from those reads alone.**
 
+**Generative multiplicity:** many genomes can produce the *same* observed reads — the whole rotation class always can, and nonrotational genomes can too, whenever the read law fails to separate them.
+
 We need conditions that prevent this kind of ambiguity.
 
 <!--
 Exact circular length-3 read counts: ATA and TAT twice; each of
 ATG/TGA/GAT/ATC/TCA/CAT once. Not a counterexample to the
 2016 algorithmic theorem because its bridging hypotheses do not hold.
+This is generative multiplicity at its extreme: two nonrotational
+genomes with identical read laws (paper ex:ABAB: AAABAB vs AABAAB,
+identical 2-mer spectra {AA:2, AB:2, BA:2}). Do NOT conflate it
+with certificate multiplicity: the 2016 strong guarantee is a
+certificate about the observations, not a claim that only one
+genome can generate the reads (see the Question A slide).
 -->
 
 ---
@@ -625,7 +633,7 @@ genome uniqueness is a separate structural problem.
 
 **But could two different genomes produce exactly the same distribution and tie?**
 
-**We proved uniqueness** if the truth and competing genomes are **primitive and P2-admissible**. In this class, only rotations of the true circular genome can tie—even when candidate lengths are not fixed in advance.
+**We proved uniqueness** if the truth and competing genomes are **primitive and P2-admissible**. In this class, only rotations of the true circular genome can tie—the whole rotation class always ties, since rotations induce identical read laws—even when candidate lengths are not fixed in advance.
 
 *Primitive* means the whole genome is not a shorter pattern repeated. **P2**, rooted in the repeat analysis of **Bresler, Bresler & Tse (2013)**, excludes certain long triple and interleaved repeats.
 
@@ -638,7 +646,13 @@ no external Bresler axiom. Candidate lengths need not agree.
 P2 excludes triple repeats of length >=L-1 and interleaved
 maximal-repeat pairs both of length >=L-1. Do not claim
 unrestricted population uniqueness: non-identifiable
-normalized spectra can tie.
+normalized spectra can tie. This is generative multiplicity
+at the population level: rotations of the truth always
+produce the identical read distribution, and the P2 theorem
+is what rules out additional nonrotational ties. It is a
+statement about read laws, distinct from certificate
+multiplicity (which rotation class satisfies the strong
+guarantee on fixed observations) and from finite-sample ML.
 -->
 
 ---
@@ -686,6 +700,8 @@ There is a separate way to add information. Suppose we are explicitly told:
 
 Not-So-Greedy reads **only the reads** and, under that promise, returns the true circle.
 
+**Certificate multiplicity:** at most *one* rotation class can satisfy the strong guarantee on fixed observations, because the construction is a deterministic function of the reads alone with a unique Eulerian spelling.
+
 If two different genomes met the promise for the **same reads**, its single output would have to equal both. Impossible.
 
 So with this additional promise, the **conditional Bayesian posterior is 100%** on one circular-genome class.
@@ -704,6 +720,13 @@ Do not substitute a placement-based predicate or ignore
 marginalization over latent read starts. Unlike same-length
 or population uniqueness, this uses a truth-dependent
 additional event supplied as external knowledge.
+Honest labels: the unique-spelling fact is the published 2016
+premise (external, shomorony2016); the at-most-one-class
+conclusion is a paper-level corollary (paper
+prop:strong-guarantee-singleton), NOT Lean-proved. The
+guarantee is a certificate about the observations, NOT a
+claim that only one genome can generate the reads — that
+generative multiplicity is real (see the ambiguity slide).
 -->
 
 ---

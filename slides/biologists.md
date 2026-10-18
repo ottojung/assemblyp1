@@ -101,12 +101,22 @@ A useful way to see the reconstruction: make a **graph whose nodes are the reads
 
 Under the coverage and bridging conditions, that graph has a **unique Eulerian tour**, and the tour spells the true circular genome.
 
+The tour is a function of the reads alone. So for one fixed set of reads, **at most one rotation class** can satisfy the reconstruction conditions — a *certificate about the observations*, not a claim that only one genome can produce the reads.
+
 <!--
 Cite Shomorony, Kim, Courtade & Tse (2016), Bioinformatics, DOI
 10.1093/bioinformatics/btw450, Theorem 1 and its supplement. Present the idea,
 not the internals: nodes are reads, edges are overlaps, and a unique Eulerian
 tour spells the genome. This is distinct from the didactic de Bruijn graph
 (where nodes are short k-mers).
+Certificate multiplicity vs generative multiplicity: many genomes
+(including nonrotational ones) can produce the SAME reads — see the
+AAACAC/AACAAC example later in this talk, and the paper's extreme
+case ex:ABAB (AAABAB vs AABAAB, identical 2-mer spectra). The
+2016 guarantee constrains only which rotation class passes the
+conditions on fixed observations. Honest labels: the unique-spelling
+fact is the published 2016 premise (external); the at-most-one-class
+conclusion is a paper-level corollary, not Lean-proved.
 -->
 
 ---
@@ -119,7 +129,7 @@ If the reads already contain enough information to reconstruct the genome...
 
 Those are **two different questions**.
 
-- **Question A (conditional):** restrict candidates to those that already pass the reconstruction conditions — then the answer is the true circle, a corollary of the guarantee.
+- **Question A (conditional):** restrict candidates to those that already pass the reconstruction conditions — then the answer is the true circle, a corollary of the guarantee. (The conditions act as a *certificate about the reads*: for fixed observations, at most one rotation class can pass.)
 - **Question B (unconditional):** without that restriction, must the true genome be most likely? **No** — the next slides show a decoy winning.
 
 <!--
@@ -263,7 +273,7 @@ AACAAC
 
 Their length-2 read frequencies agree exactly, so unlimited two-base reads cannot tell them apart.
 
-**A unique best distribution need not imply a unique genome.**
+**A unique best distribution need not imply a unique genome.** This is **generative multiplicity**: the rotation class of any genome always produces the same distribution, and nonrotational genomes can too, as here.
 
 Our population theorem gives uniqueness under a precise repeat condition: oriented circular genomes that are
 
@@ -277,7 +287,10 @@ Kernel endpoint: Issue94Complete.population_unique_ML, fully kernel-checked with
 no external premise, under primitive + P2 + the admissible candidate class +
 L >= 2; the equality characterization is PopulationGibbs.popTie_iff. Likelihood
 supplies maximality; repeat structure supplies uniqueness. State the qualifiers;
-without them distinct non-rotation genomes can tie.
+without them distinct non-rotation genomes can tie. Keep this generative
+multiplicity (what can produce the same reads) distinct from certificate
+multiplicity (which rotation class satisfies the 2016 guarantee on fixed
+observations — at most one, per the algorithm slide).
 -->
 
 ---
