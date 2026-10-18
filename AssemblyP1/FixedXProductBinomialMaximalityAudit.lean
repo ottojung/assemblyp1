@@ -1,0 +1,11 @@
+import AssemblyP1.FixedXProductBinomialMaximality
+
+#print axioms AssemblyP1.FixedXProductBinomialMaximality.fixedX_eq_separable
+#print axioms AssemblyP1.FixedXProductBinomialMaximality.fixedX_le_iff
+#print axioms AssemblyP1.FixedXProductBinomialMaximality.fixedX_le_of_coordwise
+#print axioms AssemblyP1.FixedXProductBinomialMaximality.fixedX_le_of_effectiveWeight_le
+#print axioms AssemblyP1.FixedXProductBinomialMaximality.fixedX_weaker_than_pointwise
+#print axioms AssemblyP1.FixedXProductBinomialMaximality.sampleUniform_iff_pointwise
+#print axioms AssemblyP1.FixedXProductBinomialMaximality.fin2_total4_enum
+#print axioms AssemblyP1.FixedXProductBinomialMaximality.fixedX_fin2_full_class
+#print axioms AssemblyP1.FixedXProductBinomialMaximality.fixedX_concentrated_iff
