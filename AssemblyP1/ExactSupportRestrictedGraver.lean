@@ -88,25 +88,31 @@ missing count `n - x` is positive (an unobserved copy forces a non-full count),
 `N` otherwise. -/
 def highOf (N n x : E → ℤ) (e : E) : ℤ := if 0 < n e - x e then N e - 1 else N e
 
+omit [Fintype E] in
 theorem lowOf_pos {x : E → ℤ} {e : E} (h : 0 < x e) : lowOf x e = 1 := by
-  rw [lowOf]; exact if_pos h
+  rw [lowOf]; exact ite_eq_left h
 
+omit [Fintype E] in
 theorem lowOf_zero {x : E → ℤ} {e : E} (h : x e ≤ 0) : lowOf x e = 0 := by
-  rw [lowOf]; exact if_neg (not_lt.mpr h)
+  rw [lowOf]; exact ite_eq_right (not_lt.mpr h)
 
+omit [Fintype E] in
 theorem highOf_pos {N n x : E → ℤ} {e : E} (h : 0 < n e - x e) :
     highOf N n x e = N e - 1 := by
-  rw [highOf]; exact if_pos h
+  rw [highOf]; exact ite_eq_left h
 
+omit [Fintype E] in
 theorem highOf_zero {N n x : E → ℤ} {e : E} (h : n e - x e ≤ 0) :
     highOf N n x e = N e := by
-  rw [highOf]; exact if_neg (not_lt.mpr h)
+  rw [highOf]; exact ite_eq_right (not_lt.mpr h)
 
 /-- The admissible box sits inside the ambient box `[0, N]`. -/
+omit [Fintype E] in
 theorem lowOf_nonneg {x : E → ℤ} {e : E} : 0 ≤ lowOf x e := by
   rw [lowOf]; split_ifs <;> omega
 
 /-- The admissible box sits inside the ambient box `[0, N]`. -/
+omit [Fintype E] in
 theorem highOf_le {N n x : E → ℤ} {e : E} : highOf N n x e ≤ N e := by
   rw [highOf]; split_ifs <;> omega
 
@@ -212,7 +218,8 @@ theorem excluded_binom_not_minimizer {V : Type}
   rw [excluded_binom_exact_eq_top (N := N) (x := x) (n := n) hexcl]
   have hwfin : exactObj (fun e => binomExact (N e) (x e) (n e)) w ≠ ⊤ := by
     rw [admissible_binomExact_eq_coe (N := N) (x := x) (n := n) hwadm]
-    exact WithTop.coe_ne_top _
+    exact WithTop.lt_top_iff_ne_top.mp
+      (WithTop.coe_lt_top (sepObj (fun e => binomCost (N e) (x e) (n e)) w))
   exact WithTop.lt_top_iff_ne_top.mpr hwfin
 
 /-- **T1 (multinomial).**  A candidate with a zero copy count at a positive
@@ -240,13 +247,15 @@ theorem excluded_multinomial_not_minimizer {V : Type}
   rw [excluded_multinomial_exact_eq_top (G := G) (x := x) hexcl]
   have hwfin : exactObj (fun e => multinomialExact (G e) (x e)) w ≠ ⊤ := by
     rw [admissible_multinomialExact_eq_coe (G := G) (x := x) hwadm]
-    exact WithTop.coe_ne_top _
+    exact WithTop.lt_top_iff_ne_top.mp
+      (WithTop.coe_lt_top (sepObj (fun e => multinomialCost (G e) (x e)) w))
   exact WithTop.lt_top_iff_ne_top.mpr hwfin
 
 /-! ## T2 (convexity): the finite interior cost is discretely convex on the box -/
 
 /-- `d ↦ -log (N - d)` is discretely convex on `[0, N-1]` (the left endpoint is
 honest because `N - d > 0` there). -/
+omit [Fintype E] in
 theorem negLog_sub_discConvOn_zero (N : ℤ) :
     DiscConvOn (fun d : ℤ => -Real.log ((N : ℝ) - (d : ℝ))) 0 (N - 1) := by
   have h := (negLog_discConvOn N).comp_sub (c := N)
@@ -258,6 +267,7 @@ theorem negLog_sub_discConvOn_zero (N : ℤ) :
 finite product-binomial cost `binomCost N x n` is discretely convex on the
 support-restricted admissible box `(lowOf x, highOf N n x)`, in all four sign
 patterns of `x` and `n - x`. -/
+omit [Fintype E] in
 theorem binomCost_admissible_discConvOn (N x n : E → ℤ) (hx : ∀ e, 0 ≤ x e)
     (hxn : ∀ e, x e ≤ n e) :
     ∀ e, DiscConvOn (binomCost (N e) (x e) (n e)) (lowOf x e) (highOf N n x e) := by
@@ -292,7 +302,6 @@ theorem binomCost_admissible_discConvOn (N x n : E → ℤ) (hx : ∀ e, 0 ≤ x
         unfold binomCost
         rw [hnx0]
         simp only [Int.cast_zero, zero_mul, sub_zero, Real.log_div hd0 hN0]
-        push_cast
         ring
   · -- x e = 0
     have hx0' : x e = 0 := by omega
@@ -321,7 +330,7 @@ theorem binomCost_admissible_discConvOn (N x n : E → ℤ) (hx : ∀ e, 0 ≤ x
           exact this.ne'
         unfold binomCost
         rw [hx0']
-        simp only [sub_zero, neg_zero, zero_mul, one_sub_div hN0, Real.log_div hNd hN0]
+        simp only [sub_zero, one_sub_div hN0, Real.log_div hNd hN0]
         push_cast
         ring
     · -- box [0, N], the cost is identically 0
@@ -338,6 +347,7 @@ theorem binomCost_admissible_discConvOn (N x n : E → ℤ) (hx : ∀ e, 0 ≤ x
 /-- **T2 (multinomial convexity on the admissible box).**  The honest finite
 multinomial cost `multinomialCost G x` is discretely convex on
 `(lowOf x, G)`. -/
+omit [Fintype E] in
 theorem multinomialCost_admissible_discConvOn (G x : E → ℤ) (hx : ∀ e, 0 ≤ x e) :
     ∀ e, DiscConvOn (multinomialCost (G e) (x e)) (lowOf x e) (G e) := by
   intro e
