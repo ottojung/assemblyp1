@@ -19,7 +19,7 @@ module: [`AssemblyP1/FiniteBayesianSideInformation.lean`](../AssemblyP1/FiniteBa
 | Decoder-correctness ⇒ fibre uniqueness ⇒ posterior one | kernel-checked | `fibreUnique_of_decoder`, `conditional_certain_of_fibreUnique` |
 | Two sufficient promises are incomparable (no ordering from sufficiency) | kernel-checked example | `Incomparable.sufficient_promises_incomparable` |
 | Not-So-Greedy `I_s` ⇒ posterior one | external premise + the above bridge | §6 below |
-| Minimal source-defined bridging promise | **OPEN** | §7 |
+| Minimal source-defined bridging promise | **iff `∀ r, Unambiguous`**; weakest = `True`, unique | [`FiniteSourceDefinedWeakest.lean`](../AssemblyP1/FiniteSourceDefinedWeakest.lean) §7 |
 
 All Lean results are proved with `autoImplicit` disabled and audited by
 `AssemblyP1/FiniteBayesianSideInformationAudit.lean`; the only axioms are the
@@ -208,12 +208,13 @@ statements remain attributed to the source.
 
 ## 7. Genuinely open cases
 
-1. **Minimal source-defined bridging promise.** Whether there is a weakest
-   sufficient promise within the family of *source-defined* predicates (e.g.
-   minimal bridging sets built only from observed read strings), as opposed to
-   arbitrary or read-only promises, is OPEN. The counterexample of §5 rules out
-   an intrinsic least event for the full family; the source-defined subfamily is
-   not covered by either the negative or the positive result.
+1. **Minimal source-defined bridging promise.** RESOLVED by
+   [`AssemblyP1/FiniteSourceDefinedWeakest.lean`](../AssemblyP1/FiniteSourceDefinedWeakest.lean):
+   for the source-defined family (promises built only from the observed read
+   or only from the truth), a weakest sufficient promise exists **iff**
+   `∀ r, Unambiguous π p orbit r`; when it exists, the weakest is `True`,
+   unique up to equivalence.  On the ambiguous `TwoCandidate` model, the
+   family has no weakest sufficient promise.
 2. **`I_s` necessity for the specific algorithm.** Whether `I_s` is necessary
    for the *particular* Not-So-Greedy decoder (as opposed to for any read-only
    decoder) is OPEN and is a source-level question.
@@ -237,10 +238,13 @@ equivalence-closed structural family (`weakest_admissible_iff_union`). The
 read-only family satisfies it with weakest member `Unambiguous`
 (`unambiguous_isWeakest_readonly`), while the full truth-dependent family does
 not (`NoWeakestProb.unionAllSufficient_not_sufficient`). The `I_s`-specific
-ordering of item 4, the necessity of item 2, the source-defined weakest promise
-of item 1, and the concrete historical adapter of item 3 all remain OPEN. See
-[`docs/issue272-side-information-order.md`](issue272-side-information-order.md)
-for the precise reduction and status.
+   ordering of item 4, the necessity of item 2, and the concrete historical
+   adapter of item 3 all remain OPEN. The source-defined weakest promise of
+   item 1 is RESOLVED by
+   [`AssemblyP1/FiniteSourceDefinedWeakest.lean`](../AssemblyP1/FiniteSourceDefinedWeakest.lean).
+   See
+   [`docs/issue272-side-information-order.md`](issue272-side-information-order.md)
+   for the precise reduction and status.
 
 ## 8. Decision table
 

@@ -1,0 +1,26 @@
+import AssemblyP1.FiniteSourceDefinedWeakest
+
+/-! Axiom audit for the #272 weakest source-defined sufficient promise results.
+
+Every endpoint below must depend only on the three permitted axioms
+`propext`, `Classical.choice`, and `Quot.sound`. -/
+
+#print axioms AssemblyP1.FiniteSourceDefinedWeakest.admSourceDefined_congr
+#print axioms AssemblyP1.FiniteSourceDefinedWeakest.admSourceDefined_singleton
+#print axioms AssemblyP1.FiniteSourceDefinedWeakest.admSourceDefined_true
+#print axioms AssemblyP1.FiniteSourceDefinedWeakest.unionSourceDefined_eq_true
+#print axioms AssemblyP1.FiniteSourceDefinedWeakest.weakest_sourceDefined_iff_sufficient_true
+#print axioms AssemblyP1.FiniteSourceDefinedWeakest.weakest_sourceDefined_iff_unambiguous
+#print axioms AssemblyP1.FiniteSourceDefinedWeakest.weakest_sourceDefined_exists_of_readonly_certain
+#print axioms AssemblyP1.FiniteSourceDefinedWeakest.true_isWeakest_sourceDefined
+#print axioms AssemblyP1.FiniteSourceDefinedWeakest.weakest_sourceDefined_unique
+#print axioms AssemblyP1.FiniteSourceDefinedWeakest.AmbiguousRead.not_sufficient_true
+#print axioms AssemblyP1.FiniteSourceDefinedWeakest.AmbiguousRead.union_eq_true
+#print axioms AssemblyP1.FiniteSourceDefinedWeakest.AmbiguousRead.union_not_sufficient
+#print axioms AssemblyP1.FiniteSourceDefinedWeakest.AmbiguousRead.no_weakest
+#print axioms AssemblyP1.FiniteSourceDefinedWeakest.AmbiguousRead.counterexample
+#print axioms AssemblyP1.FiniteSourceDefinedWeakest.UnambiguousExample.p_pos_iff
+#print axioms AssemblyP1.FiniteSourceDefinedWeakest.UnambiguousExample.unambiguous
+#print axioms AssemblyP1.FiniteSourceDefinedWeakest.UnambiguousExample.weakest_exists
+#print axioms AssemblyP1.FiniteSourceDefinedWeakest.UnambiguousExample.true_is_weakest
+#print axioms AssemblyP1.FiniteSourceDefinedWeakest.UnambiguousExample.weakest_exists_and_is_true

@@ -34,7 +34,7 @@ supplied promise `E`) are inherited verbatim from the merged module.
 | Minimum sufficient promise exists and is unique; minimum ≠ weakest | kernel-checked | `minimum_exists_unique`, `minimum_without_weakest` |
 | `I_s` necessity for the specific Not-So-Greedy decoder | **OPEN** | §6 |
 | Ordering of `I_s` against `Unambiguous` / arbitrary sufficient promises | **neither**, kernel-checked on the read-string adapter | [`FiniteSideInformationOrdering.lean`](../AssemblyP1/FiniteSideInformationOrdering.lean), [`FiniteReadStringIsVsUnambiguous.lean`](../AssemblyP1/FiniteReadStringIsVsUnambiguous.lean), §6 |
-| Weakest sufficient inside the source-defined bridging subfamily | **OPEN** (reduced to a concrete criterion) | §6 |
+| Weakest sufficient inside the source-defined bridging subfamily | **iff `∀ r, Unambiguous`**; weakest = `True`, unique | [`FiniteSourceDefinedWeakest.lean`](../AssemblyP1/FiniteSourceDefinedWeakest.lean) |
 
 All results are proved with `autoImplicit` disabled and audited by
 [`AssemblyP1/FiniteSideInformationOrderAudit.lean`](../AssemblyP1/FiniteSideInformationOrderAudit.lean);
@@ -199,12 +199,19 @@ equivalence-closed admissible) family.
    [`issue272-read-string-is-vs-unambiguous.md`](issue272-read-string-is-vs-unambiguous.md),
    [`issue272-read-string-adapter.md`](issue272-read-string-adapter.md),
    and [`AssemblyP1/FiniteSideInformationOrdering.lean`](../AssemblyP1/FiniteSideInformationOrdering.lean).
-3. **Weakest source-defined bridging promise.** OPEN, but now reduced by
-   `weakest_admissible_iff_union` to the single question of whether the union of
-   all source-defined sufficient promises is itself source-defined and
-   sufficient. The negative full-family result of §5 shows this cannot be
-   discharged for the unrestricted family; the source-defined subfamily is not
-   covered by either the negative or the positive result.
+3. **Weakest source-defined bridging promise.** RESOLVED by
+   [`AssemblyP1/FiniteSourceDefinedWeakest.lean`](../AssemblyP1/FiniteSourceDefinedWeakest.lean):
+   for the source-defined family (promises built only from the observed read
+   or only from the truth), a weakest sufficient promise exists **iff**
+   `∀ r, Unambiguous π p orbit r` — the read-only posterior is already
+   certain at every read.  When it exists, the weakest is `True`, unique up
+   to equivalence (`weakest_sourceDefined_iff_unambiguous`,
+   `true_isWeakest_sourceDefined`, `weakest_sourceDefined_unique`).  The union
+   of all source-defined sufficient promises is always `True`
+   (`unionSourceDefined_eq_true`), because every candidate is named by its
+   sufficient truth-only singleton.  On the ambiguous `TwoCandidate` model,
+   the family has **no** weakest sufficient promise
+   (`AmbiguousRead.no_weakest`).
 4. **Concrete historical read-string adapter.** LANDED (see
    [`issue272-read-string-adapter.md`](issue272-read-string-adapter.md)): the
    literal read-string adapter
