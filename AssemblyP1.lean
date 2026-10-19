@@ -127,6 +127,7 @@ import AssemblyP1.W1W2SeparationCompatibility
 import AssemblyP1.W1W2RcOrientedRepresentation271
 import AssemblyP1.ConditionalVsMLGenomeAdapter271
 import AssemblyP1.InformationFeasibleRotation271
+import AssemblyP1.ConditionalVsMLFullReadSet271
 import AssemblyP1.ConditionalBayesEImpliesB271
 import AssemblyP1.BayesValueMonotonicity
 import AssemblyP1.BayesOptimalityCertificate
@@ -344,6 +345,11 @@ import AssemblyP1.ProductBinomialRigidityNecessityAudit
 -- inequality, and the strict separation from sample-uniform maximality.
 import AssemblyP1.FixedXProductBinomialMaximality
 import AssemblyP1.FixedXProductBinomialMaximalityAudit
+-- #259 axis B (boundary included): the full same-total candidate class has
+-- maximal truths exactly the mass-on-one-class spectra and the {0,1}-valued
+-- spectra; boundary coordinates 0/N and zero-count coordinates are dominated.
+import AssemblyP1.ProductBinomialBoundaryFullClass
+import AssemblyP1.ProductBinomialBoundaryFullClassAudit
 import AssemblyP1.FiniteSideInformationColoring
 import AssemblyP1.FiniteSideInformationColoringAudit
 import AssemblyP1.FiniteBayesianSideInformation
@@ -403,6 +409,10 @@ import AssemblyP1.ExactMLOptimizerTransferAudit
 -- #263 optimizer-preserving EXACT support-restricted Graver certificate (T1/T2, no surrogate) + audit.
 import AssemblyP1.ExactSupportRestrictedGraver
 import AssemblyP1.ExactSupportRestrictedGraverAudit
+
+-- #284 physical visit-count transport: spelling preservation does not imply
+-- vertex-visit / ML-flow equivalence (self-contained, Lean core only).
+import AssemblyP1.Section62VisitTransport
 
 /-! ## `Issue94Transposition`: the Kotzig/Ukkonen/Pevzner descent, and an obstruction
 
@@ -1265,3 +1275,16 @@ reading. Two finite checks anchor it: the refuted BBT premise's witness is not
 #print axioms AssemblyP1.Section62ReductionWitnessAudit.perOccurrence_graph_spelling_reduction_eq_self
 #print axioms AssemblyP1.Section62ReductionWitnessAudit.perOccurrence_truth_spelled_feasible62_spelling
 #print axioms AssemblyP1.Section62ReductionWitnessAudit.perOccurrence_competitor_spelled_feasible62_spelling
+
+-- #284 physical visit-count transport: the window multiset is invariant under a
+-- spelling-preserving detour, but the physical class counts are not.
+#print axioms AssemblyP1.Section62VisitTransport.windows_detour_eq
+#print axioms AssemblyP1.Section62VisitTransport.witness_single_spell_eq
+#print axioms AssemblyP1.Section62VisitTransport.witness_two_spell_eq
+#print axioms AssemblyP1.Section62VisitTransport.witness_windows_eq
+#print axioms AssemblyP1.Section62VisitTransport.witness_vertex_ne_single
+#print axioms AssemblyP1.Section62VisitTransport.witness_vertex_ne_two
+#print axioms AssemblyP1.Section62VisitTransport.witness_windows_split_direct
+#print axioms AssemblyP1.Section62VisitTransport.witness_windows_split_two
+#print axioms AssemblyP1.Section62VisitTransport.no_transport_function
+#print axioms AssemblyP1.Section62VisitTransport.transport_required_false
