@@ -152,6 +152,16 @@ Finite-family Hellinger error bound (\ref{thm:finite-recovery})
 & \path{FiniteReadRecovery.eventProb_wrong_le_sum}; iid exact read laws,
 finite distinguishable family, ties counted as errors.\\
 \addlinespace
+Explicit sufficient sample size from the union bound
+(\ref{cor:explicit-sample-size})
+& (ii)
+& Paper-level inversion of the kernel-checked Hellinger union bound;
+kernel-checked constant endpoint
+\path{FiniteReadRecovery.eventProb_wrong_le_sum} (via
+Remark~\ref{rem:sample-complexity} from \ref{thm:finite-recovery}) with
+concrete $99\%$ instance \path{FiniteReadRecovery.il_confidence_99};
+the explicit-$n$ ceiling itself is not separately kernel-checked.\\
+\addlinespace
 Explicit uniform exponential exact-ML rate (\ref{thm:p2-uniform-rate})
 & (i)
 & \path{PrimitiveP2UniformSeparation.primitiveP2_exponential_error_bound},
