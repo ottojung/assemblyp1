@@ -142,7 +142,7 @@ theorem fullFeasible_zero (T : Finset (Fin 4)) : ¬ fullFeasible 0 T := by
   have ht : IsTripleOccurrence (genOf 0) 1 0 1 2 := by decide
   have hb := (h.2.1 (⟨1, by norm_num⟩ : Fin (genOf 0).len) 0 1 2 ht).1
   have hle := bridgesCopy_length hb
-  trace_state
+  simp only [Fin.val_mk] at hle
   omega
 
 /-! ## The concrete placement model and its proved Not-So-Greedy field -/
@@ -225,8 +225,10 @@ theorem fullFeasible_one_saturated : fullFeasible 1 Tfull := by decide
 full read set `Y1` (the saturated placement contributes `(1/4)^4`). -/
 theorem fullJoint_Y1_pos_one : 0 < placementJoint fullModel fullWeight Y1 1 := by
   unfold placementJoint
-  have hcond : fullConsistent 1 Tfull Y1 ∧ fullFeasible 1 Tfull :=
-    ⟨by decide, by decide⟩
+  have hcond : fullModel.consistent 1 Tfull Y1 ∧ fullModel.feasible 1 Tfull := by
+    refine ⟨?_, ?_⟩
+    · change observedTypes_ofFinset (genOf 1) 2 Tfull = Y1; decide
+    · change HistoricalInformationFeasibleLiteral (genOf 1) 2 Tfull; decide
   apply Finset.sum_pos'
   · intro T _
     by_cases hc : fullModel.consistent 1 T Y1 ∧ fullModel.feasible 1 T
