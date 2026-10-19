@@ -82,6 +82,10 @@ import AssemblyP1.Section62PalindromeEdgeMultiplicityAudit
 -- transport physical loop visit counts; the quotient orbit flow is the correct route.
 import AssemblyP1.Section62ReversalOrbitTransport
 import AssemblyP1.Section62ReversalOrbitTransportAudit
+-- #255/#261 L3: transport the §6.2 ML objective (visit-count vector + vertex
+-- bound + maximality reduction) to physical edge-orbit totals, and its audit.
+import AssemblyP1.Section62PhysicalOrbitObjective
+import AssemblyP1.Section62PhysicalOrbitObjectiveAudit
 import AssemblyP1.Section62FullSpectrumUnseenFactor
 -- #259 real circular-genome witness: exact iid and product-binomial rankings differ.
 import AssemblyP1.Section62BinomialRealGenomeInversion
@@ -345,6 +349,11 @@ import AssemblyP1.ProductBinomialRigidityNecessityAudit
 -- inequality, and the strict separation from sample-uniform maximality.
 import AssemblyP1.FixedXProductBinomialMaximality
 import AssemblyP1.FixedXProductBinomialMaximalityAudit
+-- #259 axis B (boundary included): the full same-total candidate class has
+-- maximal truths exactly the mass-on-one-class spectra and the {0,1}-valued
+-- spectra; boundary coordinates 0/N and zero-count coordinates are dominated.
+import AssemblyP1.ProductBinomialBoundaryFullClass
+import AssemblyP1.ProductBinomialBoundaryFullClassAudit
 import AssemblyP1.FiniteSideInformationColoring
 import AssemblyP1.FiniteSideInformationColoringAudit
 import AssemblyP1.FiniteBayesianSideInformation
@@ -405,6 +414,10 @@ import AssemblyP1.SeparableConvexGraverAudit
 -- #263 exact-ML optimizer preservation of the affine-tail Graver certificate + audit.
 import AssemblyP1.ExactMLOptimizerTransfer
 import AssemblyP1.ExactMLOptimizerTransferAudit
+
+-- #284 physical visit-count transport: spelling preservation does not imply
+-- vertex-visit / ML-flow equivalence (self-contained, Lean core only).
+import AssemblyP1.Section62VisitTransport
 
 /-! ## `Issue94Transposition`: the Kotzig/Ukkonen/Pevzner descent, and an obstruction
 
@@ -1267,3 +1280,16 @@ reading. Two finite checks anchor it: the refuted BBT premise's witness is not
 #print axioms AssemblyP1.Section62ReductionWitnessAudit.perOccurrence_graph_spelling_reduction_eq_self
 #print axioms AssemblyP1.Section62ReductionWitnessAudit.perOccurrence_truth_spelled_feasible62_spelling
 #print axioms AssemblyP1.Section62ReductionWitnessAudit.perOccurrence_competitor_spelled_feasible62_spelling
+
+-- #284 physical visit-count transport: the window multiset is invariant under a
+-- spelling-preserving detour, but the physical class counts are not.
+#print axioms AssemblyP1.Section62VisitTransport.windows_detour_eq
+#print axioms AssemblyP1.Section62VisitTransport.witness_single_spell_eq
+#print axioms AssemblyP1.Section62VisitTransport.witness_two_spell_eq
+#print axioms AssemblyP1.Section62VisitTransport.witness_windows_eq
+#print axioms AssemblyP1.Section62VisitTransport.witness_vertex_ne_single
+#print axioms AssemblyP1.Section62VisitTransport.witness_vertex_ne_two
+#print axioms AssemblyP1.Section62VisitTransport.witness_windows_split_direct
+#print axioms AssemblyP1.Section62VisitTransport.witness_windows_split_two
+#print axioms AssemblyP1.Section62VisitTransport.no_transport_function
+#print axioms AssemblyP1.Section62VisitTransport.transport_required_false
