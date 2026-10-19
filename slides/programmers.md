@@ -978,7 +978,7 @@ $$
 
 and $n\ge 8B^4\ln(N_C/\delta)$ reads suffice for error at most $\delta$.
 
-**Caveats.** The constants are deliberately loose and exponential in $L$; the bound controls the exact-ML **error probability**, not likelihood growth; and per-truth finite-sample success is **not monotone**. The class is primitive-P2, oriented, exact iid reads — not universal ML and not the MB09 product-binomial surrogate. Kernel endpoints: `AssemblyP1.PrimitiveP2UniformSeparation.primitiveP2_exponential_error_bound` and `primitiveP2_ML_confidence_explicit`.
+**Caveats.** The constants are deliberately loose and exponential in $L$; the bound controls the exact-ML **error probability**, not likelihood growth; and per-truth finite-sample success is **not monotone**. The class is primitive-P2, oriented, exact iid reads — not universal ML and not the MB09 product-binomial surrogate. Kernel endpoints: `AssemblyP1.PrimitiveP2UniformSeparation.primitiveP2_exponential_error_bound` and `primitiveP2_ML_confidence_explicit` (paper `thm:p2-uniform-rate`).
 
 **What remains open:** one sharp, uniform sample-size guarantee over the unrestricted universe of genome candidates, especially across different lengths and models.
 
@@ -994,7 +994,8 @@ the finite-family confidence theorem is established. Finite family, positive
 separation, iid oriented reads, and the candidate model matter.
 The explicit uniform rate over the primitive-P2 class is #281, kernel-checked
 in PrimitiveP2UniformSeparation (endpoints primitiveP2_exponential_error_bound
-and primitiveP2_ML_confidence_explicit; B = maxLen L = 2 q^(L-1); N_C is the
+and primitiveP2_ML_confidence_explicit; paper thm:p2-uniform-rate;
+B = maxLen L = 2 q^(L-1); N_C is the
 number of distinct competitor read laws, N_C <= sum_{g=1}^{B} q^g). It is a
 frequentist uniform-separation statement for the exact oriented iid
 multinomial likelihood, distinct from the Bayes/MAP rationale. State the three
