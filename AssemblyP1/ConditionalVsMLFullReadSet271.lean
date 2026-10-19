@@ -63,6 +63,7 @@ No `sorry`/`admit`/`axiom`/`native_decide`; the axiom audit is in
 -/
 
 set_option linter.dupNamespace false
+set_option linter.deprecated false
 set_option maxHeartbeats 1000000
 
 namespace AssemblyP1.ConditionalVsMLFullReadSet271
@@ -139,8 +140,9 @@ bridge any copy of length `≥ 1` (`bridgesCopy_length` forces `e + 2 ≤ 2`). -
 theorem fullFeasible_zero (T : Finset (Fin 4)) : ¬ fullFeasible 0 T := by
   intro h
   have ht : IsTripleOccurrence (genOf 0) 1 0 1 2 := by decide
-  obtain ⟨r, hr, d, hd, _⟩ :=
-    (h.2.1 (⟨1, by norm_num⟩ : Fin (genOf 0).len) 0 1 2 ht).1
+  have hb := (h.2.1 (⟨1, by norm_num⟩ : Fin (genOf 0).len) 0 1 2 ht).1
+  have hle := bridgesCopy_length hb
+  trace_state
   omega
 
 /-! ## The concrete placement model and its proved Not-So-Greedy field -/
@@ -223,7 +225,7 @@ theorem fullFeasible_one_saturated : fullFeasible 1 Tfull := by decide
 full read set `Y1` (the saturated placement contributes `(1/4)^4`). -/
 theorem fullJoint_Y1_pos_one : 0 < placementJoint fullModel fullWeight Y1 1 := by
   unfold placementJoint
-  have hcond : fullModel.consistent 1 Tfull Y1 ∧ fullModel.feasible 1 Tfull :=
+  have hcond : fullConsistent 1 Tfull Y1 ∧ fullFeasible 1 Tfull :=
     ⟨by decide, by decide⟩
   apply Finset.sum_pos'
   · intro T _
