@@ -1056,6 +1056,17 @@ rest remain human-readable only, as labeled per entry.
   and the bounded target-4 distinction "minimum sufficient promise always exists,
   weakest need not" by `minimum_exists_unique` / `minimum_without_weakest`.  See
   [`issue272-readonly-decoder-certainty.md`](issue272-readonly-decoder-certainty.md).
+- **Additional landed (`I_s` vs `Unambiguous` ordering, 2026-10-19):**
+  `FiniteReadStringIsVsUnambiguous.lean` + audit.  On a length-`4`,
+  read-length-`2` read-realizable model the merged literal read-string adapter
+  `isPromiseReadString` is **incomparable** with `Unambiguous`
+  (`isPromiseRS_unambiguous_incomparable`): direction 1 (`I_s ⇒ Unambiguous`) is
+  refuted because `ABAB` is `I_s`-promising at `Y = {AB, BA}` while the
+  different-orbit `AABB` also realizes `Y`; direction 2 (`Unambiguous ⇒ I_s`) is
+  refuted because `Y = {AA, BB}` is `Unambiguous` while the realizer `BBAA` is
+  not `I_s`-promising.  The two promises constrain the read-realizable fibre and
+  the `I_s`-feasible fibre respectively.  See
+  [`issue272-read-string-is-vs-unambiguous.md`](issue272-read-string-is-vs-unambiguous.md).
 - **Still OPEN:** the bridge to a specific genome assembly reconstruction
   theorem supplying the auxiliary label; the decoder-level certainty endpoint
   (external Not-So-Greedy guarantee remains an attributed premise); `I_s`

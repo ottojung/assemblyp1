@@ -33,7 +33,7 @@ supplied promise `E`) are inherited verbatim from the merged module.
 | "Side information must be supplied": inferable-from-read iff read-only | kernel-checked | `admReadOnly_iff_factorable`, `truthDependent_not_factorable` |
 | Minimum sufficient promise exists and is unique; minimum ≠ weakest | kernel-checked | `minimum_exists_unique`, `minimum_without_weakest` |
 | `I_s` necessity for the specific Not-So-Greedy decoder | **OPEN** | §6 |
-| Ordering of `I_s` against `Unambiguous` / arbitrary sufficient promises | **neither** at promise level; read-string adapter OPEN | [`FiniteSideInformationOrdering.lean`](../AssemblyP1/FiniteSideInformationOrdering.lean), §6 |
+| Ordering of `I_s` against `Unambiguous` / arbitrary sufficient promises | **neither**, kernel-checked on the read-string adapter | [`FiniteSideInformationOrdering.lean`](../AssemblyP1/FiniteSideInformationOrdering.lean), [`FiniteReadStringIsVsUnambiguous.lean`](../AssemblyP1/FiniteReadStringIsVsUnambiguous.lean), §6 |
 | Weakest sufficient inside the source-defined bridging subfamily | **OPEN** (reduced to a concrete criterion) | §6 |
 
 All results are proved with `autoImplicit` disabled and audited by
@@ -186,8 +186,17 @@ equivalence-closed admissible) family.
    The literal read-string adapter that makes the question a well-typed
    implication about one observation type is now provided (see item 4); it is
    read-dependent, and sufficiency still does not order it against
-   `Unambiguous`. See
+   `Unambiguous`. The ordering is now **kernel-checked on the adapter itself**
+   by
+   [`FiniteReadStringIsVsUnambiguous`](../AssemblyP1/FiniteReadStringIsVsUnambiguous.lean):
+   on a length-`4`, read-length-`2` read-realizable model, `ABAB` is
+   `I_s`-promising at `Y = {AB, BA}` while the different-orbit `AABB` also
+   realizes `Y` (so `I_s ⇏ Unambiguous`), and `Y = {AA, BB}` is `Unambiguous`
+   while the realizer `BBAA` is not `I_s`-promising (so `Unambiguous ⇏ I_s`).
+   The two promises constrain the read-realizable fibre and the `I_s`-feasible
+   fibre respectively, which differ. See
    [`issue272-is-vs-unambiguous-ordering.md`](issue272-is-vs-unambiguous-ordering.md),
+   [`issue272-read-string-is-vs-unambiguous.md`](issue272-read-string-is-vs-unambiguous.md),
    [`issue272-read-string-adapter.md`](issue272-read-string-adapter.md),
    and [`AssemblyP1/FiniteSideInformationOrdering.lean`](../AssemblyP1/FiniteSideInformationOrdering.lean).
 3. **Weakest source-defined bridging promise.** OPEN, but now reduced by

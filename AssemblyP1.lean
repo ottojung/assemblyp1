@@ -369,6 +369,11 @@ import AssemblyP1.FiniteSideInformationReadStringAdapterAudit
 -- must be supplied", and the minimum-versus-weakest sufficient-promise distinction.
 import AssemblyP1.FiniteReadOnlyDecoderCertainty
 import AssemblyP1.FiniteReadOnlyDecoderCertaintyAudit
+-- #272 the literal read-string `I_s` adapter is incomparable with `Unambiguous`:
+-- direction 1 (`I_s ⇒ Unambiguous`) and direction 2 (`Unambiguous ⇒ I_s`) are both
+-- refuted on a faithful finite read-realizable model (ABAB/AABB, L = 2).
+import AssemblyP1.FiniteReadStringIsVsUnambiguous
+import AssemblyP1.FiniteReadStringIsVsUnambiguousAudit
 -- #270 positive finite-family iid ML recovery via Hellinger affinity.
 import AssemblyP1.FiniteReadRecovery
 -- #270 concrete uniform-start cyclic read distribution and conditional genome bounds.

@@ -1,0 +1,30 @@
+import AssemblyP1.FiniteReadStringIsVsUnambiguous
+
+/-! Axiom audit for the #272 `I_s`-versus-`Unambiguous` read-string ordering results.
+
+Every endpoint below must depend only on the three permitted axioms
+`propext`, `Classical.choice`, and `Quot.sound`. -/
+
+#print axioms AssemblyP1.FiniteReadStringIsVsUnambiguous.isPromiseRS_iff_spelling
+#print axioms AssemblyP1.FiniteReadStringIsVsUnambiguous.orbit_rot
+#print axioms AssemblyP1.FiniteReadStringIsVsUnambiguous.π_nonneg
+#print axioms AssemblyP1.FiniteReadStringIsVsUnambiguous.p_nonneg
+#print axioms AssemblyP1.FiniteReadStringIsVsUnambiguous.p_pos_iff
+#print axioms AssemblyP1.FiniteReadStringIsVsUnambiguous.predictive_pos_of_realizable
+#print axioms AssemblyP1.FiniteReadStringIsVsUnambiguous.realizable_abab_yabba
+#print axioms AssemblyP1.FiniteReadStringIsVsUnambiguous.realizable_aabb_yabba
+#print axioms AssemblyP1.FiniteReadStringIsVsUnambiguous.orbit_aabb_ne_abab
+#print axioms AssemblyP1.FiniteReadStringIsVsUnambiguous.isPromiseRS_abab_yabba
+#print axioms AssemblyP1.FiniteReadStringIsVsUnambiguous.not_unambiguous_of_two_orbit_realizers
+#print axioms AssemblyP1.FiniteReadStringIsVsUnambiguous.isPromiseRS_not_imp_unambiguous
+#print axioms AssemblyP1.FiniteReadStringIsVsUnambiguous.not_isPromiseRS_aabb_yabba
+#print axioms AssemblyP1.FiniteReadStringIsVsUnambiguous.predictive_pos_yabba
+#print axioms AssemblyP1.FiniteReadStringIsVsUnambiguous.orbit_of_adj
+#print axioms AssemblyP1.FiniteReadStringIsVsUnambiguous.window_zero
+#print axioms AssemblyP1.FiniteReadStringIsVsUnambiguous.window_one
+#print axioms AssemblyP1.FiniteReadStringIsVsUnambiguous.realizable_yaabb_orbit
+#print axioms AssemblyP1.FiniteReadStringIsVsUnambiguous.unambiguous_yaabb
+#print axioms AssemblyP1.FiniteReadStringIsVsUnambiguous.not_isPromiseRS_bbaa_yaabb
+#print axioms AssemblyP1.FiniteReadStringIsVsUnambiguous.unambiguous_not_imp_isPromiseRS
+#print axioms AssemblyP1.FiniteReadStringIsVsUnambiguous.predictive_pos_yaabb
+#print axioms AssemblyP1.FiniteReadStringIsVsUnambiguous.isPromiseRS_unambiguous_incomparable
