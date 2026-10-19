@@ -56,6 +56,10 @@ already-merged ATAT self-loop witness (`Section62PhysicalEdgeOrbit.Atat`: three
 loop orbits with `(pos,neg) = (1,1),(2,0),(0,2)`), this pins the orbit
 structure for both distinct-class and self-loop edges.
 
+`twoClass_fourOrbits_gen` generalizes this from the concrete words to **any**
+two distinct words `w1 ≠ w2`, so the four-orbit distinctness is not an artifact
+of the chosen witness words.
+
 The exhaustive finite cross-check is `scripts/verify_261_l1_physedge_quotient.py`
 (594 small overlap graphs, checks W1-W6, exit 0).
 
@@ -151,6 +155,106 @@ theorem twoClass_orbit_signs :
     physPos s1 (physMk e22) = 0 ∧ physNeg s1 (physMk e22) = 1 := by
   simp only [physPos_mk, physNeg_mk]
   decide
+
+/-! ## General distinctness: arbitrary distinct words -/
+
+/-- The four tagged edges between the classes of arbitrary words `w1`, `w2`
+(cases 1-4), at the fixed length `len`. -/
+def g11 (w1 w2 : List Bool) : BdEdge Bool V :=
+  bdEdge (A := Bool) cls (w1, false) (w2, false) len
+
+def g12 (w1 w2 : List Bool) : BdEdge Bool V :=
+  bdEdge (A := Bool) cls (w1, false) (w2, true) len
+
+def g21 (w1 w2 : List Bool) : BdEdge Bool V :=
+  bdEdge (A := Bool) cls (w1, true) (w2, false) len
+
+def g22 (w1 w2 : List Bool) : BdEdge Bool V :=
+  bdEdge (A := Bool) cls (w1, true) (w2, true) len
+
+/-- Case 1 signs are `+1,-1` for arbitrary words. -/
+theorem g11_signs {w1 w2 : List Bool} : (g11 w1 w2).sgnX = 1 ∧ (g11 w1 w2).sgnY = -1 := by
+  simp [g11, bdEdge, sgnRep, sgnTgt, cls]
+
+/-- Case 2 signs are `+1,+1` for arbitrary words. -/
+theorem g12_signs {w1 w2 : List Bool} : (g12 w1 w2).sgnX = 1 ∧ (g12 w1 w2).sgnY = 1 := by
+  simp [g12, bdEdge, sgnRep, sgnTgt, cls]
+
+/-- Case 3 signs are `-1,-1` for arbitrary words. -/
+theorem g21_signs {w1 w2 : List Bool} : (g21 w1 w2).sgnX = -1 ∧ (g21 w1 w2).sgnY = -1 := by
+  simp [g21, bdEdge, sgnRep, sgnTgt, cls]
+
+/-- Case 4 signs are `-1,+1` for arbitrary words. -/
+theorem g22_signs {w1 w2 : List Bool} : (g22 w1 w2).sgnX = -1 ∧ (g22 w1 w2).sgnY = 1 := by
+  simp [g22, bdEdge, sgnRep, sgnTgt, cls]
+
+/-- Case 1 and case 2 are distinct orbits for arbitrary distinct words. -/
+theorem fourOrbits_ne_11_12 {w1 w2 : List Bool} (h : w1 ≠ w2) :
+    physMk (g11 w1 w2) ≠ physMk (g12 w1 w2) := by
+  intro hq
+  have : RevRel (A := Bool) (W := List Bool) (g11 w1 w2) (g12 w1 w2) := Quotient.exact hq
+  rcases this with h' | h'
+  · simp [g11, g12, bdEdge] at h'
+  · simp [g11, g12, bdEdge, reverseEdge, AssemblyP1.Section62PhysicalHalfIncidence.flip, h] at h'
+
+/-- Case 1 and case 3 are distinct orbits for arbitrary distinct words. -/
+theorem fourOrbits_ne_11_21 {w1 w2 : List Bool} (h : w1 ≠ w2) :
+    physMk (g11 w1 w2) ≠ physMk (g21 w1 w2) := by
+  intro hq
+  have : RevRel (A := Bool) (W := List Bool) (g11 w1 w2) (g21 w1 w2) := Quotient.exact hq
+  rcases this with h' | h'
+  · simp [g11, g21, bdEdge] at h'
+  · simp [g11, g21, bdEdge, reverseEdge, AssemblyP1.Section62PhysicalHalfIncidence.flip, h] at h'
+
+/-- Case 1 and case 4 are distinct orbits for arbitrary distinct words. -/
+theorem fourOrbits_ne_11_22 {w1 w2 : List Bool} (h : w1 ≠ w2) :
+    physMk (g11 w1 w2) ≠ physMk (g22 w1 w2) := by
+  intro hq
+  have : RevRel (A := Bool) (W := List Bool) (g11 w1 w2) (g22 w1 w2) := Quotient.exact hq
+  rcases this with h' | h'
+  · simp [g11, g22, bdEdge] at h'
+  · simp [g11, g22, bdEdge, reverseEdge, AssemblyP1.Section62PhysicalHalfIncidence.flip, h] at h'
+
+/-- Case 2 and case 3 are distinct orbits for arbitrary distinct words. -/
+theorem fourOrbits_ne_12_21 {w1 w2 : List Bool} (h : w1 ≠ w2) :
+    physMk (g12 w1 w2) ≠ physMk (g21 w1 w2) := by
+  intro hq
+  have : RevRel (A := Bool) (W := List Bool) (g12 w1 w2) (g21 w1 w2) := Quotient.exact hq
+  rcases this with h' | h'
+  · simp [g12, g21, bdEdge] at h'
+  · simp [g12, g21, bdEdge, reverseEdge, AssemblyP1.Section62PhysicalHalfIncidence.flip, h] at h'
+
+/-- Case 2 and case 4 are distinct orbits for arbitrary distinct words. -/
+theorem fourOrbits_ne_12_22 {w1 w2 : List Bool} (h : w1 ≠ w2) :
+    physMk (g12 w1 w2) ≠ physMk (g22 w1 w2) := by
+  intro hq
+  have : RevRel (A := Bool) (W := List Bool) (g12 w1 w2) (g22 w1 w2) := Quotient.exact hq
+  rcases this with h' | h'
+  · simp [g12, g22, bdEdge] at h'
+  · simp [g12, g22, bdEdge, reverseEdge, AssemblyP1.Section62PhysicalHalfIncidence.flip, h] at h'
+
+/-- Case 3 and case 4 are distinct orbits for arbitrary distinct words. -/
+theorem fourOrbits_ne_21_22 {w1 w2 : List Bool} (h : w1 ≠ w2) :
+    physMk (g21 w1 w2) ≠ physMk (g22 w1 w2) := by
+  intro hq
+  have : RevRel (A := Bool) (W := List Bool) (g21 w1 w2) (g22 w1 w2) := Quotient.exact hq
+  rcases this with h' | h'
+  · simp [g21, g22, bdEdge] at h'
+  · simp [g21, g22, bdEdge, reverseEdge, AssemblyP1.Section62PhysicalHalfIncidence.flip, h] at h'
+
+/-- **Generalized edge multiplicity.**  For *any* two distinct words `w1 ≠ w2`,
+the four tagged edges (cases 1-4) between their molecule classes have **four
+distinct** `physMk` orbits.  The edge-multiplicity correspondence is therefore
+not an artifact of the concrete words used in `twoClass_fourOrbits`. -/
+theorem twoClass_fourOrbits_gen {w1 w2 : List Bool} (h : w1 ≠ w2) :
+    physMk (g11 w1 w2) ≠ physMk (g12 w1 w2) ∧
+    physMk (g11 w1 w2) ≠ physMk (g21 w1 w2) ∧
+    physMk (g11 w1 w2) ≠ physMk (g22 w1 w2) ∧
+    physMk (g12 w1 w2) ≠ physMk (g21 w1 w2) ∧
+    physMk (g12 w1 w2) ≠ physMk (g22 w1 w2) ∧
+    physMk (g21 w1 w2) ≠ physMk (g22 w1 w2) :=
+  ⟨fourOrbits_ne_11_12 h, fourOrbits_ne_11_21 h, fourOrbits_ne_11_22 h,
+    fourOrbits_ne_12_21 h, fourOrbits_ne_12_22 h, fourOrbits_ne_21_22 h⟩
 
 end TwoClass
 

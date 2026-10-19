@@ -74,10 +74,14 @@ orbits (1567 loop orbits).  The correspondence holds on this family.
 1-4) have **four distinct** `physMk` values, with the four distinct sign
 patterns.  This is the edge-multiplicity half of the correspondence: the four
 physical edges are not identified by the quotient (in particular the two
-mixed-type edges are distinct orbits).  Together with the merged ATAT self-loop
-witness (`Section62PhysicalEdgeOrbit.Atat`: three loop orbits with
+mixed-type edges are distinct orbits).  `twoClass_fourOrbits_gen` strengthens
+this to **any** two distinct words `w1 ≠ w2`, so the four-orbit distinctness is
+not an artifact of the chosen witness words.  Together with the merged ATAT
+self-loop witness (`Section62PhysicalEdgeOrbit.Atat`: three loop orbits with
 `(pos,neg) = (1,1),(2,0),(0,2)`), this pins the orbit structure for both
-distinct-class and self-loop edges.  No `sorry`/`admit`/`axiom`/`native_decide`.
+distinct-class and self-loop edges.  No `sorry`/`admit`/`axiom`/`native_decide`;
+`#print axioms` yields only `{propext}` (and `Quot.sound` for
+`twoClass_orbit_signs`); `leanchecker` exits 0.
 
 ## Verdict
 
