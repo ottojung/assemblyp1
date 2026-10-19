@@ -1,10 +1,16 @@
 # Issue #272: `I_s` versus `Unambiguous` — the ordering question
 
-_Status: 2026-10-17 (literal read-string adapter landed, PR #297). Mathematical
-formalization front. Companion Lean module:
+_Status: 2026-10-19 (literal read-string adapter landed, PR #297; ordering now
+kernel-checked at the adapter, see
+[`issue272-read-string-is-vs-unambiguous.md`](issue272-read-string-is-vs-unambiguous.md)).
+Mathematical formalization front. Companion Lean modules:
 [`AssemblyP1/FiniteSideInformationOrdering.lean`](../AssemblyP1/FiniteSideInformationOrdering.lean),
 audited by
-[`AssemblyP1/FiniteSideInformationOrderingAudit.lean`](../AssemblyP1/FiniteSideInformationOrderingAudit.lean).
+[`AssemblyP1/FiniteSideInformationOrderingAudit.lean`](../AssemblyP1/FiniteSideInformationOrderingAudit.lean),
+and
+[`AssemblyP1/FiniteReadStringIsVsUnambiguous.lean`](../AssemblyP1/FiniteReadStringIsVsUnambiguous.lean),
+audited by
+[`AssemblyP1/FiniteReadStringIsVsUnambiguousAudit.lean`](../AssemblyP1/FiniteReadStringIsVsUnambiguousAudit.lean).
 Extends, without duplicating, the merged modules
 [`AssemblyP1/FiniteBayesianSideInformation.lean`](../AssemblyP1/FiniteBayesianSideInformation.lean)
 (PR #195, `b0a6e9f`) and
@@ -47,6 +53,9 @@ truth-dependent promise never forces it below `Unambiguous`.
 | Concrete three-candidate witness | kernel-checked | `ThreeCandidate.neither_implication` |
 | `I_s` is **not** a read-only promise | kernel-checked | `IsTruthDependence.informationFeasible_not_readOnly` |
 | Literal read-string adapter for `I_s` as one observation type | kernel-checked (PR #297) | [`FiniteSideInformationReadStringAdapter`](../AssemblyP1/FiniteSideInformationReadStringAdapter.lean) / [adapter note](issue272-read-string-adapter.md) |
+| Adapter `I_s` **does not** imply `Unambiguous` | kernel-checked | `FiniteReadStringIsVsUnambiguous.isPromiseRS_not_imp_unambiguous` |
+| `Unambiguous` **does not** imply adapter `I_s` | kernel-checked | `FiniteReadStringIsVsUnambiguous.unambiguous_not_imp_isPromiseRS` |
+| Adapter `I_s` and `Unambiguous` are **incomparable** | kernel-checked | `FiniteReadStringIsVsUnambiguous.isPromiseRS_unambiguous_incomparable` / [note](issue272-read-string-is-vs-unambiguous.md) |
 
 All endpoints depend only on `propext`, `Classical.choice`, `Quot.sound`
 (`#print axioms` audit); no `sorry`, `admit`, `axiom`, or `native_decide`.
@@ -132,9 +141,16 @@ single observation type. That adapter is now provided by
 [`FiniteSideInformationReadStringAdapter`](../AssemblyP1/FiniteSideInformationReadStringAdapter.lean)
 (PR #297): it fixes the distinct read-string set as one observation type and
 makes `I_s` a well-typed truth-dependent promise, but proves that promise is
-read-dependent (outside both `AdmReadOnly` and `AdmTruthOnly`). The verdict
-therefore remains "neither" — now for the well-typed promise, since sufficiency
-alone still does not order a truth-dependent promise against `Unambiguous`.
+read-dependent (outside both `AdmReadOnly` and `AdmTruthOnly`). The verdict is
+therefore "neither" — now kernel-checked **on the adapter itself** by
+[`FiniteReadStringIsVsUnambiguous`](../AssemblyP1/FiniteReadStringIsVsUnambiguous.lean):
+on the length-`4`, read-length-`2` read-realizable model, `ABAB` is
+`I_s`-promising at `Y = {AB, BA}` while `AABB` (a different orbit) also realizes
+`Y` (so `I_s ⇏ Unambiguous`), and `Y = {AA, BB}` is `Unambiguous` while the
+realizer `BBAA` is not `I_s`-promising (so `Unambiguous ⇏ I_s`). The reason is
+structural and sharp: `Unambiguous` constrains the **read-realizable** fibre
+while `I_s` constrains the **`I_s`-feasible** fibre, and these differ; see
+[`issue272-read-string-is-vs-unambiguous.md`](issue272-read-string-is-vs-unambiguous.md).
 
 ## 5. Remaining open work
 
