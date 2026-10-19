@@ -342,10 +342,16 @@ theorem interleaved_add (S : Genome α) (a b c d k : Fin S.len) :
 
 /-- **Rotation invariance of the source information-feasibility predicate
 `I_s`.** Rotating the circular genome by `k` preserves `InformationFeasible`
-exactly when the latent read-start set rotates with it.  This is the
-`InformationFeasible g T ↔ InformationFeasible (rot g) (rot T)` statement, with
-`rotGenome` the genome rotation and `R.map (rotStartEmb S k)` the placement
-rotation. -/
+exactly when the latent read-start set rotates with it.  This is the cross-side
+equivariance
+
+`InformationFeasible (rotGenome S k) L R ↔ InformationFeasible S L (R.map (rotStartEmb S k))`:
+
+a placement set `R` is feasible for the genome rotated by `k` iff the placement
+set rotated by `k` is feasible for the original.  Equivalently, rotating the
+genome by `k` and the placement set by `-k` leaves `InformationFeasible`
+unchanged; the same-direction diagonal form `g ↦ rotGenome S k`, `T ↦
+R.map (rotStartEmb S k)` is **not** claimed (it is false in general). -/
 theorem informationFeasible_rotGenome {S : Genome α} {L : ℕ}
     {R : Finset (Fin S.len)} {k : Fin S.len} :
     InformationFeasible (rotGenome S k) L R ↔

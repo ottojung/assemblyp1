@@ -23,9 +23,10 @@ E i r := ∃ T : Finset (Fin 4),
 through the chosen representatives `genOf i = toGenome (rep i)`. The likelihood
 side of the adapter is known to descend to orbits
 (`GenomeOrbitAdapter.readPmf_rotWord`, #269); the side-predicate side was left
-open. The question is whether `InformationFeasible g T` is invariant under
-rotating the genome and the placement set together, so that `E` only depends on
-the rotation class of the candidate.
+open. The question is whether `InformationFeasible` is equivariant under
+rotation — rotating the genome by `k` and the placement set by `-k` (equivalently,
+the cross-side form below) — so that `E` only depends on the rotation class of
+the candidate.
 
 ## 2. The rotation action, and the exact statement
 
@@ -42,8 +43,12 @@ informationFeasible_rotGenome :
 ```
 
 It is proved at the generic `Genome α` level, not only for the length-`4`
-adapter genomes, and it is the literal `InformationFeasible g T ↔
-InformationFeasible (rot g) (rot T)` statement with `rot T = R.map (rotStartEmb S k)`.
+adapter genomes. It is the cross-side equivariance: a placement set `R` is
+feasible for the genome rotated by `k` iff the placement set rotated by `k` is
+feasible for the original. Equivalently, rotating the genome by `k` and the
+placement set by `-k` leaves `InformationFeasible` unchanged. The same-direction
+diagonal form (`g ↦ rotGenome S k` with `T ↦ R.map (rotStartEmb S k)` in one
+step) is **not** claimed and is false in general.
 
 The development is structured so that the only non-symbol-free ingredients are
 the repeat clauses:
@@ -139,9 +144,11 @@ model of the merged adapter.
 
 ## 6. Manuscript-safe wording (for #265/#268, non-competing)
 
-> The source information-feasibility predicate `I_s` is invariant under circular
-> rotation: rotating the genome and the latent placement set together preserves
-> `InformationFeasible`. Consequently the candidate-specific latent-start
+> The source information-feasibility predicate `I_s` is equivariant under
+> circular rotation: rotating the genome by `k` and the latent placement set by
+> `-k` preserves `InformationFeasible` (equivalently, a placement set is feasible
+> for the rotated genome iff the placement set rotated by `k` is feasible for the
+> original). Consequently the candidate-specific latent-start
 > feasibility event `E` of the genome-level adapter — `∃` placement `T` that is
 > `I_s`-feasible and realizes the observed read — depends only on the rotation
 > orbit of the candidate, not on the chosen representative, and the
