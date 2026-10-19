@@ -82,6 +82,13 @@ Same-length oriented circulation rigidity (\ref{thm:rigidity})
 & \path{OrientedFinalRigidity.oriented_same_length_spectrum_rigidity};
 \path{OrientedRigidity.rigidity_same_spectrum}.\\
 \addlinespace
+No strict same-length counterexample; spectrum-based objectives tie
+(\ref{cor:same-length-zero}; $R\in\Is$, truth §6.2-admissible)
+& (i)
+& \path{OrientedFinalRigidity.spectrum_objective_tie}; equal spectra give
+equal objective values for every spectrum-factored objective, not maximizer
+uniqueness.\\
+\addlinespace
 Same-length maximizer and rotation uniqueness
 (\ref{cor:same-length-rotation}; realized placements, truth and competitor
 candidacy)
@@ -110,11 +117,27 @@ Fixed-$N$ binomial effective-weight criterion
 & \path{FixedNBinomialEffectiveWeights.every_observation_effectiveProduct_le_iff};
 this is the product-binomial surrogate, not exact iid ML.\\
 \addlinespace
+Historical matched-string and placement predicates are incomparable
+(\ref{prop:historical-source})
+& (i),(iv)
+& Published \S6.4 matched-string coverage/bridging definitions
+\cite{shomorony2016}; the two incomparability instances are kernel-checked in
+\path{HistoricalCoverageSameLengthWitnesses.regA_historicalCovers},
+\path{regB_not_historicalCovers} (with \path{regA_not_covers},
+\path{regB_covers}).\\
+\addlinespace
 Historical strict counterexamples $W_1,W_2$
 (\ref{thm:cex-historical-W1}--\ref{thm:cex-historical-W2})
 & (i)
 & \path{HistoricalCoverageSameLengthWitnesses.W1.w1_historical_literal_se62_flow_counterexample},
 \path{W2.w2_historical_literal_se62_flow_counterexample}.\\
+\addlinespace
+Reverse-complement molecule variable-length counterexample
+$AAATT\to AAAATT$ (\ref{thm:cex-molecule}; molecule read types, external $N=5$)
+& (i)
+& \path{Section62BridgingCounterexample.se62_bridging_bidirected_flow_counterexample};
+literal §6.2 bidirected flows, ratio $9/8$; molecule types are not the
+oriented types.\\
 \addlinespace
 Exact finite counterexamples $AABB\to ABAB$, $AAATT\to AAAATT$,
 $AAABB\to AAAAB$, $AAACC\to AAAAC$, $AABBC\to AABC$
@@ -146,6 +169,13 @@ Primitive-P2 class finiteness and length bound (\ref{thm:p2-finite-class})
 & (i)
 & \path{PrimitiveP2FiniteClass.primitive_P2_len_le},
 \path{primitiveP2Class_finite}; bound $2q^{L-1}$.\\
+\addlinespace
+Finite-sample ML recovery over the entire primitive-P2 class
+(\ref{cor:p2-finite-recovery-all}; no finite-family premise)
+& (i)
+& \path{PrimitiveP2FiniteClass.all_primitiveP2_ML_confidence} (via
+\path{FiniteReadRecoveryP2Complete.finite_primitiveP2_ML_confidence});
+competitor family constructed from the length bound $2q^{L-1}$.\\
 \addlinespace
 Finite-family Hellinger error bound (\ref{thm:finite-recovery})
 & (i)
