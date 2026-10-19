@@ -163,7 +163,7 @@ theorem admissible_multinomialExact_eq_coe {G x : E → ℤ} {z : E → ℤ}
   have hnot : ¬ (z e ≤ 0 ∧ 0 < x e) := by
     have hze : lowOf x e ≤ z e ∧ z e ≤ G e := hz e
     by_cases hx : 0 < x e
-      · rw [lowOf_pos hx] at hze; omega
+    · rw [lowOf_pos hx] at hze; omega
     · omega
   unfold multinomialExact
   dsimp only
@@ -211,7 +211,7 @@ theorem excluded_binom_not_minimizer {V : Type}
       exactObj (fun e => binomExact (N e) (x e) (n e)) z := by
   rw [excluded_binom_exact_eq_top (N := N) (x := x) (n := n) hexcl]
   have hwfin : exactObj (fun e => binomExact (N e) (x e) (n e)) w ≠ ⊤ := by
-    rw [admissible_binomExact_eq_coe N x n hwadm]
+    rw [admissible_binomExact_eq_coe (N := N) (x := x) (n := n) hwadm]
     exact WithTop.coe_ne_top _
   exact WithTop.lt_top_iff_ne_top.mpr hwfin
 
@@ -226,7 +226,7 @@ theorem excluded_multinomial_exact_eq_top {G x : E → ℤ} {z : E → ℤ}
   exact ⟨e, Finset.mem_univ e, by
     unfold multinomialExact
     dsimp only
-    rw [ite_eq_left he]⟩
+    rw [ite_eq_left (And.comm.mp he)]⟩
 
 /-- **T1 (multinomial, minimizer form).** -/
 theorem excluded_multinomial_not_minimizer {V : Type}
@@ -239,7 +239,7 @@ theorem excluded_multinomial_not_minimizer {V : Type}
       exactObj (fun e => multinomialExact (G e) (x e)) z := by
   rw [excluded_multinomial_exact_eq_top (G := G) (x := x) hexcl]
   have hwfin : exactObj (fun e => multinomialExact (G e) (x e)) w ≠ ⊤ := by
-    rw [admissible_multinomialExact_eq_coe G x hwadm]
+    rw [admissible_multinomialExact_eq_coe (G := G) (x := x) hwadm]
     exact WithTop.coe_ne_top _
   exact WithTop.lt_top_iff_ne_top.mpr hwfin
 
@@ -286,10 +286,12 @@ theorem binomCost_admissible_discConvOn (N x n : E → ℤ) (hx : ∀ e, 0 ≤ x
         have hN0 : (N e : ℝ) ≠ 0 := by
           have : (0 : ℝ) < (N e : ℝ) := by exact_mod_cast (show 0 < N e by omega)
           exact this.ne'
-        have hd0 : (0 : ℝ) < (d : ℝ) := by exact_mod_cast (show 0 < d by omega)
+        have hd0 : (d : ℝ) ≠ 0 := by
+          have : (0 : ℝ) < (d : ℝ) := by exact_mod_cast (show 0 < d by omega)
+          exact this.ne'
         unfold binomCost
         rw [hnx0]
-        simp only [zero_mul, sub_zero, Real.log_div hd0 hN0]
+        simp only [Int.cast_zero, zero_mul, sub_zero, Real.log_div hd0 hN0]
         push_cast
         ring
   · -- x e = 0
@@ -313,9 +315,10 @@ theorem binomCost_admissible_discConvOn (N x n : E → ℤ) (hx : ∀ e, 0 ≤ x
         have hN0 : (N e : ℝ) ≠ 0 := by
           have : (0 : ℝ) < (N e : ℝ) := by exact_mod_cast (show 0 < N e by omega)
           exact this.ne'
-        have hNd : (0 : ℝ) < (N e : ℝ) - (d : ℝ) := by
+        have hNd : ((N e : ℝ) - (d : ℝ)) ≠ 0 := by
           have : (d : ℝ) < (N e : ℝ) := by exact_mod_cast (show d < N e by omega)
-          linarith
+          have : (0 : ℝ) < (N e : ℝ) - (d : ℝ) := by linarith
+          exact this.ne'
         unfold binomCost
         rw [hx0']
         simp only [sub_zero, neg_zero, zero_mul, one_sub_div hN0, Real.log_div hNd hN0]
