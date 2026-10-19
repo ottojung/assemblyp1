@@ -1,0 +1,24 @@
+import AssemblyP1.ExactMLOptimizerTransfer
+
+open AssemblyP1.ExactMLOptimizerTransfer
+
+-- Axiom audit for the exact-ML optimizer-preservation transfer (#263).
+-- Every endpoint must depend only on {propext, Classical.choice, Quot.sound}.
+#print axioms AssemblyP1.ExactMLOptimizerTransfer.exact_minimizer_of_ext_minimizer
+#print axioms AssemblyP1.ExactMLOptimizerTransfer.graver_exact_optimal_of_no_improving
+#print axioms AssemblyP1.ExactMLOptimizerTransfer.binomExt_discConvOn
+#print axioms AssemblyP1.ExactMLOptimizerTransfer.binomExt_eq_cost_of_interior
+#print axioms AssemblyP1.ExactMLOptimizerTransfer.binomExact_eq_ext
+#print axioms AssemblyP1.ExactMLOptimizerTransfer.log_one_sub_two_le
+#print axioms AssemblyP1.ExactMLOptimizerTransfer.binomExt_zero_eq
+#print axioms AssemblyP1.ExactMLOptimizerTransfer.binomExt_N_eq
+#print axioms AssemblyP1.ExactMLOptimizerTransfer.binomExt_zero_le
+#print axioms AssemblyP1.ExactMLOptimizerTransfer.binomExt_N_le
+#print axioms AssemblyP1.ExactMLOptimizerTransfer.binomExact_dom_ext
+#print axioms AssemblyP1.ExactMLOptimizerTransfer.multinomialExt_discConvOn
+#print axioms AssemblyP1.ExactMLOptimizerTransfer.multinomialExt_eq_cost
+#print axioms AssemblyP1.ExactMLOptimizerTransfer.multinomialExact_eq_ext
+#print axioms AssemblyP1.ExactMLOptimizerTransfer.multinomialExt_zero_eq
+#print axioms AssemblyP1.ExactMLOptimizerTransfer.multinomialExact_dom_ext
+#print axioms AssemblyP1.ExactMLOptimizerTransfer.binom_separable_exact_optimal
+#print axioms AssemblyP1.ExactMLOptimizerTransfer.binom_exact_optimal_flow

@@ -23,7 +23,15 @@ and finite-sample likelihood reliability}
 Maximum likelihood offers a natural way to infer a genome from sequencing
 data: choose the genome under which the observed reads are most probable.
 But is the genome that generated the reads necessarily the most likely one?
-We investigate this question in two settings: when only a finite sample
+It is also the conceptually simplest principled benchmark: for a fixed finite
+candidate universe, the correct read-generation model, a uniform prior over
+rotation classes, and zero-one loss, maximum likelihood maximizes the
+prior-averaged probability of returning the true genome at every sample
+size, among deterministic and randomized rules alike
+(Theorem~\ref{thm:bayes-optimal}). That certificate is prior-averaged, not
+per-genome, and does not extend to arbitrary priors or losses; how the
+likelihood rank then behaves on particular read samples is the real
+question. We investigate it in two settings: when only a finite sample
 of reads is available, and when the underlying distribution of reads is
 known exactly.
 
