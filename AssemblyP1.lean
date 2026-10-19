@@ -73,6 +73,9 @@ import AssemblyP1.Section62ReductionDependencyAudit
 -- #284: explicit kernel survival of the §6.2 finite witnesses under the corrected
 -- spelling-preserving transitive reduction (requirement-6 close-out).
 import AssemblyP1.Section62ReductionWitnessAudit
+-- #284: simultaneous (global) language preservation of the spelling reduction,
+-- via the well-founded extension-length decrease.
+import AssemblyP1.Section62SimultaneousReduction
 -- #284: RC-palindrome audit of duplicate edge-list multiplicities (no model rewrite).
 import AssemblyP1.Section62PalindromeEdgeMultiplicityAudit
 -- #255/#261: the symmetric-oriented-flow discipline (`f e = f (rev e)`) fails to

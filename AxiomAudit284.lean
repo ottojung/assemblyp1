@@ -4,6 +4,7 @@ import AssemblyP1.Section62GenericAnchorSpelling
 import AssemblyP1.Section62RcWordLaw
 import AssemblyP1.Section62MyersIdealTransitivity
 import AssemblyP1.Section62ReductionDependencyAudit
+import AssemblyP1.Section62SimultaneousReduction
 
 /-!
 # #284 axiom audit
@@ -53,3 +54,9 @@ AssemblyP1`, so this file is a human-readable summary, not the sole gate.
 #print axioms AssemblyP1.Section62MyersIdealTransitivity.reduced_mem_iff_no_ideal_detour
 #print axioms AssemblyP1.Section62ReductionDependencyAudit.transitivelyReducedSpelling_eq_self_of_full
 #print axioms AssemblyP1.Section62ReductionDependencyAudit.stepsSurviveReductionSpelling_of_maximal
+
+-- Simultaneous (global) language preservation via the well-founded decrease
+#print axioms AssemblyP1.Section62SimultaneousReduction.exists_detour_of_reducible
+#print axioms AssemblyP1.Section62SimultaneousReduction.exists_irreducible_expansion
+#print axioms AssemblyP1.Section62SimultaneousReduction.reduction_preserves_language
+#print axioms AssemblyP1.Section62SimultaneousReduction.cascade_spell
