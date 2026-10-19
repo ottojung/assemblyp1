@@ -253,9 +253,9 @@ theorem excluded_multinomial_not_minimizer {V : Type}
 
 /-! ## T2 (convexity): the finite interior cost is discretely convex on the box -/
 
+omit [Fintype E] in
 /-- `d ↦ -log (N - d)` is discretely convex on `[0, N-1]` (the left endpoint is
 honest because `N - d > 0` there). -/
-omit [Fintype E] in
 theorem negLog_sub_discConvOn_zero (N : ℤ) :
     DiscConvOn (fun d : ℤ => -Real.log ((N : ℝ) - (d : ℝ))) 0 (N - 1) := by
   have h := (negLog_discConvOn N).comp_sub (c := N)
@@ -263,11 +263,11 @@ theorem negLog_sub_discConvOn_zero (N : ℤ) :
   rw [hNN] at h
   simpa only [Int.cast_sub] using h
 
+omit [Fintype E] in
 /-- **T2 (product-binomial convexity on the admissible box).**  The honest
 finite product-binomial cost `binomCost N x n` is discretely convex on the
 support-restricted admissible box `(lowOf x, highOf N n x)`, in all four sign
 patterns of `x` and `n - x`. -/
-omit [Fintype E] in
 theorem binomCost_admissible_discConvOn (N x n : E → ℤ) (hx : ∀ e, 0 ≤ x e)
     (hxn : ∀ e, x e ≤ n e) :
     ∀ e, DiscConvOn (binomCost (N e) (x e) (n e)) (lowOf x e) (highOf N n x e) := by
@@ -344,10 +344,10 @@ theorem binomCost_admissible_discConvOn (N x n : E → ℤ) (hx : ∀ e, 0 ≤ x
       rw [hx0'', hn0]
       simp
 
+omit [Fintype E] in
 /-- **T2 (multinomial convexity on the admissible box).**  The honest finite
 multinomial cost `multinomialCost G x` is discretely convex on
 `(lowOf x, G)`. -/
-omit [Fintype E] in
 theorem multinomialCost_admissible_discConvOn (G x : E → ℤ) (hx : ∀ e, 0 ≤ x e) :
     ∀ e, DiscConvOn (multinomialCost (G e) (x e)) (lowOf x e) (G e) := by
   intro e
