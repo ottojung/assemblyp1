@@ -45,12 +45,22 @@ high-probability maximum-likelihood recovery.
    `P_p[∃ q ∈ Θ, L_q ≥ L_p] ≤ ∑_{q ∈ Θ} ρ(p, q)^n ≤ |Θ| * ρ_max^n` when every
    `ρ(p, q) ≤ ρ_max < 1`.
 
-4. **Consistency** (`eventProb_wrong_tendsto_zero`, `exists_n_for_confidence`):
+4. **Exponential decay form** (`eventProb_wrong_le_exp`,
+   `eventProb_wrong_le_exp_of_identifiable`): when every competitor satisfies
+   `ρ(p, q) ≤ exp (-c)` with `c > 0`, the exact wrong-selection probability is at
+   most `|Θ| * exp (-c * n)`. For a nonempty finite identifiable family with at
+   least one positive affinity, the rate is `c = -log(max_D ρ(p, D)) > 0`, giving
+   the quantitative exponential decay of exact-ML error in the number of iid
+   reads. (An empty family of competitors gives bound `0`; a competitor with
+   zero affinity would be disjoint in support from the truth and is excluded
+   from the rate witness by the positivity hypothesis.)
+
+5. **Consistency** (`eventProb_wrong_tendsto_zero`, `exists_n_for_confidence`):
    for a finite identifiable family (`ρ_max < 1`), the wrong-selection
    probability tends to zero, so the correct-selection probability tends to
    one; an explicit sufficient `n` exists for any requested confidence.
 
-5. **Quantitative 99% illustration** (`il_confidence_99`): with `|Θ| = 3`
+6. **Quantitative 99% illustration** (`il_confidence_99`): with `|Θ| = 3`
    candidates and uniform affinity bound `ρ_max = 9/10`, `n = 55` iid reads
    give wrong-selection probability `< 1/100`, i.e. `> 99%` confidence.
 
@@ -363,6 +373,89 @@ theorem eventProb_wrong_le_card (p : W → ℝ) (Θ : Finset (W → ℝ)) (n : �
         ≤ ∑ q ∈ Θ, ρ_max ^ n := Finset.sum_le_sum h2
       _ = (Θ.card : ℝ) * ρ_max ^ n := by simp [Finset.sum_const]
   exact h1.trans h3
+
+/-- Auxiliary exponential identity: `exp x ^ n = exp (x * n)` for real `x` and
+natural `n` (stated with the factor on the right to match the decay form). -/
+theorem exp_pow_nat_eq (x : ℝ) (n : ℕ) : Real.exp x ^ n = Real.exp (x * (n : ℝ)) := by
+  induction n with
+  | zero => simp [Real.exp_zero]
+  | succ n ih =>
+    have hcast : x * ((n : ℝ) + 1) = x * (n : ℝ) + x := by ring
+    rw [show Real.exp x ^ (n + 1) = Real.exp x ^ n * Real.exp x from pow_succ (Real.exp x) n,
+      ih, ← Real.exp_add, Nat.cast_succ, hcast]
+
+/-- **Exponential finite-read Hellinger bound.** For `n` iid reads from the true
+distribution `p` (arbitrary `n ≥ 0`), if every competitor `q` in the finite
+family `Θ` has Hellinger affinity at most `exp (-c)` with `c > 0`, then the
+exact probability that some competitor ties or beats the truth in likelihood
+is at most `|Θ| * exp (-c * n)`. In the AssemblyP1 reading where `Θ` is the
+candidate family with the truth `S` (and its rotation class) removed, `|Θ|`
+is `|C| - 1`. The empty family gives bound `0`: no competitor can win. -/
+theorem eventProb_wrong_le_exp (p : W → ℝ) (Θ : Finset (W → ℝ)) (n : ℕ) (c : ℝ)
+    (hp : IsPmf p) (hq : ∀ q ∈ Θ, IsPmf q) (_hc : 0 < c)
+    (hρ : ∀ q ∈ Θ, hellinger p q ≤ Real.exp (-c)) :
+    eventProb p n (wrongEvent p Θ n) ≤ (Θ.card : ℝ) * Real.exp (-c * n) := by
+  have h1 := eventProb_wrong_le_sum p Θ n hp
+  have h2 : ∀ q ∈ Θ, eventProb p n (fun t => tupleLikelihood q n t ≥ tupleLikelihood p n t)
+      ≤ Real.exp (-c * n) := by
+    intro q hqΘ
+    calc eventProb p n (fun t => tupleLikelihood q n t ≥ tupleLikelihood p n t)
+        ≤ hellinger p q ^ n := eventProb_pairwise p q n hp (hq q hqΘ)
+      _ ≤ Real.exp (-c) ^ n :=
+          pow_le_pow_left₀ (hellinger_nonneg p q) (hρ q hqΘ) n
+      _ = Real.exp (-c * n) := exp_pow_nat_eq (-c) n
+  have h3 : ∑ q ∈ Θ, eventProb p n (fun t => tupleLikelihood q n t ≥ tupleLikelihood p n t)
+      ≤ (Θ.card : ℝ) * Real.exp (-c * n) := by
+    calc ∑ q ∈ Θ, eventProb p n (fun t => tupleLikelihood q n t ≥ tupleLikelihood p n t)
+        ≤ ∑ q ∈ Θ, Real.exp (-c * n) := Finset.sum_le_sum h2
+      _ = (Θ.card : ℝ) * Real.exp (-c * n) := by simp [Finset.sum_const]
+  exact h1.trans h3
+
+/-- **Exponential bound from pointwise identifiability of the family.** For a
+nonempty finite family `Θ` of pmfs each distinguishable from the truth `p`
+(`ρ(p, q) < 1`), let `ρ_max` be the maximum affinity over `Θ`. If some
+competitor has positive affinity (`∃ q ∈ Θ, 0 < ρ(p, q)`, i.e. the family is
+not uniformly disjoint in support from the truth), then `0 < ρ_max < 1`, so
+`c = -log ρ_max > 0` and the wrong-selection probability is at most
+`|Θ| * exp (-c * n)`. For the empty family the bound is `0` for any positive
+rate. -/
+theorem eventProb_wrong_le_exp_of_identifiable (p : W → ℝ) (Θ : Finset (W → ℝ)) (n : ℕ)
+    (hp : IsPmf p) (hq : ∀ q ∈ Θ, IsPmf q)
+    (hρ : ∀ q ∈ Θ, hellinger p q < 1)
+    (hρpos : ∃ q ∈ Θ, 0 < hellinger p q) :
+    ∃ c : ℝ, 0 < c ∧ eventProb p n (wrongEvent p Θ n) ≤ (Θ.card : ℝ) * Real.exp (-c * n) := by
+  rcases Finset.eq_empty_or_nonempty Θ with hempty | hnonempty
+  · refine ⟨1, by norm_num, ?_⟩
+    have hbound := eventProb_wrong_le_card p Θ n 1 hp hq
+      (fun q hqΘ => hellinger_le_one p q hp (hq q hqΘ))
+    have hcard0 : (Θ.card : ℝ) = 0 := by rw [hempty]; simp
+    rw [hcard0, one_pow] at hbound
+    rw [hcard0]
+    simpa using hbound
+  · obtain ⟨q₀, hq₀Θ⟩ := hnonempty.exists_mem
+    set A := Finset.image (fun q => hellinger p q) Θ with hA
+    have hq₀ρ : hellinger p q₀ ∈ A := Finset.mem_image_of_mem (fun q => hellinger p q) hq₀Θ
+    have hAne : A.Nonempty := ⟨_, hq₀ρ⟩
+    have hmax_mem : A.max' hAne ∈ A := Finset.max'_mem _ hAne
+    simp only [hA] at hmax_mem
+    obtain ⟨q₁, hq₁Θ, hρeq⟩ := Finset.mem_image.mp hmax_mem
+    have hub : ∀ x ∈ A, x ≤ A.max' hAne :=
+      fun x hx => (Finset.max'_le_iff (H := hAne) (x := A.max' hAne)).mp (le_refl _) x hx
+    have hρmax_pos : 0 < A.max' hAne := by
+      obtain ⟨q₂, hq₂Θ, hρq₂⟩ := hρpos
+      have := hub (hellinger p q₂) (Finset.mem_image_of_mem (fun q => hellinger p q) hq₂Θ)
+      linarith
+    have hρmax_lt : A.max' hAne < 1 := by rw [← hρeq]; exact hρ q₁ hq₁Θ
+    have hlog : Real.log (A.max' hAne) < 0 := by
+      rw [← Real.log_one]
+      exact Real.log_lt_log hρmax_pos hρmax_lt
+    set c := -(Real.log (A.max' hAne)) with hc_def
+    have hc : 0 < c := neg_pos.mpr hlog
+    have hρexp : ∀ q ∈ Θ, hellinger p q ≤ Real.exp (-c) := by
+      intro q hqΘ
+      rw [hc_def, neg_neg, Real.exp_log hρmax_pos]
+      exact hub _ (Finset.mem_image_of_mem (fun q => hellinger p q) hqΘ)
+    exact ⟨c, hc, eventProb_wrong_le_exp p Θ n c hp hq hc hρexp⟩
 
 /-- For a finite identifiable family (uniform `ρ_max < 1`), the exact
 wrong-selection probability tends to zero as the number of iid reads grows. -/

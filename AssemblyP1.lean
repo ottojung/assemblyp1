@@ -366,6 +366,7 @@ import AssemblyP1.FiniteReadOnlyDecoderCertainty
 import AssemblyP1.FiniteReadOnlyDecoderCertaintyAudit
 -- #270 positive finite-family iid ML recovery via Hellinger affinity.
 import AssemblyP1.FiniteReadRecovery
+import AssemblyP1.FiniteReadRecoveryAudit
 -- #270 concrete uniform-start cyclic read distribution and conditional genome bounds.
 import AssemblyP1.FiniteReadRecoveryGenome
 import AssemblyP1.FiniteReadRecoveryGenomeAudit

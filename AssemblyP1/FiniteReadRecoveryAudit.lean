@@ -12,6 +12,9 @@ been formalized. -/
 #print axioms AssemblyP1.FiniteReadRecovery.eventProb_pairwise
 #print axioms AssemblyP1.FiniteReadRecovery.eventProb_wrong_le_sum
 #print axioms AssemblyP1.FiniteReadRecovery.eventProb_wrong_le_card
+#print axioms AssemblyP1.FiniteReadRecovery.exp_pow_nat_eq
+#print axioms AssemblyP1.FiniteReadRecovery.eventProb_wrong_le_exp
+#print axioms AssemblyP1.FiniteReadRecovery.eventProb_wrong_le_exp_of_identifiable
 #print axioms AssemblyP1.FiniteReadRecovery.eventProb_wrong_tendsto_zero
 #print axioms AssemblyP1.FiniteReadRecovery.exists_n_for_confidence
 #print axioms AssemblyP1.FiniteReadRecovery.il_confidence_99
