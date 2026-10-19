@@ -131,6 +131,8 @@ import AssemblyP1.ConditionalBayesEImpliesB271
 import AssemblyP1.BayesValueMonotonicity
 import AssemblyP1.BayesOptimalityCertificate
 import AssemblyP1.BayesOptimalityCertificateAudit
+import AssemblyP1.DihedralOrbitQuotient
+import AssemblyP1.DihedralOrbitQuotientAudit
 import AssemblyP1.PopulationReduction
 import AssemblyP1.PopulationGibbsTest
 import AssemblyP1.OrientedRigidity
@@ -395,6 +397,9 @@ import AssemblyP1.ProductBinomialMonotonicityCounterexampleAudit
 -- #263 separable-convex Graver optimality certificate (conditional core) + audit.
 import AssemblyP1.SeparableConvexGraver
 import AssemblyP1.SeparableConvexGraverAudit
+-- #263 exact-ML optimizer preservation of the affine-tail Graver certificate + audit.
+import AssemblyP1.ExactMLOptimizerTransfer
+import AssemblyP1.ExactMLOptimizerTransferAudit
 
 /-! ## `Issue94Transposition`: the Kotzig/Ukkonen/Pevzner descent, and an obstruction
 
