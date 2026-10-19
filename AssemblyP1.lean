@@ -400,6 +400,9 @@ import AssemblyP1.SeparableConvexGraverAudit
 -- #263 exact-ML optimizer preservation of the affine-tail Graver certificate + audit.
 import AssemblyP1.ExactMLOptimizerTransfer
 import AssemblyP1.ExactMLOptimizerTransferAudit
+-- #263 optimizer-preserving EXACT support-restricted Graver certificate (T1/T2, no surrogate) + audit.
+import AssemblyP1.ExactSupportRestrictedGraver
+import AssemblyP1.ExactSupportRestrictedGraverAudit
 
 /-! ## `Issue94Transposition`: the Kotzig/Ukkonen/Pevzner descent, and an obstruction
 
