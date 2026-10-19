@@ -142,7 +142,8 @@ theorem fullFeasible_zero (T : Finset (Fin 4)) : ¬ fullFeasible 0 T := by
   have ht : IsTripleOccurrence (genOf 0) 1 0 1 2 := by decide
   have hb := (h.2.1 (⟨1, by norm_num⟩ : Fin (genOf 0).len) 0 1 2 ht).1
   have hle := bridgesCopy_length hb
-  simp only [Fin.val_mk] at hle
+  have he : (⟨1, by norm_num⟩ : Fin (genOf 0).len).val = 1 := rfl
+  rw [he] at hle
   omega
 
 /-! ## The concrete placement model and its proved Not-So-Greedy field -/
