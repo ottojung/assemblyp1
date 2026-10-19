@@ -392,10 +392,12 @@ above.  This is the strongest form of the review gate: not merely a concrete
 example, but the general fact that every candidate removal is spelling-preserving
 *relative to the graph*.
 
-Only the single-edge, path-in-graph statement is claimed.  Global language
-preservation of a simultaneous reduction (a well-founded substitution argument)
-and Observation 7 throughput equivalence are **not** proved here and remain
-open. -/
+Only the single-edge, path-in-graph statement is claimed here.  Global language
+preservation of the *simultaneous* reduction is proved downstream in
+`AssemblyP1.Section62SimultaneousReduction` (well-founded recursion on the
+extension length `readLen - e.len`, using `replacement_overlaps_longer` and
+`spellPath_eq_spellDirect`); it is not restated in this module to keep the
+dependency acyclic.  Observation 7 throughput equivalence is a separate front. -/
 
 /-- **(a) Membership extraction.**  If `e` is an edge of the complete
 `overlapEdges` graph, then its overlap length is proper (`o_min ≤ e.len <
