@@ -129,3 +129,18 @@ open AssemblyP1.ConditionalVsOrdinaryMLSeparation
 #print axioms AssemblyP1.ConditionalVsMLFullReadSet271.witness_placement_not_literal
 #print axioms AssemblyP1.ConditionalVsMLFullReadSet271.fullJoint_singleton_eq_zero
 #print axioms AssemblyP1.ConditionalVsMLFullReadSet271.fullReadSet_boundary
+
+-- NSG-premised oriented adapter for the #271 separation witness (#271 open
+-- item): the conditional recovery (A) is derived through the external
+-- Not-So-Greedy guarantee (the `decode_correct` field of
+-- `ConditionalIdentifiability.ReadModel`, taken as the attributed premise
+-- `hNSG`), while the ordinary-ML failure (B) is a prior-free, `E`-free fact.
+-- The full uniform NSG premise fails in this finite model (two distinct orbits
+-- are both feasible at read `01`), so the attribution is instance-level.
+#print axioms AssemblyP1.ConditionalVsMLNsgAdapter271.nsg_conditional_posterior_eq_one
+#print axioms AssemblyP1.ConditionalVsMLNsgAdapter271.separation_nsg
+#print axioms AssemblyP1.ConditionalVsMLNsgAdapter271.nsg_full_premise_fails
+#print axioms AssemblyP1.ConditionalVsMLNsgAdapter271.E_one_01
+#print axioms AssemblyP1.ConditionalVsMLNsgAdapter271.E_two_01
+#print axioms AssemblyP1.ConditionalVsMLNsgAdapter271.nsg_num_eq
+#print axioms AssemblyP1.ConditionalVsMLNsgAdapter271.nsg_hpos
