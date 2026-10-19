@@ -103,8 +103,29 @@ GitHub integration remains possible.
   (86 exact-integer assertions, exit 0).
 * **Still genuinely OPEN on this front:** the quotient model is not identified
   with MB09's physical RC overlap multigraph (edge multiplicity,
-  transitive-reduction contract), and the exact ML objective is not transported
-  to physical orbit totals. Only the incidence-level transport is settled.
+  transitive-reduction contract). Only the incidence-level transport is settled.
+
+## Addendum — 2026-10-19 (physical edge-orbit ML-objective transport, #255/#261 L3)
+
+* **Landed (kernel-checked, this increment):** the L3 remainder — transport of
+  the exact §6.2 ML objective to physical orbit totals — at the level of the
+  objective argument and the maximality reduction.
+  `AssemblyP1.Section62PhysicalOrbitObjective` (+
+  `AssemblyP1.Section62PhysicalOrbitObjectiveAudit`) defines the physical
+  visit-count / read-copy vector `physVisitVec` (`= physPosTotal`, the objective
+  argument), proves representative-invariance (`physVisitVec_reverse`),
+  additivity (`physVisitVec_add`), transports the §6.2 vertex lower bound
+  (`PhysVertexBound`, `physVertexBound_reverse`), and transports the
+  flow-to-count-vector reduction `physMaximal_image_iff` /
+  `physMaximal_reverse_iff`. On the length-`1` mixed-sign self-loop witness the
+  physical visit count is `1` versus the induced oriented departure throughput
+  `2` (`Witness.mixed_physical_ne_departure`), so the transport is not vacuous.
+  Axioms `⊆ {propext, Quot.sound}`; no `sorry`/`admit`/`axiom`/`native_decide`.
+  Scoped note: `docs/issue261-physical-orbit-objective.md`.
+* **Still genuinely OPEN:** L1 only — the quotient edge set is not identified
+  with MB09's physical RC overlap multigraph (edge multiplicity,
+  transitive-reduction contract), and no physical orbit flow is identified with
+  a single circular spelled genome.
 
 ---
 
