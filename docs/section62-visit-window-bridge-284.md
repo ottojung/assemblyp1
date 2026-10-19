@@ -16,7 +16,7 @@ survives that failure.
 
 A `GenuineWalk L vs ovs` is a list of length-`L` reads `vs = [v₀,…,vₙ₋₁]`
 chained by genuine proper overlaps `ovs = [o₀,…,oₙ₋₂]`, `oᵢ < L`, where the
-`L − oᵢ`-suffix of `vᵢ` is the `L − oᵢ`-prefix of `vᵢ₊₁`. This is the walk object
+`oᵢ`-suffix of `vᵢ` is the `oᵢ`-prefix of `vᵢ₊₁`. This is the walk object
 of `Section62VisitTransport.spellWalk`, with the overlap compatibility made
 explicit.
 
@@ -47,9 +47,13 @@ lost.
   `windowCount_detour_eq`). In particular it is invariant under the merged
   spelling-preserving §6.2 reduction
   (`Section62SpellingReductionCandidate.spellPath_eq_spellDirect`).
-* `throughputOf` is the §6.2 vertex throughput: it is exactly
-  `Section62Flow.Spelling.visits`, which MB09 Observation 7 identifies with the
-  number of times the read appears as a submolecule of the candidate.
+* `throughputOf` matches the §6.2 vertex-throughput count: it is the
+  word-level form of `Section62Flow.Spelling.visits` (the latter counts cyclic
+  positions through the molecule-class map `rep`), which MB09 Observation 7
+  identifies with the number of times the read appears as a submolecule of the
+  candidate. The kernel-checked bound is stated for the linear walk; the
+  cyclic-candidate correspondence is the prose identification above, not a
+  separately formalized theorem.
 
 So the invariant window multiset is a computable, reduction-invariant **upper
 bound** on the §6.2 throughput vector: the set of throughput vectors realizable

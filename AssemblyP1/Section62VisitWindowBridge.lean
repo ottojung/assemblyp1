@@ -52,9 +52,9 @@ variable {A : Type}
 /-- A walk of observed reads `vs` chained by genuine proper overlaps `ovs`.
 
 `vs = [v₀, v₁, …, vₙ₋₁]` and `ovs = [o₀, …, oₙ₋₂]`, where `oᵢ < L` is the
-overlap from `vᵢ` to `vᵢ₊₁`: the `L − oᵢ`-length suffix of `vᵢ` is the `L − oᵢ`
-length prefix of `vᵢ₊₁`, i.e. `vᵢ.drop (L − oᵢ) = vᵢ₊₁.take oᵢ`.  Every read has
-length `L` (derived in `genuineWalk_length`).  This is exactly the walk object of
+overlap length from `vᵢ` to `vᵢ₊₁`: the `oᵢ`-length suffix of `vᵢ` is the
+`oᵢ`-length prefix of `vᵢ₊₁`, i.e. `vᵢ.drop (L − oᵢ) = vᵢ₊₁.take oᵢ`.  Every read
+has length `L` (derived in `genuineWalk_length`).  This is the walk object of
 `Section62VisitTransport.spellWalk`, with the overlap compatibility made
 explicit. -/
 inductive GenuineWalk (L : Nat) : List (List A) → List Nat → Prop where
@@ -93,10 +93,9 @@ theorem spellWalk_single (v : List A) : spellWalk [v] [] = v := by
   simp [spellWalk, cats]
 
 /-- **The reduction step at the word level.**  A genuine overlap of length `o`
-between two length-`L` reads makes the spelled word of the full walk a suffix of
-the spelled word of the tail walk: dropping the first read's `L − o` remaining
-positions leaves exactly the tail spelling.  This is the invariant the window
-bound is built on. -/
+between two length-`L` reads makes the tail spelling a suffix of the full
+spelling: dropping the first read's `L − o` remaining positions leaves exactly
+the tail spelling.  This is the invariant the window bound is built on. -/
 theorem spellWalk_cons_drop {L o : Nat} {v w : List A} {rest : List (List A)}
     {ovs : List Nat}
     (hv : v.length = L) (hw : w.length = L) (ho : o ≤ L)
