@@ -131,6 +131,8 @@ import AssemblyP1.ConditionalBayesEImpliesB271
 import AssemblyP1.BayesValueMonotonicity
 import AssemblyP1.BayesOptimalityCertificate
 import AssemblyP1.BayesOptimalityCertificateAudit
+import AssemblyP1.DihedralOrbitQuotient
+import AssemblyP1.DihedralOrbitQuotientAudit
 import AssemblyP1.PopulationReduction
 import AssemblyP1.PopulationGibbsTest
 import AssemblyP1.OrientedRigidity
