@@ -106,13 +106,13 @@ theorem highOf_zero {N n x : E → ℤ} {e : E} (h : n e - x e ≤ 0) :
     highOf N n x e = N e := by
   rw [highOf]; exact ite_eq_right (not_lt.mpr h)
 
-/-- The admissible box sits inside the ambient box `[0, N]`. -/
 omit [Fintype E] in
+/-- The admissible box sits inside the ambient box `[0, N]`. -/
 theorem lowOf_nonneg {x : E → ℤ} {e : E} : 0 ≤ lowOf x e := by
   rw [lowOf]; split_ifs <;> omega
 
-/-- The admissible box sits inside the ambient box `[0, N]`. -/
 omit [Fintype E] in
+/-- The admissible box sits inside the ambient box `[0, N]`. -/
 theorem highOf_le {N n x : E → ℤ} {e : E} : highOf N n x e ≤ N e := by
   rw [highOf]; split_ifs <;> omega
 
@@ -209,7 +209,7 @@ an excluded candidate is strictly worse, so it is not a global exact-ML
 minimizer. -/
 theorem excluded_binom_not_minimizer {V : Type}
     (N x n : E → ℤ) (lin : (E → ℤ) → (V → ℤ)) (b : V → ℤ)
-    {z : E → ℤ} (hz : Feasible lin b (fun _ => 0) (fun e => N e) z)
+    {z : E → ℤ} (_hz : Feasible lin b (fun _ => 0) (fun e => N e) z)
     (hexcl : ∃ e, (0 < x e ∧ z e ≤ 0) ∨ (0 < n e - x e ∧ N e ≤ z e))
     {w : E → ℤ} (_hw : Feasible lin b (fun _ => 0) (fun e => N e) w)
     (hwadm : ∀ e, lowOf x e ≤ w e ∧ w e ≤ highOf N n x e) :
@@ -238,7 +238,7 @@ theorem excluded_multinomial_exact_eq_top {G x : E → ℤ} {z : E → ℤ}
 /-- **T1 (multinomial, minimizer form).** -/
 theorem excluded_multinomial_not_minimizer {V : Type}
     (G x : E → ℤ) (lin : (E → ℤ) → (V → ℤ)) (b : V → ℤ)
-    {z : E → ℤ} (hz : Feasible lin b (fun _ => 0) (fun e => G e) z)
+    {z : E → ℤ} (_hz : Feasible lin b (fun _ => 0) (fun e => G e) z)
     (hexcl : ∃ e, 0 < x e ∧ z e ≤ 0)
     {w : E → ℤ} (_hw : Feasible lin b (fun _ => 0) (fun e => G e) w)
     (hwadm : ∀ e, lowOf x e ≤ w e ∧ w e ≤ G e) :
