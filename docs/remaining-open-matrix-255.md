@@ -1,6 +1,32 @@
 # AssemblyP1 umbrella #255 — remaining-open matrix
 
 
+## Addendum — 2026-10-19 (dihedral orbit quotient, #269)
+
+* **#269 dihedral item CLOSED (conditional + obstruction).**  The last open #269
+  item — the dihedral (rotation + reverse-complement) orbit quotient — is
+  kernel-checked in `AssemblyP1/DihedralOrbitQuotient.lean` (+
+  `AssemblyP1/DihedralOrbitQuotientAudit.lean`), `docs/dihedral-orbit-quotient-269.md`,
+  and `scripts/verify_269_dihedral_orbit_quotient.py`.  Under the explicit
+  RC-invariance hypothesis `RCInvariant c` on the raw oriented read pmf, the
+  merged MAP/ML/monotonicity/certificate results lift to the dihedral quotient
+  (`readPmf_dihedral_map_success_monotone`,
+  `readPmf_uniform_dihedral_prior_ML`, `readPmf_dihedral_certificate`); the
+  strand-symmetrized read law gives the same results unconditionally
+  (`sym_dihedral_map_success_monotone`, `sym_uniform_dihedral_prior_ML`).  The
+  hypothesis is **necessary**, with a precise kernel-checked obstruction: the
+  length-3 binary genome `001` has `p(00) = 1/3` while its reverse complement has
+  `p(00) = 0` (`Obstruction.readPmf_not_rcInvariant`), so no function on dihedral
+  classes pulls back to the raw read pmf (`Obstruction.no_dihedral_descent`).
+  Axioms `⊆ {propext, Classical.choice, Quot.sound}`; no
+  `sorry`/`admit`/`axiom`/`native_decide`.  This does **not** change any §6.1/§6.2
+  flow status, #266 event-conditional inference, or per-truth monotonicity
+  (still refuted by `GenomeOrbitAdapter.PerTruthDrop.perTruth_true_drops`).
+* **Still genuinely open on the #255 umbrella:** the same items as the
+  2026-10-18 addendum (source-faithful physical RC bidirected graph
+  correspondence, flow-objective transport, general §6.2 classification,
+  exact Myers fidelity).  Nothing here closes those.
+
 ## Addendum — verified 2026-10-17 (avoid duplicate research)
 
 The dated matrix below is a **historical 2026-10-16 snapshot**, not an
@@ -1030,6 +1056,17 @@ rest remain human-readable only, as labeled per entry.
   and the bounded target-4 distinction "minimum sufficient promise always exists,
   weakest need not" by `minimum_exists_unique` / `minimum_without_weakest`.  See
   [`issue272-readonly-decoder-certainty.md`](issue272-readonly-decoder-certainty.md).
+- **Additional landed (`I_s` vs `Unambiguous` ordering, 2026-10-19):**
+  `FiniteReadStringIsVsUnambiguous.lean` + audit.  On a length-`4`,
+  read-length-`2` read-realizable model the merged literal read-string adapter
+  `isPromiseReadString` is **incomparable** with `Unambiguous`
+  (`isPromiseRS_unambiguous_incomparable`): direction 1 (`I_s ⇒ Unambiguous`) is
+  refuted because `ABAB` is `I_s`-promising at `Y = {AB, BA}` while the
+  different-orbit `AABB` also realizes `Y`; direction 2 (`Unambiguous ⇒ I_s`) is
+  refuted because `Y = {AA, BB}` is `Unambiguous` while the realizer `BBAA` is
+  not `I_s`-promising.  The two promises constrain the read-realizable fibre and
+  the `I_s`-feasible fibre respectively.  See
+  [`issue272-read-string-is-vs-unambiguous.md`](issue272-read-string-is-vs-unambiguous.md).
 - **Still OPEN:** the bridge to a specific genome assembly reconstruction
   theorem supplying the auxiliary label; the decoder-level certainty endpoint
   (external Not-So-Greedy guarantee remains an attributed premise); `I_s`
