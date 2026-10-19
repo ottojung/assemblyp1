@@ -133,6 +133,7 @@ theorem admissible_binomExact_eq_coe {N x n : E → ℤ} {z : E → ℤ}
       · rw [lowOf_zero (by omega), highOf_pos hnx] at hze; omega
       · rw [lowOf_zero (by omega), highOf_zero (by omega)] at hze; omega
   unfold binomExact
+  dsimp only
   rw [ite_eq_right hnot]
 
 /-- **T2 (product-binomial, comparison form).**  Two admissible candidates are
@@ -145,8 +146,8 @@ theorem admissible_binom_exact_le_iff_cost_le {N x n : E → ℤ} {z w : E → �
         exactObj (fun e => binomExact (N e) (x e) (n e)) w ↔
       sepObj (fun e => binomCost (N e) (x e) (n e)) z ≤
         sepObj (fun e => binomCost (N e) (x e) (n e)) w := by
-  rw [admissible_binomExact_eq_coe N x n hz,
-    admissible_binomExact_eq_coe N x n hw]
+  rw [admissible_binomExact_eq_coe (N := N) (x := x) (n := n) hz,
+    admissible_binomExact_eq_coe (N := N) (x := x) (n := n) hw]
   exact WithTop.coe_le_coe
 
 /-- **T2 (multinomial).**  On the support-restricted admissible box the exact
@@ -162,9 +163,10 @@ theorem admissible_multinomialExact_eq_coe {G x : E → ℤ} {z : E → ℤ}
   have hnot : ¬ (z e ≤ 0 ∧ 0 < x e) := by
     have hze : lowOf x e ≤ z e ∧ z e ≤ G e := hz e
     by_cases hx : 0 < x e
-    · rw [lowOf_pos hx] at hze; omega
+      · rw [lowOf_pos hx] at hze; omega
     · omega
   unfold multinomialExact
+  dsimp only
   rw [ite_eq_right hnot]
 
 /-- **T2 (multinomial, comparison form).** -/
@@ -175,8 +177,8 @@ theorem admissible_multinomial_exact_le_iff_cost_le {G x : E → ℤ} {z w : E �
         exactObj (fun e => multinomialExact (G e) (x e)) w ↔
       sepObj (fun e => multinomialCost (G e) (x e)) z ≤
         sepObj (fun e => multinomialCost (G e) (x e)) w := by
-  rw [admissible_multinomialExact_eq_coe G x hz,
-    admissible_multinomialExact_eq_coe G x hw]
+  rw [admissible_multinomialExact_eq_coe (G := G) (x := x) hz,
+    admissible_multinomialExact_eq_coe (G := G) (x := x) hw]
   exact WithTop.coe_le_coe
 
 /-! ## T1: excluded (zero-likelihood) candidates cannot minimize -/
@@ -191,6 +193,7 @@ theorem excluded_binom_exact_eq_top {N x n : E → ℤ} {z : E → ℤ}
   obtain ⟨e, he⟩ := hexcl
   exact ⟨e, Finset.mem_univ e, by
     unfold binomExact
+    dsimp only
     rcases he with ⟨hx, hz0⟩ | ⟨hnx, hzN⟩
     · rw [ite_eq_left (Or.inl ⟨hz0, hx⟩)]
     · rw [ite_eq_left (Or.inr ⟨hzN, hnx⟩)]⟩
@@ -206,7 +209,7 @@ theorem excluded_binom_not_minimizer {V : Type}
     (hwadm : ∀ e, lowOf x e ≤ w e ∧ w e ≤ highOf N n x e) :
     exactObj (fun e => binomExact (N e) (x e) (n e)) w <
       exactObj (fun e => binomExact (N e) (x e) (n e)) z := by
-  rw [excluded_binom_exact_eq_top N x n hexcl]
+  rw [excluded_binom_exact_eq_top (N := N) (x := x) (n := n) hexcl]
   have hwfin : exactObj (fun e => binomExact (N e) (x e) (n e)) w ≠ ⊤ := by
     rw [admissible_binomExact_eq_coe N x n hwadm]
     exact WithTop.coe_ne_top _
@@ -222,6 +225,7 @@ theorem excluded_multinomial_exact_eq_top {G x : E → ℤ} {z : E → ℤ}
   obtain ⟨e, he⟩ := hexcl
   exact ⟨e, Finset.mem_univ e, by
     unfold multinomialExact
+    dsimp only
     rw [ite_eq_left he]⟩
 
 /-- **T1 (multinomial, minimizer form).** -/
@@ -233,7 +237,7 @@ theorem excluded_multinomial_not_minimizer {V : Type}
     (hwadm : ∀ e, lowOf x e ≤ w e ∧ w e ≤ G e) :
     exactObj (fun e => multinomialExact (G e) (x e)) w <
       exactObj (fun e => multinomialExact (G e) (x e)) z := by
-  rw [excluded_multinomial_exact_eq_top G x hexcl]
+  rw [excluded_multinomial_exact_eq_top (G := G) (x := x) hexcl]
   have hwfin : exactObj (fun e => multinomialExact (G e) (x e)) w ≠ ⊤ := by
     rw [admissible_multinomialExact_eq_coe G x hwadm]
     exact WithTop.coe_ne_top _
@@ -258,16 +262,18 @@ theorem binomCost_admissible_discConvOn (N x n : E → ℤ) (hx : ∀ e, 0 ≤ x
     (hxn : ∀ e, x e ≤ n e) :
     ∀ e, DiscConvOn (binomCost (N e) (x e) (n e)) (lowOf x e) (highOf N n x e) := by
   intro e
+  have hx_e : 0 ≤ x e := hx e
+  have hxn_e : x e ≤ n e := hxn e
   by_cases hx0 : 0 < x e
   · by_cases hnx : 0 < n e - x e
     · -- box [1, N-1]
       rw [lowOf_pos hx0, highOf_pos hnx]
-      rcases le_or_lt (N e) 1 with hN | hN
+      rcases lt_or_ge (N e) 2 with hN | hN
       · intro a b ha hab hb; omega
-      · exact binomTerm_discConvOn (N e) (by omega) (x e) (n e) (hx e) (hxn e)
+      · exact binomTerm_discConvOn (N e) hN (x e) (n e) hx_e hxn_e
     · -- box [1, N]
       rw [lowOf_pos hx0, highOf_zero (by omega)]
-      rcases le_or_lt (N e) 1 with hN | hN
+      rcases lt_or_ge (N e) 1 with hN | hN
       · intro a b ha hab hb; omega
       · have h1 : DiscConvOn (fun d : ℤ => (x e : ℝ) * -Real.log (d : ℝ)) 1 (N e) :=
           (negLog_discConvOn (N e)).const_mul (c := (x e : ℝ)) (by exact_mod_cast hx e)
@@ -291,7 +297,7 @@ theorem binomCost_admissible_discConvOn (N x n : E → ℤ) (hx : ∀ e, 0 ≤ x
     by_cases hnx : 0 < n e - x e
     · -- box [0, N-1]
       rw [lowOf_zero (by omega), highOf_pos hnx]
-      rcases le_or_lt (N e) 1 with hN | hN
+      rcases lt_or_ge (N e) 1 with hN | hN
       · intro a b ha hab hb; omega
       · have h0 : DiscConvOn (fun d : ℤ => -Real.log ((N e : ℝ) - (d : ℝ))) 0 (N e - 1) :=
           negLog_sub_discConvOn_zero (N e)
@@ -332,11 +338,12 @@ multinomial cost `multinomialCost G x` is discretely convex on
 theorem multinomialCost_admissible_discConvOn (G x : E → ℤ) (hx : ∀ e, 0 ≤ x e) :
     ∀ e, DiscConvOn (multinomialCost (G e) (x e)) (lowOf x e) (G e) := by
   intro e
+  have hx_e : 0 ≤ x e := hx e
   by_cases hx0 : 0 < x e
   · rw [lowOf_pos hx0]
-    rcases le_or_lt (G e) 1 with hG | hG
+    rcases lt_or_ge (G e) 1 with hG | hG
     · intro a b ha hab hb; omega
-    · exact multinomialTerm_discConvOn (G e) (by omega) (x e) (hx e) (G e)
+    · exact multinomialTerm_discConvOn (G e) hG (x e) hx_e (G e)
   · rw [lowOf_zero (by omega)]
     have h : DiscConvOn (fun _ : ℤ => (0 : ℝ)) 0 (G e) := DiscConvOn.const
     refine DiscConvOn.congr (g := fun _ : ℤ => (0 : ℝ)) ?_ h
@@ -371,7 +378,7 @@ theorem binom_exact_optimal_admissible {V : Type}
   intro w hw
   have hzbox : ∀ e, lowOf x e ≤ z e ∧ z e ≤ highOf N n x e := fun e => hz.2 e
   have hwbox : ∀ e, lowOf x e ≤ w e ∧ w e ≤ highOf N n x e := fun e => hw.2 e
-  rw [admissible_binom_exact_le_iff_cost_le N x n hzbox hwbox]
+  rw [admissible_binom_exact_le_iff_cost_le (N := N) (x := x) (n := n) hzbox hwbox]
   exact ((graver_optimal_iff_no_improving lin b (lowOf x) (highOf N n x) Graver
     hlin_add hker (binomCost_admissible_discConvOn N x n hx hxn) hz hdec).mpr hno) w hw
 
@@ -393,7 +400,7 @@ theorem multinomial_exact_optimal_admissible {V : Type}
   intro w hw
   have hzbox : ∀ e, lowOf x e ≤ z e ∧ z e ≤ G e := fun e => hz.2 e
   have hwbox : ∀ e, lowOf x e ≤ w e ∧ w e ≤ G e := fun e => hw.2 e
-  rw [admissible_multinomial_exact_le_iff_cost_le G x hzbox hwbox]
+  rw [admissible_multinomial_exact_le_iff_cost_le (G := G) (x := x) hzbox hwbox]
   exact ((graver_optimal_iff_no_improving lin b (lowOf x) (fun e => G e) Graver
     hlin_add hker (multinomialCost_admissible_discConvOn G x hx) hz hdec).mpr hno) w hw
 
