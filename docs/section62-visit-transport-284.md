@@ -29,7 +29,7 @@ invariant, kernel-checked in
 The reduction does not preserve the physical class count. The
 **physical class count** — the multiset of vertices (observed read molecules)
 visited by a walk — is *not* determined by the spelled word. The `L = 5` witness
-(`sx = 012341…`, i.e. `sx = 01234`, `m₁ = 23412`, `m₂ = 12341`, `sy = 41200`):
+(`sx = 01234`, `m₁ = 23412`, `m₂ = 12341`, `sy = 41200`):
 
 | walk | overlaps | spelled word | vertex visit list |
 |------|----------|--------------|-------------------|

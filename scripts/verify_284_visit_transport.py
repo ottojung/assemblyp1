@@ -130,17 +130,28 @@ def main() -> int:
         for token in ("sorry", "admit", "axiom ", "native_decide"):
             if token in lean:
                 errors.append(f"module contains forbidden token: {token!r}")
-        # 5b. Every #print axioms endpoint is within the allowlist.
-        for decl, axs in re.findall(
-            r"#print axioms\s+AssemblyP1\.Section62VisitTransport\.(\S+)\n(.*?)(?=\n\n|\Z)",
-            lean, re.DOTALL,
+        # 5b. Every endpoint carries a `#print axioms` command so the CI axiom
+        #     audit (which runs Lean and reads the emitted axiom list) covers it.
+        #     The authoritative value gate is the CI "Audit axioms" job; this
+        #     script only confirms no endpoint is left un-audited.  The module
+        #     uses bare names (inside the namespace); the root uses qualified.
+        for decl in (
+            "windows_congr", "windows_detour_eq", "witness_single_spell_eq",
+            "witness_two_spell_eq", "witness_windows_eq",
+            "witness_vertex_ne_single", "witness_vertex_ne_two",
+            "witness_windows_split_direct", "witness_windows_split_two",
+            "no_transport_function", "transport_required_false",
         ):
-            used = set(re.findall(r"[A-Za-z_.]+", axs))
-            bad = used - ALLOWED_AXIOMS - {"depends", "axioms", "on", "any"}
-            if "sorryAx" in used:
-                errors.append(f"{decl} depends on sorryAx")
-            if bad:
-                errors.append(f"{decl} has non-allowlist axioms: {sorted(bad)}")
+            if f"#print axioms {decl}" not in lean:
+                errors.append(f"module missing #print axioms command for {decl}")
+        root = strip_lean_comments((ROOT / "AssemblyP1.lean").read_text(encoding="utf-8"))
+        for decl in ("windows_detour_eq", "witness_single_spell_eq",
+                     "witness_two_spell_eq", "witness_windows_eq",
+                     "witness_vertex_ne_single", "witness_vertex_ne_two",
+                     "witness_windows_split_direct", "witness_windows_split_two",
+                     "no_transport_function", "transport_required_false"):
+            if f"#print axioms AssemblyP1.Section62VisitTransport.{decl}" not in root:
+                errors.append(f"root missing qualified #print axioms for {decl}")
 
     # 6. Documentation exists and states the limitation.
     if not DOC.exists():
