@@ -401,6 +401,10 @@ import AssemblyP1.SeparableConvexGraverAudit
 import AssemblyP1.ExactMLOptimizerTransfer
 import AssemblyP1.ExactMLOptimizerTransferAudit
 
+-- #284 physical visit-count transport: spelling preservation does not imply
+-- vertex-visit / ML-flow equivalence (self-contained, Lean core only).
+import AssemblyP1.Section62VisitTransport
+
 /-! ## `Issue94Transposition`: the Kotzig/Ukkonen/Pevzner descent, and an obstruction
 
 The classical transposition step deletes one transposition factor of the
@@ -1262,3 +1266,16 @@ reading. Two finite checks anchor it: the refuted BBT premise's witness is not
 #print axioms AssemblyP1.Section62ReductionWitnessAudit.perOccurrence_graph_spelling_reduction_eq_self
 #print axioms AssemblyP1.Section62ReductionWitnessAudit.perOccurrence_truth_spelled_feasible62_spelling
 #print axioms AssemblyP1.Section62ReductionWitnessAudit.perOccurrence_competitor_spelled_feasible62_spelling
+
+-- #284 physical visit-count transport: the window multiset is invariant under a
+-- spelling-preserving detour, but the physical class counts are not.
+#print axioms AssemblyP1.Section62VisitTransport.windows_detour_eq
+#print axioms AssemblyP1.Section62VisitTransport.witness_single_spell_eq
+#print axioms AssemblyP1.Section62VisitTransport.witness_two_spell_eq
+#print axioms AssemblyP1.Section62VisitTransport.witness_windows_eq
+#print axioms AssemblyP1.Section62VisitTransport.witness_vertex_ne_single
+#print axioms AssemblyP1.Section62VisitTransport.witness_vertex_ne_two
+#print axioms AssemblyP1.Section62VisitTransport.witness_windows_split_direct
+#print axioms AssemblyP1.Section62VisitTransport.witness_windows_split_two
+#print axioms AssemblyP1.Section62VisitTransport.no_transport_function
+#print axioms AssemblyP1.Section62VisitTransport.transport_required_false
