@@ -25,14 +25,35 @@ The **smallest witness** is the length-`1` mixed-sign self-loop `mixedLoop` on
 physical feasible set unchanged; the correct route is alternative (b), the
 quotient-orbit flow already merged in `Section62PhysicalEdgeOrbit`.
 
-**Still OPEN (L1 and the L3 remainder).** The quotient model is *not* yet
-identified with MB09's physical RC overlap multigraph (edge multiplicity,
-transitive-reduction contract), and the exact ML objective is *not* yet
-transported to physical orbit totals. Reversal-orbit transport of *incidences*
-is settled; source-graph and objective transport are not.
+**Still OPEN (L1).** The quotient model is *not* yet identified with MB09's
+physical RC overlap multigraph (edge multiplicity, transitive-reduction
+contract). Reversal-orbit transport of *incidences* is settled; the source-graph
+correspondence is not.
 
 Independent exact-integer verifier:
 `scripts/verify_261_reversal_orbit_transport.py` (86 assertions, exit 0).
+
+## Update — 2026-10-19: the L3 objective transport is landed (kernel-checked)
+
+The **L3 remainder** ("the exact ML objective is not yet transported to physical
+orbit totals") is now settled at the level of the objective argument and the
+maximality reduction. `AssemblyP1.Section62PhysicalOrbitObjective` (with
+`AssemblyP1.Section62PhysicalOrbitObjectiveAudit`) defines the physical
+visit-count / read-copy vector `physVisitVec` on physical orbit totals, proves it
+is representative-invariant (`physVisitVec_reverse`), additive over orbit-flow
+decomposition (`physVisitVec_add`), transports the §6.2 vertex lower bound
+(`PhysVertexBound`, `physVertexBound_reverse`), and transports the
+flow-to-count-vector reduction `physMaximal_image_iff` (plus
+`physMaximal_reverse_iff`). On the length-`1` mixed-sign self-loop witness the
+physical visit count is `1` while the induced oriented departure throughput is
+`2` (`Witness.mixed_physical_ne_departure`), so the transport is not vacuous.
+Axioms `⊆ {propext, Quot.sound}`; no `sorry`/`admit`/`axiom`/`native_decide`.
+Scoped note: `docs/issue261-physical-orbit-objective.md`.
+
+**Still OPEN: L1 only.** The quotient edge set is not yet identified with MB09's
+physical RC overlap multigraph (edge multiplicity, transitive-reduction
+contract), and no physical orbit flow is identified with a single circular
+spelled genome.
 
 
 ## Updated status — 2026-10-17 (supersedes the historical snapshot below)

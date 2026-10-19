@@ -79,6 +79,10 @@ import AssemblyP1.Section62PalindromeEdgeMultiplicityAudit
 -- transport physical loop visit counts; the quotient orbit flow is the correct route.
 import AssemblyP1.Section62ReversalOrbitTransport
 import AssemblyP1.Section62ReversalOrbitTransportAudit
+-- #255/#261 L3: transport the §6.2 ML objective (visit-count vector + vertex
+-- bound + maximality reduction) to physical edge-orbit totals, and its audit.
+import AssemblyP1.Section62PhysicalOrbitObjective
+import AssemblyP1.Section62PhysicalOrbitObjectiveAudit
 import AssemblyP1.Section62FullSpectrumUnseenFactor
 -- #259 real circular-genome witness: exact iid and product-binomial rankings differ.
 import AssemblyP1.Section62BinomialRealGenomeInversion
