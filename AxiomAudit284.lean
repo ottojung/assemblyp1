@@ -5,6 +5,8 @@ import AssemblyP1.Section62RcWordLaw
 import AssemblyP1.Section62MyersIdealTransitivity
 import AssemblyP1.Section62ReductionDependencyAudit
 import AssemblyP1.Section62SimultaneousReduction
+import AssemblyP1.Section62VisitTransport
+import AssemblyP1.Section62VisitWindowBridge
 
 /-!
 # #284 axiom audit
@@ -60,3 +62,18 @@ AssemblyP1`, so this file is a human-readable summary, not the sole gate.
 #print axioms AssemblyP1.Section62SimultaneousReduction.exists_irreducible_expansion
 #print axioms AssemblyP1.Section62SimultaneousReduction.reduction_preserves_language
 #print axioms AssemblyP1.Section62SimultaneousReduction.cascade_spell
+
+-- Physical visit-count transport diagnostic (negative half)
+#print axioms AssemblyP1.Section62VisitTransport.windows_detour_eq
+#print axioms AssemblyP1.Section62VisitTransport.no_transport_function
+#print axioms AssemblyP1.Section62VisitTransport.transport_required_false
+
+-- Physical visit-count transport bound (positive half, new in #284)
+#print axioms AssemblyP1.Section62VisitWindowBridge.genuineWalk_length
+#print axioms AssemblyP1.Section62VisitWindowBridge.spellWalk_cons_drop
+#print axioms AssemblyP1.Section62VisitWindowBridge.windows_spellWalk_cons
+#print axioms AssemblyP1.Section62VisitWindowBridge.genuineWalk_dominates
+#print axioms AssemblyP1.Section62VisitWindowBridge.visitCount_le_windowCount
+#print axioms AssemblyP1.Section62VisitWindowBridge.windowCount_detour_eq
+#print axioms AssemblyP1.Section62VisitWindowBridge.witness_bound_strict
+#print axioms AssemblyP1.Section62VisitWindowBridge.witness_bound_holds
