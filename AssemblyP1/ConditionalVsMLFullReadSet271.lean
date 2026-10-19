@@ -72,6 +72,8 @@ open AssemblyP1.ConditionalIdentifiability
 open AssemblyP1.HistoricalCovers
 open AssemblyP1.SourceFaithfulIs
 open Finset BigOperators
+open Classical
+open scoped Classical
 
 /-- The observed deduplicated read-string set (the source's read set). -/
 abbrev Obs : Type := Finset Read
@@ -137,8 +139,8 @@ bridge any copy of length `≥ 1` (`bridgesCopy_length` forces `e + 2 ≤ 2`). -
 theorem fullFeasible_zero (T : Finset (Fin 4)) : ¬ fullFeasible 0 T := by
   intro h
   have ht : IsTripleOccurrence (genOf 0) 1 0 1 2 := by decide
-  have hb := (h.2.1 (⟨1, by norm_num⟩ : Fin (genOf 0).len) 0 1 2 ht).1
-  have := bridgesCopy_length hb
+  obtain ⟨r, hr, d, hd, _⟩ :=
+    (h.2.1 (⟨1, by norm_num⟩ : Fin (genOf 0).len) 0 1 2 ht).1
   omega
 
 /-! ## The concrete placement model and its proved Not-So-Greedy field -/
@@ -180,10 +182,12 @@ weighted mass of `g` at `Y` is zero. -/
 theorem fullJoint_eq_zero_of (Y : Obs) (g : Fin 3)
     (h : ∀ T : Finset (Fin 4), ¬ (fullConsistent g T Y ∧ fullFeasible g T)) :
     placementJoint fullModel fullWeight Y g = 0 := by
-  unfold placementJoint fullModel
+  unfold placementJoint
   apply Finset.sum_eq_zero
   intro T _
-  rw [if_neg (h T)]
+  by_cases hc : fullModel.consistent g T Y ∧ fullModel.feasible g T
+  · exact absurd hc (h T)
+  · simp [hc]
 
 /-- Candidate `0` never induces the full read set `Y1` (its window types omit
 `11`), so its literal placement mass at `Y1` is zero. -/
@@ -218,22 +222,16 @@ theorem fullFeasible_one_saturated : fullFeasible 1 Tfull := by decide
 /-- The truth candidate `1` has strictly positive literal placement mass at its
 full read set `Y1` (the saturated placement contributes `(1/4)^4`). -/
 theorem fullJoint_Y1_pos_one : 0 < placementJoint fullModel fullWeight Y1 1 := by
-  unfold placementJoint fullModel
-  have hcond : fullConsistent 1 Tfull Y1 ∧ fullFeasible 1 Tfull := ⟨by decide, by decide⟩
-  have hsum :
-      (∑ T : Finset (Fin 4),
-          (if fullConsistent 1 T Y1 ∧ fullFeasible 1 T then fullWeight 1 T else 0))
-        = (if fullConsistent 1 Tfull Y1 ∧ fullFeasible 1 Tfull
-            then fullWeight 1 Tfull else 0) := by
-    apply Finset.sum_eq_single Tfull
-    · intro T _ hne
-      rw [if_neg]
-      intro hc
-      exact hne ((obs_one_eq_Y1_iff T).mp hc.1)
-    · intro h
-      exact absurd (Finset.mem_univ Tfull) h
-  rw [hsum, if_pos hcond]
-  unfold fullWeight; positivity
+  unfold placementJoint
+  have hcond : fullModel.consistent 1 Tfull Y1 ∧ fullModel.feasible 1 Tfull :=
+    ⟨by decide, by decide⟩
+  apply Finset.sum_pos'
+  · intro T _
+    by_cases hc : fullModel.consistent 1 T Y1 ∧ fullModel.feasible 1 T
+    · rw [if_pos hc]; unfold fullWeight; positivity
+    · simp [hc]
+  · exact ⟨Tfull, Finset.mem_univ _,
+      by rw [if_pos hcond]; unfold fullWeight; positivity⟩
 
 /-- **The full-read-set placement mass is supported on the truth orbit.** -/
 theorem fullReadSet_support :
