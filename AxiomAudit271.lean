@@ -4,6 +4,7 @@ import AssemblyP1.W1W2SeparationCompatibility
 import AssemblyP1.W1W2RcOrientedRepresentation271
 import AssemblyP1.ConditionalVsMLGenomeAdapter271
 import AssemblyP1.ConditionalBayesEImpliesB271
+import AssemblyP1.InformationFeasibleRotation271
 
 open AssemblyP1.ConditionalVsOrdinaryMLSeparation
 
@@ -92,3 +93,16 @@ open AssemblyP1.ConditionalVsOrdinaryMLSeparation
 #print axioms AssemblyP1.ConditionalBayesEImpliesB271.condCertain_EML_iff_unique
 #print axioms AssemblyP1.ConditionalBayesEImpliesB271.toy_sideInfo_not_MLsound
 #print axioms AssemblyP1.ConditionalBayesEImpliesB271.genome_E_not_MLsound
+
+-- Rotation invariance of the source information-feasibility predicate `I_s`
+-- (#271): `InformationFeasible` commutes with rotating the genome and the
+-- placement set, so the latent-start predicate `E` descends to rotation-orbit
+-- classes; the orbit-level (A ∧ ¬B) separation follows.
+#print axioms AssemblyP1.SourceFaithfulIs.rotGenome
+#print axioms AssemblyP1.SourceFaithfulIs.informationFeasible_rotGenome
+#print axioms AssemblyP1.ConditionalVsMLGenomeAdapter271.EGenome_rotGenome
+#print axioms AssemblyP1.ConditionalVsMLGenomeAdapter271.toGenome_rotWord
+#print axioms AssemblyP1.ConditionalVsMLGenomeAdapter271.E_rotWord
+#print axioms AssemblyP1.ConditionalVsMLGenomeAdapter271.Eorb
+#print axioms AssemblyP1.ConditionalVsMLGenomeAdapter271.Eorb_orbit
+#print axioms AssemblyP1.ConditionalVsMLGenomeAdapter271.separation_orbit
