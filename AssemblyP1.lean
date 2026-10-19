@@ -419,6 +419,10 @@ import AssemblyP1.ExactMLOptimizerTransferAudit
 -- vertex-visit / ML-flow equivalence (self-contained, Lean core only).
 import AssemblyP1.Section62VisitTransport
 
+-- #284 positive transport bound: the invariant length-L window multiset
+-- dominates the physical vertex visits (self-contained, Lean core only).
+import AssemblyP1.Section62VisitWindowBridge
+
 /-! ## `Issue94Transposition`: the Kotzig/Ukkonen/Pevzner descent, and an obstruction
 
 The classical transposition step deletes one transposition factor of the
@@ -1293,3 +1297,14 @@ reading. Two finite checks anchor it: the refuted BBT premise's witness is not
 #print axioms AssemblyP1.Section62VisitTransport.witness_windows_split_two
 #print axioms AssemblyP1.Section62VisitTransport.no_transport_function
 #print axioms AssemblyP1.Section62VisitTransport.transport_required_false
+
+-- #284 positive transport bound: the window multiset dominates physical visits,
+-- and the bound is reduction-invariant but not tight (unobserved seam windows).
+#print axioms AssemblyP1.Section62VisitWindowBridge.genuineWalk_length
+#print axioms AssemblyP1.Section62VisitWindowBridge.spellWalk_cons_drop
+#print axioms AssemblyP1.Section62VisitWindowBridge.windows_spellWalk_cons
+#print axioms AssemblyP1.Section62VisitWindowBridge.genuineWalk_dominates
+#print axioms AssemblyP1.Section62VisitWindowBridge.visitCount_le_windowCount
+#print axioms AssemblyP1.Section62VisitWindowBridge.windowCount_detour_eq
+#print axioms AssemblyP1.Section62VisitWindowBridge.witness_bound_strict
+#print axioms AssemblyP1.Section62VisitWindowBridge.witness_bound_holds
