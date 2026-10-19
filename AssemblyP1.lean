@@ -390,6 +390,9 @@ import AssemblyP1.ProductBinomialMonotonicityCounterexampleAudit
 -- #263 separable-convex Graver optimality certificate (conditional core) + audit.
 import AssemblyP1.SeparableConvexGraver
 import AssemblyP1.SeparableConvexGraverAudit
+-- #263 exact-ML optimizer preservation of the affine-tail Graver certificate + audit.
+import AssemblyP1.ExactMLOptimizerTransfer
+import AssemblyP1.ExactMLOptimizerTransferAudit
 
 /-! ## `Issue94Transposition`: the Kotzig/Ukkonen/Pevzner descent, and an obstruction
 
