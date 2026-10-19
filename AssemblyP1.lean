@@ -349,6 +349,11 @@ import AssemblyP1.ProductBinomialRigidityNecessityAudit
 -- inequality, and the strict separation from sample-uniform maximality.
 import AssemblyP1.FixedXProductBinomialMaximality
 import AssemblyP1.FixedXProductBinomialMaximalityAudit
+-- #259 axis B (boundary included): the full same-total candidate class has
+-- maximal truths exactly the mass-on-one-class spectra and the {0,1}-valued
+-- spectra; boundary coordinates 0/N and zero-count coordinates are dominated.
+import AssemblyP1.ProductBinomialBoundaryFullClass
+import AssemblyP1.ProductBinomialBoundaryFullClassAudit
 import AssemblyP1.FiniteSideInformationColoring
 import AssemblyP1.FiniteSideInformationColoringAudit
 import AssemblyP1.FiniteBayesianSideInformation
