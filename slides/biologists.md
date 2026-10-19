@@ -351,8 +351,12 @@ primitive P2 class (Issue94Complete.population_unique_ML). The practical
 conclusions apply first to a deliberately simple sequencing model: circular
 genomes, equal-length error-free reads, and uniformly random starts. A sharp
 uniform sample size ("how many reads for 99%?") over the unrestricted genome
-universe remains open; the finite-family Hellinger/Chernoff bound in backup is a
-scoped sufficient answer.
+universe is not merely open - it is FALSE: a genome and its repetition share a
+read law at every length (merged #355, AB vs ABAB), so no positive uniform rate
+exists there, and the 1/(8B^4) exponent is not tight. A length bound plus
+exclusion of read-law duplicates restores the rate (primitive-P2 supplies both);
+the sharp constant stays open. The finite-family Hellinger/Chernoff bound in
+backup is a scoped sufficient answer.
 -->
 
 ---
@@ -423,7 +427,7 @@ where $N_C$ counts the distinct competitor read laws. A sufficient read count is
 
 **Caveats.** The constants are deliberately loose and exponential in $L$; the bound controls the exact-ML **error probability**, not likelihood growth; and per-truth finite-sample success is **not monotone**. Kernel endpoints: `AssemblyP1.PrimitiveP2UniformSeparation.primitiveP2_exponential_error_bound`, `primitiveP2_ML_confidence_explicit` (paper `thm:p2-uniform-rate`).
 
-A sharp uniform sample size over all genome candidates (all lengths and models) remains an open quantitative problem.
+A uniform rate over **all** genome lengths is **false**: a genome and its repetition can share a read law at every length (`AB` vs `ABAB`), forcing error `1` for every sample size; and the exponent here is **not tight**. Restoring the rate needs a **length bound** plus **no duplicate read laws**, which the primitive-P2 class supplies (merged #355; exact verifier, not kernel-checked). The *sharp* constant remains a genuinely open quantitative problem.
 
 <!--
 #265 Chernoff refinement (2026-10-18): the Hellinger constant -ln rho_* can be
@@ -455,6 +459,22 @@ MB09. Only the abstract Bayes-optimality (FiniteBayesDecision /
 FiniteMapOptimality) and the Hellinger union bound (FiniteReadRecovery) are
 kernel-checked. Verifier scripts/verify_minimax_finite_recovery_265.py; paper
 rem:minimax-sample-size; note docs/minimax-finite-recovery-265.md.
+#265 exponent findings (merged PR #355, 2026-10-19): the uniform rate over the
+UNRESTRICTED universe is FALSE, not merely open. A genome and its m-fold
+repetition share the same oriented read law at EVERY length (AB vs ABAB), so the
+truth's own read law is a candidate and the exact-ML error is 1 for every n: no
+exp(-c n) bound with c>0 and no consistency. Hand proof + exact verifier
+scripts/verify_exponent_265.py (NOT kernel-checked). Even among primitive
+competitors the separation vanishes: D_m=(AB)^m A has
+1-rho(p_AB,p_{D_m}) -> 0 (0.1835 at m=1 to 0.0299 at m=8). The primitive-P2
+exponent 1/(8B^4) is also NOT tight: exact enumeration gives worst-case
+separation gamma(B)=Theta(1/B), exceeding the bound by 274, 903, 2116, 16648 at
+B=4,6,8,16. Restoring the uniform rate needs a length bound plus exclusion of
+read-law duplicates - exactly what primitive-P2 supplies. The sharp asymptotic
+Theta(1/B) is a CONJECTURE with a named missing lemma. Sources:
+docs/restricted-vs-unrestricted-exponent-265.md. thm:p2-uniform-rate stays
+correct and kernel-checked; #355 only shows its exponent is conservative. No
+external statistics is upgraded to Lean.
 -->
 
 ---
