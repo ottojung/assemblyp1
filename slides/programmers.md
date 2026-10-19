@@ -338,6 +338,8 @@ Therefore **ML has the highest overall chance of a correct guess** in our experi
 
 **But it can still be wrong:** when the reads are **AAA, AAA**, ML's guess fails in **20%** of those cases.
 
+**What this optimality does not say.** Being right *whenever a promised, truth-dependent condition holds* is a **conditional** guarantee, not a **prior-average** one. A rule that is correct by construction on such a condition can score *worse* on average: with a uniform prior and $P_S(a)=\tfrac14$, $P_S(b)=\tfrac34$, $P_D(a)=\tfrac34$, $P_D(b)=\tfrac14$, it scores $\tfrac14$ while MAP scores $\tfrac34$ (kernel-checked witness; paper `rem:map-vs-infallible`).
+
 <!--
 Direct per-observation decision proof. General finite hypotheses
 H, observations R, prior π, equal 0-1 correctness:
@@ -667,7 +669,9 @@ For our **primitive-P2** class the rate is now **explicit and kernel-checked**: 
 
 With enough reads, ML can therefore achieve **99% recovery probability**—or any other desired confidence—for such a family.
 
-The **limit** behind both statements is exact: for a finite identifiable family, the per-read log-likelihood gap converges to the KL divergence, so almost surely the ML selection set is eventually exactly the truth's rotation class (strong law + KL; not kernel-checked here — backup B6). "Infinite reads" is a limit of finite samples; it supplies **no finite read count**.
+The **limit** behind both statements is exact: for a finite identifiable family, the per-read log-likelihood gap converges to the KL divergence, so almost surely the ML selection set is eventually exactly the truth's rotation class (paper `prop:strong-consistency`, strong law + KL; not kernel-checked here — backup B6). "Infinite reads" is a limit of finite samples; it supplies **no finite read count**.
+
+The **uniform rate**, however, does **not** extend to *all* genome lengths. Over the unrestricted universe the separation hypothesis can fail, and no exponential bound exists there (merged #355 — backup B3/B7). The rate is a statement about the finite candidate class, not about every genome.
 
 The population result says **what information identifies the genome**. The finite theorem tells us **how additional observations improve our chances**.
 
@@ -980,7 +984,7 @@ and $n\ge 8B^4\ln(N_C/\delta)$ reads suffice for error at most $\delta$.
 
 **Caveats.** The constants are deliberately loose and exponential in $L$; the bound controls the exact-ML **error probability**, not likelihood growth; and per-truth finite-sample success is **not monotone**. The class is primitive-P2, oriented, exact iid reads — not universal ML and not the MB09 product-binomial surrogate. Kernel endpoints: `AssemblyP1.PrimitiveP2UniformSeparation.primitiveP2_exponential_error_bound` and `primitiveP2_ML_confidence_explicit` (paper `thm:p2-uniform-rate`).
 
-**What remains open:** one sharp, uniform sample-size guarantee over the unrestricted universe of genome candidates, especially across different lengths and models.
+**What is now settled (merged #355).** A uniform rate over the **unrestricted** universe is **false**, not merely open: the theorem's separation hypothesis can fail, so no exponential bound exists there. Even inside primitive-P2 the exponent $1/(8B^4)$ is **loose**; the genuinely open quantitative problem is the *sharp* constant (backup B7 and `docs/restricted-vs-unrestricted-exponent-265.md`).
 
 <!--
 The explicit n is the algebraic inversion of the kernel-checked union bound
@@ -1038,6 +1042,26 @@ A=(1/2,1/2), B=(3/4,1/4), C=(1/4,3/4) the tight 99% sizes are n*=85
 153 stated here is conservative (about 1.8x). See the "Do we actually need
 infinitely many reads?" note and docs/minimax-finite-recovery-265.md; the exact
 numbers are external decision theory, not Lean.
+#355 (merged 2026-10-19): the uniform rate over the UNRESTRICTED universe is
+FALSE, not merely open. A genome and its m-fold repetition share the same
+oriented read law at EVERY length (AB vs ABAB), so the truth's own read law is a
+candidate and the exact-ML error is 1 for every n: no exp(-c n) bound with c>0
+and no consistency. The proposition is a hand proof checked exactly by
+scripts/verify_exponent_265.py (NOT kernel-checked). Even among primitive
+competitors the separation vanishes: D_m=(AB)^m A has 1-rho(p_AB,p_{D_m}) -> 0
+(0.1835 at m=1 to 0.0299 at m=8), so no positive uniform margin exists. The
+primitive-P2 exponent 1/(8B^4) is also NOT tight: exact enumeration gives
+worst-case separation gamma(B)=Theta(1/B), exceeding the bound by 274, 903, 2116,
+16648 at B=4,6,8,16. Restoring the uniform rate needs a length bound plus
+exclusion of read-law duplicates (equivalently uniform discreteness of the
+candidate read laws) - conditions (a) collisions and (b) vanishing separation
+are each individually necessary. The sharp asymptotic exponent Theta(1/B) is a
+CONJECTURE with a named missing lemma, not proved. Sources:
+docs/restricted-vs-unrestricted-exponent-265.md, scripts/verify_exponent_265.py.
+thm:p2-uniform-rate (PrimitiveP2UniformSeparation.primitiveP2_exponential_error_
+bound / primitiveP2_ML_confidence_explicit) stays correct and kernel-checked;
+#355 only shows its exponent is conservative. No external statistics is upgraded
+to Lean; this is distinct from the #255 finite-ML characterization.
 -->
 
 ---
@@ -1068,7 +1092,10 @@ More reads still drive the success probability to $1$ eventually. The dip is a f
 <!--
 This is the #265 item-4 contrast, absent from the earlier arc:
 prior-averaged success is nondecreasing in n (a rule can ignore an extra
-read): FiniteBayesDecision.chooseMAP_success_monotone_under_refinement.
+read): FiniteBayesDecision.chooseMAP_success_monotone_under_refinement;
+the explicit Bayes value V_n satisfies V_{n+1} >= V_n by
+IidMapMonotonicity.iid_map_success_monotone and
+BayesValueMonotonicity.bayesValue_succ_ge (both kernel-checked).
 Per-truth success need not be: NonmonotonicityWitness281.success_not_monotone,
 kernel-checked, succ(1)=2/3 > succ(2)=4/9. Tie handling: for n>=1 the exact
 likelihood ratio is 3^n / 2^(2n-a) (a = number of AA reads), never 1, so no
@@ -1106,7 +1133,7 @@ $$
 
 Every wrong candidate has KL $>0$; there are finitely many of them, so almost surely there is an $N$ with $L_S>L_D$ for **all** wrong $D$ at every $n\ge N$. Rotations of the truth tie it at every $n$ (identical laws). Hence the exact-ML selection set is **eventually exactly the truth's rotation class**, and the probability of being correct at $n$ tends to $1$.
 
-**The limit is not an infinite product.** The claim is about finite samples growing without bound. It gives no finite $n$, no rate, and no guarantee for one particular sample, truth, or an unrestricted universe. Classical statistics (strong law + KL nonnegativity; Durrett 2019, Cover & Thomas 2006), **not kernel-checked**; the kernel-checked Hellinger bound reaches the same a.s. conclusion via Borel--Cantelli (summable $\rho^n$).
+**The limit is not an infinite product.** The claim is about finite samples growing without bound. It gives no finite $n$, no rate, and no guarantee for one particular sample, truth, or an unrestricted universe. Classical statistics (paper `prop:strong-consistency`; strong law + KL nonnegativity; Durrett 2019, Cover & Thomas 2006), **not kernel-checked**; the kernel-checked Hellinger bound reaches the same a.s. conclusion via Borel--Cantelli (summable $\rho^n$).
 
 <!--
 #265 item-5 limit statement, paper prop:strong-consistency (Section
@@ -1122,4 +1149,45 @@ uniqueness (no sampling, law level) and from the sample-complexity problem
 rate statement). Witness numbers (AAC vs AAAC, L=2, binary): KL =
 (1/3)log(2/3)+(2/3)log(4/3) ~ 0.0566, Hellinger affinity ~ 0.9856,
 summable geometric series. Exact check: scripts/verify_strong_consistency_265.py.
+-->
+
+---
+
+# Backup B7: the unrestricted universe has no uniform rate
+
+A uniform exponential rate over **all** genome lengths is **false** (merged #355).
+
+**Read-law collision.** Let the truth be `AB` and the competitor `ABAB`, the truth's twofold repetition. Distinct, non-rotational, different lengths — yet at **every** read length they have the **same** oriented read law:
+
+~~~text
+       L=1            L=2
+AB     A:1/2  B:1/2    AB:1/2  BA:1/2
+ABAB   A:1/2  B:1/2    AB:1/2  BA:1/2
+~~~
+
+So the truth's own read law is one of the candidates. The wrong event holds on **every** sample, and the exact-ML error probability is **1 for every $n$**. No $\exp(-cn)$ bound with $c>0$, and no consistency either.
+
+**Second obstruction.** Even among primitive competitors the separation vanishes: $D_m=(AB)^m A$ has $1-\rho(p_{AB},p_{D_m})\to 0$ ($0.1835$ at $m=1$ down to $0.0299$ at $m=8$). No positive uniform margin exists.
+
+**What restores the rate.** A **length bound** on the candidates (here $B=2q^{L-1}$) plus **exclusion of read-law duplicates**. The primitive-P2 class supplies both — which is exactly why `thm:p2-uniform-rate` holds there.
+
+**And that exponent is loose.** Exact enumeration of the primitive-P2 class gives worst-case separation $\gamma(B)=\Theta(1/B)$, exceeding $1/(8B^4)$ by factors $274, 903, 2116, 16648$ at $B=4,6,8,16$. The sharp exponent $\Theta(1/B)$ is a **conjecture** with a named missing lemma, not proved.
+
+<!--
+Sources (merged PR #355): docs/restricted-vs-unrestricted-exponent-265.md and
+scripts/verify_exponent_265.py (exact rational arithmetic, exit 0). Epistemic
+labels: the repetition-collision proposition is a hand proof checked exactly by
+the verifier, NOT kernel-checked; the primitive-P2 separation values are exact
+finite computations, NOT kernel-checked; the asymptotic sharp-exponent Theta(1/B)
+is a CONJECTURE with a named missing lemma. thm:p2-uniform-rate
+(AssemblyP1/PrimitiveP2UniformSeparation.primitiveP2_exponential_error_bound /
+primitiveP2_ML_confidence_explicit) remains correct and kernel-checked; #355 only
+shows its exponent is conservative. No external statistics is upgraded to Lean.
+The collision is a law-level non-identifiability, distinct from the finite-sample
+fluctuation of Question B and from the #255 finite-ML characterization front.
+Restoring assumptions: length bound + exclusion of read-law duplicates
+(equivalently uniform discreteness of the candidate read laws); conditions (a)
+collisions and (b) vanishing separation are each individually necessary
+(counterexamples above). Do NOT claim a kernel-checked sharp exponent or a tight
+finite-n bound.
 -->
