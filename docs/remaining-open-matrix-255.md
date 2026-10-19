@@ -1,6 +1,32 @@
 # AssemblyP1 umbrella #255 — remaining-open matrix
 
 
+## Addendum — 2026-10-19 (dihedral orbit quotient, #269)
+
+* **#269 dihedral item CLOSED (conditional + obstruction).**  The last open #269
+  item — the dihedral (rotation + reverse-complement) orbit quotient — is
+  kernel-checked in `AssemblyP1/DihedralOrbitQuotient.lean` (+
+  `AssemblyP1/DihedralOrbitQuotientAudit.lean`), `docs/dihedral-orbit-quotient-269.md`,
+  and `scripts/verify_269_dihedral_orbit_quotient.py`.  Under the explicit
+  RC-invariance hypothesis `RCInvariant c` on the raw oriented read pmf, the
+  merged MAP/ML/monotonicity/certificate results lift to the dihedral quotient
+  (`readPmf_dihedral_map_success_monotone`,
+  `readPmf_uniform_dihedral_prior_ML`, `readPmf_dihedral_certificate`); the
+  strand-symmetrized read law gives the same results unconditionally
+  (`sym_dihedral_map_success_monotone`, `sym_uniform_dihedral_prior_ML`).  The
+  hypothesis is **necessary**, with a precise kernel-checked obstruction: the
+  length-3 binary genome `001` has `p(00) = 1/3` while its reverse complement has
+  `p(00) = 0` (`Obstruction.readPmf_not_rcInvariant`), so no function on dihedral
+  classes pulls back to the raw read pmf (`Obstruction.no_dihedral_descent`).
+  Axioms `⊆ {propext, Classical.choice, Quot.sound}`; no
+  `sorry`/`admit`/`axiom`/`native_decide`.  This does **not** change any §6.1/§6.2
+  flow status, #266 event-conditional inference, or per-truth monotonicity
+  (still refuted by `GenomeOrbitAdapter.PerTruthDrop.perTruth_true_drops`).
+* **Still genuinely open on the #255 umbrella:** the same items as the
+  2026-10-18 addendum (source-faithful physical RC bidirected graph
+  correspondence, flow-objective transport, general §6.2 classification,
+  exact Myers fidelity).  Nothing here closes those.
+
 ## Addendum — verified 2026-10-17 (avoid duplicate research)
 
 The dated matrix below is a **historical 2026-10-16 snapshot**, not an
