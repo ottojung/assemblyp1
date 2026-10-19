@@ -379,6 +379,10 @@ import AssemblyP1.FiniteReadOnlyDecoderCertaintyAudit
 -- refuted on a faithful finite read-realizable model (ABAB/AABB, L = 2).
 import AssemblyP1.FiniteReadStringIsVsUnambiguous
 import AssemblyP1.FiniteReadStringIsVsUnambiguousAudit
+-- #272 weakest source-defined (read-only OR truth-only) sufficient promise:
+-- existence iff the read-only posterior is already certain (subclaim b).
+import AssemblyP1.FiniteSourceDefinedWeakest
+import AssemblyP1.FiniteSourceDefinedWeakestAudit
 -- #270 positive finite-family iid ML recovery via Hellinger affinity.
 import AssemblyP1.FiniteReadRecovery
 -- #270 concrete uniform-start cyclic read distribution and conditional genome bounds.
