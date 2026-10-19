@@ -179,10 +179,13 @@ Representation warnings carried over unchanged:
 
 ## 6. Open items (labelled, not claimed)
 
-1. **Rotation descent of `E`.** `E` is stated through the chosen representatives
-   (`genOf i = toGenome (rep i)`). Proving `InformationFeasible` rotation
-   invariant, so that `E` descends to the orbit classes as `p` does, is **open**;
-   the finite separation only needs the representatives.
+1. **Rotation descent of `E` — CLOSED.** `E` is stated through the chosen
+   representatives (`genOf i = toGenome (rep i)`). The source predicate
+   `InformationFeasible` is rotation invariant
+   (`SourceFaithfulIs.informationFeasible_rotGenome`), so `E` descends to the
+   orbit classes as `p` does; the orbit-level separation is
+   `ConditionalVsMLGenomeAdapter271.separation_orbit`. See
+   [`information-feasible-rotation-271.md`](information-feasible-rotation-271.md).
 2. **Full read-set observation.** The adapter observes a single read string and
    existentially quantifies the latent placement. The source observes the whole
    sampled read set and weights placements; the source-faithful weighted-placement
