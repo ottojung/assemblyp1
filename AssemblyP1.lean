@@ -133,6 +133,7 @@ import AssemblyP1.ConditionalVsMLGenomeAdapter271
 import AssemblyP1.InformationFeasibleRotation271
 import AssemblyP1.ConditionalVsMLFullReadSet271
 import AssemblyP1.ConditionalBayesEImpliesB271
+import AssemblyP1.ConditionalVsMLNsgAdapter271
 import AssemblyP1.BayesValueMonotonicity
 import AssemblyP1.BayesOptimalityCertificate
 import AssemblyP1.BayesOptimalityCertificateAudit
