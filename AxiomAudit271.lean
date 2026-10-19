@@ -5,6 +5,7 @@ import AssemblyP1.W1W2RcOrientedRepresentation271
 import AssemblyP1.ConditionalVsMLGenomeAdapter271
 import AssemblyP1.ConditionalBayesEImpliesB271
 import AssemblyP1.InformationFeasibleRotation271
+import AssemblyP1.ConditionalVsMLFullReadSet271
 
 open AssemblyP1.ConditionalVsOrdinaryMLSeparation
 
@@ -106,3 +107,25 @@ open AssemblyP1.ConditionalVsOrdinaryMLSeparation
 #print axioms AssemblyP1.ConditionalVsMLGenomeAdapter271.Eorb
 #print axioms AssemblyP1.ConditionalVsMLGenomeAdapter271.Eorb_orbit
 #print axioms AssemblyP1.ConditionalVsMLGenomeAdapter271.separation_orbit
+
+-- Full-read-set weighted placement mass for the #271 witness (#271 open item 2):
+-- the literal historical event `HistoricalInformationFeasibleLiteral` is a
+-- concrete `ConditionalIdentifiability.PlacementModel`; at the full read set
+-- `Y1` the weighted placement mass is supported on the truth orbit and recovery
+-- is certain, while the single-read observation carries zero literal mass and
+-- the witness's `InformationFeasible` placement is not literal.
+#print axioms AssemblyP1.ConditionalVsMLFullReadSet271.coverage_window_mem
+#print axioms AssemblyP1.ConditionalVsMLFullReadSet271.coverage_iff
+#print axioms AssemblyP1.ConditionalVsMLFullReadSet271.fullFeasible_zero
+#print axioms AssemblyP1.ConditionalVsMLFullReadSet271.fullDecode_correct
+#print axioms AssemblyP1.ConditionalVsMLFullReadSet271.fullModel
+#print axioms AssemblyP1.ConditionalVsMLFullReadSet271.fullJoint_eq_zero_of
+#print axioms AssemblyP1.ConditionalVsMLFullReadSet271.fullJoint_Y1_zero_zero
+#print axioms AssemblyP1.ConditionalVsMLFullReadSet271.fullJoint_Y1_zero_two
+#print axioms AssemblyP1.ConditionalVsMLFullReadSet271.fullJoint_Y1_pos_one
+#print axioms AssemblyP1.ConditionalVsMLFullReadSet271.fullReadSet_support
+#print axioms AssemblyP1.ConditionalVsMLFullReadSet271.fullReadSet_orbit_mass_eq_total
+#print axioms AssemblyP1.ConditionalVsMLFullReadSet271.fullReadSet_posterior_eq_one
+#print axioms AssemblyP1.ConditionalVsMLFullReadSet271.witness_placement_not_literal
+#print axioms AssemblyP1.ConditionalVsMLFullReadSet271.fullJoint_singleton_eq_zero
+#print axioms AssemblyP1.ConditionalVsMLFullReadSet271.fullReadSet_boundary

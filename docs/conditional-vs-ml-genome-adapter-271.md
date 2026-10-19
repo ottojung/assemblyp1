@@ -186,14 +186,20 @@ Representation warnings carried over unchanged:
    orbit classes as `p` does; the orbit-level separation is
    `ConditionalVsMLGenomeAdapter271.separation_orbit`. See
    [`information-feasible-rotation-271.md`](information-feasible-rotation-271.md).
-2. **Full read-set observation.** The adapter observes a single read string and
-   existentially quantifies the latent placement. The source observes the whole
-   sampled read set and weights placements; the source-faithful weighted-placement
-   event mass is formalized abstractly in
-   `AssemblyP1/ConditionalIdentifiability.PlacementModel`
-   (`placement_posterior_certain`). Connecting the present finite witness to that
-   placement-level mass, with `HistoricalCovers.HistoricalInformationFeasibleLiteral`
-   as the event, is **open**.
+2. **Full read-set observation — CONNECTED with a precise boundary.**
+   `AssemblyP1/ConditionalVsMLFullReadSet271.lean` re-reads this finite witness at
+   the placement level: a concrete `AssemblyP1.ConditionalIdentifiability.PlacementModel`
+   whose event is `HistoricalCovers.HistoricalInformationFeasibleLiteral`, whose
+   observation is the full deduplicated read set, and whose proved `decode_correct`
+   makes the merged `placement_posterior_certain` apply. At the truth's full read
+   set the weighted placement mass is supported on the truth orbit and recovery is
+   certain; the literal mass vanishes at every single-read observation and this
+   witness's `InformationFeasible` placement is not literal, so the single-read
+   `(A ∧ ¬B)` separation does **not** lift to the literal full-read-set mass. See
+   [`conditional-vs-ml-full-read-set-271.md`](conditional-vs-ml-full-read-set-271.md).
+   (Kernel replay of the new module is pending in this environment; the finite
+   content is independently reproduced by a Python model of the exact source
+   predicates.)
 3. **`E → B`.** No candidate-specific feasibility event implies ordinary ML
    recovery in general (`sep_truth_not_ml` refutes it on this model). A
    sufficient refinement would add an observation-side component `C(R)` that is
