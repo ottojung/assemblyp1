@@ -705,6 +705,16 @@ abstract Bayes-optimality (FiniteBayesDecision / FiniteMapOptimality) and the
 Hellinger union bound (FiniteReadRecovery) are kernel-checked. Exact verifier
 scripts/verify_minimax_finite_recovery_265.py; paper rem:minimax-sample-size;
 note docs/minimax-finite-recovery-265.md.
+#265 exponent findings (merged PR #355): the uniform rate is FALSE over the
+unrestricted universe (AB vs ABAB share a read law at every length, so error is
+1 for all n; hand proof + exact verifier scripts/verify_exponent_265.py, NOT
+kernel-checked) and the 1/(8B^4) exponent is NOT tight (gamma(B)=Theta(1/B) by
+exact enumeration; the sharp Theta(1/B) is a CONJECTURE with a named missing
+lemma). Restoring a uniform rate needs a length bound + no read-law duplicates,
+which primitive-P2 supplies. Full illustration in backup B7 and
+docs/restricted-vs-unrestricted-exponent-265.md. Do NOT claim a kernel-checked
+sharp exponent or a tight finite-n bound; the kernel-checked rate remains
+primitiveP2_exponential_error_bound / thm:p2-uniform-rate.
 -->
 
 ---
@@ -980,7 +990,7 @@ and $n\ge 8B^4\ln(N_C/\delta)$ reads suffice for error at most $\delta$.
 
 **Caveats.** The constants are deliberately loose and exponential in $L$; the bound controls the exact-ML **error probability**, not likelihood growth; and per-truth finite-sample success is **not monotone**. The class is primitive-P2, oriented, exact iid reads — not universal ML and not the MB09 product-binomial surrogate. Kernel endpoints: `AssemblyP1.PrimitiveP2UniformSeparation.primitiveP2_exponential_error_bound` and `primitiveP2_ML_confidence_explicit` (paper `thm:p2-uniform-rate`).
 
-**What remains open:** one sharp, uniform sample-size guarantee over the unrestricted universe of genome candidates, especially across different lengths and models.
+**What is now settled (merged #355).** The uniform rate is **not** a general fact about all genomes: over the unrestricted universe it is **false**, and even inside primitive-P2 the exponent $1/(8B^4)$ is **not tight**. A **length bound** plus **exclusion of read-law duplicates** is what restores the rate — exactly what the primitive-P2 class supplies. The *sharp* uniform constant is the genuinely open quantitative problem (see backup B7).
 
 <!--
 The explicit n is the algebraic inversion of the kernel-checked union bound
@@ -1038,6 +1048,26 @@ A=(1/2,1/2), B=(3/4,1/4), C=(1/4,3/4) the tight 99% sizes are n*=85
 153 stated here is conservative (about 1.8x). See the "Do we actually need
 infinitely many reads?" note and docs/minimax-finite-recovery-265.md; the exact
 numbers are external decision theory, not Lean.
+#265 exponent findings (merged PR #355, 2026-10-19): the uniform rate over the
+UNRESTRICTED universe is FALSE, not merely open. A genome and its m-fold
+repetition share the same oriented read law at EVERY length (AB vs ABAB), so the
+truth's own read law is a candidate and the exact-ML error is 1 for every n: no
+exp(-c n) bound with c>0 and no consistency. The proposition is a hand proof
+checked exactly by scripts/verify_exponent_265.py (NOT kernel-checked). Even
+among primitive competitors the separation vanishes: D_m=(AB)^m A has
+1-rho(p_AB,p_{D_m}) -> 0 (0.1835 at m=1 to 0.0299 at m=8), so no positive uniform
+margin exists. The primitive-P2 exponent 1/(8B^4) is also NOT tight: exact
+enumeration gives worst-case separation gamma(B)=Theta(1/B), exceeding the bound
+by 274, 903, 2116, 16648 at B=4,6,8,16. Restoring the uniform rate needs a length
+bound plus exclusion of read-law duplicates (equivalently uniform discreteness of
+the candidate read laws) - conditions (a) collisions and (b) vanishing
+separation are each individually necessary. The sharp asymptotic exponent
+Theta(1/B) is a CONJECTURE with a named missing lemma, not proved. Sources:
+docs/restricted-vs-unrestricted-exponent-265.md, scripts/verify_exponent_265.py.
+thm:p2-uniform-rate (PrimitiveP2UniformSeparation.primitiveP2_exponential_error_
+bound / primitiveP2_ML_confidence_explicit) stays correct and kernel-checked;
+#355 only shows its exponent is conservative. No external statistics is upgraded
+to Lean; this is distinct from the #255 finite-ML characterization.
 -->
 
 ---
@@ -1123,3 +1153,45 @@ rate statement). Witness numbers (AAC vs AAAC, L=2, binary): KL =
 (1/3)log(2/3)+(2/3)log(4/3) ~ 0.0566, Hellinger affinity ~ 0.9856,
 summable geometric series. Exact check: scripts/verify_strong_consistency_265.py.
 -->
+
+---
+
+# Backup B7: the unrestricted universe has no uniform rate
+
+A uniform exponential rate over **all** genome lengths is **false** (merged #355).
+
+**Read-law collision.** Let the truth be `AB` and the competitor be `ABAB`, the truth's twofold repetition. Distinct, non-rotational, different lengths — yet at **every** read length they have the **same** oriented read law:
+
+~~~text
+       L=1            L=2
+AB     A:1/2  B:1/2    AB:1/2  BA:1/2
+ABAB   A:1/2  B:1/2    AB:1/2  BA:1/2
+~~~
+
+So the truth's own read law is one of the candidates. The wrong event holds on **every** sample, and the exact-ML error probability is **1 for every $n$**. No $\exp(-cn)$ bound with $c>0$, and no consistency either.
+
+**Second obstruction.** Even among primitive competitors the separation vanishes: $D_m=(AB)^m A$ has $1-\rho(p_{AB},p_{D_m})\to 0$ ($0.1835$ at $m=1$ down to $0.0299$ at $m=8$). No positive uniform margin exists.
+
+**What restores the rate.** A **length bound** on the candidates (here $B=2q^{L-1}$) plus **exclusion of read-law duplicates**. The primitive-P2 class supplies both — which is exactly why `thm:p2-uniform-rate` holds there.
+
+**And that exponent is loose.** Exact enumeration of the primitive-P2 class gives worst-case separation $\gamma(B)=\Theta(1/B)$, exceeding $1/(8B^4)$ by factors $274, 903, 2116, 16648$ at $B=4,6,8,16$. The sharp exponent $\Theta(1/B)$ is a **conjecture** with a named missing lemma, not proved.
+
+<!--
+Sources (merged PR #355): docs/restricted-vs-unrestricted-exponent-265.md and
+scripts/verify_exponent_265.py (exact rational arithmetic, exit 0). Epistemic
+labels: the repetition-collision proposition is a hand proof checked exactly by
+the verifier, NOT kernel-checked; the primitive-P2 separation values are exact
+finite computations, NOT kernel-checked; the asymptotic sharp-exponent Theta(1/B)
+is a CONJECTURE with a named missing lemma. thm:p2-uniform-rate
+(AssemblyP1/PrimitiveP2UniformSeparation.primitiveP2_exponential_error_bound /
+primitiveP2_ML_confidence_explicit) remains correct and kernel-checked; #355 only
+shows its exponent is conservative. No external statistics is upgraded to Lean.
+The collision is a law-level non-identifiability, distinct from the finite-sample
+fluctuation of Question B and from the #255 finite-ML characterization front.
+Restoring assumptions: length bound + exclusion of read-law duplicates
+(equivalently uniform discreteness of the candidate read laws); conditions (a)
+collisions and (b) vanishing separation are each individually necessary
+(counterexamples above). Do NOT claim a kernel-checked sharp exponent or a tight
+finite-n bound.
+-->
+
