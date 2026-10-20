@@ -6,6 +6,7 @@ import AssemblyP1.ConditionalVsMLGenomeAdapter271
 import AssemblyP1.ConditionalBayesEImpliesB271
 import AssemblyP1.InformationFeasibleRotation271
 import AssemblyP1.ConditionalVsMLFullReadSet271
+import AssemblyP1.ConditionalVsMLLiteralL3Adapter271
 
 open AssemblyP1.ConditionalVsOrdinaryMLSeparation
 
@@ -129,3 +130,29 @@ open AssemblyP1.ConditionalVsOrdinaryMLSeparation
 #print axioms AssemblyP1.ConditionalVsMLFullReadSet271.witness_placement_not_literal
 #print axioms AssemblyP1.ConditionalVsMLFullReadSet271.fullJoint_singleton_eq_zero
 #print axioms AssemblyP1.ConditionalVsMLFullReadSet271.fullReadSet_boundary
+
+-- Oriented adapter at read length 3 with the LITERAL §6.4 historical event
+-- (#271 goal 2/3, closes the read-length-≥3 item): a single observed read string
+-- admits a NON-SATURATED literal historical placement for the truth orbit, the
+-- literal event pins the truth orbit (conditional posterior 1), while ordinary
+-- R-only ML strictly prefers a wrong orbit; the converse holds at the all-zero
+-- orbit.
+#print axioms AssemblyP1.ConditionalVsMLLiteralL3Adapter271.p_sum_one
+#print axioms AssemblyP1.ConditionalVsMLLiteralL3Adapter271.prior_sum_one
+#print axioms AssemblyP1.ConditionalVsMLLiteralL3Adapter271.orbit_zero_ne_one
+#print axioms AssemblyP1.ConditionalVsMLLiteralL3Adapter271.literalFeasible_nonsaturated
+#print axioms AssemblyP1.ConditionalVsMLLiteralL3Adapter271.nonsaturated_card
+#print axioms AssemblyP1.ConditionalVsMLLiteralL3Adapter271.E_one_000
+#print axioms AssemblyP1.ConditionalVsMLLiteralL3Adapter271.E_zero_000
+#print axioms AssemblyP1.ConditionalVsMLLiteralL3Adapter271.E_iff_at_000
+#print axioms AssemblyP1.ConditionalVsMLLiteralL3Adapter271.sep_ml_strict
+#print axioms AssemblyP1.ConditionalVsMLLiteralL3Adapter271.sep_truth_not_ml
+#print axioms AssemblyP1.ConditionalVsMLLiteralL3Adapter271.sep_posteriorMass_one
+#print axioms AssemblyP1.ConditionalVsMLLiteralL3Adapter271.sep_posteriorMass_one_excluded
+#print axioms AssemblyP1.ConditionalVsMLLiteralL3Adapter271.sep_ordinary_not_certain
+#print axioms AssemblyP1.ConditionalVsMLLiteralL3Adapter271.separation_genome
+#print axioms AssemblyP1.ConditionalVsMLLiteralL3Adapter271.conv_ml_strict
+#print axioms AssemblyP1.ConditionalVsMLLiteralL3Adapter271.conv_ml_unique
+#print axioms AssemblyP1.ConditionalVsMLLiteralL3Adapter271.conv_ordinary_not_certain
+#print axioms AssemblyP1.ConditionalVsMLLiteralL3Adapter271.converse_genome
+#print axioms AssemblyP1.ConditionalVsMLLiteralL3Adapter271.model_axes
