@@ -6,6 +6,7 @@ import AssemblyP1.RigidityBridge
 import AssemblyP1.RigidityLength3Bridge
 import AssemblyP1.RigidityGeneralBridge
 import AssemblyP1.RigidityDoubleTheta
+import AssemblyP1.RigidityMultiHub
 import AssemblyP1.RigidityTargetCycle
 import AssemblyP1.RigidityNoGo
 open AssemblyP1.ExactRigidityCriterion
@@ -16,6 +17,7 @@ open AssemblyP1.RigidityBridge
 open AssemblyP1.RigidityLength3Bridge
 open AssemblyP1.RigidityGeneralBridge
 open AssemblyP1.RigidityDoubleTheta
+open AssemblyP1.RigidityMultiHub
 open AssemblyP1.RigidityTargetCycle
 open AssemblyP1.RigidityNoGo
 #print axioms AssemblyP1.ExactRigidityCriterion.nonrigid_iff_exists_delta
@@ -65,6 +67,18 @@ open AssemblyP1.RigidityNoGo
 #print axioms AssemblyP1.RigidityDoubleTheta.doubleTheta_nonrigid_witness
 #print axioms AssemblyP1.RigidityDoubleTheta.doubleTheta_rigid_repetitive
 #print axioms AssemblyP1.RigidityDoubleTheta.relaxed_not_sound
+-- §20: the multi-hub family (unbounded cycle rank).
+#print axioms AssemblyP1.RigidityMultiHub.balancedB_iff_balancedZ
+#print axioms AssemblyP1.RigidityMultiHub.path_const
+#print axioms AssemblyP1.RigidityMultiHub.phi_of_balanced
+#print axioms AssemblyP1.RigidityMultiHub.balanced_of_phi
+#print axioms AssemblyP1.RigidityMultiHub.phi_sum
+#print axioms AssemblyP1.RigidityMultiHub.mA_total
+#print axioms AssemblyP1.RigidityMultiHub.mA_balanced
+#print axioms AssemblyP1.RigidityMultiHub.multiHub_nonrigid_iff
+#print axioms AssemblyP1.RigidityMultiHub.multiHub_rigid_all_one
+#print axioms AssemblyP1.RigidityMultiHub.multiHub_rigid_repetitive_2
+#print axioms AssemblyP1.RigidityMultiHub.multiHub_relaxed_not_sound
 #print axioms AssemblyP1.RigidityTargetCycle.targetCycle_nonrigid_iff_coin
 #print axioms AssemblyP1.RigidityTargetCycle.targetCycle_rigid_iff_not_coin
 #print axioms AssemblyP1.RigidityTargetCycle.coin_nonrigid_23_5
