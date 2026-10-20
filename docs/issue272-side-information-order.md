@@ -35,6 +35,7 @@ supplied promise `E`) are inherited verbatim from the merged module.
 | `I_s` necessity for the specific Not-So-Greedy decoder | **OPEN** | §6 |
 | Ordering of `I_s` against `Unambiguous` / arbitrary sufficient promises | **neither**, kernel-checked on the read-string adapter | [`FiniteSideInformationOrdering.lean`](../AssemblyP1/FiniteSideInformationOrdering.lean), [`FiniteReadStringIsVsUnambiguous.lean`](../AssemblyP1/FiniteReadStringIsVsUnambiguous.lean), §6 |
 | Weakest sufficient inside the source-defined bridging subfamily | **iff `∀ r, Unambiguous`**; weakest = `True`, unique | [`FiniteSourceDefinedWeakest.lean`](../AssemblyP1/FiniteSourceDefinedWeakest.lean) |
+| Minimum is vacuous; minimal non-vacuous certificates are candidate designations | kernel-checked (minimum = empty; designations `g = g₀` incomparable) | [`FiniteSourceDefinedMinimal.lean`](../AssemblyP1/FiniteSourceDefinedMinimal.lean) |
 
 All results are proved with `autoImplicit` disabled and audited by
 [`AssemblyP1/FiniteSideInformationOrderAudit.lean`](../AssemblyP1/FiniteSideInformationOrderAudit.lean);
@@ -212,6 +213,12 @@ equivalence-closed admissible) family.
    sufficient truth-only singleton.  On the ambiguous `TwoCandidate` model,
    the family has **no** weakest sufficient promise
    (`AmbiguousRead.no_weakest`).
+   The complementary **minimum / minimal** analysis is
+   [`AssemblyP1/FiniteSourceDefinedMinimal.lean`](../AssemblyP1/FiniteSourceDefinedMinimal.lean)
+   (see [`issue272-minimal-sufficient.md`](issue272-minimal-sufficient.md)):
+   the minimum sufficient promise is always the vacuous empty promise
+   (`minimum_vacuous`), and the non-vacuous sufficient certificates are exactly
+   the candidate designations, which are incomparable (`three_way_distinction`).
 4. **Concrete historical read-string adapter.** LANDED (see
    [`issue272-read-string-adapter.md`](issue272-read-string-adapter.md)): the
    literal read-string adapter
