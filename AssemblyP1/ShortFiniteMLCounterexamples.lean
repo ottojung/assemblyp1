@@ -156,6 +156,19 @@ theorem len_AAT : genAAT.len = 3 := rfl
 theorem len_AAAT : genAAAT.len = 4 := rfl
 theorem len_AAAAT : genAAAAT.len = 5 := rfl
 
+/-! ## The witnesses are variable-length
+
+Each competitor is strictly longer than its truth (`|D| = G + 1 ≠ G`), so every
+witness lies outside the scope of the repository's same-length rigidity theorem
+(`AssemblyP1.OrientedSameLengthML`, hypotheses `2 ≤ L ≤ G` and same-length
+candidates) and of the published same-length ambiguity theorem (Bresler et al.
+2013, Theorem 1). The `G = 2` witness additionally has `L = 1 < 2`, outside
+that theorem's `2 ≤ L` hypothesis as well. -/
+
+theorem lengths_differ_2 : genAT.len ≠ genAAT.len := by decide
+theorem lengths_differ_3 : genAAT.len ≠ genAAAT.len := by decide
+theorem lengths_differ_4 : genAAAT.len ≠ genAAAAT.len := by decide
+
 /-! ## Read types, observations, and spectra -/
 
 /-- Length-`1` read types. -/
