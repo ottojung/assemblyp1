@@ -423,6 +423,11 @@ import AssemblyP1.Section62VisitTransport
 -- dominates the physical vertex visits (self-contained, Lean core only).
 import AssemblyP1.Section62VisitWindowBridge
 
+-- #284 sharpness refutation: no observed-window designation hypothesis sharpens
+-- the invariant window box to the exact physical feasible-throughput image
+-- (self-contained, Lean core only).
+import AssemblyP1.Section62WindowBoxSharpness
+
 /-! ## `Issue94Transposition`: the Kotzig/Ukkonen/Pevzner descent, and an obstruction
 
 The classical transposition step deletes one transposition factor of the
@@ -1308,3 +1313,13 @@ reading. Two finite checks anchor it: the refuted BBT premise's witness is not
 #print axioms AssemblyP1.Section62VisitWindowBridge.windowCount_detour_eq
 #print axioms AssemblyP1.Section62VisitWindowBridge.witness_bound_strict
 #print axioms AssemblyP1.Section62VisitWindowBridge.witness_bound_holds
+
+-- #284 sharpness refutation: the window box is not sharpened to equality by any
+-- observed-window designation hypothesis (prefix-delta and endpoint witnesses).
+#print axioms AssemblyP1.Section62WindowBoxSharpness.physImage_subset_windowBox
+#print axioms AssemblyP1.Section62WindowBoxSharpness.genuineWalk_spell_length_le
+#print axioms AssemblyP1.Section62WindowBoxSharpness.prefix_delta_mem_box
+#print axioms AssemblyP1.Section62WindowBoxSharpness.delta_prefix_not_mem_image
+#print axioms AssemblyP1.Section62WindowBoxSharpness.no_prefix_support_designation_sharpens
+#print axioms AssemblyP1.Section62WindowBoxSharpness.endpoint_prefix_refuted
+#print axioms AssemblyP1.Section62WindowBoxSharpness.endpoint_pair_refuted
