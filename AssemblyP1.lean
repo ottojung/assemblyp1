@@ -394,6 +394,10 @@ import AssemblyP1.FiniteReadRecoveryP2Bridge
 import AssemblyP1.FiniteReadRecoveryP2BridgeAudit
 import AssemblyP1.FiniteReadRecoveryP2Complete
 import AssemblyP1.FiniteReadRecoveryP2CompleteAudit
+-- #281 generic Hellinger-affinity contraction: converts the merged
+-- finite-iid sum-of-powers bound into the explicit exponential form.
+import AssemblyP1.HellingerExponentialDecay
+import AssemblyP1.HellingerExponentialDecayAudit
 -- #281 non-monotonicity of finite-sample exact-ML success (AAC vs AAAC).
 import AssemblyP1.NonmonotonicityWitness281
 import AssemblyP1.NonmonotonicityWitness281Audit
