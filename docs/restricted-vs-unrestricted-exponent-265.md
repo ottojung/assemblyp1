@@ -270,6 +270,92 @@ universe that is impossible.
   the Chernoff facts are the external standard results already recorded in
   `docs/chernoff-exponent-finite-recovery-265.md`.
 
+## Addendum (2026-10-19, agent `f67ca5248e6a`): exact sharpened formula
+
+This section is **additive**. It does not change any conclusion above; it
+sharpens the missing-lemma conjecture with an exact finite computation and an
+exact rational structure, and it records the remaining gap precisely.
+
+### Exact formula for the enumerated classes
+
+For every enumerated primitive-P2 class the exact worst-case separation is
+
+```
+gamma(B) = 1 - sqrt((B-1)/B) = 1 - sqrt(1 - 1/B) ~ 1/(2 B),
+```
+
+and the extremal pair is the one-symbol insertion `D = S + last(S)` of lengths
+`B-1` and `B`.  The two read laws then satisfy the **exact rational**
+single-word relation
+
+```
+p_D = (B-1)/B * p_S + (1/B) * delta_{w*},      p_S(w*) = 0,
+```
+
+for a single word `w*`.  Hence `rho(p_S, p_D) = sqrt((B-1)/B)` exactly, and
+the Hellinger gap is `1 - sqrt((B-1)/B)`.  (For `L = 2` the word `w*` is the
+dinucleotide `(last(S), last(S))`; the relation says the insertion adds exactly
+one new read word and leaves every other word count unchanged.)
+
+| `q` | `L` | `B` | class size | `gamma` | `1 - sqrt((B-1)/B)` | `gamma * B` |
+|----:|----:|----:|-----------:|--------:|---------------------:|------------:|
+| 2 | 2 | 4 | 14 | 0.133974596216 | 0.133974596216 | 0.535898 |
+| 3 | 2 | 6 | 237 | 0.087129070825 | 0.087129070825 | 0.522774 |
+| 2 | 3 | 8 | 90 | 0.064585653307 | 0.064585653307 | 0.516685 |
+| 4 | 2 | 8 | 4852 | 0.064585653307 | 0.064585653307 | 0.516685 |
+| 2 | 4 | 16 | 1750 | 0.031754163448 | 0.031754163448 | 0.508067 |
+
+The two `B = 8` classes `(q,L) = (2,3)` and `(4,2)` give the **same** value,
+so `gamma` depends on `B` alone in the enumerated range.  The value is
+`B (1 - sqrt((B-1)/B)) = B - sqrt(B(B-1))`, which is strictly decreasing and
+tends to `1/2`.
+
+### Sharpened conjecture (replacing the `c_1/B` lower bound)
+
+The lower bound of the missing lemma can be sharpened to the exact statement
+
+```
+gamma(B) = 1 - sqrt((B-1)/B),     equivalently     1 - rho >= 1 - sqrt((B-1)/B),
+```
+
+over distinct-read-law primitive-P2 pairs of lengths `<= B`.  Since
+`1 - sqrt(1 - 1/B) >= 1/(2 B)` for `B >= 1`, this gives the `c_1 = 1/2` lower
+bound `1 - rho >= 1/(2 B)`.  The upper bound half (construction) is the
+one-symbol-insertion family above, with `c_2 = 1` (indeed the gap is
+`<= 1/(2(B-1)) <= 1/(B-1)`).
+
+The exact finite computations and the exact rational structure are reproducible
+by `scripts/verify_exponent_265.py` (checks 3-6).  The asymptotic statement is
+a **sharpened conjecture**, not a theorem: the lower bound `gamma >= 1/(2B)`
+holds exactly in every enumerated class, but a proof for all distinct-read-law
+primitive-P2 pairs is not yet available.
+
+### Why the naive pointwise argument cannot reach `1/B`
+
+The existing kernel-checked bound extracts `1/(8 (G_S G_D)^2) >= 1/(8 B^4)`
+from a single pointwise read-law gap.  To reach `1/B` one needs a *global*
+argument that two primitive-P2 read laws cannot be closer than `Theta(1/B)`.
+The P2 condition is what rules out the small-gap families: without it, the pair
+
+```
+S = 0^k 1,     D = 0^{k+1} 1
+```
+
+has `1 - rho = Theta(1/B^2)` (checked: `0.002396` at `B = 6`,
+`0.000814` at `B = 8`), far below `1/B`, and neither string satisfies P2.  So
+the lower bound genuinely needs a quantitative form of the P2/BBT rigidity
+that is not currently formalized; the one-symbol-insertion construction is the
+only half of the missing lemma that is presently accessible.
+
+### Reachability of larger `B`
+
+The classes at `B = 20`, `24`, `32` are not reachable by complete enumeration
+within a sane budget: `B = 2 q^(L-1)` forces `(q,L) = (10,2)`, `(12,2)`,
+`(2,5)` or `(4,3)`, whose class sizes are `~10^20`, `~10^24` and `2^32`,
+`4^32` respectively.  The exact formula above is therefore supported by the
+five enumerated classes (including the cross-check at `B = 8`) and by the exact
+rational insertion structure, not by larger enumeration.
+
 ## Sources
 
 - Kernel: `AssemblyP1/PrimitiveP2UniformSeparation.lean`

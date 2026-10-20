@@ -401,6 +401,9 @@ import AssemblyP1.PrimitiveP2FiniteClassTight
 import AssemblyP1.PrimitiveP2FiniteClassTightAudit
 import AssemblyP1.PrimitiveP2UniformSeparation
 import AssemblyP1.PrimitiveP2UniformSeparationAudit
+-- #265 exact sharpened insertion-affinity lemma for gamma(B) = 1 - sqrt((B-1)/B).
+import AssemblyP1.PrimitiveP2ExponentInsertion
+import AssemblyP1.PrimitiveP2ExponentInsertionAudit
 -- #263 MB09 §6.1 product-binomial is not coordinatewise monotone (8-vs-4 kernel) + audit.
 import AssemblyP1.ProductBinomialMonotonicityCounterexample
 import AssemblyP1.ProductBinomialMonotonicityCounterexampleAudit

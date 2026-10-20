@@ -26,6 +26,24 @@ statistics assumed):
     4.  This is an exact finite computation; the asymptotic claim is stated as a
     conjecture in docs/restricted-vs-unrestricted-exponent-265.md, not here.
 
+3.  **Exact sharpened formula.**  For every enumerated class the worst-case
+    separation is exactly
+
+        gamma(B) = 1 - sqrt((B-1)/B) = 1 - sqrt(1 - 1/B) ~ 1/(2 B),
+
+    and the extremal pair ``D = S + last(S)`` has read laws satisfying the exact
+    rational single-word relation
+
+        p_D = (G/(G+1)) p_S + (1/(G+1)) delta_{w*},   p_S(w*) = 0,
+
+    for one word ``w*`` (so ``rho = sqrt(G/(G+1))``).  ``check_exact_formula``,
+    ``check_insertion_structure`` and ``check_lower_bound`` verify these facts;
+    ``check_more_classes`` confirms the same value at ``B = 8`` for two
+    different classes ``(q,L) = (2,3)`` and ``(4,2)``, so ``gamma`` depends on
+    ``B`` alone in the enumerated range.  The asymptotic statement is a
+    sharpened conjecture, not a theorem; the lower bound ``gamma >= 1/(2B)``
+    holds exactly in every enumerated class but is not yet proved in general.
+
 Run:  python3 scripts/verify_exponent_265.py
 Exit code 0 means every checked identity/inequality held.
 """
@@ -242,6 +260,120 @@ def worst_separation(q, L):
     return cls, B, best
 
 
+def worst_separation_fast(q, L):
+    """Canonical-form dedup of `worst_separation`, for classes that are too
+    large for the O(|class|^2) rotation-set scan.  Rotation-equivalent genomes
+    share a read law, so replacing each genome by its lexicographically
+    smallest rotation leaves the minimum over distinct pairs unchanged.
+    Returns `(cls, B, (gap, S, D))` with `S`, `D` canonical representatives.
+    """
+    cls, B = primitive_p2_class(q, L)
+    canon = {}
+    laws = {}
+    for S in cls:
+        canon[S] = min(rotations(S))
+        laws[S] = read_law(S, L)
+    best = None
+    for i, S in enumerate(cls):
+        p = laws[S]
+        cS = canon[S]
+        for j, D in enumerate(cls):
+            if i == j or canon[D] == cS:
+                continue
+            r = laws[D]
+            if r == p:
+                continue
+            gap = 1 - affinity(p, r)
+            if best is None or gap < best[0]:
+                best = (gap, S, D)
+    return cls, B, best
+
+
+def insertion_gap(B):
+    """Exact worst-case insertion gap `1 - sqrt((B-1)/B)` predicted for the
+    one-symbol-insertion extremal pair with a single new read word."""
+    return 1 - sqrt((B - 1) / B)
+
+
+def insertion_structure(S, D, L):
+    """Check the exact rational structure `p_D = (G/(G+1)) p_S + (1/(G+1)) d_w*`
+    for the insertion pair `D = S + (last symbol of S)`.
+
+    Returns `(wstar, ok, zero)` where `ok` says the relation holds for every
+    word and `zero` says the new word `wstar` was absent from `S`'s read law.
+    If the relation is not a single-word perturbation, returns `None`.
+    """
+    if len(D) != len(S) + 1:
+        return None
+    p = read_law(S, L)
+    d = read_law(D, L)
+    G = len(S)
+    diffs = [w for w in set(p) | set(d)
+             if d.get(w, 0) != Fraction(G, G + 1) * p.get(w, 0)]
+    if len(diffs) != 1:
+        return None
+    wstar = diffs[0]
+    ok = all(
+        d.get(w, 0) == Fraction(G, G + 1) * p.get(w, 0)
+        + (Fraction(1, G + 1) if w == wstar else Fraction(0))
+        for w in set(p) | set(d))
+    return (wstar, ok, p.get(wstar, 0) == 0)
+
+
+def check_exact_formula(rows):
+    print("\n== Check 3: exact sharpened formula gamma(B) = 1 - sqrt((B-1)/B) ==")
+    for (q, L, B, n, gap, ratio, gb, S, D) in rows:
+        pred = insertion_gap(B)
+        check(abs(gap - pred) < 1e-9,
+              f"q={q},L={L},B={B}: gamma = 1 - sqrt((B-1)/B) "
+              f"({gap:.12f} vs {pred:.12f})")
+    gbs = [row[6] for row in rows]
+    # gamma(B)*B = B(1 - sqrt((B-1)/B)) is decreasing and tends to 1/2
+    check(all(gbs[i] > gbs[i + 1] for i in range(len(gbs) - 1)),
+          "gamma(B)*B is strictly decreasing in B")
+    check(abs(gbs[-1] - 0.5) < 0.02,
+          "gamma(B)*B approaches 1/2 (gap ~ 1/(2B))")
+
+
+def check_insertion_structure(rows):
+    print("\n== Check 4: insertion structure c_D = c_S + e_w* exactly ==")
+    for (q, L, B, n, gap, ratio, gb, S, D) in rows:
+        res = insertion_structure(S, D, L)
+        check(res is not None,
+              f"q={q},L={L},B={B}: extremal pair is a single-word insertion")
+        if res is None:
+            continue
+        wstar, ok, zero = res
+        check(ok, f"q={q},L={L},B={B}: p_D = (G/(G+1)) p_S + d_w*/(G+1)")
+        check(zero, f"q={q},L={L},B={B}: new word w* absent from S")
+        G = len(S)
+        rho_formula = sqrt(G / (G + 1))
+        check(abs((1 - gap) - rho_formula) < 1e-12,
+              f"q={q},L={L},B={B}: rho = sqrt(G/(G+1)) from the structure")
+        print(f"    w*={wstar}  gap=1-sqrt({G}/{G+1})={gap:.12f}")
+
+
+def check_lower_bound(rows):
+    print("\n== Check 5: gamma(B) >= 1/(2B) (conjectured sharp lower bound) ==")
+    for (q, L, B, n, gap, ratio, gb, S, D) in rows:
+        check(gap >= 1 / (2 * B) - 1e-12,
+              f"q={q},L={L},B={B}: gamma >= 1/(2B)")
+
+
+def check_more_classes():
+    print("\n== Check 6: an additional class with the same B (q=4, L=2, B=8) ==")
+    q, L = 4, 2
+    cls, B, (gap, S, D) = worst_separation_fast(q, L)
+    pred = insertion_gap(B)
+    print(f"  q={q} L={L} B={B} |class|={len(cls)}")
+    print(f"    extremal S={S}")
+    print(f"             D={D}")
+    print(f"    gamma={gap:.12f}  1-sqrt((B-1)/B)={pred:.12f}  gamma*B={gap*B:.6f}")
+    check(abs(gap - pred) < 1e-9,
+          f"q={q},L={L},B={B}: gamma = 1 - sqrt((B-1)/B) independently of q")
+    check(gap >= 1 / (2 * B) - 1e-12, f"q={q},L={L},B={B}: gamma >= 1/(2B)")
+
+
 def check_exponent():
     print("\n== Check 2: exact worst-case separation vs the 1/(8 B^4) bound ==")
     rows = []
@@ -271,12 +403,17 @@ def check_exponent():
     print("\n  ratio to 1/(8B^4) grows like B^3 (4*B^3):")
     for (q, L, B, n, gap, ratio, gb, S, D) in rows:
         print(f"    B={B:>3}: ratio={ratio:>10.4g}   4*B^3={4*B**3:>10.4g}")
+    return rows
 
 
 def main() -> int:
     check_collision()
     check_primitive_vanishing()
-    check_exponent()
+    rows = check_exponent()
+    check_exact_formula(rows)
+    check_insertion_structure(rows)
+    check_lower_bound(rows)
+    check_more_classes()
     print()
     if FAIL:
         print(f"{len(FAIL)} check(s) FAILED")
