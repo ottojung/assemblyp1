@@ -28,17 +28,21 @@ orbit-class boundary `AssemblyP1.FiniteBayesianSideInformation.posteriorMass_eq_
 | side information | candidate-specific **literal** §6.4 event `E i r := ∃ T, (∃ s ∈ T, window (genOf i) 3 s = r) ∧ HistoricalInformationFeasibleLiteral (genOf i) 3 T` |
 | rotation | the genuine rotation action on `ZMod 4`; `readPmf` is rotation invariant (`readPmf_rotWord`), so `p` descends to orbits |
 
-## 2. The literal event is non-degenerate at read length `3`
+## 2. The first non-saturated single-read literal witness at read length `3`
 
-The merged `AssemblyP1/ConditionalVsMLFullReadSet271` proved that at read length
-`2` the literal historical event is **degenerate**: literal feasibility forces
-coverage, coverage forces the whole window-type image (cardinality `≥ 2`) into
-the observed read set, so the literal weighted placement mass vanishes at
-**every** single-read observation (`fullJoint_singleton_eq_zero`).
+The merged `AssemblyP1/ConditionalVsMLFullReadSet271` proved that the literal
+**weighted placement mass** over the full observed read set vanishes at **every**
+**singleton full-read-set** observation (`fullJoint_singleton_eq_zero`).  That
+statement is about the placement mass at a single full-read-set observation; it
+does **not** say that the single-read-string literal event `E` is degenerate.
 
-At read length `3` that degeneracy disappears. The truth orbit `1` (`0001`)
-satisfies the literal §6.4 event at the **single** observed read string `000`
-via the **non-saturated** placement `{0,1,3}`:
+At read length `2` the literal event `E` is satisfiable and already yields the
+`(A ∧ ¬B)` separation, but only through the **saturated** placement `{0,1,2,3}`
+(independently kernel-checked; external review artifact on board #271).  At read
+length `3` the genuinely new content is the first **non-saturated** single-read
+literal witness. The truth orbit `1` (`0001`) satisfies the literal §6.4 event at
+the **single** observed read string `000` via the **non-saturated** placement
+`{0,1,3}`:
 
 ```
 literalFeasible_nonsaturated :
@@ -103,11 +107,15 @@ in (A) is the literal source event `E`.
   present module uses the **literal** §6.4 predicate
   `HistoricalInformationFeasibleLiteral` (coverage + all three-occurrence repeats
   bridged + interleaved repeats bridged) at a non-saturated placement, and
-  exhibits the first **non-degenerate single-read literal** witness.
+  exhibits the first **non-saturated single-read literal** witness.
 * **Full-read-set literal mass.** `AssemblyP1/ConditionalVsMLFullReadSet271.lean`
   computes the literal weighted placement mass over the full observed read set;
-  its `fullJoint_singleton_eq_zero` is the read-length-`2` degeneracy that the
-  present read-length-`3` witness escapes.
+  its `fullJoint_singleton_eq_zero` is the singleton full-read-set placement-mass
+  vanishing fact (a single full-read-set observation), not a statement that the
+  single-read-string event `E` is degenerate.  At read length `2` the literal
+  event already yields `(A ∧ ¬B)`, but only via the saturated placement
+  `{0,1,2,3}`; the present read-length-`3` witness is the first non-saturated
+  single-read literal witness.
 * **Rotation descent.** The source predicate is rotation invariant
   (`SourceFaithfulIs.informationFeasible_rotGenome`, merged PR #354), so `p`
   descends to orbit classes; the present `E` is stated at the chosen
@@ -140,5 +148,7 @@ in (A) is the literal source event `E`.
 > information-feasibility event holds for the true rotation class through a
 > **non-saturated** placement, while ordinary maximum likelihood strictly prefers
 > a wrong class: conditioning on the literal event yields posterior certainty on
-> the truth, but the R-only ML rule does not recover it. This complements the
-> read-length-two placement-based witness, where the literal event is degenerate.
+> the truth, but the R-only ML rule does not recover it. This is the first
+> single-read literal witness attained through a non-saturated placement; at read
+> length two the literal event already yields the same separation, but only
+> through a saturated placement.

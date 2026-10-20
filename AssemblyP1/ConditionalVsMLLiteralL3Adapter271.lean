@@ -14,13 +14,17 @@ historical predicate `HistoricalInformationFeasibleLiteral`, attained by a
 **non-saturated** placement at a *single* observed read string.**
 
 The merged adapter `AssemblyP1/ConditionalVsMLGenomeAdapter271` uses the
-placement-based `SourceFaithfulIs.InformationFeasible` at read length `2`; the
-merged `AssemblyP1/ConditionalVsMLFullReadSet271` then proved that at read length
-`2` the literal event is *degenerate*: literal feasibility forces coverage, which
-forces the whole window-type image into the observed read set, so the literal
-weighted placement mass vanishes at **every** single-read observation
-(`fullJoint_singleton_eq_zero`).  At read length `3` that degeneracy disappears,
-and this module exhibits the first non-degenerate single-read literal witness.
+placement-based `SourceFaithfulIs.InformationFeasible` at read length `2`.  The
+merged `AssemblyP1/ConditionalVsMLFullReadSet271` proved that the literal
+*weighted placement mass* over the full observed read set vanishes at **every**
+**singleton full-read-set** observation (`fullJoint_singleton_eq_zero`); that
+statement is about the placement mass at a single full-read-set observation, not
+about the satisfiability of the single-read-string event `E`.  At read length `2`
+the literal event `E` is nonetheless satisfiable and already yields the
+`(A ∧ ¬B)` separation, but only through the **saturated** placement `{0,1,2,3}`
+(independently kernel-checked; external review artifact on board #271).  At read
+length `3` the genuinely new content of this module is the first
+**non-saturated** single-read literal witness, via the placement `{0,1,3}`.
 
 ## The model (fixed axes)
 
