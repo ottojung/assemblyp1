@@ -7,6 +7,7 @@ import AssemblyP1.Section62ReductionDependencyAudit
 import AssemblyP1.Section62SimultaneousReduction
 import AssemblyP1.Section62VisitTransport
 import AssemblyP1.Section62VisitWindowBridge
+import AssemblyP1.Section62WindowBoxSharpness
 
 /-!
 # #284 axiom audit
@@ -77,3 +78,13 @@ AssemblyP1`, so this file is a human-readable summary, not the sole gate.
 #print axioms AssemblyP1.Section62VisitWindowBridge.windowCount_detour_eq
 #print axioms AssemblyP1.Section62VisitWindowBridge.witness_bound_strict
 #print axioms AssemblyP1.Section62VisitWindowBridge.witness_bound_holds
+
+-- Window-box sharpness refutation (new in #284): no observed-window designation
+-- hypothesis sharpens the invariant box to the exact physical image.
+#print axioms AssemblyP1.Section62WindowBoxSharpness.physImage_subset_windowBox
+#print axioms AssemblyP1.Section62WindowBoxSharpness.genuineWalk_spell_length_le
+#print axioms AssemblyP1.Section62WindowBoxSharpness.prefix_delta_mem_box
+#print axioms AssemblyP1.Section62WindowBoxSharpness.delta_prefix_not_mem_image
+#print axioms AssemblyP1.Section62WindowBoxSharpness.no_prefix_support_designation_sharpens
+#print axioms AssemblyP1.Section62WindowBoxSharpness.endpoint_prefix_refuted
+#print axioms AssemblyP1.Section62WindowBoxSharpness.endpoint_pair_refuted
