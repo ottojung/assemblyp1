@@ -30,7 +30,10 @@ four-variable criterion and classification cross-check, exhaustive small scope),
 four-variable criterion cross-check, exhaustive small scope),
 `python3 scripts/verify_257_double_theta.py` (§19 double-theta four-variable
 coupled criterion, rigid repetitive instance and coupling refutation cross-check,
-exhaustive small scope).
+exhaustive small scope),
+`python3 scripts/verify_257_multi_hub.py` (§20 multi-hub two-equation criterion,
+polynomial DP decision, rigid repetitive instance and coupling refutation
+cross-check, exhaustive small scopes).
 Self-contained, exact integer arithmetic, deterministic._
 
 _Blocking-review repair (2026-10-10, branch `research/257-graver-lean-repair`):
@@ -200,6 +203,26 @@ map `B : E → ℤ` with `B ≥ 1` on every edge, balanced at every node, and
     `(m₁,m₂,n₁,n₂) = (2,1,2,1)` is a **rigid repetitive** support, and dropping
     the coupling equation is **not sound** (`relaxed_not_sound`). [mathematical
     proof + kernel-checked, section 19]
+
+13. **The multi-hub family: an unbounded-cycle-rank family with a polynomial
+    criterion (§8.1/§8.2 progress).** The *multi-hub* family joins two hubs by
+    `k` `u → v` paths and `l` `v → u` paths of **arbitrary lengths**; its cycle
+    rank is `k + l - 1`, which is **unbounded**, so it strictly exceeds the
+    bounded-cycle-rank families (bouquet / bridge / double theta are the cases
+    `k + l ≤ 4`). Every circulation is constant on each path, and the exact
+    criterion is a **two-equation** integer system — hub balance
+    `∑_{u→v} α = ∑_{v→u} α`, zero total mass `∑ length·α = 0`, and the boxes
+    `α ≥ 1 - m` (kernel-checked `multiHub_nonrigid_iff`). The instance
+    `(lengths (1,3), multiplicities (2,1))` is a **rigid repetitive** support,
+    and dropping the hub-balance coupling is **not sound**
+    (`multiHub_relaxed_not_sound`), so no independent-per-path / single-cut
+    criterion decides the family. Because the path lengths are unary, the
+    two-equation system is a nonnegative-integer **uniqueness** problem
+    decidable by a polynomial DP (counting solutions up to `2`), giving a §8.2
+    **upper bound for this unbounded-rank family**; the *general*-support case
+    (arbitrary topology) and any min-cut/max-flow closed form for it remain
+    **OPEN**. [mathematical proof + kernel-checked + verified computation,
+    section 20]
 
 ---
 
@@ -524,14 +547,27 @@ exhaustive zeros are a sanity check on the proofs, not a substitute for them.
      four-variable criterion coupled by an extra
      hub-balance equation, a rigid repetitive instance `(2,1,2,1)`, and a
      kernel-checked refutation of the coupling-dropped relaxation.
+     **Further partial progress (§20, 2026-10-20):** the **multi-hub family**
+     (`k` `u → v` paths and `l` `v → u` paths of arbitrary lengths) has
+     **unbounded cycle rank** `k + l - 1` and an exact **two-equation** criterion
+     (`multiHub_nonrigid_iff`); because the path lengths are unary, deciding it is
+     a nonnegative-integer **uniqueness** problem solvable by a polynomial DP,
+     giving a §8.2 upper bound for this unbounded-rank family. It has a rigid
+     repetitive instance and its coupling-dropped relaxation is not sound. The
+     *general* support topology and a min-cut/max-flow closed form for it remain
+     **OPEN** — no criterion of a single-cut / independent-per-path form can be
+     exact (the committed counterexample `multiHub_relaxed_not_sound`).
     [open; bouquet case reduced and shown poly-time, §13/§15;
     bridge case classified, §14; length-3 bridge classified and bridge pattern
      refuted, §17; general `p,q` long bridge classified, §18; coupling begins at
-     rank `3`, double theta minimal among realizable supports, §19]
+     rank `3`, double theta minimal among realizable supports, §19; multi-hub
+     unbounded-rank family with a two-equation polynomial criterion, §20]
 2. **The exact complexity** of the exact criterion (§7). **Partial (§15,
-   2026-10-16):** the bouquet family (hence the target-cycle family) is in `P`
-   via the Apéry-set / residue-graph shortest-path algorithm; the
-   uniform-in-support case is **OPEN**. [open]
+    2026-10-16):** the bouquet family (hence the target-cycle family) is in `P`
+    via the Apéry-set / residue-graph shortest-path algorithm. **Partial (§20,
+    2026-10-20):** the multi-hub family (unbounded cycle rank) is in `P` via a
+    two-equation nonnegative-integer-uniqueness DP (unary path lengths); the
+    uniform-in-support case (arbitrary topology) is **OPEN**. [open]
 3. ~~**The two-closed-walk certificate** (§4)~~ **RESOLVED (2026-10-15).** The
    two-closed-walk certificate is necessary **and** sufficient for strongly
    connected supports; see Theorem 5 in §12. The earlier `n = 3` evidence was
@@ -598,6 +634,12 @@ exhaustive zeros are a sanity check on the proofs, not a substitute for them.
 | §19 double-theta rigid repetitive instance `doubleTheta_rigid_repetitive` (`(2,1,2,1)`) | kernel-checked |
 | §19 coupling-dropped relaxation not sound `relaxed_not_sound` (`(2,1,2,1)` relaxed-satisfied yet rigid) | kernel-checked |
 | §19 double-theta cross-check vs brute force (`scripts/verify_257_double_theta.py`: 33 double thetas, 0 mismatches) | verified computation, exhaustive in scope |
+| §20 multi-hub exact criterion (`multiHub_nonrigid_iff`: `∃ α ≠ 0`, `∑_{u→v} α = ∑_{v→u} α`, `∑ length·α = 0`, `α ≥ 1-m`) for arbitrary `k, l` and lengths — unbounded cycle rank | mathematical proof + kernel-checked (`AssemblyP1/RigidityMultiHub.lean`) |
+| §20 multi-hub path constancy (`phi_of_balanced` / `balanced_of_phi`) | kernel-checked |
+| §20 all multiplicities `1` is rigid (`multiHub_rigid_all_one`) | kernel-checked |
+| §20 rigid repetitive instance `multiHub_rigid_repetitive_2` (`p2`/`m2`: lengths `(1,3)`, multiplicities `(2,1)`) | kernel-checked |
+| §20 coupling-dropped relaxation not sound `multiHub_relaxed_not_sound` (`p2`/`m2` relaxed-satisfied yet rigid) | kernel-checked |
+| §20 multi-hub cross-check vs brute force + polynomial DP (`scripts/verify_257_multi_hub.py`: 78 multi-hub supports, 0 mismatches) | verified computation, exhaustive in scope |
 
 ---
 
@@ -1594,3 +1636,122 @@ instead the smaller `3`-vertex `K3`-minus-an-arc (rank `3`), whose de Bruijn
 overlap constraints are unsatisfiable. The residual — a *polynomial*
 min-cut/max-flow closed form for general supports, or a proof that none exists —
 remains **OPEN** (§8.1/§8.2).
+
+---
+
+## 20. The multi-hub family: unbounded cycle rank with a polynomial criterion (§8.1/§8.2 progress)
+
+This section advances open items **§8.1** (a polynomial closed-form criterion
+beyond bounded cycle rank) and **§8.2** (the exact complexity) by isolating a
+genuinely **unbounded-cycle-rank** family with an exact, polynomial-time
+decidable criterion. It builds on — and does not redo — the bouquet (§13), the
+antiparallel bridge (§14), the length-3 bridge (§17), the general `p,q` bridge
+(§18) and the double theta (§19). [mathematical proof + kernel-checked + verified
+computation]
+
+### 20.1 The topology
+
+The *multi-hub* family `MH(k, l; L, M)` joins two hubs `u, v` by `k` internally
+vertex-disjoint `u → v` paths of lengths `L₁, …, L_k ≥ 1` and `l` internally
+vertex-disjoint `v → u` paths of lengths `M₁, …, M_l ≥ 1`:
+
+```
+u → … → v      (k paths, arbitrary lengths)      v → … → u      (l paths)
+```
+
+on `2 + Σ(L_i − 1) + Σ(M_j − 1)` vertices and `Σ L_i + Σ M_j` arcs, of cycle
+rank `k + l − 1`. Unlike the bouquet (rank `k`, but all cycles through one
+vertex), the double theta / general two-hub (rank `3`) and the bridges (rank
+`4`), here `k` and `l` are **arbitrary**, so the cycle rank is **unbounded**. The
+bouquet is `k = l = 1`; the double theta is `k = l = 2` with lengths `(1,2)`.
+
+Every internal vertex has in- and out-degree `1`, so balance forces each path to
+carry a **constant** value; writing `α` for the value on each path, the only
+independent balance equation is the **hub balance**
+`∑_{u→v} α = ∑_{v→u} α`, and the total mass is `∑ length · α`. This is
+kernel-checked as `phi_of_balanced` / `balanced_of_phi`.
+
+### 20.2 The exact two-equation criterion
+
+**Theorem 13 (multi-hub criterion).** For lengths `L, M ≥ 1` and multiplicities
+`m ≥ 1` with `∑_{u→v} m = ∑_{v→u} m`, the base circulation `A` is non-rigid
+**iff** there is a nonzero integer path-perturbation `α` with
+
+```
+∑_{u→v} α = ∑_{v→u} α              (hub balance — the coupling)
+∑_s length_s · α_s = 0             (zero total mass)
+α_s ≥ 1 − m_s                       (boxes)
+```
+
+This is kernel-checked as
+`AssemblyP1.RigidityMultiHub.multiHub_nonrigid_iff`, obtained from Theorem 1
+(`nonrigid_iff_exists_delta`) exactly as the merged criteria were. It
+specialises to the bouquet criterion (`k = l = 1`) and to
+`doubleTheta_nonrigid_iff` (`k = l = 2`, lengths `(1,2)`).
+
+The contrast with the bouquet is the **hub-balance coupling**: the two hubs
+impose one equation linking the two directions, which is *not* implied by the
+boxes.
+
+### 20.3 Instances: a rigid repetitive support and the coupling refutation
+
+* **Rigid repetitive instance** (`multiHub_rigid_repetitive_2`): the instance
+  `p2`/`m2` — lengths `(1,3)` each way, multiplicities `(2,1)` — is **rigid**,
+  even though the length-`1` path of each direction is traversed **twice**. So
+  no `m ≥ 2` repeat bound forces non-rigidity in this family.
+* **All multiplicities `1` is rigid** (`multiHub_rigid_all_one`): with unit
+  slack the boxes force `α ≥ 0`, and positive lengths force `α = 0`.
+* **The coupling equation is essential (failed simpler hypothesis)**
+  (`multiHub_relaxed_not_sound`): the *relaxed* predicate obtained by dropping
+  the hub-balance equation — the naive independent-per-path / bouquet-style /
+  single-cut relaxation — is **satisfied** at the rigid instance `p2`/`m2`
+  (witness `α = (-1, 0, 1, 0)`). Hence **no** criterion of the independent-per-
+  path or single-cut form can decide the multi-hub family: the coupling is a
+  genuine balance equation, not a cut condition. This is a committed
+  counterexample to the tempting "min-cut / per-cycle" hypothesis for §8.1.
+
+### 20.4 §8.2: a polynomial criterion for the unbounded-rank family
+
+Shifting to nonnegative variables `u_s = α_s + m_s − 1 ≥ 0`, the criterion
+becomes the existence of a **second** nonnegative integer solution to the
+**two-equation** system
+
+```
+∑_{u→v} u − ∑_{v→u} v = l − k
+∑_s length_s · u_s (on u→v) + ∑_s length_s · v_s (on v→u) = G − |E|
+```
+
+with the base solution `(m_s − 1)` always present. Since the path lengths are
+encoded in **unary** (an explicit support), this is a nonnegative-integer
+**uniqueness** problem decidable by a dynamic program over `(count, mass)` pairs
+that counts solutions up to `2`; its running time is polynomial in the input
+size (`O((k + l) · C²)` with `C = G − |E|`). This is a §8.2 **upper bound for a
+family of unbounded cycle rank** and complements the bouquet Apéry-set bound
+(§15). It is implemented and cross-checked from scratch in
+`scripts/verify_257_multi_hub.py`. The **uniform-in-support** complexity
+(arbitrary topology) remains **OPEN**.
+
+### 20.5 Cross-check (`scripts/verify_257_multi_hub.py`)
+
+The script `scripts/verify_257_multi_hub.py` is self-contained, exact and
+deterministic. It recomputes rigidity from scratch by enumerating **all**
+positive integer circulations of total `G` on the multi-hub graph and compares
+with the two-equation criterion over exhaustive scopes — `(k,l) ∈ {(1,1),(2,2),
+(3,3),(3,2),(2,3),(4,4)}` with small lengths, multiplicities `≤ 4` and `G ≤ 16`
+(**78** multi-hub supports, **0** mismatches) — re-derives the rigid repetitive
+instance `p2`/`m2`, the relaxed counterexample and the all-ones rigidity, and
+cross-checks the polynomial DP against the criterion. [verified computation,
+exhaustive in scope]
+
+### 20.6 Epistemic status
+
+Theorems and instances are kernel-checked with only
+`[propext, Classical.choice, Quot.sound]` (`AssemblyP1/RigidityMultiHubAudit`,
+and `AxiomAudit257.lean`); no `sorry`/`admit`/`axiom`/`native_decide`. The
+topology is an *abstract* oriented support graph, as for the merged general
+bridge (§18); the double-theta specialisation is de-Bruijn-realizable (§19.6).
+The residual — a *polynomial* min-cut/max-flow closed form for **arbitrary**
+supports (general topology), or a proof that none exists — remains **OPEN**
+(§8.1/§8.2); §20 shows that such a criterion cannot be of a single-cut /
+independent-per-path form, and gives a polynomial criterion for the
+unbounded-rank multi-hub subfamily.
