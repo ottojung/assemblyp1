@@ -44,6 +44,8 @@ jobs:
         run: python3 scripts/verify_real_genome_inversion_259.py
       - name: Verify #281 primitive-P2 (L-1)-window multiplicity cap
         run: python3 scripts/verify_281_window_cap.py 3 11 4
+      - name: Verify #281 Hellinger-affinity exponential ML error decay
+        run: python3 scripts/verify_281_hellinger_exponential.py
       - name: Verify #265 scoped finite-family sample-complexity bound
         run: python3 scripts/verify_sample_complexity_265.py
       - name: Verify #265 Chernoff refinement and its finite-n gap
