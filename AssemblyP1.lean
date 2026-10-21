@@ -388,6 +388,11 @@ import AssemblyP1.FiniteReadOnlyDecoderCertaintyAudit
 -- refuted on a faithful finite read-realizable model (ABAB/AABB, L = 2).
 import AssemblyP1.FiniteReadStringIsVsUnambiguous
 import AssemblyP1.FiniteReadStringIsVsUnambiguousAudit
+-- #272 subclaim 1: `I_s` is NOT necessary for read-only decoder certainty; a
+-- kernel-checked counterexample (AAAB, L = 3, R = {0,2}, Y = {AAA, ABA}) fails the
+-- all-bridged-triple clause of `I_s` while a read-only decoder is certain at Y.
+import AssemblyP1.FiniteIsNotNecessaryCertainty
+import AssemblyP1.FiniteIsNotNecessaryCertaintyAudit
 -- #272 weakest source-defined (read-only OR truth-only) sufficient promise:
 -- existence iff the read-only posterior is already certain (subclaim b).
 import AssemblyP1.FiniteSourceDefinedWeakest
