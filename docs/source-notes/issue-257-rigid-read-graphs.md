@@ -33,7 +33,10 @@ coupled criterion, rigid repetitive instance and coupling refutation cross-check
 exhaustive small scope),
 `python3 scripts/verify_257_multi_hub.py` (§20 multi-hub two-equation criterion,
 polynomial DP decision, rigid repetitive instance and coupling refutation
-cross-check, exhaustive small scopes).
+cross-check, exhaustive small scopes),
+`python3 scripts/verify_257_tri_hub.py` (§21 triangular multi-hub three-equation
+criterion, polynomial DP decision, rigid repetitive instance, non-rigidity
+witness and coupling refutation, mutation-red control, exhaustive small scopes).
 Self-contained, exact integer arithmetic, deterministic._
 
 _Blocking-review repair (2026-10-10, branch `research/257-graver-lean-repair`):
@@ -223,6 +226,26 @@ map `B : E → ℤ` with `B ≥ 1` on every edge, balanced at every node, and
     (arbitrary topology) and any min-cut/max-flow closed form for it remain
     **OPEN**. [mathematical proof + kernel-checked + verified computation,
     section 20]
+
+14. **The triangular multi-hub family: a genuinely three-hub unbounded-rank
+    family (§8.1/§8.2 progress).** The *triangular multi-hub* family joins three
+    hubs `u, v, w` in a directed cycle: `a` `u → v` paths, `b` `v → w` paths and
+    `c` `w → u` paths of **arbitrary lengths**; its cycle rank is `a + b + c - 2`,
+    **unbounded**. It is a genuinely *three-hub* topology — the merged two-hub
+    multi-hub (§20) is the degenerate two-hub case — and adds a **second
+    independent hub-balance equation**, so every circulation is constant on each
+    path and the exact criterion is a **three-equation** integer system:
+    `∑_{u→v} α = ∑_{v→w} β = ∑_{w→u} γ` (two hub balances), zero total mass
+    `∑ length·α + ∑ length·β + ∑ length·γ = 0`, and the boxes `α ≥ 1 - m`
+    (kernel-checked `triHub_nonrigid_iff`). The instance
+    `(lengths (1,3), multiplicities (2,1))` in each direction is a **rigid
+    repetitive** support, and dropping the hub-balance coupling is **not sound**
+    (`triHub_relaxed_not_sound`), so no independent-per-path / single-cut
+    criterion decides the family. Because the path lengths are unary, the
+    three-equation system is a nonnegative-integer **uniqueness** problem
+    decidable by a polynomial DP (counting solutions up to `2`), a §8.2 upper
+    bound for this unbounded-rank family. [mathematical proof + kernel-checked +
+    verified computation, section 21]
 
 ---
 
@@ -554,20 +577,32 @@ exhaustive zeros are a sanity check on the proofs, not a substitute for them.
      a nonnegative-integer **uniqueness** problem solvable by a polynomial DP,
      giving a §8.2 upper bound for this unbounded-rank family. It has a rigid
      repetitive instance and its coupling-dropped relaxation is not sound. The
-     *general* support topology and a min-cut/max-flow closed form for it remain
-     **OPEN** — no criterion of a single-cut / independent-per-path form can be
-     exact (the committed counterexample `multiHub_relaxed_not_sound`).
+      *general* support topology and a min-cut/max-flow closed form for it remain
+      **OPEN** — no criterion of a single-cut / independent-per-path form can be
+      exact (the committed counterexample `multiHub_relaxed_not_sound`).
+      **Further partial progress (§21, 2026-10-21):** the **triangular multi-hub
+      family** (three hubs in a directed cycle, `a + b + c - 2` paths, unbounded
+      cycle rank) is a genuinely *three-hub* topology with a **three-equation**
+      criterion (`triHub_nonrigid_iff`); it too is decidable by a polynomial DP
+      (unary lengths), has a rigid repetitive instance, and its coupling-dropped
+      relaxation is not sound (`triHub_relaxed_not_sound`). The general support
+      topology and a min-cut/max-flow closed form for it remain **OPEN**.
     [open; bouquet case reduced and shown poly-time, §13/§15;
     bridge case classified, §14; length-3 bridge classified and bridge pattern
      refuted, §17; general `p,q` long bridge classified, §18; coupling begins at
      rank `3`, double theta minimal among realizable supports, §19; multi-hub
-     unbounded-rank family with a two-equation polynomial criterion, §20]
+     unbounded-rank family with a two-equation polynomial criterion, §20;
+     triangular three-hub unbounded-rank family with a three-equation polynomial
+     criterion, §21]
 2. **The exact complexity** of the exact criterion (§7). **Partial (§15,
     2026-10-16):** the bouquet family (hence the target-cycle family) is in `P`
     via the Apéry-set / residue-graph shortest-path algorithm. **Partial (§20,
     2026-10-20):** the multi-hub family (unbounded cycle rank) is in `P` via a
-    two-equation nonnegative-integer-uniqueness DP (unary path lengths); the
-    uniform-in-support case (arbitrary topology) is **OPEN**. [open]
+     two-equation nonnegative-integer-uniqueness DP (unary path lengths); the
+     uniform-in-support case (arbitrary topology) is **OPEN**. **Partial (§21,
+     2026-10-21):** the triangular three-hub family (unbounded cycle rank) is in
+     `P` via a three-equation nonnegative-integer-uniqueness DP (unary path
+     lengths); the uniform-in-support case remains **OPEN**. [open]
 3. ~~**The two-closed-walk certificate** (§4)~~ **RESOLVED (2026-10-15).** The
    two-closed-walk certificate is necessary **and** sufficient for strongly
    connected supports; see Theorem 5 in §12. The earlier `n = 3` evidence was
@@ -640,6 +675,12 @@ exhaustive zeros are a sanity check on the proofs, not a substitute for them.
 | §20 rigid repetitive instance `multiHub_rigid_repetitive_2` (`p2`/`m2`: lengths `(1,3)`, multiplicities `(2,1)`) | kernel-checked |
 | §20 coupling-dropped relaxation not sound `multiHub_relaxed_not_sound` (`p2`/`m2` relaxed-satisfied yet rigid) | kernel-checked |
 | §20 multi-hub cross-check vs brute force + polynomial DP (`scripts/verify_257_multi_hub.py`: 78 multi-hub supports, 0 mismatches) | verified computation, exhaustive in scope |
+| §21 triangular multi-hub exact criterion (`triHub_nonrigid_iff`: `∃ (α,β,γ) ≠ 0`, `∑_{u→v} α = ∑_{v→w} β = ∑_{w→u} γ`, zero weighted mass, boxes) for arbitrary `a, b, c` and lengths — three-hub, unbounded cycle rank | mathematical proof + kernel-checked (`AssemblyP1/RigidityTriHub.lean`) |
+| §21 triangular path constancy (`phi_of_balanced` / `balanced_of_phi`) | kernel-checked |
+| §21 all multiplicities `1` is rigid (`triHub_rigid_all_one`) | kernel-checked |
+| §21 rigid repetitive instance `triHub_rigid_repetitive` (lengths `(1,3)`, multiplicities `(2,1)` each direction) | kernel-checked |
+| §21 coupling-dropped relaxation not sound `triHub_relaxed_not_sound` | kernel-checked |
+| §21 triangular cross-check vs brute force + polynomial DP + mutation-red (`scripts/verify_257_tri_hub.py`: 153 triangular supports, 0 mismatches) | verified computation, exhaustive in scope |
 
 ---
 
@@ -1755,3 +1796,119 @@ supports (general topology), or a proof that none exists — remains **OPEN**
 (§8.1/§8.2); §20 shows that such a criterion cannot be of a single-cut /
 independent-per-path form, and gives a polynomial criterion for the
 unbounded-rank multi-hub subfamily.
+
+---
+
+## 21. The triangular multi-hub family: a three-hub unbounded-rank criterion (§8.1/§8.2 progress)
+
+This section advances open items **§8.1** (a polynomial closed-form criterion
+beyond bounded cycle rank) and **§8.2** (the exact complexity) by isolating a
+genuinely **three-hub** family — distinct from the two-hub multi-hub of §20 —
+with an exact, polynomial-time decidable criterion. It builds on — and does not
+redo — the bouquet (§13), the bridges (§14/§17/§18), the double theta (§19) and
+the two-hub multi-hub (§20). [mathematical proof + kernel-checked + verified
+computation]
+
+### 21.1 The topology
+
+The *triangular multi-hub* family `TH(a, b, c; L, M, N)` joins three hubs
+`u, v, w` in a directed cycle by `a` internally vertex-disjoint `u → v` paths,
+`b` `v → w` paths and `c` `w → u` paths, of lengths `L₁, …, L_a`, `M₁, …, M_b`,
+`N₁, …, N_c ≥ 1`:
+
+```
+u → … → v      (a paths)      v → … → w      (b paths)      w → … → u      (c paths)
+```
+
+on `3 + Σ(L_i − 1) + Σ(M_j − 1) + Σ(N_k − 1)` vertices and
+`Σ L_i + Σ M_j + Σ N_k` arcs, of cycle rank `a + b + c − 2`. Unlike the two-hub
+multi-hub (§20), which has *two* hubs and a *single* independent hub-balance
+equation, here the third hub adds a **second independent hub-balance equation**;
+the cycle rank is again **unbounded**. The two-hub multi-hub is the degenerate
+case `c = 0`; the directed triangle of single arcs is `a = b = c = 1`.
+
+Every internal vertex has in- and out-degree `1`, so balance forces each path to
+carry a **constant** value; writing `α, β, γ` for the values in the three
+directions, the hubs give the two independent balance equations
+`∑_{u→v} α = ∑_{v→w} β` and `∑_{v→w} β = ∑_{w→u} γ`, and the total mass is
+`∑ L_i α_i + ∑ M_j β_j + ∑ N_k γ_k`. This is kernel-checked as
+`phi_of_balanced` / `balanced_of_phi`.
+
+### 21.2 The exact three-equation criterion
+
+**Theorem 14 (triangular multi-hub criterion).** For lengths `L, M, N ≥ 1` and
+multiplicities `m ≥ 1` with `∑ m(u→v) = ∑ m(v→w) = ∑ m(w→u)`, the base
+circulation `A` is non-rigid **iff** there is a nonzero integer path-perturbation
+`(α, β, γ)` with
+
+```
+∑_{u→v} α = ∑_{v→w} β = ∑_{w→u} γ        (two hub balances — the coupling)
+∑_s length_s · α_s + ∑_s length_s · β_s + ∑_s length_s · γ_s = 0   (zero mass)
+α_s, β_s, γ_s ≥ 1 − m_s                    (boxes)
+```
+
+This is kernel-checked as `AssemblyP1.RigidityTriHub.triHub_nonrigid_iff`,
+obtained from Theorem 1 (`nonrigid_iff_exists_delta`) exactly as the merged
+criteria were. The contrast with the two-hub multi-hub is the **second**
+hub-balance equation: the three-hub coupling is strictly stronger, and the
+criterion is a **three-equation** system rather than a two-equation one.
+
+### 21.3 Instances: a rigid repetitive support, a witness, and the coupling refutation
+
+* **Rigid repetitive instance** (`triHub_rigid_repetitive`): the instance
+  `p3`/`m3` — lengths `(1,3)` each direction, multiplicities `(2,1)` each
+  direction — is **rigid**, even though the length-`1` path of each direction is
+  traversed **twice**. So no `m ≥ 2` repeat bound forces non-rigidity here.
+* **Non-rigidity witness** (`scripts/verify_257_tri_hub.py`): at lengths `(1,1)`
+  each direction and multiplicities `(2,2)` each direction, the perturbation
+  `(α, β, γ) = ((-1,1), (-1,1), (-1,1))` (or `((-1,1),(0,0,0),(0,0))`) is a
+  valid non-rigidity witness.
+* **All multiplicities `1` is rigid** (`triHub_rigid_all_one`): with unit slack
+  the boxes force the perturbation to be nonnegative, and positive lengths force
+  it to be zero.
+* **The coupling equations are essential (failed simpler hypothesis)**
+  (`triHub_relaxed_not_sound`): the *relaxed* predicate obtained by dropping the
+  two hub-balance equations — the naive independent-per-path / bouquet-style /
+  single-cut relaxation — is **satisfied** at the rigid instance `p3`/`m3`.
+  Hence **no** criterion of the independent-per-path or single-cut form can
+  decide the triangular multi-hub family.
+
+### 21.4 §8.2: a polynomial criterion for the unbounded-rank family
+
+Shifting to nonnegative variables `u_i = α_i + m_i − 1 ≥ 0` (etc.), the criterion
+becomes the existence of a **second** nonnegative integer solution of a
+**three-equation** system (two balance differences and the weighted mass) whose
+base solution is `(m_s − 1)`. Since the path lengths are encoded in **unary** (an
+explicit support), this is a nonnegative-integer **uniqueness** problem decidable
+by a dynamic program over `(Δ_ab, Δ_bc, mass)` counting solutions up to `2`; its
+running time is polynomial in the input size. This is a §8.2 **upper bound for a
+three-hub family of unbounded cycle rank** and complements the bouquet Apéry-set
+bound (§15) and the two-hub DP (§20). It is implemented and cross-checked from
+scratch in `scripts/verify_257_tri_hub.py`. The **uniform-in-support** complexity
+(arbitrary topology) remains **OPEN**.
+
+### 21.5 Cross-check (`scripts/verify_257_tri_hub.py`)
+
+The script is self-contained, exact and deterministic. It recomputes rigidity
+from scratch by enumerating **all** positive integer circulations of total `G` on
+the triangular multi-hub graph and compares with the criterion and the DP over
+exhaustive scopes — `(a,b,c) ∈ {(1,1,1), (2,2,2), (3,3,3), (2,3,2), (3,2,3),
+(2,2,3)}` with small lengths, multiplicities `≤ 4` and `G ≤ 16` (**153**
+triangular supports, **0** mismatches) — re-derives the rigid repetitive
+instance `p3`/`m3`, the non-rigidity witness, the relaxed counterexample and the
+all-ones rigidity, and includes a **mutation-red control** (the coupling-dropped
+relaxation disagrees with the brute force, so the harness has real discriminating
+power). [verified computation, exhaustive in scope]
+
+### 21.6 Epistemic status
+
+Theorems and instances are kernel-checked with only
+`[propext, Classical.choice, Quot.sound]` (`AssemblyP1/RigidityTriHubAudit`,
+and `AxiomAudit257.lean`); no `sorry`/`admit`/`axiom`/`native_decide`. The
+topology is an *abstract* oriented support graph, as for the merged general
+bridge (§18) and the two-hub multi-hub (§20). The residual — a *polynomial*
+min-cut/max-flow closed form for **arbitrary** supports (general topology), or a
+proof that none exists — remains **OPEN** (§8.1/§8.2); §21 shows that such a
+criterion cannot be of a single-cut / independent-per-path form for the
+triangular family either, and gives a polynomial criterion for that
+unbounded-rank three-hub subfamily.
