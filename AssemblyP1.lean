@@ -86,6 +86,10 @@ import AssemblyP1.Section62ReversalOrbitTransportAudit
 -- bound + maximality reduction) to physical edge-orbit totals, and its audit.
 import AssemblyP1.Section62PhysicalOrbitObjective
 import AssemblyP1.Section62PhysicalOrbitObjectiveAudit
+-- #255/#261 L3 remainder: uniqueness does NOT transport across the physical
+-- visit map (non-injective on the two representations of one physical edge).
+import AssemblyP1.Section62PhysicalOrbitObjectiveUniqueness
+import AssemblyP1.Section62PhysicalOrbitObjectiveUniquenessAudit
 import AssemblyP1.Section62FullSpectrumUnseenFactor
 -- #259 real circular-genome witness: exact iid and product-binomial rankings differ.
 import AssemblyP1.Section62BinomialRealGenomeInversion
