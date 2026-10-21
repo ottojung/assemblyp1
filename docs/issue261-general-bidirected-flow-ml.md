@@ -214,6 +214,27 @@ length `N` is therefore a variable and the comparison acquires a length factor.
   and length `k·G`, so its normalized spectrum equals the truth's and it ties on
   every sample (`rescaling_tie`). No full-overlap analogue.
 
+### Class 6: Half-integral relaxation under the exact variable-length objective
+
+- **Candidates**: rational §6.2 flows (`Feasible62Rat`, the `ℚ`-analogue of the
+  literal `Feasible62`) vs the literal integer `Feasible62` flows. Candidates are
+  **flows**, not spelled circuits or circular genomes.
+- **Truth**: admitted (any feasible rational flow).
+- **Likelihood**: exact multinomial `qExactLik` of the normalized throughput.
+- **Length universe**: variable `N = ∑ d` (the §6.1 first display).
+- **Status**: **RESOLVED for this family** by
+  `AssemblyP1.Section62HalfIntegralSourceML` (`no_half_integral_gap_exact`,
+  `truth_half_maximal_iff_int_maximal`, kernel-checked). Because the exact
+  likelihood is scale-invariant and the §6.2 clauses are homogeneous, doubling a
+  half-integral feasible flow gives a literal integer `Feasible62` flow with the
+  same likelihood; hence the relaxation cannot strictly beat the integer optimum
+  and ML maximality of the truth is unchanged. The relaxation is nevertheless a
+  **strict** enlargement (`integral_strict_subset_half_integral`).
+- **Contrast with Class 3**: the same question for the fixed-external-`N`
+  binomial has the *opposite* answer (a real gap), because that objective is not
+  homogeneous. See `docs/issue261-half-integral-source-ml.md`. The **real**
+  (non-half-integral) LP relaxation remains OPEN.
+
 ## Adjudication (2026-10-16): unobserved molecule types and the count-vector criterion
 
 An open review objection on #261 (research-assistant, 2026-10-14) observed that
