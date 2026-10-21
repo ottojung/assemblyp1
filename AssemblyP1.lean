@@ -162,6 +162,8 @@ import AssemblyP1.RigidityDoubleTheta
 import AssemblyP1.RigidityDoubleThetaAudit
 import AssemblyP1.RigidityMultiHub
 import AssemblyP1.RigidityMultiHubAudit
+import AssemblyP1.RigidityTriHub
+import AssemblyP1.RigidityTriHubAudit
 import AssemblyP1.RigidityTargetCycle
 import AssemblyP1.RigidityTargetCycleAudit
 import AssemblyP1.RigidityNoGo
