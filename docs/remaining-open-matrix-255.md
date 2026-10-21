@@ -1,5 +1,33 @@
 # AssemblyP1 umbrella #255 — remaining-open matrix
 
+## Addendum — 2026-10-21 (#259 axis B full count-vector classification)
+
+* **Landed on `main` (PR #365, merge `17b40b414fd630f61bc99859e0411e607b0437d0`):**
+  `AssemblyP1.ProductBinomialBoundaryFullClass.fullClass_sampleUniformMax_iff`
+  proves the full same-total candidate-class classification for the MB09 §6.1
+  fixed-external-`N` product-binomial surrogate, including truths `A` with zero
+  coordinates and competitors with zero/full coordinates or new support. For
+  `A : E → ℕ`, finite `E`, `∑ A = N`, candidates `B : E → ℕ` with `∑ B = N`,
+  and every count vector `x` with `A ≤ x` and `x e = 0` whenever `A e = 0`,
+  sample-uniform maximality is equivalent to `A` being concentrated on one
+  coordinate or `A e ≤ 1` for all `e`. Here `n = ∑ x` is free. The score is the
+  MB09 §6.1 product of marginal binomials; its effective weights retain all
+  `(N − B j)` factors, including zero-count coordinates. It is not the exact
+  multinomial objective (#256) or the §6.2 flow objective (#260/#261).
+* **Validation:** theorem and audit build with `lake build --wfail`; the audit
+  reports only `{propext, Classical.choice, Quot.sound}`. The independent exact
+  integer verifier passes Parts A–E (including its mutation control), and
+  `scripts/check-research-docs.py` passes. Detailed proof and scope:
+  `docs/product-binomial-boundary-fullclass-259.md`.
+* **Residual OPEN, do not overstate:** the theorem ranges over all covered
+  *count vectors*, which is stronger than restricting the sample quantifier to
+  realizable complete-support observations. It proves the sufficiency of the
+  two listed truth classes on any realizable subdomain, but its necessity
+  witness is not shown to be a realizable genome sample. Thus the iff for
+  realizable complete-support `x` remains open. Also open are axis A at
+  non-integral empirical frequencies, variable genome length, and the general
+  §6.2 bidirected-flow domain.
+
 
 ## Addendum — 2026-10-21 (L3 uniqueness transport: does NOT hold, kernel-checked)
 
