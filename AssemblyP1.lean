@@ -90,6 +90,10 @@ import AssemblyP1.Section62ReversalOrbitTransportAudit
 -- bound + maximality reduction) to physical edge-orbit totals, and its audit.
 import AssemblyP1.Section62PhysicalOrbitObjective
 import AssemblyP1.Section62PhysicalOrbitObjectiveAudit
+-- #255/#261 L3 remainder: uniqueness does NOT transport across the physical
+-- visit map (non-injective on the two representations of one physical edge).
+import AssemblyP1.Section62PhysicalOrbitObjectiveUniqueness
+import AssemblyP1.Section62PhysicalOrbitObjectiveUniquenessAudit
 import AssemblyP1.Section62FullSpectrumUnseenFactor
 -- #259 real circular-genome witness: exact iid and product-binomial rankings differ.
 import AssemblyP1.Section62BinomialRealGenomeInversion
@@ -166,6 +170,8 @@ import AssemblyP1.RigidityDoubleTheta
 import AssemblyP1.RigidityDoubleThetaAudit
 import AssemblyP1.RigidityMultiHub
 import AssemblyP1.RigidityMultiHubAudit
+import AssemblyP1.RigidityTriHub
+import AssemblyP1.RigidityTriHubAudit
 import AssemblyP1.RigidityTargetCycle
 import AssemblyP1.RigidityTargetCycleAudit
 import AssemblyP1.RigidityNoGo
@@ -386,6 +392,11 @@ import AssemblyP1.FiniteReadOnlyDecoderCertaintyAudit
 -- refuted on a faithful finite read-realizable model (ABAB/AABB, L = 2).
 import AssemblyP1.FiniteReadStringIsVsUnambiguous
 import AssemblyP1.FiniteReadStringIsVsUnambiguousAudit
+-- #272 subclaim 1: `I_s` is NOT necessary for read-only decoder certainty; a
+-- kernel-checked counterexample (AAAB, L = 3, R = {0,2}, Y = {AAA, ABA}) fails the
+-- all-bridged-triple clause of `I_s` while a read-only decoder is certain at Y.
+import AssemblyP1.FiniteIsNotNecessaryCertainty
+import AssemblyP1.FiniteIsNotNecessaryCertaintyAudit
 -- #272 weakest source-defined (read-only OR truth-only) sufficient promise:
 -- existence iff the read-only posterior is already certain (subclaim b).
 import AssemblyP1.FiniteSourceDefinedWeakest

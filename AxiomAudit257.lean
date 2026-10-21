@@ -7,6 +7,7 @@ import AssemblyP1.RigidityLength3Bridge
 import AssemblyP1.RigidityGeneralBridge
 import AssemblyP1.RigidityDoubleTheta
 import AssemblyP1.RigidityMultiHub
+import AssemblyP1.RigidityTriHub
 import AssemblyP1.RigidityTargetCycle
 import AssemblyP1.RigidityNoGo
 open AssemblyP1.ExactRigidityCriterion
@@ -18,6 +19,7 @@ open AssemblyP1.RigidityLength3Bridge
 open AssemblyP1.RigidityGeneralBridge
 open AssemblyP1.RigidityDoubleTheta
 open AssemblyP1.RigidityMultiHub
+open AssemblyP1.RigidityTriHub
 open AssemblyP1.RigidityTargetCycle
 open AssemblyP1.RigidityNoGo
 #print axioms AssemblyP1.ExactRigidityCriterion.nonrigid_iff_exists_delta
@@ -79,6 +81,19 @@ open AssemblyP1.RigidityNoGo
 #print axioms AssemblyP1.RigidityMultiHub.multiHub_rigid_all_one
 #print axioms AssemblyP1.RigidityMultiHub.multiHub_rigid_repetitive_2
 #print axioms AssemblyP1.RigidityMultiHub.multiHub_relaxed_not_sound
+#print axioms AssemblyP1.RigidityTriHub.balancedB_iff_balancedZ
+#print axioms AssemblyP1.RigidityTriHub.balanced_step
+#print axioms AssemblyP1.RigidityTriHub.path_const
+#print axioms AssemblyP1.RigidityTriHub.phi_of_balanced
+#print axioms AssemblyP1.RigidityTriHub.balanced_of_phi
+#print axioms AssemblyP1.RigidityTriHub.phi_sum
+#print axioms AssemblyP1.RigidityTriHub.mA_total
+#print axioms AssemblyP1.RigidityTriHub.mA_balanced
+#print axioms AssemblyP1.RigidityTriHub.sum_elim_three
+#print axioms AssemblyP1.RigidityTriHub.triHub_nonrigid_iff
+#print axioms AssemblyP1.RigidityTriHub.triHub_rigid_all_one
+#print axioms AssemblyP1.RigidityTriHub.triHub_rigid_repetitive
+#print axioms AssemblyP1.RigidityTriHub.triHub_relaxed_not_sound
 #print axioms AssemblyP1.RigidityTargetCycle.targetCycle_nonrigid_iff_coin
 #print axioms AssemblyP1.RigidityTargetCycle.targetCycle_rigid_iff_not_coin
 #print axioms AssemblyP1.RigidityTargetCycle.coin_nonrigid_23_5

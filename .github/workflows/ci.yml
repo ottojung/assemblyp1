@@ -66,6 +66,8 @@ jobs:
         run: python3 scripts/verify_284_visit_window_bridge.py
       - name: Verify #284 window-box sharpness refutation (no designation to equality)
         run: python3 scripts/verify_284_window_box_sharpness.py
+      - name: Verify #284 §6.2 reduction dependent-classification survival matrix
+        run: python3 scripts/verify_284_reduction_survival_matrix.py
 
   build:
     runs-on: ubuntu-latest
