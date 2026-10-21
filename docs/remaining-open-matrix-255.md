@@ -1,6 +1,37 @@
 # AssemblyP1 umbrella #255 — remaining-open matrix
 
 
+## Addendum — 2026-10-21 (L3 uniqueness transport: does NOT hold, kernel-checked)
+
+* **New kernel-checked increment on the L3 axis.**  The merged L3 transport
+  (`AssemblyP1.Section62PhysicalOrbitObjective`, PR #353) reduces *maximality*
+  (ties admitted) of a physical orbit flow to maximality of its physical visit
+  vector, for any score that is a function of the visit vector.  The #255
+  umbrella asks for the transport of the exact ML objective *or its argmax /
+  uniqueness*.  The uniqueness half is now settled, and it does **not** hold:
+  `AssemblyP1.Section62PhysicalOrbitObjectiveUniqueness` (+ audit) proves
+  * `physUniqueMaximal_image_of_flow` — uniqueness transports **forward**:
+    a unique flow maximizer has a unique visit-vector maximizer;
+  * `physUniqueMaximal_of_injective` /
+    `physUniqueMaximal_iff_of_injective` — uniqueness transports **backward
+    only under injectivity** of the visit map on the candidate set at the truth;
+  * `MixedLoop.physVisitVec_twoRep_eq` — on the minimal length-`1`
+    mixed-sign self-loop witness (`mixedLoop` on `Tagged Bool`), two orbit IDs
+    representing the *same* physical edge give two distinct orbit flows the
+    *same* physical visit vector, so the visit map is not injective;
+  * `MixedLoop.physUniqueMaximal_not_transported` — on that witness the visit
+    vector is the unique image maximizer while the flow is not a unique
+    maximizer, for every score that is a function of the visit vector
+    (including the exact oriented ML objective).
+  Axioms `⊆ {propext, Classical.choice, Quot.sound}`; no
+  `sorry`/`admit`/`axiom`/`native_decide`.  Scoped note:
+  `docs/issue261-physical-orbit-objective-uniqueness-255.md`.
+* **Still genuinely OPEN:** L1 remains the source-graph correspondence (owned
+  by live #284/#261); the spelled-genome identification and the general §6.2
+  classification remain OPEN.  Uniqueness of the *flow* maximizer is **not**
+  recovered by the physical-orbit objective transport without an injectivity
+  hypothesis; this increment delimits the L3 transport, it does not close it.
+
 ## Addendum — 2026-10-19 (dihedral orbit quotient, #269)
 
 * **#269 dihedral item CLOSED (conditional + obstruction).**  The last open #269
