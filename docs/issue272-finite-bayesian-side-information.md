@@ -215,9 +215,15 @@ statements remain attributed to the source.
    `∀ r, Unambiguous π p orbit r`; when it exists, the weakest is `True`,
    unique up to equivalence.  On the ambiguous `TwoCandidate` model, the
    family has no weakest sufficient promise.
-2. **`I_s` necessity for the specific algorithm.** Whether `I_s` is necessary
-   for the *particular* Not-So-Greedy decoder (as opposed to for any read-only
-   decoder) is OPEN and is a source-level question.
+2. **`I_s` necessity for decoder-level certainty.** RESOLVED (negative) at the
+   read-only-decoder level by
+   [`AssemblyP1/FiniteIsNotNecessaryCertainty.lean`](../AssemblyP1/FiniteIsNotNecessaryCertainty.lean)
+   (`is_not_necessary_for_readOnly_certainty`): a kernel-checked `L = 3` witness
+   (`AAAB`, `R = {0,2}`, `Y = {AAA, ABA}`) fails the all-bridged-triple clause of
+   `I_s` while a read-only decoder is certain at `Y`. **Algorithm-specific**
+   necessity for the literal 2016 Not-So-Greedy decoder is OPEN (the algorithm is
+   not formalized; it is the attributed external premise). See
+   [`docs/source-notes/issue272-is-necessity.md`](source-notes/issue272-is-necessity.md).
 3. **Concrete AssemblyP1 endpoint.** A kernel-checked instantiation of
    `conditional_certain_of_fibreUnique` on the full historical read-string model
    requires the external guarantee; the abstract bridge is proved, the concrete
