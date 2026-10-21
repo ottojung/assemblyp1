@@ -423,6 +423,9 @@ import AssemblyP1.SeparableConvexGraverAudit
 -- #263 exact-ML optimizer preservation of the affine-tail Graver certificate + audit.
 import AssemblyP1.ExactMLOptimizerTransfer
 import AssemblyP1.ExactMLOptimizerTransferAudit
+-- #263 optimizer-preserving EXACT support-restricted Graver certificate (T1/T2, no surrogate) + audit.
+import AssemblyP1.ExactSupportRestrictedGraver
+import AssemblyP1.ExactSupportRestrictedGraverAudit
 
 -- #284 physical visit-count transport: spelling preservation does not imply
 -- vertex-visit / ML-flow equivalence (self-contained, Lean core only).

@@ -1,0 +1,25 @@
+import AssemblyP1.ExactSupportRestrictedGraver
+
+open AssemblyP1.ExactSupportRestrictedGraver
+
+-- Axiom audit for the exact support-restricted Graver certificate (#263).
+-- Every endpoint must depend only on {propext, Classical.choice, Quot.sound}.
+#print axioms AssemblyP1.ExactSupportRestrictedGraver.lowOf_pos
+#print axioms AssemblyP1.ExactSupportRestrictedGraver.lowOf_zero
+#print axioms AssemblyP1.ExactSupportRestrictedGraver.highOf_pos
+#print axioms AssemblyP1.ExactSupportRestrictedGraver.highOf_zero
+#print axioms AssemblyP1.ExactSupportRestrictedGraver.lowOf_nonneg
+#print axioms AssemblyP1.ExactSupportRestrictedGraver.highOf_le
+#print axioms AssemblyP1.ExactSupportRestrictedGraver.admissible_binomExact_eq_coe
+#print axioms AssemblyP1.ExactSupportRestrictedGraver.admissible_binom_exact_le_iff_cost_le
+#print axioms AssemblyP1.ExactSupportRestrictedGraver.admissible_multinomialExact_eq_coe
+#print axioms AssemblyP1.ExactSupportRestrictedGraver.admissible_multinomial_exact_le_iff_cost_le
+#print axioms AssemblyP1.ExactSupportRestrictedGraver.excluded_binom_exact_eq_top
+#print axioms AssemblyP1.ExactSupportRestrictedGraver.excluded_binom_not_minimizer
+#print axioms AssemblyP1.ExactSupportRestrictedGraver.excluded_multinomial_exact_eq_top
+#print axioms AssemblyP1.ExactSupportRestrictedGraver.excluded_multinomial_not_minimizer
+#print axioms AssemblyP1.ExactSupportRestrictedGraver.negLog_sub_discConvOn_zero
+#print axioms AssemblyP1.ExactSupportRestrictedGraver.binomCost_admissible_discConvOn
+#print axioms AssemblyP1.ExactSupportRestrictedGraver.multinomialCost_admissible_discConvOn
+#print axioms AssemblyP1.ExactSupportRestrictedGraver.binom_exact_optimal_admissible
+#print axioms AssemblyP1.ExactSupportRestrictedGraver.multinomial_exact_optimal_admissible
