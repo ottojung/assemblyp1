@@ -163,8 +163,15 @@ while `I_s` constrains the **`I_s`-feasible** fibre, and these differ; see
    the resulting read-dependent `I_s` family. A *decoder-level* certainty
    endpoint still requires the external Not-So-Greedy guarantee and remains an
    attributed premise. OPEN (decoder-level endpoint only).
-2. **`I_s` necessity for the specific Not-So-Greedy decoder.** Still OPEN and
-   source-level; the order results here do not address it.
+2. **`I_s` necessity for decoder-level certainty.** RESOLVED (negative) at the
+   read-only-decoder level by
+   [`FiniteIsNotNecessaryCertainty`](../AssemblyP1/FiniteIsNotNecessaryCertainty.lean):
+   a kernel-checked `L = 3` witness (`AAAB`, `R = {0,2}`, `Y = {AAA, ABA}`) fails
+   the all-bridged-triple clause of `I_s` while a read-only decoder is certain at
+   `Y`, so `I_s` is **not** necessary. See
+   [`docs/source-notes/issue272-is-necessity.md`](source-notes/issue272-is-necessity.md).
+   Algorithm-specific necessity for the literal 2016 Not-So-Greedy decoder stays
+   OPEN (algorithm not formalized; attributed external premise).
 3. **Weakest source-defined bridging promise.** Still reduced by
    `weakest_admissible_iff_union` to whether the union of source-defined
    sufficient promises is itself source-defined and sufficient. OPEN.
