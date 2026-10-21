@@ -386,6 +386,8 @@ import AssemblyP1.FiniteReadStringIsVsUnambiguousAudit
 -- existence iff the read-only posterior is already certain (subclaim b).
 import AssemblyP1.FiniteSourceDefinedWeakest
 import AssemblyP1.FiniteSourceDefinedWeakestAudit
+import AssemblyP1.FiniteSourceDefinedMinimal
+import AssemblyP1.FiniteSourceDefinedMinimalAudit
 -- #270 positive finite-family iid ML recovery via Hellinger affinity.
 import AssemblyP1.FiniteReadRecovery
 -- #270 concrete uniform-start cyclic read distribution and conditional genome bounds.
