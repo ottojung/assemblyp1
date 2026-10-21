@@ -8,6 +8,7 @@ import AssemblyP1.Section62SimultaneousReduction
 import AssemblyP1.Section62VisitTransport
 import AssemblyP1.Section62VisitWindowBridge
 import AssemblyP1.Section62WindowBoxSharpness
+import AssemblyP1.Section62SpellChainWindowTransport
 
 /-!
 # #284 axiom audit
@@ -88,3 +89,14 @@ AssemblyP1`, so this file is a human-readable summary, not the sole gate.
 #print axioms AssemblyP1.Section62WindowBoxSharpness.no_prefix_support_designation_sharpens
 #print axioms AssemblyP1.Section62WindowBoxSharpness.endpoint_prefix_refuted
 #print axioms AssemblyP1.Section62WindowBoxSharpness.endpoint_pair_refuted
+
+-- Real-model `spellChain` window-multiset bridge (new in #284): the §6.2 spelling
+-- function agrees with the walk spelling, and its window multiset dominates the
+-- physical visited reads of a genuine chain.
+#print axioms AssemblyP1.Section62SpellChainWindowTransport.spellChain_eq_spellWalk
+#print axioms AssemblyP1.Section62SpellChainWindowTransport.spellChain_windows_congr
+#print axioms AssemblyP1.Section62SpellChainWindowTransport.reduction_preserves_language_windows
+#print axioms AssemblyP1.Section62SpellChainWindowTransport.genuineChain_of_overlapEdges
+#print axioms AssemblyP1.Section62SpellChainWindowTransport.chainStrands_subset_strandsOf
+#print axioms AssemblyP1.Section62SpellChainWindowTransport.chain_visited_dominated
+#print axioms AssemblyP1.Section62SpellChainWindowTransport.genuineChain_visited_dominated

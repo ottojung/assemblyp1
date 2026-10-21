@@ -451,6 +451,10 @@ import AssemblyP1.Section62VisitWindowBridge
 -- (self-contained, Lean core only).
 import AssemblyP1.Section62WindowBoxSharpness
 
+-- #284 real-model bridge: the §6.2 `spellChain` window multiset and its
+-- domination of the physical visited reads (reuses the toy transport modules).
+import AssemblyP1.Section62SpellChainWindowTransport
+
 /-! ## `Issue94Transposition`: the Kotzig/Ukkonen/Pevzner descent, and an obstruction
 
 The classical transposition step deletes one transposition factor of the
@@ -1346,3 +1350,13 @@ reading. Two finite checks anchor it: the refuted BBT premise's witness is not
 #print axioms AssemblyP1.Section62WindowBoxSharpness.no_prefix_support_designation_sharpens
 #print axioms AssemblyP1.Section62WindowBoxSharpness.endpoint_prefix_refuted
 #print axioms AssemblyP1.Section62WindowBoxSharpness.endpoint_pair_refuted
+
+-- #284 real-model bridge: the §6.2 `spellChain` window multiset and its
+-- domination of the physical visited reads.
+#print axioms AssemblyP1.Section62SpellChainWindowTransport.spellChain_eq_spellWalk
+#print axioms AssemblyP1.Section62SpellChainWindowTransport.spellChain_windows_congr
+#print axioms AssemblyP1.Section62SpellChainWindowTransport.reduction_preserves_language_windows
+#print axioms AssemblyP1.Section62SpellChainWindowTransport.genuineChain_of_overlapEdges
+#print axioms AssemblyP1.Section62SpellChainWindowTransport.chainStrands_subset_strandsOf
+#print axioms AssemblyP1.Section62SpellChainWindowTransport.chain_visited_dominated
+#print axioms AssemblyP1.Section62SpellChainWindowTransport.genuineChain_visited_dominated
