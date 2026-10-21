@@ -113,8 +113,14 @@ module formalizes the source algorithm.
 
 ## 5. What remains genuinely OPEN
 
-1. **`I_s` necessity for the specific 2016 Not-So-Greedy decoder.** Still OPEN
-   and source-level; the order results here do not address it.
+1. **`I_s` necessity for decoder-level certainty.** RESOLVED (negative) at the
+   read-only-decoder level by
+   [`FiniteIsNotNecessaryCertainty`](../AssemblyP1/FiniteIsNotNecessaryCertainty.lean):
+   the `L = 3` witness (`AAAB`, `R = {0,2}`, `Y = {AAA, ABA}`) fails the
+   all-bridged-triple clause of `I_s` while a read-only decoder is certain at `Y`.
+   Algorithm-specific necessity for the literal 2016 Not-So-Greedy decoder stays
+   OPEN (algorithm not formalized; attributed external premise). See
+   [`docs/source-notes/issue272-is-necessity.md`](source-notes/issue272-is-necessity.md).
 2. **Weakest source-defined bridging promise.** Still reduced by
    `weakest_admissible_iff_union` to whether the union of source-defined
    sufficient promises is itself source-defined and sufficient. OPEN.

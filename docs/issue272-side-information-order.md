@@ -172,12 +172,20 @@ equivalence-closed admissible) family.
 
 ## 6. Remaining open cases
 
-1. **`I_s` necessity for the specific Not-So-Greedy decoder.** Whether the
-   source predicate `I_s` is necessary for the *particular* 2016 decoder (as
-   opposed to sufficient for certainty via the external guarantee) is OPEN and a
-   source-level question. The order results here say nothing about it: `I_s` is
-   one admissible promise, and sufficiency of one promise does not order it
-   against another (§2, and the merged `Incomparable.sufficient_promises_incomparable`).
+1. **`I_s` necessity for decoder-level certainty.** RESOLVED at the
+   read-only-decoder level, and **negative**: `I_s` is sufficient but **not
+   necessary**. A kernel-checked counterexample (`AssemblyP1/FiniteIsNotNecessaryCertainty`,
+   `is_not_necessary_for_readOnly_certainty`) exhibits a positive-predictive
+   observation at which some read-only decoder is certain while the truth genome
+   fails `I_s` on the all-bridged-triple clause; see
+   [`docs/source-notes/issue272-is-necessity.md`](source-notes/issue272-is-necessity.md).
+   The reason is the gap between Bresler et al. (2013) Theorem 1 (ambiguity only
+   when *all* copies of a triple repeat are unbridged) and the stronger
+   *all-bridged* clause of `I_s`. **Algorithm-specific** necessity for the literal
+   2016 Not-So-Greedy decoder remains OPEN: the algorithm is not formalized here
+   (it is the attributed external premise), so "the decoder is correct on this
+   input" is not a kernel-checkable proposition. The order results here say
+   nothing about the algorithm.
 2. **Ordering of `I_s` against `Unambiguous` / arbitrary sufficient promises.**
    Resolved at the promise level as **neither**: `I_s` is a truth-dependent
    promise (`informationFeasible_not_readOnly`) while `Unambiguous` is read-only,
