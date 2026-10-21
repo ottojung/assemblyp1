@@ -22,6 +22,8 @@ jobs:
       - uses: actions/checkout@v4
       - name: Check research documentation integrity
         run: python3 scripts/check-research-docs.py
+      - name: Verify #263 exact support-restricted Graver certificate
+        run: python3 scripts/verify_issue263_exact_support_restricted_graver.py
       - name: Verify historical coverage and finite likelihood witnesses
         run: python3 scripts/verify_historical_coverage_audit.py
       - name: Verify 247c historical same-length §6.2 witnesses

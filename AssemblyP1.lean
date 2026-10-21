@@ -388,6 +388,8 @@ import AssemblyP1.FiniteReadStringIsVsUnambiguousAudit
 -- existence iff the read-only posterior is already certain (subclaim b).
 import AssemblyP1.FiniteSourceDefinedWeakest
 import AssemblyP1.FiniteSourceDefinedWeakestAudit
+import AssemblyP1.FiniteSourceDefinedMinimal
+import AssemblyP1.FiniteSourceDefinedMinimalAudit
 -- #270 positive finite-family iid ML recovery via Hellinger affinity.
 import AssemblyP1.FiniteReadRecovery
 -- #270 concrete uniform-start cyclic read distribution and conditional genome bounds.
@@ -423,6 +425,9 @@ import AssemblyP1.SeparableConvexGraverAudit
 -- #263 exact-ML optimizer preservation of the affine-tail Graver certificate + audit.
 import AssemblyP1.ExactMLOptimizerTransfer
 import AssemblyP1.ExactMLOptimizerTransferAudit
+-- #263 optimizer-preserving EXACT support-restricted Graver certificate (T1/T2, no surrogate) + audit.
+import AssemblyP1.ExactSupportRestrictedGraver
+import AssemblyP1.ExactSupportRestrictedGraverAudit
 
 -- #284 physical visit-count transport: spelling preservation does not imply
 -- vertex-visit / ML-flow equivalence (self-contained, Lean core only).
