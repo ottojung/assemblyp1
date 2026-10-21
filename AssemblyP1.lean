@@ -36,6 +36,10 @@ import AssemblyP1.SameLengthSection62Parametric
 import AssemblyP1.PerOccurrenceSameLengthCounterexample
 import AssemblyP1.HistoricalCoverageSameLengthWitnesses
 import AssemblyP1.Section62BidirectedFlow
+-- #261 integer-flow vs half-integral-relaxation classification on the literal
+-- §6.2 flow object (exact variable-length objective) and axiom audit.
+import AssemblyP1.Section62HalfIntegralSourceML
+import AssemblyP1.Section62HalfIntegralSourceMLAudit
 import AssemblyP1.Section62SignedDoubleCoverAudit
 import AssemblyP1.Section62OrientedMLClassification
 import AssemblyP1.Section62ReversalInvolution
