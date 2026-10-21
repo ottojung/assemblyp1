@@ -1,0 +1,28 @@
+import AssemblyP1.Section62HalfIntegralSourceML
+
+open AssemblyP1.Section62HalfIntegralSourceML
+
+-- Axiom audit for the integer-vs-half-integral classification on the literal
+-- §6.2 flow object (#261).  Every endpoint must depend only on
+-- {propext, Classical.choice, Quot.sound}.
+#print axioms AssemblyP1.Section62HalfIntegralSourceML.qThroughput_cast
+#print axioms AssemblyP1.Section62HalfIntegralSourceML.qBalance_cast
+#print axioms AssemblyP1.Section62HalfIntegralSourceML.qThroughput_smul
+#print axioms AssemblyP1.Section62HalfIntegralSourceML.qBalance_smul
+#print axioms AssemblyP1.Section62HalfIntegralSourceML.feasible62Rat_smul
+#print axioms AssemblyP1.Section62HalfIntegralSourceML.feasible62Rat_of_feasible62
+#print axioms AssemblyP1.Section62HalfIntegralSourceML.halfDoubleNat_cast
+#print axioms AssemblyP1.Section62HalfIntegralSourceML.qThroughput_double
+#print axioms AssemblyP1.Section62HalfIntegralSourceML.qBalance_double
+#print axioms AssemblyP1.Section62HalfIntegralSourceML.halfIntegral_double_feasible62
+#print axioms AssemblyP1.Section62HalfIntegralSourceML.qExactLik_smul
+#print axioms AssemblyP1.Section62HalfIntegralSourceML.qExactLik_congr_on
+#print axioms AssemblyP1.Section62HalfIntegralSourceML.no_half_integral_gap_exact
+#print axioms AssemblyP1.Section62HalfIntegralSourceML.ratObj_of_int
+#print axioms AssemblyP1.Section62HalfIntegralSourceML.truth_half_maximal_iff_int_maximal
+#print axioms AssemblyP1.Section62HalfIntegralSourceML.Witness.halfFlow_isHalfIntegral
+#print axioms AssemblyP1.Section62HalfIntegralSourceML.Witness.halfFlow_feasible
+#print axioms AssemblyP1.Section62HalfIntegralSourceML.Witness.halfFlow_not_integral
+#print axioms AssemblyP1.Section62HalfIntegralSourceML.Witness.integral_strict_subset_half_integral
+#print axioms AssemblyP1.Section62HalfIntegralSourceML.Witness.halfFlow_double_feasible
+#print axioms AssemblyP1.Section62HalfIntegralSourceML.Witness.halfFlow_double_same_likelihood
