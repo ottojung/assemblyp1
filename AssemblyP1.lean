@@ -86,6 +86,10 @@ import AssemblyP1.Section62ReversalOrbitTransportAudit
 -- bound + maximality reduction) to physical edge-orbit totals, and its audit.
 import AssemblyP1.Section62PhysicalOrbitObjective
 import AssemblyP1.Section62PhysicalOrbitObjectiveAudit
+-- #261 integer vs half-integral relaxation of the §6.2 flow polytope for the
+-- exact multinomial likelihood: doubling a half-integral feasible flow gives an
+-- integer feasible flow with the same normalized throughput.
+import AssemblyP1.Section62HalfIntegralExactML
 import AssemblyP1.Section62FullSpectrumUnseenFactor
 -- #259 real circular-genome witness: exact iid and product-binomial rankings differ.
 import AssemblyP1.Section62BinomialRealGenomeInversion
@@ -1194,6 +1198,18 @@ graph content remains external. -/
 #print axioms AssemblyP1.Section62NonSpelledFlow.half_integral_strictly_better
 #print axioms AssemblyP1.Section62NonSpelledFlow.no_sequence_has_star_spectrum
 #print axioms AssemblyP1.Section62NonSpelledFlow.spelled_subset_general
+-- #261 integer vs half-integral relaxation of the §6.2 flow polytope for the
+-- exact multinomial likelihood: the exact likelihood is scale-invariant and the
+-- §6.2 clauses are homogeneous, so the half-integral relaxation cannot strictly
+-- beat the integer optimum (contrast the non-homogeneous §6.1 binomial).
+#print axioms AssemblyP1.Section62HalfIntegralExactML.qThroughput_smul
+#print axioms AssemblyP1.Section62HalfIntegralExactML.qBalance_smul
+#print axioms AssemblyP1.Section62HalfIntegralExactML.qFeasible62_smul
+#print axioms AssemblyP1.Section62HalfIntegralExactML.exactLik_smul
+#print axioms AssemblyP1.Section62HalfIntegralExactML.halfIntegralDouble_eq
+#print axioms AssemblyP1.Section62HalfIntegralExactML.qThroughput_double
+#print axioms AssemblyP1.Section62HalfIntegralExactML.qBalance_double
+#print axioms AssemblyP1.Section62HalfIntegralExactML.half_integral_doubling
 -- #261 spelled-circuit -> §6.2 feasible-flow adapter (general, any o_min).
 #print axioms AssemblyP1.Section62SpelledFlowAdapter.spelling_flow_feasible
 #print axioms AssemblyP1.Section62SpelledFlowAdapter.throughput_eq_visits
