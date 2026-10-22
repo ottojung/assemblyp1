@@ -92,7 +92,7 @@ points on every feasible face (an irrational affine singleton is the elementary
 obstruction); whether the actual `Feasible62Rat`/real pair has the required
 face-density remains to be proved. No unrestricted real strict-gap instance has
 been found, and no real no-gap theorem is claimed. A future proof must explicitly
-  resolve whether “LP relaxation” means rational points only or the full real
+resolve whether “LP relaxation” means rational points only or the full real
   polyhedron. The comparison here is: candidates are literal §6.2 zero-terminal
   flows (not circuits/genomes), truth is admitted, and the objective is exact
   multinomial on own variable length `sum throughput`, with the source-model
