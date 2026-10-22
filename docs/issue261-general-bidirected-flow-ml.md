@@ -237,8 +237,10 @@ length `N` is therefore a variable and the comparison acquires a length factor.
   (2026-10-22): for any *rational* feasible point, clearing denominators gives
   an integer feasible flow with positively scaled throughput, hence the same
   exact variable-length likelihood. Thus rational points do not introduce new
-  normalized throughputs, although the broader no-gap result is not yet packaged
-  as a Lean theorem. A real strict-gap witness would imply a rational one if
+  normalized-throughput scores, and the rational-point maximum value equals the
+  integer-point maximum value (with supremum understood if no maximum is
+  attained). This score-image argument is analytic; the broader theorem is not
+  yet packaged in Lean. A real strict-gap witness would imply a rational one if
   rational feasible points are dense relative to the feasible polyhedron's
   active face, since the exact score is continuous where total throughput is
   positive. That density condition for the literal source constraints is not
