@@ -80,7 +80,43 @@ The observed spectra and likelihoods:
 ## 3. The `L = 1` and `L = 2` edge cases, stated precisely
 
 The issue requires that the two shortest instances not be mislabelled as
-refuting a theorem that assumes a larger `L`.
+refuting a theorem that assumes a larger `L`. The scrutiny below is against the
+published literature and the repository's formal assumptions.
+
+### 3.1 What the published literature does and does not require
+
+- **No published theorem in this line requires `L ≥ 2` (or `L ≥ 3`) of the
+  information-feasibility predicate itself.** Shomorony et al. (2016) Eq. (1)
+  defines `I_s` for the read length `L` of its §2 model without a lower bound,
+  and Bresler–Bresler–Tse (2013) define repeats, triple repeats, interleaved
+  repeats, and bridging without one. What the literature *does* fix is the
+  **candidate universe** and the **conclusion**:
+  - *Bresler–Bresler–Tse (2013), Theorem 1:* if a triple repeat is not
+    all-bridged or an interleaved repeat pair is not bridged, "there is another
+    sequence `s'` **of the same length** under which the likelihood of
+    observing the reads is the same." The conclusion is explicitly same-length
+    ambiguity; a variable-length competitor with *strictly greater* likelihood
+    is outside the theorem's statement.
+  - *Shomorony et al. (2016), Theorem 1:* reconstructs the true sequence from
+    information-feasible read sets. It is a reconstruction theorem, not an
+    ML-optimality theorem. Whether `I_s` implies that the truth *is* the
+    maximum-likelihood sequence is left open in the paper's Discussion
+    (Section 5).
+  - *Medvedev–Brudno (2009) §6.1:* the exact global read-count likelihood has
+    candidate-dependent length `N(D)`; the exact objective does **not** fix
+    `N(D)` to the true genome length (only the later separable approximation
+    treats length as a constant). The variable-candidate-length model used here
+    is therefore the source-faithful reading of the exact objective.
+- **The repository's own same-length rigidity theorem**
+  (`AssemblyP1.OrientedSameLengthML.informationFeasible_exactLik_maximizer`)
+  carries the hypotheses `2 ≤ L ≤ G` **and** same-length candidates
+  (`Fin G → α`). The `G = 2, L = 1` witness fails `L ≥ 2`; the `G = 3, L = 2`
+  and `G = 4, L = 3` witnesses satisfy `2 ≤ L ≤ G` but are variable-length
+  (`|D| = G + 1 ≠ G`). The theorem applies to none of the three witnesses; the
+  module kernel-checks the length separation (`lengths_differ_2/3/4`).
+  [kernel-checked]
+
+### 3.2 The formal assumption that does bite: bridging needs `e + 2 ≤ L`
 
 - `SourceFaithfulIs.BridgesCopy` bridges a length-`e` copy only when a single
   read contains a base strictly before and strictly after the copy, so
@@ -97,13 +133,23 @@ refuting a theorem that assumes a larger `L`.
   triple of `A`s at starts `0, 1, 2` — and the module proves it and its
   all-bridged certificate (`triple_repeat_4`, `triple_repeat_all_bridged_4`);
   here the bridging bound `e + 2 = L` is tight. [kernel-checked]
-- The repository's same-length rigidity theorem
-  (`AssemblyP1.OrientedSameLengthML`, hypothesis `2 ≤ L ≤ G`) does **not** apply
-  to the `G = 2, L = 1` instance (`L < 2`); and in any case that theorem is about
-  *same-length* candidates, whereas these witnesses are variable-length
-  (`|D| = G + 1 ≠ G`). Nothing here is claimed to refute a same-length or
-  `L ≥ 2` statement. The witnesses settle the **variable-candidate-length**
-  question in the oriented, per-vertex-§6.2, source-faithful model. [scope]
+
+### 3.3 Exactly what the witnesses settle
+
+In the model — oriented single-strand read types (no reverse-complement
+collapse); candidate length a free parameter; the exact MB09 §6.1
+ordered-read likelihood with candidate-dependent length; §6.2 feasibility read
+literally as the per-vertex lower bound `1` (and the stronger spelled and
+circuit readings); `I_s` the full source-faithful Eq. (1) predicate — the
+truth is information-feasible, the competitor is a genuine §6.2-feasible
+candidate, and the competitor has strictly greater exact likelihood. This is a
+negative answer, for these finite genomes, to the Shomorony et al. (2016)
+Discussion question whether information feasibility implies ML optimality,
+**in the variable-candidate-length model**. It refutes no published theorem:
+the published ambiguity theorem (Bresler et al. 2013, Thm 1) is same-length,
+the published reconstruction theorem (Shomorony et al. 2016, Thm 1) does not
+assert ML optimality, and no published theorem asserts that the truth is the
+unique ML sequence in the variable-candidate-length model. [scope]
 
 ## 4. Exact Lean theorem names
 
@@ -111,6 +157,8 @@ Module `AssemblyP1.ShortFiniteMLCounterexamples`:
 
 - full `I_s`: `truth_information_feasible_2`, `truth_information_feasible_3`,
   `truth_information_feasible_4`;
+- variable-length separation: `lengths_differ_2`, `lengths_differ_3`,
+  `lengths_differ_4`;
 - vacuity / bridging detail: `no_triple_repeat_2`, `no_interleaved_2`,
   `no_triple_repeat_3`, `no_interleaved_3`, `triple_repeat_4`,
   `triple_repeat_all_bridged_4`, `no_interleaved_4`;
@@ -134,6 +182,7 @@ Module `AssemblyP1.ShortFiniteMLCounterexamples`:
 | Claim | Certificate |
 |---|---|
 | `I_s` at full strength for each truth | Lean `truth_information_feasible_2/3/4` (`decide` on `SourceFaithfulIs.InformationFeasible`), axiom-clean |
+| Variable-length separation (`|D| = G + 1 ≠ G`) | Lean `lengths_differ_2/3/4` (`decide`), placing every witness outside the same-length theorems' scope |
 | Repeat-clause vacuity / bridging | Lean `no_triple_repeat_2/3`, `no_interleaved_2/3/4`, `triple_repeat_4`, `triple_repeat_all_bridged_4` |
 | §6.2 feasibility, all three readings | Lean `*_perVertex_*`, `*_spelled_*`, `*_section62_*` (closed walks `walkS2…walkD4`) |
 | Exact likelihoods and strict ratios | Lean `lik_*`, `ratio_*`, `candidate_strictly_better_*` |
@@ -150,4 +199,6 @@ question for the three specific short witnesses, under the source per-vertex
 strength. It does not settle which Medvedev–Brudno object the Shomorony et al.
 (2016) sentence intends, does not address the bidirected / reverse-complement
 sub-case, does not touch the fixed-length rigidity theorem, and does not claim
-that these witnesses are minimal.
+that these witnesses are minimal. Per §3, the witnesses answer the 2016
+Discussion question negatively in the variable-candidate-length model and
+refute no published theorem.

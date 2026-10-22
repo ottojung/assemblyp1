@@ -1258,6 +1258,9 @@ graph content remains external. -/
 #print axioms AssemblyP1.ImplicationLattice.ConcretePanel.lambda1_A_tie
 #print axioms AssemblyP1.OrientedVariableLengthSe62.oriented_variable_length_se62_counterexample
 #print axioms AssemblyP1.OrientedVariableLengthSe62.oriented_variable_length_se62_counterexample'
+#print axioms AssemblyP1.ShortFiniteMLCounterexamples.lengths_differ_2
+#print axioms AssemblyP1.ShortFiniteMLCounterexamples.lengths_differ_3
+#print axioms AssemblyP1.ShortFiniteMLCounterexamples.lengths_differ_4
 #print axioms AssemblyP1.ShortFiniteMLCounterexamples.short_finite_ml_counterexample_2
 #print axioms AssemblyP1.ShortFiniteMLCounterexamples.short_finite_ml_counterexample_3
 #print axioms AssemblyP1.ShortFiniteMLCounterexamples.short_finite_ml_counterexample_4
