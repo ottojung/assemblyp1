@@ -233,7 +233,14 @@ length `N` is therefore a variable and the comparison acquires a length factor.
 - **Contrast with Class 3**: the same question for the fixed-external-`N`
   binomial has the *opposite* answer (a real gap), because that objective is not
   homogeneous. See `docs/issue261-half-integral-source-ml.md`. The **real**
-  (non-half-integral) LP relaxation remains OPEN.
+  (non-half-integral) LP relaxation remains OPEN. Follow-up clarification
+  (2026-10-22): for any *rational* feasible point, clearing denominators gives
+  an integer feasible flow with positively scaled throughput, hence the same
+  exact variable-length likelihood. Thus rational points do not introduce new
+  normalized throughputs, although the broader no-gap result is not yet packaged
+  as a Lean theorem. This argument does not cover arbitrary real points (no
+  finite denominator), nor the fixed-external-`N` binomial objective. No strict
+  unrestricted rational/real gap witness was found in this follow-up.
 
 ## Adjudication (2026-10-16): unobserved molecule types and the count-vector criterion
 

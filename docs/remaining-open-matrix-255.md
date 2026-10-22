@@ -841,6 +841,16 @@ rest remain human-readable only, as labeled per entry.
   lower bound 1, orientation/RC classes, integer vs half-integral flows,
   flows not spelling one circular genome, candidate-set choice, truth
   admissibility, likelihood (exact vs fixed-N binomial), length universe.
+- **Rational/real relaxation clarification (2026-10-22):** on the literal
+  zero-terminal `Feasible62` constraints, every rational feasible flow can be
+  multiplied by a positive common denominator to give an integer feasible flow;
+  for the exact own-variable-length multinomial, normalization makes the score
+  unchanged. Thus the rational feasible points add no new normalized throughput
+  scores for that objective (source-connected half-integral special case is
+  kernel-checked in `Section62HalfIntegralSourceML`). The argument does not cover
+  arbitrary real points or the fixed-external-`N` binomial. An unrestricted
+  rational/real LP strict-gap instance or a complete general theorem remains
+  **OPEN**; #261 remains open on all other axes above.
 - **Status:** OPEN, explicitly unresolved. General §6.2 bidirected flow
   classification remains OPEN.
 

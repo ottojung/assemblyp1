@@ -57,6 +57,47 @@ about a strictly larger feasible set.
    `(1,1)`) and has **no** integral representative, so the equivalence of optima
    is over a strictly larger set.
 
+## Follow-up: unrestricted rational LP relaxation (2026-10-22)
+
+The result above does **not** settle the unrestricted rational LP relaxation.
+The executed follow-up found the following exact bridge, which narrows what a
+future strict-gap witness must show:
+
+* For any feasible rational flow `f`, its throughput `d` is feasible as the
+  throughput of an integer flow: choose an integer `k ≥ 1` clearing all edge
+  denominators and use `k f`. Edge nonnegativity, zero signed-incidence balance,
+  and throughput equalities are homogeneous; `k d` still obeys the vertex lower
+  bound because `d ≥ 1`. This is `feasible62Rat_smul` plus the cast bridges to the
+  literal `Feasible62` (or a direct integer-clearing argument). Thus the
+  *throughput-image* inclusion for rational flows into integer-flow throughputs
+  holds up to positive scaling.
+* Under `qExactLik`, positive scaling leaves every sample score unchanged.
+  Consequently a rational flow cannot strictly beat the integer optimum solely
+  by introducing a new normalized throughput vector. This is stronger than the
+  recorded half-integral theorem at the score-image level, but the current Lean
+  result only packages the maximality equivalence for the half-integral class.
+
+This does **not** settle the real LP case: a general real feasible flow need not
+have a common finite denominator, and the homogeneity argument does not provide
+an integer feasible representative for it. The requested real/rational strict-gap
+instance has therefore **not** been found, and no unrestricted no-gap theorem has
+been established here. A future proof must explicitly resolve whether “rational
+LP relaxation” means rational points only or the full real polytope; these are
+different sets for an unbounded polyhedron. For either interpretation, the
+well-defined comparison recorded here is: candidates are literal §6.2 zero-terminal
+flows (not circuits/genomes), truth is admitted, objective is exact multinomial
+on own variable length `sum throughput`, with the source-model caveats elsewhere
+in this document still applying.
+
+**Attempts/evidence.** Confirmed the latest board comments and live related work:
+the open #382 half-integral PR has no comments; its head is not integrated into
+main, and #392 concerns adjacent Graver signs rather than the rational likelihood
+gap. Re-ran `scripts/verify_261_half_integral_source_ml.py` on current main:
+W1–W6 all pass, including the four-edge witness and its bounded half-integral
+enumeration. That verifier does not enumerate arbitrary rational coordinates and
+cannot certify the unrestricted result. No new instance, Lean theorem, or source
+definition change is claimed.
+
 ## Why this is *not* the already-merged binomial answer
 
 `docs/issue261-general-bidirected-flow-ml.md` (Class 3) records the MB09 §6.1
