@@ -77,26 +77,39 @@ future strict-gap witness must show:
   recorded half-integral theorem at the score-image level, but the current Lean
   result only packages the maximality equivalence for the half-integral class.
 
-This does **not** settle the real LP case: a general real feasible flow need not
-have a common finite denominator, and the homogeneity argument does not provide
-an integer feasible representative for it. The requested real/rational strict-gap
-instance has therefore **not** been found, and no unrestricted no-gap theorem has
-been established here. A future proof must explicitly resolve whether “rational
-LP relaxation” means rational points only or the full real polytope; these are
-different sets for an unbounded polyhedron. For either interpretation, the
-well-defined comparison recorded here is: candidates are literal §6.2 zero-terminal
-flows (not circuits/genomes), truth is admitted, objective is exact multinomial
-on own variable length `sum throughput`, with the source-model caveats elsewhere
-in this document still applying.
+This settles the rational-point relaxation's maximum-value comparison, but not the
+full real polytope. A general real feasible flow need not have a common finite
+denominator, so scaling alone supplies no integer feasible representative.
+However, a strict real-point gap would imply a strict rational-point gap whenever
+the rational feasible points are dense in the real feasible polyhedron: the
+exact multinomial score is continuous wherever total throughput is positive,
+and the vertex lower bound `d_v ≥ 1` makes that total positive for nonempty
+`verts`. Thus active zero edge coordinates do not obstruct the argument: density
+must be relative to the face containing the real point, with its active
+nonnegativity equalities preserved. The literal source constraints have integer
+coefficients, but general real linear systems need not have dense rational
+points on every feasible face (an irrational affine singleton is the elementary
+obstruction); whether the actual `Feasible62Rat`/real pair has the required
+face-density remains to be proved. No unrestricted real strict-gap instance has
+been found, and no real no-gap theorem is claimed. A future proof must explicitly
+  resolve whether “LP relaxation” means rational points only or the full real
+  polyhedron. The comparison here is: candidates are literal §6.2 zero-terminal
+  flows (not circuits/genomes), truth is admitted, and the objective is exact
+  multinomial on own variable length `sum throughput`, with the source-model
+  caveats elsewhere in this document still applying.
 
-**Attempts/evidence.** Confirmed the latest board comments and live related work:
-the open #382 half-integral PR has no comments; its head is not integrated into
-main, and #392 concerns adjacent Graver signs rather than the rational likelihood
-gap. Re-ran `scripts/verify_261_half_integral_source_ml.py` on current main:
-W1–W6 all pass, including the four-edge witness and its bounded half-integral
-enumeration. That verifier does not enumerate arbitrary rational coordinates and
-cannot certify the unrestricted result. No new instance, Lean theorem, or source
-definition change is claimed.
+**Exact-rational validation.** The general rational scaling argument is direct:
+the edge domain `BdEdge A W` is finite because `W` is finite and `len` is bounded
+in `overlapEdges`; clearing all flow-value denominators gives a positive integer
+multiple. (For the literal predicate on an arbitrary supplied edge list, the
+finite-support condition must be made explicit.) Nonnegativity, signed balance,
+and throughput equalities are homogeneous; lower bound `1` remains satisfied
+after positive integer scaling. The resulting natural-valued flow is literally
+`Feasible62`, via the cast bridges in `Section62HalfIntegralSourceML`, and its
+throughput is multiplied by the same factor. `qExactLik_smul` then gives equality
+of every sample's likelihood. The verifier's W1–W6 checks were rerun, including
+the four-edge witness; they provide exact-rational regression evidence, not an
+enumeration of all real points.
 
 ## Why this is *not* the already-merged binomial answer
 

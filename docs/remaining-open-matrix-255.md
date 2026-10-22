@@ -847,10 +847,13 @@ rest remain human-readable only, as labeled per entry.
   for the exact own-variable-length multinomial, normalization makes the score
   unchanged. Thus the rational feasible points add no new normalized throughput
   scores for that objective (source-connected half-integral special case is
-  kernel-checked in `Section62HalfIntegralSourceML`). The argument does not cover
-  arbitrary real points or the fixed-external-`N` binomial. An unrestricted
-  rational/real LP strict-gap instance or a complete general theorem remains
-  **OPEN**; #261 remains open on all other axes above.
+  kernel-checked in `Section62HalfIntegralSourceML`). A real strict-gap point
+  would imply a rational strict-gap point if rational points are dense relative
+  to the active feasible face, by continuity and positive total throughput; this
+  face-density condition is still unproved for the literal source constraints.
+  The argument does not cover arbitrary real points by itself or the
+  fixed-external-`N` binomial. The real LP no-gap/gap question remains **OPEN**;
+  #261 remains open on all other axes above.
 - **Status:** OPEN, explicitly unresolved. General §6.2 bidirected flow
   classification remains OPEN.
 

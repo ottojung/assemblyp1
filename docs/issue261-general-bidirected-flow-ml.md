@@ -238,9 +238,13 @@ length `N` is therefore a variable and the comparison acquires a length factor.
   an integer feasible flow with positively scaled throughput, hence the same
   exact variable-length likelihood. Thus rational points do not introduce new
   normalized throughputs, although the broader no-gap result is not yet packaged
-  as a Lean theorem. This argument does not cover arbitrary real points (no
-  finite denominator), nor the fixed-external-`N` binomial objective. No strict
-  unrestricted rational/real gap witness was found in this follow-up.
+  as a Lean theorem. A real strict-gap witness would imply a rational one if
+  rational feasible points are dense relative to the feasible polyhedron's
+  active face, since the exact score is continuous where total throughput is
+  positive. That density condition for the literal source constraints is not
+  yet proved. This argument does not cover arbitrary real points by itself, nor
+  the fixed-external-`N` binomial objective. No strict unrestricted real gap
+  witness was found in this follow-up.
 
 ## Adjudication (2026-10-16): unobserved molecule types and the count-vector criterion
 
