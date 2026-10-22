@@ -77,8 +77,9 @@ future strict-gap witness must show:
   recorded half-integral theorem at the score-image level, but the current Lean
   result only packages the maximality equivalence for the half-integral class.
 
-This settles the rational-point relaxation's maximum-value comparison, but not the
-full real polytope. A general real feasible flow need not have a common finite
+This settles the rational-point relaxation's maximum-value comparison (in the
+extended-real sense if the maximum is not attained), but not the full real
+polytope. A general real feasible flow need not have a common finite
 denominator, so scaling alone supplies no integer feasible representative.
 However, a strict real-point gap would imply a strict rational-point gap whenever
 the rational feasible points are dense in the real feasible polyhedron: the
