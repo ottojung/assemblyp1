@@ -33,6 +33,7 @@ supplied promise `E`) are inherited verbatim from the merged module.
 | "Side information must be supplied": inferable-from-read iff read-only | kernel-checked | `admReadOnly_iff_factorable`, `truthDependent_not_factorable` |
 | Minimum sufficient promise exists and is unique; minimum ≠ weakest | kernel-checked | `minimum_exists_unique`, `minimum_without_weakest` |
 | `I_s` necessity for the specific Not-So-Greedy decoder | **OPEN** | §6 |
+| Bresler--Bresler--Tse all-unbridged obstruction necessary but **not sufficient**; not the exact condition | kernel-checked counterexample (`AABB`, `L=2`, `R={0,1}`, `Y={AA,AB}`) | [`FiniteBreslerObstructionGap.lean`](../AssemblyP1/FiniteBreslerObstructionGap.lean), [`issue272-bresler-obstruction-gap.md`](issue272-bresler-obstruction-gap.md) |
 | Ordering of `I_s` against `Unambiguous` / arbitrary sufficient promises | **neither**, kernel-checked on the read-string adapter | [`FiniteSideInformationOrdering.lean`](../AssemblyP1/FiniteSideInformationOrdering.lean), [`FiniteReadStringIsVsUnambiguous.lean`](../AssemblyP1/FiniteReadStringIsVsUnambiguous.lean), §6 |
 | Weakest sufficient inside the source-defined bridging subfamily | **iff `∀ r, Unambiguous`**; weakest = `True`, unique | [`FiniteSourceDefinedWeakest.lean`](../AssemblyP1/FiniteSourceDefinedWeakest.lean) |
 | Minimum is vacuous; minimal non-vacuous certificates are candidate designations | kernel-checked (minimum = empty; designations `g = g₀` incomparable) | [`FiniteSourceDefinedMinimal.lean`](../AssemblyP1/FiniteSourceDefinedMinimal.lean) |
@@ -250,6 +251,19 @@ equivalence-closed admissible) family.
    `truthDependent_not_factorable`) and the bounded target-4 distinction
    "minimum sufficient promise always exists, weakest need not"
    (`minimum_exists_unique`, `minimum_without_weakest`).
+6. **The all-unbridged obstruction is not the exact condition (target 5).**
+   LANDED in
+   [`FiniteBreslerObstructionGap.lean`](../AssemblyP1/FiniteBreslerObstructionGap.lean)
+   (see
+   [`issue272-bresler-obstruction-gap.md`](issue272-bresler-obstruction-gap.md)):
+   the Bresler--Bresler--Tse (2013) Theorem-1 obstruction (an all-unbridged
+   triple repeat or an all-unbridged interleaved pair) is **necessary** for
+   read-only certainty under the attributed equal-likelihood premise
+   (`sourceObstruction_necessary_of_bresler`) but **not sufficient**, by the
+   kernel-checked counterexample `AABB` at `L = 2`, `R = {0,1}`,
+   `Y = {AA, AB}` (`not_sourceObstruction_aabb`, `not_unambiguous_aabb`).  It is
+   therefore not the exact necessary-and-sufficient condition; the exact
+   condition is the merged `Unambiguous`.
 
 ## 7. Relationship to sibling fronts (no duplication)
 

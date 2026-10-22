@@ -195,7 +195,7 @@ guarantee.**
 | Property | Implication for posterior singleton | Status / scope |
 |---|---|---|
 | `I_s` holds for the truth (coverage + bridged interleaved + triple repeats) | posterior one given `E = I_s`, via the external Not-So-Greedy guarantee + `conditional_certain_of_fibreUnique` | sufficient; external premise; same orientation, `2 ≤ L ≤ G`, observed read multiplicities, fixed candidate universe |
-| Absence of a repeat-bridging obstruction | necessary for read-only certainty (else two orbits share the read support) | necessary only; formalized abstractly by §4, not as the 2016 predicate |
+| Absence of the Bresler--Bresler--Tse all-unbridged obstruction | necessary for read-only certainty (attributed premise); **not sufficient** (`AABB`, `L=2`, `R={0,1}`, `Y={AA,AB}`) | necessary only, kernel-checked not sufficient; [`FiniteBreslerObstructionGap.lean`](../AssemblyP1/FiniteBreslerObstructionGap.lean) |
 | Arbitrary fibre-unique `F` (separates confusable orbits) | posterior one given `E = F` | sufficient; **no ordering against `I_s` follows from sufficiency** (incomparable in general, §5) |
 | Read-unambiguous (`Unambiguous`) | posterior one given `E = Unambiguous`; unique weakest **read-only** promise | sufficient, read-only; **not shown to be weaker or stronger than `I_s`** |
 
@@ -233,6 +233,16 @@ statements remain attributed to the source.
    truth-dependent sufficient promises is OPEN. Sufficiency alone yields no
    ordering, and `Incomparable.sufficient_promises_incomparable` shows two
    sufficient promises can be incomparable, so no such ordering may be assumed.
+5. **The all-unbridged obstruction is not the exact condition (target 5).**
+   RESOLVED by
+   [`AssemblyP1/FiniteBreslerObstructionGap.lean`](../AssemblyP1/FiniteBreslerObstructionGap.lean):
+   the Bresler--Bresler--Tse (2013) Theorem-1 obstruction (all-unbridged triple
+   repeat or all-unbridged interleaved pair) is necessary for read-only
+   certainty under the attributed equal-likelihood premise
+   (`sourceObstruction_necessary_of_bresler`) but not sufficient
+   (`sourceObstruction_not_sufficient_for_readOnly_certainty`), so it is not the
+   exact necessary-and-sufficient condition. See
+   [`docs/issue272-bresler-obstruction-gap.md`](issue272-bresler-obstruction-gap.md).
 
 **Addendum (2026-10-14, `AssemblyP1/FiniteSideInformationOrder.lean`).** The
 *existence and uniqueness* question behind items 3–4 is now settled at the level
