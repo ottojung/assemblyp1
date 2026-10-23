@@ -40,4 +40,27 @@ theorem isMinOn_comp_iff (g : β → γ) (hg : StrictMono g)
   · intro h x hx
     exact (hg.le_iff_le).2 (h x hx)
 
+/-- A strictly antitone transformation reverses maximizers into minimizers.
+This is the form used when a log-likelihood is negated to obtain a loss. -/
+theorem isMinOn_comp_iff_of_strictAnti (g : β → γ) (hg : StrictAnti g)
+    (f : α → β) (s : Set α) (a : α) :
+    IsMinOn (g ∘ f) s a ↔ IsMaxOn f s a := by
+  simp only [IsMinOn, IsMaxOn, Function.comp_apply]
+  constructor
+  · intro h x hx
+    exact (hg.le_iff_ge).1 (h x hx)
+  · intro h x hx
+    exact (hg.le_iff_ge).2 (h x hx)
+
+/-- A strictly antitone transformation reverses minimizers into maximizers. -/
+theorem isMaxOn_comp_iff_of_strictAnti (g : β → γ) (hg : StrictAnti g)
+    (f : α → β) (s : Set α) (a : α) :
+    IsMaxOn (g ∘ f) s a ↔ IsMinOn f s a := by
+  simp only [IsMaxOn, IsMinOn, Function.comp_apply]
+  constructor
+  · intro h x hx
+    exact (hg.le_iff_ge).1 (h x hx)
+  · intro h x hx
+    exact (hg.le_iff_ge).2 (h x hx)
+
 end AssemblyP1.MaximizerOrderTransform
