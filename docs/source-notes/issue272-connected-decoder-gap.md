@@ -125,6 +125,49 @@ claim about literal 2016 Not-So-Greedy output._
    (`FiniteIsNotNecessaryCertainty`-style endpoints for `R = (1,2,3)`) is not
    done here.
 5. **Next.** Port the connectivity filter into the repo's enumerator or a new
-   focused script, extend to the documented `G <= 7` range, then transcribe and
-   audit the literal greedy/disagreement/pruning/multiplicity/Eulerian rules
-   before any claim about the 2016 decoder's spelling on the connected witness.
+    focused script, extend to the documented `G <= 7` range, then transcribe and
+    audit the literal greedy/disagreement/pruning/multiplicity/Eulerian rules
+    before any claim about the 2016 decoder's spelling on the connected witness.
+
+## Appendix B (2026-10-23): witness recheck + Lean gap scope
+
+_Owner: agent-AIEbf4MO-spindle. No Lean code changed; no claim about literal
+2016 Not-So-Greedy output._
+
+1. **Fast witness-only recheck (PASS).** Truth `AAAB` (`(0,0,0,1)`), `L = 3`:
+   `R = (1,2,3)` gives `Y = {AAB, ABA, BAA}`, `failing_clause = triple`,
+   read-only certain, undirected-connected (directed 3-cycle
+   `BAA -> AAB -> ABA -> BAA`); siblings `R = (0,1,2)` and `R = (0,2,3)` also
+   triple-failing, certain, and undirected-connected. This confirms the Appendix
+   A primary witness without re-running the full census.
+2. **Full census attempt (not completed, time-boxed).**
+   `python3 scripts/verify_272_is_necessity.py` produces no output within a
+   90-100 s tool budget (script buffers its report until the `G <= 7`
+   exhaustive search finishes), so the documented `G <= 7` coverage/triple/
+   interleaved counts were not re-verified in this run. Prior reported counts
+   from the same script remain unverified here; the `G <= 6` connectivity-
+   filtered numbers (`coverage 3807/2370`, `triple 4584/2128`, `interleaved
+   0/0`) are likewise carried over from Appendix A, not re-run.
+3. **Lean posterior-iff gap scope.** The exact necessary-and-sufficient theorem
+   needed by #272 target 2 already exists kernel-checked in
+   `AssemblyP1/FiniteBayesianSideInformation.lean`: `posteriorMass_eq_one_iff`
+   (posterior 1 iff every positive-prior, positive-likelihood, promise-holding
+   competitor is in orbit `θ`), its excluded-competitor form
+   `posteriorMass_eq_one_iff_excluded`, the side-channel form
+   `posteriorMassZ_eq_one_iff` (supported `(R,Z)`-fibre singleton), the
+   read-only corollary `readOnly_posterior_eq_one_iff` (`E ≡ True`), the
+   a.s.-vs-pointwise lemma `ae_certain_iff_pointwise`, the no-weakest-sufficient
+   counterexample `NoWeakest.no_weakest_sufficient`, and the honest bridge
+   `fibreUnique_of_decoder` / `conditional_certain_of_fibreUnique` (decoder
+   correctness stays an external attributed premise). No `sorry`/`admit` in
+   either `FiniteBayesianSideInformation.lean` or
+   `FiniteIsNotNecessaryCertainty.lean` (grep clean; audit files only contain
+   `#print axioms`). What remains unproved: (a) kernel-checked endpoints for
+   the new connected witness `R = (1,2,3)` in the
+   `FiniteIsNotNecessaryCertainty` style; (b) any formalization or execution of
+   the literal 2016 greedy/disagreement/pruning/multiplicity/Eulerian rules —
+   the witness instantiates separation (triple-fail + singleton fibre + weak
+   connectivity) only under the shared observable read-multiplicity model, not
+   under the literal decoder, so the 2016-decoder implication stays OPEN.
+4. **Validation.** `git diff --check` PASS; witness python recheck PASS; full
+   census not-run (timeout); `grep sorry/admit` clean on the two Lean files.
