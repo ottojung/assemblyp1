@@ -176,6 +176,24 @@ theorem conformal_same_sign {δ : E → ℤ} {gs : List (E → ℤ)}
     rw [h2] at h1
     exact negPart_eq_zero (le_antisymm h1 (negPart_nonneg e))
 
+/-- Finite sums preserve a supplied common sign.  This is the elementary
+throughput-coordinate step needed by any T-sign-compatible decomposition; the
+sign-compatible list itself remains an independent structural obligation. -/
+theorem list_sum_same_sign {α : Type} (φ : α → ℤ) (gs : List α)
+    (hsign : (∀ g ∈ gs, 0 ≤ φ g) ∨ (∀ g ∈ gs, φ g ≤ 0)) :
+    (0 ≤ (gs.map φ).sum) ∨ (gs.map φ).sum ≤ 0 := by
+  rcases hsign with hp | hn
+  · exact Or.inl (List.sum_nonneg (by
+      intro x hx
+      rw [List.mem_map] at hx
+      obtain ⟨g, hg, rfl⟩ := hx
+      exact hp g hg))
+  · exact Or.inr (list_sum_nonpos_int (by
+      intro x hx
+      rw [List.mem_map] at hx
+      obtain ⟨g, hg, rfl⟩ := hx
+      exact hn g hg))
+
 /-- **Edge-flow Graver decomposition.**  The edge-flow system satisfies the
 `HasGraverDecomposition` hypothesis of the separable-convex certificate, proved
 directly from `AssemblyP1.GraverRigidity.graver_decomposition`.  A feasible

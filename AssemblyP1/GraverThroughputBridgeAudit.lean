@@ -8,6 +8,7 @@ open AssemblyP1.GraverThroughputBridge
 #print axioms AssemblyP1.GraverThroughputBridge.flowLin_sub
 #print axioms AssemblyP1.GraverThroughputBridge.flowLin_eq_zero_iff
 #print axioms AssemblyP1.GraverThroughputBridge.conformal_same_sign
+#print axioms AssemblyP1.GraverThroughputBridge.list_sum_same_sign
 #print axioms AssemblyP1.GraverThroughputBridge.hasGraverDecomposition_flow
 #print axioms AssemblyP1.GraverThroughputBridge.graver_flowLin_eq_zero
 #print axioms AssemblyP1.GraverThroughputBridge.graver_optimal_flow

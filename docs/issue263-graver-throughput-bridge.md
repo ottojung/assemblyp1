@@ -37,6 +37,11 @@ flowLin f (inr _) = ∑ e, f e                              -- fixed-total row
 * `graver_optimal_flow` — `graver_optimal_iff_no_improving` instantiated on the
   edge-flow system, with the decomposition hypothesis discharged, so the
   certificate is unconditional there.
+* `list_sum_same_sign` — finite sums preserve a supplied common sign. This is
+  the elementary throughput-coordinate step any future T-sign-compatible
+  decomposition would need; it does not supply the sign-compatible list itself,
+  which remains OPEN for the genuine outgoing-throughput map (see the sign-clash
+  witness in `docs/issue263-throughput-sign-clash-example.md`).
 
 ### The augmented `[A 0; -T I]` system
 
