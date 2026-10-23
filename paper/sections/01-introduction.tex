@@ -90,6 +90,17 @@ A different tradition \cite{medvedev2009} scores candidates instead of
 reconstructing: the \emph{likelihood} of a candidate genome is the probability
 that uniform sampling from it would produce the observed reads, and the
 \emph{maximum-likelihood genome} is the candidate with the highest score.
+More explicitly, for a fixed circular genome $G$ of length $|G|\ge L$, choose
+each read start independently and uniformly from its $|G|$ positions and
+observe the corresponding error-free length-$L$ window. This defines a read
+law $P_G(w)=\spec_L(G)(w)/|G|$; for ordered reads
+$R_1,\ldots,R_n$, the sampling likelihood is
+$L_n(G)=\prod_{i=1}^n P_G(R_i)$. Uniform starts do not imply uniform read
+strings: a string appearing at several positions has proportionally greater
+probability. This likelihood is $P(R_1,\ldots,R_n\mid G)$, not the posterior
+$P(G\mid R_1,\ldots,R_n)$, which also depends on the prior. Rotations have
+the same read law and are treated as one genome when identifying circular
+truths.
 Likelihood assigns a score to candidate genomes; selecting a maximizer
 turns that objective into a reconstruction rule. There is a compelling reason
 to study this rule. With a finite candidate class, a correct read-generation
@@ -104,6 +115,16 @@ truth's likelihood rank for \emph{particular} reads and structural conditions.
 In particular, the guarantee applies to the actual read distribution,
 not automatically to an approximate likelihood or to an optimizer over
 flows that fail to spell genomes.
+
+That distinction matters even in the smallest examples: with $L=2$ and two
+reads both equal to $\texttt{AA}$, the circular genomes $S=\texttt{AAC}$ and
+$D=\texttt{AAAC}$ assign likelihoods $L_2(S)=1/9$ and $L_2(D)=1/4$,
+respectively. Thus the source can lose exact finite-sample ML. This is a
+sampling fluctuation, not a defect in likelihood: ML remains the optimal
+prior-averaged zero-one decision rule under the finite uniform-prior model
+above. The worked calculation and the distinction between average success and
+success conditional on a fixed truth are given in
+Section~\ref{sec:finite}.
 
 Shomorony et al.\ close their Discussion with a question that sits between the
 two lines \cite[Discussion]{shomorony2016}:
