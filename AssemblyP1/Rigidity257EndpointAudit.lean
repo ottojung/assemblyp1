@@ -1,0 +1,4 @@
+import AssemblyP1.FiniteRigidityDecider
+
+#print axioms AssemblyP1.FiniteRigidityDecider.atatat_rigid
+#print axioms AssemblyP1.FiniteRigidityDecider.aatatt_nonrigid
