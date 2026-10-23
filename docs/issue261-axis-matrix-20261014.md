@@ -1,5 +1,23 @@
 # Issue #261 axis matrix — independent audit (2026-10-14)
 
+## 2026-10-23 continuation checkpoint
+
+The verifier repair referenced by the prior terminal handoff is present on
+`origin/research/261-verifier-stretch-fix-1G5S0IIcECkDocLJmuuKBL-brothers`
+at `94dd545` (`fix(#261): repair exact witness verifier`).  From a clean clone
+of `https://github.com/ottojung/assemblyp1.git`, the repaired
+`scripts/verify_issue261_general_bidirected_flow_ml.py` was rerun and passed:
+36,352 variable-length density triples, the exact `AAATT` flow ratio `256/81`,
+the half-integral gap `625/576`, the binomial core witness `8 > 4`, and 5,440
+flow-dominance pairs.  This validates that artifact; it does not close the open
+source-fidelity, orientation/RC, reduction, and general flow-image questions
+listed below.
+
+The GitHub CLI is unavailable in this runtime (`gh: command not found`), and the
+unauthenticated GitHub API request for issue #261 returned HTTP 403.  Thus the
+newest board comments and any PR review/check state could not be independently
+read here; no claims about them are made.
+
 This note is the independent open/closed matrix requested by the #261 delegated
 task.  It audits `origin/main` at `e024af24227bccbb88c26d22e1239d84f02e2684`
 (merge of PR #206, the #284 global-circular branch) against the declared axes of
