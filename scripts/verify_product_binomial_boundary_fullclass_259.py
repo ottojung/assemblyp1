@@ -152,15 +152,17 @@ def part_B():
                         i = next(k for k in S
                                  if eff_weight(N, B, k) > eff_weight(N, A, k))
                         # flood coordinate i (keeping other coords at A) until
-                        # the score ratio exceeds 1
-                        C = prod(
-                            (eff_weight(N, B, k) ** A[k])
-                            / (eff_weight(N, A, k) ** A[k])
-                            for k in range(m) if k != i)
+                        # the score ratio exceeds 1 (exact rational arithmetic;
+                        # the float quotient must NOT be wrapped in Fraction).
                         from fractions import Fraction
+                        C = Fraction(1, 1)
+                        for k in range(m):
+                            if k != i:
+                                C *= Fraction(eff_weight(N, B, k) ** A[k],
+                                              eff_weight(N, A, k) ** A[k])
                         ratio_i = Fraction(eff_weight(N, B, i), eff_weight(N, A, i))
                         t = A[i]
-                        while ratio_i ** t * Fraction(C) <= 1:
+                        while ratio_i ** t * C <= 1:
                             t += 1
                         x = list(A)
                         x[i] = t
