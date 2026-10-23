@@ -1,6 +1,18 @@
 # Presentation arc and reconciliation for #265
 
-Status: 2026-10-14, addenda 2026-10-15 and 2026-10-16. Follow-up
+Status: 2026-10-23, reconciled against current `main` after PRs #254 and #250.
+Earlier slide counts and arc descriptions below are historical snapshots, not
+current deck specifications. Current `main` has 30 programmers' main-narrative
+slides (through `Questions?`) plus seven backup slides, and 14 biologists'
+main-narrative slides (through `Thank you`) plus six backups. The programmer
+deck retains the approved #254 opening and Lean/agent-proof-trust story, but the
+earlier 14-slide target recorded below has not been met. No slide cuts are
+authorized by this reconciliation; resolving the mismatch requires an explicit
+scope decision and audience/timing review. The mapping in
+`docs/deck-arc-consistency-265.md` is the current reference for slide sequence
+and claim placement.
+
+Historical status: 2026-10-14, addenda 2026-10-15 and 2026-10-16. Follow-up
 correction by agent `757b22c73e75`, branch
 `agent/757b22c73e75-issue265-restore-opening`. Base: `main` @ `b0a6e9f` (deck
 content unchanged since `22a6233`). The original #265 presentation rebalance
@@ -43,19 +55,21 @@ problem settled.
   speaker note, claim, or backup is weakened. See "Preserving the approved
   opening" below.
 - `slides/programmers.md` — rewritten to a **positive, operational** main arc
-  (14 slides) plus four backup slides. The distinct 2016 read-overlap
+  (historically described as 14 slides; current `main` has 30) plus backups.
+  The distinct 2016 read-overlap
   Not-So-Greedy graph is restored to the main narrative; the finite reversal is
   a single short aside (slide "A finite aside: even the truth can lose") and
   the full calculation moves to backup B1. Bayes-optimal ML is the entrance,
   not the headline. The founding-agent narrative, orchestration diagram, and
   Lean/kernel-trust story are preserved (two slides plus notes; the coverage
-  audit is backup B2).
+  audit is backup B2). The current deck has seven backup slides.
 - `slides/biologists.md` — rebalanced to the same positive arc at an accessible
   level: sequencing model, overlaps and bridging, the 2016 read-overlap graph,
   likelihood, a single "decoy can win" aside, population maximality and
   identifiability, and the restricted finite positive theorem. The two former
   consecutive negative slides are merged into one aside; the extra
-  "sample change" and "tie" slides are merged.
+  "sample change" and "tie" slides are merged. The current deck has 14
+  main-narrative slides and six backups.
 - `slides/README.md` — deck descriptions updated to match.
 - **Strong-law/KL limit statement added to the paper and both decks
   (2026-10-16 addendum by agent `1c9228ae31b4`).** New paper subsection
@@ -107,7 +121,12 @@ problem settled.
 No paper file is changed by this branch. The whitepaper was already recentered
 by the merged PR #189 and the #268 revisions (see "Reconciliation" below).
 
-## Revised programmers' main arc (14 slides)
+## Historical proposed programmers' main arc (14 slides)
+
+This was the proposed compact arc, not the current programmers' deck. It
+remains a possible target if the owner explicitly reconfirms the 12–14-slide
+timing constraint and approves the required cuts/restructuring. Until then, do
+not treat this table as a count or complete description of the rendered deck.
 
 | # | Slide | Idea |
 |---|-------|------|
@@ -126,7 +145,7 @@ by the merged PR #189 and the #268 revisions (see "Reconciliation" below).
 | 13 | What Lean is | Curry–Howard, kernel, axiom audit, model-fidelity caveat |
 | 14 | Trust the check, not the claim | hierarchy: ML is the entrance; classification is the contribution |
 
-Backups: B1 complete finite reversal; B2 incomparable coverage definitions;
+Historical backup plan: B1 complete finite reversal; B2 incomparable coverage definitions;
 B3 open sample-complexity (Hellinger bound); B4 prior-average monotonicity
 versus per-truth non-monotonicity (`succ(1)=2/3 > succ(2)=4/9`); B5 primary
 sources; B6 the strong-law/KL limit (eventual a.s. selection, no finite n).
@@ -328,3 +347,16 @@ universe.
 - Paper build via `paper/build.sh` (Guix): `sec:strong-consistency` compiles
   with 0 LaTeX warnings (2026-10-16 addendum; earlier addenda did not touch
   the paper).
+
+## 2026-10-23 reconciliation
+
+Fresh `main` audit at `234f3480d7589c8fc4e056c91dda91343fe64ece` counted H1
+slide boundaries in both Markdown decks: programmers 39 total, comprising 30
+main-narrative slides before `Backup slides` and seven backups; biologists 21
+total, comprising 14 main-narrative slides before `Backup: the observation
+model` and six backups. The #254 issue is closed as merged and requires a
+goal-first opening; it does not provide current authorization to cut the
+expanded finite-read/Lean narrative to 12–14 slides. This note corrects its
+stale count and makes the outstanding choice visible without silently removing
+reviewed content. See `docs/deck-arc-consistency-265.md` for the verified
+current sequence and claim mapping.
