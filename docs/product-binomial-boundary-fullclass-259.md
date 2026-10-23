@@ -147,6 +147,24 @@ Consequences.
 | Boundary probabilities | `d(w) = 0`, `d(w) = N` handled (zero branch, dominated) | — |
 | Graph rigidity | necessary but not sufficient; exact full-class condition given | general bidirected-flow rigidity (`#260`/`#261`) |
 
+### Additional bounded realizable-spectrum census (binary circular `k=2`)
+
+The executable search `scripts/census_circular_binary_k2_259.py` enumerates
+binary circular words modulo rotation for lengths `L = 2,…,16`, forms their
+oriented cyclic 2-mer spectra, deduplicates the spectra, and compares every
+truth spectrum against every candidate spectrum using exact integer products
+for the same fixed-`N` objective (`N=L`, `n=L`, observed `x=A`).  Every truth was
+a maximizer at its own observed spectrum in this census.  For each truth it
+also checked all complete-support observations `x ≥ A` with total excess at
+most 8.  The surviving truths were: all three spectra at `L=2`; two at `L=3`,
+namely `(0,1,1,1)` and `(1,1,1,0)`; `(1,1,1,1)` at `L=4`; and none at
+`L=5,…,16`.  Thus this family supplies no non-concentrated sample-uniform
+counterexample; even the finite excess-box check is not a proof for all
+observations.  This complements the prior `k=1` census through `L=11` but does
+not close the realizability-restricted theorem.  The script is an exact bounded
+census, not a Lean-checked theorem or an assertion about other alphabets,
+orders, genome models, or the exact multinomial objective.
+
 ## 6. Independent verification
 
 `scripts/verify_product_binomial_boundary_fullclass_259.py` (exact Python
