@@ -56,6 +56,13 @@ length `N` is therefore a variable and the comparison acquires a length factor.
 
 ## Candidate classes and maximality conditions
 
+The bounded exact-likelihood search in
+[`issue261-spelled-flow-maximality-search.md`](issue261-spelled-flow-maximality-search.md)
+found no spelled-maximal / surrogate-count-vector-nonmaximal separation for
+binary circular truths through length 8 at `L=2,3`. Its count-vector universe is
+not the literal §6.2 flow image, so this is computational evidence only; the
+converse from spelled maximality to flow maximality remains OPEN.
+
 ### Class 1: Variable-length exact multinomial (the §6.1 first display)
 
 - **Candidates**: count vectors `d` with variable length `N` (flows, not
