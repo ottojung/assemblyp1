@@ -101,6 +101,14 @@ optimal rule is maximum a posteriori (MAP). This standard Bayesian
 decision-theoretic result provides the motivation and benchmark for the paper,
 not its solution: the harder assembly question is what can be said about the
 truth's likelihood rank for \emph{particular} reads and structural conditions.
+Finite-sample error does not make ML meaningless: for the circular genomes
+$S=\texttt{AAC}$ and $D=\texttt{AAAC}$ with length-$2$ oriented reads, observing
+$\texttt{AA},\texttt{AA}$ gives likelihoods $L_2(S)=1/9$ and $L_2(D)=1/4$,
+so this particular sample strictly favors the wrong candidate. The example is
+under the same independent uniform-start read law, and the finite-sample
+success probabilities (including the tie convention) are calculated in
+Proposition~\ref{prop:nonmonotone}. Thus ML is a principled average-risk rule,
+not a promise of correctness on every finite sample or for every fixed truth.
 In particular, the guarantee applies to the actual read distribution,
 not automatically to an approximate likelihood or to an optimizer over
 flows that fail to spell genomes.
