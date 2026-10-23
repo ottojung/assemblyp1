@@ -15,14 +15,22 @@ equal, and total `6` fixes each at `3`. This rigidity despite triple
 `(L-1)`-mer occurrences refutes necessity of the simple no-triple repeat
 condition.
 
+The follow-up endpoint `aatt_rigid` uses the *same* four-edge support
+`AA, AT, TA, TT` as `aatatt_nonrigid` with unit multiplicities `(1, 1, 1, 1)`
+at total `4` (the circular 2-mer spectrum of `S = AATT`, kernel-checked with
+the same finite decider over a `5^4 = 625` search space). The pair
+(`aatatt_nonrigid`, `aatt_rigid`) shows rigidity is a multiplicity property,
+not a support-topology property, on a concrete genome-realizable support —
+mirroring the existing figure-eight rigid/non-rigid pair.
+
 ## Claim status
 
 **PROVED:** The general algebraic iff criterion
 `ExactRigidityCriterion.nonrigid_iff_exists_delta` is kernel-checked, as is an
 exact finite decider in `FiniteRigidityDecider.rigid_iff_decider`. The decider
 enumerates `(G + 1)^|E|` candidate vectors and is therefore a checkable finite
-certificate, not a polynomial-time complexity claim. The `AATATT` and
-`ATATAT` endpoints are kernel-checked in the named model.
+certificate, not a polynomial-time complexity claim. The `AATATT`,
+`ATATAT`, and `AATT` endpoints are kernel-checked in the named model.
 
 **OPEN:** A more structural characterization or better complexity bound for
 arbitrary oriented read-support graphs is not established by these endpoints.
