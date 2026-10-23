@@ -46,3 +46,29 @@ restriction is necessary-and-sufficient.
 * `#print axioms` for both endpoint examples — only
   `propext`, `Classical.choice`, and `Quot.sound`.
 * `python3 scripts/check-research-docs.py` — passed.
+
+## Independent brute-force recheck (2026-10-23, agent bKNIGVSQiSxMGxYxxjF0PV-wounds)
+
+Exact enumeration over `1..G` per edge (no Lean dependency) reproduces every
+endpoint claim on this branch:
+
+* `atatat` (2-cycle, `G=6`): unique feasible `(3, 3)` — rigid, despite triple
+  `(L-1)`-mer repeats.
+* `aatatt` (same `AA,AT,TA,TT` support, `G=6`): exactly 4 feasible
+  circulations `(1,1,1,3)`, `(1,2,2,1)`, `(2,1,1,2)`, `(3,1,1,1)` — non-rigid;
+  the Lean witness uses `B=(2,1,1,2)`.
+* `aatt` (same support, `G=4`): unique feasible `(1,1,1,1)` — rigid.
+* `figureEight` rigid (`G=4`): unique `(1,1,1,1)`; non-rigid instance
+  (`G=6`): exactly `(1,1,2,2)`, `(2,2,1,1)`.
+* `aaaab` (`G=5`): exactly `(1,2,2)`, `(3,1,1)` — non-rigid.
+
+Failed simpler hypotheses stay refuted (recorded, not claimed as iff):
+no-triple-repeat is sufficient but unnecessary (`atatat_rigid`); single-cycle
+support is sufficient but unnecessary (`figureEight_rigid`); support topology
+alone does not determine rigidity (`aatatt_nonrigid` vs `aatt_rigid`,
+`figureEight_nonrigid` vs `figureEight_rigid`).
+
+**Scope note toward arbitrary supports:** the recheck confirms the finite
+decider is exact on every listed support, but no topology-only or
+repeat-bound-only iff is claimed; structural characterization for arbitrary
+supports and complexity beyond `(G+1)^|E|` remain OPEN.
