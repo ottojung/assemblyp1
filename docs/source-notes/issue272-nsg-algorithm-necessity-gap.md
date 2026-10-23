@@ -31,13 +31,35 @@ selects/spells an Eulerian traversal outside the theorem's hypotheses.
 
 The publisher-hosted article endpoint
 `https://academic.oup.com/bioinformatics/article/32/17/i494/2450754` returned
-HTTP 403 in this run. The DOI resolver confirmed the bibliographic identity,
-but supplied no procedure text. The exact supplement has not been recovered in
-this run. Existing source notes report the same archival limitation. Thus this
-run does not claim an independent reconstruction of algorithm details from a
-primary full-text copy.
+HTTP 403 in this run. The DOI resolver confirmed the bibliographic identity;
+the Crossref abstract confirms only the headline guarantee (information
+feasibility implies reduction to an Eulerian path problem), not a full
+tie-breaking specification. A contemporaneous author-associated implementation
+is publicly available at
+[`samhykim/nsg`](https://github.com/samhykim/nsg), pinned for this audit at
+commit `32038da6b207e87b4572fbb6b91186f71814fe3a`. Its README describes the
+greedy/next-largest non-aligning overlap selection and X/Z cleanup. The source
+`nsg.cpp`, `find_xz.h`, and `nsg_util.h` provide implementation detail, but do
+not define an output genome: this code builds/cleans an overlap graph and does
+not spell an Eulerian traversal. It therefore cannot by itself settle a claim
+about the paper's reconstructed sequence or its tie semantics. In particular,
+the repository source's `MIN_L = 10` and use of hash-backed, parallel matching
+make it unsafe to silently identify this implementation with a minimal finite
+mathematical evaluator. The paper/supplement's exact output and tie rules remain
+unrecovered.
 
 ## Why the existing witness does not transfer
+
+### Connected distinct-read overlap check
+
+The requested follow-up census was not run in this invocation. The prior
+`AAAB` witness remains the only concrete example recorded here; its overlap
+disconnection makes it unsuitable as evidence about an Eulerian spelling
+procedure. In particular, the present source audit does not establish that
+there are no connected `I_s`-failure singleton-fibre examples: such a negative
+claim requires a precisely bounded enumeration and a completeness record. This
+is an unresolved computational task, not a consequence of the algorithm-source
+gap below.
 
 `docs/source-notes/issue272-is-necessity.md` and
 `AssemblyP1/FiniteIsNotNecessaryCertainty.lean` settle a different, precise
@@ -61,16 +83,22 @@ particular algorithm on such inputs.
 **Finding: the literal algorithm-specific claim remains open in the present
 formal/source record.** No source-faithful bounded success witness was
 established in this run, and no theorem that it cannot exist was established.
-The decisive next step is to recover the primary/supplement procedure text and
-translate its exact read-overlap graph, multiplicity rules, and deterministic
-Eulerian-spelling/output semantics into a small evaluator under the same
-orientation, read-length, genome-length, and candidate conventions. Then
-search for a truth with `I_s` false whose actual algorithm output is in its
-rotation class; exhaustively validate any finite witness independently. A
+The primary-source lookup was expanded: the article endpoint gave 403;
+Crossref yielded only the abstract; the linked author implementation was
+located and pinned, and its README and graph-builder/cleanup source were
+inspected. That inspection narrows the blocker: a candidate could be tested
+against the author's graph builder only after specifying a consistent
+small-instance execution model, but correctness of that graph output still
+does not equal correctness of a spelled genome because the checked-in
+implementation does not include an Eulerian spelling/output procedure. A
 generic decoder chosen to return the unique supported orbit would not satisfy
 that burden.
 
-No Lean formalization was attempted because the source-faithful procedure
-definition is still missing. No result here upgrades the external published
-reconstruction theorem or the existing generic decoder lemma into a verified
-historical algorithm claim.
+No candidate search or Lean formalization was attempted: the primary paper's
+exact tie/output semantics could not be recovered, and the located code stops at
+graph construction rather than genome spelling. No result here upgrades the
+external published reconstruction theorem or the existing generic decoder lemma
+into a verified historical algorithm claim. The next decisive question is to
+obtain the paper/supplement passage defining the output Eulerian path (including
+ties), or an author-endorsed implementation of that output stage; only then can
+the smallest connected-overlap, `I_s`-failing cases be enumerated faithfully.
