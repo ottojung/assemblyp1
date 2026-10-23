@@ -337,6 +337,7 @@ import AssemblyP1.Issue209EAudit
 import AssemblyP1.FibreCountArithmetic
 import AssemblyP1.RobustSameLengthIff
 import AssemblyP1.FixedXExactML
+import AssemblyP1.FiniteMLAdmissibility255
 import AssemblyP1.FixedNBinomialEffectiveWeights
 import AssemblyP1.FixedNConstructiveWitness
 import AssemblyP1.FixedNConstructiveWitnessAudit

@@ -1,5 +1,17 @@
 # AssemblyP1 umbrella #255 — remaining-open matrix
 
+## Addendum — 2026-10-23 (fixed-x admissibility necessity, axis A)
+
+* **New scoped increment (unmerged branch).**
+  `AssemblyP1/FiniteMLAdmissibility255.lean` proves truth-support
+  admissibility of the fixed sample is necessary for exact-ML maximality:
+  `exactLik_eq_zero_of_inadmissible` (general lemma), plus the minimal
+  witness `truth_not_maximal_at_xStar` — truth `AAABBB`, `L = 3`, single
+  read `010` (outside the truth's windows) gives truth likelihood `0`
+  vs competitor `![0,1,0,0,0,0]` likelihood `1/6`. Scoped note:
+  `docs/fixed-x-admissibility-necessity-255.md`. Complements (does not
+  alter) the `FixedXExactML` iff, which assumes admissibility. No child
+  issue is closed; #255 remains OPEN.
 
 ## Addendum — 2026-10-21 (L3 uniqueness transport: does NOT hold, kernel-checked)
 
