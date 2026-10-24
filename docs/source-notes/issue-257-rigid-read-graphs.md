@@ -80,6 +80,17 @@ kernel-checked proof that the direct LP/fractional relaxation is **not** suffici
 polynomial min-cut/max-flow form for general supports (or a proof that none
 exists) remains **OPEN**._
 
+_Lean (unit-slack lemma, 2026-10-24): the general fact that any feasible
+circulation of total `G = |E|` is the all-ones vector (hence rigid) is
+kernel-checked as `AssemblyP1/RigidityUnitSlack.lean`
+(`feasible_eq_one_of_total_eq_card`, `rigid_of_total_eq_card`) with only the
+standard axioms `[propext, Classical.choice, Quot.sound]`. It assumes no repeat
+bound, throughput cap, or connectivity hypothesis; it is the forward direction
+of exact per-support characterizations at unit slack. Cross-check with
+`python3 scripts/verify_257_unit_slack.py` (11 Eulerian supports, exhaustive in
+scope, with non-vacuous controls at `G = 2|E|`). Build with
+`lake build AssemblyP1.RigidityUnitSlack`._
+
 ---
 
 ## 0. Answer at a glance
