@@ -253,3 +253,33 @@ Summary of the boundary, case by case (truth `A` at the shown observation):
 | tie | equal | `A` non-unique | `1/2` | separate (B non-unique ∧ ¬A) |
 | zero-likelihood | `A` strictly higher | `A` unique | `1` | **overlap** |
 | MAP vs ML, skew prior | `B` strictly higher | `B` unique | `3/4` (posterior argmax `A`) | MAP ≠ ML |
+
+## 10. Genome-level L3 literal separation cell (merged PR #376)
+
+_Kernel-checked in `AssemblyP1/ConditionalVsMLLiteralL3Adapter271.lean`
+(audited in `AxiomAudit271.lean`); standalone re-derivation in
+`scripts/verify_271_literal_l3.py`. Source-faithful oriented adapter, not an
+abstract toy: six binary rotation-orbit candidates
+`0000, 0001, 0011, 0101, 0111, 1111`; oriented `L = 3` reads; normalized orbit
+read pmf; uniform `1/6` orbit prior; side event `E` = literal §6.4
+`HistoricalInformationFeasibleLiteral`._
+
+At read `000` with truth orbit `1` (`0001`):
+
+* **(A ∧ ¬B), genome-level.** The literal witness `{0,1,3}` is
+  non-saturated (`literalFeasible_nonsaturated`, `nonsaturated_card`) and pins
+  exactly orbit `1` (`E_iff_at_000`), so the conditional posterior is `1`
+  (`sep_posteriorMass_one`, packaged in `separation_genome`), while ordinary
+  R-only ML strictly prefers wrong orbit `0` (`sep_ml_strict`: `1/4 < 1`,
+  `sep_truth_not_ml`), and the ordinary posterior is not certain
+  (`sep_ordinary_not_certain`).
+* **Converse (B ∧ ¬A).** Orbit `0` is the unique ordinary-ML maximizer at
+  `000` (`conv_ml_unique`) with non-certain ordinary posterior
+  (`conv_ordinary_not_certain`, `converse_genome`).
+* **Scope.** At `L = 2` the literal event already yields (A ∧ ¬B) but only
+  via the saturated placement `{0,1,2,3}`; the L3 cell is the first
+  non-saturated single-read literal separation witness
+  (`docs/conditional-vs-ml-literal-l3-adapter-271.md` §2/§6). This cell does
+  not re-open the #255/#258/#259/#261 classifications and does not transfer
+  to the RC-collapsed or §6.2-flow objectives (§5 representation warnings
+  apply unchanged).
