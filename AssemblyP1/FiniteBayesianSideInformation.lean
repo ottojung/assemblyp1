@@ -572,6 +572,15 @@ theorem readOnly_not_certain :
 
 theorem truth_satisfies_promise : E 0 0 := rfl
 
+/-- Exact read-only posterior value: without side information the posterior on
+the true orbit class is exactly `1 / 2`, sharpening `readOnly_not_certain`
+from "not one" to the precise uncertain value. -/
+theorem readOnly_posterior_half :
+    posteriorMass π p (fun _ _ => True) orbit (0 : Fin 1) (orbit 0) = 1 / 2 := by
+  unfold posteriorMass predictiveMass jointMass
+  simp only [π, p, orbit, id_eq, Fin.sum_univ_two]
+  norm_num
+
 theorem promise_certain : posteriorMass π p E orbit (0 : Fin 1) (orbit 0) = 1 := by
   have hZ : 0 < predictiveMass π p E (0 : Fin 1) := by
     have hg : 0 < jointMass π p E 0 0 := by
