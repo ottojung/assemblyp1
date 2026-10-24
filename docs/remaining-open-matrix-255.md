@@ -1,5 +1,35 @@
 # AssemblyP1 umbrella #255 — remaining-open matrix
 
+## Addendum — 2026-10-24 (order-audit reachability + per-axis OPEN audit, unmerged)
+
+* **Verified this run (isolated fresh clone, no shared-checkout edits).**
+  `origin/main` HEAD is `234f348`. All three recent #255 artifacts are
+  reachable on origin and form the ancestry chain
+  `48447f5 -> 5b55129 -> origin/main 234f348` (`merge-base --is-ancestor`
+  yes for both links): `5b55129` (4 fixed-x objective-equivalence iff
+  lemmas, `MaximizerOrderTransform`), `48447f5` (order-audit module
+  `MaximizerOrderTransformAudit` + root import + exact-rational verifier
+  `scripts/verify_255_order_transform.py`), `7a8d326` (matrix addendum
+  recording `5b55129` pending-integration status). All three remain
+  **unmerged / pending-integration**; none is on `main`, and none closes
+  any child front. No Lean cell owned by #257/#259/#261 is duplicated here.
+* **Honest per-axis status after this audit (nothing promoted to fact):**
+  fixed-x (A) has kernel-checked objective-equivalence lemmas only
+  (monotone rewording preserves argmax; antitone swaps max/min) — truth
+  maximality at fixed x stays OPEN; sample-uniform (B) exact-iid
+  full-start-covered cell PROVED (PR #251), all other (B) cells OPEN;
+  exact multinomial PROVED only in landed scopes (#256/#258/#260 + PR
+  #251), fixed-N binomial PARTIAL (#259 landed weights/witnesses, full
+  (A)/(B) OPEN); same length PROVED in landed scopes, variable length
+  OPEN (fenced to #261, short counterexamples landed #300); spelled
+  genomes vs §6.2 bidirected flows / overlap floor OPEN except
+  full-overlap + reduced-circuit occurrence cells; truth candidacy PROVED
+  in landed scopes, extended candidate sets OPEN; literal historical
+  read-string `I_s` bridging sufficiency REFUTED (W1/W2), project
+  placement `I_s` PROVED where landed, remaining historical-referent
+  questions and the (A)-side adapter OPEN (#271). Cross-checked by
+  `scripts/verify_255_matrix_axes.py`.
+* **#255 stays OPEN.** This is a documentation/verification increment only.
 
 ## Addendum — 2026-10-21 (L3 uniqueness transport: does NOT hold, kernel-checked)
 
