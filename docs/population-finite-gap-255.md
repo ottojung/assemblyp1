@@ -64,8 +64,18 @@ Concrete two-type witness:
   (e.g. one read of type `A` and three of type `B`, `n = 4`).
 - Population: `ℓpop_S(S) = log(1/2) ≈ −0.693 > ℓpop_S(D) ≈ −0.837`, so the
   truth maximizes at the population level.
-- Finite sample: `∑ p̂ log p_D ≈ −0.562 > ∑ p̂ log p_S = log(1/2)`, so the
-  candidate strictly beats the truth.
+- Finite sample: `∑ p̂ log p_D = (1/4)log(1/4)+(3/4)log(3/4) ≈ −0.562`,
+  while `∑ p̂ log p_S = log(1/2) ≈ −0.693`; equivalently, the exact
+  likelihood ratio is `(1/2)^1(3/2)^3 = 27/16 > 1`. Thus the candidate
+  strictly beats the truth.
+
+The exact-rational script `scripts/verify_255_population_finite_gap.py`
+checks this witness without floating-point logarithms and adds the reversed
+sample `x=(3,1)`, where the competitor/truth likelihood ratio is `3/16`.
+Thus, even with truth and candidate distributions fixed, the outcome in (A)
+depends on the observed counts; the population ordering does not decide it.
+The script is a finite numerical check, not a proof for arbitrary candidate
+sets or read-generation models.
 
 ## Relationship to #274
 
