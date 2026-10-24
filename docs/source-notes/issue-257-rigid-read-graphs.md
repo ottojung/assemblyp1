@@ -36,7 +36,10 @@ polynomial DP decision, rigid repetitive instance and coupling refutation
 cross-check, exhaustive small scopes),
 `python3 scripts/verify_257_tri_hub.py` (§21 triangular multi-hub three-equation
 criterion, polynomial DP decision, rigid repetitive instance, non-rigidity
-witness and coupling refutation, mutation-red control, exhaustive small scopes).
+witness and coupling refutation, mutation-red control, exhaustive small scopes),
+`python3 scripts/verify_257_kernel_decider.py` (§22 support-agnostic
+incidence-kernel decider: exact rational RREF free-coordinate search,
+exhaustive small-scope cross-check, genome instances, mutation-red control).
 Self-contained, exact integer arithmetic, deterministic._
 
 _Blocking-review repair (2026-10-10, branch `research/257-graver-lean-repair`):
@@ -1912,3 +1915,75 @@ proof that none exists — remains **OPEN** (§8.1/§8.2); §21 shows that such 
 criterion cannot be of a single-cut / independent-per-path form for the
 triangular family either, and gives a polynomial criterion for that
 unbounded-rank three-hub subfamily.
+
+## 22. Incidence-kernel decider: exact free-coordinate search in dimension `d`
+
+This section gives a **support-agnostic** decision procedure for Theorem 1 that
+searches neither the full delta box `(2C+1)^m` nor the value product
+`(G+1)^m` (cf. the §11 finite decider). It instead computes an exact rational
+basis of the zero-sum circulation lattice and enumerates only the free
+coordinates. [mathematical proof + verified computation]
+
+### 22.1 Exact rational kernel parametrisation
+
+Let `K` be the `(n+1) × m` stacked matrix (incidence `M` plus the all-ones
+zero-sum row) over `ℚ`. Reduced row-echelon elimination over `ℚ` (exact
+`Fraction` arithmetic, hence polynomial-time) yields pivot columns `P` and
+free columns `S` with `|S| = d = m − rank(K)`. Every `δ ∈ ker K` is uniquely
+determined by its restriction to `S` via `δ_P = −R δ_S`, where `R` is the
+RREF pivot block. Since every feasible witness satisfies `|δ_e| ≤ C := G − m`
+(`B = A + δ` has `B_e ∈ [1, G−m+1]`), `A` is non-rigid **iff** some nonzero
+assignment `f : S → {−C, …, C}` extends to an integral vector with
+`A + δ ≥ 1` on every edge. The extension is kernel-balanced by construction,
+so each surviving assignment is independently re-validated (nonzero,
+integral, in-box, zero-sum, balanced). The search space is `(2C+1)^d`
+against `(2C+1)^m` for direct delta-box enumeration — an exponential saving
+of `m − d = rank(K)` dimensions — and it collapses to a single check when
+`d = 0` (e.g. a lone self-loop). [mathematical proof]
+
+### 22.2 Complexity status
+
+The RREF step is polynomial; the residual search is exponential only in the
+cyclomatic number `d` and `log C`, i.e. the procedure is fixed-parameter
+tractable in `(d, C)`. This is a genuine §8.2-adjacent upper bound for
+bounded-cycle-rank supports with bounded slack, complementing the
+family-specific polynomial criteria (§§15, 20, 21), which exploit unary
+lengths rather than small rank. Whether a fully polynomial general-support
+decider exists (arbitrary topology and multiplicities) remains **OPEN**; no
+min-cut/max-flow closed form is claimed here. [mathematical proof + open]
+
+### 22.3 Worked genome instances
+
+Supports are derived from the genome strings themselves (`L`-mer windows of
+a circular truth), not hand-built:
+
+* `S = ATATAT`, `L = 3`: support `{ATA, TAT}`, `A = (3,3)` — **rigid**,
+  re-deriving the canonical rigid-repetitive example (§5.1) through the
+  kernel decider.
+* `S = AATATT`, `L = 2`: support `{AA, AT, TA, TT}`, `A = (1,2,2,1)` —
+  **non-rigid** with kernel witness `δ = (2,−1,−1,0)`
+  (`B = (3,1,1,1)`); the same-support unit endpoint `S = AATT`
+  (`A = (1,1,1,1)`, a single directed 4-cycle) is **rigid**.
+  [verified computation]
+
+### 22.4 Cross-check (`scripts/verify_257_kernel_decider.py`)
+
+The script is self-contained, exact and deterministic. It compares the
+kernel decider against direct positive-circulation enumeration over all
+strongly connected supports on `n ∈ {2,3}` nodes with `m ≤ 5` edges where
+every edge lies on a cycle, and all positive circulations of total
+`G ≤ min(2m, 7)` (**205** support/circulation instances, kernel dimensions
+`{0, 1, 2}`, **0** mismatches) — re-derives the genome instances above and
+includes a **mutation-red control** (shrinking the coefficient box to `C−1`
+admits no nonzero assignment on the figure-eight `A = (2,1)`, missing the
+genuine witness, so the harness has real discriminating power).
+[verified computation, exhaustive in scope]
+
+### 22.5 Epistemic status
+
+This section is a verified computational increment, not a Lean-checked
+theorem: no `.lean` files are added or changed. It does not duplicate the
+§11 product decider (different search space), the slack-bound enumeration
+(different certificate: free-coordinate assignments, not delta boxes), or
+any family-specific criterion (§§13–21). The uniform-in-support complexity
+question and the exact repeat-structural iff beyond §§12–21 remain **OPEN**.
