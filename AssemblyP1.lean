@@ -190,6 +190,8 @@ import AssemblyP1.MLEscape
 import AssemblyP1.SameLength62TieUniqueness
 import AssemblyP1.PopulationUniqueness
 import AssemblyP1.PopulationMaximizerUnrestricted
+import AssemblyP1.MaximizerOrderTransform
+import AssemblyP1.MaximizerOrderTransformAudit
 import AssemblyP1.Issue94GcdOneP2
 import AssemblyP1.P2GcdOne
 import AssemblyP1.Issue94R1LongWindow
