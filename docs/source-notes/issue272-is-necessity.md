@@ -194,7 +194,13 @@ negation of necessity explicitly (`is_not_necessary_for_readOnly_certainty`).
 1. **Algorithm-specific necessity for the literal Not-So-Greedy decoder.** OPEN;
    requires formalizing the algorithm (graph construction, Eulerian spelling) so
    that "the decoder is correct on this input" becomes a kernel-checkable
-   proposition. Not attempted here.
+   proposition. The existing `AAAB`, `L = 3`, `Y = {AAA, ABA}` certainty witness
+   has two disconnected components in the usual oriented de Bruijn graph
+   (`AA → AA` and `AB → BA`), so it does not establish what the historical
+   decoder does. See the bounded diagnostic
+   [`issue272-next-open-slice.md`](../issue272-next-open-slice.md). This instance's
+   algorithmic behavior remains OPEN until the source's domain and disconnected
+   input handling are established; no counterexample to the decoder is claimed.
 2. **Exact necessary condition.** The source necessity theorem (all-unbridged)
    and `I_s` (all-bridged) leave a strict gap on triple repeats. Whether the exact
    necessary-and-sufficient condition for same-length orbit certainty is
