@@ -497,6 +497,17 @@ exhaustive zeros are a sanity check on the proofs, not a substitute for them.
   decide whether `∃ δ ∈ ℤ^E \ {0}` with `M δ = 0`, `∑ δ = 0`, `δ ≥ 1 - A`.
   Since `|δ_e| ≤ G - |E|` (from `δ ≥ 1 - A` and `∑ δ = 0`), the search is
   bounded, hence decidable. [mathematical proof]
+* **Complexity upper bound (new, explicit-input model).** For an explicit finite
+  directed support with integer multiplicities and total `G` encoded in binary,
+  non-rigidity is in NP: a certificate is a second positive circulation `B`.
+  Each coordinate satisfies `1 ≤ B(e) ≤ G`, so the certificate uses
+  `O(|E| log(G+1))` bits; balance, positivity, total, and `B ≠ A` are checked
+  with polynomially many binary integer operations. Equivalently, rigidity is
+  in coNP. This is only an upper bound; it does **not** establish NP-hardness,
+  coNP-completeness, or a polynomial-time algorithm. The existing Lean lemma
+  `FiniteRigidityDecider.le_total_of_feasible` kernel-checks the key coordinate
+  bound, and its exact finite decider checks the same certificate relation.
+  [mathematical proof + kernel-checked bound]
 * The two-cycle certificate (Theorem 2) is a **finite sufficient check**
   (enumerate pairs of simple directed cycles; the number can be exponential,
   but each check is polynomial). [mathematical proof]
