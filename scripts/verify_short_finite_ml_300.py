@@ -29,7 +29,11 @@ code and no Lean output) and checks, with exact Python integers and
   4. the exact ordered-read likelihoods ``P(R|S)``, ``P(R|D)`` and the strict
      ratios, matching the issue table exactly;
   5. the multinomial-count objective shares each ratio (the common coefficient
-     cancels).
+     cancels);
+  6. the three instances are G=2,3,4 of the infinite family truth ``A^{G-1}T``
+     vs competitor ``A^{G}T`` at read length ``L=G-1``: for each G in 2..8 the
+     exact likelihoods match the closed forms ``P(R|S)=(1/G)^{G+1}`` and
+     ``P(R|D)=4/(G+1)^{G+1}``, i.e. ratio ``4*G^{G+1}/(G+1)^{G+1} > 1``.
 
 Exit code is non-zero if any check fails.
 """
@@ -396,7 +400,85 @@ def main():
     # G=4 is the tight case e+2 == L == 3.
     check(1 + 2 == 3, "G=4 triple-repeat bridging bound is tight (e+2 = L = 3)")
 
+    check_general_family(2, 8)
+
     print(f"\nAll {CHECKS['n']} exact-rational checks for #300 passed.")
+
+
+def check_general_family(G_min, G_max):
+    """The A^{G-1}T vs A^G T infinite family at read length L = G - 1.
+
+    For every G >= 2 the truth ``S = A^{G-1}T`` (|S| = G) and the competitor
+    ``D = A^{G}T`` (|D| = G + 1) are checked from scratch: the truth satisfies
+    the full ``InformationFeasible`` predicate on all starts, the observation
+    (one read per true start plus one extra read from start 0) has spectrum
+    ``{A^L: 2}`` plus one copy of every other truth window, the competitor
+    spectrum is ``{A^L: 2}`` plus one copy of every other window, both
+    candidates are §6.2-feasible (per-vertex, spelled support, closed overlap
+    circuit), and the exact likelihoods match the closed forms
+
+        P(R|S) = (1/G)^{G+1},  P(R|D) = 4/(G+1)^{G+1},
+
+    so P(R|D)/P(R|S) = 4*G^{G+1}/(G+1)^{G+1} > 1 (since
+    ((G+1)/G)^{G+1} = (1+1/G)^{G+1} <= 4 for G >= 1, strict for G >= 2).
+    The issue table is the G=2,3,4 slice of this family.
+    """
+    print(f"== general A^(G-1)T vs A^G T family, G={G_min}..{G_max} ==")
+    for G in range(G_min, G_max + 1):
+        L = G - 1
+        truth = "A" * (G - 1) + "T"
+        competitor = "A" * G + "T"
+        reads = list(range(G)) + [0]
+        R = sorted(set(reads))
+        aL = tuple("A" * L)
+
+        check(information_feasible(truth, L, R),
+              f"G={G}: I_s holds for truth {truth} at starts {R}")
+
+        ws = observed(truth, L, reads)
+        check(len(ws) == G + 1 and ws.count(aL) == 2,
+              f"G={G}: observation has {G + 1} reads with A^L exactly twice")
+        check(sorted(set(ws)) == sorted(support(truth, L)),
+              f"G={G}: observed support equals truth window support")
+
+        d_S = spectrum(truth, L)
+        d_D = spectrum(competitor, L)
+        check(d_S.get(aL) == 1 and all(c == 1 for w, c in d_S.items() if w != aL),
+              f"G={G}: truth spectrum is one copy of each of {G} windows")
+        check(d_D.get(aL) == 2 and all(c == 1 for w, c in d_D.items() if w != aL),
+              f"G={G}: competitor spectrum adds exactly one A^L window")
+        check(set(d_D) == set(d_S),
+              f"G={G}: competitor support equals truth support")
+
+        lik_S = Fraction(1, G ** (G + 1))
+        lik_D = Fraction(4, (G + 1) ** (G + 1))
+        ratio = Fraction(4 * G ** (G + 1), (G + 1) ** (G + 1))
+        check(ordered_lik(truth, L, ws) == lik_S,
+              f"G={G}: P(R|S) == {lik_S}")
+        check(ordered_lik(competitor, L, ws) == lik_D,
+              f"G={G}: P(R|D) == {lik_D}")
+        check(ordered_lik(competitor, L, ws)
+              / ordered_lik(truth, L, ws) == ratio and ratio > 1,
+              f"G={G}: P(R|D)/P(R|S) == {ratio} > 1")
+        if G in (2, 3, 4):
+            check(ratio == {2: Fraction(32, 27), 3: Fraction(81, 64),
+                            4: Fraction(4096, 3125)}[G],
+                  f"G={G}: general ratio reproduces the issue table")
+
+        for name, cand in (("truth", truth), ("competitor", competitor)):
+            d = spectrum(cand, L)
+            x = obs_count(truth, L, reads)
+            walk = [window(cand, L, r) for r in range(len(cand))]
+            check(per_vertex_feasible(d, x),
+                  f"G={G}: {name} per-vertex §6.2 feasible")
+            check(spelled_feasible62(d, x),
+                  f"G={G}: {name} spelled-support §6.2 feasible")
+            check(section62_feasible(L, walk, d, x),
+                  f"G={G}: {name} circuit §6.2 feasible")
+
+        check(multinom_lik(competitor, L, ws)
+              / multinom_lik(truth, L, ws) == ratio,
+              f"G={G}: multinomial-count ratio also == {ratio}")
 
 
 if __name__ == "__main__":

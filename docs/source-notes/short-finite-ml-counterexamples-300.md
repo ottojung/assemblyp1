@@ -25,6 +25,23 @@ the competitor is a genuine §6.2-feasible candidate, and the competitor has
 No minimality is claimed or proved: this note and the module only exhibit the
 three witnesses and compute their exact ratios.
 
+## 1b. The three witnesses sit in an infinite family (verifier-checked)
+
+The tabulated instances are the `G = 2, 3, 4` slice of the family truth
+`S = A^{G-1}T` vs competitor `D = A^{G}T` at read length `L = G - 1`, with one
+read per true start plus one extra read from start `0`. For every `G ≥ 2` the
+competitor spectrum is the truth spectrum plus exactly one extra `A^L` window,
+so the exact likelihoods have the closed forms `P(R|S) = (1/G)^{G+1}` and
+`P(R|D) = 4/(G+1)^{G+1}`, i.e. ratio `4·G^{G+1}/(G+1)^{G+1} > 1`. The extended
+independent verifier (`scripts/verify_short_finite_ml_300.py`,
+`check_general_family(2, 8)`) re-derives from scratch, for each `G = 2, …, 8`:
+full `I_s` for the truth, the spectrum pattern, both candidates' three §6.2
+readings (per-vertex, spelled support, closed overlap circuit with the cyclic
+window order as the walk), the closed-form likelihoods and strict ratio
+(reproducing `32/27`, `81/64`, `4096/3125` at `G = 2, 3, 4`), and the shared
+multinomial-count ratio. The Lean module certifies only the `G = 2, 3, 4`
+slice; the wider family is Python-checked, not kernel-checked.
+
 ## 1. Assumptions, stated exactly
 
 - **Alphabet and read types.** Alphabet `{A, T}`. A read type is the *oriented*
