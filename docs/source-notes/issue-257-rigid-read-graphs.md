@@ -681,6 +681,10 @@ exhaustive zeros are a sanity check on the proofs, not a substitute for them.
 | §21 rigid repetitive instance `triHub_rigid_repetitive` (lengths `(1,3)`, multiplicities `(2,1)` each direction) | kernel-checked |
 | §21 coupling-dropped relaxation not sound `triHub_relaxed_not_sound` | kernel-checked |
 | §21 triangular cross-check vs brute force + polynomial DP + mutation-red (`scripts/verify_257_tri_hub.py`: 153 triangular supports, 0 mismatches) | verified computation, exhaustive in scope |
+| §22 directed-2-cycle sufficiency, parametric (`cycle2_rigid`, `cycle2_balanced_const`) | mathematical proof + kernel-checked (`AssemblyP1/RigiditySimpleCycle.lean`) |
+| §22 `ATATAT` parametric rigidity (`atatat_of_cycle2`: rigid at every uniform `k`) | kernel-checked |
+| §22 AATT boundary rigid non-cycle (`aatt_rigid`, `aatt_search_space`) | kernel-checked (`by decide`) |
+| §22 cross-check vs brute force + mutation-red (`scripts/verify_257_simple_cycle.py`: 20 directed cycles + AATT rigid/mutated, 0 mismatches) | verified computation, exhaustive in scope |
 
 ---
 
@@ -1910,5 +1914,80 @@ bridge (§18) and the two-hub multi-hub (§20). The residual — a *polynomial*
 min-cut/max-flow closed form for **arbitrary** supports (general topology), or a
 proof that none exists — remains **OPEN** (§8.1/§8.2); §21 shows that such a
 criterion cannot be of a single-cut / independent-per-path form for the
-triangular family either, and gives a polynomial criterion for that
-unbounded-rank three-hub subfamily.
+ triangular family either, and gives a polynomial criterion for that
+ unbounded-rank three-hub subfamily.
+
+---
+
+## 22. Directed-cycle sufficiency (parametric) and the AATT boundary
+
+This section proves a new small Lean-checked rigidity lemma for a restricted
+family (§8.1 progress on a bounded-topology front): uniform directed cycles
+are rigid at *every* multiplicity, and records a kernel-checked rigid
+repetitive boundary example showing "single directed cycle" is sufficient
+but **not necessary**. It builds on — and does not redo — the finite decider
+(§11), which is used only as the checking engine for the boundary instance.
+[mathematical proof + kernel-checked + verified computation]
+
+### 22.1 Parametric directed-2-cycle rigidity
+
+**Theorem 15 (directed-2-cycle sufficiency).** The directed `2`-cycle support
+(`0 → 1 → 0`) with uniform multiplicity `k` and total `G = 2 * k` is rigid,
+for every `k : ℕ`.
+
+_Proof._ Balance at vertex `0` (out-edge `{0}`, in-edge `{1}`) forces
+`B 0 = B 1`; the total `B 0 + B 1 = 2 * k` then forces `B 0 = B 1 = k. ∎
+
+This is kernel-checked as
+`AssemblyP1.RigiditySimpleCycle.cycle2_rigid`, with the constancy step as
+`cycle2_balanced_const`. The `ATATAT`/`L = 3` read graph *is* this `2`-cycle
+(`cycle2_is_atatat_tail/head`), so the canonical "rigid despite triple
+`(L-1)`-mer repeats" example now follows parametrically
+(`atatat_of_cycle2`: rigid at every uniform `k`, total `2 * k`), rather than
+from a single `k = 3` computation. The general `n`-cycle case is strictly
+analogous (balance forces constancy on any directed cycle) and remains open
+in Lean.
+
+### 22.2 The AATT boundary: rigid but not a single directed cycle
+
+The circular genome `S = AATT` at `L = 2` has spectrum
+`{AA:1, AT:1, TT:1, TA:1}` (verified in
+`scripts/verify_257_simple_cycle.py`): two vertices `A, T` and four edges
+`AA : A → A`, `AT : A → T`, `TT : T → T`, `TA : T → A`, of cycle rank
+`|E| - |V| + c = 3` (zero-sum rank `r = 2`). It is **not** a single directed
+cycle, yet it is **rigid** at `A = (1,1,1,1)`, `G = 4`: balance at `A` forces
+`B(AT) = B(TA)`, and `B(AA) + B(TT) + 2 * B(AT) = 4` with `B ≥ 1` forces
+`B = 1` everywhere. Kernel-checked as
+`AssemblyP1.RigiditySimpleCycle.aatt_rigid` (`by decide`, search space
+`5^4 = 625`, recorded as `aatt_search_space`).
+
+**Failed simpler hypothesis (committed).** "The support is a single directed
+cycle ⟺ rigid" is **false** as an iff: `AATT` is a rigid read-support with
+four edges. The forward direction for `2`-cycles is Theorem 15; the reverse
+direction fails already at this smallest genome boundary.
+
+### 22.3 Cross-check (`scripts/verify_257_simple_cycle.py`)
+
+The script is self-contained, exact and deterministic. It recomputes rigidity
+from scratch by enumerating **all** positive integer circulations of total
+`G`:
+
+* directed `n`-cycles, `n = 2..6`, uniform `k = 1..4` — **20** cases, all
+  rigid, **0** mismatches;
+* `AATT` at `(1,1,1,1)` — rigid, unique witness;
+* **mutation-red control**: the same `AATT` support at `(2,1,1,1)`, `G = 5`
+  is non-rigid (witnesses `(1,1,2,1)`, `(2,1,1,1)`), so the harness has real
+  discriminating power;
+* complexity record: `(G+1)^|E|` tabulated against `r` (e.g. `AATT`: 625
+  candidates at `r = 2`; 6-cycle `k = 4`: 244140625 at `r = 0`);
+* genome realizations: circular `AATT`/`L = 2` and `ATATAT`/`L = 3` spectra.
+  [verified computation, exhaustive in scope]
+
+### 22.4 Epistemic status
+
+`cycle2_rigid`, `cycle2_balanced_const`, `atatat_of_cycle2`, `aatt_rigid`
+and `aatt_search_space` are kernel-checked with only
+`[propext, Classical.choice, Quot.sound]`
+(`AssemblyP1/RigiditySimpleCycleAudit`, and `AxiomAudit257.lean`); no
+`sorry`/`admit`/`axiom`/`native_decide`. The uniform-in-support polynomial
+criterion (§8.1/§8.2) remains **OPEN**.
