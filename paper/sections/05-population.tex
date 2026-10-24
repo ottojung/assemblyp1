@@ -646,8 +646,11 @@ Theorem~\ref{thm:finite-recovery} bounds the \emph{error} of exact
 maximum-likelihood selection, and the bound decreases monotonically in $n$.
 The success probability itself need not: because the exact objective compares
 likelihoods on the realized sample, adding one more read can move the decision
-boundary and lower the chance that the truth is the strict maximizer. The
-following two-genome witness makes this exact. The qualitative
+boundary and lower the chance that the truth is the strict maximizer. When every
+competitor has disjoint support from the truth, the Lean-checked pairwise bound
+gives zero error as soon as $n>0$; the generic positive-rate formula handles
+the remaining cases without assigning a finite value to $-\log 0$. The
+following two-genome witness makes non-monotonicity exact. The qualitative
 sawtooth effect in discrete tests is well known
 \cite{chernick2002}; here the result instead concerns
 \emph{per-truth} exact-ML success for two circular genomes.
