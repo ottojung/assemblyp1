@@ -45,6 +45,7 @@ LEAN_PATH = ROOT / "AssemblyP1" / "HellingerExponentialDecay.lean"
 THEOREMS = [
     "hellinger_pow_eq_exp_neg",
     "hellinger_pow_le_exp_neg",
+    "eventProb_wrong_eq_zero_of_affinity_zero",
     "eventProb_wrong_le_exp_neg",
     "exists_uniform_affinity_lt_one",
     "eventProb_wrong_le_exp_neg_identifiable",
@@ -87,7 +88,7 @@ def check_source() -> None:
             raise SystemExit(f"forbidden construct in source: {bad}")
     if "import AssemblyP1.FiniteReadRecovery" not in code:
         raise SystemExit("module does not reuse the merged FiniteReadRecovery endpoint")
-    print("source check: 5 theorems present; no sorry/admit/axiom/native_decide; "
+    print("source check: 6 theorems present; no sorry/admit/axiom/native_decide; "
           "FiniteReadRecovery reused")
 
 
@@ -174,6 +175,17 @@ def main() -> int:
     for n in range(0, 6):
         check_positive(p, [q1, q2], n, W, f"fixed/n={n}")
     print("deterministic positive check passed (uniform truth, two skewed rivals)")
+
+    # Disjoint-support boundary: affinity 0 forces error probability 0 for n >= 1.
+    p_dis = {0: 1.0, 1: 0.0}
+    q_dis = {0: 0.0, 1: 1.0}
+    if hellinger(p_dis, q_dis) != 0.0:
+        raise SystemExit("disjoint setup wrong: affinity not zero")
+    for n in (1, 2, 3):
+        ep_dis = event_prob(p_dis, [q_dis], n, W)
+        if ep_dis != 0.0:
+            raise SystemExit(f"disjoint boundary violated: error {ep_dis} != 0 at n={n}")
+    print("disjoint-support boundary passed (affinity 0 => error 0 for n >= 1)")
 
     # NC1: identifiability is necessary. Θ = {p} => error probability is 1.
     ep = event_prob(p, [p], 3, W)

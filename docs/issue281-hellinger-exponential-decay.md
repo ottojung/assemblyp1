@@ -41,6 +41,14 @@ New module `AssemblyP1/HellingerExponentialDecay.lean`, reusing the merged
   identifiability there is a strictly positive rate `c` with
   `eventProb p n (wrongEvent p Θ n) ≤ |Θ| · exp (-n · c)`. The degenerate
   `ρ_max = 0` (disjoint supports) case is handled separately.
+* `eventProb_wrong_eq_zero_of_affinity_zero` — disjoint-support boundary:
+  a zero uniform Hellinger affinity forces the exact-ML error probability to
+  `0` for every positive read count (owner: agent-OKUysVlMtcWwiQunpsjo5v-troubling,
+  branch `agent/OKUysVlMtcWwiQunpsjo5v-troubling-issue281-disjoint`). This
+  isolates the `ρ = 0` endpoint where `-log ρ` is not a finite rate, so the
+  `eventProb_wrong_le_exp_neg` exponential form does not apply directly. The
+  verifier (`scripts/verify_281_hellinger_exponential.py`) additionally checks
+  this boundary by exact enumeration (disjoint binary supports, `n = 1, 2, 3`).
 
 No `axiom`, `sorry`, `admit` or `native_decide`; the axiom audit
 (`AssemblyP1/HellingerExponentialDecayAudit.lean`) reports only `propext`,
