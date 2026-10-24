@@ -368,8 +368,13 @@ $\ellpop_S(D)=-\infty$ of Definition~\ref{def:population}.
 \label{rem:limit-scope}
 The statement is asymptotic: it supplies no finite $n$, no rate, and no
 per-sample guarantee, and it covers neither the unrestricted candidate
-universe nor non-identifiable families --- the sample-size question of
-Remark~\ref{rem:sample-complexity} remains open, and per-truth success need
+universe nor non-identifiable families. Sufficient finite-family sample sizes
+are settled (Corollary~\ref{cor:explicit-sample-size} and, for primitive P2,
+Theorem~\ref{thm:p2-uniform-rate}), while a uniform rate over the
+unrestricted universe is refuted rather than open: a length-unbounded family
+can contain distinct genomes with identical read laws
+(Example~\ref{ex:ABAB}), so the exact-ML error probability stays $1$ there.
+What remains open is the sharp exponent and constant, and per-truth success need
 not be monotone (Proposition~\ref{prop:nonmonotone}). It is also distinct
 from population uniqueness (Theorem~\ref{thm:population}): that theorem
 fixes the exact read distribution and proves law-level separation with no
