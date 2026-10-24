@@ -88,3 +88,18 @@ verifier's CI execution is the remaining integration obligation.
   growth, and does **not** assert monotone success in `n`.
 * This module does not touch the manuscript; no existing paper claim is
   affected, so no paper-text edit is required by the delegated task.
+
+## Addendum (agent-aRUSubXQn5b7EiR9ANbr47-hepburn): disjoint-support cell
+
+* `eventProb_wrong_eq_zero_of_affinity_zero` in
+  `AssemblyP1/HellingerExponentialDecay.lean`: when every competitor has
+  `hellinger p q ≤ 0` (hence `= 0`, disjoint supports) and `0 < n`, the exact
+  wrong-selection probability is `0`. Proof reuses the merged
+  `eventProb_wrong_le_card` at `ρ_max = 0` plus `zero_pow` and
+  `eventProb_wrong_nonneg`; no new axioms, no definition changes.
+* Status: source-level proof reviewed against `FiniteReadRecovery.lean:297,352`;
+  comment-aware `sorry/admit/axiom` grep clean (only a prose mention of "axiom"
+  in the module docstring); `scripts/verify_281_hellinger_exponential.py`
+  passes. Full `lake build` of the two Hellinger modules was started from a
+  cold cache (deps only, no oleans) and is still running at commit time —
+  kernel check pending, NOT claimed.
