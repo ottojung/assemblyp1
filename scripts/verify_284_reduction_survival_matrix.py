@@ -460,9 +460,31 @@ def verify_regression(errors: list[str]) -> None:
         errors.append("corrected reduction removed a detour leg")
 
     # Forced-longer arithmetic for the witness and the omega inequality.
-    l1, l2 = 2, 2
-    if not (direct[2] < l1 and direct[2] < l2):
-        errors.append("forced-longer arithmetic failed for the witness")
+    # Extract the actual spelling witness (m, l1, l2) for the direct edge and
+    # assert the predicate-level consequence of req (3): the composition law
+    # holds and both replacement overlaps are strictly longer than e.len.
+    # This mirrors Lean `replacement_overlaps_longer` lifted to the
+    # `isReducibleSpelling` predicate (cf. `isReducibleSpelling_legs_longer`).
+    witness = None
+    for m in strands_of(VERTS):
+        for l1 in range(READLEN):
+            for l2 in range(READLEN):
+                if (
+                    OMIN <= l1
+                    and OMIN <= l2
+                    and suf(STRAND[direct[0]], l1) == pre(STRAND[m], l1)
+                    and suf(STRAND[m], l2) == pre(STRAND[direct[1]], l2)
+                    and l1 + l2 == READLEN + direct[2]
+                ):
+                    witness = (m, l1, l2)
+    if witness is None:
+        errors.append("no spelling witness (m, l1, l2) for the direct edge")
+    else:
+        _, l1, l2 = witness
+        if not (l1 + l2 == READLEN + direct[2]):
+            errors.append("witness composition law l1+l2=L+e.len failed")
+        if not (direct[2] < l1 and direct[2] < l2):
+            errors.append("witness legs not strictly longer than the direct edge")
     for length in range(2, 9):
         for a in range(length):
             for b in range(length):
