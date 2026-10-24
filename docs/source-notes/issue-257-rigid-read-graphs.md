@@ -36,8 +36,23 @@ polynomial DP decision, rigid repetitive instance and coupling refutation
 cross-check, exhaustive small scopes),
 `python3 scripts/verify_257_tri_hub.py` (§21 triangular multi-hub three-equation
 criterion, polynomial DP decision, rigid repetitive instance, non-rigidity
-witness and coupling refutation, mutation-red control, exhaustive small scopes).
+witness and coupling refutation, mutation-red control, exhaustive small scopes),
+`python3 scripts/verify_257_kernel_decider.py` (support-agnostic exact-RREF
+free-coordinate search, small-support cross-check, genome instances and
+mutation-red control; §22 on the originating branch).
 Self-contained, exact integer arithmetic, deterministic._
+
+_Verification note (2026-10-24): the originating remote commit is
+`ca6e82e92a81f7a30b37912b5d964a9b8a27974c` on
+`agent/O06046s2JgfCWhKpeeq1oE-belong-issue257-kernel-decider`. That branch is
+present on `origin`, but the commit is not an ancestor of current
+`origin/main` (`234f3480d7589c8fc4e056c91dda91343fe64ece`). Its verifier was
+replayed in isolation: 205 cases, 110 rigid, 95 non-rigid, 0 mismatches;
+kernel dimensions `{0,1,2}`; `ATATAT` rigid, `AATATT` non-rigid with
+`(2,-1,-1,0)`, `AATT` rigid; mutation control detected. This replay is
+computational evidence, not a Lean-checked theorem or a general polynomial-time
+bound. The exact arbitrary-support iff remains Theorem 1; classification and
+uniform complexity beyond the established families remain open._
 
 _Blocking-review repair (2026-10-10, branch `research/257-graver-lean-repair`):
 §2's false "primitive = Graver basis" equivalence is corrected (Graver =
