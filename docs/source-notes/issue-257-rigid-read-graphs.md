@@ -36,7 +36,10 @@ polynomial DP decision, rigid repetitive instance and coupling refutation
 cross-check, exhaustive small scopes),
 `python3 scripts/verify_257_tri_hub.py` (§21 triangular multi-hub three-equation
 criterion, polynomial DP decision, rigid repetitive instance, non-rigidity
-witness and coupling refutation, mutation-red control, exhaustive small scopes).
+witness and coupling refutation, mutation-red control, exhaustive small scopes),
+`python3 scripts/verify_257_kernel_genome_sweep.py` (§22 genome-derived
+incidence-kernel sweep: exhaustive circular words over {A,T} to length 9 and
+over {A,C,T} to length 7 for L=2,3, kernel decider vs direct enumeration).
 Self-contained, exact integer arithmetic, deterministic._
 
 _Blocking-review repair (2026-10-10, branch `research/257-graver-lean-repair`):
@@ -1912,3 +1915,55 @@ proof that none exists — remains **OPEN** (§8.1/§8.2); §21 shows that such 
 criterion cannot be of a single-cut / independent-per-path form for the
 triangular family either, and gives a polynomial criterion for that
 unbounded-rank three-hub subfamily.
+
+## 22. Genome-derived incidence-kernel sweep (exhaustive small words)
+
+This section cross-checks the exact kernel criterion (Theorem 1) against
+direct enumeration on **genome-derived** instances: every circular word over
+`{A,T}` of length 1–9 and every circular word over `{A,C,T}` of length 1–7
+(up to rotation, 636 words), each at `L = 2` and `L = 3` (1,272 instances).
+The script reimplements the incidence-kernel decider from scratch (exact
+`QQ`-RREF, free-coordinate search over `(2C+1)^d` with `C = G - m`) rather
+than reusing any unmerged branch artifact, so this is an independent
+re-derivation. **Result: 859 rigid, 413 non-rigid, 0 mismatches** between
+the kernel decider and direct positive-circulation enumeration.
+[verified computation, exhaustive in scope]
+
+### 22.1 Rigid repetitive family beyond repeat bounds
+
+The `(AT)^k` family at `L = 3` is rigid for `k = 3, 4, 5, 6` with
+`A = (k, k)` while the most frequent 2-mer occurs exactly `k ≥ 3` times:
+a directed 2-cycle support forces `B_0 = B_1 = G/2` for every positive
+circulation, so no repeat-triple bound can be necessary. The sweep finds
+169 rigid instances with an `(L-1)`-mer occurring `≥ 3` times.
+[verified computation]
+
+### 22.2 A sufficient-but-not-necessary cycle hypothesis, refuted as iff
+
+A directed simple-cycle support is rigid (balance forces all edge flows
+equal; the total then fixes the common value — a one-line proof). Its
+converse is **false**: `AATT` at `L = 2` has `A = (1,1,1,1)` on the
+4-edge support `{AA, AT, TA, TT}`, which is not a simple directed cycle,
+yet both the kernel decider and direct enumeration report rigid. So
+"simple directed cycle" joins "no `(L-1)`-mer triple" on the list of
+sufficient but **not** necessary conditions; neither may be claimed as an
+iff. [mathematical proof for sufficiency; verified computation for the
+counterexample]
+
+### 22.3 Non-rigidity witnesses and mutation-red control
+
+Example witnesses from the sweep: `AAAAT/L=2` with `A = (3,1,1)` and
+`δ = (-2,1,1)`; `AATAT/L=2` with `A = (1,2,2)` and `δ = (2,-1,-1)`. The
+harness includes a mutation-red control: shrinking the free-coordinate
+box from `C` to `C - 1` misses the genuine figure-eight witness on
+`((0,0),(1,1))` with `A = (2,1)`, so the bound `C = G - m` is load-bearing
+and the harness has discriminating power. [verified computation]
+
+### 22.4 Epistemic status
+
+No Lean code is added here; the kernel criterion itself is already
+kernel-checked (`ExactRigidityCriterion.nonrigid_iff_exists_delta`,
+`FiniteRigidityDecider`, `TwoWalkRigidity`). The uniform-in-support
+structural closed form / polynomial-complexity characterization remains
+**OPEN**. (Numbering note: unmerged branch work on this issue also uses
+§22/§23 labels; the orchestrator should renumber on integration.)
