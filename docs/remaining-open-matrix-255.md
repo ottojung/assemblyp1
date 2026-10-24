@@ -1,5 +1,35 @@
 # AssemblyP1 umbrella #255 — remaining-open matrix
 
+## Addendum — 2026-10-24 (fixed-x objective-equivalence lemma, pending integration)
+
+* **Bounded (A)-side increment, NOT merged.** Commit `5b55129`
+  (branches `agent/X0KLIHmuKcT0kc1TLHQ8Xy-issue255-review` and
+  `agent/4jvYGrYCRqE7OvDbI3v5Tp-issue255-monotone-integ`, both children of
+  `origin/main` @ `234f348`) adds `AssemblyP1/MaximizerOrderTransform.lean`
+  (+1 root import): four `IsMaxOn`/`IsMinOn` iff lemmas under
+  `StrictMono` (preserve/reflect) and `StrictAnti` (swap max/min), with
+  `LinearOrder` domain hypotheses as required by Mathlib's `le_iff_le`.
+  Explicit scope: for a fixed observed sample `x`, the exact-multinomial
+  likelihood and any strictly monotone reparameterization (e.g.
+  log-likelihood on the positive-support cell) share the same maximizer set
+  over any candidate set. Structure-independent (oriented or RC, same or
+  variable length, spelled genomes or §6.2 flows) and settles **no**
+  truth-maximality claim by itself.
+* **Verification (this run, isolated fresh clone):** commit reachable on
+  origin; `origin/main` is an ancestor of `5b55129` (child, not yet merged);
+  module-file forbidden-token grep clean (`sorry`/`admit`/`axiom`/
+  `native_decide` absent); `scripts/check-research-docs.py` passed.
+  Full `lake build` of the module was re-attempted but exceeded this
+  environment's budget on a cold cache (no warm `.lake` oleans); the two
+  prior independent green builds of the identical commit (module +
+  full-root `AssemblyP1`, axiom audit `[propext]`, leanchecker with
+  non-vacuous control) are recorded on the issue and not re-claimed here.
+* **Still genuinely OPEN:** all truth-maximality classification cells in the
+  matrix below; this lemma only removes the (A)-side objective-rewording
+  degree of freedom. No child front (#257/#259/#261 or others) is duplicated
+  or closed by this entry. Needs a key-holding integrator to open the PR
+  from the pushed review branch to `main` and merge.
+
 
 ## Addendum — 2026-10-21 (L3 uniqueness transport: does NOT hold, kernel-checked)
 
