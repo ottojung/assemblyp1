@@ -7,6 +7,8 @@ classCount vectors are equal; exact uniform-start oriented likelihoods of
 sample x0=[00] are 1 vs 0. Hence no throughput-factoring score equals it.
 """
 from fractions import Fraction
+import pathlib
+import subprocess
 
 def windows(genome, L):
     G = len(genome)
@@ -50,3 +52,21 @@ assert Counter(windows(S0, L)) != Counter(windows(S1, L))  # oriented multisets 
 M = Counter(windows([0, 0, 1], 2))
 assert likelihood([0, 0, 1], 2, [(0, 0)]) == Fraction(M[(0, 0)], 3)
 print("ML-likelihood boundary verified: equal throughput, likelihoods 1 vs 0; no throughput-factoring score equals exact oriented likelihood.")
+
+# Source grounding (issue #284 requirement 1 + boundary-doc accuracy): the
+# Lean endpoints cited by docs/section62-ml-likelihood-transport-boundary-284.md
+# must exist in-tree, and no Lean file may be modified by this diagnostic.
+ROOT = pathlib.Path(__file__).resolve().parents[1]
+SEP = (ROOT / "AssemblyP1/Section62FlowGenomeSeparation.lean").read_text()
+ADAPT = (ROOT / "AssemblyP1/Section62SpelledFlowAdapter.lean").read_text()
+for name in ["classCount_S0_eq_S1", "likelihood_S0_ne_S1",
+              "exactLikelihood_not_factors_throughput",
+              "section62_flow_objective_ne_genome_likelihood",
+              "no_flow_objective_eq_likelihood"]:
+    assert f"theorem {name}" in SEP, f"missing Lean endpoint {name}"
+assert "theorem throughput_eq_visits" in ADAPT, "missing throughput_eq_visits bridge"
+lean_diff = subprocess.run(
+    ["git", "diff", "--name-only", "origin/main", "--", "AssemblyP1/"],
+    capture_output=True, text=True, cwd=ROOT).stdout.strip()
+assert lean_diff == "", f"diagnostic must not touch Lean sources: {lean_diff}"
+print("Source grounding verified: all 5 Lean endpoints present; AssemblyP1/ untouched (req 1 preserved).")
