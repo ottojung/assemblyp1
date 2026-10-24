@@ -46,6 +46,24 @@ compared separately. In the equal-length, error-free, deduplicated
 setting, the containment concern simplifies, but this is not a
 formal equivalence theorem for the practical algorithm.
 
+### Compatibility boundary (what has and has not been compared)
+
+| Myers feature | Evidence available in the cited paper | Relation to this formalization |
+|---|---|---|
+| Exact transitivity | §2 defines a transitive edge by a two-edge path spelling the same sequence. | **Proved equivalent** for proper equal-length, error-free observed overlaps by `reducible_iff_ideal_two_hop`. |
+| Approximate/noisy overlaps (`FUZZ = 10`) | §3 and Fig. 4 describe approximate overlap handling and additional marking passes. | **Not modeled**: predicates here use exact suffix-prefix equality. No claim that a fuzzy deletion preserves spelling is made. |
+| Contained reads | Myers' algorithm handles containment as a separate graph-construction concern. | **Not separately modeled**: every formal vertex is a fixed-length observed read and every edge is a proper overlap. Containment preprocessing is outside the iff theorem. |
+| Multiple/parallel overlaps and edge collapsing | The practical construction can retain distinct overlap/edge identities and has collapsing behavior. | **Not compared at identifier level**: the formal relation is over read strands and overlap lengths; equivalence of multiplicities or collapse policy is open. |
+| Bidirected orientation | Myers' model includes orientations; the repository also represents reverse-complement strands. | The theorem is stated for the repository's oriented strand/overlap relation, but does not assert every practical representation or canonicalization choice is identical. |
+
+The exact-transitivity row is the narrow correspondence supported by the
+kernel theorem. The other rows are explicit non-claims, not presumed
+compatibilities. In particular, idealized equivalence must not be cited as
+validation of Myers' complete implementation or of MB09's full preprocessing
+pipeline. Closing those rows requires an inspectable source specification and a
+separate comparison of definitions and edge identity; this note does not infer
+implementation details from the title or citation alone.
+
 The Observation 7 theorem in PR #265 is already unconditional for the
 repository's `transitivelyReducedSpelling` graph; this module narrows
 its source-fidelity gap without changing its hypotheses.
