@@ -222,6 +222,39 @@ theorem aaaab_nonrigid :
   revert h'
   decide
 
+/-- The `AATATT`, `L = 2` support, with edge order `AA, AT, TA, TT`.
+The explicit alternative multiplicities are `(2, 1, 1, 2)` instead of
+`(1, 2, 2, 1)`, at the same total mass `6`. -/
+def aatattTail : Fin 4 → Fin 2 := fun e => if e.val < 2 then 0 else 1
+def aatattHead : Fin 4 → Fin 2 := fun e => if e.val % 2 = 0 then 0 else 1
+def aatattA : Fin 4 → ℤ := fun e => if e.val = 0 || e.val = 3 then 1 else 2
+
+/-- `AATATT` is non-rigid: `B = (2, 1, 1, 2)` is a positive balanced
+circulation on the same four-edge support and has total `6`. -/
+theorem aatatt_nonrigid :
+    ¬ Rigid aatattTail aatattHead (Finset.univ : Finset (Fin 2)) aatattA 6 := by
+  intro h
+  have h' := (rigid_iff_decider aatattTail aatattHead (Finset.univ : Finset (Fin 2))
+    aatattA 6).mp h
+  revert h'
+  decide
+
+/-- The `AATT`, `L = 2` circulation: the *same* four-edge support
+`AA, AT, TA, TT` as `aatatt_nonrigid`, but with unit multiplicities
+`A = (1, 1, 1, 1)` at total mass `4` (circular 2-mer spectrum of `S = AATT`).
+Balance forces the `AT`/`TA` values equal (loops are neutral), and with every
+box constraint `δ ≥ 0` the zero total mass forces `δ = 0`. -/
+def aattA : Fin 4 → ℤ := fun _ => 1
+
+/-- `AATT` is rigid on the `AATATT` support: the only positive balanced
+circulation of total `4` is `(1, 1, 1, 1)`. Together with `aatatt_nonrigid`
+this shows rigidity is a multiplicity property, not a support-topology
+property, on this concrete genome-realizable support. -/
+theorem aatt_rigid :
+    Rigid aatattTail aatattHead (Finset.univ : Finset (Fin 2)) aattA 4 :=
+  (rigid_iff_decider aatattTail aatattHead (Finset.univ : Finset (Fin 2))
+    aattA 4).mpr (by decide)
+
 /-- The figure-eight support `0 → 1 → 0`, `0 → 2 → 0` with
 `A = (1, 1, 1, 1)` (`G = 4`). -/
 def figureEightTail : Fin 4 → Fin 3 :=
