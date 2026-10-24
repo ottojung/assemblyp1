@@ -247,7 +247,9 @@ as Proposition~\ref{prop:nonmonotone} demonstrates.
 success at every finite $n$ (including $n=0$) in
 \texttt{AssemblyP1.IidMapMonotonicity.iid\_map\_success\_monotone}, in the
 explicit form $V_n\le V_{n+1}$ in
-\texttt{AssemblyP1.BayesValueMonotonicity.bayesValue\_succ\_ge}, and
+\texttt{AssemblyP1.BayesValueMonotonicity.bayesValue\_succ\_ge} (iterated to
+$V_n\le V_m$ for $n\le m$ in
+\texttt{AssemblyP1.BayesValueMonotonicity.bayesValue\_mono}), and
 instantiated for the AssemblyP1 circular oriented genome rotation-class read
 model in \texttt{AssemblyP1.GenomeOrbitAdapter.orbit\_map\_success\_monotone};
 the per-truth success-drop counterexample is kernel-checked in
