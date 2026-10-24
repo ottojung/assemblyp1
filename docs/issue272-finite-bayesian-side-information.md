@@ -252,6 +252,14 @@ not (`NoWeakestProb.unionAllSufficient_not_sufficient`). The `I_s`-specific
    [`docs/issue272-side-information-order.md`](issue272-side-information-order.md)
    for the precise reduction and status.
 
+**Addendum (2026-10-24, `TwoCandidate.pi_normalized`).** The two-candidate
+example prior is now kernel-checked normalized (`∑ g, π g = 1`), audited by
+`FiniteBayesianSideInformationAudit.lean`; axioms remain `propext`,
+`Classical.choice`, `Quot.sound` only. Verified by
+`lake build AssemblyP1.FiniteBayesianSideInformation
+AssemblyP1.FiniteBayesianSideInformationAudit` (1010 jobs) plus
+`scripts/check-research-docs.py`.
+
 ## 8. Decision table
 
 ```
