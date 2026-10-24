@@ -23,11 +23,17 @@ and kernel-checked:
   `AssemblyP1.FiniteBayesianSideInformation.posteriorMass_eq_one_iff_excluded`
   (#272);
 * **uniform vs nonuniform priors (MAP vs ML)** — a nonuniform prior flips the
-  posterior maximizer (MAP) away from the likelihood maximizer (ML), while ML
-  is unchanged.  The general posterior/MAP equivalence is owned by #269
-  (`AssemblyP1.GenomeOrbitAdapter.PosteriorMAP.posterior_argmax_iff`); this
-  module only instantiates it on a concrete tiny table and is not generic MAP
-  infrastructure.
+   posterior maximizer (MAP) away from the likelihood maximizer (ML), while ML
+   is unchanged.  The general posterior/MAP equivalence is owned by #269
+   (`AssemblyP1.GenomeOrbitAdapter.PosteriorMAP.posterior_argmax_iff`); this
+   module only instantiates it on a concrete tiny table and is not generic MAP
+   infrastructure.
+* **unique ML maximizer without posterior certainty** — a strictly separated
+   likelihood table where the truth is the *unique* ordinary-ML maximizer while
+   the unconditional posterior on the truth is strictly below `1`.  This is the
+   abstract tiny-table shadow of the genome-adapter converse
+   (`conv_ml_unique` + `conv_ordinary_not_certain`): unique (B) still does not
+   give (A).
 
 Everything here is an abstract finite pmf regression, not a source-faithful
 genome witness.
@@ -214,5 +220,51 @@ theorem prior_flips_MAP_not_ML :
   refine ⟨?_, ?_, ml_map_B_strict_r0⟩
   · rw [map_uniform_B_r0, map_uniform_A_r0]; norm_num
   · rw [map_skew_A_r0, map_skew_B_r0]; norm_num
+
+/-! ## Table 4: unique ordinary-ML maximizer without posterior certainty -/
+
+/-- Strictly separated likelihood table: `A` emits `r0` with probability `2/3`
+and `r1` with `1/3`; `B` the reverse.  Both rows are pmfs. -/
+def likHi : Hypothesis → Obs → ℚ
+  | Hypothesis.A, Obs.r0 => 2 / 3
+  | Hypothesis.A, Obs.r1 => 1 / 3
+  | Hypothesis.B, Obs.r0 => 1 / 3
+  | Hypothesis.B, Obs.r1 => 2 / 3
+
+/-- At `r = r0` the truth `A` is the *unique* ordinary-ML maximizer
+(`2/3 > 1/3`). -/
+theorem ml_hi_A_unique_r0 :
+    IsMLMaximizerOf likHi Hypothesis.A Obs.r0 ∧
+      ∀ h, IsMLMaximizerOf likHi h Obs.r0 → h = Hypothesis.A := by
+  constructor
+  · intro h'
+    cases h' <;> norm_num [likHi]
+  · intro h hmax
+    cases h with
+    | A => rfl
+    | B => exact absurd (hmax Hypothesis.A) (by norm_num [likHi])
+
+/-- With the uniform prior the posterior on the truth at `r = r0` is `2/3`:
+ML is decisive while the posterior still spreads mass over `B`. -/
+theorem post_hi_A_r0 : post2 priorUnif likHi Hypothesis.A Obs.r0 = 2 / 3 := by
+  norm_num [post2, priorUnif, likHi]
+
+theorem post_hi_B_r0 : post2 priorUnif likHi Hypothesis.B Obs.r0 = 1 / 3 := by
+  norm_num [post2, priorUnif, likHi]
+
+theorem post_hi_A_r0_not_certain : post2 priorUnif likHi Hypothesis.A Obs.r0 ≠ 1 := by
+  rw [post_hi_A_r0]; norm_num
+
+/-- **Unique (B) does not give (A).** At `r = r0` the truth `A` is the unique
+ordinary-ML maximizer, yet the unconditional posterior on `A` is `2/3 ≠ 1`.
+This completes the tiny-table boundary alongside the tied Table 1
+(non-unique maximizer, posterior `1/2`) and the zero-likelihood Table 2
+(unique maximizer with posterior `1`): uniqueness of the ML maximizer is
+orthogonal to posterior certainty. -/
+theorem unique_ml_posterior_not_certain :
+    (IsMLMaximizerOf likHi Hypothesis.A Obs.r0 ∧
+        ∀ h, IsMLMaximizerOf likHi h Obs.r0 → h = Hypothesis.A) ∧
+      post2 priorUnif likHi Hypothesis.A Obs.r0 ≠ 1 :=
+  ⟨ml_hi_A_unique_r0, post_hi_A_r0_not_certain⟩
 
 end AssemblyP1.ConditionalVsOrdinaryMLBoundary271

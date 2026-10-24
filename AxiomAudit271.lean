@@ -22,12 +22,14 @@ open AssemblyP1.ConditionalVsOrdinaryMLSeparation
 #print axioms AssemblyP1.ConditionalVsOrdinaryMLSeparation.sideInfo_not_dataOnly
 #print axioms AssemblyP1.ConditionalVsOrdinaryMLSeparation.posteriorSeq_A_r0_ne_posterior_A_r0
 
--- Tiny-table sanity regressions (#271): ties, zero-likelihood competitors, MAP vs ML.
+-- Tiny-table sanity regressions (#271): ties, zero-likelihood competitors, MAP vs ML,
+-- unique ML maximizer without posterior certainty.
 #print axioms AssemblyP1.ConditionalVsOrdinaryMLBoundary271.tie_maximizer_posterior_not_certain
 #print axioms AssemblyP1.ConditionalVsOrdinaryMLBoundary271.zero_likelihood_overlap
 #print axioms AssemblyP1.ConditionalVsOrdinaryMLBoundary271.post_zero_B_r0_skew
 #print axioms AssemblyP1.ConditionalVsOrdinaryMLBoundary271.map_ne_ml_nonuniform
 #print axioms AssemblyP1.ConditionalVsOrdinaryMLBoundary271.prior_flips_MAP_not_ML
+#print axioms AssemblyP1.ConditionalVsOrdinaryMLBoundary271.unique_ml_posterior_not_certain
 
 -- Historical W1/W2 (B)-side instantiation by reuse of merged theorems.
 #print axioms AssemblyP1.W1W2SeparationCompatibility.w1_truth_not_maximizer_binomial

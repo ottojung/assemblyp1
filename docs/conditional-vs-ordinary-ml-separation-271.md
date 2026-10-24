@@ -253,3 +253,15 @@ Summary of the boundary, case by case (truth `A` at the shown observation):
 | tie | equal | `A` non-unique | `1/2` | separate (B non-unique ∧ ¬A) |
 | zero-likelihood | `A` strictly higher | `A` unique | `1` | **overlap** |
 | MAP vs ML, skew prior | `B` strictly higher | `B` unique | `3/4` (posterior argmax `A`) | MAP ≠ ML |
+| strict-separation `likHi` | `A` strictly higher (`2/3 > 1/3`) | `A` unique | `2/3` | separate (unique B ∧ ¬A) |
+
+* **Unique ML maximizer without posterior certainty.** On the strictly
+  separated table `likHi` (`p_A = (2/3, 1/3)`, `p_B = (1/3, 2/3)`) at
+  `r = r0`, the truth `A` is the *unique* ordinary-ML maximizer while the
+  unconditional posterior on `A` is `2/3 ≠ 1`
+  (`unique_ml_posterior_not_certain`, with `ml_hi_A_unique_r0`,
+  `post_hi_A_r0`). Uniqueness of the ML maximizer is therefore orthogonal to
+  posterior certainty: Table 2 (zero-likelihood) has unique ML *with*
+  certainty, this table has unique ML *without* certainty. This is the
+  abstract tiny-table shadow of the genome-adapter converse
+  (`conv_ml_unique` + `conv_ordinary_not_certain`).
