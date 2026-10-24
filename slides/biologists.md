@@ -177,6 +177,11 @@ maximizes the average chance of being right, and the kernel-checked certificate
 (BayesOptimalityCertificate) adds that a rule missing a per-observation
 maximizer is strictly worse, ties allow several optimal rules, and a strict
 maximizer forces the choice. This still says nothing for one fixed truth.
+A rule that is right whenever a promised truth-dependent condition holds is only
+conditionally guaranteed: with a uniform prior and P_S(a)=1/4, P_S(b)=3/4,
+P_D(a)=3/4, P_D(b)=1/4 it scores 1/4 on average while MAP scores 3/4
+(kernel-checked witness; paper rem:map-vs-infallible, mirrored from the
+programmers deck).
 -->
 
 ---
