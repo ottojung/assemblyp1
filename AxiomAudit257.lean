@@ -9,6 +9,7 @@ import AssemblyP1.RigidityDoubleTheta
 import AssemblyP1.RigidityMultiHub
 import AssemblyP1.RigidityTriHub
 import AssemblyP1.RigidityTargetCycle
+import AssemblyP1.RigiditySimpleCycle
 import AssemblyP1.RigidityNoGo
 open AssemblyP1.ExactRigidityCriterion
 open AssemblyP1.FiniteRigidityDecider
@@ -21,6 +22,7 @@ open AssemblyP1.RigidityDoubleTheta
 open AssemblyP1.RigidityMultiHub
 open AssemblyP1.RigidityTriHub
 open AssemblyP1.RigidityTargetCycle
+open AssemblyP1.RigiditySimpleCycle
 open AssemblyP1.RigidityNoGo
 #print axioms AssemblyP1.ExactRigidityCriterion.nonrigid_iff_exists_delta
 #print axioms AssemblyP1.FiniteRigidityDecider.le_total_of_feasible
@@ -99,6 +101,13 @@ open AssemblyP1.RigidityNoGo
 #print axioms AssemblyP1.RigidityTargetCycle.coin_nonrigid_23_5
 #print axioms AssemblyP1.RigidityTargetCycle.coin_rigid_23_1
 #print axioms AssemblyP1.RigidityTargetCycle.coin_rigid_33_2
+
+-- §22: directed-cycle sufficiency and the AATT boundary.
+#print axioms AssemblyP1.RigiditySimpleCycle.cycle2_balanced_const
+#print axioms AssemblyP1.RigiditySimpleCycle.cycle2_rigid
+#print axioms AssemblyP1.RigiditySimpleCycle.atatat_of_cycle2
+#print axioms AssemblyP1.RigiditySimpleCycle.aatt_rigid
+#print axioms AssemblyP1.RigiditySimpleCycle.aatt_search_space
 
 -- §16: direct fractional-relaxation insufficiency, independently checked.
 #print axioms AssemblyP1.RigidityNoGo.coin_bouquet_nonrigid_iff
