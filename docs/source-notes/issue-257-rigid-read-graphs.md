@@ -36,7 +36,9 @@ polynomial DP decision, rigid repetitive instance and coupling refutation
 cross-check, exhaustive small scopes),
 `python3 scripts/verify_257_tri_hub.py` (§21 triangular multi-hub three-equation
 criterion, polynomial DP decision, rigid repetitive instance, non-rigidity
-witness and coupling refutation, mutation-red control, exhaustive small scopes).
+witness and coupling refutation, mutation-red control, exhaustive small scopes),
+`python3 scripts/verify_257_genome_certificate_size.py` (§23 genome encoding
+certificate-size bounds and exhaustive small-case check).
 Self-contained, exact integer arithmetic, deterministic._
 
 _Blocking-review repair (2026-10-10, branch `research/257-graver-lean-repair`):
@@ -1912,3 +1914,32 @@ proof that none exists — remains **OPEN** (§8.1/§8.2); §21 shows that such 
 criterion cannot be of a single-cut / independent-per-path form for the
 triangular family either, and gives a polynomial criterion for that
 unbounded-rank three-hub subfamily.
+
+## 23. Genome encoding bounds for the non-rigidity certificate
+
+For a circular genome over an alphabet of size `q`, the oriented `L`-mer
+support has at most `q^L` distinct edges. Combined with §22, every alternative
+positive length-`G` circulation has a difference witness `δ` with
+`|δ(e)| ≤ C = G - |E|`. Thus the certificate can be represented by at most
+`q^L · ceil(log₂(2C+1))` signed-coordinate bits (up to constant-factor
+encoding overhead), and its incidence, zero-sum, nonzero, and lower-box
+conditions can be checked using polynomially many arithmetic operations in
+that representation. This is a certificate-size bound, not a polynomial-time
+decision algorithm: enumerating all such vectors still has up to
+`(2C+1)^(q^L)` candidates. It is useful when `q^L` is small relative to the
+genome input, but it makes no fixed-`L` or alphabet assumption unless stated
+explicitly.
+
+**Proof.** There are exactly `q^L` words of length `L`, hence no greater number
+of support edges. The §22 slack proof bounds each coordinate; encoding a signed
+integer in `[-C,C]` takes `O(log(C+1))` bits. Given a candidate vector, compute
+each vertex divergence and total by summing at most `|E|` integers, and compare
+each coordinate with `1-A(e)`; all intermediate bit lengths are polynomial in
+the input and certificate lengths. ∎
+
+The script `python3 scripts/verify_257_genome_certificate_size.py` exactly
+checks the support-cardinality bound and slack-coordinate certificate on
+exhaustively enumerated binary circular words through length `8` and every
+`L ≤ G`. This is a finite cross-check of the encoding facts, not a proof of the
+arbitrary-alphabet theorem above; the latter follows directly from counting
+words and §22. The general complexity classification stays **OPEN**.
