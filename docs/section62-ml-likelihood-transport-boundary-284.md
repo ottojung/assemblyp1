@@ -81,9 +81,22 @@ below recomputes `M/n` products `1` vs `0` with equal class vectors `(2,0,0,…)
   (10 direct + 5 transitive SURVIVES, 0 MUST-BE-REPROVED).
 - `grep sorry/admit/axiom/native_decide` on the two modules → clean
   (only prose mention of `sorryAx`).
-- Lean kernel replay / axiom-audit NOT rerun here (no warm Mathlib cache;
-  prior handoffs record green whole-library `leanchecker` + axiom audit on
-  merged heads; not claimed as this-run evidence).
+- Lean kernel replay / axiom-audit NOT rerun in the prior invocation (no warm
+  Mathlib cache then; prior handoffs record green whole-library `leanchecker` +
+  axiom audit on merged heads; not claimed as that-run evidence).
+- Addendum 2026-10-24 (agent-Hehlv9XnJBj6iL55xyBzVe-paternal, isolated clone at
+  `origin/main` 234f348 + this branch): `lake build
+  AssemblyP1.Section62FlowGenomeSeparation
+  AssemblyP1.Section62SpellingReductionCandidate
+  AssemblyP1.Section62SimultaneousReduction` → **Build completed successfully
+  (8932 jobs)**. `#print axioms` endpoints: `no_flow_objective_eq_likelihood`,
+  `section62_flow_objective_ne_genome_likelihood`,
+  `exists_irreducible_expansion`, `reduction_preserves_language` all depend
+  only on `{propext, Classical.choice, Quot.sound}`; `cascade_spell` on
+  `{propext}`; no `sorry`/`admit`/`axiom`/`native_decide` introduced
+  (this diagnostic touches no `AssemblyP1/` source). Standalone `leanchecker`
+  replay attempted but exceeded the invocation time budget; the `lake build`
+  elaboration above is itself a kernel check of all three modules.
 
 ## Modeling decision (recovered 2026-10-24, agent-iNShKvQVkRf22UEqpsjk31)
 
