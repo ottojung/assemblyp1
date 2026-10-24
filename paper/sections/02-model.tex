@@ -197,6 +197,29 @@ a different read-type convention; each changes the objective
 (Appendix~\ref{app:modeling}). All exact-likelihood statements below are for
 uniform start sampling unless stated otherwise.
 
+\begin{definition}[Finite-read sampling triple]
+\label{def:sampling-triple}
+Fix a genome $G$ and read length $L\le|G|$. The \emph{read-sampling
+distribution} $P_G$ assigns to each length-$L$ word $w$
+\[
+  P_G(w) \;=\; \frac{\spec_L(G)(w)}{|G|},
+\]
+the fraction of start positions of $G$ spelling $w$. The observed reads
+$R_1,\dots,R_n$ are independent draws from $P_G$, and the \emph{likelihood} of
+a candidate $D$ at the observed sample is
+\[
+  L_n(D) \;=\; \prod_{i=1}^n P_D(R_i).
+\]
+Three objects must not be conflated: the \emph{sampling process}, which draws
+$R_i\sim P_G$ from the fixed truth; the \emph{likelihood} $L_n(D)$, a function
+of the candidate $D$ at fixed data; and the \emph{posterior} $P(D\mid
+R_1,\dots,R_n)\propto\pi(D)L_n(D)$, which additionally depends on a prior
+$\pi$. Cyclic rotations of a candidate induce the same $P_D$ and hence the
+same likelihood at every sample (Remark~\ref{rem:cyclic}).
+\statusline{\srcfact{} for uniform-start error-free sampling
+\cite[\S6.1]{medvedev2009}; the $P_G/R_i/L_n$ notation is ours.}
+\end{definition}
+
 \paragraph{Count dependence is not eliminated by larger samples.}
 In \cite[\S6.1]{medvedev2009}, the move from the exact multinomial
 to the product of per-type binomial probabilities is motivated by the claim
