@@ -64,6 +64,14 @@ pipeline. Closing those rows requires an inspectable source specification and a
 separate comparison of definitions and edge identity; this note does not infer
 implementation details from the title or citation alone.
 
+Independent re-confirmation (issue #284, agent robinson): the contained-read
+non-claim above was re-checked against the inspectable Lean source
+(`TwoHopSameSpelling` requires `l1 < L`, `l2 < L` and the iff theorem requires
+`e.len < L`, with no containment definition), and the survival-matrix entry
+`Section62NonSpelledFlow.lean:584` still references the old model with corrected
+bridge `nonspelled_reduction_spelling_eq` present, so its SURVIVES verdict
+stands; see `scripts/verify_284_myers_contained_boundary.py`.
+
 The Observation 7 theorem in PR #265 is already unconditional for the
 repository's `transitivelyReducedSpelling` graph; this module narrows
 its source-fidelity gap without changing its hypotheses.
