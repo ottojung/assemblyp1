@@ -153,7 +153,7 @@ Imagine testing a proposed genome by repeating the sequencing experiment in your
 
 **Nothing more complicated than a set of probabilities and a product.**
 
-**Why the highest-probability candidate?** If the candidates start out equally likely and every wrong answer costs the same, the most likely candidate is also the one that is right most often *on average*.
+**Why the highest-probability candidate?** If the candidates start out equally likely and every wrong answer costs the same, the most likely candidate is also the one that is right most often *on average*. That is an on-average claim, not a per-truth promise: a rule that is right whenever a promised truth-dependent condition holds can still score worse on average ($1/4$ versus $3/4$ for MAP in the kernel-checked witness of paper `rem:map-vs-infallible`).
 
 <!--
 This is likelihood P(data | genome), not posterior probability P(genome | data).
