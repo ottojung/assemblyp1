@@ -20,7 +20,13 @@ the zero-terminal §6.2 feasible-flow set.  Here we
    * `spelled_maximal_of_flow_maximal` — flow-level maximality **restricts** to
      the spelled sub-class;
    * `flow_not_maximal_of_spelled_witness` — a spelled candidate that strictly
-     beats the truth **transfers upward** to the full feasible-flow set.
+     beats the truth **transfers upward** to the full feasible-flow set; and
+
+3. prove **spelling preservation across transitive reduction**
+   (`spelledVisitSet_mono_edges`,
+   `spelled_witness_transfers_across_reduction`): the spelled class only shrinks
+   under reduction, so a spelled failure on a reduced graph transfers to any
+   edge-superset's feasible-flow set.
 
 The spelled sub-class is the one for which the adapter applies, so this is the
 available direction of the full §6.2 classification.
@@ -186,5 +192,43 @@ theorem flow_maximal_iff_spelled_maximal_of_image_eq (rep : W → W) (readLen : 
         (throughputVec rep f₀ edges) := by
   rw [← hEq]
   exact (maximal_image_iff rep edges (feasibleFlowSet rep verts edges) score f₀).symm
+
+/-! ## Spelling preservation across transitive reduction -/
+
+/-- **Spelled-class monotonicity in the edge set.**  A spelled circuit whose steps
+all lie in `edges₁` is also a spelled circuit on any edge-superset `edges₂`.
+In §6.2 terms: transitive reduction can only *shrink* the spelled candidate
+class, never grow it — every circuit spelled on the reduced graph is preserved
+on the unreduced graph.  The vertex-lower-bound clause is graph-independent
+(it constrains only `sp.visits`), so it transfers unchanged. -/
+theorem spelledVisitSet_mono_edges {edges₁ edges₂ : List (BdEdge A W)}
+    (rep : W → W) (readLen : Nat) (verts : List W)
+    (h : ∀ e ∈ edges₁, e ∈ edges₂) :
+    spelledVisitSet (A := A) rep readLen verts edges₁ ⊆
+      spelledVisitSet (A := A) rep readLen verts edges₂ := by
+  rintro d ⟨n, sp, hSteps, hCircuit, hVisit, rfl⟩
+  exact ⟨n, sp, fun i => h _ (hSteps i), hCircuit, hVisit, rfl⟩
+
+/-- **Negative transfer across reduction.**  A spelled-sub-class failure found on
+a transitively reduced graph `edges₁` transfers upward to the feasible-flow set
+of any edge-superset `edges₂` (e.g. the unreduced overlap graph): the witness
+is preserved by `spelledVisitSet_mono_edges` and then lifted by
+`flow_not_maximal_of_spelled_witness`.  Candidate class: spelled circuits
+(`spelledVisitSet`); truth: any feasible flow `f₀` on `edges₂`; likelihood: any
+score factoring through the throughput vector (including the fixed-`N`
+product-binomial surrogate); length universe: the spelling length `n`
+(`sum_visits_eq_n`).  Inclusion is proved, so this is a licensed negative
+transfer; no positive statement is claimed. -/
+theorem spelled_witness_transfers_across_reduction {edges₁ edges₂ : List (BdEdge A W)}
+    (rep : W → W) (readLen : Nat) (verts : List W)
+    (hNodup₂ : edges₂.Nodup)
+    (h : ∀ e ∈ edges₁, e ∈ edges₂) (score : (W → ℕ) → ℚ) (f₀ : BdFlow A W)
+    (hwit : ∃ d ∈ spelledVisitSet (A := A) rep readLen verts edges₁,
+      score (throughputVec rep f₀ edges₂) < score d) :
+    ¬ Maximal (feasibleFlowSet rep verts edges₂)
+        (fun f => score (throughputVec rep f edges₂)) f₀ := by
+  refine flow_not_maximal_of_spelled_witness rep readLen verts edges₂ hNodup₂ score f₀ ?_
+  obtain ⟨d, hd, hlt⟩ := hwit
+  exact ⟨d, spelledVisitSet_mono_edges rep readLen verts h hd, hlt⟩
 
 end AssemblyP1.Section62SpelledFlowMaximality
