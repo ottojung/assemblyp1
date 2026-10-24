@@ -546,6 +546,10 @@ def E : Fin 2 → Fin 1 → Prop := fun g _ => g = 0
 
 instance : DecidableRel E := fun g r => by unfold E; infer_instance
 
+theorem pi_normalized : ∑ g : Fin 2, π g = 1 := by
+  rw [Fin.sum_univ_two]
+  norm_num [π]
+
 theorem pi_nonneg : ∀ g : Fin 2, 0 ≤ π g := fun g => by norm_num [π]
 theorem p_nonneg : ∀ g : Fin 2, ∀ r : Fin 1, 0 ≤ p g r := fun g r => by norm_num [p]
 
