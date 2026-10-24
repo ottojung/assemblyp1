@@ -104,6 +104,20 @@ product-binomial kernel is **already kernel-checked** as
 single-coordinate sign-compatible Positive Sum Property (`HasPSS`) failure — is
 foregrounded.
 
+## Independent exact-integer verifier
+
+`scripts/verify_263_graver_throughput_bridge.py` cross-checks the two
+unconditional claims on a concrete tiny graph (2 vertices, edges
+`0 → 1`, `1 → 0`, one loop at `0`): it exhaustively verifies
+`flowLin_eq_zero_iff` over a `5³` box (balance rows plus fixed-total row vanish
+exactly on the balanced zero-sum flows), and it checks the vanishing-case lift
+mechanism of `hasGraverDecomposition_aug` — for the zero throughput map the
+lifted conformal decomposition `(3, 3, -6, 0, 0) = (1, 1, -2, 0, 0) +
+(2, 2, -4, 0, 0)` preserves full augmented sign-compatibility and stays in the
+augmented kernel. It asserts nothing about the genuine vertex-throughput map,
+whose `T`-sign-compatible lift remains OPEN (see the obstruction section and
+`scripts/verify_263_throughput_sign_clash.py`).
+
 ## Axioms
 
 Every endpoint of `GraverThroughputBridge.lean` depends only on the standard
