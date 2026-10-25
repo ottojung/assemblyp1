@@ -303,6 +303,50 @@ theorem superadd_separable_list {E : Type} [Fintype E] {f : E → ℤ → ℝ}
   rw [hLHS, hRHS]
   exact Finset.sum_le_sum (fun e _ => hcoord e)
 
+/-! ## Box-path side condition: single steps stay in the box -/
+
+/-- **Box-path side condition (issue #263).**  If the moves `gs` are
+coordinatewise sign-compatible and both endpoints `z` and `z + gs.sum` lie in
+the box `l ≤ · ≤ u`, then every single step `z + g` (`g ∈ gs`) also lies in
+the box.  This is the side condition used implicitly in
+`graver_optimal_iff_no_improving` to promote each Graver summand to a feasible
+step; it holds coordinatewise because a sign-compatible summand lies between
+`0` and the total displacement. -/
+theorem step_mem_box {E : Type} {l u : E → ℤ}
+    (z : E → ℤ) (gs : List (E → ℤ))
+    (hsign : ∀ e, (∀ g ∈ gs, 0 ≤ g e) ∨ (∀ g ∈ gs, g e ≤ 0))
+    (hzlo : ∀ e, l e ≤ z e) (hzhi : ∀ e, z e ≤ u e)
+    (hclo : ∀ e, l e ≤ (z + gs.sum) e) (hchi : ∀ e, (z + gs.sum) e ≤ u e) :
+    ∀ g ∈ gs, ∀ e, l e ≤ (z + g) e ∧ (z + g) e ≤ u e := by
+  intro g hg e
+  rw [Pi.add_apply]
+  have hsum_e : (gs.sum) e = (gs.map (fun g => g e)).sum := (list_sum_apply gs e).symm
+  rcases hsign e with hp | hn
+  · have hle : g e ≤ (gs.map (fun g => g e)).sum :=
+      list_le_sum_of_mem_int (List.mem_map.mpr ⟨g, hg, rfl⟩)
+        (fun x hx => by
+          rw [List.mem_map] at hx
+          obtain ⟨g', hg', rfl⟩ := hx
+          exact hp g' hg')
+    have hg0 : 0 ≤ g e := hp g hg
+    rw [← hsum_e] at hle
+    have h1 := hzlo e
+    have h2 := hchi e
+    rw [Pi.add_apply] at h2
+    constructor <;> omega
+  · have hge : (gs.map (fun g => g e)).sum ≤ g e :=
+      list_sum_le_of_mem_int (List.mem_map.mpr ⟨g, hg, rfl⟩)
+        (fun x hx => by
+          rw [List.mem_map] at hx
+          obtain ⟨g', hg', rfl⟩ := hx
+          exact hn g' hg')
+    have hg0 : g e ≤ 0 := hn g hg
+    rw [← hsum_e] at hge
+    have h1 := hclo e
+    have h2 := hzhi e
+    rw [Pi.add_apply] at h1
+    constructor <;> omega
+
 /-! ## The conditional Graver optimality certificate -/
 
 section Certificate

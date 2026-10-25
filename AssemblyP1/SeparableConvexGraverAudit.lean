@@ -10,6 +10,7 @@ open AssemblyP1.SeparableConvexGraver
 #print axioms AssemblyP1.SeparableConvexGraver.quad_neg
 #print axioms AssemblyP1.SeparableConvexGraver.superadd_list
 #print axioms AssemblyP1.SeparableConvexGraver.superadd_separable_list
+#print axioms AssemblyP1.SeparableConvexGraver.step_mem_box
 #print axioms AssemblyP1.SeparableConvexGraver.graver_optimal_iff_no_improving
 #print axioms AssemblyP1.SeparableConvexGraver.multiplier_improving
 #print axioms AssemblyP1.SeparableConvexGraver.negLog_discConvOn
