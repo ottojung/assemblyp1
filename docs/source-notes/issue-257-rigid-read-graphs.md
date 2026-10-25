@@ -37,6 +37,8 @@ cross-check, exhaustive small scopes),
 `python3 scripts/verify_257_tri_hub.py` (§21 triangular multi-hub three-equation
 criterion, polynomial DP decision, rigid repetitive instance, non-rigidity
 witness and coupling refutation, mutation-red control, exhaustive small scopes).
+`python3 scripts/verify_257_simple_cycle.py` (§22 directed-cycle and AATT
+examples, plus the G≤7 binary-genome scalar-summary census).
 Self-contained, exact integer arithmetic, deterministic._
 
 _Blocking-review repair (2026-10-10, branch `research/257-graver-lean-repair`):
@@ -685,6 +687,7 @@ exhaustive zeros are a sanity check on the proofs, not a substitute for them.
 | §22 `ATATAT` parametric rigidity (`atatat_of_cycle2`: rigid at every uniform `k`) | kernel-checked |
 | §22 AATT boundary rigid non-cycle (`aatt_rigid`, `aatt_search_space`) | kernel-checked (`by decide`) |
 | §22 cross-check vs brute force + mutation-red (`scripts/verify_257_simple_cycle.py`: 20 directed cycles + AATT rigid/mutated, 0 mismatches) | verified computation, exhaustive in scope |
+| §22 bounded binary-genome census (`scripts/verify_257_simple_cycle.py`: G=1..7, L=2..3; 508 circular words/read-length cases; finds a scalar-summary group with both rigid and non-rigid genomes) | verified computation, exhaustive in scope |
 
 ---
 

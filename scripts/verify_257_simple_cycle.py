@@ -19,6 +19,8 @@ scratch (no repository imports):
    {AA:1, AT:1, TT:1, TA:1}.
 6. A scalar topology summary plus L and G is insufficient: two circular
    L=3, G=7 genomes have |V|=3, |E|=4, cycle rank 2, but differ in rigidity.
+7. Exhaustive enumeration of all binary circular genomes with G=1..7 and
+   L=2..3 finds 36 rigid/non-rigid pairs with identical (L,G,|V|,|E|,rank).
 """
 
 from __future__ import annotations
@@ -136,6 +138,45 @@ def main() -> int:
         rank_pair.append((len(vs), len(es), 7, rank, is_rigid))
     if len(rank_pair) != 2 or rank_pair[0][:4] != rank_pair[1][:4] or rank_pair[0][4] == rank_pair[1][4]:
         print("FAIL: expected a rigidity split at fixed (L,G,|V|,|E|,rank)")
+        fails += 1
+
+    # 7. Exhaust all binary circular words in a bounded genome/read scope.
+    # Group by scalar summaries only, then require at least one group where
+    # spectra have differing rigidity status. This verifies rank_pair as one
+    # instance and also avoids selecting that pair as a hand-picked-only case.
+    from itertools import product as cartesian_product
+
+    grouped = {}
+    words_checked = 0
+    for genome_length in range(1, 8):
+        for letters in cartesian_product("AB", repeat=genome_length):
+            word = "".join(letters)
+            for read_length in (2, 3):
+                sp = spectrum_circular(word, read_length)
+                es = list(sp)
+                vs = {e[:-1] for e in es} | {e[1:] for e in es}
+                outs = [[i for i, e in enumerate(es) if e[:-1] == v] for v in vs]
+                ins = [[i for i, e in enumerate(es) if e[1:] == v] for v in vs]
+                eqs = list(zip(outs, ins))
+                counts = [sp[e] for e in es]
+                is_rigid, candidates = brute_rigid(es, eqs, counts, genome_length)
+                rank = len(es) - len(vs) + 1
+                key = (read_length, genome_length, len(vs), len(es), rank)
+                grouped.setdefault(key, []).append((word, is_rigid))
+                words_checked += 1
+    split_groups = {
+        key: cases for key, cases in grouped.items()
+        if {rigid for _, rigid in cases} == {False, True}
+    }
+    print(f"binary genome census G=1..7, L=2..3: {words_checked} cases, "
+          f"{len(split_groups)} scalar-summary groups contain both rigid and non-rigid genomes")
+    if not split_groups:
+        print("FAIL: census did not find a scalar-summary collision")
+        fails += 1
+    elif not any(key == (3, 7, 3, 4, 2) and
+                 {rigid for _, rigid in cases} == {False, True}
+                 for key, cases in split_groups.items()):
+        print("FAIL: census did not independently recover the rank-pair key")
         fails += 1
 
     # ATATAT genome control (2-cycle, rigid despite triples)
