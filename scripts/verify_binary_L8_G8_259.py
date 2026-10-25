@@ -44,6 +44,23 @@ def effective(N, B, e, universe):
     return value
 
 
+def sample_uniform_beats(A, B, N, universe):
+    """Decide F_B(x)<=F_A(x) for every integer x>=A, exactly.
+
+    If every truth-supported effective numerator for B is <= A's, then each
+    factor ratio is at most one. Conversely, if one is greater, increasing
+    that coordinate's count makes the likelihood ratio unbounded above.
+    A zero effective numerator is handled as a losing (zero likelihood)
+    candidate, including probability-boundary cases.
+    """
+    for e in support(A):
+        qb = effective(N, B, e, universe)
+        qa = effective(N, A, e, universe)
+        if qb > qa:
+            return False
+    return True
+
+
 def is_rigid(A, L, G):
     edges = support(A)
     nodes = {}
@@ -85,7 +102,7 @@ def main():
     assert len(candidates) == 36 and all(sum(a) == G for a in candidates)
     result = {"rigid_max": 0, "rigid_notmax": 0,
               "nonrigid_max": 0, "nonrigid_notmax": 0}
-    pairs = fixed_checks = 0
+    pairs = fixed_checks = uniform_checks = 0
     for A in candidates:
         rigid = is_rigid(A, L, G)
         maximal = True
@@ -95,18 +112,14 @@ def main():
             pairs += 1
             # At x=A (n=G), the literal MB09 §6.1 product-binomial score
             # includes every unobserved type's (N-B[e])**n factor.
-            fixed_checks += 1
             if score(N, A, B, universe) > score(N, A, A, universe):
+                fixed_checks += 1
                 maximal = False
                 break
-            # The comparison is also uniform over all realizable covered
-            # samples x>=A: after factoring, compare every supported type's
-            # effective product-binomial probability numerator.
-            for e in support(A):
-                if effective(N, B, e, universe) > effective(N, A, e, universe):
-                    maximal = False
-                    break
-            if not maximal:
+            fixed_checks += 1
+            uniform_checks += 1
+            if not sample_uniform_beats(A, B, N, universe):
+                maximal = False
                 break
         result[("rigid_" if rigid else "nonrigid_") + ("max" if maximal else "notmax")] += 1
 
@@ -130,8 +143,9 @@ def main():
     assert omitted_factor > 1 and exact == omitted_zero_counts * omitted_factor
     assert sum(result.values()) == len(candidates)
     print(f"binary L=G=N=8, universe=256, spectra={len(candidates)}")
-    print(f"truth/competitor pairs={len(candidates) * (len(candidates)-1)}")
-    print(f"outcomes={result}; inspected fixed-sample comparisons={fixed_checks}")
+    assert pairs == len(candidates) * (len(candidates) - 1)
+    print(f"truth/competitor pairs={pairs}")
+    print(f"outcomes={result}; fixed-truth checks={fixed_checks}; covered-uniform checks={uniform_checks}")
     print(f"mutation control: A_support={len(support(A))}, B_unobserved_intermediate=True")
     print("All scores are exact integer products; OK")
 

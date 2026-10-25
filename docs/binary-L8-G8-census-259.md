@@ -27,18 +27,20 @@ objective's candidate-dependent numerator is `product_e B_e^(x_e)` and has no
 unobserved-type complement factors. It is also not MB09 §6.2's bidirected-flow
 model (#260/#261).
 
-For each pair, the verifier compares the exact integer score at `x=A`. It also
-tests sample-uniform comparisons over covered samples `x>=A` with the
-effective weight numerator
-`q_e(B)=B_e product_{j!=e}(N-B_j)` on each `e` in `supp(A)`. Thus the printed
-classification includes both the truth sample and all covered count vectors
-by the coordinatewise product-binomial comparison criterion; it does not
-claim maximality over samples omitting any truth-supported type.
+For each pair, the verifier compares the exact integer score at `x=A` and
+decides uniform dominance over every integer count vector `x>=A`. The latter
+uses the effective weight numerator
+`q_e(B)=B_e product_{j!=e}(N-B_j)` on each `e` in `supp(A)`: after factoring,
+the likelihood ratio is a constant times a product of coordinate ratios, so
+it is bounded by one for every `x>=A` iff each `q_e(B)<=q_e(A)`. If one is
+greater, increasing that coordinate makes the ratio unbounded. The code checks
+both criteria exactly, including zero weights and probabilities 0/1.
 
 ## Result
 
 There are 36 distinct circular spectra and 1,260 ordered distinct truth /
-competitor pairs. The exact census reports:
+competitor pairs. All 1,260 pairs received the fixed-truth score check; 1,260
+also received the covered-sample uniform check. The exact census reports:
 
 | truth class | sample-uniform maximal | not maximal |
 |---|---:|---:|
@@ -59,6 +61,6 @@ spectra, uses exact Python integers for every likelihood product, enumerates
 truth-support circulations for rigidity, and checks a non-vacuous mutation:
 for a multi-type truth and a realizable competitor with an intermediate count
 on an unobserved type, omitting zero-count-coordinate factors changes the
-score. The census does not address other lengths, alphabets, or samples not
-covering the truth support. The general necessary-and-sufficient
-classification remains open.
+score. The census does not address other lengths or alphabets, nor uniformity
+over samples omitting any truth-supported type. The general
+necessary-and-sufficient classification remains open.
