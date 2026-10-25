@@ -1966,6 +1966,24 @@ cycle ⟺ rigid" is **false** as an iff: `AATT` is a rigid read-support with
 four edges. The forward direction for `2`-cycles is Theorem 15; the reverse
 direction fails already at this smallest genome boundary.
 
+**Finite separator for cycle-rank-only classifiers.** Two circular `L = 3`,
+`G = 7` genomes have the same support summary `(|V|, |E|, cycle-rank) =
+(3,4,2)` but opposite rigidity status:
+
+* `S = AABABAB` has support edges `AAB, ABA, BAB, BAA`, with multiplicities
+  `(1,3,2,1)` in that order. It is **rigid**: the exact enumeration finds only
+  that positive balanced circulation of total `7`.
+* `T = AAAAAAB` has support edges `AAA, AAB, ABA, BAA`, with multiplicities
+  `(4,1,1,1)`. It is **non-rigid**: `(1,2,2,2)` is a distinct positive
+  balanced circulation of total `7` on its support.
+
+The supports are different (the repeated edge is `BAB` versus `AAA`), but their
+vertex/edge counts, first Betti number, read length, and genome length coincide.
+Therefore those scalar graph/genome summaries cannot decide rigidity; the
+actual labeled incidence structure and multiplicities matter. This finite
+counterexample refutes only classifiers determined by these summaries, not
+every graph-theoretic condition. [mathematical witness + verified computation]
+
 ### 22.3 Cross-check (`scripts/verify_257_simple_cycle.py`)
 
 The script is self-contained, exact and deterministic. It recomputes rigidity
@@ -1980,7 +1998,10 @@ from scratch by enumerating **all** positive integer circulations of total
   discriminating power;
 * complexity record: `(G+1)^|E|` tabulated against `r` (e.g. `AATT`: 625
   candidates at `r = 2`; 6-cycle `k = 4`: 244140625 at `r = 0`);
-* genome realizations: circular `AATT`/`L = 2` and `ATATAT`/`L = 3` spectra.
+* genome realizations: circular `AATT`/`L = 2` and `ATATAT`/`L = 3` spectra;
+* **cycle-rank separator**: `AABABAB` and `AAAAAAB` share `L=3`, `G=7`,
+  `|V|=3`, `|E|=4`, and cycle rank `2`, while exact enumeration reports rigid
+  versus non-rigid.
   [verified computation, exhaustive in scope]
 
 ### 22.4 Epistemic status
