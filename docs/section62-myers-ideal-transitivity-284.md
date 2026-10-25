@@ -83,3 +83,59 @@ implementation details from the title or citation alone.
 The Observation 7 theorem in PR #265 is already unconditional for the
 repository's `transitivelyReducedSpelling` graph; this module narrows
 its source-fidelity gap without changing its hypotheses.
+
+## Independent Myers source-row review (2026-10-25)
+
+Reviewer method: the Myers 2005 PDF (https://www.cs.utoronto.ca/~brudno/csc2427/myers.pdf,
+"The fragment assembly string graph", Bioinformatics 21 Suppl. 2 (2005), ii79-ii85)
+was retrieved and text-extracted locally; MB09 §6.2 ("6.2 Putting it all together")
+was re-read at https://pmc.ncbi.nlm.nih.gov/articles/PMC3154397/. Each
+compatibility-table row above was checked against the exact source wording.
+No Lean source was changed by this review.
+
+Row verdicts:
+
+1. Exact transitivity -- CONFIRMED. Myers §2 (p. ii80): "if f overlaps g overlaps h
+   in such a way that f overlaps h as well, then the string graph edge f->h is
+   unnecessary as one can use the edges f->g->h to spell the same sequence. That is,
+   one may remove all transitive edges from the graph above without impacting what
+   can be spelled." This is exactly the `TwoHopSameSpelling` /
+   `reducible_iff_ideal_two_hop` correspondence, restricted to the error-free
+   equal-length proper-overlap setting.
+
+2. Approximate/noisy overlaps (`FUZZ = 10`) -- CONFIRMED as non-claim. Myers Fig. 4
+   pseudocode states `constant FUZZ <- 10`; line 8 (`longest <- max len + FUZZ`) and
+   lines 15-19 (second marking pass over successors within FUZZ base pairs) plus the
+   §3 rationale ("endpoint positions can shift a bit ... approximate equality is not
+   an equivalence relation") confirm the "Not modeled" row: the formalization uses
+   exact suffix-prefix equality only.
+
+3. Contained reads -- CONFIRMED as non-claim. Myers §"Contained reads": "the graph is
+   only built from the remaining reads, all of which properly overlap"; contained
+   reads are removed first and mapped back only for statistics. Matches the
+   "Not separately modeled" row and the formalization's proper-overlap hypotheses.
+
+4. Multiple/parallel overlaps and edge collapsing -- CONFIRMED as non-claim. Myers §2
+   collapses non-branching chains into composite edges ("Collapse all paths whose
+   interior vertices are internal ... replacing them with a single composite edge").
+   The formalization's relation is over read strands and overlap lengths with no
+   multiplicity/collapse comparison, as documented.
+
+5. Bidirected orientation -- CONFIRMED as scoped. Myers §1: "the problem of
+   orientation, i.e. that reads can be from either the forward or reverse strand, is
+   addressed and accounted for in our string graph formulation"; §2 uses bidirected
+   edges. The "does not assert" row stands: the theorem covers the repository's
+   oriented strand/overlap relation only.
+
+Source-wording reconciliation (MB09 §6.2 vs `twoHop_overlaps_gt_direct`):
+MB09 §6.2 says reduction "remove[s] any overlap that is spelled by two shorter
+overlaps". Read literally about overlap lengths, this contradicts
+`twoHop_overlaps_gt_direct` (replacement overlaps are forced LONGER: `e.len < l1`,
+`e.len < l2`). The Myers source resolves the tension: in Myers §3, edges are ordered
+by the length of their string LABEL (the overhang/extension, `len(v->w)`), and the
+irreducible edges are the SHORTEST labels. For equal-length reads the overhang is
+`L - overlap`, so "shorter" edge-labels are exactly "longer" overlaps. MB09's "two
+shorter overlaps" must therefore be read as "two shorter edge-labels (overhangs/
+extensions)"; under that reading MB09, Myers §3, and the kernel theorem agree, and
+the length law `l1 + l2 = L + e.len` is the common content. This note records the
+disambiguation so #261/#262 reuse the overlap-length form, not the loose wording.
