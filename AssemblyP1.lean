@@ -143,6 +143,7 @@ import AssemblyP1.ConditionalVsMLFullReadSet271
 import AssemblyP1.ConditionalBayesEImpliesB271
 import AssemblyP1.ConditionalVsMLLiteralL3Adapter271
 import AssemblyP1.BayesValueMonotonicity
+import AssemblyP1.IgnoreReadMonotonicity
 import AssemblyP1.BayesOptimalityCertificate
 import AssemblyP1.BayesOptimalityCertificateAudit
 import AssemblyP1.DihedralOrbitQuotient
