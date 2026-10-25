@@ -199,6 +199,14 @@ guarantee.**
 | Arbitrary fibre-unique `F` (separates confusable orbits) | posterior one given `E = F` | sufficient; **no ordering against `I_s` follows from sufficiency** (incomparable in general, §5) |
 | Read-unambiguous (`Unambiguous`) | posterior one given `E = Unambiguous`; unique weakest **read-only** promise | sufficient, read-only; **not shown to be weaker or stronger than `I_s`** |
 
+Here ``E = I_s`` means the event is actually included in the observation or
+promise being conditioned on. Knowing only that the realized truth/read pair
+satisfies `I_s(g,r)` does not change the read-only posterior: the event
+indicator must occur in the conditioned joint law (or its information must be
+reported by a side channel). In particular, the second row is an obstruction
+to *read-only* certainty, not a claim that conditioning on an unobserved
+truth-dependent event is available.
+
 **Consequence.** `I_s` is a *sufficient* structural certificate. Sufficiency alone
 does **not** establish that `I_s` is necessary, nor that it is the strongest or
 the weakest sufficient promise: the ordering between `I_s` and other sufficient
