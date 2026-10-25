@@ -159,6 +159,21 @@ prior-free and `E`-free, so no fixed-x classification result can transfer to
 (A) without adding the conditional layer (prior + promise + normalized
 observation model).
 
+* **Uniqueness non-transport (merged #255/#261 L3 remainder, reused here).**
+  The §6.2 physical-orbit objective transport preserves maximality in both
+  directions (`Section62PhysicalOrbitObjective.physMaximal_image_iff`) but
+  uniqueness only forward
+  (`Section62PhysicalOrbitObjectiveUniqueness.physUniqueMaximal_image_of_flow`);
+  backward uniqueness needs visit-map injectivity
+  (`physUniqueMaximal_of_injective`, `physUniqueMaximal_iff_of_injective`)
+  and fails in general on the minimal mixed-sign self-loop witness
+  (`MixedLoop.physUniqueMaximal_not_transported`). For the #271 comparison
+  this sharpens the maximizer-vs-unique-maximizer paragraph of §7: the
+  unique-maximizer form of (B) is not only prior-sensitive in its absence
+  (Section 4) but also quotient-sensitive — it need not survive the
+  flow-to-visit-vector quotient. This is recorded by reuse, not re-proved;
+  #255/#261 remain open and are not re-classified here.
+
 ## 7. Which refinements would establish E → B, refute it, or guarantee A
 
 * **E → B (ordinary ML recovery from side information):** would require `E` to
