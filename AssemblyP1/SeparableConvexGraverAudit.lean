@@ -12,6 +12,8 @@ open AssemblyP1.SeparableConvexGraver
 #print axioms AssemblyP1.SeparableConvexGraver.superadd_separable_list
 #print axioms AssemblyP1.SeparableConvexGraver.graver_optimal_iff_no_improving
 #print axioms AssemblyP1.SeparableConvexGraver.multiplier_improving
+#print axioms AssemblyP1.SeparableConvexGraver.ray_unit_step_in_box
+#print axioms AssemblyP1.SeparableConvexGraver.multiplier_improving_of_endpoints
 #print axioms AssemblyP1.SeparableConvexGraver.negLog_discConvOn
 #print axioms AssemblyP1.SeparableConvexGraver.negLog_sub_discConvOn
 #print axioms AssemblyP1.SeparableConvexGraver.multinomialTerm_discConvOn
