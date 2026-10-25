@@ -159,6 +159,22 @@ prior-free and `E`-free, so no fixed-x classification result can transfer to
 (A) without adding the conditional layer (prior + promise + normalized
 observation model).
 
+For an **ordered iid read sequence** `R = (r₁, …, rₙ)` under the exact
+per-read model, the likelihood used by (B) is
+`P_g(R) = ∏ᵢ p_g(rᵢ)`. Thus the truth-maximizer test is the comparison of these
+products over the fixed candidate universe (or, when all compared factors are
+positive, equivalently the sum comparison `Σᵢ log p_g(rᵢ)`). A one-read
+preference is not itself a fixed-sample characterization: later factors can
+reinforce it, reverse it, or create a tie. For example, in the Section 3 toy,
+the two-read sequence `(r₀, r₁)` has likelihood `3/16` under each candidate,
+even though the first read strictly favors `B` and the second strictly favors
+`A`. If the observation is instead an
+unordered count vector, the induced multinomial coefficient is common to all
+candidates and does not change exact ML, while the product-binomial objective
+remains a distinct approximation as in #259. These identities do not establish
+any genome-structural iff; those remain the classifications owned by #255,
+#258, #259, #261 and the restricted uniform results #256/#260.
+
 ## 7. Which refinements would establish E → B, refute it, or guarantee A
 
 * **E → B (ordinary ML recovery from side information):** would require `E` to
