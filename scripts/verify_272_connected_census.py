@@ -4,7 +4,8 @@
 Ports the elementary distinct-read overlap-connectivity filter from
 docs/source-notes/issue272-connected-decoder-gap.md (tutelage handoff,
 commit 4ae4b28) into a runnable repo enumerator. Bounded census
-(G in {4,5,6}, k in {2,3} with k^G<=3000): certainty-holding I_s failures
+(G in {4,5,6}, k in {2,3} with k^G<=3000), plus a separately bounded
+G=7,k=2 census: certainty-holding I_s failures
 split total/connected, plus the concrete connected triple-clause witness
 (AAAB, L=3, R=(1,2,3), Y={AAB,ABA,BAA}, directed 3-cycle).
 
@@ -83,3 +84,27 @@ print("connected :", con)
 assert (tot["coverage"],tot["triple"],tot["interleaved"]) == (3807,4584,0), tot
 assert con["interleaved"] == 0
 print("COUNTS MATCH handoff: total 3807/4584/0; connected triple>0, interleaved 0")
+
+# Separately bounded G=7 binary extension (same canonical-genome,
+# nonconstant, nonempty-start-subset, all-length filter as above).
+G = 7; k = 2
+gs = list(itertools.product(range(k), repeat=G))
+can = {t: canon(t) for t in gs}
+wins = {(t, L2): all_windows(t, L2) for t in gs for L2 in range(2, G)}
+tot7 = {"coverage":0,"triple":0,"interleaved":0}
+con7 = dict.fromkeys(tot7, 0)
+for s2 in gs:
+    if can[s2] != s2 or len(set(s2)) == 1: continue
+    for L2 in range(2, G):
+        for r in range(1, 2**G):
+            R2 = tuple(i for i in range(G) if r & (1 << i))
+            fc = failing_clause(s2, L2, R2)
+            if fc is None: continue
+            Y2 = readset(s2, L2, R2); cs2 = can[s2]
+            if all(not (can[t] != cs2 and Y2 <= wins[(t, L2)]) for t in gs):
+                tot7[fc] += 1
+                if connected(Y2, L2): con7[fc] += 1
+print("G=7,k=2 total:", tot7)
+print("G=7,k=2 connected:", con7)
+assert (tot7["coverage"], tot7["triple"], tot7["interleaved"]) == (396, 2100, 0)
+assert (con7["coverage"], con7["triple"], con7["interleaved"]) == (228, 810, 0)
