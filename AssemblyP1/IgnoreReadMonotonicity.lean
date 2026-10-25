@@ -320,10 +320,29 @@ theorem mapSuccess_binary_one :
   norm_num [IidMapMonotonicity.iidJoint, readPℝ, halfℝ,
     GenomeOrbitAdapter.PerTruthDrop.readP, Fin.prod_univ_one]
 
+/-- The reindexing `(Fin 2 → Read) ≃ Read × Read`, `x ↦ (x 0, x 1)`, used to
+enumerate the two-read sample space.  Stated at top level (like `oneArrowRead`)
+so definitional unfolding is available to the unifier in `mapSuccess_binary_two`. -/
+def twoArrowRead : (Fin 2 → GenomeOrbitAdapter.PerTruthDrop.Read) ≃
+    (GenomeOrbitAdapter.PerTruthDrop.Read × GenomeOrbitAdapter.PerTruthDrop.Read) where
+  toFun x := (x 0, x 1)
+  invFun p := fun i => if i = 0 then p.1 else p.2
+  left_inv x := by
+    rw [funext_iff]
+    intro i
+    fin_cases i <;> simp
+  right_inv := by rintro ⟨a, b⟩; rfl
+
 /-- In the binary counterexample model with uniform prior, the two-read
 prior-averaged MAP success is exactly `139/200`. -/
 theorem mapSuccess_binary_two :
     IidMapMonotonicity.mapSuccess halfℝ readPℝ 2 = 139 / 200 := by
+  have key : ∀ x : Fin 2 → GenomeOrbitAdapter.PerTruthDrop.Read,
+      x = (fun i => if i = 0 then x 0 else x 1) := by
+    intro x
+    rw [funext_iff]
+    intro i
+    fin_cases i <;> simp
   have hreindex : (∑ x : Fin 2 → GenomeOrbitAdapter.PerTruthDrop.Read,
       IidMapMonotonicity.iidJoint halfℝ readPℝ 2
           (FiniteBayesDecision.chooseMAP (IidMapMonotonicity.iidJoint halfℝ readPℝ 2) x) x)
@@ -332,34 +351,47 @@ theorem mapSuccess_binary_two :
               (FiniteBayesDecision.chooseMAP (IidMapMonotonicity.iidJoint halfℝ readPℝ 2)
                 (fun i => if i = 0 then p.1 else p.2))
               (fun i => if i = 0 then p.1 else p.2) := by
-    have key : ∀ x : Fin 2 → GenomeOrbitAdapter.PerTruthDrop.Read,
-        x = (fun i => if i = 0 then x 0 else x 1) := by
-      intro x
-      rw [funext_iff]
-      intro i
-      fin_cases i <;> simp
-    have e : (Fin 2 → GenomeOrbitAdapter.PerTruthDrop.Read) ≃
-        (GenomeOrbitAdapter.PerTruthDrop.Read × GenomeOrbitAdapter.PerTruthDrop.Read) :=
-      { toFun := fun x => (x 0, x 1),
-        invFun := fun p i => if i = 0 then p.1 else p.2,
-        left_inv := fun x => (key x).symm,
-        right_inv := by rintro ⟨a, b⟩; simp }
-    refine (Fintype.sum_equiv e
-      (fun x => IidMapMonotonicity.iidJoint halfℝ readPℝ 2
-          (FiniteBayesDecision.chooseMAP (IidMapMonotonicity.iidJoint halfℝ readPℝ 2) x) x)
-      (fun p => IidMapMonotonicity.iidJoint halfℝ readPℝ 2
-          (FiniteBayesDecision.chooseMAP (IidMapMonotonicity.iidJoint halfℝ readPℝ 2)
-            (fun i => if i = 0 then p.1 else p.2))
-          (fun i => if i = 0 then p.1 else p.2))
-      (fun x => congrArg (fun y => IidMapMonotonicity.iidJoint halfℝ readPℝ 2
-          (FiniteBayesDecision.chooseMAP (IidMapMonotonicity.iidJoint halfℝ readPℝ 2) y) y)
-        (show x = (fun i => if i = 0 then (e x).1 else (e x).2) from key x))).symm
+    refine Finset.sum_bij (fun x _ => twoArrowRead x)
+      (fun x _ => Finset.mem_univ _) ?_ ?_ (fun x _ => ?_)
+    · intro a _ b _ hab
+      exact twoArrowRead.injective hab
+    · intro p _
+      exact ⟨twoArrowRead.symm p, Finset.mem_univ _,
+        twoArrowRead.apply_symm_apply p⟩
+    · exact congrArg (fun y => IidMapMonotonicity.iidJoint halfℝ readPℝ 2
+        (FiniteBayesDecision.chooseMAP (IidMapMonotonicity.iidJoint halfℝ readPℝ 2) y) y)
+        (key x)
+  -- Each summand is a closed joint-mass value, proved separately so no single
+  -- tactic call exceeds the heartbeat limit.
+  have hAA : IidMapMonotonicity.iidJoint halfℝ readPℝ 2
+      (0 : GenomeOrbitAdapter.PerTruthDrop.Read)
+      (fun i => if i = 0 then (0 : GenomeOrbitAdapter.PerTruthDrop.Read)
+        else (0 : GenomeOrbitAdapter.PerTruthDrop.Read)) = 8 / 25 := by
+    norm_num [IidMapMonotonicity.iidJoint, readPℝ, halfℝ,
+      GenomeOrbitAdapter.PerTruthDrop.readP, Fin.prod_univ_two]
+  have hAC : IidMapMonotonicity.iidJoint halfℝ readPℝ 2
+      (1 : GenomeOrbitAdapter.PerTruthDrop.Read)
+      (fun i => if i = 0 then (0 : GenomeOrbitAdapter.PerTruthDrop.Read)
+        else (1 : GenomeOrbitAdapter.PerTruthDrop.Read)) = 1 / 8 := by
+    norm_num [IidMapMonotonicity.iidJoint, readPℝ, halfℝ,
+      GenomeOrbitAdapter.PerTruthDrop.readP, Fin.prod_univ_two]
+  have hCA : IidMapMonotonicity.iidJoint halfℝ readPℝ 2
+      (1 : GenomeOrbitAdapter.PerTruthDrop.Read)
+      (fun i => if i = 0 then (1 : GenomeOrbitAdapter.PerTruthDrop.Read)
+        else (0 : GenomeOrbitAdapter.PerTruthDrop.Read)) = 1 / 8 := by
+    norm_num [IidMapMonotonicity.iidJoint, readPℝ, halfℝ,
+      GenomeOrbitAdapter.PerTruthDrop.readP, Fin.prod_univ_two]
+  have hCC : IidMapMonotonicity.iidJoint halfℝ readPℝ 2
+      (1 : GenomeOrbitAdapter.PerTruthDrop.Read)
+      (fun i => if i = 0 then (1 : GenomeOrbitAdapter.PerTruthDrop.Read)
+        else (1 : GenomeOrbitAdapter.PerTruthDrop.Read)) = 1 / 8 := by
+    norm_num [IidMapMonotonicity.iidJoint, readPℝ, halfℝ,
+      GenomeOrbitAdapter.PerTruthDrop.readP, Fin.prod_univ_two]
   unfold IidMapMonotonicity.mapSuccess
   rw [FiniteBayesDecision.success_eq_observation_sum, hreindex, Fintype.sum_prod_type]
   simp only [Fin.sum_univ_two, chooseMAP_two_aa, chooseMAP_two_ac,
-    chooseMAP_two_ca, chooseMAP_two_cc]
-  norm_num [IidMapMonotonicity.iidJoint, readPℝ, halfℝ,
-    GenomeOrbitAdapter.PerTruthDrop.readP, Fin.prod_univ_two]
+    chooseMAP_two_ca, chooseMAP_two_cc, hAA, hAC, hCA, hCC]
+  norm_num
 
 /-- **Target C scope boundary, kernel-checked.**  In the binary counterexample
 model (`p_true(A) = 4/5`, `p_comp(A) = 1/2`, uniform prior, deterministic ML
