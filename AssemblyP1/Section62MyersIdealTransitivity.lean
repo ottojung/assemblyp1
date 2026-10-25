@@ -103,6 +103,36 @@ theorem reduced_mem_iff_no_ideal_detour {A W : Type}
         have hred : isReducibleSpelling W toList rc L oMin verts e := hb
         exact False.elim (hnot (hiff.mp hred))
 
+/-- Spelled-length identity as a standalone corollary (requirement (2) reuse
+endpoint for #261/#262): any idealized two-hop same-spelling witness for a
+proper overlap edge satisfies the overlap-length law `l1 + l2 = L + e.len`.
+Proved by comparing exact spelled-word lengths, as in the converse of
+`reducible_iff_ideal_two_hop`. -/
+theorem twoHop_overlap_sum {A W : Type}
+    [DecidableEq A] [DecidableEq W]
+    (toList : W → List A) (rc : W → W) (L oMin : Nat)
+    (verts : List W) (e : BdEdge A W)
+    (hsx : (toList e.sx).length = L)
+    (hsy : (toList e.sy).length = L)
+    (hLen : ∀ m ∈ strandsOf rc verts, (toList m).length = L)
+    (hproper : e.len < L)
+    (h : TwoHopSameSpelling toList rc L oMin verts e) :
+    ∃ m ∈ strandsOf rc verts, ∃ l1 l2 : Nat,
+      oMin ≤ l1 ∧ l1 < L ∧ oMin ≤ l2 ∧ l2 < L ∧
+      l1 + l2 = L + e.len ∧
+      sufOf (toList e.sx) l1 = preOf (toList m) l1 ∧
+      sufOf (toList m) l2 = preOf (toList e.sy) l2 ∧
+      spellPath (toList e.sx) (toList m) (toList e.sy) l1 l2 =
+        spellDirect (toList e.sx) (toList e.sy) e.len := by
+  obtain ⟨m, hm, l1, l2, ho1, hl1, ho2, hl2, hov1, hov2, hspell⟩ := h
+  have hlenPath := spellPath_length hsx (hLen m hm) hsy
+    (Nat.le_of_lt hl1) (Nat.le_of_lt hl2)
+  have hlenDirect := spellDirect_length hsx hsy (Nat.le_of_lt hproper)
+  have hlenEq := congrArg List.length hspell
+  rw [hlenPath, hlenDirect] at hlenEq
+  have hcomp : l1 + l2 = L + e.len := by omega
+  exact ⟨m, hm, l1, l2, ho1, hl1, ho2, hl2, hcomp, hov1, hov2, hspell⟩
+
 /-- Arithmetic core of requirement (3): when the overlap-length identity
 `l1 + l2 = L + e` holds alongside properness (`l1, l2 < L`, `e < L`),
 both replacement overlaps are forced to be strictly longer than the
@@ -143,6 +173,8 @@ theorem twoHop_overlaps_gt_direct {A W : Type}
   have hcomp : l1 + l2 = L + e.len := by omega
   have hgt := overlapLens_gt_direct_of_comp hl1 hl2 hproper hcomp
   exact ⟨m, hm, l1, l2, ho1, hl1, ho2, hl2, hgt.1, hgt.2, hov1, hov2, hspell⟩
+
+#print axioms twoHop_overlap_sum
 
 #print axioms twoHop_overlaps_gt_direct
 

@@ -31,6 +31,11 @@ filter: a proper equal-length edge survives the implemented reduction
 **iff** it belongs to the input graph and no observed legal two-hop detour
 spells the same word.
 
+`twoHop_overlap_sum` packages the spelled-length comparison as a standalone
+corollary for #261/#262 reuse: every idealized two-hop same-spelling witness
+carries explicit overlaps satisfying the length law `l1+l2=L+e.len` alongside
+the suffix/prefix equalities and the spelled-word identity.
+
 `overlapLens_gt_direct_of_comp` (pure `Nat`, by `omega`) plus its lift
 `twoHop_overlaps_gt_direct` record requirement (3) of #284: whenever the
 spelling identity holds for a proper overlap edge, the length identity

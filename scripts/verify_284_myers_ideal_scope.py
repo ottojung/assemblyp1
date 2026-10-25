@@ -19,7 +19,8 @@ src = LEAN.read_text()
 doc = DOC.read_text()
 
 for name in ["TwoHopSameSpelling", "reducible_iff_ideal_two_hop",
-             "reduced_mem_iff_no_ideal_detour"]:
+              "reduced_mem_iff_no_ideal_detour", "twoHop_overlap_sum",
+              "overlapLens_gt_direct_of_comp", "twoHop_overlaps_gt_direct"]:
     if name not in src or name not in doc:
         failures.append(f"claimed name {name} missing from lean or doc")
 
@@ -31,7 +32,10 @@ if re.search(r"^axiom\b", src, re.M):
     failures.append("lean source declares an axiom")
 
 for ax in ["#print axioms reducible_iff_ideal_two_hop",
-           "#print axioms reduced_mem_iff_no_ideal_detour"]:
+            "#print axioms reduced_mem_iff_no_ideal_detour",
+            "#print axioms twoHop_overlap_sum",
+            "#print axioms overlapLens_gt_direct_of_comp",
+            "#print axioms twoHop_overlaps_gt_direct"]:
     if ax not in src:
         failures.append(f"missing axiom audit line: {ax}")
 
@@ -48,5 +52,5 @@ if failures:
     for f in failures:
         print(" -", f)
     sys.exit(1)
-print("Myers ideal-scope guard verified: 3 names, axiom-print lines, "
+print("Myers ideal-scope guard verified: 6 names, axiom-print lines, "
       "no sorry/admit/axiom, 4+ boundary non-claims present")

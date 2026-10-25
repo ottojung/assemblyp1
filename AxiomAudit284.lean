@@ -57,6 +57,7 @@ AssemblyP1`, so this file is a human-readable summary, not the sole gate.
 #print axioms AssemblyP1.Section62MyersIdealTransitivity.reducible_iff_ideal_two_hop
 #print axioms AssemblyP1.Section62MyersIdealTransitivity.reduced_mem_iff_no_ideal_detour
 #print axioms AssemblyP1.Section62MyersIdealTransitivity.overlapLens_gt_direct_of_comp
+#print axioms AssemblyP1.Section62MyersIdealTransitivity.twoHop_overlap_sum
 #print axioms AssemblyP1.Section62MyersIdealTransitivity.twoHop_overlaps_gt_direct
 #print axioms AssemblyP1.Section62ReductionDependencyAudit.transitivelyReducedSpelling_eq_self_of_full
 #print axioms AssemblyP1.Section62ReductionDependencyAudit.stepsSurviveReductionSpelling_of_maximal
