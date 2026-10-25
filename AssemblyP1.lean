@@ -363,6 +363,10 @@ import AssemblyP1.ProductBinomialRigidityNecessityAudit
 -- inequality, and the strict separation from sample-uniform maximality.
 import AssemblyP1.FixedXProductBinomialMaximality
 import AssemblyP1.FixedXProductBinomialMaximalityAudit
+-- #255 frozen axis (same vs variable length): fixed-x exact-ML same-total unique
+-- maximality does not transfer to variable totals; kernel-checked separation witness.
+import AssemblyP1.FixedXVariableLengthSeparation
+import AssemblyP1.FixedXVariableLengthSeparationAudit
 -- #259 axis B (boundary included): the full same-total candidate class has
 -- maximal truths exactly the mass-on-one-class spectra and the {0,1}-valued
 -- spectra; boundary coordinates 0/N and zero-count coordinates are dominated.

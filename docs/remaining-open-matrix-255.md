@@ -1,5 +1,25 @@
 # AssemblyP1 umbrella #255 — remaining-open matrix
 
+## Addendum — 2026-10-25 (fixed-x same-vs-variable-length separation: transfer REFUTED, kernel-checked)
+
+* **New scoped increment on the frozen same/variable-length axis (regime A).**
+  The conjecture "same-total unique maximality at fixed `x` transfers to all
+  totals" is refuted: `AssemblyP1.FixedXVariableLengthSeparation`
+  (`samelen_does_not_imply_varlen255` + audit, axioms
+  `⊆ {propext, Classical.choice, Quot.sound}`, no `sorry`/`admit`/`axiom`/
+  `native_decide`). Witness on two read types at `x = (2, 1)`: truth
+  `A = (3, 1)` (total 4, factor `9/64`) uniquely maximizes among all five
+  mass-4 spectra, yet `B = (2, 1)` (total 3, factor `4/27`) strictly beats it
+  at the same `x`; `B` attains the simplex optimum `q = x/n`, so nothing of
+  any total beats `B` there. Independent exact-rational check:
+  `scripts/verify_255_variable_length_fixedx.py` (exit 0). Scoped note:
+  `docs/fixedx-variable-length-separation-255.md`.
+* **Deliberately out of scope:** regime (B), the §6.1 surrogate, §6.2 flows,
+  spelled-genome realizability of the witness spectra. Umbrella #255 and all
+  child issues stay OPEN. Distinct from unmerged PR #396 (order-transform
+  objective equivalence); this increment does not re-land or duplicate it.
+
+
 
 ## Addendum — 2026-10-21 (L3 uniqueness transport: does NOT hold, kernel-checked)
 

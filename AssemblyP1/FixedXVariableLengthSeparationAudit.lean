@@ -1,0 +1,5 @@
+import AssemblyP1.FixedXVariableLengthSeparation
+
+#print axioms AssemblyP1.FixedXVariableLengthSeparation.samelen_does_not_imply_varlen255
+#print axioms AssemblyP1.FixedXVariableLengthSeparation.samelen_unique_max255
+#print axioms AssemblyP1.FixedXVariableLengthSeparation.varlen_beats_samelen255
