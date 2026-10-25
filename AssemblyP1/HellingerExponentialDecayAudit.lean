@@ -11,6 +11,7 @@ candidate-class structure is assumed. -/
 
 #print axioms AssemblyP1.HellingerExponentialDecay.hellinger_pow_eq_exp_neg
 #print axioms AssemblyP1.HellingerExponentialDecay.hellinger_pow_le_exp_neg
+#print axioms AssemblyP1.HellingerExponentialDecay.eventProb_wrong_eq_zero_of_affinity_zero
 #print axioms AssemblyP1.HellingerExponentialDecay.eventProb_wrong_le_exp_neg
 #print axioms AssemblyP1.HellingerExponentialDecay.exists_uniform_affinity_lt_one
 #print axioms AssemblyP1.HellingerExponentialDecay.eventProb_wrong_le_exp_neg_identifiable

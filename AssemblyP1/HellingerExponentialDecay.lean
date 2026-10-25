@@ -61,6 +61,19 @@ theorem hellinger_pow_le_exp_neg {ρ : ℝ} (hρpos : 0 < ρ) (hρlt : ρ < 1) (
     ρ ^ n ≤ Real.exp (-(n : ℝ) * (- Real.log ρ)) :=
   (hellinger_pow_eq_exp_neg hρpos hρlt n).le
 
+/-- Once the read count is positive, a zero Hellinger affinity forces the
+pairwise exact-ML error probability to vanish.  This isolates the disjoint-
+support boundary case, where `-log ρ` is not a finite rate. -/
+theorem eventProb_wrong_eq_zero_of_affinity_zero (p : W → ℝ)
+    (Θ : Finset (W → ℝ)) (n : ℕ) (hp : IsPmf p)
+    (hq : ∀ q ∈ Θ, IsPmf q) (hρ : ∀ q ∈ Θ, hellinger p q ≤ 0)
+    (hn : 0 < n) :
+    eventProb p n (wrongEvent p Θ n) = 0 := by
+  have hbound := eventProb_wrong_le_card p Θ n 0 hp hq hρ
+  have hpow : (0 : ℝ) ^ n = 0 := zero_pow (Nat.ne_of_gt hn)
+  rw [hpow, mul_zero] at hbound
+  exact le_antisymm hbound (eventProb_wrong_nonneg p Θ n hp)
+
 /-- **Generic finite-family exponential exact-ML error bound.** For a finite
 family `Θ` of read distributions and a uniform sub-unit affinity bound
 `ρ_max`, the exact probability that some competitor ties or beats the truth
