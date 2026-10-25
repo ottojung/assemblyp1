@@ -448,6 +448,44 @@ theorem multiplier_improving {E : Type} [Fintype E] {f : E → ℤ → ℝ}
     nlinarith [mul_nonneg (le_of_lt hαpos) h0]
   linarith
 
+/-- **Unit-step box membership (issue #263).**  If the endpoints `z` and
+`z + α • g` (`α ≥ 1`) both lie in the box, then the unit step `z + g` does too:
+coordinatewise, `z e + g e` lies between `z e` and `z e + α * g e` according to
+the sign of `g e`.  This makes the box hypothesis of `multiplier_improving`
+explicit: an improving integer Graver ray with feasible endpoint always yields
+a *feasible* improving unit step, not merely a strictly better value. -/
+theorem ray_unit_mem_box {E : Type}
+    {z g l u : E → ℤ} {α : ℕ} (hα : 1 ≤ α)
+    (hzlo : ∀ e, l e ≤ z e) (hzhi : ∀ e, z e ≤ u e)
+    (hclo : ∀ e, l e ≤ (z + α • g) e) (hchi : ∀ e, (z + α • g) e ≤ u e) :
+    ∀ e, l e ≤ (z + g) e ∧ (z + g) e ≤ u e := by
+  obtain ⟨m, rfl⟩ := Nat.exists_eq_add_of_le hα
+  intro e
+  have hzg : (z + g) e = z e + g e := Pi.add_apply z g e
+  have hray : (z + (1 + m) • g) e = (z + g) e + m • (g e) := by
+    rw [Pi.add_apply, Pi.smul_apply, add_smul, one_smul, Pi.add_apply, add_assoc]
+  rcases le_total 0 (g e) with hge | hle
+  · have ht : 0 ≤ m • (g e) := nsmul_nonneg hge m
+    rw [hzg]
+    exact ⟨by have := hzlo e; omega, by have := hchi e; rw [hray] at this; omega⟩
+  · have ht : m • (g e) ≤ 0 := nsmul_nonpos hle m
+    rw [hzg]
+    exact ⟨by have := hclo e; rw [hray] at this; omega, by have := hzhi e; omega⟩
+
+/-- **Feasible unit-step improvement (issue #263).**  Bundles `ray_unit_mem_box`
+with `multiplier_improving`: an improving integer Graver ray `α • g` (`α ≥ 1`)
+whose endpoint stays in the box yields a unit step `z + g` that is both in the
+box and strictly improving. -/
+theorem multiplier_unit_feasible_improving {E : Type} [Fintype E]
+    {f : E → ℤ → ℝ} {l u : E → ℤ} (hf : ∀ e, DiscConvOn (f e) (l e) (u e))
+    {z g : E → ℤ} {α : ℕ} (hα : 1 ≤ α)
+    (hzlo : ∀ e, l e ≤ z e) (hzhi : ∀ e, z e ≤ u e)
+    (hclo : ∀ e, l e ≤ (z + α • g) e) (hchi : ∀ e, (z + α • g) e ≤ u e)
+    (himp : sepObj f (z + α • g) < sepObj f z) :
+    (∀ e, l e ≤ (z + g) e ∧ (z + g) e ≤ u e) ∧ sepObj f (z + g) < sepObj f z :=
+  ⟨ray_unit_mem_box hα hzlo hzhi hclo hchi,
+    multiplier_improving hf hα hzlo hzhi hclo hchi himp⟩
+
 /-! ## Discrete convexity of the source likelihood costs (candidate copy count)
 
 The following lemmas instantiate the abstract convexity hypothesis on the
