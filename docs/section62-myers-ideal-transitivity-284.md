@@ -31,8 +31,19 @@ filter: a proper equal-length edge survives the implemented reduction
 **iff** it belongs to the input graph and no observed legal two-hop detour
 spells the same word.
 
+`overlapLens_gt_direct_of_comp` (pure `Nat`, by `omega`) plus its lift
+`twoHop_overlaps_gt_direct` record requirement (3) of #284: whenever the
+spelling identity holds for a proper overlap edge, the length identity
+`l1+l2=L+e.len` is forced (same spelled-length comparison as the converse
+above), and hence both replacement overlaps are forced strictly longer
+than the direct edge overlap (`e.len < l1` and `e.len < l2`).
+
 Both theorems are Lean-kernel-checked; their axiom audit uses only
-`[propext, Quot.sound]`, no `sorryAx` or `native_decide`.
+`[propext, Quot.sound]`, no `sorryAx` or `native_decide`. The two new
+`overlapLens` declarations above are source-stated with `omega`-closed
+proofs (the arithmetic core additionally replayed standalone through the
+pinned Lean kernel); full-module `lake build` replay of this file remains
+for the integrator with a warm Mathlib cache.
 
 ## Still outside the theorem
 
