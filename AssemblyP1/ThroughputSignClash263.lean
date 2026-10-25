@@ -69,6 +69,27 @@ theorem naive_lift_throughput_sign_clash :
     throughput g₁ 0 = 1 ∧ throughput g₂ 0 = -1 ∧ throughput δ 0 = 0 := by
   decide
 
+/-- The naive augmented lifts are jointly sign-incompatible at vertex zero:
+no side of the disjunction in `HasGraverDecomposition` holds there.  Hence the
+edge-conformal pair `[g₁, g₂]` does **not** lift to an augmented
+sign-compatible decomposition of `δ`; a general `T`-sign-compatible conformal
+Graver decomposition theorem is false for the genuine throughput map without
+further hypotheses. -/
+theorem naive_lift_aug_sign_incompatible :
+    ¬ ((∀ w ∈ [lift throughput g₁, lift throughput g₂], 0 ≤ w (Sum.inr 0)) ∨
+      (∀ w ∈ [lift throughput g₁, lift throughput g₂], w (Sum.inr 0) ≤ 0)) := by
+  have h1 : lift throughput g₁ (Sum.inr (0 : V)) = 1 := by
+    have := (naive_lift_throughput_sign_clash).1
+    simpa [lift] using this
+  have h2 : lift throughput g₂ (Sum.inr (0 : V)) = -1 := by
+    have := (naive_lift_throughput_sign_clash).2.1
+    simpa [lift] using this
+  rintro (hpos | hneg)
+  · have := hpos (lift throughput g₂) (by simp)
+    omega
+  · have := hneg (lift throughput g₁) (by simp)
+    omega
+
 /-- For the box `0 ≤ w_e ≤ 2`, the base point and displaced point are feasible;
 the displacement preserves total and vertex balance. -/
 theorem bounded_feasible_pair :
