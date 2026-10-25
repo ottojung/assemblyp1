@@ -1,7 +1,7 @@
 # Strict-threshold cell at `o_min=2`: feasible set empty, no witness transfer (#261)
 
-Bounded increment on top of `docs/issue261-real-flow-candidacy.md` and
-`docs/issue261-witness-robustness.md`. This note resolves one new genuine
+Bounded increment complementing the earlier real-flow candidacy and witness
+robustness notes. This note resolves one new genuine
 MB09 §6.2 bidirected-flow cell — the `o_min=2` strict-threshold restriction
 of the same `AAATT` instance (`L=3`, full overlap `graph1` minus the
 overlap-1 edge, zero terminals) — with exact-rational verification in
