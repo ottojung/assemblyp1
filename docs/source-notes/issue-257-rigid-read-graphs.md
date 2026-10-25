@@ -1912,3 +1912,48 @@ proof that none exists — remains **OPEN** (§8.1/§8.2); §21 shows that such 
 criterion cannot be of a single-cut / independent-per-path form for the
 triangular family either, and gives a polynomial criterion for that
 unbounded-rank three-hub subfamily.
+
+## 22. Discharging the routing hypothesis: unconditional two-walk rigidity on concrete supports
+
+The two-closed-walk criterion (`TwoWalkRigidity.rigid_iff_no_two_nonneg_circ`)
+carried one graph-theoretic hypothesis, `Routable`: every nonnegative integer
+flow can be completed to a nonnegative circulation by adding a nonnegative
+flow (the transshipment consequence of strong connectivity). §22 discharges it
+by closed form on two concrete supports
+(`AssemblyP1/TwoWalkRoutable.lean`, kernel-checked):
+
+* **2-cycle** (`atatat_routable`): `h 0 = max (p 1 - p 0) 0`,
+  `h 1 = max (p 0 - p 1) 0`, so both sides reach `max (p 0) (p 1)`.
+* **Figure-eight** (`figureEight_routable`): the same pairing applied
+  independently to each lobe (`{0,1}`, `{2,3}`); the shared vertex balances
+  as the sum of two balanced lobes. The routing flow satisfies
+  `h e ≤ max surplus`, hence the produced two-walk certificate has linear
+  size in `‖δ‖₁` — the criterion is checkable by bounded integer search.
+
+Unconditional corollaries (no routing hypothesis, no throughput cap):
+
+* `atatat_rigid`: `S = ATATAT`, `L = 3` at uniform multiplicity `3` is rigid
+  despite triple `(L-1)`-mer repeats — repeat bounds are not necessary.
+* `figureEight_rigid`: the figure-eight at `A = (1,1,1,1)` is rigid, while
+  the same support at `A = (2,2,1,1)` is non-rigid
+  (`figureEight_two_walk_witness`). Rigidity is a multiplicity property, not
+  a support-topology property.
+
+### 22.1 Cross-check (`scripts/verify_257_two_walk_routable.py`)
+
+Self-contained, exact and deterministic: on four supports (directed 2-cycle,
+figure-eight, doubled 2-cycle, directed 3-cycle) over all feasible `A` with
+entries in `1..3` (**34** feasible cases), brute-force rigidity agrees with
+the exact delta criterion in all cases; for every nonrigid `(A, B)` the
+Lean routing construction is re-executed and yields a valid two-walk
+certificate (**26** cases); bounded search (`0..2G`) finds no certificate
+for any rigid `A`. [verified computation, exhaustive in scope]
+
+### 22.2 Epistemic status
+
+Route witnesses, feasibility facts (by kernel `decide`) and both rigidity
+theorems are kernel-checked with only `[propext, Classical.choice, Quot.sound]`
+(`AssemblyP1/TwoWalkRoutableAudit`, `AxiomAudit257.lean`); no
+`sorry`/`admit`/`axiom`/`native_decide`. The residual — `Routable` from
+strong connectivity for **arbitrary** supports (a path-family construction),
+or a polynomial closed form — remains **OPEN**.

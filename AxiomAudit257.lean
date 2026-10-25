@@ -1,6 +1,7 @@
 import AssemblyP1.ExactRigidityCriterion
 import AssemblyP1.FiniteRigidityDecider
 import AssemblyP1.TwoWalkRigidity
+import AssemblyP1.TwoWalkRoutable
 import AssemblyP1.RigidityBouquet
 import AssemblyP1.RigidityBridge
 import AssemblyP1.RigidityLength3Bridge
@@ -13,6 +14,7 @@ import AssemblyP1.RigidityNoGo
 open AssemblyP1.ExactRigidityCriterion
 open AssemblyP1.FiniteRigidityDecider
 open AssemblyP1.TwoWalkRigidity
+open AssemblyP1.TwoWalkRoutable
 open AssemblyP1.RigidityBouquet
 open AssemblyP1.RigidityBridge
 open AssemblyP1.RigidityLength3Bridge
@@ -40,6 +42,13 @@ open AssemblyP1.RigidityNoGo
 #print axioms AssemblyP1.TwoWalkRigidity.rigid_iff_no_two_nonneg_circ
 #print axioms AssemblyP1.TwoWalkRigidity.atatat_no_two_nonneg_circ
 #print axioms AssemblyP1.TwoWalkRigidity.figureEight_two_walk_witness
+#print axioms AssemblyP1.TwoWalkRoutable.atatat_routable
+#print axioms AssemblyP1.TwoWalkRoutable.figureEight_routable
+#print axioms AssemblyP1.TwoWalkRoutable.atatat_feasible
+#print axioms AssemblyP1.TwoWalkRoutable.atatat_rigid
+#print axioms AssemblyP1.TwoWalkRoutable.figureEight_no_two_nonneg_circ
+#print axioms AssemblyP1.TwoWalkRoutable.figureEight_feasible
+#print axioms AssemblyP1.TwoWalkRoutable.figureEight_rigid
 #print axioms AssemblyP1.RigidityBouquet.bouquet_nonrigid_iff
 #print axioms AssemblyP1.RigidityBouquet.len24_mult21_rigid
 #print axioms AssemblyP1.RigidityBouquet.len23_mult41_nonrigid
