@@ -43,6 +43,7 @@ import AssemblyP1.Section62VariableOverlap247e
 import AssemblyP1.FiniteSamplingCounterexample
 import AssemblyP1.FiniteBayesDecision
 import AssemblyP1.IidMapMonotonicity
+import AssemblyP1.ConditionalRefinementAudit
 import AssemblyP1.PopulationReduction
 import AssemblyP1.PopulationGibbsTest
 import AssemblyP1.OrientedRigidity
