@@ -1,8 +1,10 @@
-# Short finite-read ML counterexamples: true circular genome lengths 2, 3, 4
+# Short finite-read ML counterexamples: true circular genome lengths 2, 3, 4, 5
 
 _Status: kernel-checked Lean certificate + exact-rational arithmetic, 2026-10-15,
-for board issue #300. Companion module:
-[`AssemblyP1/ShortFiniteMLCounterexamples.lean`](../../AssemblyP1/ShortFiniteMLCounterexamples.lean)._
+for board issue #300 (G = 2, 3, 4), extended 2026-10-25 with the G = 5 cell.
+Companion modules:
+[`AssemblyP1/ShortFiniteMLCounterexamples.lean`](../../AssemblyP1/ShortFiniteMLCounterexamples.lean),
+[`AssemblyP1/ShortFiniteMLCounterexamplesG5.lean`](../../AssemblyP1/ShortFiniteMLCounterexamplesG5.lean)._
 
 ## 0. Verdict at a glance
 
@@ -11,7 +13,8 @@ Under the **source-faithful oriented single-strand** convention already used by
 *types* are the oriented length-`L` circular windows of the truth (no
 reverse-complement collapse), candidate length is a free parameter, and the
 §6.2 feasibility constraint is the literal per-vertex lower bound `1` — there are
-concrete finite-read witnesses with true circular genome lengths **2, 3, and 4**
+concrete finite-read witnesses with true circular genome lengths **2, 3, 4,
+and 5**
 in which the truth satisfies the full information-feasibility predicate `I_s`,
 the competitor is a genuine §6.2-feasible candidate, and the competitor has
 **strictly greater ordinary exact read likelihood**.
@@ -21,9 +24,10 @@ the competitor is a genuine §6.2-feasible candidate, and the competitor has
 | 2 | 1 | `AT` | `AAT` | `A, A, T` | `32/27 > 1` |
 | 3 | 2 | `AAT` | `AAAT` | `AA, AA, AT, TA` | `81/64 > 1` |
 | 4 | 3 | `AAAT` | `AAAAT` | `AAA, AAA, AAT, ATA, TAA` | `4096/3125 > 1` |
+| 5 | 4 | `AAAAT` | `AAAAAT` | `AAAA, AAAA, AAAT, AATA, ATAA, TAAA` | `15625/11664 > 1` |
 
-No minimality is claimed or proved: this note and the module only exhibit the
-three witnesses and compute their exact ratios.
+No minimality is claimed or proved: this note and the modules only exhibit the
+four witnesses and compute their exact ratios.
 
 ## 1. Assumptions, stated exactly
 
@@ -32,12 +36,13 @@ three witnesses and compute their exact ratios.
   [source fact for the oriented single-strand convention: Shomorony et al. 2016
   §2; the *choice* to study the oriented type space is inherited from the
   variable-length front.]
-- **Genomes.** Truths `AT`, `AAT`, `AAAT` (`G = 2, 3, 4`); competitors
-  `AAT`, `AAAT`, `AAAAT` (`|D| = G + 1`). Every genome is a circular word, and
+- **Genomes.** Truths `AT`, `AAT`, `AAAT`, `AAAAT` (`G = 2, 3, 4, 5`); competitors
+  `AAT`, `AAAT`, `AAAAT`, `AAAAAT` (`|D| = G + 1`). Every genome is a circular word, and
   its length is intrinsic to the Lean `Genome` object. [mathematical fact]
 - **Sampling.** The observation is **one read from every true starting position,
-  plus one extra read from start `0`**: `[0,1,0]`, `[0,1,2,0]`, `[0,1,2,3,0]`
-  for `G = 2, 3, 4`. Reads are distinguished by their actual strings.
+  plus one extra read from start `0`**: `[0,1,0]`, `[0,1,2,0]`, `[0,1,2,3,0]`,
+  `[0,1,2,3,4,0]`
+  for `G = 2, 3, 4, 5`. Reads are distinguished by their actual strings.
   [source fact: reads are sampled from uniformly chosen starts, MB09 §6.1]
 - **Likelihood (E), exact ordered-read.** `P(R | X) = ∏_{w ∈ R} d_X(w)/|X|`,
   where `d_X(w)` is the number of starts of `X` whose length-`L` window is `w`
@@ -62,7 +67,7 @@ three witnesses and compute their exact ratios.
 
 ## 2. The witnesses
 
-For `G = 2, 3, 4` the truth is `S = A^{G-1}T` and the competitor is
+For `G = 2, 3, 4, 5` the truth is `S = A^{G-1}T` and the competitor is
 `D = A^{G}T`, the truth with one extra `A` inserted inside its maximal `A`-run.
 Inserting one `A` into the maximal `A^{G-1}` run adds exactly one `AAA…A`
 window and preserves every other length-`L = G-1` window, so the competitor's
@@ -76,6 +81,13 @@ The observed spectra and likelihoods:
 | 2 | `A:1, T:1` | `A:2, T:1` | `1/8` | `4/27` |
 | 3 | `AA:1, AT:1, TA:1` | `AA:2, AT:1, TA:1` | `1/81` | `1/64` |
 | 4 | `AAA:1, AAT:1, ATA:1, TAA:1` | `AAA:2, AAT:1, ATA:1, TAA:1` | `1/1024` | `4/3125` |
+| 5 | `AAAA:1, AAAT:1, AATA:1, ATAA:1, TAAA:1` | `AAAA:2, AAAT:1, AATA:1, ATAA:1, TAAA:1` | `1/15625` | `1/11664` |
+
+The `G = 5` truth carries three maximal triple repeats — `(e=1; 0,1,3)`,
+`(e=1; 0,2,3)`, and `(e=2; 0,1,2)` — all bridged by the length-`4` reads
+(the bound `e + 2 ≤ L` holds for both `e = 1` and `e = 2`), and no
+interleaved pair of maximal repeats. [verified computation; kernel-checked by
+`triple_repeat_5a/b/c`, `triple_repeat_all_bridged_5a/b/c`, `no_interleaved_5`]
 
 ## 3. The `L = 1` and `L = 2` edge cases, stated precisely
 
@@ -129,14 +141,30 @@ Module `AssemblyP1.ShortFiniteMLCounterexamples`:
 - endpoints: `short_finite_ml_counterexample_2/3/4` (each bundles `I_s`, both
   §6.2 certificates, both candidate-intrinsic lengths, and the strict ratio).
 
+Module `AssemblyP1.ShortFiniteMLCounterexamplesG5` (the `G = 5`, `L = 4`
+cell, reusing the base module's layer; truth `genAAAAT`, competitor
+`genAAAAAT`):
+
+- full `I_s`: `truth_information_feasible_5`;
+- repeat detail: `triple_repeat_5a/5b/5c`, `triple_repeat_all_bridged_5a/5b/5c`,
+  `no_interleaved_5`;
+- §6.2 feasibility: `truth_perVertex_5`, `competitor_perVertex_5`,
+  `truth_spelled_5`, `competitor_spelled_5`, `truth_section62_5`,
+  `competitor_section62_5`, with circuits `circuit_S5`, `circuit_D5` and count
+  theorems `counts_S5`, `counts_D5`;
+- exact likelihoods: `lik_truth_5` (`1/15625`), `lik_competitor_5` (`1/11664`);
+- strict ratio: `ratio_5` (`15625/11664`), `candidate_strictly_better_5`,
+  `multinom_ratio_5`;
+- endpoint: `short_finite_ml_counterexample_5`.
+
 ## 5. Verification map
 
 | Claim | Certificate |
 |---|---|
-| `I_s` at full strength for each truth | Lean `truth_information_feasible_2/3/4` (`decide` on `SourceFaithfulIs.InformationFeasible`), axiom-clean |
-| Repeat-clause vacuity / bridging | Lean `no_triple_repeat_2/3`, `no_interleaved_2/3/4`, `triple_repeat_4`, `triple_repeat_all_bridged_4` |
-| §6.2 feasibility, all three readings | Lean `*_perVertex_*`, `*_spelled_*`, `*_section62_*` (closed walks `walkS2…walkD4`) |
-| Exact likelihoods and strict ratios | Lean `lik_*`, `ratio_*`, `candidate_strictly_better_*` |
+| `I_s` at full strength for each truth | Lean `truth_information_feasible_2/3/4` and `truth_information_feasible_5` (`decide` on `SourceFaithfulIs.InformationFeasible`), axiom-clean |
+| Repeat-clause vacuity / bridging | Lean `no_triple_repeat_2/3`, `no_interleaved_2/3/4/5`, `triple_repeat_4`, `triple_repeat_all_bridged_4`, `triple_repeat_5a/5b/5c`, `triple_repeat_all_bridged_5a/5b/5c` |
+| §6.2 feasibility, all three readings | Lean `*_perVertex_*`, `*_spelled_*`, `*_section62_*` (closed walks `walkS2…walkD4`, `walkS5`, `walkD5`) |
+| Exact likelihoods and strict ratios | Lean `lik_*`, `ratio_*`, `candidate_strictly_better_*` (ratios `32/27`, `81/64`, `4096/3125`, `15625/11664`) |
 | Independent exact-rational re-derivation | [`scripts/verify_short_finite_ml_300.py`](../../scripts/verify_short_finite_ml_300.py) (imports no repository or Lean output; `fractions.Fraction` throughout) |
 | Multinomial-count ratio | Lean `multinomLik_ratio`, `multinom_ratio_2/3/4` |
 | No `sorry`/`axiom`/`admit`/`native_decide` | `grep` over the module returns no matches |
@@ -145,7 +173,7 @@ Module `AssemblyP1.ShortFiniteMLCounterexamples`:
 ## 6. Scope
 
 This note settles the **oriented single-strand variable-candidate-length**
-question for the three specific short witnesses, under the source per-vertex
+question for the four specific short witnesses, under the source per-vertex
 §6.2 reading (and the stronger spelled and circuit readings), with `I_s` at full
 strength. It does not settle which Medvedev–Brudno object the Shomorony et al.
 (2016) sentence intends, does not address the bidirected / reverse-complement

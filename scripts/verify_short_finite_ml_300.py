@@ -3,14 +3,17 @@
 counterexamples of Antonina board issue #300 (AssemblyP1,
 ``github.com/ottojung/assemblyp1``).
 
-Kernel-checked companion module:
-``AssemblyP1/ShortFiniteMLCounterexamples.lean`` (merged as PR #229).  The three
-witnesses, under the source-faithful oriented single-strand convention:
+Kernel-checked companion modules:
+``AssemblyP1/ShortFiniteMLCounterexamples.lean`` (merged as PR #229) and
+``AssemblyP1/ShortFiniteMLCounterexamplesG5.lean``.  The four witnesses,
+under the source-faithful oriented single-strand convention:
 
-    G=2, L=1: truth AT   vs competitor AAT   reads A,A,T          ratio 32/27
-    G=3, L=2: truth AAT  vs competitor AAAT  reads AA,AA,AT,TA    ratio 81/64
-    G=4, L=3: truth AAAT vs competitor AAAAT reads AAA,AAA,AAT,ATA,TAA
-                                                                  ratio 4096/3125
+    G=2, L=1: truth AT    vs competitor AAT    reads A,A,T            ratio 32/27
+    G=3, L=2: truth AAT   vs competitor AAAT   reads AA,AA,AT,TA      ratio 81/64
+    G=4, L=3: truth AAAT  vs competitor AAAAT  reads AAA,AAA,AAT,ATA,TAA
+                                                                     ratio 4096/3125
+    G=5, L=4: truth AAAAT vs competitor AAAAAT reads AAAA(x2),AAAT,AATA,ATAA,TAAA
+                                                                     ratio 15625/11664
 
 This script re-implements the semantics FROM SCRATCH (it imports no repository
 code and no Lean output) and checks, with exact Python integers and
@@ -381,6 +384,24 @@ def main():
         walkD=[("A", "A", "A"), ("A", "A", "A"), ("A", "A", "T"), ("A", "T", "A"),
                ("T", "A", "A")],
         expect_triples=[(1, 0, 1, 2)], expect_no_triples=False, expect_interleaved=[],
+    )
+
+    # G=5, L=4: truth AAAAT, competitor AAAAAT, reads [0,1,2,3,4,0]
+    check_instance(
+        G=5, L=4, truth="AAAAT", competitor="AAAAAT", reads=[0, 1, 2, 3, 4, 0],
+        ws_expected=[("A", "A", "A", "A"), ("A", "A", "A", "T"),
+                     ("A", "A", "T", "A"), ("A", "T", "A", "A"),
+                     ("T", "A", "A", "A"), ("A", "A", "A", "A")],
+        lik_S=Fraction(1, 15625), lik_D=Fraction(1, 11664),
+        ratio=Fraction(15625, 11664),
+        walkS=[("A", "A", "A", "A"), ("A", "A", "A", "T"),
+               ("A", "A", "T", "A"), ("A", "T", "A", "A"),
+               ("T", "A", "A", "A")],
+        walkD=[("A", "A", "A", "A"), ("A", "A", "A", "A"),
+               ("A", "A", "A", "T"), ("A", "A", "T", "A"),
+               ("A", "T", "A", "A"), ("T", "A", "A", "A")],
+        expect_triples=[(1, 0, 1, 3), (1, 0, 2, 3), (2, 0, 1, 2)],
+        expect_no_triples=False, expect_interleaved=[],
     )
 
     # The length bound e + 2 <= L that makes the L=1, L=2 repeat clauses vacuous:
