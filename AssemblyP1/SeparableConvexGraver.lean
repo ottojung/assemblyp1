@@ -486,6 +486,17 @@ theorem multiplier_unit_feasible_improving {E : Type} [Fintype E]
   ⟨ray_unit_mem_box hα hzlo hzhi hclo hchi,
     multiplier_improving hf hα hzlo hzhi hclo hchi himp⟩
 
+/-- **Unit-step fiber membership (issue #263).**  The fiber half of the feasible
+unit step, complementing the box half `ray_unit_mem_box`: if `z` is in the
+affine fiber `lin · = b` and `g` is in the kernel of `lin`, then `z + g` is in
+the fiber.  Together they upgrade an improving integer Graver ray with feasible
+endpoint to a *feasible* improving unit step. -/
+theorem ray_unit_mem_fiber {E V : Type} (lin : (E → ℤ) → (V → ℤ))
+    (hlin_add : ∀ x y : E → ℤ, lin (x + y) = lin x + lin y)
+    {z g : E → ℤ} {b : V → ℤ} (hz : lin z = b) (hg : lin g = 0) :
+    lin (z + g) = b := by
+  rw [hlin_add, hz, hg, add_zero]
+
 /-! ## Discrete convexity of the source likelihood costs (candidate copy count)
 
 The following lemmas instantiate the abstract convexity hypothesis on the
