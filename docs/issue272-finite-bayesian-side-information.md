@@ -262,3 +262,31 @@ tie/zero-prior corner               excluded from support; no effect
 a.s. vs pointwise                   equal (ae_certain_iff_pointwise)
 must be supplied (not inferred)?    --               yes                yes
 ```
+
+### 8.1 Promise-family comparison (weakest vs minimal)
+
+The posterior-iff theorem of §2 is family-independent, but *weakest*
+existence depends sharply on which promises are admissible. Kernel-checked
+status per family (`AssemblyP1/FiniteSideInformationOrder.lean`,
+`AssemblyP1/FiniteSideInformationSourcePromise.lean`,
+`AssemblyP1/FiniteSourceDefinedWeakest.lean`):
+
+| admissible family | weakest sufficient promise | existence | witness |
+|---|---|---|---|
+| read-only (`AdmReadOnly`) | `Unambiguous`, unique | always | `unambiguous_unique_weakest_readonly` |
+| truth-only (`AdmTruthOnly`) | `True`, unique | iff `∀ r, Unambiguous` | `weakest_truthOnly_iff_readonly_certain` |
+| source-defined (read-only or truth-only) | `True`, unique | iff `∀ r, Unambiguous` | `weakest_sourceDefined_iff_unambiguous` |
+| arbitrary truth-dependent | none generically | fails on any ambiguous model | `NoWeakest.no_weakest_sufficient` |
+
+The source-defined criterion coincides with the truth-only criterion because
+the truth-only singletons already saturate the union at `True`
+(`unionSourceDefined_eq_true`); adding read-only promises changes nothing
+about the weakest member. Computational cross-check on one explicit exact
+model (two candidates in distinct orbits; read 0 ambiguous, read 1 produced
+only by candidate 0), with exact rational arithmetic:
+`scripts/verify_272_source_vs_arbitrary.py` verifies that (i) the read-only
+family has weakest member `Unambiguous` (holds exactly at read 1),
+(ii) the union of the sufficient source-defined promises is `True` and
+insufficient, so no weakest source-defined promise exists, and
+(iii) at least two incomparable *minimal* sufficient source-defined promises
+exist — minimal elements without a minimum.
