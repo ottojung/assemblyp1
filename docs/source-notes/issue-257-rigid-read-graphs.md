@@ -2004,7 +2004,24 @@ from scratch by enumerating **all** positive integer circulations of total
   versus non-rigid.
   [verified computation, exhaustive in scope]
 
-### 22.4 Epistemic status
+### 22.4 Second rigid rank-2 cell (`scripts/verify_257_aabaabb.py`)
+
+Circular `S = AABAABB`, `L = 3` has spectrum
+`{AAB:2, ABA:1, BAA:2, ABB:1, BBA:1}` (`G = 7`) on vertices
+`AA, AB, BA, BB` (`|V| = 4`, `|E| = 5`, cycle rank `2`). It is **not** a
+single directed cycle, yet exact enumeration finds exactly **one** positive
+balanced circulation of total `7`: `(2,1,2,1,1)` in spectrum order. The
+neighbouring totals `G = 6` and `G = 8` admit **zero** positive balanced
+circulations on this support, so the rigid point is isolated rather than
+vacuous. The `(L-1)`-mers `AA`/`AB`/`BA` each occur twice in `S`, giving
+another rigid repetitive genome beyond `ATATAT`/`AABABAB`, and the shape
+`(|V|,|E|) = (4,5)` differs from the `(3,4)` separator pair at the same
+cycle rank `2`: rigidity is not a function of cycle rank alone. Lean
+formalization of this cell is **not** attempted here (python-only verified
+computation; no `sorry` introduced).
+  [verified computation, exhaustive in scope]
+
+### 22.5 Epistemic status
 
 `cycle2_rigid`, `cycle2_balanced_const`, `atatat_of_cycle2`, `aatt_rigid`
 and `aatt_search_space` are kernel-checked with only
