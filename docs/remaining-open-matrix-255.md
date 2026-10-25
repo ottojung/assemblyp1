@@ -1,5 +1,22 @@
 # AssemblyP1 umbrella #255 — remaining-open matrix
 
+## Addendum — 2026-10-25 (fixed-x product-binomial smallest cell, pending integration)
+
+* **Bounded exact cell, NOT a general classification.** `scripts/verify_255_fixedx_product_binomial_fin2.py`
+  enumerates every positive total-4 candidate spectrum on two oriented read
+  types for the MB09 §6.1 fixed-external-`N` product-binomial surrogate at the
+  single fixed sample `x=(2,2)`. Exact rational scores are `81/65536` for
+  `(1,3)`, `1/256` for `(2,2)`, and `81/65536` for `(3,1)`, so `(2,2)` is the unique
+  maximizer in this three-candidate cell. This corroborates the corresponding
+  already-kernel-checked finite instance in
+  `FixedXProductBinomialMaximality.fixedX_fin2_full_class`; the script is an
+  independent arithmetic check, not new proof or a broader iff.
+* **Validation:** script uses `Fraction` and complete enumeration of positive
+  two-part compositions of `4`; no floating point or sampling. This scoped
+  exact check does not settle fixed-`x` non-integral empirical frequencies,
+  larger candidate classes, the exact multinomial objective, or §6.2 flows.
+  The general #259(A)/(B) and umbrella truth-maximality cells remain OPEN.
+
 ## Addendum — 2026-10-24 (fixed-x objective-equivalence lemma, pending integration)
 
 * **Bounded (A)-side increment, NOT merged.** Commit `5b55129`
