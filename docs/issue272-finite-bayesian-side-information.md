@@ -262,3 +262,23 @@ tie/zero-prior corner               excluded from support; no effect
 a.s. vs pointwise                   equal (ae_certain_iff_pointwise)
 must be supplied (not inferred)?    --               yes                yes
 ```
+
+### 8.1 Side-channel vs supplied-promise cell (truth-vs-source distinction)
+
+The promise-iff theorem (`posteriorMass_eq_one_iff`) and the side-channel
+theorem (`posteriorMassZ_eq_one_iff`) share one fibre-singleton criterion:
+certainty holds iff the supported fibre of the *observed* pair lies in one
+orbit. Read-only certainty (`readOnly_posterior_eq_one_iff`) is strictly
+weaker on ambiguous reads: it cannot exclude a rival orbit. Computational
+cross-check on one explicit exact model (two candidates in distinct orbits;
+read 0 ambiguous, read 1 only from candidate 0), with exact rational
+arithmetic: `scripts/verify_272_sidechannel_vs_supplied.py` verifies that
+(i) the read-only posterior at ambiguous read 0 is 1/3, not 1
+(`readOnly_not_certain`), so no read-only decoder is certain there;
+(ii) conditioning prior AND likelihood on a supplied truth-dependent promise
+excluding the rival orbit gives posterior exactly 1
+(`sufficient_implies_conditional_certain`, `promise_certain`), while the
+vacuous promise stays at 1/3 -- the promise must be supplied, never inferred
+merely because it holds; (iii) a separating side channel gives posterior 1
+on each fibre value (`posteriorMassZ_eq_one_iff`); (iv) a likelihood
+mutation breaks the certainty claims (mutation control).
