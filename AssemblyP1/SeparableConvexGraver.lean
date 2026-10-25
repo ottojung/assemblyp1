@@ -448,6 +448,52 @@ theorem multiplier_improving {E : Type} [Fintype E] {f : E → ℤ → ℝ}
     nlinarith [mul_nonneg (le_of_lt hαpos) h0]
   linarith
 
+/-- **Unit-step box lemma (issue #263).**  For a single integer direction `g`,
+the unit step `z + g` lies in the box whenever the two endpoints `z` and
+`z + α • g` (`α ≥ 1`) do: coordinatewise `z e + g e` sits between `z e` and
+`z e + α * g e`.  This makes the "whenever `z + g` is feasible" bound in the
+multiplier certificate checkable from endpoint feasibility alone. -/
+theorem ray_unit_step_in_box {E : Type}
+    {z g : E → ℤ} {l u : E → ℤ} {α : ℕ} (hα : 1 ≤ α)
+    (hzlo : ∀ e, l e ≤ z e) (hzhi : ∀ e, z e ≤ u e)
+    (hclo : ∀ e, l e ≤ (z + α • g) e) (hchi : ∀ e, (z + α • g) e ≤ u e) :
+    ∀ e, l e ≤ (z + g) e ∧ (z + g) e ≤ u e := by
+  intro e
+  have hcast : (z + α • g) e = z e + (α : ℤ) * g e := by
+    rw [Pi.add_apply, Pi.smul_apply, nsmul_eq_mul]
+  have hstep : (z + g) e = z e + g e := Pi.add_apply z g e
+  have hα1 : (1 : ℤ) ≤ (α : ℤ) := by exact_mod_cast hα
+  have hlo := hzlo e
+  have hhi := hzhi e
+  have hlo' := hclo e
+  have hhi' := hchi e
+  rw [hcast] at hlo' hhi'
+  rcases le_total 0 (g e) with hg | hg
+  · have h1 : z e ≤ z e + g e := by omega
+    have h2 : z e + g e ≤ z e + (α : ℤ) * g e := by nlinarith
+    rw [hstep]
+    exact ⟨by omega, by omega⟩
+  · have h1 : z e + (α : ℤ) * g e ≤ z e + g e := by nlinarith
+    have h2 : z e + g e ≤ z e := by omega
+    rw [hstep]
+    exact ⟨by omega, by omega⟩
+
+/-- **Endpoint multiplier corollary (issue #263).**  Same conclusion as
+`multiplier_improving`, but the whole-path box hypothesis is replaced by
+endpoint feasibility: if `z` and `z + α • g` are in the box and the ray
+strictly improves, the unit step `z + g` is in the box (by
+`ray_unit_step_in_box`) and strictly improves. -/
+theorem multiplier_improving_of_endpoints {E : Type} [Fintype E]
+    {f : E → ℤ → ℝ}
+    {l u : E → ℤ} (hf : ∀ e, DiscConvOn (f e) (l e) (u e))
+    {z g : E → ℤ} {α : ℕ} (hα : 1 ≤ α)
+    (hzlo : ∀ e, l e ≤ z e) (hzhi : ∀ e, z e ≤ u e)
+    (hclo : ∀ e, l e ≤ (z + α • g) e) (hchi : ∀ e, (z + α • g) e ≤ u e)
+    (himp : sepObj f (z + α • g) < sepObj f z) :
+    (∀ e, l e ≤ (z + g) e ∧ (z + g) e ≤ u e) ∧ sepObj f (z + g) < sepObj f z :=
+  ⟨ray_unit_step_in_box hα hzlo hzhi hclo hchi,
+    multiplier_improving hf (hα := hα) hzlo hzhi hclo hchi himp⟩
+
 /-! ## Discrete convexity of the source likelihood costs (candidate copy count)
 
 The following lemmas instantiate the abstract convexity hypothesis on the
