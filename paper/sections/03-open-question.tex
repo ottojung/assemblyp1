@@ -113,6 +113,11 @@ The truth can lose strictly, including under the source's own matched-string
 bridging predicate. This is the substantive finite-sample question addressed
 by Section~\ref{sec:finite}. The event $E$ depends on the unknown truth and
 must not be treated as an observable filter available to ordinary ML.
+In particular, the sampling likelihood in this comparison remains the one
+specified before observing $r$: learning after the fact that the realized truth
+belongs to $F$ does not retroactively replace $P_g(r)$ by a likelihood
+conditioned on $F(g,R)$. The two questions therefore differ in both candidate
+support and experiment, even when they discuss the same read realization.
 
 \subsection{Why study maximum likelihood?}
 \label{sec:bayes-rationale}
