@@ -14,6 +14,7 @@ open AssemblyP1.SeparableConvexGraver
 #print axioms AssemblyP1.SeparableConvexGraver.multiplier_improving
 #print axioms AssemblyP1.SeparableConvexGraver.ray_unit_mem_box
 #print axioms AssemblyP1.SeparableConvexGraver.multiplier_unit_feasible_improving
+#print axioms AssemblyP1.SeparableConvexGraver.ray_unit_mem_fiber
 #print axioms AssemblyP1.SeparableConvexGraver.negLog_discConvOn
 #print axioms AssemblyP1.SeparableConvexGraver.negLog_sub_discConvOn
 #print axioms AssemblyP1.SeparableConvexGraver.multinomialTerm_discConvOn
