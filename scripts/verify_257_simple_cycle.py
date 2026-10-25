@@ -17,6 +17,8 @@ scratch (no repository imports):
    zero-sum circulation rank r = |E| - |V| + c - 1.
 5. Genome realization: circular S = AATT has L = 2 spectrum
    {AA:1, AT:1, TT:1, TA:1}.
+6. A scalar topology summary plus L and G is insufficient: two circular
+   L=3, G=7 genomes have |V|=3, |E|=4, cycle rank 2, but differ in rigidity.
 """
 
 from __future__ import annotations
@@ -107,6 +109,33 @@ def main() -> int:
     print(f"circular AATT L=2 spectrum: {spec}")
     if spec != {"AA": 1, "AT": 1, "TT": 1, "TA": 1}:
         print("FAIL: AATT spectrum mismatch")
+        fails += 1
+
+    # 6. Same scalar topology summary (|V|, |E|, cycle rank) and same L,G,
+    # but opposite rigidity statuses on two genuine circular-word supports.
+    # Edges are 3-mers; vertices are their 2-mer prefix/suffix.
+    rank_pair = []
+    for word, expected_rigid in (("AABABAB", True), ("AAAAAAB", False)):
+        sp = spectrum_circular(word, 3)
+        es = list(sp)
+        vs = {e[:-1] for e in es} | {e[1:] for e in es}
+        outs = [[i for i, e in enumerate(es) if e[:-1] == v] for v in vs]
+        ins = [[i for i, e in enumerate(es) if e[1:] == v] for v in vs]
+        eqs = list(zip(outs, ins))
+        counts = [sp[e] for e in es]
+        is_rigid, candidates = brute_rigid(es, eqs, counts, 7)
+        rank = len(es) - len(vs) + 1
+        print(f"{word} L=3 spectrum={sp} |V|={len(vs)} |E|={len(es)} "
+              f"rank={rank} rigid={is_rigid} candidates={candidates}")
+        if is_rigid != expected_rigid or len(vs) != 3 or len(es) != 4 or rank != 2:
+            print(f"FAIL: unexpected topology/rigidity for {word}")
+            fails += 1
+        if word == "AAAAAAB" and not any(tuple(c) != tuple(counts) for c in candidates):
+            print("FAIL: non-rigid genome has no alternative candidate")
+            fails += 1
+        rank_pair.append((len(vs), len(es), 7, rank, is_rigid))
+    if len(rank_pair) != 2 or rank_pair[0][:4] != rank_pair[1][:4] or rank_pair[0][4] == rank_pair[1][4]:
+        print("FAIL: expected a rigidity split at fixed (L,G,|V|,|E|,rank)")
         fails += 1
 
     # ATATAT genome control (2-cycle, rigid despite triples)
