@@ -24,6 +24,12 @@ or **open**._
   the `G = 5` sub-universe only — it is undefined across lengths.
 - Truth admission: the truth window walk (five len-2 steps) is a closed walk in
   `G1` spelling `AAATT`; verified in the script. [verified computation]
+- This checkpoint verifies a **spelled-circuit** class only. It does not claim
+  that every integer §6.2 flow is spellable or that its flow-throughput image is
+  identical to the spelled spectra; the latter identity is refuted separately by
+  `Section62SpelledFlowImageRefutation`. No implication from this likelihood
+  winner to the unrestricted flow optimum follows without candidate-set
+  inclusion.
 
 ## Results
 
