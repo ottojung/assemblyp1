@@ -687,7 +687,7 @@ exhaustive zeros are a sanity check on the proofs, not a substitute for them.
 | §22 `ATATAT` parametric rigidity (`atatat_of_cycle2`: rigid at every uniform `k`) | kernel-checked |
 | §22 AATT boundary rigid non-cycle (`aatt_rigid`, `aatt_search_space`) | kernel-checked (`by decide`) |
 | §22 cross-check vs brute force + mutation-red (`scripts/verify_257_simple_cycle.py`: 20 directed cycles + AATT rigid/mutated, 0 mismatches) | verified computation, exhaustive in scope |
-| §22 bounded binary-genome census (`scripts/verify_257_simple_cycle.py`: G=1..7, L=2..3; 508 circular words/read-length cases; finds a scalar-summary group with both rigid and non-rigid genomes) | verified computation, exhaustive in scope |
+| §22 bounded binary-genome census (`scripts/verify_257_simple_cycle.py`: binary G=1..7, L=2..3, 508 cases; binary G=1..8, L=2..4, 1530 cases, 3 split groups; ternary G=1..6, L=2..3, 2184 cases, 2 split groups; scalar summaries fail in every scope) | verified computation, exhaustive in scope |
 
 ---
 
@@ -2004,7 +2004,14 @@ from scratch by enumerating **all** positive integer circulations of total
 * genome realizations: circular `AATT`/`L = 2` and `ATATAT`/`L = 3` spectra;
 * **cycle-rank separator**: `AABABAB` and `AAAAAAB` share `L=3`, `G=7`,
   `|V|=3`, `|E|=4`, and cycle rank `2`, while exact enumeration reports rigid
-  versus non-rigid.
+  versus non-rigid;
+* **extended census (three scopes)**: binary `G=1..7, L=2..3` (508 cases, 1
+  split scalar-summary group), binary `G=1..8, L=2..4` (1530 cases, 3 split
+  groups), ternary `G=1..6, L=2..3` (2184 cases, 2 split groups, e.g. `L=2`,
+  `G=6`, `|V|=3`, `|E|=4`, rank `2` with rigid `AAAABC` versus non-rigid
+  `ABABAC`). So scalar summaries fail across alphabets and read lengths, not
+  just at one hand-picked key; the ternary scope needs `G = 6` before any
+  collision appears.
   [verified computation, exhaustive in scope]
 
 ### 22.4 Epistemic status

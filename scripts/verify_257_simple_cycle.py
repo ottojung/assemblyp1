@@ -19,8 +19,11 @@ scratch (no repository imports):
    {AA:1, AT:1, TT:1, TA:1}.
 6. A scalar topology summary plus L and G is insufficient: two circular
    L=3, G=7 genomes have |V|=3, |E|=4, cycle rank 2, but differ in rigidity.
-7. Exhaustive enumeration of all binary circular genomes with G=1..7 and
-   L=2..3 finds 36 rigid/non-rigid pairs with identical (L,G,|V|,|E|,rank).
+7. Exhaustive enumeration of all binary circular genomes with G=1..8 and
+   L=2..4, plus all ternary circular genomes with G=1..6 and L=2..3:
+   every scope contains scalar-summary groups with both rigid and
+   non-rigid genomes, so no scalar summary (|V|,|E|,rank at fixed L,G,
+   even with alphabet size fixed) determines rigidity.
 """
 
 from __future__ import annotations
@@ -140,42 +143,59 @@ def main() -> int:
         print("FAIL: expected a rigidity split at fixed (L,G,|V|,|E|,rank)")
         fails += 1
 
-    # 7. Exhaust all binary circular words in a bounded genome/read scope.
+    # 7. Exhaust all binary circular words in a bounded genome/read scope,
+    # plus a ternary-alphabet scope (new cross-alphabet dimension).
     # Group by scalar summaries only, then require at least one group where
     # spectra have differing rigidity status. This verifies rank_pair as one
     # instance and also avoids selecting that pair as a hand-picked-only case.
     from itertools import product as cartesian_product
 
-    grouped = {}
-    words_checked = 0
-    for genome_length in range(1, 8):
-        for letters in cartesian_product("AB", repeat=genome_length):
-            word = "".join(letters)
-            for read_length in (2, 3):
-                sp = spectrum_circular(word, read_length)
-                es = list(sp)
-                vs = {e[:-1] for e in es} | {e[1:] for e in es}
-                outs = [[i for i, e in enumerate(es) if e[:-1] == v] for v in vs]
-                ins = [[i for i, e in enumerate(es) if e[1:] == v] for v in vs]
-                eqs = list(zip(outs, ins))
-                counts = [sp[e] for e in es]
-                is_rigid, candidates = brute_rigid(es, eqs, counts, genome_length)
-                rank = len(es) - len(vs) + 1
-                key = (read_length, genome_length, len(vs), len(es), rank)
-                grouped.setdefault(key, []).append((word, is_rigid))
-                words_checked += 1
+    def run_scope(alphabet, gmax, read_lengths):
+        grouped = {}
+        words_checked = 0
+        for genome_length in range(1, gmax + 1):
+            for letters in cartesian_product(alphabet, repeat=genome_length):
+                word = "".join(letters)
+                for read_length in read_lengths:
+                    sp = spectrum_circular(word, read_length)
+                    es = list(sp)
+                    vs = {e[:-1] for e in es} | {e[1:] for e in es}
+                    outs = [[i for i, e in enumerate(es) if e[:-1] == v] for v in vs]
+                    ins = [[i for i, e in enumerate(es) if e[1:] == v] for v in vs]
+                    eqs = list(zip(outs, ins))
+                    counts = [sp[e] for e in es]
+                    is_rigid, candidates = brute_rigid(es, eqs, counts, genome_length)
+                    rank = len(es) - len(vs) + 1
+                    key = (read_length, genome_length, len(vs), len(es), rank)
+                    grouped.setdefault(key, []).append((word, is_rigid))
+                    words_checked += 1
+        return grouped, words_checked
+
+    scopes = [
+        ("AB", 7, (2, 3)),
+        ("AB", 8, (2, 3, 4)),
+        ("ABC", 6, (2, 3)),
+    ]
+    for alphabet, gmax, read_lengths in scopes:
+        grouped, words_checked = run_scope(alphabet, gmax, read_lengths)
+        split_groups = {
+            key: cases for key, cases in grouped.items()
+            if {rigid for _, rigid in cases} == {False, True}
+        }
+        print(f"alphabet={alphabet} genome census G=1..{gmax}, L={read_lengths}: "
+              f"{words_checked} cases, "
+              f"{len(split_groups)} scalar-summary groups contain both rigid and non-rigid genomes")
+        if not split_groups:
+            print(f"FAIL: census {alphabet}/{gmax}/{read_lengths} found no scalar-summary collision")
+            fails += 1
+    grouped, _ = run_scope("AB", 7, (2, 3))
     split_groups = {
         key: cases for key, cases in grouped.items()
         if {rigid for _, rigid in cases} == {False, True}
     }
-    print(f"binary genome census G=1..7, L=2..3: {words_checked} cases, "
-          f"{len(split_groups)} scalar-summary groups contain both rigid and non-rigid genomes")
-    if not split_groups:
-        print("FAIL: census did not find a scalar-summary collision")
-        fails += 1
-    elif not any(key == (3, 7, 3, 4, 2) and
-                 {rigid for _, rigid in cases} == {False, True}
-                 for key, cases in split_groups.items()):
+    if not any(key == (3, 7, 3, 4, 2) and
+               {rigid for _, rigid in cases} == {False, True}
+               for key, cases in split_groups.items()):
         print("FAIL: census did not independently recover the rank-pair key")
         fails += 1
 
