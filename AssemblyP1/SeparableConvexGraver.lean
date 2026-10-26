@@ -448,6 +448,58 @@ theorem multiplier_improving {E : Type} [Fintype E] {f : E → ℤ → ℝ}
     nlinarith [mul_nonneg (le_of_lt hαpos) h0]
   linarith
 
+/-- If a positive integer ray step improves, then the unit step improves.
+The endpoint must be in the box; because the ray is sign-compatible, this
+endpoint condition also places all intermediate steps in the box. -/
+theorem ray_improves_unit_step {E : Type} [Fintype E] {f : E → ℤ → ℝ}
+    {l u z g : E → ℤ} {α : ℕ} (hα : 1 ≤ α)
+    (hf : ∀ e, DiscConvOn (f e) (l e) (u e))
+    (hzlo : ∀ e, l e ≤ z e) (hzhi : ∀ e, z e ≤ u e)
+    (hclo : ∀ e, l e ≤ (z + α • g) e) (hchi : ∀ e, (z + α • g) e ≤ u e)
+    (hray : sepObj f (z + α • g) < sepObj f z) :
+    sepObj f (z + g) < sepObj f z := by
+  have hsum_rep : (List.replicate α g).sum = α • g := List.sum_replicate α g
+  have hsign : ∀ e, (∀ h ∈ List.replicate α g, 0 ≤ h e)
+      ∨ (∀ h ∈ List.replicate α g, h e ≤ 0) := by
+    intro e
+    rcases le_total (g e) 0 with hg | hg
+    · exact Or.inr (fun h hh => by
+        obtain ⟨-, rfl⟩ := List.mem_replicate.mp hh
+        exact hg)
+    · exact Or.inl (fun h hh => by
+        obtain ⟨-, rfl⟩ := List.mem_replicate.mp hh
+        exact hg)
+  have hclo' : ∀ e, l e ≤ (z + (List.replicate α g).sum) e := by
+    intro e
+    rw [hsum_rep]
+    exact hclo e
+  have hchi' : ∀ e, (z + (List.replicate α g).sum) e ≤ u e := by
+    intro e
+    rw [hsum_rep]
+    exact hchi e
+  have hsuper := superadd_separable_list hf z (List.replicate α g) hsign
+    hzlo hzhi hclo' hchi'
+  rw [hsum_rep] at hsuper
+  have hmap : (List.replicate α g).map
+      (fun g' => sepObj f (z + g') - sepObj f z)
+      = List.replicate α (sepObj f (z + g) - sepObj f z) := by
+    rw [List.map_replicate]
+  rw [hmap, List.sum_replicate] at hsuper
+  have hcast : (α : ℝ) * (sepObj f (z + g) - sepObj f z)
+      ≤ sepObj f (z + α • g) - sepObj f z := by
+    simpa using hsuper
+  have hαpos : (0 : ℝ) < (α : ℝ) := by exact_mod_cast hα
+  have hrayneg : sepObj f (z + α • g) - sepObj f z < 0 := by linarith
+  have hproduct : (α : ℝ) * (sepObj f (z + g) - sepObj f z) < 0 :=
+    lt_of_le_of_lt hcast hrayneg
+  have hunitneg : sepObj f (z + g) - sepObj f z < 0 := by
+    by_contra h
+    have hnonneg : 0 ≤ sepObj f (z + g) - sepObj f z := le_of_not_gt h
+    have hnonneg_product : 0 ≤ (α : ℝ) * (sepObj f (z + g) - sepObj f z) :=
+      mul_nonneg (le_of_lt hαpos) hnonneg
+    linarith
+  linarith
+
 /-! ## Discrete convexity of the source likelihood costs (candidate copy count)
 
 The following lemmas instantiate the abstract convexity hypothesis on the
