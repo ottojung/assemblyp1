@@ -1917,5 +1917,113 @@ bridge (§18) and the two-hub multi-hub (§20). The residual — a *polynomial*
 min-cut/max-flow closed form for **arbitrary** supports (general topology), or a
 proof that none exists — remains **OPEN** (§8.1/§8.2); §21 shows that such a
 criterion cannot be of a single-cut / independent-per-path form for the
+<<<<<<< HEAD
 triangular family either, and gives a polynomial criterion for that
 unbounded-rank three-hub subfamily.
+=======
+ triangular family either, and gives a polynomial criterion for that
+ unbounded-rank three-hub subfamily.
+
+---
+
+## 22. Directed-cycle sufficiency (parametric) and the AATT boundary
+
+This section proves a new small Lean-checked rigidity lemma for a restricted
+family (§8.1 progress on a bounded-topology front): uniform directed cycles
+are rigid at *every* multiplicity, and records a kernel-checked rigid
+repetitive boundary example showing "single directed cycle" is sufficient
+but **not necessary**. It builds on — and does not redo — the finite decider
+(§11), which is used only as the checking engine for the boundary instance.
+[mathematical proof + kernel-checked + verified computation]
+
+### 22.1 Parametric directed-2-cycle rigidity
+
+**Theorem 15 (directed-2-cycle sufficiency).** The directed `2`-cycle support
+(`0 → 1 → 0`) with uniform multiplicity `k` and total `G = 2 * k` is rigid,
+for every `k : ℕ`.
+
+_Proof._ Balance at vertex `0` (out-edge `{0}`, in-edge `{1}`) forces
+`B 0 = B 1`; the total `B 0 + B 1 = 2 * k` then forces `B 0 = B 1 = k. ∎
+
+This is kernel-checked as
+`AssemblyP1.RigiditySimpleCycle.cycle2_rigid`, with the constancy step as
+`cycle2_balanced_const`. The `ATATAT`/`L = 3` read graph *is* this `2`-cycle
+(`cycle2_is_atatat_tail/head`), so the canonical "rigid despite triple
+`(L-1)`-mer repeats" example now follows parametrically
+(`atatat_of_cycle2`: rigid at every uniform `k`, total `2 * k`), rather than
+from a single `k = 3` computation. The general `n`-cycle case is strictly
+analogous (balance forces constancy on any directed cycle) and remains open
+in Lean.
+
+### 22.2 The AATT boundary: rigid but not a single directed cycle
+
+The circular genome `S = AATT` at `L = 2` has spectrum
+`{AA:1, AT:1, TT:1, TA:1}` (verified in
+`scripts/verify_257_simple_cycle.py`): two vertices `A, T` and four edges
+`AA : A → A`, `AT : A → T`, `TT : T → T`, `TA : T → A`, of cycle rank
+`|E| - |V| + c = 3` (zero-sum rank `r = 2`). It is **not** a single directed
+cycle, yet it is **rigid** at `A = (1,1,1,1)`, `G = 4`: balance at `A` forces
+`B(AT) = B(TA)`, and `B(AA) + B(TT) + 2 * B(AT) = 4` with `B ≥ 1` forces
+`B = 1` everywhere. Kernel-checked as
+`AssemblyP1.RigiditySimpleCycle.aatt_rigid` (`by decide`, search space
+`5^4 = 625`, recorded as `aatt_search_space`).
+
+**Failed simpler hypothesis (committed).** "The support is a single directed
+cycle ⟺ rigid" is **false** as an iff: `AATT` is a rigid read-support with
+four edges. The forward direction for `2`-cycles is Theorem 15; the reverse
+direction fails already at this smallest genome boundary.
+
+**Finite separator for cycle-rank-only classifiers.** Two circular `L = 3`,
+`G = 7` genomes have the same support summary `(|V|, |E|, cycle-rank) =
+(3,4,2)` but opposite rigidity status:
+
+* `S = AABABAB` has support edges `AAB, ABA, BAB, BAA`, with multiplicities
+  `(1,3,2,1)` in that order. It is **rigid**: the exact enumeration finds only
+  that positive balanced circulation of total `7`.
+* `T = AAAAAAB` has support edges `AAA, AAB, ABA, BAA`, with multiplicities
+  `(4,1,1,1)`. It is **non-rigid**: `(1,2,2,2)` is a distinct positive
+  balanced circulation of total `7` on its support.
+
+The supports are different (the repeated edge is `BAB` versus `AAA`), but their
+vertex/edge counts, first Betti number, read length, and genome length coincide.
+Therefore those scalar graph/genome summaries cannot decide rigidity; the
+actual labeled incidence structure and multiplicities matter. This finite
+counterexample refutes only classifiers determined by these summaries, not
+every graph-theoretic condition. [mathematical witness + verified computation]
+
+### 22.3 Cross-check (`scripts/verify_257_simple_cycle.py`)
+
+The script is self-contained, exact and deterministic. It recomputes rigidity
+from scratch by enumerating **all** positive integer circulations of total
+`G`:
+
+* directed `n`-cycles, `n = 2..6`, uniform `k = 1..4` — **20** cases, all
+  rigid, **0** mismatches;
+* `AATT` at `(1,1,1,1)` — rigid, unique witness;
+* **mutation-red control**: the same `AATT` support at `(2,1,1,1)`, `G = 5`
+  is non-rigid (witnesses `(1,1,2,1)`, `(2,1,1,1)`), so the harness has real
+  discriminating power;
+* complexity record: `(G+1)^|E|` tabulated against `r` (e.g. `AATT`: 625
+  candidates at `r = 2`; 6-cycle `k = 4`: 244140625 at `r = 0`);
+* genome realizations: circular `AATT`/`L = 2` and `ATATAT`/`L = 3` spectra;
+* **cycle-rank separator**: `AABABAB` and `AAAAAAB` share `L=3`, `G=7`,
+  `|V|=3`, `|E|=4`, and cycle rank `2`, while exact enumeration reports rigid
+  versus non-rigid;
+* **extended census (three scopes)**: binary `G=1..7, L=2..3` (508 cases, 1
+  split scalar-summary group), binary `G=1..8, L=2..4` (1530 cases, 3 split
+  groups), ternary `G=1..6, L=2..3` (2184 cases, 2 split groups, e.g. `L=2`,
+  `G=6`, `|V|=3`, `|E|=4`, rank `2` with rigid `AAAABC` versus non-rigid
+  `ABABAC`). So scalar summaries fail across alphabets and read lengths, not
+  just at one hand-picked key; the ternary scope needs `G = 6` before any
+  collision appears.
+  [verified computation, exhaustive in scope]
+
+### 22.4 Epistemic status
+
+`cycle2_rigid`, `cycle2_balanced_const`, `atatat_of_cycle2`, `aatt_rigid`
+and `aatt_search_space` are kernel-checked with only
+`[propext, Classical.choice, Quot.sound]`
+(`AssemblyP1/RigiditySimpleCycleAudit`, and `AxiomAudit257.lean`); no
+`sorry`/`admit`/`axiom`/`native_decide`. The uniform-in-support polynomial
+criterion (§8.1/§8.2) remains **OPEN**.
+>>>>>>> 147359e (Issue 257: extend section-22 census to L=4 and ternary genomes)
