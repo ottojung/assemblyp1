@@ -198,10 +198,30 @@ Explicit uniform exponential exact-ML rate (\ref{thm:p2-uniform-rate})
 \path{primitiveP2_ML_confidence_explicit}; constants deliberately loose
 (exponential in $L$), exact oriented iid only.\\
 \addlinespace
+No uniform exponential exact-ML rate over the length-unrestricted universe;
+the $1/(8B^4)$ exponent is valid but loose (extremal one-symbol insertions
+suggest sharp $\Theta(1/B)$)
+& (ii)
+& Exact computation \path{scripts/verify_exponent_265.py} for note
+\path{docs/restricted-vs-unrestricted-exponent-265.md}; \emph{not}
+kernel-checked. $AB$ vs.\ $ABAB$ read-law collision gives error probability
+$1$ for every $n$; the sharp $c_1/B$ lower bound is a named missing lemma,
+not proved.\\
+\addlinespace
 Per-truth non-monotonicity (\ref{prop:nonmonotone})
 & (i)
 & \path{NonmonotonicityWitness281.success_not_monotone}; the $n=1,2$ step
 is kernel-checked.\\
+\addlinespace
+Optimal prior-average success is nondecreasing in $n$
+($V_n\le V_{n+1}$, every finite $n$ including $n=0$)
+& (i)
+& \path{IidMapMonotonicity.iid_map_success_monotone},
+\path{BayesValueMonotonicity.bayesValue_succ_ge} (iterated
+\path{BayesValueMonotonicity.bayesValue_mono}),
+\path{GenomeOrbitAdapter.orbit_map_success_monotone}; the ignore-extra-observation
+argument. Prior-averaged only, in explicit contrast with the per-truth row
+above.\\
 \addlinespace
 Variable-length primitive identifiability iff nonbranching
 (\ref{thm:identifiable-iff-nonbranching})
