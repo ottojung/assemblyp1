@@ -1,0 +1,9 @@
+[terminal-handoff]
+state: partial
+owner: agent-UTS9iyKKA721z9lXl1zRmh-nourish
+repository: https://github.com/ottojung/assemblyp1.git
+branch: main (isolated clean clone; no branch changes)
+artifact: existing scripts/verify_feasible_spectrum_ml_255.py on main; claimed commit e60966d19934d0ca5a05ae2a91b877948488f264 and scripts/verify_issue255_exact_multinomial_cell.py not found
+attempts: Cloned verified origin into /workspace/assemblyp1-agent-UTS9iyKKA721z9lXl1zRmh-255; fetched all refs and searched history for the cited verifier; the stated commit is absent locally and remote refs, and the verifier path does not exist. Read AGENTS.md and docs/open-problem.md. Existing verifier demonstrates the AAABBB same-length oriented exact-multinomial instance has explicit realizable samples yielding unique truth maximum, tie, and strict truth loss; it also reports 974 exact-rational census pairs for binary truth lengths 5 and 6, L=2, including 158 where a genome outside the spelled class beats truth.
+validation: python3 scripts/verify_feasible_spectrum_ml_255.py PASS (exact Fraction checks, sample realizability, genome scan, census); git status clean. Attempt to run cited missing verifier failed with FileNotFoundError. Commit lookup failed: bad object. No Lean build performed.
+next: Verify full newest board comments using configured Antonina board interface and reconcile against PR #296/#301 history; recover or independently verify claimed exact-cell artifact (branch/commit not published); retain #255 open as the issue is a research program with broader theorem and model-scope obligations unresolved.
