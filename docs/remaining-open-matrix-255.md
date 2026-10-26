@@ -1,6 +1,6 @@
 # AssemblyP1 umbrella #255 — remaining-open matrix
 
-## Addendum — 2026-10-24 (fixed-x objective-equivalence lemma, pending integration)
+## Addendum — 2026-10-24 (historical status before integration PR #403)
 
 * **Bounded (A)-side increment, NOT merged.** Commit `5b55129`
   (branches `agent/X0KLIHmuKcT0kc1TLHQ8Xy-issue255-review` and
@@ -611,9 +611,9 @@ a full classification.
 | #272 | `Is`-vs-unambiguous ordering classification: read-only sufficiency iff implication-of-unambiguity; truth-dependent and singleton promises incomparable | `AssemblyP1/FiniteSideInformationOrdering.lean` (`sufficient_readonly_iff_imp_unambiguous` `:91`, `truthdependent_sufficient_incomparable` `:146`, `ordering_verdict` `:272`) | `41e5aec` (GitHub PR #244) | Candidate-specific posterior weights and latent-placement `E(g,T)` adapter; bridge to a genome reconstruction theorem (#272 still OPEN) |
 | #281 | Explicit uniform exponential exact-ML error rate (`primitiveP2_ML_confidence_explicit`, `all_primitiveP2_ML_confidence`) surfaced in the paper and both decks | `AssemblyP1/PrimitiveP2UniformSeparation.lean` (`primitiveP2_ML_confidence_explicit` `:340`, `primitiveP2_exponential_error_bound` `:317`); `paper/sections/01-introduction.tex`; `slides/{biologists,programmers}.md` | `70c21b8` (GitHub PR #258), `eaf5d38` (GitHub PR #268) | Genome-level finite corollary and paper recentering still OPEN (#281 still OPEN) |
 | #265 | Strong-law / KL-limit statement for finite identifiable families + CI script | `scripts/verify_strong_consistency_265.py`; `paper/sections/05-population.tex`; `docs/presentation-arc-265.md` | `53f8c4d` (GitHub PR #280), `b9f0f47` (CI wiring, GitHub PR #284) | #265/#268 editorial review pass still OPEN |
-| #265 | Chernoff refinement of the finite-family recovery bound: `Σ_D exp(-n C(p_S,p_D)) ≤ \|C_S\| exp(-n C_*)`, `C_* ≥ ln(1/ρ_*)`; `C_*` is the exact finite-family exact-ML error exponent (classical Chernoff/Sanov, EXTERNAL); the bound stays loose at finite `n` (~3.7× exact at `n=16`, ratio `≈√n`) | `paper/sections/03-open-question.tex` (`prop:chernoff-refinement`, `rem:chernoff-sharp`); `docs/chernoff-exponent-finite-recovery-265.md`; `scripts/verify_chernoff_finite_recovery_265.py`; both decks' speaker notes | pending (branch `agent/df84a657ae4a-issue265-chernoff-exponent`) | Tight/minimax finite-`n` bound and the unrestricted-universe uniform sample size remain OPEN |
+| #265 | Chernoff refinement of the finite-family recovery bound: `Σ_D exp(-n C(p_S,p_D)) ≤ \|C_S\| exp(-n C_*)`, `C_* ≥ ln(1/ρ_*)`; `C_*` is the exact finite-family exact-ML error exponent (classical Chernoff/Sanov, EXTERNAL); the bound stays loose at finite `n` (~3.7× exact at `n=16`, ratio `≈√n`) | `paper/sections/03-open-question.tex` (`prop:chernoff-refinement`, `rem:chernoff-sharp`); `docs/chernoff-exponent-finite-recovery-265.md`; `scripts/verify_chernoff_finite_recovery_265.py`; both decks' speaker notes | `15c8c19` (GitHub PR #321, already on main) | Tight/minimax finite-`n` bound and the unrestricted-universe uniform sample size remain OPEN |
 | #284 | Generic anchored-window spelling identity and word-level reverse-complement class-count law | `AssemblyP1/Section62GenericAnchorSpelling.lean` (`generic_anchors_window_eq_sources` `:70`, `generic_circular_spelling_anchors` `:99`); `AssemblyP1/Section62RcWordLaw.lean` (`classWordCount_eq_rc_class_count` `:72`) | `c581d11` (GitHub PR #282), `0b87b58` (GitHub PR #252) | Exact Myers practical-algorithm fidelity and full unobserved RC class universe still OPEN (#284 still OPEN) |
-| #263 | Conditional separable-convex Graver optimality certificate (file added by GitHub PR #249) plus the penalized-solver-cost vs pure-ML distinction | `AssemblyP1/SeparableConvexGraver.lean` (`graver_optimal_iff_no_improving` `:324`, `negLog_discConvOn` `:500`) | `9fa5a41` (GitHub PR #249), `e57e81f` (GitHub PR #281) | Full separable-convex discrete Graver certificate conditional on #264 still OPEN (#263 still OPEN) |
+| #263 | Conditional separable-convex Graver optimality certificate (file added by GitHub PR #249) plus the penalized-solver-cost vs pure-ML distinction | `AssemblyP1/SeparableConvexGraver.lean` (`graver_optimal_iff_no_improving` `:340`, `negLog_discConvOn` `:500`) | `9fa5a41` (GitHub PR #249), `e57e81f` (GitHub PR #281) | Full separable-convex discrete Graver certificate conditional on #264 still OPEN (#263 still OPEN) |
 
 ---
 
@@ -1221,6 +1221,16 @@ sub-claims are now supported by a kernel-checked artifact or a CI test at
 | Population vs finite sample | #273/#274 (CLOSED), #255 axis-(B) | `PopulationMaximizerUnrestricted.lean` (`AssemblyP1.PopulationUniqueness.population_maximizer_unrestricted`), `PopulationGibbs.lean`; exact iid finite classification PR #251 | finite-sample classification outside the landed cells; population-to-finite bridge is elementary-only (see flag F-b) |
 | Finite-read reliability / sample complexity | #281 (OPEN), #265 (OPEN) | `PrimitiveP2FiniteClass.lean`, `PrimitiveP2UniformSeparation.lean` (`primitiveP2_ML_confidence_explicit`), `NonmonotonicityWitness281.lean`; `scripts/verify_strong_consistency_265.py` | genome-level finite corollary (#281); #265/#268 editorial pass |
 | Bayes/MAP and conditional inference | #266/#267/#270 (CLOSED), #269/#271/#272 (OPEN) | `FiniteBayesDecision.lean`, `IidMapMonotonicity.lean`, `GenomeOrbitAdapter.lean`, `BayesValueMonotonicity.lean`, `PosteriorMAPEquivalence.lean`, `ConditionalVsOrdinaryMLSeparation.lean`, `FiniteSideInformationColoring.lean`, `FiniteSideInformationOrdering.lean` | RC-orbit quotient and genome-level conditional recovery (#269/#271); latent-placement adapter (#272); duplicate-invariance adapter (#266 residual) |
+
+### Flag F-a — CORRECTED (2026-10-26): kernel-checked
+
+The general covered-sample surrogate criterion is now kernel-checked:
+`AssemblyP1.CoveredBinomialWeightsIff.covered_ambient_effectiveProduct_le_iff`
+(`AssemblyP1/CoveredBinomialWeightsIff.lean`). On the full modeled molecule
+universe, its domain of samples covering the true support is exactly the
+`x=A+y` domain discussed below. Its conclusion is the zero-weight-or-
+pointwise-dominance characterization. The earlier missing-artifact status
+below is historical, not a current open proof obligation.
 
 ### Flag F-a — RESOLVED scoped claim that lacks a kernel-checked artifact
 
