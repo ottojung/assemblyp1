@@ -178,9 +178,12 @@ randomized reconstruction rule on prior-average zero-one success, and ML
 coincides with MAP under a uniform prior. Its Lean formalization also proves
 that optimal average success cannot decrease when genuinely additional
 information is observed
-(\kernelcheck{} \texttt{AssemblyP1.IidMapMonotonicity.iid\_map\_success\_monotone}). These are general decision-theoretic facts, not
-novel assembly-specific identifiability results; they explain \emph{why}
-the likelihood question is worth asking.
+ (\kernelcheck{} \texttt{AssemblyP1.IidMapMonotonicity.iid\_map\_success\_monotone}). These are general decision-theoretic facts, not
+ novel assembly-specific identifiability results; they explain \emph{why}
+ the likelihood question is worth asking. Crucially, this monotonicity is
+ prior-average only: per-truth finite-sample ML success need not be monotone
+ in $n$ (Proposition~\ref{prop:nonmonotone}), so identifiability yields an
+ exponential error \emph{rate}, not a monotone success curve.
 
 \paragraph{Structural: circulation rigidity.}
 Under the bridging condition of Definition~\ref{def:Is}, the truth's length-$L$
