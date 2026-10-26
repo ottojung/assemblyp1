@@ -42,6 +42,14 @@ criterion with integer balance equations over 1,794 transfers on binary
 necklace spectra (`L=2,3`, `G<=10`): 98 balanced, zero mismatches. This is a
 general algebraic characterization; the enumeration only checks its encoding.
 
+This transfer criterion also rules out promoting the one-transfer argument to a
+general rigidity necessity theorem: for the alternating truth above the only
+support transfer `01 -> 10` is unbalanced, while the full-class beater exists.
+Consequently local circulation-preserving transfers do not characterize all
+realizable competitors; a competitor can differ by a multi-unit balanced move.
+This is a verified obstruction to that proof strategy, not a claim that
+rigidity is or is not necessary for sample-uniform realizable maximality.
+
 ## Smallest full-vs-realizable gap found
 
 At `L=2`, `G=N=4`, truth `A=(0,2,2,0)` is the spectrum of `0101`. The
@@ -66,6 +74,13 @@ sample witness; the full-vs-realizable classification uses the established
 covered-sample iff, hence quantifies over all covered samples, rather than a
 bounded sample box. It also exhausts necklace spectra for the stated finite
 cells. No Lean replay is claimed.
+
+An independent replay on 2026-10-26 from the pushed predecessor commit
+`6b3c09f3fa9f9177f44bdeabf4880f908a2c87cc` reproduced the printed census and
+witness, passed Python byte-compilation and `scripts/check-research-docs.py`,
+and reported clean `git diff --check`. This replay verifies the encoded
+finite scope; it does not verify the predecessor's statement about “smallest”
+over any universe beyond the searched binary cells.
 
 Still open: characterize all realizable balanced spectra (including non-binary
 alphabets and non-necklace flow candidates), prove or refute the alternating
