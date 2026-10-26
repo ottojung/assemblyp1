@@ -38,7 +38,9 @@ cross-check, exhaustive small scopes),
 criterion, polynomial DP decision, rigid repetitive instance, non-rigidity
 witness and coupling refutation, mutation-red control, exhaustive small scopes).
 `python3 scripts/verify_257_simple_cycle.py` (§22 directed-cycle and AATT
-examples, plus binary G≤8/L≤4 and ternary G≤6/L≤3 scalar-summary censuses).
+examples, plus binary G≤8/L≤4 and ternary G≤6/L≤3 scalar-summary censuses),
+`python3 scripts/verify_257_delta_witness.py` (exact incidence witnesses and
+multiplicity-vs-support control).
 Self-contained, exact integer arithmetic, deterministic._
 
 _Blocking-review repair (2026-10-10, branch `research/257-graver-lean-repair`):
@@ -688,6 +690,7 @@ exhaustive zeros are a sanity check on the proofs, not a substitute for them.
 | §22 AATT boundary rigid non-cycle (`aatt_rigid`, `aatt_search_space`) | kernel-checked (`by decide`) |
 | §22 cross-check vs brute force + mutation-red (`scripts/verify_257_simple_cycle.py`: 20 directed cycles + AATT rigid/mutated, 0 mismatches) | verified computation, exhaustive in scope |
 | §22 bounded genome census (`scripts/verify_257_simple_cycle.py`: binary G=1..7/L=2..3, binary G=1..8/L=2..4, ternary G=1..6/L=2..3; scalar-summary collisions in all scopes) | verified computation, exhaustive in scope |
+| §22 exact integral witness verifier (`scripts/verify_257_delta_witness.py`: figure-eight same support rigid/non-rigid under changed A; explicit AATT witness and rigid unit-multiplicity control) | verified computation |
 
 ---
 
@@ -1917,12 +1920,8 @@ bridge (§18) and the two-hub multi-hub (§20). The residual — a *polynomial*
 min-cut/max-flow closed form for **arbitrary** supports (general topology), or a
 proof that none exists — remains **OPEN** (§8.1/§8.2); §21 shows that such a
 criterion cannot be of a single-cut / independent-per-path form for the
-<<<<<<< HEAD
 triangular family either, and gives a polynomial criterion for that
 unbounded-rank three-hub subfamily.
-=======
- triangular family either, and gives a polynomial criterion for that
- unbounded-rank three-hub subfamily.
 
 ---
 
@@ -2018,6 +2017,18 @@ from scratch by enumerating **all** positive integer circulations of total
   collision appears.
   [verified computation, exhaustive in scope]
 
+* **Explicit signed trade and support/multiplicity separation** (recomputed by
+  `scripts/verify_257_delta_witness.py`): on the figure-eight with ordered edges
+  `(01,10,02,20)`, `A=(2,2,1,1)` admits `δ=(-1,-1,1,1)`, giving the distinct
+  positive circulation `B=(1,1,2,2)`. The very same topology at `A=(1,1,1,1)`
+  is rigid because total mass equals the number of edges. For an actual circular
+  genome, `AATT`, `L=2`, has the same four-edge multi-cycle support; its spectrum
+  `(1,1,1,1)` is rigid, while the multiplicity vector `(2,1,2,1)` admits the
+  exact trade `δ=(-1,1,-1,1)` to `(1,2,1,2)`. The script checks incidence,
+  zero total, the positive lower bounds, and independently exhausts candidate
+  circulations. [verified computation; each witness also follows directly by
+  checking the stated equations]
+
 ### 22.4 Epistemic status
 
 `cycle2_rigid`, `cycle2_balanced_const`, `atatat_of_cycle2`, `aatt_rigid`
@@ -2026,4 +2037,3 @@ and `aatt_search_space` are kernel-checked with only
 (`AssemblyP1/RigiditySimpleCycleAudit`, and `AxiomAudit257.lean`); no
 `sorry`/`admit`/`axiom`/`native_decide`. The uniform-in-support polynomial
 criterion (§8.1/§8.2) remains **OPEN**.
->>>>>>> 147359e (Issue 257: extend section-22 census to L=4 and ternary genomes)
