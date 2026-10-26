@@ -39,6 +39,12 @@ Supporting results:
 * `multiplier_improving` — if the integer Graver ray `α • g` (`α ≥ 1`) strictly
   improves over `z` while the path stays in the box, then the unit step `g`
   already strictly improves.
+* `ray_unit_step_in_box` and `multiplier_improving_of_endpoints` — an endpoint
+  form: coordinatewise, `z + g` lies between `z` and `z + α • g` for integer
+  `α ≥ 1`, so endpoint box feasibility implies unit-step box feasibility and
+  the ray-improvement theorem gives strict improvement at that unit step.
+  The lemma concerns coordinate bounds only; affine equalities still require
+  the usual kernel condition on `g`.
 * `negLog_discConvOn`, `negLog_sub_discConvOn`, `multinomialTerm_discConvOn`,
   `binomTerm_discConvOn` — the source likelihood costs are discretely convex in
   the **candidate copy count** `d` on the positive interior.
