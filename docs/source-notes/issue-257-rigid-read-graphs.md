@@ -2037,3 +2037,22 @@ multiplicity split, §2). Implemented from scratch and cross-checked in
 enumeration, ≤ 20 candidates per genome; exit 0 iff every expectation holds).
 [verified computation, three fixed genomes — not a census, and no general
 iff claimed; the exact criterion of Theorem 1 and the OPEN items of §8 stand]
+
+## 24. A second scalar-summary collision at a distinct genome length
+
+The same failure of scalar topology summaries persists in a second pair, not
+rotation-equivalent to the §22 genomes. At `L = 3`, both binary circular genomes
+have `(G, |V|, |E|, cycle rank) = (8, 3, 4, 2)`:
+
+* `S = AABAABAB` has spectrum `{AAB:2, ABA:3, BAA:2, BAB:1}` and exactly one
+  positive circulation of total `8`, namely `(2,3,2,1)` — **rigid**.
+* `S = AAAAAAAB` has spectrum `{AAA:5, AAB:1, ABA:1, BAA:1}` and also admits
+  `(2,2,2,2)` in addition to its truth spectrum `(5,1,1,1)` — **non-rigid**.
+
+The scalar tuple `(L,G,|V|,|E|,rank)` is identical, but the true multiplicity
+vectors interact differently with the integer circulation constraints. The
+extended self-contained verifier `scripts/verify_257_scalar_collision.py`
+checks both this pair and the §22 pair by exact positive-composition
+enumeration; it also checks that these two genomes are not cyclic rotations of
+each other. This is another fixed example, not a census or a general iff.
+[verified computation; general graph criterion/complexity remains open]

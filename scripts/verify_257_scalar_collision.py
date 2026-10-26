@@ -102,6 +102,31 @@ def main() -> int:
     else:
         print(f"AAAAAAB alternative witness: A={pair[1]['A']} B={alt[0]}")
 
+    # A second, non-rotationally-equivalent pair at a different genome length.
+    # This prevents the first scalar collision from being a one-off example.
+    pair8 = [analyze("AABAABAB", 3), analyze("AAAAAAAB", 3)]
+    for r in pair8:
+        print(f"{r['word']}: spectrum={r['spectrum']} "
+              f"(L,G,|V|,|E|,rank)={(r['L'], r['G'], r['V'], r['E'], r['rank'])} "
+              f"rigid={r['rigid']} candidates={r['candidates']}")
+    keys8 = [(r["L"], r["G"], r["V"], r["E"], r["rank"]) for r in pair8]
+    if keys8[0] != keys8[1] or keys8[0] != (3, 8, 3, 4, 2):
+        print(f"FAIL: expected second shared summary (3,8,3,4,2), got {keys8}")
+        fails += 1
+    if pair8[0]["rigid"] is not True or pair8[1]["rigid"] is not False:
+        print("FAIL: AABAABAB / AAAAAAAB should be rigid / non-rigid")
+        fails += 1
+    alt8 = [c for c in pair8[1]["candidates"] if c != pair8[1]["A"]]
+    if (2, 2, 2, 2) not in alt8:
+        print("FAIL: expected AAAAAAAB alternative circulation (2,2,2,2)")
+        fails += 1
+    # Explicitly distinguish the circular genomes up to rotation.
+    def rotations(word: str):
+        return {word[i:] + word[:i] for i in range(len(word))}
+    if rotations(pair8[0]["word"]) & rotations(pair8[1]["word"]):
+        print("FAIL: second pair should not be rotations of the same genome")
+        fails += 1
+
     atat = analyze("ATATAT", 3)
     print(f"ATATAT: spectrum={atat['spectrum']} rigid={atat['rigid']}")
     if atat["rigid"] is not True or atat["spectrum"] != {"ATA": 3, "TAT": 3}:
