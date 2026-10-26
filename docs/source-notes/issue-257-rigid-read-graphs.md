@@ -68,6 +68,12 @@ same standard axioms, resolving §8.3. Build with
 `lake build AssemblyP1.TwoWalkRigidity`; audit with
 `lake env lean AxiomAudit257.lean`._
 
+_The requested conformal-minimal certificate front was also reconciled here
+(2026-10-26). The core lemma and iff were already kernel-checked in
+`AssemblyP1/GraverRigidity.lean`; §23 adds a separate bounded exact-arithmetic
+cross-check and records why the reduction is sound but does not improve the
+general enumeration complexity._
+
 _Lean (bouquet criterion, §8.1 progress, 2026-10-15): the bouquet reduction of
 §13 is kernel-checked as `AssemblyP1/RigidityBouquet.lean`
 (`bouquet_nonrigid_iff`, plus the rigid-repetitive instance
@@ -587,7 +593,16 @@ exhaustive zeros are a sanity check on the proofs, not a substitute for them.
       (unary lengths), has a rigid repetitive instance, and its coupling-dropped
       relaxation is not sound (`triHub_relaxed_not_sound`). The general support
       topology and a min-cut/max-flow closed form for it remain **OPEN**.
-    [open; bouquet case reduced and shown poly-time, §13/§15;
+     **Further partial progress (§23, 2026-10-26):** the conformal-minimal
+     certificate reduction is not just a general theorem: on the fixed
+     zero-sum circulation lattice, every feasible nonzero delta contains a
+     conformally indecomposable nonzero summand that still fits the same
+     multiplicity box. This is already kernel-checked in
+     `GraverRigidity.rigid_iff_forall_graver_not_inbox`; a new exact bounded
+     cross-check appears in §23. It yields a certificate with coordinates
+     bounded by the slack, but does **not** by itself give a faster decision
+     procedure or a polynomial Graver enumeration bound.
+     [open; bouquet case reduced and shown poly-time, §13/§15;
     bridge case classified, §14; length-3 bridge classified and bridge pattern
      refuted, §17; general `p,q` long bridge classified, §18; coupling begins at
      rank `3`, double theta minimal among realizable supports, §19; multi-hub
@@ -640,6 +655,7 @@ exhaustive zeros are a sanity check on the proofs, not a substitute for them.
 | §11 Boolean decider `decider` correctness | kernel-checked (`FiniteRigidityDecider.rigid_iff_decider`) |
 | §11 worked instances (`ATATAT` rigid, `AAAAB` non-rigid, figure-eight rigid/non-rigid) | kernel-checked (`by decide`) |
 | §11 finite-decider cross-check vs brute force (n=3: 255; n=4: 312; 0 mismatches) | verified computation, exhaustive in scope |
+| §23 conformal-minimal witness reduction cross-check (11 bounded cases, including AATT, figure-eight, double-theta) | verified computation, exhaustive in scope |
 | §13 bouquet exact criterion (`bouquet_nonrigid_iff`: non-rigid iff `∃ x ≠ 0, ∑ len_i x_i = 0, x_i ≥ 1 - mult_i`) | mathematical proof + kernel-checked (`AssemblyP1/RigidityBouquet.lean`) |
 | §13 bouquet rigid-repetitive instance `len24_mult21_rigid` | kernel-checked |
 | §13 bouquet non-rigidity witness `len23_mult41_nonrigid` (`x = (-3, 2)`) | kernel-checked |
@@ -1912,3 +1928,90 @@ proof that none exists — remains **OPEN** (§8.1/§8.2); §21 shows that such 
 criterion cannot be of a single-cut / independent-per-path form for the
 triangular family either, and gives a polynomial criterion for that
 unbounded-rank three-hub subfamily.
+
+---
+
+## 23. Conformal-minimal obstruction certificates: exact reduction and bounded cross-check
+
+This section revisits the conformal-minimal (Graver) certificate question from
+§2, using the already kernel-checked theorem in
+`AssemblyP1/GraverRigidity.lean`. Its purpose is to make the finite certificate
+meaning and its limitation concrete; it does not claim a new Graver theorem or
+a polynomial algorithm for arbitrary supports.
+
+### 23.1 Definitions and exact reduction
+
+Fix a finite oriented support with edge set `E`, incidence map `M`, positive
+integer circulation `A`, and total `G`. Define
+
+```
+L₀ = {g ∈ ℤ^E : M g = 0 and Σ_e g(e) = 0}
+s(e) = A(e) - 1 ≥ 0.
+```
+
+For `g,h ∈ ℤ^E`, write `g ⊑ h` (conformal order) when the positive and negative
+parts of `g` are coordinatewise at most those of `h`. A nonzero `g ∈ L₀` is
+conformally indecomposable (a Graver element) when every `g = g₁ + g₂` with
+`g₁,g₂ ∈ L₀` and `g₁,g₂ ⊑ g` has a zero summand. The exact criterion is
+
+```
+A is non-rigid  ⇔  ∃ δ ∈ L₀ \ {0}, δ(e) ≥ -s(e) for every e
+                ⇔  ∃ Graver g ∈ L₀ \ {0}, g(e) ≥ -s(e) for every e.
+```
+
+For the nontrivial forward implication, choose any feasible nonzero `δ` and
+write it as a conformal sum of Graver elements, `δ = Σ_i g_i`. Such a finite
+decomposition follows by repeatedly splitting a conformally decomposable
+lattice vector; each nonzero proper summand has strictly smaller `ℓ₁` norm.
+Each `g_i` has the same coordinate signs as `δ` and `|g_i(e)| ≤ |δ(e)|`, hence
+on negative coordinates `g_i(e) ≥ δ(e) ≥ -s(e)`, while on nonnegative
+coordinates the box bound is automatic. Any nonzero summand is therefore an
+obstruction. Conversely, a box-feasible Graver element is itself a feasible
+nonzero delta. This is the theorem
+`GraverRigidity.rigid_iff_forall_graver_not_inbox` (kernel-checked).
+
+### 23.2 What the certificate checks—and does not check
+
+The witness can be normalized to conformal-minimality without losing box
+feasibility. In particular, from `δ(e) ≥ -s(e)`, every conformal summand also
+satisfies that inequality. A proposed certificate is checkable by verifying
+its integer coordinates, nonzero status, balance, zero sum, and box bounds;
+however, **checking** that an arbitrary vector is Graver requires ruling out
+all proper conformal lattice decompositions. This finite minimality test is
+itself an extra search, not a demonstrated polynomial-time certificate
+verifier. The Graver criterion therefore improves the witness's irreducibility
+interpretation, but does not improve on the finite circulation decider's
+worst-case complexity or settle arbitrary-support complexity.
+
+The coordinate bound is immediate and sharper than the generic total bound:
+every box-feasible `g` has `g(e) ≥ -(A(e)-1)` on negative coordinates. Since
+`Σg=0`, total positive mass equals total negative magnitude, so
+`g(e) ≤ Σ_f s(f) = G-|E|` on positive coordinates. Thus all candidate
+certificates lie in `[-s(e), G-|E|]` edgewise. This proves a finite explicit
+search envelope, not a polynomial Graver-basis size bound.
+
+### 23.3 Bounded exact cross-check
+
+`scripts/verify_257_conformal_minimal.py` independently enumerates small
+circulation lattices via their integer coordinate boxes. For each non-rigid
+instance it checks (a) at least one nonzero feasible delta exists, and (b) at
+least one such feasible delta is minimal under conformal containment among all
+nonzero lattice vectors in its box. The enumeration uses exact integer balance
+and zero-sum equations; it does not call the Lean theorem or a Graver library.
+The 11-case scope contains directed cycles, the figure-eight, the `AATT` read
+cycle, and the double-theta, with multiplicities bounded by 3 and total at most
+16. All 11 matched; among them it recovers the non-rigid figure-eight
+`A=(2,2,1,1)` with witness `(-1,-1,1,1)`, while the unit figure-eight,
+`AATT`, and rigid repetitive double-theta remain rigid. [verified computation,
+exhaustive in scope]
+
+### 23.4 Epistemic status
+
+The reduction is a mathematical theorem independently kernel-checked in
+`AssemblyP1/GraverRigidity.lean`; the small-case enumeration is verified
+computation, exhaustive only in the stated 11-instance scope. The finite
+enumeration of all positive circulations remains the unconditional exact
+decider. Neither the bounded cross-check nor conformal minimality supplies a
+general polynomial algorithm, a sharp Graver cardinality bound, or a general
+graph-structural iff beyond the existing lattice-box criterion. Those remain
+open.
