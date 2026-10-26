@@ -31,6 +31,14 @@
   from the pushed review branch to `main` and merge.
 ## Addendum — 2026-10-26 (verified fixed-sample cell; matrix reconciliation)
 
+* **Second exact pairwise witness (this branch; not a classification):**
+  `S=AAABBB`, `D=AABBBB`, oriented pair types `(AA,AB,BA,BB)`,
+  `x=(1,0,1,4)` gives exact multinomial likelihoods `P(S;x)=1/1458` and
+  `P(D;x)=1/576`, ratio `81/32 > 1`. The observation uses six reads on the
+  truth support. Note `docs/issue255-fixedx-second-witness.md`; exact-rational
+  verifier `scripts/verify_255_fixedx_second_witness.py` passed. This changes
+  no general fixed-`x` classification status or model-axis scope.
+
 * **A-axis exact multinomial counterexample, computationally exhaustive in a
   finite spelled-genome universe (not a general theorem):** for circular truth
   `AAABBB`, `G=6`, `L=2`, oriented types ordered `AA,AB,BA,BB`, and observed
