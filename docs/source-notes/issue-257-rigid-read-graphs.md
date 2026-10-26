@@ -2015,3 +2015,25 @@ decider. Neither the bounded cross-check nor conformal minimality supplies a
 general polynomial algorithm, a sharp Graver cardinality bound, or a general
 graph-structural iff beyond the existing lattice-box criterion. Those remain
 open.
+
+## 22. Scalar topology summaries do not determine rigidity (genome pair)
+
+No function of the scalar summary `(|V|, |E|, cycle rank)` at fixed `(L, G)` —
+even with the alphabet fixed — decides rigidity. Two genuine binary circular
+genomes share `(L, G, |V|, |E|, rank) = (3, 7, 3, 4, 2)` but differ:
+
+* `S = AABABAB`: spectrum `{AAB:1, ABA:3, BAB:2, BAA:1}`; the only positive
+  circulation of total `7` is `A` itself — **rigid**.
+* `S = AAAAAAB`: spectrum `{AAA:4, AAB:1, ABA:1, BAA:1}`; a second positive
+  circulation `(1, 2, 2, 2)` of total `7` exists — **non-rigid**, with explicit
+  alternative-circulation witness `B = (1, 2, 2, 2) ≠ A = (4, 1, 1, 1)`.
+
+Controls in the same harness: `S = ATATAT` (`L = 3`) is rigid despite triple
+`(L-1)`-mer repeats (§5.1); `S = AATT` (`L = 2`, `G = 4`) is rigid at all-ones
+multiplicities on its rank-3 support but non-rigid at `A = (2,1,1,1)`
+(`G = 5`), so the same support flips with multiplicities (topology vs
+multiplicity split, §2). Implemented from scratch and cross-checked in
+`scripts/verify_257_scalar_collision.py` (exact positive-composition
+enumeration, ≤ 20 candidates per genome; exit 0 iff every expectation holds).
+[verified computation, three fixed genomes — not a census, and no general
+iff claimed; the exact criterion of Theorem 1 and the OPEN items of §8 stand]
