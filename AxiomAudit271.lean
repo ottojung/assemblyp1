@@ -7,6 +7,7 @@ import AssemblyP1.ConditionalBayesEImpliesB271
 import AssemblyP1.InformationFeasibleRotation271
 import AssemblyP1.ConditionalVsMLFullReadSet271
 import AssemblyP1.ConditionalVsMLLiteralL3Adapter271
+import AssemblyP1.W1W2SharedObservableSeparation
 
 open AssemblyP1.ConditionalVsOrdinaryMLSeparation
 
@@ -164,3 +165,16 @@ open AssemblyP1.ConditionalVsOrdinaryMLSeparation
 #print axioms AssemblyP1.ConditionalVsMLNsgAdapter271.E_two_01
 #print axioms AssemblyP1.ConditionalVsMLNsgAdapter271.nsg_num_eq
 #print axioms AssemblyP1.ConditionalVsMLNsgAdapter271.nsg_hpos
+
+#print axioms AssemblyP1.W1W2SharedObservableSeparation.postE_truth_eq_one
+#print axioms AssemblyP1.W1W2SharedObservableSeparation.truth_not_ml_of_comp_strict
+#print axioms AssemblyP1.W1W2SharedObservableSeparation.noE_post_lt_one
+#print axioms AssemblyP1.W1W2SharedObservableSeparation.w1_A
+#print axioms AssemblyP1.W1W2SharedObservableSeparation.w1_B
+#print axioms AssemblyP1.W1W2SharedObservableSeparation.w1_noE_post
+#print axioms AssemblyP1.W1W2SharedObservableSeparation.w1_noE_post'
+#print axioms AssemblyP1.W1W2SharedObservableSeparation.w1_premise_sensitivity
+#print axioms AssemblyP1.W1W2SharedObservableSeparation.w2_A
+#print axioms AssemblyP1.W1W2SharedObservableSeparation.w2_B
+#print axioms AssemblyP1.W1W2SharedObservableSeparation.w2_noE_post
+#print axioms AssemblyP1.W1W2SharedObservableSeparation.w2_premise_sensitivity
