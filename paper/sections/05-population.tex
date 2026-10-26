@@ -615,6 +615,33 @@ success curve.  The competitor class here is restricted to primitive-P2
 admissible, oriented exact iid reads; it is not universal maximum likelihood
 over all genomes and not the MB09 product-binomial approximation.
 
+\begin{remark}[Sharpness of the rate, and the unrestricted universe]
+\label{rem:rate-sharpness}
+The separation bound $1/(8B^4)$ of Theorem~\ref{thm:p2-uniform-rate} is valid
+but not tight.  Complete exact enumeration of the primitive-P2 class at
+$B=4,6,8,16$ gives exact worst-case separations $1-\rho$ larger than the
+proved bound by factors $274$, $903$, $2116$, and $16648$; the observed extremal pairs
+are one-symbol insertions, suggesting separation of order $1/B$; the sharp
+exponent is conjecturally $1$ rather than $4$.  The finite-class
+non-tightness is an exact finite computation and the asymptotic statement is a
+conjecture whose missing ingredient is a separation lower bound
+$1-\rho\ge c_1/B$, not yet proved in any form; nothing in this remark is
+kernel-checked.  The exact arithmetic
+is reproducible with \path{scripts/verify\_exponent\_265.py}, and the record
+is \path{docs/restricted-vs-unrestricted-exponent-265.md}.  Over the
+\emph{unrestricted} candidate universe no uniform positive separation exists
+at all: the circular genomes $AB$ and $ABAB$ induce the identical oriented
+read law at every read length, so once such a competitor is admissible the
+exact-ML error probability is $1$ for every $n$.  The length bound and the
+exclusion of read-law duplicates are therefore necessary hypotheses of the
+theorem, not conveniences.
+\end{remark}
+
+\statusline{\computed{} for the finite-class enumeration and the read-law
+collision (exact verifier \path{scripts/verify\_exponent\_265.py}); the sharp
+exponent is an \openstatus{} asymptotic conjecture; no new claim in this
+remark is \kernelcheck{}.}
+
 
 \subsection{Scope of the population theorem}
 

@@ -137,6 +137,8 @@ monotonicity is claimed anywhere.
 ## Reproducible proof commands
 
 ```sh
+lake build AssemblyP1.FiniteBayesTwoHypothesisWitness --wfail
+lake env leanchecker AssemblyP1.FiniteBayesTwoHypothesisWitness
 lake build AssemblyP1.BayesOptimalityCertificate --wfail        # build, warnings as errors
 lake build AssemblyP1.BayesOptimalityCertificateAudit --wfail  # audit module build
 lake env leanchecker AssemblyP1.BayesOptimalityCertificate     # kernel replay

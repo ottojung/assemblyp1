@@ -190,6 +190,8 @@ import AssemblyP1.MLEscape
 import AssemblyP1.SameLength62TieUniqueness
 import AssemblyP1.PopulationUniqueness
 import AssemblyP1.PopulationMaximizerUnrestricted
+import AssemblyP1.MaximizerOrderTransform
+import AssemblyP1.MaximizerOrderTransformAudit
 import AssemblyP1.Issue94GcdOneP2
 import AssemblyP1.P2GcdOne
 import AssemblyP1.Issue94R1LongWindow
@@ -314,16 +316,6 @@ import AssemblyP1.Issue94SameAltF
 import AssemblyP1.Issue94Antiderivative
 import AssemblyP1.Issue94IntervalCore
 import AssemblyP1.Issue94Complete
--- #217 finite-front integrations: same-length §6.2 tie uniqueness (#211); the
--- general (non-spelled) §6.2 flow domain at o_min = 1 (#214) and the
--- full-overlap disconnected flow optimum at o_min = L-1 (#214); the two
--- disjoint-circles duplex model and the 2G-remap non-equivalence (#215); the
--- conclusion-schema implication lattice (#216); the oriented unrestricted-length
--- §6.2 classification (#210); the variable-length per-occurrence audit (#213);
--- the E/A audit (#209); the Bresler-remap compatibility (#215); and the
--- fibre-count arithmetic (#219, terminal B219 `81d29c6`).  Each is
--- self-contained; the imports carry their own modules.
-import AssemblyP1.SameLength62TieUniqueness
 import AssemblyP1.Section62NonSpelledFlow
 import AssemblyP1.Section62FullOverlapDisconnected
 import AssemblyP1.DoubleStrandBridgingTransfer
@@ -342,30 +334,19 @@ import AssemblyP1.FixedNConstructiveWitness
 import AssemblyP1.FixedNConstructiveWitnessAudit
 import AssemblyP1.FiniteStartCoverage
 import AssemblyP1.FiniteStartCoverageAudit
--- #255 exact iid full-start-covered pointwise ML classification (envelope generalization).
 import AssemblyP1.FiniteSampleIidEnvelope
 import AssemblyP1.FiniteSampleIidEnvelopeAudit
 import AssemblyP1.FixedNBinomialEffectiveWeightsAudit
 import AssemblyP1.CoveredBinomialWeightsIff
 import AssemblyP1.CoveredBinomialWeightsIffAudit
--- #259 sharpness: neither disjunct of the covered-sample iff is redundant.
 import AssemblyP1.CoveredBinomialWeightsIffSharpness
 import AssemblyP1.CoveredBinomialWeightsIffSharpnessAudit
--- #259 power monotonicity: the exact-iid vs §6.1 ranking inversion holds for all n ≥ 1.
 import AssemblyP1.Section62BinomialPowerMonotonicity
 import AssemblyP1.Section62BinomialPowerMonotonicityAudit
--- #259 necessity: sample-uniform maximality of the §6.1 product-binomial implies rigidity,
--- and a rigid truth can still be beaten by a new-support candidate (sufficiency fails).
 import AssemblyP1.ProductBinomialRigidityNecessity
 import AssemblyP1.ProductBinomialRigidityNecessityAudit
--- #259 axis A: at a fixed observed count x the §6.1 product-binomial objective is
--- separable per read type; the exact fixed-x criterion, its coordinatewise sufficient
--- inequality, and the strict separation from sample-uniform maximality.
 import AssemblyP1.FixedXProductBinomialMaximality
 import AssemblyP1.FixedXProductBinomialMaximalityAudit
--- #259 axis B (boundary included): the full same-total candidate class has
--- maximal truths exactly the mass-on-one-class spectra and the {0,1}-valued
--- spectra; boundary coordinates 0/N and zero-count coordinates are dominated.
 import AssemblyP1.ProductBinomialBoundaryFullClass
 import AssemblyP1.ProductBinomialBoundaryFullClassAudit
 import AssemblyP1.FiniteSideInformationColoring
@@ -374,91 +355,122 @@ import AssemblyP1.FiniteBayesianSideInformation
 import AssemblyP1.FiniteBayesianSideInformationAudit
 import AssemblyP1.FiniteSideInformationOrder
 import AssemblyP1.FiniteSideInformationOrderAudit
--- #272 ordering of the source predicate `I_s` against the read-only `Unambiguous`.
 import AssemblyP1.FiniteSideInformationOrdering
 import AssemblyP1.FiniteSideInformationOrderingAudit
--- #272 weakest sufficient source-defined (truth-only property) promise.
 import AssemblyP1.FiniteSideInformationSourcePromise
 import AssemblyP1.FiniteSideInformationSourcePromiseAudit
--- #272 literal read-string adapter for the read-dependent `I_s` family, plus the
--- `I_s` necessity obstructions (unbridged-triple witnesses ABXABYABZ / ABXABZABY).
 import AssemblyP1.FiniteSideInformationReadStringAdapter
 import AssemblyP1.FiniteSideInformationReadStringAdapterAudit
--- #272 target 3: read-only decoder certainty characterization, "side information
--- must be supplied", and the minimum-versus-weakest sufficient-promise distinction.
 import AssemblyP1.FiniteReadOnlyDecoderCertainty
 import AssemblyP1.FiniteReadOnlyDecoderCertaintyAudit
--- #272 the literal read-string `I_s` adapter is incomparable with `Unambiguous`:
--- direction 1 (`I_s ⇒ Unambiguous`) and direction 2 (`Unambiguous ⇒ I_s`) are both
--- refuted on a faithful finite read-realizable model (ABAB/AABB, L = 2).
 import AssemblyP1.FiniteReadStringIsVsUnambiguous
 import AssemblyP1.FiniteReadStringIsVsUnambiguousAudit
--- #272 subclaim 1: `I_s` is NOT necessary for read-only decoder certainty; a
--- kernel-checked counterexample (AAAB, L = 3, R = {0,2}, Y = {AAA, ABA}) fails the
--- all-bridged-triple clause of `I_s` while a read-only decoder is certain at Y.
 import AssemblyP1.FiniteIsNotNecessaryCertainty
 import AssemblyP1.FiniteIsNotNecessaryCertaintyAudit
--- #272 weakest source-defined (read-only OR truth-only) sufficient promise:
--- existence iff the read-only posterior is already certain (subclaim b).
+import AssemblyP1.FiniteBreslerObstructionGap
+import AssemblyP1.FiniteBreslerObstructionGapAudit
 import AssemblyP1.FiniteSourceDefinedWeakest
 import AssemblyP1.FiniteSourceDefinedWeakestAudit
 import AssemblyP1.FiniteSourceDefinedMinimal
 import AssemblyP1.FiniteSourceDefinedMinimalAudit
--- #270 positive finite-family iid ML recovery via Hellinger affinity.
 import AssemblyP1.FiniteReadRecovery
--- #270 concrete uniform-start cyclic read distribution and conditional genome bounds.
 import AssemblyP1.FiniteReadRecoveryGenome
 import AssemblyP1.FiniteReadRecoveryGenomeAudit
--- #270 connect structural primitive-P2 uniqueness to iid finite-read ML.
 import AssemblyP1.FiniteReadRecoveryP2Bridge
 import AssemblyP1.FiniteReadRecoveryP2BridgeAudit
 import AssemblyP1.FiniteReadRecoveryP2Complete
 import AssemblyP1.FiniteReadRecoveryP2CompleteAudit
--- #281 generic Hellinger-affinity contraction: converts the merged
--- finite-iid sum-of-powers bound into the explicit exponential form.
 import AssemblyP1.HellingerExponentialDecay
 import AssemblyP1.HellingerExponentialDecayAudit
--- #281 non-monotonicity of finite-sample exact-ML success (AAC vs AAAC).
 import AssemblyP1.NonmonotonicityWitness281
 import AssemblyP1.NonmonotonicityWitness281Audit
--- #281 the whole primitive-P2 admissible class is finite, so the ML recovery
--- theorem needs no caller-supplied finite candidate family.
 import AssemblyP1.PrimitiveP2FiniteClass
 import AssemblyP1.PrimitiveP2FiniteClassAudit
--- #281 the length bound is attained for every alphabet size at K = 1.
 import AssemblyP1.PrimitiveP2FiniteClassTight
 import AssemblyP1.PrimitiveP2FiniteClassTightAudit
 import AssemblyP1.PrimitiveP2UniformSeparation
 import AssemblyP1.PrimitiveP2UniformSeparationAudit
--- #263 MB09 §6.1 product-binomial is not coordinatewise monotone (8-vs-4 kernel) + audit.
 import AssemblyP1.ProductBinomialMonotonicityCounterexample
 import AssemblyP1.ProductBinomialMonotonicityCounterexampleAudit
--- #263 separable-convex Graver optimality certificate (conditional core) + audit.
 import AssemblyP1.SeparableConvexGraver
 import AssemblyP1.SeparableConvexGraverAudit
--- #263 exact-ML optimizer preservation of the affine-tail Graver certificate + audit.
 import AssemblyP1.ExactMLOptimizerTransfer
 import AssemblyP1.ExactMLOptimizerTransferAudit
--- #263 optimizer-preserving EXACT support-restricted Graver certificate (T1/T2, no surrogate) + audit.
 import AssemblyP1.ExactSupportRestrictedGraver
 import AssemblyP1.ExactSupportRestrictedGraverAudit
+import AssemblyP1.Section62VisitTransport
+import AssemblyP1.Section62VisitWindowBridge
+import AssemblyP1.Section62WindowBoxSharpness
+import AssemblyP1.Section62SpellChainWindowTransport
+import AssemblyP1.Section62HalfIntegralExactML
+import AssemblyP1.ConditionalVsMLNsgAdapter271
+import AssemblyP1.W1W2SharedObservableSeparation
+import AssemblyP1.FiniteSideInformationDecoderEndpoint
+import AssemblyP1.FiniteSideInformationDecoderEndpointAudit
+-- #217 finite-front integrations: same-length §6.2 tie uniqueness (#211); the
+-- general (non-spelled) §6.2 flow domain at o_min = 1 (#214) and the
+-- full-overlap disconnected flow optimum at o_min = L-1 (#214); the two
+-- disjoint-circles duplex model and the 2G-remap non-equivalence (#215); the
+-- conclusion-schema implication lattice (#216); the oriented unrestricted-length
+-- §6.2 classification (#210); the variable-length per-occurrence audit (#213);
+-- the E/A audit (#209); the Bresler-remap compatibility (#215); and the
+-- fibre-count arithmetic (#219, terminal B219 `81d29c6`).  Each is
+-- self-contained; the imports carry their own modules.
+-- #255 exact iid full-start-covered pointwise ML classification (envelope generalization).
+-- #259 sharpness: neither disjunct of the covered-sample iff is redundant.
+-- #259 power monotonicity: the exact-iid vs §6.1 ranking inversion holds for all n ≥ 1.
+-- #259 necessity: sample-uniform maximality of the §6.1 product-binomial implies rigidity,
+-- and a rigid truth can still be beaten by a new-support candidate (sufficiency fails).
+-- #259 axis A: at a fixed observed count x the §6.1 product-binomial objective is
+-- separable per read type; the exact fixed-x criterion, its coordinatewise sufficient
+-- inequality, and the strict separation from sample-uniform maximality.
+-- #259 axis B (boundary included): the full same-total candidate class has
+-- maximal truths exactly the mass-on-one-class spectra and the {0,1}-valued
+-- spectra; boundary coordinates 0/N and zero-count coordinates are dominated.
+-- #272 ordering of the source predicate `I_s` against the read-only `Unambiguous`.
+-- #272 weakest sufficient source-defined (truth-only property) promise.
+-- #272 literal read-string adapter for the read-dependent `I_s` family, plus the
+-- `I_s` necessity obstructions (unbridged-triple witnesses ABXABYABZ / ABXABZABY).
+-- #272 target 3: read-only decoder certainty characterization, "side information
+-- must be supplied", and the minimum-versus-weakest sufficient-promise distinction.
+-- #272 the literal read-string `I_s` adapter is incomparable with `Unambiguous`:
+-- direction 1 (`I_s ⇒ Unambiguous`) and direction 2 (`Unambiguous ⇒ I_s`) are both
+-- refuted on a faithful finite read-realizable model (ABAB/AABB, L = 2).
+-- #272 subclaim 1: `I_s` is NOT necessary for read-only decoder certainty; a
+-- kernel-checked counterexample (AAAB, L = 3, R = {0,2}, Y = {AAA, ABA}) fails the
+-- all-bridged-triple clause of `I_s` while a read-only decoder is certain at Y.
+-- #272 target 5: the Bresler--Bresler--Tse all-unbridged obstruction is necessary
+-- (attributed premise) but not sufficient for read-only decoder certainty; a
+-- kernel-checked counterexample (AABB, L = 2, R = {0,1}, Y = {AA, AB}) carries no
+-- obstruction yet is ambiguous, so it is not the exact condition.
+-- #272 weakest source-defined (read-only OR truth-only) sufficient promise:
+-- existence iff the read-only posterior is already certain (subclaim b).
+-- #270 positive finite-family iid ML recovery via Hellinger affinity.
+-- #270 concrete uniform-start cyclic read distribution and conditional genome bounds.
+-- #270 connect structural primitive-P2 uniqueness to iid finite-read ML.
+-- #281 generic Hellinger-affinity contraction: converts the merged
+-- finite-iid sum-of-powers bound into the explicit exponential form.
+-- #281 non-monotonicity of finite-sample exact-ML success (AAC vs AAAC).
+-- #281 the whole primitive-P2 admissible class is finite, so the ML recovery
+-- theorem needs no caller-supplied finite candidate family.
+-- #281 the length bound is attained for every alphabet size at K = 1.
+-- #263 MB09 §6.1 product-binomial is not coordinatewise monotone (8-vs-4 kernel) + audit.
+-- #263 separable-convex Graver optimality certificate (conditional core) + audit.
+-- #263 exact-ML optimizer preservation of the affine-tail Graver certificate + audit.
+-- #263 optimizer-preserving EXACT support-restricted Graver certificate (T1/T2, no surrogate) + audit.
 
 -- #284 physical visit-count transport: spelling preservation does not imply
 -- vertex-visit / ML-flow equivalence (self-contained, Lean core only).
-import AssemblyP1.Section62VisitTransport
 
 -- #284 positive transport bound: the invariant length-L window multiset
 -- dominates the physical vertex visits (self-contained, Lean core only).
-import AssemblyP1.Section62VisitWindowBridge
 
 -- #284 sharpness refutation: no observed-window designation hypothesis sharpens
 -- the invariant window box to the exact physical feasible-throughput image
 -- (self-contained, Lean core only).
-import AssemblyP1.Section62WindowBoxSharpness
 
 -- #284 real-model bridge: the §6.2 `spellChain` window multiset and its
 -- domination of the physical visited reads (reuses the toy transport modules).
-import AssemblyP1.Section62SpellChainWindowTransport
 
 /-! ## `Issue94Transposition`: the Kotzig/Ukkonen/Pevzner descent, and an obstruction
 
@@ -1259,6 +1271,9 @@ graph content remains external. -/
 #print axioms AssemblyP1.ImplicationLattice.ConcretePanel.lambda1_A_tie
 #print axioms AssemblyP1.OrientedVariableLengthSe62.oriented_variable_length_se62_counterexample
 #print axioms AssemblyP1.OrientedVariableLengthSe62.oriented_variable_length_se62_counterexample'
+#print axioms AssemblyP1.ShortFiniteMLCounterexamples.lengths_differ_2
+#print axioms AssemblyP1.ShortFiniteMLCounterexamples.lengths_differ_3
+#print axioms AssemblyP1.ShortFiniteMLCounterexamples.lengths_differ_4
 #print axioms AssemblyP1.ShortFiniteMLCounterexamples.short_finite_ml_counterexample_2
 #print axioms AssemblyP1.ShortFiniteMLCounterexamples.short_finite_ml_counterexample_3
 #print axioms AssemblyP1.ShortFiniteMLCounterexamples.short_finite_ml_counterexample_4

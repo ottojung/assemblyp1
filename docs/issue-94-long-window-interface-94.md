@@ -1,6 +1,25 @@
 # Issue #89 / board 94, front `94iface`: the residual is `P2LongUnique`, and
 # that is the target a route has to hit
 
+> **Current status (2026-10-18): goal ACHIEVED downstream.**
+> This document records the original interface-design frontier.
+> `Issue94ConcreteAntiderivative.concrete_p2LongUnique` now
+> inhabits the exactly required `P2LongUnique` for every `L ≥ 2`,
+> using a concrete vertex-preserving component antiderivative.
+> `Issue94LongWindowSplit.shortRangeUnique` supplies the remaining
+> short-genome range. `Issue94Complete.population_unique_ML` then
+> proves the population likelihood maximization and uniqueness-up-to-rotation
+> theorem on every finite alphabet, under primitive-P2 truth assumptions,
+> **without an external BBT uniqueness hypothesis**. The full library
+> build, kernel replay and axiom audit passed on main
+> 65f5e83bb2e860bffda71e95f6bc60eb95d5e84f
+> (GitHub CI 39082113540; axioms `propext`, `Classical.choice`,
+> `Quot.sound`). What remains mathematically open includes the
+> stronger unrestricted BBTUniqueAt/LadderVertexCycle theorems and
+> unrelated physical §6.2 flow/genome correspondence. The historical
+> 'nothing landed' status in sections below is superseded.
+
+
 Branch `research/94-phoebe-end2end`, module
 `AssemblyP1/Issue94P2PrimInterface.lean`, namespace
 `AssemblyP1.Issue94Interface`. Companion (compile-gated) module

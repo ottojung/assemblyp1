@@ -589,8 +589,9 @@ exhaustive zeros are a sanity check on the proofs, not a substitute for them.
       **Further partial progress (§21, 2026-10-21):** the **triangular multi-hub
       family** (three hubs in a directed cycle, `a + b + c - 2` paths, unbounded
       cycle rank) is a genuinely *three-hub* topology with a **three-equation**
-      criterion (`triHub_nonrigid_iff`); it too is decidable by a polynomial DP
-      (unary lengths), has a rigid repetitive instance, and its coupling-dropped
+       criterion (`triHub_nonrigid_iff`); it too is decidable by a
+       pseudopolynomial DP (unary path lengths, multiplicity encoding explicit
+       in §21.4.1), has a rigid repetitive instance, and its coupling-dropped
       relaxation is not sound (`triHub_relaxed_not_sound`). The general support
       topology and a min-cut/max-flow closed form for it remain **OPEN**.
      **Further partial progress (§23, 2026-10-26):** the conformal-minimal
@@ -607,8 +608,8 @@ exhaustive zeros are a sanity check on the proofs, not a substitute for them.
      refuted, §17; general `p,q` long bridge classified, §18; coupling begins at
      rank `3`, double theta minimal among realizable supports, §19; multi-hub
      unbounded-rank family with a two-equation polynomial criterion, §20;
-     triangular three-hub unbounded-rank family with a three-equation polynomial
-     criterion, §21]
+      triangular three-hub unbounded-rank family with a three-equation
+      pseudopolynomial DP, §21]
 2. **The exact complexity** of the exact criterion (§7). **Partial (§15,
     2026-10-16):** the bouquet family (hence the target-cycle family) is in `P`
     via the Apéry-set / residue-graph shortest-path algorithm. **Partial (§20,
@@ -616,8 +617,9 @@ exhaustive zeros are a sanity check on the proofs, not a substitute for them.
      two-equation nonnegative-integer-uniqueness DP (unary path lengths); the
      uniform-in-support case (arbitrary topology) is **OPEN**. **Partial (§21,
      2026-10-21):** the triangular three-hub family (unbounded cycle rank) is in
-     `P` via a three-equation nonnegative-integer-uniqueness DP (unary path
-     lengths); the uniform-in-support case remains **OPEN**. [open]
+      a three-equation nonnegative-integer-uniqueness DP polynomial in the
+      numeric slack bound (pseudopolynomial; multiplicities need not be unary);
+      the uniform-in-support case remains **OPEN**. [partial; §21.4.1]
 3. ~~**The two-closed-walk certificate** (§4)~~ **RESOLVED (2026-10-15).** The
    two-closed-walk certificate is necessary **and** sufficient for strongly
    connected supports; see Theorem 5 in §12. The earlier `n = 3` evidence was
@@ -644,7 +646,7 @@ exhaustive zeros are a sanity check on the proofs, not a substitute for them.
 | §7 exact criterion is a finite integer feasibility problem | mathematical proof |
 | §7 LP relaxation not exact (real/integer gap witnessed, §7) | mathematical proof + verified computation |
 | §8.1 closed-form graph-theoretic iff (polynomial / min-cut form) | open |
-| §8.2 exact complexity | open |
+| §8.2 exact complexity | partial: bouquet/target-cycle polynomial; multi-hub and triangular-hub DPs polynomial in their numeric bounds (pseudopolynomial unless multiplicities are unary); arbitrary-topology classification open |
 | §8.3 two-closed-walk certificate iff | mathematical proof + kernel-checked (`TwoWalkRigidity.rigid_iff_no_two_nonneg_circ`, §12) |
 | §8.4 finite-`k` cycle question | open |
 | §12 Theorem 5: two-closed-walk iff (general `w₁,w₂` and equal-length `w=1` forms) | mathematical proof + kernel-checked |
@@ -696,7 +698,8 @@ exhaustive zeros are a sanity check on the proofs, not a substitute for them.
 | §21 all multiplicities `1` is rigid (`triHub_rigid_all_one`) | kernel-checked |
 | §21 rigid repetitive instance `triHub_rigid_repetitive` (lengths `(1,3)`, multiplicities `(2,1)` each direction) | kernel-checked |
 | §21 coupling-dropped relaxation not sound `triHub_relaxed_not_sound` | kernel-checked |
-| §21 triangular cross-check vs brute force + polynomial DP + mutation-red (`scripts/verify_257_tri_hub.py`: 153 triangular supports, 0 mismatches) | verified computation, exhaustive in scope |
+| §21 triangular cross-check vs brute force + pseudopolynomial DP + mutation-red (`scripts/verify_257_tri_hub.py`: 153 triangular supports, 0 mismatches) | verified computation, exhaustive in scope |
+| §21.4.1 triangular DP operation/state/bit bound and independent small census (`scripts/check_257_tri_hub_dp_complexity.py`) | source-level bound + verified computation, exhaustive in stated scope |
 
 ---
 
@@ -1788,6 +1791,67 @@ family of unbounded cycle rank** and complements the bouquet Apéry-set bound
 `scripts/verify_257_multi_hub.py`. The **uniform-in-support** complexity
 (arbitrary topology) remains **OPEN**.
 
+#### 21.4.1 Exact resource bound and encoding qualification
+
+The phrase "polynomial in the input size" in §21.4 is too broad unless the
+multiplicity/slack encoding is specified. Here is a bound for the actual
+`dp_nonrigid` loop in `scripts/verify_257_tri_hub.py`; it is a source-level
+bound, not a bound for arbitrary support graphs.
+
+Write `P = a+b+c`, let `L_i ≥ 1` be all path lengths, `s_i=m_i-1 ≥ 0` the
+base slacks, `E = Σ_i L_i` the support-edge count, and
+`K = Σ_i L_i s_i = G-E`. A shifted solution has coordinates `u_i ≥ 0` and
+must satisfy two signed balance differences and weighted mass `K`. For every
+partial DP state, `0 ≤ mass ≤ K`. Since every `L_i ≥ 1`, the sum of all
+processed `u_i` is at most `K`; consequently each signed balance coordinate
+is in `[-K,K]`. Thus at most
+`S=(2K+1)^2(K+1)` dictionary keys can occur. For each of `P` paths the code
+visits at most `S` old keys and tries `t=0,...,floor((K-mass)/L_i)`, at most
+`K+1` transitions. Each transition performs a constant number of integer
+operations and one expected-amortized dictionary update on the usual
+word-RAM/hash-table model. Therefore the expected word-operation upper bound is
+`O(P(K+1)^4)` and the simultaneous
+`cur`/`nxt` dictionaries use `O((K+1)^3)` entries. Counts are saturated at
+`2`, so count values themselves require only constant-size storage.
+Each key coordinate needs `O(log(K+1))` bits; accounting for ordinary
+arbitrary-precision integer arithmetic gives `O(P(K+1)^4 log(K+1))` bit
+operations as a conservative bound, with `O((K+1)^3 log(K+1))` key bits
+(excluding hash-table/object overhead). The final lookup tests whether the
+base solution is the unique one; the zero vector is not subtracted because
+the counted objects are shifted feasible circulations and the known base is
+one of them.
+
+Precisely, after processing the first `j` paths, the table entry at state
+`(d_ab,d_bc,q)` is `min(2, N_j(d_ab,d_bc,q))`, where `N_j` is the number of
+nonnegative assignments to those `j` variables with those signed partial
+balances and mass. This follows by induction: initialize the empty assignment
+at `(0,0,0)` with count one; for the next path of length `L` and group `A`,
+`B`, or `C`, add every `t=0..floor((K-q)/L)` to the corresponding balance
+coordinate(s) and mass, adding the old count and saturating the sum at two.
+Saturation is exact for the decision threshold because all later extensions
+depend only on the state and are counted with nonnegative integer weights.
+At the terminal state `(Σ_A s-Σ_B s, Σ_B s-Σ_C s, K)`, the count is at least
+one (the slack assignment); it equals one iff that assignment is unique. Thus
+for this triangular-path family the implemented test returns non-rigid exactly
+when the terminal saturated count is two. This theorem assumes path constancy
+and the three-hub balance reduction already established in §21; it makes no
+claim for other support topologies.
+
+This is polynomial in `P` and the **numeric** value `K` (hence
+pseudopolynomial). If all path multiplicities are unary encoded, then `K` is
+bounded by the numeric input size times the explicit path length and the bound
+is polynomial in that encoding. With binary multiplicities, `K` can be
+exponential in the bit length, so this implementation does **not** establish a
+polynomial-time bound in the ordinary binary input length. The explicit support
+makes the lengths unary, but does not by itself make multiplicities unary.
+Neither the DP nor this bound applies to arbitrary support topology; uniform
+general-support complexity remains **OPEN**. A fresh independent arithmetic
+census and a balance-dropping negative control are in
+`scripts/check_257_tri_hub_dp_complexity.py`. The §9 epistemic ledger records
+this as a source-level bound plus verified computation, not a general
+complexity classification. [proved bound from loop invariants; verified
+computation for the stated census]
+
 ### 20.5 Cross-check (`scripts/verify_257_multi_hub.py`)
 
 The script `scripts/verify_257_multi_hub.py` is self-contained, exact and
@@ -1889,19 +1953,22 @@ criterion is a **three-equation** system rather than a two-equation one.
   Hence **no** criterion of the independent-per-path or single-cut form can
   decide the triangular multi-hub family.
 
-### 21.4 §8.2: a polynomial criterion for the unbounded-rank family
+### 21.4 §8.2: a pseudopolynomial criterion for the unbounded-rank family
 
 Shifting to nonnegative variables `u_i = α_i + m_i − 1 ≥ 0` (etc.), the criterion
 becomes the existence of a **second** nonnegative integer solution of a
 **three-equation** system (two balance differences and the weighted mass) whose
-base solution is `(m_s − 1)`. Since the path lengths are encoded in **unary** (an
-explicit support), this is a nonnegative-integer **uniqueness** problem decidable
-by a dynamic program over `(Δ_ab, Δ_bc, mass)` counting solutions up to `2`; its
-running time is polynomial in the input size. This is a §8.2 **upper bound for a
-three-hub family of unbounded cycle rank** and complements the bouquet Apéry-set
-bound (§15) and the two-hub DP (§20). It is implemented and cross-checked from
-scratch in `scripts/verify_257_tri_hub.py`. The **uniform-in-support** complexity
-(arbitrary topology) remains **OPEN**.
+base solution is `(m_s − 1)`. Path lengths are encoded in **unary** (explicit
+support), but multiplicities are not assumed unary. The implemented DP over
+`(Δ_ab, Δ_bc, mass)` counts solutions up to `2`; §21.4.1 gives its state,
+transition, memory and bit-operation bounds and establishes a
+**pseudopolynomial** upper bound in `K = G-E`. The DP is polynomial in the
+ordinary input length if multiplicities are also unary, but can be exponential
+in their binary bit length. This is a §8.2 upper bound for a three-hub family of
+unbounded cycle rank, not a polynomial-in-binary-input classification. It
+complements the bouquet bound (§15) and two-hub DP (§20), and is implemented
+and cross-checked from scratch in `scripts/verify_257_tri_hub.py`. The
+**uniform-in-support** complexity (arbitrary topology) remains **OPEN**.
 
 ### 21.5 Cross-check (`scripts/verify_257_tri_hub.py`)
 
@@ -1926,8 +1993,45 @@ bridge (§18) and the two-hub multi-hub (§20). The residual — a *polynomial*
 min-cut/max-flow closed form for **arbitrary** supports (general topology), or a
 proof that none exists — remains **OPEN** (§8.1/§8.2); §21 shows that such a
 criterion cannot be of a single-cut / independent-per-path form for the
-triangular family either, and gives a polynomial criterion for that
+triangular family either, and gives a pseudopolynomial criterion for that
 unbounded-rank three-hub subfamily.
+
+---
+
+## 22. Arbitrary-support slack bound for delta certificates (§8.2 increment)
+
+Let a finite support have `m` edges, and let `A` be its positive integer
+circulation of total `G`. Any alternative positive circulation `B` with the
+same total gives `δ = B - A`, a nonzero balanced zero-sum witness from Theorem 1.
+Writing `C = G - m = ∑ₑ(A(e)-1)` gives the support-wide coordinate bound
+
+```text
+                 -C ≤ δ(e) ≤ C       for every support edge e.
+```
+
+**Proof.** Since `∑δ = 0`, the sum of positive coordinates of `δ` equals the
+absolute sum of its negative coordinates. For a negative coordinate,
+`-δ(e) = A(e)-B(e) ≤ A(e)-1`, since `B(e) ≥ 1`; therefore the total negative
+mass is at most `∑ₑ(A(e)-1)=G-m=C`. Each negative magnitude is at most this
+total. The positive mass is the same total, so each positive coordinate is at
+most `C` as well. This proves both sides. ∎
+
+Consequently an exact finite certificate can search only
+`{δ ∈ ℤ^E : -C ≤ δ(e) ≤ C}` and retain the balanced, zero-sum, box-feasible,
+nonzero vectors. This sharpens the generic `G`-coordinate bound underlying
+`FiniteRigidityDecider`; in particular `C=0` immediately certifies rigidity.
+The search still has worst-case `(2C+1)^m` candidates, so this is **not** a
+polynomial-time characterization and does not close §8.1 or the general §8.2
+complexity question. It is an explicit topology-independent certificate bound
+in the available excess multiplicity (`genome length - support size`).
+
+`python3 scripts/verify_257_slack_bound.py` independently compares full positive
+circulation enumeration with bounded-delta enumeration on every strongly
+connected loopless directed support of at most three vertices and at most five
+edges (positive circulations through `G ≤ min(2m,8)`). The deliberate `C-1`
+mutation is caught by the two-self-loop support `A=(2,1)`, `G=3`, `m=2`: its
+alternative `(1,2)` has a coordinate of magnitude exactly `C=1`, demonstrating
+that the stated bound cannot be decreased uniformly.
 
 ---
 
