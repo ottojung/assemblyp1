@@ -21,6 +21,26 @@ maximality; no exact-genome likelihood is defined on arbitrary orbit flows.
 
 ## Conditional incidence inclusion
 
+### Local palindrome/loop boundary (kernel checked)
+
+The endpoint convention itself does not fail at this boundary. In
+`Section62PhysicalEdgeOrbit.ForwardLoop`, for any window label `w`, the
+forward-tagged loop `bdEdge cls (w,false) (w,false) len` contributes exactly
+`(pos,neg)=(1,1)` at `(w,false)`, and its physical reversal orbit has the same
+counts. This computation also applies when the content of `w` is a
+self-reverse-complement palindrome: the strand tag records the selected
+forward traversal, and the two endpoint occurrences remain distinct even
+though their vertex classes coincide. The reverse edge represents the same
+physical orbit; it does not add a second unit of flow.
+
+This is deliberately only the local incidence lemma. The current `Tagged W`
+formalization stores a word plus an orientation bit, but does not itself
+constrain that word to be the actual string content of a strand or prove that
+successive circular windows generate this particular tagged edge. Thus the
+source-faithful window-occurrence map (including orientation selection at
+palindromic windows and edge availability) remains open; no genome-to-flow
+inclusion follows from this lemma alone.
+
 Let `G` be a circular word with `N >= L`, and let `e_i` be its oriented
 length-`L` window beginning at circular position `i`. Suppose an oriented
 overlap graph contains the edge occurrences

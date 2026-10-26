@@ -194,6 +194,58 @@ theorem physBalanced_reverse {ι : Type} (reps : List ι)
 
 /-! ## The ATAT witness: three orbits, and why inherited throughput is not enough -/
 
+/-! ## A forward-oriented loop occurrence
+
+The endpoint-occurrence convention is local and does not require a loop to
+have distinct endpoint classes.  When a window occurrence and its successor
+are both represented by their forward tagged strands, a loop edge has one
+positive source half and one negative target half.  In particular, a
+self-reverse-complement *word* does not force us to identify the two endpoint
+occurrences or to count the orbit twice: the tag records the chosen traversal
+orientation, while the quotient identifies only reversal of the whole edge.
+
+This lemma establishes that incidence calculation for the canonical
+forward-tagged loop.  It does not construct such an edge from a genome's
+windows or prove membership in `overlapEdges`; those remain separate graph-map
+obligations.
+-/
+
+namespace ForwardLoop
+
+/-- The edge occurrence whose two endpoints are the same forward-tagged
+molecule-class representative. -/
+def edge (w : W) (len : Nat) : BdEdge A (Tagged W) :=
+  bdEdge cls (w, false) (w, false) len
+
+/-- A unit occurrence of this loop contributes exactly one positive and one
+negative physical half-incidence at its vertex.  The same calculation applies
+when `w` is a self-reverse-complement window: palindrome status does not merge
+the two endpoint occurrences. -/
+theorem loop_halfIncidence (w : W) (len : Nat) :
+    posHalf (edge (A := A) w len) (w, false) = 1 ∧
+    negHalf (edge (A := A) w len) (w, false) = 1 := by
+  simp [edge, bdEdge, posHalf, negHalf, cls, sgnRep, sgnTgt]
+
+/-- The quotient orbit has the same one-and-one incidence, independently of
+which of its two oriented representatives is used. -/
+theorem orbit_loop_halfIncidence (w : W) (len : Nat) :
+    physPos (w, false) (physMk (edge (A := A) w len)) = 1 ∧
+    physNeg (w, false) (physMk (edge (A := A) w len)) = 1 ∧
+    physPos (w, false) (physMk (reverseEdge (edge (A := A) w len))) = 1 ∧
+    physNeg (w, false) (physMk (reverseEdge (edge (A := A) w len))) = 1 := by
+  have h := loop_halfIncidence (A := A) w len
+  have hPos : physPos (w, false) (physMk (edge (A := A) w len)) = 1 := by
+    rw [physPos_mk]
+    exact h.1
+  have hNeg : physNeg (w, false) (physMk (edge (A := A) w len)) = 1 := by
+    rw [physNeg_mk]
+    exact h.2
+  exact ⟨hPos, hNeg,
+    (physPos_reverse (w, false) (edge (A := A) w len)).trans hPos,
+    (physNeg_reverse (w, false) (edge (A := A) w len)).trans hNeg⟩
+
+end ForwardLoop
+
 namespace Atat
 
 /-- The tagged strand type on `Bool`-words. -/

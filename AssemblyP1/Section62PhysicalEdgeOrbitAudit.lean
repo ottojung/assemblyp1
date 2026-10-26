@@ -34,6 +34,9 @@ none; the quotient lemmas use `Quot.sound`), with no `sorryAx`.  No `sorry` /
 
 /-! ## ATAT witness -/
 
+#print axioms AssemblyP1.Section62PhysicalEdgeOrbit.ForwardLoop.loop_halfIncidence
+#print axioms AssemblyP1.Section62PhysicalEdgeOrbit.ForwardLoop.orbit_loop_halfIncidence
+
 #print axioms AssemblyP1.Section62PhysicalEdgeOrbit.Atat.reverse_E1
 #print axioms AssemblyP1.Section62PhysicalEdgeOrbit.Atat.reverse_E2
 #print axioms AssemblyP1.Section62PhysicalEdgeOrbit.Atat.reverse_E3
