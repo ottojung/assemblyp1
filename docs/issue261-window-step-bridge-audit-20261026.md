@@ -52,3 +52,35 @@ representative enumeration law. Then prove `StepsInGraph` from these hypotheses
 for `oMin ≤ readLen - 1`; separately investigate whether the particular
 transitive-reduction definition preserves those steps. Keep the flow/circuit /
 genome candidate sets distinct until that work is complete.
+
+## Follow-up branch audit (2026-10-26)
+
+The proposed next step is now represented by independent source branches, so
+this checkpoint does not duplicate their code. I verified these remote tips with
+`git ls-remote` and fetched them for inspection:
+
+* `agent/board-261-spelling-reduction-47f4ce129286` at
+  `31f6d3be1b6e0542c544a2614bb0e834da5fc2fa` adds
+  `Section62SpellingReduction.lean`. Its `spellPath_eq_spellDirect` theorem
+  supplies the core arbitrary-proper-overlap composition identity, and its
+  spelling-preserving reduction predicate explicitly checks both overlap
+  equalities and `l1 + l2 = readLen + e.len`.
+* `agent/issue284-visit-window-transport-bridge` at
+  `5a781fb89b2642e14aec282931776827509be0ee` updates the visit/window bridge
+  and its prose to make the overlap direction and throughput identification
+  explicit.
+* `agent/research/261-transred-spelling-psDnExG-brandy` at
+  `52b6c446c90249a7c668142a7c1b4834ecbfa2dc` adds an exact finite audit of
+  transitive-reduction spelling on a concrete cell.
+
+These are useful but do not yet close the original source-faithful bridge:
+the first theorem concerns words already supplied as lists and not the
+`Spelling` record's circular window content or observed-class/RC membership;
+the second is a separate visit-window interface; the finite reduction audit is
+not a general preservation theorem. Their existence also makes a parallel
+implementation here non-duplicative only if it addresses the still-missing
+interface, which has not been derived in the current run. Treat the arbitrary
+overlap spelling identity as a checkable intermediate result, not as proof that
+all genuine circular genomes yield surviving graph steps. The question's newest
+board comments could not be independently read in this runtime (`gh` is not
+installed); see the terminal handoff for lookup attempts.
