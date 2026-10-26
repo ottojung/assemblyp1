@@ -156,3 +156,11 @@ open AssemblyP1.ConditionalVsOrdinaryMLSeparation
 #print axioms AssemblyP1.ConditionalVsMLLiteralL3Adapter271.conv_ordinary_not_certain
 #print axioms AssemblyP1.ConditionalVsMLLiteralL3Adapter271.converse_genome
 #print axioms AssemblyP1.ConditionalVsMLLiteralL3Adapter271.model_axes
+
+#print axioms AssemblyP1.ConditionalVsMLNsgAdapter271.nsg_conditional_posterior_eq_one
+#print axioms AssemblyP1.ConditionalVsMLNsgAdapter271.separation_nsg
+#print axioms AssemblyP1.ConditionalVsMLNsgAdapter271.nsg_full_premise_fails
+#print axioms AssemblyP1.ConditionalVsMLNsgAdapter271.E_one_01
+#print axioms AssemblyP1.ConditionalVsMLNsgAdapter271.E_two_01
+#print axioms AssemblyP1.ConditionalVsMLNsgAdapter271.nsg_num_eq
+#print axioms AssemblyP1.ConditionalVsMLNsgAdapter271.nsg_hpos

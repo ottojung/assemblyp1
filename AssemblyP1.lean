@@ -1377,3 +1377,4 @@ reading. Two finite checks anchor it: the refuted BBT premise's witness is not
 #print axioms AssemblyP1.Section62SpellChainWindowTransport.chain_visited_dominated
 #print axioms AssemblyP1.Section62SpellChainWindowTransport.genuineChain_visited_dominated
 import AssemblyP1.Section62HalfIntegralExactML
+import AssemblyP1.ConditionalVsMLNsgAdapter271
