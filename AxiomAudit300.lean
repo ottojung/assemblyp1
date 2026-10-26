@@ -2,6 +2,9 @@ import AssemblyP1.ShortFiniteMLCounterexamples
 
 open AssemblyP1.ShortFiniteMLCounterexamples
 
+#print axioms AssemblyP1.ShortFiniteMLCounterexamples.lengths_differ_2
+#print axioms AssemblyP1.ShortFiniteMLCounterexamples.lengths_differ_3
+#print axioms AssemblyP1.ShortFiniteMLCounterexamples.lengths_differ_4
 #print axioms AssemblyP1.ShortFiniteMLCounterexamples.truth_information_feasible_2
 #print axioms AssemblyP1.ShortFiniteMLCounterexamples.truth_information_feasible_3
 #print axioms AssemblyP1.ShortFiniteMLCounterexamples.truth_information_feasible_4
