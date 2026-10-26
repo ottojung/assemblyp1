@@ -2140,3 +2140,22 @@ multiplicity split, §2). Implemented from scratch and cross-checked in
 enumeration, ≤ 20 candidates per genome; exit 0 iff every expectation holds).
 [verified computation, three fixed genomes — not a census, and no general
 iff claimed; the exact criterion of Theorem 1 and the OPEN items of §8 stand]
+
+## 25. Same support graph, different positive-slack rigidity (binary genomes)
+
+The `AAAB` and `AAAAB` circular genomes at `L = 2` both have the directed
+support `AA` (loop at `A`), `AB`, `BA` (the `A`–`B` two-cycle), hence identical
+support topology. Their spectra in edge order `(AA, AB, BA)` are respectively
+`A = (2,1,1)` and `A = (3,1,1)`. Exact circulation enumeration gives only
+`(2,1,1)` at total `4`, so `AAAB` is rigid; at total `5`, `AAAAB` has both
+`(3,1,1)` and `(1,2,2)`, so it is non-rigid. The difference from the latter
+truth is `δ = (-2,1,1)`: it is nonzero, balanced, zero-sum, and satisfies
+`δ ≥ 1-A = (-2,0,0)`, exactly the box criterion of Theorem 1.
+
+This is a compact genome-realizable instance of the separation between support
+topology and true multiplicities: extra slack on the loop permits moving one
+copy to the two-cycle while preserving total length. The exact check is
+`python3 scripts/verify_257_positive_slack_graph.py`; it enumerates all
+positive compositions at these two totals and separately validates the delta
+certificate. [verified computation, two fixed genomes; no general iff or
+complexity claim]
