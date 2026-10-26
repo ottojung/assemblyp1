@@ -238,8 +238,10 @@ equivalence-closed admissible) family.
    `weakest_admissible_iff_union` to the resulting read-dependent `I_s` family,
    and kernel-checks the `I_s` necessity obstructions (general coverage /
    triple / interleaved projection lemmas plus the unbridged-triple witnesses
-   `ABXABYABZ` / `ABXABZABY`).     A *decoder-level* certainty endpoint still
-   requires the external Not-So-Greedy guarantee and remains attributed/OPEN.
+   `ABXABYABZ` / `ABXABZABY`).     The concrete decoder-level conditional-certainty implication is
+    kernel-checked in `FiniteSideInformationDecoderEndpoint.lean`,
+    *conditional* on the externally attributed 2016 Not-So-Greedy guarantee.
+    The guarantee itself remains unproved.
 5. **Read-only decoder certainty (target 3).** LANDED separately in
    [`issue272-readonly-decoder-certainty.md`](issue272-readonly-decoder-certainty.md):
    some read-only decoder reaches posterior one at `r` **iff** the supported

@@ -160,9 +160,11 @@ while `I_s` constrains the **`I_s`-feasible** fibre, and these differ; see
    the source-faithful truth-dependent promise by marginalising
    `HistoricalInformationFeasibleLiteral` over the compatible placements,
    proves it is read-dependent, and applies `weakest_admissible_iff_union` to
-   the resulting read-dependent `I_s` family. A *decoder-level* certainty
-   endpoint still requires the external Not-So-Greedy guarantee and remains an
-   attributed premise. OPEN (decoder-level endpoint only).
+   the resulting read-dependent `I_s` family. A concrete decoder-level conditional-certainty implication
+    is kernel-checked in `FiniteSideInformationDecoderEndpoint.lean`:
+    under the explicitly attributed external Not-So-Greedy correctness
+    guarantee, a read-only decoder entails posterior certainty for the
+    true rotation orbit. The external premise itself remains unproved.
 2. **`I_s` necessity for decoder-level certainty.** RESOLVED (negative) at the
    read-only-decoder level by
    [`FiniteIsNotNecessaryCertainty`](../AssemblyP1/FiniteIsNotNecessaryCertainty.lean):

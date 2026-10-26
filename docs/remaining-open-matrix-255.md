@@ -1150,10 +1150,12 @@ rest remain human-readable only, as labeled per entry.
   the `I_s`-feasible fibre respectively.  See
   [`issue272-read-string-is-vs-unambiguous.md`](issue272-read-string-is-vs-unambiguous.md).
 - **Still OPEN:** the bridge to a specific genome assembly reconstruction
-  theorem supplying the auxiliary label; the decoder-level certainty endpoint
-  (external Not-So-Greedy guarantee remains an attributed premise); `I_s`
-  necessity for the *particular* 2016 decoder; the full classification of
-  weakest side information for certain finite Bayesian recovery.
+  theorem supplying the auxiliary label; `I_s` necessity for the *particular*
+  2016 decoder; the full classification of weakest side information for certain
+  finite Bayesian recovery.  The decoder-level certainty endpoint is LANDED as
+  an attributed-premise bridge
+  ([`FiniteSideInformationDecoderEndpoint`](../AssemblyP1/FiniteSideInformationDecoderEndpoint.lean)):
+  the external Not-So-Greedy guarantee remains an explicit hypothesis, not proved.
 
 ### #276 (CLOSED) — reframe paper around comparable information and recovery guarantees
 

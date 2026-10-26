@@ -1379,3 +1379,5 @@ reading. Two finite checks anchor it: the refuted BBT premise's witness is not
 import AssemblyP1.Section62HalfIntegralExactML
 import AssemblyP1.ConditionalVsMLNsgAdapter271
 import AssemblyP1.W1W2SharedObservableSeparation
+import AssemblyP1.FiniteSideInformationDecoderEndpoint
+import AssemblyP1.FiniteSideInformationDecoderEndpointAudit
