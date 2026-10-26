@@ -37,6 +37,8 @@ cross-check, exhaustive small scopes),
 `python3 scripts/verify_257_tri_hub.py` (§21 triangular multi-hub three-equation
 criterion, polynomial DP decision, rigid repetitive instance, non-rigidity
 witness and coupling refutation, mutation-red control, exhaustive small scopes).
+`python3 scripts/verify_257_ternary_l2_census.py` (§22 ternary circular `L=2`
+census, all spectra from `2 ≤ G ≤ 7`, direct circulation/delta checks).
 Self-contained, exact integer arithmetic, deterministic._
 
 _Blocking-review repair (2026-10-10, branch `research/257-graver-lean-repair`):
@@ -1912,3 +1914,24 @@ proof that none exists — remains **OPEN** (§8.1/§8.2); §21 shows that such 
 criterion cannot be of a single-cut / independent-per-path form for the
 triangular family either, and gives a polynomial criterion for that
 unbounded-rank three-hub subfamily.
+
+## 22. Bounded ternary circular `L=2` census
+
+The independent verifier `scripts/verify_257_ternary_l2_census.py` covers exactly
+the circular words over `{A,B,C}` with `2 ≤ G ≤ 7`, modulo cyclic rotation, at
+`L=2`. It enumerates all **537** rotation classes and obtains **358** distinct
+length-2 spectra. For each distinct spectrum it independently enumerates every
+positive integer circulation on the observed directed-edge support with the
+same total, rather than relying on the binary genome census or a family
+criterion. The complete counts are **181 rigid** and **177 non-rigid** spectra.
+All **342** nontrivial alternative circulations found were separately checked
+for zero incidence at each symbol, zero total delta, nonzero delta, and
+`A + delta ≥ 1` edgewise.
+
+The bounded cell includes 15 rigid spectra with more than one support edge and
+some edge multiplicity at least 3; for example, circular `AAAABC` has spectrum
+`AA:3, AB:1, BC:1, CA:1` and is rigid in this support. A non-rigid example is
+`AABBBAC`, with support edges `(AA, AB, AC, BA, BB, CA)`, truth multiplicities
+`(1,1,1,1,2,1)`, alternative `(2,1,1,1,1,1)`, and validated delta
+`(1,0,0,0,-1,0)`. This is a finite census and witness cross-check only; it
+establishes no general iff, repeat bound, or complexity claim.
