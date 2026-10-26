@@ -153,7 +153,7 @@ Imagine testing a proposed genome by repeating the sequencing experiment in your
 
 **Nothing more complicated than a set of probabilities and a product.**
 
-**Why the highest-probability candidate?** If the candidates start out equally likely and every wrong answer costs the same, the most likely candidate is also the one that is right most often *on average*.
+**Why the highest-probability candidate?** If the candidates start out equally likely and every wrong answer costs the same, the most likely candidate is also the one that is right most often *on average*. That is an on-average claim, not a per-truth promise: a rule that is right whenever a promised truth-dependent condition holds can still score worse on average ($1/4$ versus $3/4$ for MAP in the kernel-checked witness of paper `rem:map-vs-infallible`).
 
 <!--
 This is likelihood P(data | genome), not posterior probability P(genome | data).
@@ -177,6 +177,11 @@ maximizes the average chance of being right, and the kernel-checked certificate
 (BayesOptimalityCertificate) adds that a rule missing a per-observation
 maximizer is strictly worse, ties allow several optimal rules, and a strict
 maximizer forces the choice. This still says nothing for one fixed truth.
+A rule that is right whenever a promised truth-dependent condition holds is only
+conditionally guaranteed: with a uniform prior and P_S(a)=1/4, P_S(b)=3/4,
+P_D(a)=3/4, P_D(b)=1/4 it scores 1/4 on average while MAP scores 3/4
+(kernel-checked witness; paper rem:map-vs-infallible, mirrored from the
+programmers deck).
 -->
 
 ---
