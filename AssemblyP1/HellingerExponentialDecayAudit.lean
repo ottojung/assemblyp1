@@ -1,4 +1,5 @@
 import AssemblyP1.HellingerExponentialDecay
+import AssemblyP1.HellingerNoDecay
 
 /-! # Independent kernel axiom audit for the generic Hellinger-affinity
 exponential decay of exact-ML error (issue #281)
@@ -14,3 +15,4 @@ candidate-class structure is assumed. -/
 #print axioms AssemblyP1.HellingerExponentialDecay.eventProb_wrong_le_exp_neg
 #print axioms AssemblyP1.HellingerExponentialDecay.exists_uniform_affinity_lt_one
 #print axioms AssemblyP1.HellingerExponentialDecay.eventProb_wrong_le_exp_neg_identifiable
+#print axioms AssemblyP1.HellingerNoDecay.eventProb_wrong_eq_one_of_mem

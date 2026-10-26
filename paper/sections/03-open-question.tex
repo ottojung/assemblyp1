@@ -273,6 +273,11 @@ size: the class may be enormous and $\rho_*$ close to one.
 For arbitrary same-length circular genomes the uniform strict-separation
 assumption fails: at $L=2$, $AAABAB$ and $AABAAB$ have identical read laws
 (Example~\ref{ex:ABAB}), giving $\rho=1$ for a family containing both.
+The boundary is sharp and kernel-checked: when the competitor family
+contains the truth itself, every read tuple ties for the exact-ML lead, so
+the exact wrong-selection probability is $1$ at every sample size $n$
+(\path{HellingerNoDecay.eventProb_wrong_eq_one_of_mem}); no decay rate is
+possible without identifiability.
 In contrast, Theorem~\ref{thm:p2-finite-class} proves that the entire
 primitive-P2 candidate class is finite for fixed alphabet and read length,
 and Theorem~\ref{thm:population} proves separation modulo rotation.
