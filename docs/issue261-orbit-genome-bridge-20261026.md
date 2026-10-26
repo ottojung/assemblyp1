@@ -40,10 +40,17 @@ each circular genome's molecule-class spectrum is in the physical orbit-flow
 visit image (and the mapped flow has total edge multiplicity `N`). This is a
 conditional inclusion, not an identification: it supplies no converse and
 does not establish the hypothesis for MB09's graph or its transitive
-reduction. A full proof for the formal repository graph also needs the exact
-`posHalf`/`negHalf` definitions on a chain junction, including self-loops and
-palindromic classes, and a proof that every window-chain edge occurrence is
-present after reduction.
+reduction. The existing Lean modules establish two adjacent facts but do not
+close this map: `Section62PhysicalHalfIncidence.posHalf_reverse` and
+`negHalf_reverse` preserve the separate endpoint counts under the formal edge
+reversal, including loops; `Section62ObservedMoleculeCount` identifies RC-class
+word counts for already-spelled reduced signed circuits, including palindromes.
+Neither proves that a circular-window occurrence maps to the needed physical
+edge orbit with those incidences, nor that it survives reduction. In
+particular `Section62Flow.Spelling.step` is parameterized at `readLen - 1`,
+whereas `overlapEdges` admits any proper length in `[oMin, readLen)`; a
+source-faithful correspondence must explain how those occurrence records are
+generated and related, not infer their presence from the endpoint graph API.
 
 ## Counterexample to the naive oriented lift
 
@@ -84,8 +91,10 @@ the graph and junction-incidence hypotheses are formalized and verified.
 Still OPEN: (i) identify edge occurrences and multiplicities in MB09's physical
 RC overlap multigraph, including transitive reduction; (ii) prove the stated
 occurrence map preserves signed half-incidences and vertex lower bound 1 for
-arbitrary overlap and palindrome cases; (iii) determine whether the physical
-flow visit image is larger than the circular-genome spectrum image in this
-source-faithful graph; (iv) relate the oriented and quotient likelihood
-maximizers on the *whole* genome candidate universe; (v) general maximality,
-fixed-`N` binomial, half-integral/real relaxations. Keep #261 and #255 open.
+arbitrary overlap and palindrome cases (the existing reversal and observed
+class-count results are compatible but are not that proof); (iii) determine
+whether the physical flow visit image is larger than the circular-genome
+spectrum image in this source-faithful graph; (iv) relate the oriented and
+quotient likelihood maximizers on the *whole* genome candidate universe; (v)
+general maximality, fixed-`N` binomial, half-integral/real relaxations. Keep
+#261 and #255 open.
