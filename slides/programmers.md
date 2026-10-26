@@ -232,6 +232,25 @@ A pair and two B pairs. P(B|AAA)=(2/10)/(1/10+2/10)=2/3.
 
 ---
 
+# A finite sample can fool ML—and ML still matters
+
+Truth **AABBC** gives `AAB` and `BCA` probability **1/5 each**.
+
+Decoy **AABC** gives each probability **1/4**.
+
+For the observed pair `AAB, BCA`:
+
+```text
+truth likelihood = 2 × (1/5)² = 2/25
+decoy likelihood = 2 × (1/4)² = 1/8  (25/16 times larger)
+```
+
+**The truth can lose on finite data.** ML remains a principled comparison of data probabilities—not a per-sample guarantee.
+
+<!-- Exact iid uniform-start read model, oriented length-3 words, genome classes not collapsed by length. The example is kernel-checked as `FiniteSamplingCounterexample.finite_sampling_counterexample`; sample starts 0 and 3 satisfy the stated information-feasibility predicate. The common multinomial 2! factor is shown explicitly. The theorem does not imply every candidate domain or every historical likelihood. -->
+
+---
+
 # More reads: count pairs of possible positions
 
 Now suppose we independently observe **two reads, both `AAA`**.

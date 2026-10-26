@@ -148,6 +148,34 @@ not the theorem's proof status.}
 
 \subsection{Observation models and candidate classes}
 
+For a fixed circular genome $G$ of length $g$ and fixed read length $L$, let
+$P_G$ be the probability law on oriented length-$L$ words defined by drawing a
+start $T$ uniformly from $\ints/g\ints$ and returning $W_T(G)$. Thus
+\[
+  P_G(w)=\frac{\spec_L(G)(w)}{g}.
+\]
+The experiment draws $R_1,\ldots,R_n$ independently from $P_G$. For an
+observed ordered sample $r=(r_1,\ldots,r_n)$ its likelihood is
+\[
+  L_n(G;r)=\prod_{i=1}^n P_G(r_i).
+\]
+For unordered read counts this is multiplied by the multinomial coefficient,
+which is independent of the candidate. Uniform sampling of *starts* does not
+make distinct read strings equally likely: strings occurring at more positions
+have larger $P_G$. The sampling process is the generation of the $R_i$;
+$L_n(G;r)$ is the probability of the realized data under a proposed $G$;
+posterior probability additionally requires a prior,
+$P(G\mid r)\propto L_n(G;r)P(G)$. Rotations have identical $P_G$ and are
+therefore treated as one candidate whenever genome identity is intended modulo
+rotation. These definitions specify the exact error-free model used for the
+statistical discussion; the source's Section~6.1 product-binomial objective
+below is a different approximation, not this sampling likelihood.
+The source-fidelity comparison is explicit: the exact iid oriented-read law
+corresponds to Medvedev--Brudno \cite[\S6.1]{medvedev2009}; their fixed-$N$
+product-binomial approximation in the same section is not equal to it, and
+their \S6.2 feasible-flow likelihood has a different candidate domain that may
+include flows not spelling one genome.
+
 The likelihood layer must consume only observable read multiplicities plus a
 candidate genome; it must not see the latent true placements. We keep the
 following three objectives distinct, because the published sentence does not

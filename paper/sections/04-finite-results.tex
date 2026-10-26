@@ -314,6 +314,30 @@ realized reads is still satisfied. This is ordinary finite-sample fluctuation,
 not a paradox: the sample is unrepresentative, and likelihood ranks candidates
 by how well they fit the sample, not the population.
 
+\begin{theorem}[A finite read sample can make the truth lose]
+\label{thm:finite-sampling-counterexample}
+The kernel-checked example uses truth $G=\texttt{AABBC}$,
+decoy $D=\texttt{AABC}$, read length $3$, and sample
+$r=(\texttt{AAB},\texttt{BCA})$. Under independent uniform starts, the
+probabilities of these types are $P_G(\texttt{AAB})=P_G(\texttt{BCA})=1/5$
+and $P_D(\texttt{AAB})=P_D(\texttt{BCA})=1/4$. Hence the unordered-data
+likelihoods (including the common $2!$ count coefficient) are
+\[
+ L_2(G;r)=2(1/5)^2=2/25,\qquad
+ L_2(D;r)=2(1/4)^2=1/8,
+ \qquad \frac{L_2(D;r)}{L_2(G;r)}=\frac{25}{16}>1.
+\]
+This sample has positive probability under the truth, which therefore loses to
+the decoy. The finite fluctuation does not make likelihood meaningless: ML
+still compares the actual probabilities of the observed data, and its
+Bayes-optimality below is prior-averaged rather than a guarantee for every
+realization or fixed truth. This source-faithful witness also satisfies the
+stated information-feasibility predicate. It illustrates one finite observation,
+not a claim that the truth loses for every sample or every candidate domain.
+\statusline{\kernelcheck{}; see
+\texttt{FiniteSamplingCounterexample.finite\_sampling\_counterexample}.}
+\end{theorem}
+
 \begin{theorem}[Exact-multinomial counterexample over all circular candidates]
 \label{thm:cex-exact}
 Let $\Alphabet=\{A,B\}$, $L=3$, and let the truth be
