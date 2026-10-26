@@ -62,18 +62,21 @@ No `axiom`, `sorry`, `admit` or `native_decide`; the axiom audit
 * axiom-audit `--allow propext,Classical.choice,Quot.sound --root AssemblyP1
   --modules-from AssemblyP1` — green.
 
-**CI-wiring limitation (honest):** the author's push token lacks the GitHub
-`workflow` scope, so this increment cannot itself add the verifier to
-`.github/workflows/ci.yml`. The verifier is committed and runnable; a reviewer
-or integrator with `workflow` scope should add the step
+**CI wiring (verified on the current integration head):**
+`.github/workflows/ci.yml` runs `scripts/verify_281_hellinger_exponential.py`
+in the `research-docs` job. The earlier workflow-scope limitation recorded in
+the initial implementation handoff is resolved; CI wiring is no longer an
+outstanding integration obligation.
 
-```
-      - name: Verify #281 generic Hellinger-affinity exponential decay
-        run: python3 scripts/verify_281_hellinger_exponential.py
-```
-
-to the `research-docs` job of `.github/workflows/ci.yml`. Until then the
-verifier's CI execution is the remaining integration obligation.
+**Independent mathematical/Lean review:** a fresh read-only review of the
+generic affinity theorem and its primitive-P2 instantiation confirmed the
+finite read universe, division-free treatment of zero support, removal of
+rotation-equivalent genomes, and the explicit finite-class hypothesis. It
+also checked that `HellingerNoDecay.eventProb_wrong_eq_one_of_mem` has the
+narrow stated scope: ties count as errors and the competitor family contains
+the truth distribution itself. This lemma illustrates the boundary but does
+not claim error probability one for arbitrary tie-breaking among distinct
+candidates with equal read laws.
 
 ## Scope and remaining limits
 
@@ -86,5 +89,7 @@ verifier's CI execution is the remaining integration obligation.
   not an efficient or tight rate.
 * The bound concerns the **error probability** (ties included), not likelihood
   growth, and does **not** assert monotone success in `n`.
-* This module does not touch the manuscript; no existing paper claim is
-  affected, so no paper-text edit is required by the delegated task.
+* The manuscript carries the primitive-P2-specific explicit rate, which is
+  stronger in presentation because it provides a genome-level rate and
+  candidate-count bound. The generic theorem remains the reusable finite-law
+  result; this note does not substitute one for the other.
