@@ -20,7 +20,8 @@ scratch (no repository imports):
 6. A scalar topology summary plus L and G is insufficient: two circular
    L=3, G=7 genomes have |V|=3, |E|=4, cycle rank 2, but differ in rigidity.
 7. Exhaustive enumeration of all binary circular genomes with G=1..8 and
-   L=2..4, plus all ternary circular genomes with G=1..6 and L=2..3:
+   L=2..4, plus a new binary G=1..9, L=2..3 scope and all ternary circular
+   genomes with G=1..6 and L=2..3:
    every scope contains scalar-summary groups with both rigid and
    non-rigid genomes, so no scalar summary (|V|,|E|,rank at fixed L,G,
    even with alphabet size fixed) determines rigidity.
@@ -28,7 +29,15 @@ scratch (no repository imports):
 
 from __future__ import annotations
 
-from itertools import product
+def positive_compositions(total: int, parts: int):
+    """Yield positive integer vectors of fixed total without scanning a box."""
+    if parts == 1:
+        if total >= 1:
+            yield (total,)
+        return
+    for first in range(1, total - parts + 2):
+        for rest in positive_compositions(total - first, parts - 1):
+            yield (first,) + rest
 
 
 def spectrum_circular(s: str, L: int) -> dict:
@@ -49,9 +58,7 @@ def brute_rigid(edges, balance_eqs, A, G):
     """
     m = len(edges)
     wit = []
-    for vals in product(range(1, G + 1), repeat=m):
-        if sum(vals) != G:
-            continue
+    for vals in positive_compositions(G, m):
         ok = True
         for out, inn in balance_eqs:
             if sum(vals[i] for i in out) != sum(vals[i] for i in inn):
@@ -174,6 +181,7 @@ def main() -> int:
     scopes = [
         ("AB", 7, (2, 3)),
         ("AB", 8, (2, 3, 4)),
+        ("AB", 9, (2, 3)),
         ("ABC", 6, (2, 3)),
     ]
     for alphabet, gmax, read_lengths in scopes:

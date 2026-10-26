@@ -689,7 +689,7 @@ exhaustive zeros are a sanity check on the proofs, not a substitute for them.
 | §22 `ATATAT` parametric rigidity (`atatat_of_cycle2`: rigid at every uniform `k`) | kernel-checked |
 | §22 AATT boundary rigid non-cycle (`aatt_rigid`, `aatt_search_space`) | kernel-checked (`by decide`) |
 | §22 cross-check vs brute force + mutation-red (`scripts/verify_257_simple_cycle.py`: 20 directed cycles + AATT rigid/mutated, 0 mismatches) | verified computation, exhaustive in scope |
-| §22 bounded genome census (`scripts/verify_257_simple_cycle.py`: binary G=1..7/L=2..3, binary G=1..8/L=2..4, ternary G=1..6/L=2..3; scalar-summary collisions in all scopes) | verified computation, exhaustive in scope |
+| §22 bounded genome census (`scripts/verify_257_simple_cycle.py`: binary G=1..7/L=2..3, binary G=1..8/L=2..4, binary G=1..9/L=2..3, ternary G=1..6/L=2..3; scalar-summary collisions in all scopes) | verified computation, exhaustive in scope |
 | §22 exact integral witness verifier (`scripts/verify_257_delta_witness.py`: figure-eight same support rigid/non-rigid under changed A; explicit AATT witness and rigid unit-multiplicity control) | verified computation |
 
 ---
@@ -2008,9 +2008,11 @@ from scratch by enumerating **all** positive integer circulations of total
 * **cycle-rank separator**: `AABABAB` and `AAAAAAB` share `L=3`, `G=7`,
   `|V|=3`, `|E|=4`, and cycle rank `2`, while exact enumeration reports rigid
   versus non-rigid;
-* **extended census (three scopes)**: binary `G=1..7, L=2..3` (508 cases, 1
+* **extended census (four scopes)**: binary `G=1..7, L=2..3` (508 cases, 1
   split scalar-summary group), binary `G=1..8, L=2..4` (1530 cases, 3 split
-  groups), ternary `G=1..6, L=2..3` (2184 cases, 2 split groups, e.g. `L=2`,
+  groups), binary `G=1..9, L=2..3` (2044 cases, 6 split groups; newly extended genome-length
+  bound, split-group count verified by the script), ternary `G=1..6, L=2..3`
+  (2184 cases, 2 split groups, e.g. `L=2`,
   `G=6`, `|V|=3`, `|E|=4`, rank `2` with rigid `AAAABC` versus non-rigid
   `ABABAC`). So scalar summaries fail across alphabets and read lengths, not
   just at one hand-picked key; the ternary scope needs `G = 6` before any
