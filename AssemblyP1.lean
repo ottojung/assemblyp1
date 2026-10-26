@@ -398,6 +398,12 @@ import AssemblyP1.FiniteReadStringIsVsUnambiguousAudit
 -- all-bridged-triple clause of `I_s` while a read-only decoder is certain at Y.
 import AssemblyP1.FiniteIsNotNecessaryCertainty
 import AssemblyP1.FiniteIsNotNecessaryCertaintyAudit
+-- #272 target 5: the Bresler--Bresler--Tse all-unbridged obstruction is necessary
+-- (attributed premise) but not sufficient for read-only decoder certainty; a
+-- kernel-checked counterexample (AABB, L = 2, R = {0,1}, Y = {AA, AB}) carries no
+-- obstruction yet is ambiguous, so it is not the exact condition.
+import AssemblyP1.FiniteBreslerObstructionGap
+import AssemblyP1.FiniteBreslerObstructionGapAudit
 -- #272 weakest source-defined (read-only OR truth-only) sufficient promise:
 -- existence iff the read-only posterior is already certain (subclaim b).
 import AssemblyP1.FiniteSourceDefinedWeakest
