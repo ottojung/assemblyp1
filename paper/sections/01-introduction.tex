@@ -105,6 +105,14 @@ In particular, the guarantee applies to the actual read distribution,
 not automatically to an approximate likelihood or to an optimizer over
 flows that fail to spell genomes.
 
+This optimality is an average over the stated prior, not a guarantee for each
+fixed genome. That distinction is exactly why the 2016 question is not
+tautological: bridging is a property of the truth and observations, while
+unrestricted ML still scores every candidate, including one that fails the
+bridge condition. The problem asks whether the structural guarantee forces
+the truth to win on those particular data, a pointwise claim that Bayes/MAP
+optimality alone does not provide.
+
 Shomorony et al.\ close their Discussion with a question that sits between the
 two lines \cite[Discussion]{shomorony2016}:
 
