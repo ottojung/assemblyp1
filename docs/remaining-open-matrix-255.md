@@ -1,6 +1,28 @@
 # AssemblyP1 umbrella #255 — remaining-open matrix
 
 
+## Addendum — 2026-10-26 (bounded non-integral fixed-x probe; evidence only)
+
+* **New reproducible bounded computation:**
+  `scripts/verify_255_nonintegral_fixedx_probe.py` exhausts three-coordinate
+  count vectors with total `n=4` and external `N=5` in the non-integral
+  empirical-frequency slice, then enumerates every nonnegative integer
+  three-coordinate candidate of mass four and computes the exact §6.1
+  product-binomial score with `fractions.Fraction`. It records unique winners
+  and ties and prints one exact-score witness. No floating-point arithmetic is
+  used; the candidate box is deliberately small.
+* **Epistemic status and scope:** this is computational evidence, not a proof
+  or classification. It covers neither all dimensions, `N`, masses, nor
+  observations and establishes no structural criterion for the integer
+  optimizer. The general non-integral fixed-`x` characterization remains
+  OPEN; continuous KKT necessity remains refuted (see the existing integer
+  counterexample below). This probe does not address §6.2 bidirected flows, RC
+  molecule types, or genome realizability.
+* **Next open cell:** a proved or refuted necessary-and-sufficient criterion
+  for the full integer candidate class at non-integral empirical frequencies;
+  alternatively, source-faithful general §6.2 classification remains a
+  distinct open axis and must preserve the documented flow/spelling gap.
+
 ## Addendum — 2026-10-21 (L3 uniqueness transport: does NOT hold, kernel-checked)
 
 * **New kernel-checked increment on the L3 axis.**  The merged L3 transport
