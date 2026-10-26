@@ -11,12 +11,10 @@ usual extended-real convention `-log 0 = +∞`, the boundary is therefore
 The finite affine-tail Graver certificate in `ExactMLOptimizerTransfer.lean`
 uses `multinomialExt`, whereas the true objective is `multinomialExact`. The
 file proves the conditional transfer when the certified minimizer lies in the
-positive interior. This boundary distinction explains why that interior
-hypothesis cannot simply be dropped using the current pointwise domination
-argument: at zero-count coordinates the exact cost is finite, so equality with
-the extension must be shown; at positive-count coordinates the exact cost is
-infinite and domination is automatic, but agreement at a candidate minimizer
-on that boundary fails.
+positive interior. At a boundary candidate, equality with the extension must
+be checked coordinatewise; for the multinomial objective this holds at
+zero-count coordinates, while positive-count coordinates have exact cost
+infinite.
 
 For `x=0`, the endpoint `d=0` agrees with the exact cost: both are zero,
 as also proved by `multinomialExt_zero_eq`. For `x>0`, e.g. `G=2,x=1`, the
@@ -30,20 +28,19 @@ returns finite `multinomialCost` otherwise. At `x=0,d=0`, the product
 `multinomialExt_zero_eq` proves agreement with the extension. Thus for this
 exact multinomial definition, the candidate endpoint cases are already
 accounted for by the generic pointwise-domination transfer; the positive-count
-endpoint has exact cost `⊤`, and the zero-count endpoint agrees. These
-statements concern pure fixed-total likelihood only, not any penalized solver
-objective. The remaining boundary question is whether one can formulate and
-use this transfer uniformly for feasible box minima without assuming the
-candidate itself interior (and similarly for the product-binomial endpoint
-pair).
+endpoint has exact cost `⊤`, and the zero-count endpoint agrees. Hence the
+generic transfer's domination and agreement hypotheses do not require
+interiority for `multinomialExact` when the candidate is in `[0,G]` (for
+`G ≥ 2`): use the extension equality on `1 ≤ d ≤ G`, the zero-count endpoint
+lemma at `d=0`, and `le_top` at positive-count `d=0`. These statements concern
+pure fixed-total likelihood only, not any penalized solver objective. The
+analogous product-binomial endpoint pair needs separate analysis.
 
 ## Scope
 
-This note records the exact endpoint semantics and the logical gap. The
-existing Lean `multinomialExact` definition explicitly models the positive-
-count zero-support case, and its zero-count endpoint agrees with the affine
-extension. A useful next formal step is therefore a theorem allowing a
-boundary candidate in `graver_exact_optimal_of_no_improving`, whose current
-interior agreement hypothesis is stronger than needed for these endpoint
-cases. Product-binomial endpoints require their own two-sided support analysis
-and are not covered here.
+This note records the exact endpoint semantics and the narrow formal gap: the
+existing generic theorem carries a stronger interior-agreement hypothesis than
+the multinomial endpoint facts require. Formalize the coordinatewise agreement
+and invoke the generic transfer without the interior assumption for this
+objective. Product-binomial endpoints require their own two-sided support
+analysis and are not covered here.
