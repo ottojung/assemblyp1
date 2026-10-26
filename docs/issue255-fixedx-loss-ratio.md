@@ -9,12 +9,12 @@ same-length circular candidate `D = AABBBB`:
 | type | `AA` | `AB` | `BA` | `BB` |
 |---|---:|---:|---:|---:|
 | truth spectrum `spec_S` | 2 | 1 | 1 | 2 |
-| candidate spectrum `spec_D` | 1 | 1 | 1 | 4 |
+| candidate spectrum `spec_D` | 1 | 1 | 1 | 3 |
 | observed count `x` | 1 | 0 | 0 | 5 |
 
 Therefore the exact multinomial likelihood ratio is
 
-`P(D;x)/P(S;x) = (1/6)/(2/6) · ((4/6)/(2/6))^5 = 2^4 = 16`.
+`P(D;x)/P(S;x) = (1/6)/(2/6) · ((3/6)/(2/6))^5 = 3^5/2^6 = 243/64`.
 
 Thus this candidate strictly beats the truth for this *fixed* sample. This
 algebraic certificate is a hand-checkable lemma for one oriented, exact

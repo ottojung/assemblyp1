@@ -23,7 +23,16 @@ ratio = candidate_score / truth_score
 assert truth_score == Fraction(1, 1458)
 assert candidate_score == Fraction(1, 576)
 assert ratio == Fraction(81, 32)
+
+# Cross-check the earlier fixed-x certificate: AABBBB has three BB edges.
+first_observation = (1, 0, 0, 5)
+first_truth_score = likelihood(truth, first_observation)
+first_candidate_score = likelihood(candidate, first_observation)
+assert first_truth_score == Fraction(1, 729)
+assert first_candidate_score == Fraction(1, 192)
+assert first_candidate_score / first_truth_score == Fraction(243, 64)
 print(
     "PASS: S=AAABBB, D=AABBBB, x=(1,0,1,4): "
-    f"P(S;x)={truth_score}, P(D;x)={candidate_score}, ratio={ratio}"
+    f"P(S;x)={truth_score}, P(D;x)={candidate_score}, ratio={ratio}; "
+    "cross-check x=(1,0,0,5) ratio=243/64"
 )
