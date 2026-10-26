@@ -88,6 +88,32 @@ explicitly.
   `verify_covered_binomial_weights_259.py`, `verify_281_window_cap.py 3 11 4`,
   and `verify_sample_complexity_265.py` all exit `0`.
 
+## Follow-up verification (2026-10-26)
+
+- Verified repository identity at `https://github.com/ottojung/assemblyp1.git`;
+  fetched `origin/main` at `234f3480d7589c8fc4e056c91dda91343fe64ece` and the
+  published ready branch at `ce15e3daaf41c6c5577b073f8ea0cdd2ecaa201f`.
+- The ready commit is signed (`git verify-commit`: Good signature) and descends
+  from the recorded main. Its diff against main is exactly the two prose files
+  `paper/sections/01-introduction.tex` (+8) and
+  `paper/sections/03-open-question.tex` (+3/-1); the changes are limited to the
+  Bayes-average versus pointwise motivation and the R-only/conditioning caveat.
+- `sh paper/build.sh` in `paper/` exited 0; latexmk reported the existing PDF is
+  up to date. `check-research-docs.py` and the eight targeted historical,
+  binomial, window-cap, and sample-complexity verification scripts all passed.
+- At verification time the branch was not an ancestor of `origin/main`, and
+  the public PR listing showed no PR for this ready branch. `gh` is unavailable;
+  unauthenticated GitHub API accepts reads but rejects comment creation with
+  HTTP 401 (and prior PR operations returned 403). Thus this review could not
+  create an integration PR or post a board comment. Compare URL:
+  <https://github.com/ottojung/assemblyp1/compare/main...agent/m207b4xxQBSjv47yF8Z6FF-issue268-ready>.
+- Reusable #265 slide narrative: introduce finite-n uniform-prior MAP/ML as a
+  prior-average benchmark, then state the two questions early. Conditional
+  feasible-fiber reconstruction follows from the strong reconstruction premise;
+  original-unrestricted likelihood given only truth-feasibility remains the
+  substantive pointwise comparison. Preserve evidence labels and distinguish
+  source-faithful observation models.
+
 ## Open questions for human review
 
 1. The claim matrix `tab:claims` is prose-level synthesis; the row-1 evidence is
