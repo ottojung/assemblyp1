@@ -436,6 +436,9 @@ import AssemblyP1.ProductBinomialMonotonicityCounterexampleAudit
 -- #263 separable-convex Graver optimality certificate (conditional core) + audit.
 import AssemblyP1.SeparableConvexGraver
 import AssemblyP1.SeparableConvexGraverAudit
+-- #263 exact-rational KKT-gap witness (AAABBB discrete unique maximizer, nonzero KKT residual) + audit.
+import AssemblyP1.SeparableConvexKKTGap263
+import AssemblyP1.SeparableConvexKKTGap263Audit
 -- #263 exact-ML optimizer preservation of the affine-tail Graver certificate + audit.
 import AssemblyP1.ExactMLOptimizerTransfer
 import AssemblyP1.ExactMLOptimizerTransferAudit

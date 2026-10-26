@@ -157,3 +157,21 @@ and make no claim about penalized solver costs in general.
   core convex theorem.
 * No claim is made about polynomial-time Graver augmentation or about which
   feasible flows spell genomes.
+
+## KKT-gap witness (AAABBB, `G = N = 6`, `x = [3,1,2,1]`)
+
+`AssemblyP1/SeparableConvexKKTGap263.lean` (+ `...Audit.lean`) kernel-checks the
+exact-rational witness behind the board #259 comment
+(`docs/remaining-open-matrix-255.md`, "#259 recovered WIP's fixed-x iff continuous
+KKT: FALSE"): at the fixed-external-`N` product-binomial likelihood (per-type
+`Binom(n, cᵢ/N)`, `N = n = 6`, `x = [3,1,2,1]`), the AAABBB truth `d = [2,1,2,1]`
+is the unique maximizer over the *entire* sum-6 count fiber (`kktGap_uniqueMax`,
+`decide` over the `7⁴` box), while the exact stationarity vector is
+`g = [3/4, 0, 0, 0]` (`statVec_vals`, `no_equal_multiplier`,
+`directional_nonzero` along `v = (1,0,-1,0)`). Continuous KKT stationarity is
+therefore **not necessary** for discrete optimality here, and the Graver
+certificate above — which never asks for a vanishing gradient — is the correct
+necessary-and-sufficient tool. Kernel-checked are the maximality and gradient
+values; the KKT-necessity-fails reading is documented interpretation (standard
+Lagrange consequence for concave maximization over the simplex). No duplication
+of #257/#261/#258; the historical candidate adapter stays OPEN.
