@@ -90,6 +90,51 @@ A different tradition \cite{medvedev2009} scores candidates instead of
 reconstructing: the \emph{likelihood} of a candidate genome is the probability
 that uniform sampling from it would produce the observed reads, and the
 \emph{maximum-likelihood genome} is the candidate with the highest score.
+More precisely, fix a circular genome $G$ of length $g$ and read length $L$.
+Each read independently chooses one of the $g$ start positions uniformly and
+reports its error-free circular length-$L$ window. Thus, for a read word $w$,
+\[
+  P_G(w)=\frac{\spec_L(G)(w)}{g},\qquad
+  L_n(G;R_1,\ldots,R_n)=\prod_{i=1}^n P_G(R_i).
+\]
+Uniform starts do not make distinct read strings equally likely: a word
+appearing at several starts has proportionally larger probability. The
+likelihood is the probability of the observed data \emph{given} $G$; a posterior
+$P(G\mid R_1,\ldots,R_n)$ additionally requires a prior over candidate genomes
+and normalizes prior-weighted likelihoods. Rotations are equivalent candidates
+because they have the same read distribution. This is the exact iid sampling
+model used for the likelihood statements here
+\cite[\S2]{shomorony2016,medvedev2009}; the separate product-binomial
+approximation of Medvedev--Brudno \S6.1 is not this likelihood.
+
+\begin{example}[A finite sample can reverse the likelihood ranking]
+\label{ex:intro-finite-reversal}
+Take length-$3$ reads from the fixed circular truth $G=AAATT$ and compare it
+with the nonrotational candidate $D=AAAATT$. Their length-$3$ read
+probabilities are
+\[
+\begin{array}{c|ccccc}
+ & AAA & AAT & ATT & TTA & TAA\\\hline
+P_G & 1/5&1/5&1/5&1/5&1/5\\
+P_D & 2/6&1/6&1/6&1/6&1/6
+\end{array}
+\]
+because $G$ has one start for each listed word, while $D$ has two starts for
+$AAA$ and one for each other word. In the possible six-read sample with two
+$AAA$ reads and one of each other word, the likelihoods are
+\[
+  L_6(G)= (1/5)^6=1/15625,\qquad
+  L_6(D)=(2/6)^2(1/6)^4=1/11664,
+\]
+so the false candidate is strictly the ML winner (likelihood ratio
+$15625/11664>1$). Yet this sample has positive probability under the truth,
+$\frac{6!}{2!}(1/5)^6=360/15625$. Finite-sample ML is a principled likelihood rule,
+not a promise that every random sample selects its source. The exact counts
+and ratios follow directly from the displayed start counts (see also the
+kernel-checked related witness in
+Theorem~\ref{thm:cex-variable-length}).
+\end{example}
+
 Likelihood assigns a score to candidate genomes; selecting a maximizer
 turns that objective into a reconstruction rule. There is a compelling reason
 to study this rule. With a finite candidate class, a correct read-generation
