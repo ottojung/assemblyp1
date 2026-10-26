@@ -1998,6 +1998,43 @@ unbounded-rank three-hub subfamily.
 
 ---
 
+## 22. Arbitrary-support slack bound for delta certificates (§8.2 increment)
+
+Let a finite support have `m` edges, and let `A` be its positive integer
+circulation of total `G`. Any alternative positive circulation `B` with the
+same total gives `δ = B - A`, a nonzero balanced zero-sum witness from Theorem 1.
+Writing `C = G - m = ∑ₑ(A(e)-1)` gives the support-wide coordinate bound
+
+```text
+                 -C ≤ δ(e) ≤ C       for every support edge e.
+```
+
+**Proof.** Since `∑δ = 0`, the sum of positive coordinates of `δ` equals the
+absolute sum of its negative coordinates. For a negative coordinate,
+`-δ(e) = A(e)-B(e) ≤ A(e)-1`, since `B(e) ≥ 1`; therefore the total negative
+mass is at most `∑ₑ(A(e)-1)=G-m=C`. Each negative magnitude is at most this
+total. The positive mass is the same total, so each positive coordinate is at
+most `C` as well. This proves both sides. ∎
+
+Consequently an exact finite certificate can search only
+`{δ ∈ ℤ^E : -C ≤ δ(e) ≤ C}` and retain the balanced, zero-sum, box-feasible,
+nonzero vectors. This sharpens the generic `G`-coordinate bound underlying
+`FiniteRigidityDecider`; in particular `C=0` immediately certifies rigidity.
+The search still has worst-case `(2C+1)^m` candidates, so this is **not** a
+polynomial-time characterization and does not close §8.1 or the general §8.2
+complexity question. It is an explicit topology-independent certificate bound
+in the available excess multiplicity (`genome length - support size`).
+
+`python3 scripts/verify_257_slack_bound.py` independently compares full positive
+circulation enumeration with bounded-delta enumeration on every strongly
+connected loopless directed support of at most three vertices and at most five
+edges (positive circulations through `G ≤ min(2m,8)`). The deliberate `C-1`
+mutation is caught by the two-self-loop support `A=(2,1)`, `G=3`, `m=2`: its
+alternative `(1,2)` has a coordinate of magnitude exactly `C=1`, demonstrating
+that the stated bound cannot be decreased uniformly.
+
+---
+
 ## 23. Conformal-minimal obstruction certificates: exact reduction and bounded cross-check
 
 This section revisits the conformal-minimal (Graver) certificate question from
