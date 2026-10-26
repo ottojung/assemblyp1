@@ -1,5 +1,48 @@
 # AssemblyP1 umbrella #255 — remaining-open matrix
 
+## Addendum — 2026-10-26 (verified fixed-sample cell; matrix reconciliation)
+
+* **A-axis exact multinomial counterexample, computationally exhaustive in a
+  finite spelled-genome universe (not a general theorem):** for circular truth
+  `AAABBB`, `G=6`, `L=2`, oriented types ordered `AA,AB,BA,BB`, and observed
+  counts `x=(1,0,0,5)`, exact enumeration of all 64 binary length-six circular
+  words gives truth likelihood `1/729`, maximum `1/192`, and ratio `243/64`.
+  The six maximizers are rotations of `AABBBB`, so truth is not a maximizer
+  even modulo rotation. Reproducer is
+  `scripts/verify_issue255_exact_multinomial_cell.py` at
+  `0a7569202b4ffd161f572128f78d7e4010809efd` on
+  `origin/issue255-exact-multinomial-cell`; its independent enumeration was
+  rerun and passed. The precise scope and model comparison are recorded in
+  `docs/issue255-exact-cell-255.md` (commit `3d50af1`). This is exact finite
+  computation in this bounded universe, not kernel-checked and not a
+  sample-family classification; the existing #258 Lean results use a distinct
+  sample `x=B4=(1,2,1,2)`.
+* **Fixed-sample objective reparameterization lemma (kernel-checked on a child
+  branch, not merged):** commit
+  `5b551292e8a905ecf4788fcd518522db2746d21c` on
+  `origin/agent/4jvYGrYCRqE7OvDbI3v5Tp-issue255-monotone-integ` adds
+  `AssemblyP1/MaximizerOrderTransform.lean` and root import, proving
+  `IsMaxOn`/`IsMinOn` preservation or exchange under `StrictMono`/`StrictAnti`.
+  It identifies order-equivalent objectives for a fixed `x`; it does not
+  establish any truth-maximality comparison. It remains unmerged and is not
+  counted as a landed result in the axis table below.
+* **Remote provenance check:** latest available main at reconciliation is
+  `433f19948c5e1ba557ea68ba73069b8528544482` (PR #402). The last matrix
+  integration commit on main is
+  `57ec40e38d14d064ab37d21e88651ca42908e15f`; its scoped findings remain
+  represented below. The preceding claimed AABB commit `c1bee12` and branch
+  `agent/IVB2v85WjYWS6eYK2l3zHl-issue255-aabb` could not be found in local Git
+  objects or advertised remote refs, so no claims from it are adopted here.
+* **Status:** no classification cell is closed by this addendum. Preserve the
+  distinctions across fixed `x` vs every admissible sample, oriented vs RC,
+  multinomial vs fixed-`N` product-binomial, same vs variable length, spelled
+  genomes vs §6.2 flows/overlap floor, truth candidacy, and literal historical
+  read-string `I_s` vs project placement `I_s`. The precise next useful lemma
+  is a proved finite-cell witness criterion that relates an oriented
+  fixed-`x` spectrum comparison to genome realizability; the present exhaustive
+  sample is evidence only, while #258's existing iff/census is restricted to
+  its four AAABBB spectra and does not cover arbitrary `x`.
+
 
 ## Addendum — 2026-10-21 (L3 uniqueness transport: does NOT hold, kernel-checked)
 
