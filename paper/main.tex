@@ -20,42 +20,26 @@ and finite-sample likelihood reliability}
 
 \begin{abstract}
 \noindent
-Maximum likelihood offers a natural way to infer a genome from sequencing
-data: choose the genome under which the observed reads are most probable.
-But is the genome that generated the reads necessarily the most likely one?
-It is also the conceptually simplest principled benchmark: for a fixed finite
-candidate universe, the correct read-generation model, a uniform prior over
-rotation classes, and zero-one loss, maximum likelihood maximizes the
-prior-averaged probability of returning the true genome at every sample
-size, among deterministic and randomized rules alike
-(Theorem~\ref{thm:bayes-optimal}). That certificate is prior-averaged, not
-per-genome, and does not extend to arbitrary priors or losses; how the
-likelihood rank then behaves on particular read samples is the real
-question. We investigate it in two settings: when only a finite sample
-of reads is available, and when the underlying distribution of reads is
-known exactly.
+Maximum likelihood chooses the genome under which the observed sequencing
+reads are most probable. But reads contain two kinds of evidence: their
+overlaps constrain how the genome can be assembled, while the frequency of
+each read influences which genome receives the highest likelihood.
+Does enough information for reconstruction also make the true genome the
+most likely one?
 
-For finite samples, we examine a question raised by Shomorony et al.\ (2016):
-do the conditions that guarantee genome reconstruction also guarantee that
-maximum likelihood selects the true genome? We separate two readings of it.
-Restricting to the feasible fiber, given that the truth satisfies it, is a
-corollary of the reconstruction theorem; maximizing the original unrestricted
-likelihood over the original candidate universe is the genuinely nontrivial
-comparison, and it can fail. We establish conditions under which the answer is
-yes, but also construct counterexamples in which the reads satisfy the original
-reconstruction conditions and yet an incorrect genome has greater likelihood.
-Thus, the information needed to reconstruct a genome does not always make it
-the most likely explanation of the data.
+We show that it need not. Even when a collection of reads satisfies strong
+coverage and repeat-bridging conditions, a different genome can assign those
+reads greater likelihood. We also prove a positive result under additional
+restrictions: for a class of same-length genomes with oriented reads, the
+overlap structure forces the true genome to be the unique likelihood
+maximizer, up to rotation.
 
-When the read distribution is known exactly, the true genome always maximizes
-expected log-likelihood. We establish conditions on genomic repeats under which
-this distribution uniquely identifies the true genome. We further prove an explicit quantitative guarantee for finite samples: over the identifiable primitive-P2 candidate class the
-probability that the exact maximum-likelihood rule errs decreases exponentially
-in the number of independent reads, with a rate that is explicit but
-deliberately loose (exponential in the read length). The theorem bounds the
-\emph{error} probability, not the likelihood, and it does not claim that
-per-truth finite-sample success is monotone in the sample size; we supply a
-kernel-checked two-genome witness to the contrary.
+We then ask what can be learned if the distribution of reads is known exactly,
+rather than estimated from a finite sample. For primitive genomes satisfying
+explicit restrictions on repeats, we prove that this distribution identifies
+the genome uniquely up to rotation. We also establish that, within this class,
+the chance of an incorrect maximum-likelihood reconstruction decreases
+exponentially as more reads are collected.
 \end{abstract}
 
 \clearpage
