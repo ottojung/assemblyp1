@@ -111,6 +111,16 @@ Graver-basis rigidity criterion (\ref{thm:graver-rigidity})
 & \path{GraverRigidity.GraverBasis.rigid_iff_forall_graver_not_inbox},
 for the specified finite positive-circulation domain.\\
 \addlinespace
+Unconstrained KKT gradient need not vanish at a discrete
+multinomial optimum (positive copy counts; fixed total)
+& (i)
+& \path{KKTRefutation263.mlCost_slope_ne_zero},
+\path{mlCost_slope_at_truth},
+\path{truth_gradient_ne_zero};
+\path{SeparableConvexKKTRefutation263Audit.lean}.
+The constrained simplex multiplier is not a certificate
+for the general bidirected-flow ML domain.\\
+\addlinespace
 Fixed-$N$ binomial effective-weight criterion
 (\ref{thm:binomial-weights}; surrogate objective)
 & (i)
