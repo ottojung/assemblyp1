@@ -24,6 +24,19 @@ genomes. With finitely many reads, random sampling can make a wrong candidate
 win this principled likelihood comparison; the population and structural
 questions developed below explain what can and cannot be guaranteed.
 
+For a small exact example, take circular $S=AAC$ as the truth and
+$D=AAAC$ as a competitor, with $L=2$. Their read probabilities for
+$AA,AC,CA$ are respectively $(1/3,1/3,1/3)$ and $(1/2,1/4,1/4)$.
+One observed read $AC$ gives $L_1(S)=1/3>L_1(D)=1/4$, while two reads
+$AA,AA$ give $L_2(S)=1/9<L_2(D)=1/4$. The sample is a possible
+fluctuation under $S$; it does not make likelihood meaningless. Under
+the two-candidate model, the likelihood ratio for $n$ reads is
+$L_n(D)/L_n(S)=3^n/2^{2n-a}$, where $a$ counts the $AA$ reads, so there are no
+positive-probability ties. Exact arithmetic for the sample and the associated
+success probabilities is reproduced by
+\path{scripts/verify_finite_read_arc_265.py}; the related checked
+non-monotonicity result is stated in Proposition~\ref{prop:nonmonotone}.
+
 The obstacle to assembly is repetition. When the same substring occurs twice
 in the genome, reads drawn from the two copies are identical, and the data do
 not record which copy produced them. The ambiguity is structural: two genomes

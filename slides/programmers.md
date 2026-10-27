@@ -216,6 +216,32 @@ are uniformly distributed.
 
 ---
 
+# A finite sample can reverse the ranking
+
+Truth: `AAC`  Competitor: `AAAC`  Read length: 2
+
+| Observed reads | Truth likelihood | Competitor likelihood | ML choice |
+|---|---:|---:|---|
+| `AC` | $1/3$ | $1/4$ | Truth |
+| `AA, AA` | $1/9$ | $1/4$ | Competitor |
+
+**A principled rule can still make a finite-sample error.**
+
+<!--
+Exact iid oriented read model: uniform independent circular starts, no errors.
+Read laws (AA,AC,CA,CC): AAC=(1/3,1/3,1/3,0), AAAC=(1/2,1/4,1/4,0).
+Rows are exact products of read probabilities. The second observation has
+positive probability under the truth; it is a finite sampling fluctuation,
+not evidence against likelihood as a decision rule. Exact-rational verifier:
+scripts/verify_finite_read_arc_265.py; source data: docs/finite-read-arc-figure-265.md.
+For n>=1, ratio L_n(AAAC)/L_n(AAC)=3^n/2^(2n-a), with a the count of AA;
+this cannot equal 1, so the example has no positive-probability likelihood ties.
+The population / finite-family consistency statements occur later and do not
+turn this finite observation into a guaranteed error-free decision.
+-->
+
+---
+
 # From a read probability to a genome probability
 
 Suppose there are **only two candidates, A and B**, and before sequencing we treat them as equally likely.
