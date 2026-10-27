@@ -17,14 +17,37 @@ likelihood for the same observation. An ordered read tuple or a multiset with
 counts is a distinct observation model and cannot be silently substituted for
 this deduplicated `Finset` adapter.
 
-## Result of this bounded attempt
+## Exact finite census (new)
 
-No exact pair or general obstruction was established. I inspected the concrete
-adapter and source predicate, and rebuilt the adapter module; the repository
-already contains concrete repeat-bridging examples (`ABXABYABZ` and
-`ABXABZABY`) where literal `I_s` fails, but those are not witnesses for this
-question. In particular, a failure-of-`I_s` example cannot be used to claim two
-members of the same `I_s` fibre.
+The executable verifier [`scripts/verify_272_aligned_is.py`](../scripts/verify_272_aligned_is.py)
+enumerates **all** binary circular spellings for `3 ≤ G ≤ 6`, every
+`2 ≤ L < G`, and every placement subset `R ⊆ Z/GZ`. For each placement it
+computes the distinct read-string set `Y`, its saturated matching-start set,
+historical `L−1` coverage, the literal all-three-occurrence bridge clause, and
+the interleaved-maximal-repeat clause. It groups accepted `(genome,Y)` pairs by
+the rotation-canonical spelling. The census finds **zero** `Y` with two
+different rotation classes in these bounded parameters.
+
+| `G` | `L` | binary spellings | feasible `(g,Y)` | shared nonrotation fibres |
+|---:|---:|---:|---:|---:|
+| 3 | 2 | 8 | 2 | 0 |
+| 4 | 2 | 16 | 2 | 0 |
+| 4 | 3 | 16 | 14 | 0 |
+| 5 | 2 | 32 | 0 | 0 |
+| 5 | 3 | 32 | 14 | 0 |
+| 5 | 4 | 32 | 66 | 0 |
+| 6 | 2 | 64 | 0 | 0 |
+| 6 | 3 | 64 | 13 | 0 |
+| 6 | 4 | 64 | 124 | 0 |
+| 6 | 5 | 64 | 287 | 0 |
+
+Run with `python3 scripts/verify_272_aligned_is.py`. This is an exhaustive
+combinatorial check in the stated finite family, not a Lean theorem and not a
+general obstruction. Its result is consistent with the externally attributed
+Not-So-Greedy feasible-fibre uniqueness, but it does not prove or independently
+formalize that theorem. It uses the repository adapter's **distinct read-string
+set**; source random sampling multiplicities/ordered tuples still require the
+placement-weighted likelihood treatment from #266.
 
 The prior source-defined search verifier
 `scripts/verify_272_source_defined.py` is not applicable here: it models
@@ -38,17 +61,16 @@ fails, not ambiguity or uniqueness after `I_s` conditioning.
 
 ## Reproducible verification
 
-From the repository root, run:
+The imported literal predicate/adapter definitions also build with:
 
 ```sh
 lake build AssemblyP1.FiniteSideInformationReadStringAdapter
 ```
 
-Observed result on branch `research/272-is-compare-VJ0Ttaxksx27FdwuEGIrya-inter`
-at `7f3cecafabd572fc3ed3f1cb21427eef47ba6095`:
-`Build completed successfully (8930 jobs)`. This checks the definitions and
-existing finite examples, but is not an exhaustive search over genomes and does
-not establish that no shared-fibre pair exists.
+`lake build AssemblyP1.FiniteSideInformationReadStringAdapter` passed on this
+branch. The Python census is complete for the explicit domain above; the Lean
+build checks the source definitions and existing formal examples, not the Python
+loop itself.
 
 ## Remaining lemma
 
@@ -62,3 +84,8 @@ coverage, triple-bridging, and interleaved-bridging clauses), then separately
 check the chosen likelihood and prior supports. A complete finite census would
 settle only its explicitly bounded `(G,L,q)` family; a general answer or
 historical random-read multiplicity transfer remains open.
+
+In particular, no exact `I_s`-conditioned two-orbit witness was found in the
+exhaustive binary domain `3 ≤ G ≤ 6`; larger genomes, alphabets, variable-length
+competitors, read multiplicity observations, and the historical algorithm's
+precise candidate universe remain open.
