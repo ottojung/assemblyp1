@@ -2056,3 +2056,22 @@ checks both this pair and the §22 pair by exact positive-composition
 enumeration; it also checks that these two genomes are not cyclic rotations of
 each other. This is another fixed example, not a census or a general iff.
 [verified computation; general graph criterion/complexity remains open]
+
+## 25. Third scalar-summary collision (exhaustive length-9 search)
+
+An exhaustive search over all binary circular words of length `9` with `L=3`
+found another collision, with the same scalar summary `(L,G,|V|,|E|,rank) =
+(3,9,3,4,2)`:
+
+* `S = BBABABABA` has spectrum `{BBA:1, BAB:4, ABA:3, ABB:1}` and exactly
+  one positive circulation, its truth vector `(1,4,3,1)` in sorted-edge
+  order — **rigid**.
+* `S = BBBBBBBBA` has support `{BBB, BBA, BAB, ABB}` and truth vector
+  `(6,1,1,1)` in sorted-edge order. It also admits `(2,2,2,3)`, so is
+  **non-rigid**.
+
+The verifier checks identical summary, the rigid candidate list, the explicit
+alternative circulation, and non-equivalence up to rotation by exhaustive
+positive-composition enumeration. This adds a distinct fixed witness, not a
+general criterion. [verified computation; general graph criterion/complexity
+remains open]

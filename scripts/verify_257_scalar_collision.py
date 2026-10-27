@@ -127,6 +127,30 @@ def main() -> int:
         print("FAIL: second pair should not be rotations of the same genome")
         fails += 1
 
+    # A third collision, found by exhaustive length-9 binary enumeration.
+    pair9 = [analyze("BBABABABA", 3), analyze("BBBBBBBBA", 3)]
+    for r in pair9:
+        print(f"{r['word']}: spectrum={r['spectrum']} "
+              f"(L,G,|V|,|E|,rank)={(r['L'], r['G'], r['V'], r['E'], r['rank'])} "
+              f"rigid={r['rigid']} candidates={r['candidates']}")
+    keys9 = [(r["L"], r["G"], r["V"], r["E"], r["rank"]) for r in pair9]
+    if keys9[0] != keys9[1] or keys9[0] != (3, 9, 3, 4, 2):
+        print(f"FAIL: expected third shared summary (3,9,3,4,2), got {keys9}")
+        fails += 1
+    if pair9[0]["rigid"] is not True or pair9[1]["rigid"] is not False:
+        print("FAIL: BBABABABA / BBBBBBBBA should be rigid / non-rigid")
+        fails += 1
+    if pair9[0]["candidates"] != [pair9[0]["A"]]:
+        print("FAIL: expected BBABABABA's truth spectrum to be its sole circulation")
+        fails += 1
+    alt9 = [c for c in pair9[1]["candidates"] if c != pair9[1]["A"]]
+    if (2, 2, 2, 3) not in alt9:
+        print(f"FAIL: expected BBBBBBBBA alternative circulation, got {alt9}")
+        fails += 1
+    if rotations(pair9[0]["word"]) & rotations(pair9[1]["word"]):
+        print("FAIL: third pair should not be rotations of the same genome")
+        fails += 1
+
     atat = analyze("ATATAT", 3)
     print(f"ATATAT: spectrum={atat['spectrum']} rigid={atat['rigid']}")
     if atat["rigid"] is not True or atat["spectrum"] != {"ATA": 3, "TAT": 3}:
