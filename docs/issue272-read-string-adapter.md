@@ -146,3 +146,24 @@ See also
 [`issue272-is-vs-unambiguous-ordering.md`](issue272-is-vs-unambiguous-ordering.md),
 and
 [`issue272-finite-bayesian-side-information.md`](issue272-finite-bayesian-side-information.md).
+
+## 7. Scope of the concrete alignment
+
+The adapter is aligned at the **event/fibre** level: its observation is a set of
+distinct read strings, and its promise at `(w,Y)` holds exactly when at least one
+latent start set `R` induces `Y` on `w` and satisfies the literal source predicate
+`I_s(w,R)`.  Thus the kernel-checked implication from `IsCorrectReadStringDecoder`
+to `conditional_certain_readStringIS_of_decoder` applies to the same observation
+and event fibre; it does not replace that event by `I_s(w,R)` at one unobserved
+placement.
+
+This alignment is intentionally **not** a fully specified random-read
+likelihood.  In particular, `Y` is a `Finset` and forgets repeated read
+multiplicities, while the adapter existentially quantifies compatible start
+sets rather than summing their sampling probabilities.  The decoder endpoint
+allows an arbitrary nonnegative `p w Y`; its conditional posterior conclusion is
+valid for every such likelihood satisfying its hypotheses, but no source-faithful
+finite sampling law or normalized prior/likelihood is instantiated by this
+module.  The theorem names establish an exact conditional bridge on the aligned
+fibre under the attributed decoder-correctness premise, not the published
+algorithmic theorem in Lean and not a new concrete assembly-model bridge.
