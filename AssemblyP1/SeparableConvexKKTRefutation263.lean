@@ -58,7 +58,6 @@ theorem hasDerivAt_mlCost {x G d : ℝ} (hd : d ≠ 0) (hG : G ≠ 0) :
   have h := (hdiv.log (div_ne_zero hd hG)).const_mul (-x)
   have heq : -x * ((1 / G) / (d / G)) = -x / d := by
     field_simp [hd, hG]
-    ring
   rw [heq] at h
   exact h
 
