@@ -107,4 +107,30 @@ theorem reduced_mem_iff_no_ideal_detour {A W : Type}
 
 #print axioms reducible_iff_ideal_two_hop
 
+/-! ## Exact regression witness at the ideal-semantics level
+
+The candidate regression (`Section62SpellingReductionCandidate`) removes the
+direct `1`-overlap `0 → 2` over reads `[0,1,2]`, `[1,2,3]`, `[2,3,4]` of common
+length `3`, keeping both `2`-overlap legs.  The following kernel-checked
+identity is the exact numeric content of Myers 2005 §2 at the idealized level
+for that instance: the two-hop path `0 → 1 → 2` spells literally the same
+sequence (`[0,1,2,3,4]`) as the direct edge.  By `reducible_iff_ideal_two_hop`,
+this is the semantic half of the predicate/semantic agreement on the
+regression; the predicate half is `regression_edge_is_reducible` in the
+candidate module.
+
+Scope: idealized equal-length error-free spelling only.  This says nothing
+about practical Myers heuristics (FUZZ tolerance, noisy approximate overlaps,
+contained reads, orientation/parallel-edge handling), which remain open. -/
+
+/-- The regression detour spells exactly the word Myers 2005 §2 requires:
+the `2,2`-overlap path over `[0,1,2] → [1,2,3] → [2,3,4]` spells `[0,1,2,3,4]`,
+the same word as the direct `1`-overlap `[0,1,2] → [2,3,4]`. -/
+theorem myers_ideal_regression_witness :
+    spellPath ([0, 1, 2] : List Nat) [1, 2, 3] [2, 3, 4] 2 2 =
+      spellDirect [0, 1, 2] [2, 3, 4] 1 := by
+  decide
+
+#print axioms myers_ideal_regression_witness
+
 end AssemblyP1.Section62MyersIdealTransitivity
