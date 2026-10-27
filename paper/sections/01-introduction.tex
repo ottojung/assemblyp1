@@ -11,6 +11,19 @@ short \emph{reads}: each read records the length-$L$ window at a start position
 chosen uniformly at random along the genome, independently of the other reads.
 The assembly problem is to infer the genome from the observed reads.
 
+This is a statistical inference problem before it is a graph problem. For a
+fixed circular genome $G$, let $P_G$ be the law of one read under an
+independent uniform start and error-free fixed-length-$L$ sampling. The
+observations $R_1,\ldots,R_n$ are iid from $P_G$, and the exact likelihood of
+a candidate $H$ is $L_n(H)=\prod_{i=1}^n P_H(R_i)$. Uniform starts do not mean
+uniform read strings: a string's probability is its number of occurrences
+divided by $|G|$. Likelihood is the probability of the observed data given a
+candidate; a posterior additionally requires a prior and normalization.
+Circular rotations have the same read law and are treated as equivalent
+genomes. With finitely many reads, random sampling can make a wrong candidate
+win this principled likelihood comparison; the population and structural
+questions developed below explain what can and cannot be guaranteed.
+
 The obstacle to assembly is repetition. When the same substring occurs twice
 in the genome, reads drawn from the two copies are identical, and the data do
 not record which copy produced them. The ambiguity is structural: two genomes

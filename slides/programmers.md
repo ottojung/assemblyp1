@@ -19,6 +19,15 @@ mdc: true
 
 **AssemblyP1** · A research investigation
 
+<!--
+Newcomer framing: a fixed circular genome emits iid reads under independent
+uniform starts. ML compares L_n(H)=product_i P_H(R_i), while a posterior also
+needs a prior. Finite samples can reverse the ranking; this is a motivating
+aside, not a defect in ML. The exact-rational AAC/AAAC example and its checked
+figure data are in docs/finite-read-arc-figure-265.md; validation:
+scripts/verify_finite_read_arc_265.py. Rotations induce the same law.
+-->
+
 <HomeLink label="Choose another audience" />
 
 <!--
