@@ -448,6 +448,49 @@ theorem multiplier_improving {E : Type} [Fintype E] {f : E → ℤ → ℝ}
     nlinarith [mul_nonneg (le_of_lt hαpos) h0]
   linarith
 
+/-- If the endpoints `z` and `z + α • g` lie in the box, then so does the
+unit step `z + g` for `1 ≤ α`. Coordinatewise, the unit step lies between
+the endpoints because the ray is an integer multiple in the sign of `g`. -/
+theorem ray_unit_mem_box {E : Type}
+    {z g l u : E → ℤ} {α : ℕ} (hα : 1 ≤ α)
+    (hzlo : ∀ e, l e ≤ z e) (hzhi : ∀ e, z e ≤ u e)
+    (hclo : ∀ e, l e ≤ (z + α • g) e) (hchi : ∀ e, (z + α • g) e ≤ u e) :
+    ∀ e, l e ≤ (z + g) e ∧ (z + g) e ≤ u e := by
+  obtain ⟨m, rfl⟩ := Nat.exists_eq_add_of_le hα
+  intro e
+  have hzg : (z + g) e = z e + g e := Pi.add_apply z g e
+  have hray : (z + (1 + m) • g) e = (z + g) e + m • (g e) := by
+    rw [Pi.add_apply, Pi.smul_apply, add_smul, one_smul, Pi.add_apply, add_assoc]
+  rcases le_total 0 (g e) with hge | hle
+  · have ht : 0 ≤ m • (g e) := nsmul_nonneg hge m
+    rw [hzg]
+    exact ⟨by have := hzlo e; omega, by have := hchi e; rw [hray] at this; omega⟩
+  · have ht : m • (g e) ≤ 0 := nsmul_nonpos hle m
+    rw [hzg]
+    exact ⟨by have := hclo e; rw [hray] at this; omega, by have := hzhi e; omega⟩
+
+/-- Bundle the convex ray-improvement implication with the box argument: a
+strictly improving feasible integer ray has a feasible, strictly improving
+unit step. The affine-fiber equation is handled separately by
+`ray_unit_mem_fiber` when applying this to a constrained integer program. -/
+theorem multiplier_unit_feasible_improving {E : Type} [Fintype E]
+    {f : E → ℤ → ℝ} {l u : E → ℤ} (hf : ∀ e, DiscConvOn (f e) (l e) (u e))
+    {z g : E → ℤ} {α : ℕ} (hα : 1 ≤ α)
+    (hzlo : ∀ e, l e ≤ z e) (hzhi : ∀ e, z e ≤ u e)
+    (hclo : ∀ e, l e ≤ (z + α • g) e) (hchi : ∀ e, (z + α • g) e ≤ u e)
+    (himp : sepObj f (z + α • g) < sepObj f z) :
+    (∀ e, l e ≤ (z + g) e ∧ (z + g) e ≤ u e) ∧ sepObj f (z + g) < sepObj f z :=
+  ⟨ray_unit_mem_box hα hzlo hzhi hclo hchi,
+    multiplier_improving hf hα hzlo hzhi hclo hchi himp⟩
+
+/-- Kernel linearity carries a unit step from the base point into the same
+affine fiber. -/
+theorem ray_unit_mem_fiber {E V : Type} (lin : (E → ℤ) → (V → ℤ))
+    (hlin_add : ∀ x y : E → ℤ, lin (x + y) = lin x + lin y)
+    {z g : E → ℤ} {b : V → ℤ} (hz : lin z = b) (hg : lin g = 0) :
+    lin (z + g) = b := by
+  rw [hlin_add, hz, hg, add_zero]
+
 /-! ## Discrete convexity of the source likelihood costs (candidate copy count)
 
 The following lemmas instantiate the abstract convexity hypothesis on the
