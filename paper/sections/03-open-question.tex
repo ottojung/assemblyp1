@@ -24,7 +24,12 @@ predicate $I_s^{\mathrm{match}}(S,\mathcal W)$ requires:
 The source quantifies over \emph{matching read strings}, not hidden sampled
 start positions \cite[Supplement, \S6.4, Definitions~1--2]{shomorony2016}.
 The sampled-placement predicate $\Is$ in Definition~\ref{def:Is} is different;
-the two are incomparable (Proposition~\ref{prop:historical-source}).
+the two are incomparable (Proposition~\ref{prop:historical-source}). The
+published reconstruction theorem is an external premise (class~(iv)); its
+singleton-fiber consequence is proved in the paper (class~(ii)), while the
+conditional posterior/MAP result is kernel-checked only given an explicit
+decoder-correctness hypothesis (class~(i) conditional on (iv)). The Lean
+module does not formally instantiate Not-So-Greedy itself.
 \end{definition}
 
 \begin{theorem}[Not-So-Greedy reconstruction; published result]
@@ -475,11 +480,10 @@ Conditional reconstruction (Question~A)
   & each realized $R$ with $F(S,R)$ and $P_S(R)>0$
   & candidate set restricted to the feasible fiber; source model assumptions
   & positive-weight feasible fiber is one rotation class; conditional MAP returns truth
-  & 2016 reconstruction premise \cite{shomorony2016} makes the positive-weight
-    feasible fiber a single rotation class (paper-level
-    Prop.~\ref{prop:strong-guarantee-singleton}, not kernel-checked); given that
-    reconstruction interface, conditional posterior and constrained-MAP
-    certainty are kernel-checked in \texttt{ConditionalIdentifiability}\\
+  & (iv) 2016 reconstruction premise \cite{shomorony2016} gives the singleton
+    via paper-level Prop.~\ref{prop:strong-guarantee-singleton} (ii); conditional
+    posterior/MAP consequence is kernel-checked only under its explicit decoder
+    interface in \texttt{AssemblyP1/ConditionalIdentifiability.lean} (i | iv)\\
 \addlinespace
 Prior-average Bayes optimality
   & for every finite $n$, averaged over truth $\sim\pi$ and data $\sim P_\theta$
@@ -515,7 +519,8 @@ Limiting consistency
 \begin{sloppypar}
 The kernel-checked endpoints referenced in the last column are
 \texttt{ConditionalIdentifiability} (row~1; the conditional posterior/MAP
-conclusion, under the reconstruction interface that module assumes),
+conclusion under the explicit decoder-correctness hypothesis; the historical
+Not-So-Greedy algorithm premise itself is imported, not formalized),
 \texttt{FiniteBayesDecision} and \texttt{FiniteMapOptimality} (row~2), the
 $W_1,W_2$ certificates (row~3), the
 population and rigidity theorems (row~4), and \texttt{FiniteReadRecovery}

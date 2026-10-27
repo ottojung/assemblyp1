@@ -141,9 +141,15 @@ read set $R$. \emph{Question~A (conditional)} restricts the candidate set to the
 feasible fiber $\{\,g : F(g,R)\,\}$ and assumes the truth is in it; the
 reconstruction theorem makes the positive-weight feasible fiber
 $\{g:\pi(g)P_g(R)>0,\ F(g,R)\}$ a singleton up to rotation,
-so conditional MAP returns the truth. The bare predicate $F$ can admit a
-genome incapable of generating the observed reads. This is
-largely a corollary of the reconstruction theorem, not a new likelihood result.
+so conditional MAP returns the truth. More precisely, the theorem identifies
+the positive-weight feasible fiber, not every genome satisfying the bare
+predicate $F$: a genome incapable of generating the observations has zero
+posterior weight. The conditional statement is largely a corollary of the
+reconstruction theorem, not a new likelihood result. The proof boundary is
+important: the paper-level singleton deduction uses the published reconstruction
+result as an external premise, and the Lean posterior/MAP lemma assumes an
+explicit decoder-correctness interface; it does not formally instantiate the
+historical algorithm premise.
 \emph{Question~B (unconditional)} assumes only that the truth is feasible,
 $F(S,R)$, and maximizes the \emph{original, unrestricted} likelihood over the
 \emph{original} candidate universe. That maximizer need not be the truth, and it
