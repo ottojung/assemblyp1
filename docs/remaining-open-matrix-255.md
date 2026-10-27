@@ -79,6 +79,39 @@
   fixed-`x` spectrum comparison to genome realizability; the present exhaustive
   sample is evidence only, while #258's existing iff/census is restricted to
   its four AAABBB spectra and does not cover arbitrary `x`.
+
+## Addendum — 2026-10-27 (fresh reconciliation and exact census hardening)
+
+* **Fixed-sample axis A remains open in general.** The kernel-checked
+  `AssemblyP1.FixedXExactML.fixedX_classification_iff` is an exact product
+  inequality characterization over the feasible spectrum set; for AAABBB,
+  `feasibleSpectrum_iff_258` exhausts the four candidates and
+  `fixedX_four_chamber_iff_258` reduces each observation to three comparisons.
+  These are theorems, but do not provide a closed-form partition for arbitrary
+  truth/sample pairs. For the spelled-genome, oriented, exact-multinomial cell,
+  the witnesses in `docs/issue255-fixedx-loss-ratio.md` and
+  `docs/issue255-fixedx-second-witness.md` prove only that truth loses at those
+  particular samples. General characterization across truths, lengths, and
+  samples remains OPEN; reverse-complement molecule types, fixed-N binomial,
+  variable lengths, §6.2 flows, and both `I_s` interpretations remain distinct
+  axes.
+* **Validated exact finite census.** On commit
+  `8d0e0c277b70d20ce0206953770289ba7b8cf9c2`,
+  `scripts/verify_255_aaabbb_truth_never_wins.py` asserts exactly 84
+  support-admissible length-six samples, one truth-maximizing sample, and
+  largest relaxed-composition competitor/truth ratio 46656 at `(0,0,6,0)`.
+  Re-ran this verifier, `scripts/verify_255_fixedx_second_witness.py`, and
+  `scripts/check-research-docs.py`; all passed. This is bounded computation
+  over the four-type sample and candidate-composition universes, not a general
+  theorem.
+* **Scoped closed results remain scoped:** #256's exact-multinomial oriented
+  same-length sample-uniform iff is for positive balanced support circulations;
+  #260's full-overlap RC-molecule sample-uniform iff assumes equal support;
+  #258 is the AAABBB fixed-x certificate; and #251 is exact-iid on the
+  all-full-start-covered domain. Population KL maximality is not a finite-sample
+  result. None settles arbitrary fixed-x classification or general MB09 §6.2
+  flow classification; see the LANDED entries for exact hypotheses and lemmas.
+
 ## Addendum — 2026-10-21 (L3 uniqueness transport: does NOT hold, kernel-checked)
 
 * **New kernel-checked increment on the L3 axis.**  The merged L3 transport
