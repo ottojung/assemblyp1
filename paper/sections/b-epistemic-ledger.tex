@@ -50,7 +50,7 @@ rotation classes, zero-one loss)
 & (i),(iii)
 & \path{FiniteBayesDecision.chooseMAP_optimal},
 \path{chooseMAP_optimal_randomized}, \path{finite_iid_MAP_optimal};
-classical \cite{berger1985}. Not per-truth ML optimality.\\
+classical \parencite{berger1985}. Not per-truth ML optimality.\\
 \addlinespace
 Uniform rotation-class prior makes ML and MAP coincide
 & (i)
@@ -60,7 +60,7 @@ uniform start sampling are external modeling inputs.\\
 Not-So-Greedy reconstruction
 (\ref{thm:notso-greedy}; matched-string coverage and bridging)
 & (iv)
-& Published theorem \cite{shomorony2016}, for the source's matched-string
+& Published theorem \parencite{shomorony2016}, for the source's matched-string
 predicate.\\
 \addlinespace
 Certificate singleton / strong guarantee
@@ -131,7 +131,7 @@ Historical matched-string and placement predicates are incomparable
 (\ref{prop:historical-source})
 & (i),(iv)
 & Published \S6.4 matched-string coverage/bridging definitions
-\cite{shomorony2016}; the two incomparability instances are kernel-checked in
+\parencite{shomorony2016}; the two incomparability instances are kernel-checked in
 \path{HistoricalCoverageSameLengthWitnesses.regA_historicalCovers},
 \path{regB_not_historicalCovers} (with \path{regA_not_covers},
 \path{regB_covers}).\\
@@ -270,18 +270,18 @@ formalization claimed.\\
 Strong consistency on a finite family (\ref{prop:strong-consistency})
 & (ii),(iii)
 & Paper-level strong law and KL argument; classical
-\cite{durrett2019,cover2006}. No finite $n$ supplied.\\
+\parencite{durrett2019,cover2006}. No finite $n$ supplied.\\
 \addlinespace
-Chernoff refinement (\ref{prop:chernoff-refinement})
+One-sided likelihood-ratio exponent (\ref{prop:chernoff-refinement})
 & (ii),(iii)
-& Paper-level Chernoff/Sanov bound; classical \cite{cover2006,tsybakov2009}.
+& Paper-level Cram\'er/Sanov rate, one-sided $t>0$; classical \parencite{cover2006,tsybakov2009}.
 Kernel-checked constant remains the Hellinger $\rho_*$.\\
 \addlinespace
 Exact finite-$n$ $99\%$ minimax sizes (\ref{rem:minimax-sample-size})
 & (ii),(iii)
 & Exact computation
 \path{scripts/verify_minimax_finite_recovery_265.py}; classical decision
-theory \cite{berger1985,lehmann1998}. One explicit family only.\\
+theory \parencite{berger1985,lehmann1998}. One explicit family only.\\
 \addlinespace
 Referent of the 2016 sentence (MB09 object, read-type convention, candidate
 length, maximizer versus uniqueness); exactness of the MB09 \S6.1
