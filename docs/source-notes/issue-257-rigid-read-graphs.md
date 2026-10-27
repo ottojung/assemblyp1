@@ -2000,6 +2000,23 @@ unbounded-rank three-hub subfamily.
 
 ## 22. Arbitrary-support slack bound for delta certificates (§8.2 increment)
 
+### 22.1 Scalar summaries do not determine rigidity
+
+No function of only `(L,G,|V|,|E|,cycle rank)` decides rigidity, even for
+binary circular genomes. The exact verifier `scripts/verify_257_scalar_collision.py`
+checks two length-7, `L=3` genomes with the same summary `(3,7,3,4,2)`:
+`AABABAB` is rigid, whereas `AAAAAAB` is non-rigid with the alternative
+circuit `(1,2,2,2)`. This refutes a scalar-topology-only classification; it
+does not refute a criterion that uses labelled incidence or multiplicities.
+
+Two controls sharpen the scope. `ATATAT` is rigid despite a triple occurrence
+of an `(L-1)`-mer, so that repeat bound is not necessary. On the AATT support,
+the all-one vector is rigid but multiplicity vector `(2,1,1,1)` at total 5 is
+not, so support topology alone is likewise insufficient. The verifier checks
+all positive edge vectors of the stated total for these fixed instances. This
+is verified finite computation, not a genome census or a replacement for the
+exact box-feasibility iff of Theorem 1.
+
 Let a finite support have `m` edges, and let `A` be its positive integer
 circulation of total `G`. Any alternative positive circulation `B` with the
 same total gives `δ = B - A`, a nonzero balanced zero-sum witness from Theorem 1.
