@@ -452,16 +452,25 @@ def check_search(n, max_len, maxG_factor):
     return len(bad)
 
 
-def main():
+def main(argv=None):
+    import argparse
+    ap = argparse.ArgumentParser(description="two-closed-walk rigidity cross-check")
+    ap.add_argument("--extended", action="store_true",
+                    help="also run constructive n=4 maxG=2m (slow, >100s)")
+    args = ap.parse_args(argv)
     failures = 0
     failures += check_constructive(3, 3)
-    failures += check_constructive(4, 2)
     failures += check_search(3, 10, 3)
+    if args.extended:
+        failures += check_constructive(4, 2)
     if failures:
         print(f"FAIL: {failures} bad instances")
         return 1
+    scope = "constructive n=3 maxG=3m (447 instances) + search n=3 maxlen=10 maxG=3m"
+    if args.extended:
+        scope += " + constructive n=4 maxG=2m"
     print("OK: two-closed-walk criterion agrees with brute-force rigidity "
-          "(constructive on n=3,4; exhaustive search on n=3)")
+          f"({scope})")
     return 0
 
 
