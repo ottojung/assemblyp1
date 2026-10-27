@@ -55,8 +55,9 @@ def main() -> None:
             worst_observation = x
 
     assert samples == 84  # compositions of six into four truth-supported types
-    assert truth_maximizers > 0
-    assert max_truth_to_competitor >= Fraction(243, 64)
+    assert truth_maximizers == 1
+    assert max_truth_to_competitor == Fraction(46656, 1)
+    assert worst_observation == (0, 0, 6, 0)
     print(
         "PASS: among 84 support-admissible N=6 samples for S=AAABBB, "
         f"truth maximizes in {truth_maximizers}; largest competitor/truth ratio is "
