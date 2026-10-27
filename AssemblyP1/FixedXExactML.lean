@@ -550,6 +550,22 @@ theorem fixedX_strict_loss_at_xLose258 :
     likProduct E255 B1 B4 < likProduct E255 B4 B4 := by
   decide
 
+/-- At sample x=B4, the rival spectrum B4 is the UNIQUE maximizer over ALL
+feasible spectra (integer products: B4:16 > B1:4 > B2,B3:3). This completes
+the loss-chamber description: the pairwise loss `fixedX_strict_loss_at_xLose258`
+is not a B1-vs-B4 accident. -/
+theorem fixedX_unique_at_xLose258 :
+    ∀ B : (Fin 2 → Fin 2) → ℕ,
+      IsFeasibleSpectrum (by decide : 0 < 6) S255 B →
+      B ≠ B4 →
+      likProduct E255 B B4 < likProduct E255 B4 B4 := by
+  intro B hB hne
+  rcases (feasibleSpectrum_iff_258 B).mp hB with h | h | h | h
+  · rw [h]; decide
+  · rw [h]; decide
+  · rw [h]; decide
+  · exact False.elim (hne h)
+
 #print axioms fixedX_unique_at_xWin258
 #print axioms fixedX_top_tie_at_xTie258
 #print axioms fixedX_strict_loss_at_xLose258
