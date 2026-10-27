@@ -48,6 +48,65 @@ walk/occurrence definitions: the theorem here is about arbitrary graph chains,
 not specifically a feasible flow or the exact walk semantics of that
 observation. Observation 7 cannot be inferred solely from language preservation.
 
+## What Observation 7 identifies (and what the repository models)
+
+MB09 §3.2 defines a bidirected walk by successive incident edges whose
+incidences at every interior vertex are opposite; a cycle additionally closes
+with opposite incidences at its first vertex. Section 3.3 defines an overlap
+edge by orientation-specific strand matches between molecule vertices.
+Observation 7 in §6.2 identifies a read-vertex's number of visits by a walk
+with the number of occurrences of that read-molecule as a submolecule of the
+candidate spelled by the walk. It is not an assertion that every feasible flow
+is itself one walk.
+
+The repository keeps these objects separate in
+`AssemblyP1/Section62BidirectedFlow.lean`:
+
+* `BdEdge` (lines 86–100) stores departure/arrival strands, overlap length,
+  and signed endpoint incidences. `overlapEdges` (147–154) constructs them
+  from suffix/prefix equality over observed strands. `Chain` in
+  `Section62SimultaneousReduction.lean` (61–66) only checks endpoint-strand
+  adjacency. It does not check MB09's opposite-incidence walk rule. The latter
+  is modeled by `OppositeAtInterior` and `BidirectedCircuit` (Flow.lean
+  455–468).
+* `spellChain` (SimultaneousReduction.lean 68–74) spells a linear edge-list
+  chain by appending each arrival read past that edge's overlap. The two-hop
+  theorem and `reduction_preserves_language` therefore concern `Chain` paths
+  and linear-word equality; they do not produce a bidirected circuit or circular
+  genome.
+* `Spelling` (Flow.lean 412–420) is a nonempty cyclic list of strands, while
+  `Spelling.visits` (448–453) counts positions by molecule representative.
+  `Spelling.flow` (438–446) is the integer edge-traversal multiplicity of that
+  cyclic walk. `SpelledFeasible62` (491–510) additionally requires circuit
+  validity, graph membership, survival of reduction, and a feasible integral
+  flow. No theorem here says every `Feasible62` flow has such a spelling.
+* `BdFlow` is `BdEdge → ℕ` (252); `Feasible62` imposes vertex throughput at
+  least one, signed balance, and zero terminal usage (375–408). These local
+  constraints do not imply that the positive support is one connected cyclic
+  walk with those exact multiplicities. A rational/half-integral relaxation
+  also has a different coefficient domain from this literal natural-valued
+  object.
+
+For a circular spelling already given as a cyclic sequence of length-`L`
+windows, its window positions are exactly the occurrences counted by
+`Spelling.visits`, after quotienting by the declared representative/RC
+convention. Identifying this with `throughput` further requires the walk-flow
+and departure-count convention to agree. The L=5 witness above shows that
+linear word preservation alone does not identify graph-vertex visits with
+physical window occurrences: an intermediate spelling vertex can be absent
+from the observed vertex set. For a circular candidate, one must in addition
+prove incidence-compatible closure and account for wraparound windows; a
+linear `spellChain` equality proves neither.
+
+Thus the narrow implication is: **for a candidate already represented by a
+valid bidirected circular walk, its read-molecule occurrence counts are the
+counts of its cyclic windows under the chosen molecule orientation convention.**
+This is the intended observation-level bridge, not a theorem that arbitrary
+balanced flows are spelled circuits, nor that the repository's idealized
+simultaneous deletion is exactly MB09's operational reduction. Flow,
+spelled-circuit and circular-genome maximality remain distinct candidate
+classes until those bridges and their objective preservation are proved.
+
 ## Consequences for #261
 
 The idealized graph-language reduction has a precise kernel-checked proof, but
@@ -67,5 +126,6 @@ Primary sources: Medvedev–Brudno, *Maximum Likelihood Genome Assembly* (2009),
 assembly string graph* (2005), §2–§3. Repository evidence:
 `AssemblyP1/Section62MyersIdealTransitivity.lean`,
 `AssemblyP1/Section62SimultaneousReduction.lean`, and
+`AssemblyP1/Section62BidirectedFlow.lean` (definitions cited inline), plus
 `docs/section62-simultaneous-reduction-284.md`. The Lean regression is exact
 and `decide`-checked as recorded there; this note adds no new formal theorem.
