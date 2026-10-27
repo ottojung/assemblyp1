@@ -7,6 +7,7 @@ import AssemblyP1.ConditionalBayesEImpliesB271
 import AssemblyP1.InformationFeasibleRotation271
 import AssemblyP1.ConditionalVsMLFullReadSet271
 import AssemblyP1.ConditionalVsMLLiteralL3Adapter271
+import AssemblyP1.ConditionalVsMLNsgAdapter271
 import AssemblyP1.W1W2SharedObservableSeparation
 
 open AssemblyP1.ConditionalVsOrdinaryMLSeparation
