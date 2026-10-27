@@ -17,10 +17,10 @@ likelihood for the same observation. An ordered read tuple or a multiset with
 counts is a distinct observation model and cannot be silently substituted for
 this deduplicated `Finset` adapter.
 
-## Exact finite census (new)
+## Exact finite census
 
 The executable verifier [`scripts/verify_272_aligned_is.py`](../scripts/verify_272_aligned_is.py)
-enumerates **all** binary circular spellings for `3 ≤ G ≤ 6`, every
+by default enumerates **all** ternary circular spellings for `3 ≤ G ≤ 5`, every
 `2 ≤ L < G`, and every placement subset `R ⊆ Z/GZ`. For each placement it
 computes the distinct read-string set `Y`, its saturated matching-start set,
 historical `L−1` coverage, the literal all-three-occurrence bridge clause, and
@@ -28,20 +28,17 @@ the interleaved-maximal-repeat clause. It groups accepted `(genome,Y)` pairs by
 the rotation-canonical spelling. The census finds **zero** `Y` with two
 different rotation classes in these bounded parameters.
 
-| `G` | `L` | binary spellings | feasible `(g,Y)` | shared nonrotation fibres |
+| `G` | `L` | ternary spellings | feasible `(g,Y)` | shared nonrotation fibres |
 |---:|---:|---:|---:|---:|
-| 3 | 2 | 8 | 2 | 0 |
-| 4 | 2 | 16 | 2 | 0 |
-| 4 | 3 | 16 | 14 | 0 |
-| 5 | 2 | 32 | 0 | 0 |
-| 5 | 3 | 32 | 14 | 0 |
-| 5 | 4 | 32 | 66 | 0 |
-| 6 | 2 | 64 | 0 | 0 |
-| 6 | 3 | 64 | 13 | 0 |
-| 6 | 4 | 64 | 124 | 0 |
-| 6 | 5 | 64 | 287 | 0 |
+| 3 | 2 | 27 | 8 | 0 |
+| 4 | 2 | 81 | 15 | 0 |
+| 4 | 3 | 81 | 105 | 0 |
+| 5 | 2 | 243 | 18 | 0 |
+| 5 | 3 | 243 | 282 | 0 |
+| 5 | 4 | 243 | 756 | 0 |
 
-Run with `python3 scripts/verify_272_aligned_is.py`. This is an exhaustive
+Run the ternary census with `python3 scripts/verify_272_aligned_is.py`; use
+`--binary` to reproduce the earlier binary census. This is an exhaustive
 combinatorial check in the stated finite family, not a Lean theorem and not a
 general obstruction. Its result is consistent with the externally attributed
 Not-So-Greedy feasible-fibre uniqueness, but it does not prove or independently
@@ -86,6 +83,7 @@ settle only its explicitly bounded `(G,L,q)` family; a general answer or
 historical random-read multiplicity transfer remains open.
 
 In particular, no exact `I_s`-conditioned two-orbit witness was found in the
-exhaustive binary domain `3 ≤ G ≤ 6`; larger genomes, alphabets, variable-length
+exhaustive ternary domain `3 ≤ G ≤ 5` or earlier binary domain `3 ≤ G ≤ 6`;
+larger genomes, alphabets, variable-length
 competitors, read multiplicity observations, and the historical algorithm's
 precise candidate universe remain open.

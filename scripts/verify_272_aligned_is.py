@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Exhaustively census shared literal-I_s fibres for small binary circles.
+"""Exhaustively census shared literal-I_s fibres for small circles.
 
 Exact model: circular spelling, fixed genome length G, fixed read length L,
 orientation, distinct read-string Finset Y, and the literal historical
@@ -7,8 +7,11 @@ HistoricalInformationFeasibleLiteral predicate. A pair counts only when both
 spellings have a feasible placement set inducing the same Y. This is an
 exhaustive finite census, not a proof beyond the printed parameter range and
 not a transfer to ordered reads/multiplicities or the historical algorithm.
+The default run is a separate ternary census (G=3..5); pass --binary to
+reproduce the earlier binary census (G=3..6).
 """
 
+import argparse
 from itertools import combinations, product
 
 
@@ -89,8 +92,8 @@ def orbit(s):
     return min(s[i:]+s[:i] for i in range(len(s)))
 
 
-def census(G, L):
-    genomes = list(product(range(2), repeat=G))
+def census(G, L, q):
+    genomes = list(product(range(q), repeat=G))
     feasible = {}
     # Enumerate every candidate-specific placement set and exact induced Y.
     for s in genomes:
@@ -105,20 +108,25 @@ def census(G, L):
 
 
 def main():
-    # Full binary spelling space and every nontrivial proper read length up
-    # through G=6. G=2 is omitted because the predicate's repeat clauses have
-    # no meaningful placement range there; G=3..6 are all fully enumerated.
-    for G in range(3, 7):
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--binary", action="store_true",
+                        help="also reproduce the earlier binary census")
+    args = parser.parse_args()
+    q = 2 if args.binary else 3
+    upper = 7 if args.binary else 6
+    # G=2 is omitted because the predicate's repeat clauses have no meaningful
+    # placement range there. Enumerate every spelling and placement subset.
+    for G in range(3, upper):
         for L in range(2, G):
-            n, pairs, collisions = census(G,L)
-            print(f"G={G} L={L} q=2: genomes={n}, feasible-(genome,Y)={pairs}, "
+            n, pairs, collisions = census(G,L,q)
+            print(f"G={G} L={L} q={q}: genomes={n}, feasible-(genome,Y)={pairs}, "
                   f"shared-I_s-fibres={len(collisions)}")
             if collisions:
                 Y, os = collisions[0]
                 print("  WITNESS:", sorted(Y), sorted(os))
                 return 1
-    print("NO SHARED NONROTATION I_s FIBRE in exhaustive binary census "
-          "3<=G<=6, 2<=L<G")
+    print(f"NO SHARED NONROTATION I_s FIBRE in exhaustive q={q} census "
+          f"3<=G<{upper}, 2<=L<G")
     return 0
 
 
