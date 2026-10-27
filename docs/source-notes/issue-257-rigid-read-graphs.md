@@ -1936,3 +1936,13 @@ multiplicity split, §2). Implemented from scratch and cross-checked in
 enumeration, ≤ 20 candidates per genome; exit 0 iff every expectation holds).
 [verified computation, three fixed genomes — not a census, and no general
 iff claimed; the exact criterion of Theorem 1 and the OPEN items of §8 stand]
+
+The fixed `ATATAT` example also has a simple parametric explanation: for any
+positive integer `m`, the circular genome `(AT)^m` with `L=3` has support
+`{ATA,TAT}` and edge multiplicities `(m,m)`. Its directed graph is the
+two-edge directed cycle, whose incidence kernel is zero, so its only
+circularization on this support is `(m,m)` for every `m`; this conclusion is
+about support incidence and is independent of the larger multiplicity. (When
+`m=1`, the circular-word convention still supplies the two distinct directed
+3-mers `ATA` and `TAT`.) This gives an infinite rigid repetitive family, not
+just a finite control. [mathematical proof]
