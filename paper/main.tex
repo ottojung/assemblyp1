@@ -20,25 +20,31 @@ and finite-sample likelihood reliability}
 
 \begin{abstract}
 \noindent
-Maximum likelihood chooses the genome under which the observed sequencing
-reads are most probable. But reads contain two kinds of evidence: their
-overlaps constrain how the genome can be assembled, while the frequency of
-each read influences which genome receives the highest likelihood.
-Does enough information for reconstruction also make the true genome the
-most likely one?
+Short DNA reads can contain enough overlapping information to reconstruct
+the genome they came from. Yet a different genome may produce that particular
+collection of reads more often under random sequencing. We investigate when
+this can happen, and when the true genome is guaranteed to be the most
+likely explanation.
 
-We show that it need not. Even when a collection of reads satisfies strong
-coverage and repeat-bridging conditions, a different genome can assign those
-reads greater likelihood. We also prove a positive result under additional
-restrictions: for a class of same-length genomes with oriented reads, the
-overlap structure forces the true genome to be the unique likelihood
-maximizer, up to rotation.
+We exhibit finite collections of reads that satisfy strong coverage and
+repeat-bridging conditions but are more probable under an incorrect genome.
+We also prove a positive result: for oriented reads and a restricted class of
+same-length genomes with the required overlap support, the true genome is
+the unique maximum-likelihood reconstruction, up to rotation.
 
-We then ask what can be learned if the distribution of reads is known exactly,
-rather than estimated from a finite sample. For primitive genomes satisfying
-explicit restrictions on repeats, we prove that this distribution identifies
-the genome uniquely up to rotation. For finite samples from this class, we give an exponentially decreasing
-upper bound on the probability of a wrong maximum-likelihood reconstruction.
+We then consider an idealized experiment in which the probabilities of all
+possible reads are known exactly. We prove that these probabilities uniquely
+identify primitive genomes satisfying specified restrictions on repeats.
+For this class, we also obtain an explicit upper bound on the probability
+of a maximum-likelihood error that decreases exponentially with the number
+of sampled reads.
+
+Beyond these results, we establish when maximum likelihood is optimal for
+average reconstruction accuracy under a uniform prior on a finite candidate
+set, give criteria for uniqueness of read-count assignments in overlap graphs
+and for comparing likelihoods under a binomial approximation, and show that
+an additional read need not improve reconstruction success for a particular
+genome.
 \end{abstract}
 
 \clearpage
