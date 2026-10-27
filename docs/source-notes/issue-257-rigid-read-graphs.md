@@ -502,13 +502,18 @@ exhaustive zeros are a sanity check on the proofs, not a substitute for them.
 * The exact criterion (Theorem 1) is a **finite integer feasibility problem**:
   decide whether `∃ δ ∈ ℤ^E \ {0}` with `M δ = 0`, `∑ δ = 0`, `δ ≥ 1 - A`.
   Since `|δ_e| ≤ G - |E|` (from `δ ≥ 1 - A` and `∑ δ = 0`), the search is
-  bounded, hence decidable. [mathematical proof]
+  bounded, hence decidable. Under the standard explicit-graph, binary-multiplicity
+  encoding, this also puts **non-rigidity in NP and rigidity in coNP**: the
+  bounded vector `δ` is a polynomial-bit certificate, checked by exact integer
+  addition and incidence summation. This is an upper-bound classification, not
+  an NP-hardness result or a polynomial-time algorithm. [mathematical proof]
 * The two-cycle certificate (Theorem 2) is a **finite sufficient check**
   (enumerate pairs of simple directed cycles; the number can be exponential,
   but each check is polynomial). [mathematical proof]
-* The **precise complexity classification** of the exact criterion (whether
-  it is polynomial via a flow reduction, or NP-hard in general) is **open**;
-  this note does not claim it.
+* The **precise complexity classification** of the exact criterion remains
+  **open** beyond non-rigidity in NP / rigidity in coNP (whether either side is
+  in P, or whether the problem is complete for a larger class). This note does
+  not claim NP-hardness.
 * The LP relaxation `P = {δ : Mδ = 0, ∑δ = 0, δ ≥ -s}` is **not** an exact proxy:
   `P ≠ {0}` (real) does not imply a nonzero integer point, so real and integer
   non-rigidity can differ. **Justification (the non-TU remark alone is not
@@ -644,6 +649,7 @@ exhaustive zeros are a sanity check on the proofs, not a substitute for them.
 | §5.3 rigid graphs with `≥ 2` independent cycles (`r = 0`) | mathematical proof |
 | §6 exhaustive `n = 3` two-cycle agreement | verified computation, exhaustive in scope |
 | §7 exact criterion is a finite integer feasibility problem | mathematical proof |
+| §7/§24 binary-encoding complexity upper bound (non-rigidity ∈ NP; rigidity ∈ coNP) | mathematical proof from the bounded delta certificate |
 | §7 LP relaxation not exact (real/integer gap witnessed, §7) | mathematical proof + verified computation |
 | §8.1 closed-form graph-theoretic iff (polynomial / min-cut form) | open |
 | §8.2 exact complexity | partial: bouquet/target-cycle polynomial; multi-hub and triangular-hub DPs polynomial in their numeric bounds (pseudopolynomial unless multiplicities are unary); arbitrary-topology classification open |
@@ -2119,3 +2125,42 @@ decider. Neither the bounded cross-check nor conformal minimality supplies a
 general polynomial algorithm, a sharp Graver cardinality bound, or a general
 graph-structural iff beyond the existing lattice-box criterion. Those remain
 open.
+
+---
+
+## 24. Complexity upper bound from short delta certificates
+
+Use the explicit input model: the directed support graph is listed edge by edge,
+and the positive integer circulation `A(e)` is given in binary for every edge.
+The validity conditions (`A(e) ≥ 1`, incidence balance, and total `G = Σ A(e)`)
+are themselves checkable in polynomial time, so either one may view rigidity as
+a language restricted to valid instances or include validity in the verifier.
+
+**Proposition.** Non-rigidity is in NP, and rigidity is in coNP, in this input
+model.
+
+**Proof.** A certificate for non-rigidity is a vector of signed integers
+`δ(e)`, one per explicitly listed edge. By the exact criterion (Theorem 1),
+accept precisely when `δ` is nonzero and satisfies
+
+```text
+M δ = 0,     Σₑ δ(e) = 0,     δ(e) ≥ 1 - A(e) for every e.
+```
+
+Every such witness has `|δ(e)| ≤ C`, where `C = G - |E| = Σₑ(A(e)-1)` by
+§22. Thus each coordinate needs at most `O(log(C+2))` bits (including a sign),
+and the whole certificate has `O(|E| log(C+2))` bits. Since `G` is at most the
+sum of the encoded multiplicities, `log(C+2)` is polynomial in the input bit
+length. Balance, total zero, nonzeroness, and all lower bounds are checked by
+polynomially many exact additions/comparisons on polynomial-bit integers.
+Therefore non-rigidity has polynomial-size, polynomial-time-checkable
+certificates; its complement, rigidity, lies in coNP. ∎
+
+This upper bound applies to arbitrary explicit support topology, including
+oriented `L`-mer support graphs. It sharpens the complexity statement without
+enumerating the `(2C+1)^{|E|}` possible certificates. It does **not** bound the
+time to find a witness, prove NP/coNP hardness or completeness, or yield a
+polynomial-time decision procedure; the exact uniform complexity and a more
+informative structural characterization remain open. The finite Lean decider
+in §11 remains a separate correctness artifact, with its exhaustive-search
+runtime as stated there. [mathematical proof; no computation needed]
