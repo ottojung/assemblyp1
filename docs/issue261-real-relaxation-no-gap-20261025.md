@@ -27,6 +27,22 @@
   real feasible flow shares its exact likelihood with an integer feasible flow:
   the real relaxation **cannot** change the exact-ML optimum or the truth's
   maximality status on this cell.
+- The maximality implication does not require every real flow itself to be
+  rational. On this fixed graph, any strictly better real feasible flow can be
+  approximated by rational feasible flows: the flow constraints are a rational
+  polyhedron (homogeneous rational balance equalities, nonnegative edges, and
+  rational throughput lower bounds), whose rational points are dense. The
+  exact likelihood is continuous wherever total throughput is positive, so a
+  sufficiently close rational feasible flow remains strictly better. Clearing
+  that rational flow's denominators and scaling by a positive integer preserves
+  balance, preserves normalized throughputs and likelihood, and keeps all
+  throughput lower bounds at least 1. Thus a strictly better real flow exists
+  iff a strictly better integer flow exists; in particular truth-maximality
+  agrees for real and integer candidates here. This argument concerns strict
+  domination/maximality only; an irrational real maximizer need not have an
+  integer candidate with exactly its own likelihood. The claim applies to
+  rational polyhedral flow constraints and this continuous scale-invariant
+  exact likelihood, not the fixed-N binomial objective.
 - This closes the explicitly OPEN "real (non-half-integral) LP relaxation"
   subclaim of `docs/issue261-half-integral-source-ml.md` **for the exact
   likelihood only**. No claim about the fixed-external-`N` binomial (which
@@ -43,8 +59,9 @@ the 10-edge build assertion inherited from the audited scope cell.
 
 ## Scope
 
-One bounded cell only. No general maximality criterion is stated. Irrational
-flows are not separately witnessed (clearing denominators is stated for
-rational values; scale invariance itself is exact for all positive reals).
+One bounded graph/model cell only. No general maximality criterion is stated.
+The density argument resolves the real-versus-integer strict-domination
+question for this cell; it does not provide a candidate attaining the exact
+likelihood of an arbitrary irrational flow.
 Spelled circuits, circular genomes, transitive-reduction transfer, and
 RC/orientation classes beyond this support stay OPEN. Keep #261 and #255 open.
