@@ -1,5 +1,11 @@
 # Issue 272: source-faithful bridge findings (partial)
 
+_Status: 2026-10-27. Read with the exact posterior characterization in
+[`issue272-finite-bayesian-side-information.md`](issue272-finite-bayesian-side-information.md)
+and the read-string / obstruction comparisons in
+[`issue272-read-string-is-vs-unambiguous.md`](issue272-read-string-is-vs-unambiguous.md)
+and [`issue272-bresler-obstruction-gap.md`](issue272-bresler-obstruction-gap.md)._
+
 ## Scope and model alignment
 
 The local source-faithful condition in `AssemblyP1.SourceFaithfulIs` is a
@@ -46,19 +52,46 @@ Accordingly the safe implication table is:
 | `I_s` plus exact §6.2 candidate certificates | Truth is an exact ML maximizer (Lean theorem named above) | Not implied without eliminating every supported competing orbit |
 | Supplied event `I_s(g,r)` and exactly one positive-prior, positive-likelihood orbit remains in its fibre | Conditional finite posterior is singleton | Yes, by finite Bayes support characterization |
 
-This rules out using truth feasibility alone as the bridge. A concrete exact
-counterexample matching the same orientation, read-multiplicity and candidate
-universe remains to be checked before elevating the failure to a
-Lean-checked AssemblyP1 example.
+This rules out using truth feasibility alone as the bridge to posterior
+certainty. A subtlety is that the local `InformationFeasible` property is
+truth-and-start-set dependent; the historical read-string adapter is instead
+the supplied event obtained by existentially marginalizing over compatible
+placements. These are distinct conditioning questions. For the adapter, the
+exact criterion is still: among positive-prior, positive-likelihood candidates
+that satisfy that supplied event, exactly one rotation orbit remains. Its
+existing Lean theorem `FiniteReadOnlyDecoderCertainty` proves an `I_s`-failure
+can coexist with certainty for a read-only decoder (`AAAB`, `L=3`,
+`Y={AAA,ABA}`); this disproves necessity for existence of *some* certain
+read-only decoder, not necessity for the particular Not-So-Greedy algorithm.
+
+The read-string comparison already supplies the complementary, positive
+direction: `ABAB` is `I_s`-feasible at `Y={AB,BA}` but `AABB` in a different
+rotation orbit also realizes the read set. This refutes singleton support for
+the read-realizable fibre without conditioning on the supplied `I_s` event;
+the candidate `AABB` is specifically not `I_s`-feasible there. Thus it does
+not refute singleton posterior *after conditioning on* the historical `I_s`
+event. The verified decoder-certain `AAAB` witness likewise establishes
+read-only recovery in the unconditioned support, not a two-orbit conditioned
+`I_s` fibre. A concrete aligned pair satisfying the same source-defined event
+on two positive-supported non-rotation candidates remains unestablished.
 
 ## Remaining concrete work
 
-Inspect the 2016 theorem's precise finite/infinite sampling and candidate
-universe clauses against `SourceFaithfulIs`, `FiniteBayesDecision`, and
-`FiniteSideInformationColoring`. Then construct a smallest finite read
-experiment with two non-rotation same-length candidates, exact observed read
-multiset, and both candidates satisfying the same source-defined promise (or
-prove that such an example is impossible under the exact predicate). Kernel
-check that enumeration and compare it with the historical theorem hypotheses.
-Until then the implication between source-faithful `I_s` and posterior
-singleton remains open at the requested source-faithful bridge level.
+1. Align the 2016 random-read event (ordered sample/multiplicities and placement
+   sampling) with the project’s literal read-string adapter and candidate
+   universe; the source’s reconstruction result cannot be transferred merely
+   from the support-only read-set model.
+2. Decide whether source `I_s` is sufficient for posterior singleton under the
+   *supplied-event conditioning law*, separately from its external decoder
+   guarantee and from its local exact-start-set likelihood-maximizer theorem.
+   Search for two different-orbit positive-supported candidates in the same
+   conditioned `I_s` fibre, or prove that the historical theorem excludes
+   them under fully aligned assumptions.
+3. Keep algorithm-specific necessity for the literal 2016 Not-So-Greedy
+   decoder open; the existing `AAAB` counterexample only concerns whether some
+   read-only decoder can be certain.
+
+No new source-faithful counterexample is claimed here. The checked artifacts
+remain the existing kernel proofs: generic posterior iff, exact ML maximizer
+endpoints, read-string `I_s`/unambiguous incomparability, the `I_s`-not-necessary
+read-only certainty example, and the attributed Bresler obstruction comparison.
