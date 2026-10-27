@@ -19,6 +19,15 @@ mdc: true
 
 **AssemblyP1** · A research investigation
 
+<!--
+Newcomer framing: a fixed circular genome emits iid reads under independent
+uniform starts. ML compares L_n(H)=product_i P_H(R_i), while a posterior also
+needs a prior. Finite samples can reverse the ranking; this is a motivating
+aside, not a defect in ML. The exact-rational AAC/AAAC example and its checked
+figure data are in docs/finite-read-arc-figure-265.md; validation:
+scripts/verify_finite_read_arc_265.py. Rotations induce the same law.
+-->
+
 <HomeLink label="Choose another audience" />
 
 <!--
@@ -203,6 +212,32 @@ This is a probability **of the read if the genome is given**. It is **not yet** 
 The circular starts are equiprobable by model assumption. A yields AAA at
 one of five starts; B at two of five. This does not assume read types themselves
 are uniformly distributed.
+-->
+
+---
+
+# A finite sample can reverse the ranking
+
+Truth: `AAC`  Competitor: `AAAC`  Read length: 2
+
+| Observed reads | Truth likelihood | Competitor likelihood | ML choice |
+|---|---:|---:|---|
+| `AC` | $1/3$ | $1/4$ | Truth |
+| `AA, AA` | $1/9$ | $1/4$ | Competitor |
+
+**A principled rule can still make a finite-sample error.**
+
+<!--
+Exact iid oriented read model: uniform independent circular starts, no errors.
+Read laws (AA,AC,CA,CC): AAC=(1/3,1/3,1/3,0), AAAC=(1/2,1/4,1/4,0).
+Rows are exact products of read probabilities. The second observation has
+positive probability under the truth; it is a finite sampling fluctuation,
+not evidence against likelihood as a decision rule. Exact-rational verifier:
+scripts/verify_finite_read_arc_265.py; source data: docs/finite-read-arc-figure-265.md.
+For n>=1, ratio L_n(AAAC)/L_n(AAC)=3^n/2^(2n-a), with a the count of AA;
+this cannot equal 1, so the example has no positive-probability likelihood ties.
+The population / finite-family consistency statements occur later and do not
+turn this finite observation into a guaranteed error-free decision.
 -->
 
 ---

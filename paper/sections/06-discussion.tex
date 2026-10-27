@@ -69,6 +69,20 @@ job for score dominance in the fixed-$N$ surrogate's all-count
 domain. These deserve attention for their own results, not
 merely because they support ML.
 
+An additional kernel-checked analytic boundary is worth keeping distinct
+from the discrete Graver certificate.  For a positive observation count
+$x$ and a positive candidate copy count $d$, the one-coordinate
+negative-log multinomial term $f(d)=-x\log(d/G)$ has
+$f'(d)=-x/d<0$: its \emph{unconstrained} gradient need not vanish
+at the integer maximizer.  At the positive count vector $d=x$,
+all coordinate slopes are $-1$, as expected from
+\emph{constrained} fixed-total stationarity.  The explicit four-class
+$AAABBB$ witness verifies this separation; the corresponding
+derivative and finite-vector endpoints are kernel-checked in
+\texttt{AssemblyP1.KKTRefutation263}.  This is neither a new
+necessary-and-sufficient characterization of the entire Section~6.2
+flow domain nor a replacement for discrete convex certification.
+
 The strict historical counterexamples
 (Theorems~\ref{thm:cex-historical-W1} and
 \ref{thm:cex-historical-W2}) are equally decisive in a different
@@ -156,85 +170,98 @@ and consequence. The central investigation remains the
 relationship between read information, feasible assembly,
 and the likelihood of the \emph{realized} reads.
 
-\subsection{What remains open}
+\subsection{Open questions after the proved results}
+\label{sec:open-questions-final}
 
-\paragraph{Source questions.}
-Which Medvedev--Brudno object the 2016 sentence denotes; which read-type
-convention (and hence which equivalence) it intends; whether candidate length is
-restricted; whether the conclusion is maximizer or uniqueness; and whether the
-unretrieved publisher-hosted supplement archive contains a definition that
-narrows any of these. These are not bookkeeping: each changes which formal
-statement the published sentence asserts. The full audit is
-Appendix~\ref{app:referents}.
+Our results settle several precisely scoped statements but not a universal
+criterion for finite-read maximum likelihood.  In particular, the strict
+historical read-string counterexamples
+(Theorems~\ref{thm:cex-historical-W1} and~\ref{thm:cex-historical-W2})
+refute certain proposed implications; the same-length oriented rigidity
+theorem (Theorem~\ref{thm:rigidity}), the population uniqueness theorem
+(Theorem~\ref{thm:population}), and the finite-read confidence theorem
+(Theorem~\ref{thm:p2-uniform-rate}) give positive conclusions on their
+respective, explicitly restricted domains.  None of these statements is
+silently extended to a different read orientation, candidate universe,
+likelihood, or graph model.
 
-\paragraph{The source's own read-string predicate.}
-The finite witnesses of Section~\ref{sec:finite} were first stated for the
-placement-based $\Is$. Under the source's own supplement-\S6.4 read-string
-predicate $\Is^{\mathrm{match}}$, the same-length molecule slice is likewise
-\emph{false}, with all historical predicates and both likelihood ratios
-kernel-checked (\S\ref{sec:finite:historical}): $W_1$ ($AAATAT\to AAAAAT$) and $W_2$
-($ATATACAC\to ATACACAC$) satisfy historical coverage and matched-string bridging
-at full strength, are genuine Section~6.2 molecule flows of equal length, and
-beat the truth under both the exact multinomial and the fixed-$N$ binomial. This
-does \emph{not} settle the referent of the 2016 sentence or the general
-$o_{\min}$ Section~6.2 flow domain.
+The following are \emph{open questions}, not unproved lemmas used by
+the theorems above.  Their formulations describe the boundary of the
+present work rather than an assertion that any particular answer is true.
 
-\paragraph{Mathematical questions.}
-The same-length Section~6.2 statement under the per-occurrence strengthening
-($d_D\ge x$) is \emph{no longer open}: it is false, by the same-length witness
-$ATATACAC\to ATACACAC$ (Theorem~\ref{thm:cex-peroccurrence}) whose truth is
-itself per-occurrence feasible. That this needed the real four-letter DNA
-alphabet, where no base is its own reverse complement, is a reminder that the
-small-counterexample search space for a modeling choice can be non-monotone in
-the alphabet. It remains true that the strengthening is \emph{not}
-Medvedev--Brudno's §6.2 rule, which states only a per-vertex lower bound of $1$,
-so this is an added assumption surface rather than a reading of the 2016
-sentence; it is refuted because the question is determinate, not because a source
-asks it. With it, no determinate row of the finite landscape remains open:
-what is left is the doubled-strand $2G$ convention of a different paper, which
-is open in \emph{both} directions under a convention the 2016 text does not
-state (the only proved facts are the known witness's inadmissibility and the
-compatibility classification; no bounded search is offered as evidence), and the
-unspecified-principle reading, which is not a determinate proposition. The
-single-strand reading of the variable-length Section~6.2 statement is
-\emph{no longer open}: it is false, by the oriented
-variable-length boundary witness, which beats the truth as soon as $n>G$ under
-both objectives. The
-population uniqueness theorem is now a \emph{fully kernel-checked} Lean theorem
-with no external premise: \popml{}
-proves that, for $L\ge2$ and a primitive P2 truth, the truth maximizes the
-population log-likelihood over \emph{every} positive-length primitive P2
-candidate, and that every population tie is a cyclic rotation of the truth. The
-classical complete-spectrum analysis of Ukkonen and Pevzner
-\cite{ukkonen1992,pevzner1995}, developed in
-\cite{bresler2013}, remains a mathematical explanation of the identifiability step, but it
-is no longer a required external premise of either the population theorem or
-the \emph{truth-candidate-conditional} finite rotation theorem
-(Corollary~\ref{cor:same-length-rotation}). Without truth candidacy, a distinct result treats a
-\emph{nonprimitive truth} positively, while a primitive truth
-can have a certified nonrotation competitor. These cases concern
-the truth's primitivity, not the competitor's. Neither is an unrestricted
-finite likelihood result. The historical referent
-of the 2016 sentence remains a source gap. The population model for
-\emph{molecule} read types --- as opposed to oriented types --- is not addressed
-here. The finite-read rate of Theorem~\ref{thm:p2-uniform-rate} is valid
-but loose for the enumerated primitive-P2 instances; the sharp uniform
-separation exponent is conjectured to be $1$, not $4$ (Remark~\ref{rem:rate-sharpness}).
-No uniform exponential rate extends to the unrestricted genome universe:
-read-law collisions such as $AB$ versus $ABAB$ make the exact-ML error
-probability $1$ for every sample size. Consequently, no uniform finite
-sample-size guarantee is possible over that unrestricted universe.
-Sharp uniform rates are meaningful only under explicit restrictions.
+\begin{enumerate}[label=\textbf{Q\arabic*.},leftmargin=*,itemsep=5pt,topsep=4pt]
+\item \textbf{General finite-sample likelihood classification.}
+Can one give informative necessary and sufficient conditions, in terms
+of the read multiset and the admissible genome/flow structure, under
+which the generating genome maximizes the exact finite-sample likelihood?
+The distinction between a fixed realized count vector $x$ and
+\emph{every} allowed $x$ is essential, as are truth candidacy,
+candidate length, and whether the score is exact multinomial,
+fixed-$N$ binomial, or another sampling law.  The proved special-case
+rigidity and effective-weight criteria do not classify all these
+domains.
 
-\paragraph{What would count as settlement.}
-A positive settlement of the published question is a Lean proof of a formally
-justified version of the published implication after an argument fixes the axes
-audited in Appendix~\ref{app:referents} (Table~\ref{tab:axes}).
-A negative settlement is a mathematically valid
-counterexample satisfying the faithfully formalized bridging hypotheses while
-violating the faithfully formalized likelihood conclusion. A computational
-discovery is useful but not a settlement until the finite instance is
-kernel-checked and the source correspondence is documented.
+\item \textbf{A faithful physical reverse-complement overlap model.}
+Precisely when does the source's bidirected physical overlap graph,
+including parallel matches, reversed edges, self-complementary reads,
+and transitive reduction, correspond to the graph and incidence
+conventions used in the formal development?
+We prove spelling preservation for specified reductions, but neither
+identify them with every step of the published construction nor give
+a general equivalence of the physical and oriented flow domains.
+
+\item \textbf{Genome spelling versus feasible flow.}
+Under what extra hypotheses does an admissible nonnegative integral
+(or half-integral, where allowed) flow represent a \emph{single}
+circular spelled genome with exactly the stipulated read
+multiplicities?  Balance and vertex lower bounds alone do not supply
+such a realization; the exact relationship among the full flow
+polytope, one closed signed walk, and physical molecule-count vectors
+remains to be characterized.
+
+\item \textbf{Optimality under graph reductions and flow relaxation.}
+When can maximizers and \emph{unique} maximizers be transported between
+spelled genomes, physical-edge-orbit flow vectors, visit-count vectors,
+and a transitive-reduced graph?  The proved objective-factorization
+results require specific hypotheses.  In particular, noninjectivity
+of a flow-to-visit map obstructs automatic transport of uniqueness;
+the full reverse-complement Section~6.2 optimizer correspondence
+remains open.
+
+\item \textbf{Sharp finite-read recovery rates.}
+For the oriented primitive-P2 class, can the explicit
+$1/(8B^4)$ exponent in Theorem~\ref{thm:p2-uniform-rate} be improved
+to the conjectural sharp order $1/B$, with matching asymptotic bounds?
+The finite enumerations motivating that conjecture are not a proof.
+An unrestricted-universe uniform rate is \emph{not} an open
+possibility: distinct genomes such as $AB$ and $ABAB$ have identical
+read laws, preventing uniform recovery.
+
+\item \textbf{Population identifiability for physical molecule reads.}
+Which structural restrictions make population maximum likelihood
+unique, up to the appropriate rotational or dihedral equivalence,
+when each observation is a reverse-complement \emph{molecule class}
+rather than an oriented word?  The unconditional primitive-P2 theorem
+in this paper concerns the \emph{oriented} read law.
+
+\item \textbf{Minimal sufficient side information.}
+For a finite collection of candidate genomes and a specified
+observed-read experiment, characterize the weakest additional
+read-string or reconstruction certificate that forces posterior
+probability one on the truth's equivalence class.  The abstract
+posterior-support criterion and the conditional MAP results are
+proved, but neither identifies a minimal historical decoder
+certificate nor makes ordinary unrestricted ML inherit the
+conditional guarantee.
+\end{enumerate}
+
+A separate \emph{source-interpretation question} is which precise
+likelihood universe and observation convention the 2016 discussion
+intended; see Appendix~\ref{app:referents}.  Its unresolved historical
+referent is not itself a missing mathematical proof.  Further,
+the source's matched-string bridging predicate differs from the
+sampled-placement predicate, and proved counterexamples to one
+must not be attributed to the other without a separate argument.
 
 \subsection{Relation to the literature}
 
