@@ -6,6 +6,8 @@ branch `research/261-scope-matrix-RQZTG1WbAejzEkEnSWm7Wr-chemical` (commit
 This note instantiates that matrix's "smallest next bridge" for one observed RC
 support. Independent exact-integer witness; verifier:
 [`scripts/verify_261_flow_cell_acac.py`](../scripts/verify_261_flow_cell_acac.py).
+The stricter shortest-edge boundary is independently exhaustively checked by
+[`scripts/verify_261_acac_short_edge_boundary.py`](../scripts/verify_261_acac_short_edge_boundary.py).
 
 ## Fixed instance (source-faithful MB09 Sec. 6.2)
 
@@ -46,6 +48,29 @@ support. Independent exact-integer witness; verifier:
    reduction-vacuous genuine `o_min=1` bidirected graph with a feasible spelled
    truth. This resolves the scope matrix's bounded falsification target for one
    cell; it is not a general maximality criterion (still OPEN).
+
+## Shortest-overlap boundary (finite exhaustive result)
+
+The strict flow defeater in this cell is genuinely dependent on allowing the
+shortest observed overlap length. The independent checker enumerates all
+`4^8=65,536` nonnegative edge-flow vectors: because every edge contributes to
+its source-class throughput and candidates are restricted to throughput at most
+`N=3`, each edge coordinate is at most 3, so this is exhaustive for this
+probability-bounded flow set. It filters the literal `Feasible62` conditions and
+scores the two observed coordinates with the same exact fixed-`N` binomial core.
+
+* With all eight edges, the maximum score is 16 and its only throughput vector
+  is `(2,1)`, strictly above the truth score 8.
+* After excluding all four length-1 edges (leaving only maximal length-2 edges),
+  the maximum is 8, attained at `(1,1)` and `(2,2)`; there is no strict flow
+  defeat of the truth.
+
+Thus, **in this finite cell and under the stated throughput-bound/unobserved-zero
+convention**, the strict flow defeat requires a length-1 edge. The literal
+project `isReducibleB` predicate removes no edge in this graph, as checked by
+both verifiers, so this result is stable under that predicate. It does not
+establish how a source-faithful spelling-preserving MB09 transitive reduction
+acts in general, nor any global criterion or transfer from full overlap.
 
 ## What stays OPEN
 
