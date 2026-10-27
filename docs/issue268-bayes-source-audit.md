@@ -34,7 +34,9 @@ source-faithful realization of the 2016 reconstruction algorithm.
 
 ## Manuscript alignment and bounded caveat
 
-At the reviewed paper sources, Theorem `thm:bayes-optimal` states a finite
+At the reviewed manuscript source on the #268 integration branch (whose
+exact two-question wording is independently represented by signed commit
+`6fa5a9f25f86e21ec79602d6648bb095ed2bb280`), Theorem `thm:bayes-optimal` states a finite
 candidate universe, a correct common observation model, zero-one exact-class
 loss, and uniform prior over equivalence classes for ML=MAP; it separately
 states MAP for general priors and the iid every-finite-`n` specialization. Its
