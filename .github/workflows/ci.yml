@@ -46,6 +46,8 @@ jobs:
         run: python3 scripts/verify_covered_binomial_weights_259.py
       - name: Verify #259 circular-genome exact-iid vs §6.1 ranking inversion
         run: python3 scripts/verify_real_genome_inversion_259.py
+      - name: Verify #259 quinary-L3 realizable census (rigidity necessity cell)
+        run: python3 scripts/verify_realizable_census_Q5L3_259.py
       - name: Verify #281 primitive-P2 (L-1)-window multiplicity cap
         run: python3 scripts/verify_281_window_cap.py 3 11 4
       - name: Verify #281 Hellinger-affinity exponential ML error decay
