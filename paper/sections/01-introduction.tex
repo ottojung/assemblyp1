@@ -14,7 +14,9 @@ uniformly chosen position; different starts are sampled independently, and
 the letters are read without errors. Unless specified otherwise, we keep
 track of which direction each read was read in. These assumptions isolate
 the mathematical question; they are not a model of every complication of
-real sequencing.
+real sequencing. For small mathematical examples we sometimes use
+the toy alphabet $\{A,B\}$; $B$ is only a stand-in for a second
+distinct DNA letter, not an additional nucleotide.
 
 For example, the circular genome $\texttt{ACGTA}$ has five possible
 length-three reads:
@@ -39,7 +41,7 @@ but they are not the same question.
 When two reads share a long suffix and prefix, that overlap suggests they
 might come from neighboring positions. Trouble arises when a stretch of
 letters appears in several places. If a genome contains both
-$\texttt{\ldots CAA G\ldots}$ and $\texttt{\ldots TAA C\ldots}$,
+$\texttt{\ldots CAAG\ldots}$ and $\texttt{\ldots TAAC\ldots}$,
 a read $\texttt{AA}$ does not say which copy it came from; even
 $\texttt{CAA}$ tells us only what lies on one side. A read
 $\texttt{CAAG}$ extends beyond the first $\texttt{AA}$ on \emph{both}
