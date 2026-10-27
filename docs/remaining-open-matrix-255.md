@@ -31,6 +31,21 @@
   from the pushed review branch to `main` and merge.
 ## Addendum — 2026-10-26 (verified fixed-sample cell; matrix reconciliation)
 
+* **Matrix follow-up (2026-10-27):** the arbitrary fixed-`x` question now has
+  to be stated carefully. In the exact-multinomial, oriented, same-length
+  feasible-spectrum model, `AssemblyP1.FixedXExactML.fixedX_classification_iff`
+  is already a general fixed-observation necessary-and-sufficient test: truth
+  is a maximizer iff its exact integer likelihood product dominates every
+  feasible spectrum. This is an iff over the entire feasible spectrum class,
+  not merely a witness/candidate comparison. However, it is an objective-level
+  test, not a structural criterion deciding the result from the circular truth
+  alone; the finite witnesses below show that changing `x` can reverse truth
+  maximality for the same truth and candidate. Thus “arbitrary fixed-`x`
+  classification” is CLOSED only in this scoped, pairwise-product sense;
+  a more informative structural characterization of which `x` satisfy all
+  inequalities remains OPEN. This does not extend to fixed-`N` binomial,
+  reverse-complement molecule types, variable lengths, or §6.2 flows.
+
 * **Second exact pairwise witness (this branch; not a classification):**
   `S=AAABBB`, `D=AABBBB`, oriented pair types `(AA,AB,BA,BB)`,
   `x=(1,0,1,4)` gives exact multinomial likelihoods `P(S;x)=1/1458` and
