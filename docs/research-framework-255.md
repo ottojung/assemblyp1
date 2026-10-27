@@ -96,6 +96,18 @@ stay OPEN.
 
 ## 3. Anchors (known, with scope)
 
+- **Fixed-sample exact-multinomial baseline criterion (elementary, not a
+  structural classification).** For a fixed count vector `x` and any one
+  candidate probability vector `p_D`, truth weakly beats it exactly when
+  `∏_i p_S(i)^{x_i} ≥ ∏_i p_D(i)^{x_i}`; the shared multinomial coefficient
+  cancels. The log version requires extended-real zero-support handling.
+  Conjoining over the admissible candidate set is necessary and sufficient
+  for (A), but yields no shortcut for an infinite or large candidate class.
+  It is exact multinomial only: RC types require a separately defined
+  probability vector, fixed-`N` product-binomial retains candidate-specific
+  absence factors, and §6.2 flows require their own objective-to-vector map.
+  Full scope and proof sketch: `docs/issue255-fixed-sample-likelihood-criterion.md`.
+
 - **Population maximality: PROVED (kernel-checked), unconditional for all
   circular genomes.** `population_maximizer_unrestricted`: the truth
   maximizes the exact population likelihood over ALL circular candidate
