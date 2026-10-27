@@ -27,3 +27,32 @@ one positive-prior, positive-likelihood truth and yields posterior one; zero
 prior and zero likelihood candidates contribute no posterior mass; an event
 with zero predictive mass has no defined posterior. This is computational
 evidence for these finite values, not a general theorem proof.
+
+## Probability-endpoint audit (2026-10-27)
+
+The delegated endpoint question is resolved for the generic finite posterior
+iff theorem: no strict-positivity assumption on every candidate is needed.
+`jointMass_pos_iff` identifies positive support exactly as
+`π g > 0 ∧ p_g(r) > 0 ∧ E(g,r)`. Thus zero-prior, zero-likelihood, and
+promise-excluded candidates contribute zero; ties remain possible only among
+positive supported candidates. `posteriorMass_eq_one_iff` requires
+`predictiveMass > 0`, which is the exact domain restriction preventing an
+undefined `0/0` posterior. For a decoder and the a.s. theorem, the pointwise
+quantification is likewise restricted to `predictiveMass > 0`; observations
+with zero predictive mass do not affect a.s. certainty.
+
+Independent targeted validation at main `3decc39b`:
+
+* `lake env lean AssemblyP1/FiniteBayesianSideInformationAudit.lean` passes;
+  the printed dependencies for the core iff, excluded-competitor, read-only,
+  side-channel, and a.s./pointwise theorems are exactly
+  `[propext, Classical.choice, Quot.sound]`.
+* `python3 scripts/verify_272_posterior_support_corners.py` passes its exact
+  rational cases for positive mass, zero prior, zero likelihood, and zero
+  predictive mass. This is a targeted example check, not the proof; the Lean
+  theorem supplies the general proof.
+
+No code change was required. Endpoint validity is already covered by the
+existing theorem and positivity-domain hypotheses. This is a bounded audit;
+it does not close the full issue's explicitly open AssemblyP1 bridge or
+algorithm-specific necessity questions.
