@@ -238,6 +238,13 @@ For n>=1, ratio L_n(AAAC)/L_n(AAC)=3^n/2^(2n-a), with a the count of AA;
 this cannot equal 1, so the example has no positive-probability likelihood ties.
 The population / finite-family consistency statements occur later and do not
 turn this finite observation into a guaranteed error-free decision.
+A finite strict loss does not contradict finite-universe Bayes/MAP
+prior-average optimality (kernel-checked FiniteBayesDecision); that benchmark
+is prior-averaged, not pointwise. Keep separate the conditional 2016
+reconstruction premise (singleton positive-posterior class only under the
+truth-dependent feasibility event) from ordinary read-only ML, which cannot
+observe that event. Candidate universe, oriented read model, likelihood
+formula, and bridging predicate stay as stated in the paper.
 -->
 
 ---

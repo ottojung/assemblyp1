@@ -36,6 +36,16 @@ positive-probability ties. Exact arithmetic for the sample and the associated
 success probabilities is reproduced by
 \path{scripts/verify_finite_read_arc_265.py}; the related checked
 non-monotonicity result is stated in Proposition~\ref{prop:nonmonotone}.
+Such a finite strict loss does not contradict the finite-universe
+Bayes/MAP prior-average benchmark of Theorem~\ref{thm:bayes-optimal},
+which is kernel-checked in \path{AssemblyP1/FiniteBayesDecision.lean}:
+the optimality is prior-averaged over the candidate universe, not
+pointwise for every truth. It must also be kept distinct from the
+conditional reconstruction premise of~\cite{shomorony2016} discussed in
+Section~\ref{sec:two-questions}: conditioning on the truth-dependent
+feasibility event can yield a singleton positive-posterior class, while
+ordinary read-only ML, which does not observe that event, may still rank
+another genome higher.
 
 The obstacle to assembly is repetition. When the same substring occurs twice
 in the genome, reads drawn from the two copies are identical, and the data do
