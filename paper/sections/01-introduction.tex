@@ -1,63 +1,73 @@
 \section{Introduction}
 \label{sec:intro}
 
-\subsection{Genomes, reads, and the repeat obstacle}
+\subsection{From a genome to a collection of reads}
 
-A genome is a long string over the four-letter DNA alphabet $\{A,C,G,T\}$;
-many bacterial genomes are circular, and we model the genome as a circular word
-so that every position has a well-defined neighborhood on both sides. A
-sequencing experiment does not read the genome end to end. It samples many
-short \emph{reads}: each read records the length-$L$ window at a start position
-chosen uniformly at random along the genome, independently of the other reads.
-The assembly problem is to infer the genome from the observed reads.
+A genome is a sequence of letters from the DNA alphabet $\{A,C,G,T\}$.
+Sequencing does not normally reveal that sequence all at once. Instead, it
+produces many shorter strings, called \emph{reads}, whose original positions
+are unknown. Assembly asks how to recover the sequence from those pieces.
 
-This is a statistical inference problem before it is a graph problem. For a
-fixed circular genome $G$, let $P_G$ be the law of one read under an
-independent uniform start and error-free fixed-length-$L$ sampling. The
-observations $R_1,\ldots,R_n$ are iid from $P_G$, and the exact likelihood of
-a candidate $H$ is $L_n(H)=\prod_{i=1}^n P_H(R_i)$. Uniform starts do not mean
-uniform read strings: a string's probability is its number of occurrences
-divided by $|G|$. Likelihood is the probability of the observed data given a
-candidate; a posterior additionally requires a prior and normalization.
-Circular rotations have the same read law and are treated as equivalent
-genomes. With finitely many reads, random sampling can make a wrong candidate
-win this principled likelihood comparison; the population and structural
-questions developed below explain what can and cannot be guaranteed.
+We study a deliberately simple model. The genome is circular, so a read can
+wrap around its end. Each read has the same length $L$ and starts at a
+uniformly chosen position; different starts are sampled independently, and
+the letters are read without errors. Unless specified otherwise, we keep
+track of which direction each read was read in. These assumptions isolate
+the mathematical question; they are not a model of every complication of
+real sequencing. For small mathematical examples we sometimes use
+the toy alphabet $\{A,B\}$; $B$ is only a stand-in for a second
+distinct DNA letter, not an additional nucleotide.
 
-For a small exact example, take circular $S=AAC$ as the truth and
-$D=AAAC$ as a competitor, with $L=2$. Their read probabilities for
-$AA,AC,CA$ are respectively $(1/3,1/3,1/3)$ and $(1/2,1/4,1/4)$.
-One observed read $AC$ gives $L_1(S)=1/3>L_1(D)=1/4$, while two reads
-$AA,AA$ give $L_2(S)=1/9<L_2(D)=1/4$. The sample is a possible
-fluctuation under $S$; it does not make likelihood meaningless. Under
-the two-candidate model, the likelihood ratio for $n$ reads is
-$L_n(D)/L_n(S)=3^n/2^{2n-a}$, where $a$ counts the $AA$ reads, so there are no
-positive-probability ties. Exact arithmetic for the sample and the associated
-success probabilities is reproduced by
-\path{scripts/verify_finite_read_arc_265.py}; the related checked
-non-monotonicity result is stated in Proposition~\ref{prop:nonmonotone}.
+For example, the circular genome $\texttt{ACGTA}$ has five possible
+length-three reads:
+\[
+  \texttt{ACG},\quad\texttt{CGT},\quad\texttt{GTA},\quad
+  \texttt{TAA},\quad\texttt{AAC}.
+\]
+The last two wrap around the end of the written sequence. A sequencing
+experiment could see each of these once, or see some several times and miss
+others entirely. Its output is a \emph{multiset} of reads, not their original
+order around the genome. Since no position is distinguished on a circle,
+we consider two genomes identical if one is a cyclic rotation of the other.
 
-The obstacle to assembly is repetition. When the same substring occurs twice
-in the genome, reads drawn from the two copies are identical, and the data do
-not record which copy produced them. The ambiguity is structural: two genomes
-with the same length-$L$ window spectrum induce exactly the same read
-distribution, so no scoring of the reads can separate them.
+Two questions arise from the same data. \emph{Reconstruction} asks which
+sequence the pieces fit together to form. \emph{Maximum likelihood} asks
+which candidate sequence would have been most likely to generate the
+particular collection of pieces we happened to observe. These are related,
+but they are not the same question.
 
-\begin{example}[Structural ambiguity before the repeat boundary]
+\subsection{Why overlaps sometimes reveal the genome}
+
+When two reads share a long suffix and prefix, that overlap suggests they
+might come from neighboring positions. Trouble arises when a stretch of
+letters appears in several places. If a genome contains both
+$\texttt{\ldots CAAG\ldots}$ and $\texttt{\ldots TAAC\ldots}$,
+a read $\texttt{AA}$ does not say which copy it came from; even
+$\texttt{CAA}$ tells us only what lies on one side. A read
+$\texttt{CAAG}$ extends beyond the first $\texttt{AA}$ on \emph{both}
+sides, distinguishing its surrounding context. We say that it
+\emph{bridges} that repeat copy. In particular, a length-two repeat
+requires a read of length at least four to be bridged on both sides.
+
+Without enough such context, the difficulty is not merely that a
+particular algorithm is weak. Different genomes can produce exactly
+the same reads with exactly the same probabilities.
+
+\begin{example}[Two genomes that no amount of these reads can distinguish]
 \label{ex:ABAB}
-Let the alphabet be $\{A,B\}$ and let $L=2$. The circular genomes
+Consider the circular genomes
 \[
-  S = AAABAB, \qquad D = AABAAB
+  S=\texttt{AAABAB},\qquad D=\texttt{AABAAB},
 \]
-of length $6$ are not cyclic rotations of one another, yet their circular
-$2$-mer spectra agree:
+with read length $L=2$. They are not rotations of one another, but each
+has two occurrences of $\texttt{AA}$, two of $\texttt{AB}$, and two of
+$\texttt{BA}$. Thus each produces the same read distribution:
 \[
-  \spec_2(S) = \spec_2(D) = \{\,AA:2,\ AB:2,\ BA:2\,\}.
+ P(\texttt{AA})=P(\texttt{AB})=P(\texttt{BA})=\tfrac13.
 \]
-Indeed $S$ has windows $AA,AA,AB,BA,AB,BA$ and $D$ has windows
-$AA,AB,BA,AA,AB,BA$. Under uniform-start error-free sampling the observed read
-distribution is the same for both genomes, so \emph{no} likelihood objective
---- exact, approximate, or flow-based --- can prefer $S$ to $D$ here.
+Even infinitely many such reads could not tell us whether $S$ or $D$
+generated them. This is \emph{structural ambiguity}, not a sampling
+accident.
 \statusline{\computed{} for the explicit spectra and nonrotation;
 \mathfact{} for the resulting equal read distributions.}
 \end{example}
@@ -65,11 +75,10 @@ distribution is the same for both genomes, so \emph{no} likelihood objective
 \subsection{From reads to a graph algorithm}
 \label{sec:intro:assembly-operations}
 
-The reconstruction step can be performed explicitly. Fix $L=3$ and consider
-the circular genome $\texttt{ACGTA}$. Its five circular windows are
-$\texttt{ACG}$, $\texttt{CGT}$, $\texttt{GTA}$, $\texttt{TAA}$, and
-$\texttt{AAC}$. In the associated \emph{de Bruijn graph}, an $L$-mer
-is an edge from its length-$(L-1)$ prefix to its length-$(L-1)$ suffix:
+Overlaps turn reconstruction into a graph problem. Return to
+$\texttt{ACGTA}$ and its length-three reads. In a simple
+\emph{de Bruijn graph}, each read is an edge joining its first two
+letters to its last two:
 \[
 \mathrm{AC}\xrightarrow{\mathrm{ACG}}\mathrm{CG}
 \xrightarrow{\mathrm{CGT}}\mathrm{GT}
@@ -77,248 +86,187 @@ is an edge from its length-$(L-1)$ prefix to its length-$(L-1)$ suffix:
 \xrightarrow{\mathrm{TAA}}\mathrm{AA}
 \xrightarrow{\mathrm{AAC}}\mathrm{AC}.
 \]
-An Eulerian traversal uses each edge with its multiplicity and spells
-$\texttt{ACGTA}$, up to rotation. Thus a family of reads becomes a finite
-graph and assembly becomes a question about compatible cyclic traversals.
-At repeated substrings, a vertex can branch and multiple traversals may
-spell different genomes.
+Following the edges around this cycle spells the original circular
+genome, up to rotation. With repeats the graph may branch, and
+different ways of following its edges can spell different genomes.
+This is why a guarantee about repeats is a useful guarantee about
+reconstruction.
 
-Shomorony et al.\ \cite{shomorony2016} use a distinct \emph{read-overlap
-graph}: vertices are observed reads, and weighted edges represent
-suffix-prefix overlaps. Their Not-So-Greedy construction retains the greedy
-successor and an additional genuinely disagreeing extension, constructs
-analogous predecessor edges, prunes spurious edges using effective overlaps,
-and modifies edge multiplicities to obtain an Eulerian multigraph. Under
-the coverage and repeat-bridging conditions described next, that multigraph
-has a unique Eulerian cycle spelling the truth. The construction takes
-$O(NL)$ time for $N$ reads of length $L$. The de Bruijn graph above is a
-teaching example, not the graph produced by Not-So-Greedy.
+Shomorony et al.~\cite{shomorony2016} developed an efficient
+\emph{Not-So-Greedy} assembly algorithm using overlaps between observed
+reads. Its graph is different from the teaching example above. Their
+theorem says, roughly, that sufficient read coverage together with
+bridging of certain repeated regions allows that graph to recover the
+true genome uniquely up to rotation. The precise conditions concern
+triple repeats and pairs of interleaved repeats, rather than every
+repeat, and are given in Section~\ref{sec:open}. This is a guarantee
+about reconstructing a sequence from the read strings.
 
-\subsection{Bridging: the structural evidence inside overlapping reads}
+\subsection{Which genome makes the sample most probable?}
 
-A read \emph{bridges} a copy of a repeat when it extends strictly beyond the
-copy on both sides. The read then ties that copy to its unique flanking
-context: the copy is no longer interchangeable with the other copy, because
-only one placement makes the read fit. Bridging is the local, structural
-evidence with which overlapping reads resolve repeats.
+The number of times a read occurs in a candidate genome matters to
+likelihood. If a candidate $D$ has length $|D|$, and a length-$L$
+read $w$ occurs at $c$ of its positions, a uniformly sampled read
+equals $w$ with probability $c/|D|$. For independent reads we multiply
+those probabilities. Uniform \emph{start positions} therefore do not
+mean uniform \emph{read strings}.
 
-Shomorony, Kim, Courtade, and Tse \cite{shomorony2016} made this precise. They
-gave repeat-bridging conditions on the \emph{true} genome --- every position
-covered by some read, every triple repeat bridged at all copies, and every
-interleaved repeat pair bridged --- under which the reads determine the true
-circular genome uniquely up to cyclic shift. This is an
-\emph{information-feasibility} guarantee: a statement about what the reads
-contain, proved through the graph structure of the reads.
+Here is a minimal example. Let $S=\texttt{AAC}$ be the true circular
+genome and $D=\texttt{AAAC}$ a competing genome, with $L=2$:
 
-\subsection{The maximum-likelihood question}
+\begin{center}
+\begin{tabular}{@{}lcc@{}}
+\toprule
+Read & Probability under $S$ & Probability under $D$\\
+\midrule
+$\texttt{AA}$ & $1/3$ & $1/2$\\
+$\texttt{AC}$ & $1/3$ & $1/4$\\
+$\texttt{CA}$ & $1/3$ & $1/4$\\
+\bottomrule
+\end{tabular}
+\end{center}
 
-A different tradition \cite{medvedev2009} scores candidates instead of
-reconstructing: the \emph{likelihood} of a candidate genome is the probability
-that uniform sampling from it would produce the observed reads, and the
-\emph{maximum-likelihood genome} is the candidate with the highest score.
-Likelihood assigns a score to candidate genomes; selecting a maximizer
-turns that objective into a reconstruction rule. There is a compelling reason
-to study this rule. With a finite candidate class, a correct read-generation
-model, and a uniform prior on rotation classes, \emph{maximum likelihood has the
-highest prior-averaged probability of returning the true genome among all
-algorithms}, including randomized ones
-(Theorem~\ref{thm:bayes-optimal}). For nonuniform priors the corresponding
-optimal rule is maximum a posteriori (MAP). This standard Bayesian
-decision-theoretic result provides the motivation and benchmark for the paper,
-not its solution: the harder assembly question is what can be said about the
-truth's likelihood rank for \emph{particular} reads and structural conditions.
-In particular, the guarantee applies to the actual read distribution,
-not automatically to an approximate likelihood or to an optimizer over
-flows that fail to spell genomes.
+One observed read $\texttt{AC}$ favors the truth: $1/3>1/4$.
+But two reads $\texttt{AA},\texttt{AA}$ favor the competitor:
+$(1/2)^2=1/4$ against $(1/3)^2=1/9$. Both observations are
+possible under $S$. A sample need not have the same proportions
+as the genome's full collection of possible reads.
 
-Shomorony et al.\ close their Discussion with a question that sits between the
-two lines \cite[Discussion]{shomorony2016}:
+This small example illustrates sampling fluctuations, \emph{not} a
+reconstruction theorem: we have not claimed that those one or two reads
+determine $S$. Its exact arithmetic is reproduced by
+\path{scripts/verify_finite_read_arc_265.py}. Next we show that
+the mismatch can persist even with much stronger structural evidence.
 
-\begin{quote}
-``Understanding whether bridging conditions can be used to guarantee that the
-maximum-likelihood sequence is the true sequence is currently an open
-question.''
-\end{quote}
-
-This manuscript investigates that question: when do constraints on
-sequencing reads make the true genome a likelihood maximizer, and when can
-another genome be more likely? The answer turns on how the structural evidence
-of Section~\ref{sec:intro} meets the statistical evidence that likelihood
-scores, and on choices the published sentence does not make --- the objective,
-the read-type convention, the candidate class, and whether the conclusion
-asserts that the truth is \emph{a} maximizer or the \emph{unique} one. We
-separate those choices explicitly rather than absorbing them into notation.
-
-\subsection{Reconstruction and likelihood ask different questions}
+\subsection{Bridging can hold when likelihood prefers another genome}
 \label{sec:intro:two-questions}
 
-The graph algorithm answers a question of \emph{information and computation}:
-when reads provide sufficient context, can we reconstruct the true circular
-word? Maximum likelihood instead asks which candidate $D$ assigns the
-largest probability to the \emph{observed read-type counts}. A finite sample
-can exhibit uneven frequencies even when its overlaps determine the source,
-so a reconstruction theorem does not automatically rank the source highest.
+Shomorony et al.~\cite[Discussion]{shomorony2016} asked whether their
+conditions guaranteeing reconstruction also guarantee that the
+maximum-likelihood genome is the true one. The question is striking
+because reconstructing a genome sounds as though it should make that
+genome the best explanation of the reads. But reconstruction uses
+their \emph{overlaps}, while likelihood also depends on \emph{how
+often} each kind of read was sampled.
 
-These two statements cannot be identified, because ``the maximum-likelihood
-sequence is the true sequence'' names \emph{two} inequivalent questions. Let
-$F(g,R)$ be a feasibility predicate --- for the 2016 question, the source's
-coverage-and-bridging condition evaluated on candidate $g$ against the observed
-read set $R$. \emph{Question~A (conditional)} restricts the candidate set to the
-feasible fiber $\{\,g : F(g,R)\,\}$ and assumes the truth is in it; the
-reconstruction theorem makes the positive-weight feasible fiber
-$\{g:\pi(g)P_g(R)>0,\ F(g,R)\}$ a singleton up to rotation,
-so conditional MAP returns the truth. The bare predicate $F$ can admit a
-genome incapable of generating the observed reads. This is
-largely a corollary of the reconstruction theorem, not a new likelihood result.
-\emph{Question~B (unconditional)} assumes only that the truth is feasible,
-$F(S,R)$, and maximizes the \emph{original, unrestricted} likelihood over the
-\emph{original} candidate universe. That maximizer need not be the truth, and it
-is the genuinely nontrivial published comparison. The two differ in one place:
-whether optimization is restricted to the feasible fiber, an event defined
-through the hidden truth and therefore not knowable from the reads alone
-(Section~\ref{sec:two-questions}).
-
-We also study population likelihood, where the exact read distribution
-replaces a particular finite sample. A Gibbs/KL identity then gives
-maximality, leaving spectrum uniqueness as the interesting combinatorial
-question. Bayesian inference supplied with an external promise about the
-truth is a distinct conditional model; detailed interpretation and
-source-referent questions belong in Appendices~\ref{app:modeling}
-and~\ref{app:referents}.
-
-\subsection{Contributions}
-
-This manuscript proves positive and negative results about when the true
-genome is a likelihood maximizer, and clarifies how those results relate to the
-deterministic reconstruction guarantee of Shomorony et al.\ (2016). The
-unifying thread is \emph{identifiability}: whether the read distribution
-distinguishes a genome from its competitors, at the structural, population,
-and finite-sample levels. The results below have different proof content and
-deserve to be read on their own terms, rather than ranked by how closely they
-resemble a general optimality slogan.
-
-\paragraph{Motivation: optimal average reconstruction.}
-The finite Bayes/MAP theorem (Theorem~\ref{thm:bayes-optimal}) establishes the
-correctness-probability benchmark: MAP dominates every deterministic and
-randomized reconstruction rule on prior-average zero-one success, and ML
-coincides with MAP under a uniform prior. Its Lean formalization also proves
-that optimal average success cannot decrease when genuinely additional
-information is observed
- (\kernelcheck{} \texttt{AssemblyP1.IidMapMonotonicity.iid\_map\_success\_monotone}). These are general decision-theoretic facts, not
- novel assembly-specific identifiability results; they explain \emph{why}
- the likelihood question is worth asking. Crucially, this monotonicity is
- prior-average only: per-truth finite-sample ML success need not be monotone
- in $n$ (Proposition~\ref{prop:nonmonotone}), so identifiability yields an
- exponential error \emph{rate}, not a monotone success curve.
-
-\paragraph{Structural: circulation rigidity.}
-Under the bridging condition of Definition~\ref{def:Is}, the truth's length-$L$
-spectrum is the unique positive circulation of its window-support graph
-(Theorem~\ref{cor:same-length-zero}): no other assignment of positive
-multiplicities to the observed windows can be balanced and sum to the genome
-length. Consequently, on the same-length oriented slice, every spelled
-candidate ties the truth under any spectrum-based objective, and no strict
-same-length counterexample exists for \emph{any} genome length, read length,
-or alphabet. With the complete-spectrum uniqueness step, every such candidate
-is in fact a cyclic rotation of the truth (Corollary~\ref{cor:same-length-rotation}).
-The extra assumptions this theorem needs --- oriented reads, equal candidate
-length, the full-overlap support restriction, and truth candidature --- are
-explicit assumptions, stated in Section~\ref{sec:finite};
-they do not follow from the published sentence.
-
-\paragraph{Negative: finite-sample reweighting.}
-Two separate restrictions are essential to the positive theorem:
-truth candidacy (lost in the same-length $AABB\to ABAB$ witness) and
-equal length (lost in $AAATT\to AAAATT$). We exhibit finite observations in
-which the truth satisfies the bridging conditions and a competitor still has
-strictly greater likelihood, under the exact multinomial over all circular
-candidates (Theorem~\ref{thm:cex-exact}), under its fixed-length binomial
-approximation (Theorem~\ref{thm:cex-binomial}), and under the
-reverse-complement molecule reading of the Section~6.2 flow
-(Theorem~\ref{thm:cex-molecule}). The mechanism is empirical read reweighting:
-the exact objective scores the \emph{observed} read-type frequencies, and a
-competitor can improve its score by reallocating multiplicity toward
-over-represented observed types. Allowing a single extra symbol reintroduces
-a strict witness (Theorem~\ref{thm:cex-variable-length}). The same failure
-survives under the \emph{source's own} read-string predicate of supplement
-\S6.4, where coverage and bridging quantify observed read strings matched at
-any genomic position: two same-length molecule witnesses
-(Theorem~\ref{thm:cex-historical-W1}
-and~\ref{thm:cex-historical-W2}) satisfy historical coverage and
-matched-string bridging at full strength while beating the truth under both
-source-named objectives.
-
-\paragraph{General exact certificates.}
-Beyond the special repeat-bridging regime, an internally proved Graver-basis
-criterion characterizes rigidity of \emph{any} finite positive integral-flow
-support by the absence of feasible elementary lattice perturbations
-(Theorem~\ref{thm:graver-rigidity}). On the statistical side, an exact
-effective-weight factorization of the fixed-$N$ product-binomial surrogate
-gives an if-and-only-if criterion for candidate score dominance over all
-nonnegative read-count vectors
-(Theorem~\ref{thm:binomial-weights}). These are positive structural
-classifications with their own proof content and explicitly restricted
-domains.
-
-\paragraph{Population uniqueness.}
-We then study maximum likelihood when the read distribution is known exactly,
-without sampling fluctuations. In this setting the true genome always
-maximizes likelihood --- a Gibbs/KL identity (Lemma~\ref{lem:gibbs})
---- so uniqueness is the only question. Uniqueness is nontrivial: it reduces to
-spectrum identifiability, and for primitive genomes satisfying a structural
-repeat condition (P2) it is proved in full, with no external premise
-(Theorem~\ref{thm:population}). The complete-spectrum uniqueness
-step that this theorem needs is the deep combinatorial ingredient; the
-maximizer statement itself is routine.
-
-\paragraph{Finite-read error exponent.}
-The population theorem identifies when the exact read distribution separates
-candidates. A second positive theorem quantifies the finite sample. For a
-finite candidate family whose members induce pairwise distinct read
-distributions, the probability that any wrong candidate ties or beats the
-truth under the exact iid likelihood is at most the sum of the pairwise
-Hellinger affinities $\rho(p_S,p_D)=\sum_w\sqrt{p_S(w)p_D(w)}$ raised to the
-number of reads (Theorem~\ref{thm:finite-recovery}). Each affinity is strictly
-below one under identifiability, so the probability of an exact-ML error
-decays exponentially, and any target confidence is reached after finitely many
-reads. This bounds the \emph{error} rate, not the likelihood, and it is a
-statement about a \emph{finite} candidate class. This premise holds for
-the entire primitive-P2 class: Theorem~\ref{thm:p2-finite-class} gives the
-intrinsic bound $|D|\le2q^{L-1}$, so
-Corollary~\ref{cor:p2-finite-recovery-all} applies without an artificial
-length cutoff. The abstract affinity can moreover be made explicit:
-Theorem~\ref{thm:p2-uniform-rate} derives from the integer-denominator
-structure of the uniform-start read law the uniform gap
-$1-\rho(p_S,p_D)\ge1/(8B^4)$ with $B=2q^{L-1}$, hence the kernel-checked bound
+Consider a concrete counterexample from
+Theorem~\ref{thm:cex-exact}. The true circular genome is
+$S=\texttt{AAABB}$, and the three observed length-three reads are
 \[
-  \Pr_S\!\bigl\{\exists D\ \text{nonrotational admissible}:
-    L_D(R_1,\dots,R_n)\ge L_S(R_1,\dots,R_n)\bigr\}
-  \;\le\; N_C\,e^{-n/(8B^4)},
+  \texttt{AAA},\quad\texttt{AAB},\quad\texttt{BAA}.
 \]
-where $N_C\le\sum_{g=1}^{B}q^{g}$ counts the distinct competitor read laws and
-$n\ge8B^4\log(N_C/\delta)$ suffices for error at most $\delta$. The constants
-are deliberately loose and exponential in the read length $L$: this is a
-positive rate, not a tractability claim. Exact finite-sample success is not even monotone
-in sample size (Proposition~\ref{prop:nonmonotone}); the exponential guarantee
-is asymptotic, not a monotone curve.
+They are drawn from start positions $0,1,4$ of $S$. These reads
+cover the entire five-letter genome and bridge each occurrence
+of its troublesome triple repeat of $\texttt{A}$, satisfying our
+precise placement-based coverage-and-bridging conditions.
+
+Now compare $S$ with $D=\texttt{AAAAB}$, another five-letter genome.
+In $S$, each of the three observed read types occurs once. In $D$,
+$\texttt{AAA}$ occurs twice, while $\texttt{AAB}$ and $\texttt{BAA}$
+still occur once. Thus, for the ordered sample $r$ displayed above, the likelihood ratio is
+\[
+  \frac{\Pr(r\mid D)}{\Pr(r\mid S)}
+    = \frac{(2/5)(1/5)^2}{(1/5)^3}=2.
+\]
+The \emph{wrong genome is twice as likely} under the exact sampling
+model, despite the coverage and bridging evidence for the truth.
+The unordered-read likelihood has an extra combinatorial factor
+common to both candidates, so the comparison is unchanged.
+
+There is no contradiction with the positive same-length result
+proved later. That theorem restricts the candidate class further:
+among other things, the true genome must itself be admissible
+when candidates are required to have exactly the observed read types.
+Here the truth also contains $\texttt{ABB}$ and $\texttt{BBA}$,
+which the sample missed. Nor should our sampled-placement bridging
+predicate be silently identified with the original 2016
+\emph{matched-read-string} predicate. We treat the original
+predicate separately and give verified counterexamples for it too
+(Theorems~\ref{thm:cex-historical-W1} and
+\ref{thm:cex-historical-W2}).
+
+One could first discard all candidate genomes failing a
+reconstruction condition and then maximize likelihood only among
+those left. But that is a \emph{different optimization problem}
+from finding the most likely genome among all permitted candidates.
+Section~\ref{sec:two-questions} makes that distinction precise,
+including what happens when an additional promise about the truth
+is included in a Bayesian model.
+
+\subsection{What this paper establishes}
+
+The central lesson is that there are two obstacles to inferring the
+true genome: \emph{ambiguity in how reads fit together}, and
+\emph{random variation in the observed read counts}. More
+sequencing can reduce the second obstacle, but cannot resolve two
+genomes that produce exactly the same read distribution.
+
+\paragraph{A positive structural result.}
+In a restricted model with oriented reads, equal-length candidates,
+and explicit requirements on which reads the candidates contain,
+bridging makes the true genome's complete read counts rigid:
+competitors cannot rearrange those counts to improve likelihood.
+Under these assumptions, the true genome is the unique
+maximum-likelihood candidate up to rotation
+(Theorem~\ref{thm:rigidity} and
+Corollary~\ref{cor:same-length-rotation}).
+Those extra assumptions matter; they are not supplied automatically
+by reconstruction alone.
+
+\paragraph{Finite-sample counterexamples.}
+Over larger candidate classes, the wrong genome may receive a
+higher likelihood even when the read set covers and bridges
+the truth. We give exact examples for different sampling objectives,
+including the original matched-read formulation
+(Section~\ref{sec:finite}). Some failures occur even when the
+competing genome has the same length as the truth. The example above
+shows why: a competitor can assign more probability to a read type
+that happened to be sampled.
+
+\paragraph{What the full read distribution reveals.}
+If we knew the probability of \emph{every} possible read exactly,
+the truth would always maximize expected log-likelihood. The
+remaining question would be whether another genome generates
+the very same distribution, as in Example~\ref{ex:ABAB}.
+We prove uniqueness for primitive genomes satisfying a
+specific repeat condition, called P2
+(Theorem~\ref{thm:population}). For this class we also give an
+exponentially decreasing upper bound on the probability of a
+maximum-likelihood error as independent reads are collected
+(Theorem~\ref{thm:p2-uniform-rate}). This is a theoretical
+guarantee, not a claim that the explicit bound gives a
+practical sequencing depth.
+
+\paragraph{Why maximum likelihood is still worth studying.}
+There is a general statistical reason to use it: if one assigns
+equal prior probabilities to a finite collection of candidate
+genomes (up to rotation), maximum likelihood has the highest
+\emph{average} probability of identifying the truth among all
+decision rules (Theorem~\ref{thm:bayes-optimal}). But being optimal
+\emph{on average} does not mean always being correct for a
+particular genome or sample. That difference is central here.
+
+\paragraph{General structural criteria.}
+We also prove mathematical criteria for when read-count
+assignments are rigid and when particular flow-based likelihood
+scores can be improved (Theorems~\ref{thm:graver-rigidity} and
+\ref{thm:binomial-weights}). These apply to stated graph and
+likelihood models; they should not be confused with a universal
+solution for every physical read-overlap graph.
 
 \subsection{How to read this paper}
 
-Section~\ref{sec:model} fixes the sequencing and bridging model and the
-objectives. Section~\ref{sec:open} states the mathematical question precisely.
-Section~\ref{sec:finite} reports the finite-sample results: the positive
-rigidity theorem, the finite counterexamples, and the source-predicate
-witnesses. Section~\ref{sec:population} introduces the population model, its
-uniqueness theorem, and the finite-read exponential error bound together with
-the non-monotonicity caveat. Section~\ref{sec:discussion} draws the failure
-modes together and lists what remains open.
+Section~\ref{sec:model} gives the exact model: circular reads,
+repeat bridging, candidate classes, and alternative likelihoods.
+Section~\ref{sec:open} formulates the historical question carefully.
+Section~\ref{sec:finite} proves the positive restricted result
+and the finite counterexamples. Section~\ref{sec:population}
+treats complete read distributions and error bounds, while
+Section~\ref{sec:discussion} summarizes the answers and lists
+what remains open.
 
-Appendix~\ref{app:modeling} explains the modeling choices;
-Appendix~\ref{app:ledger} distinguishes source facts, proofs and computations
-and carries the proof-to-claim support matrix of Table~\ref{tab:ledger}, which
-labels every headline as kernel-checked, paper-level, textbook, external 2016
-premise, or open;
-Appendix~\ref{app:reproduction} points to the repository verification guide;
-Appendix~\ref{app:referents} records the source-referent audit. A reader who wants only
-the mathematical story can read Sections~\ref{sec:model}--\ref{sec:discussion}
-and treat the appendices as reference.
+The appendices record modeling choices
+(Appendix~\ref{app:modeling}), the proof-status ledger
+(Appendix~\ref{app:ledger}), reproduction instructions
+(Appendix~\ref{app:reproduction}), and unresolved historical
+source interpretations (Appendix~\ref{app:referents}).

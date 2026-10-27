@@ -20,42 +20,32 @@ and finite-sample likelihood reliability}
 
 \begin{abstract}
 \noindent
-Maximum likelihood offers a natural way to infer a genome from sequencing
-data: choose the genome under which the observed reads are most probable.
-But is the genome that generated the reads necessarily the most likely one?
-It is also the conceptually simplest principled benchmark: for a fixed finite
-candidate universe, the correct read-generation model, a uniform prior over
-rotation classes, and zero-one loss, maximum likelihood maximizes the
-prior-averaged probability of returning the true genome at every sample
-size, among deterministic and randomized rules alike
-(Theorem~\ref{thm:bayes-optimal}). That certificate is prior-averaged, not
-per-genome, and does not extend to arbitrary priors or losses; how the
-likelihood rank then behaves on particular read samples is the real
-question. We investigate it in two settings: when only a finite sample
-of reads is available, and when the underlying distribution of reads is
-known exactly.
+Genome assembly aims to reconstruct a genome from the short DNA sequences
+produced by sequencing. Under suitable conditions, the overlaps between these
+sequences allow us to recover the original genome uniquely. But does this also
+guarantee that the true genome is the one most likely to produce the particular
+collection of sequences we observed? We investigate when this is the case
+and when it fails.
 
-For finite samples, we examine a question raised by Shomorony et al.\ (2016):
-do the conditions that guarantee genome reconstruction also guarantee that
-maximum likelihood selects the true genome? We separate two readings of it.
-Restricting to the feasible fiber, given that the truth satisfies it, is a
-corollary of the reconstruction theorem; maximizing the original unrestricted
-likelihood over the original candidate universe is the genuinely nontrivial
-comparison, and it can fail. We establish conditions under which the answer is
-yes, but also construct counterexamples in which the reads satisfy the original
-reconstruction conditions and yet an incorrect genome has greater likelihood.
-Thus, the information needed to reconstruct a genome does not always make it
-the most likely explanation of the data.
+We exhibit finite collections of reads that satisfy strong coverage and
+repeat-bridging conditions but are more probable under an incorrect genome.
+We also prove a positive result: for oriented reads and a restricted class of
+same-length genomes with the required overlap support, the true genome is
+the unique maximum-likelihood reconstruction, up to rotation.
 
-When the read distribution is known exactly, the true genome always maximizes
-expected log-likelihood. We establish conditions on genomic repeats under which
-this distribution uniquely identifies the true genome. We further prove an explicit quantitative guarantee for finite samples: over the identifiable primitive-P2 candidate class the
-probability that the exact maximum-likelihood rule errs decreases exponentially
-in the number of independent reads, with a rate that is explicit but
-deliberately loose (exponential in the read length). The theorem bounds the
-\emph{error} probability, not the likelihood, and it does not claim that
-per-truth finite-sample success is monotone in the sample size; we supply a
-kernel-checked two-genome witness to the contrary.
+We then consider an idealized experiment in which the probabilities of all
+possible reads are known exactly. We prove that these probabilities uniquely
+identify primitive genomes satisfying specified restrictions on repeats.
+For this class, we also obtain an explicit upper bound on the probability
+of a maximum-likelihood error that decreases exponentially with the number
+of sampled reads.
+
+Beyond these results, we establish when maximum likelihood is optimal for
+average reconstruction accuracy under a uniform prior on a finite candidate
+set, give criteria for uniqueness of read-count assignments in overlap graphs
+and for comparing likelihoods under a binomial approximation, and show that
+an additional read need not improve reconstruction success for a particular
+genome.
 \end{abstract}
 
 \clearpage
