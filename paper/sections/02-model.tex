@@ -5,29 +5,37 @@ We model circular genomes as words, reads as short windows, and repeat
 structure as conditions on what those reads determine. The resulting
 window-support graph and its balanced flows connect assembly to Eulerian
 traversal, as in the classical de Bruijn approach
-\cite{idury1995,pevzner2001}. We then define the sampling likelihoods
+\parencite{idury1995,pevzner2001}. We then define the sampling likelihoods
 that score candidate genomes. Precise source conventions and alternative
 normalizations are collected in Appendix~\ref{app:modeling}.
+
+Throughout the paper, $G=|D|$ denotes a circular candidate's length
+(and $|S|$ the true length), $L$ the read length, $n$ the
+\emph{number of independently sampled reads}, and $q$ the alphabet
+size. The symbol $N$ below is an \emph{external} reference genome
+size in the fixed-$N$ binomial approximation; it need not equal the
+candidate-intrinsic $|D|$. These are distinct inputs.
 
 \subsection{Circular genomes and spectra}
 
 \begin{definition}[Circular word, window, spectrum]
 \label{def:spectrum}
-Fix a finite alphabet $\Alphabet$ of size $\sigma$. A \emph{circular word} $D$ of
-length $n=|D|$ is a function $D:\ints/n\ints \to \Alphabet$, written
-$D_0D_1\cdots D_{n-1}$ with indices mod $n$. For $L \le n$ the \emph{length-$L$
+Fix a finite alphabet $\Alphabet$ of size $q$. A \emph{circular word} $D$ of
+length $G=|D|$ is a function $D:\ints/G\ints \to \Alphabet$, written
+$D_0D_1\cdots D_{G-1}$ with indices mod $G$. For any $L\ge1$ the \emph{length-$L$
 window} at start $t$ is
 \[
   W_t(D) \;=\; D_t D_{t+1}\cdots D_{t+L-1},
 \]
-read cyclically. The \emph{length-$L$ spectrum} of $D$ is the function
+read cyclically (also when $L>G$, in which case positions are revisited).
+The \emph{length-$L$ spectrum} of $D$ is the function
 \[
-  \spec_L(D)(w) \;=\; \#\{\, t \in \ints/n\ints : W_t(D)=w \,\}
+  \spec_L(D)(w) \;=\; \#\{\, t \in \ints/G\ints : W_t(D)=w \,\}
 \]
-on length-$L$ words, with total $\sum_w \spec_L(D)(w) = n$. Its support is
+on length-$L$ words, with total $\sum_w \spec_L(D)(w) = G$. Its support is
 $\supp\spec_L(D) = \{\,w : \spec_L(D)(w) > 0\,\}$.
 \statusline{\srcfact{} for the circular, oriented-window model
-\cite[\S2]{shomorony2016}; the notation is ours.}
+\parencite[\S2]{shomorony2016}; the notation is ours.}
 \end{definition}
 
 Two circular words are \emph{cyclically equivalent}, written $D \sim D'$, if one
@@ -40,8 +48,8 @@ weakest equivalence that a likelihood on spectra can ever distinguish.
 \label{rem:cyclic}
 Rotation is a bijection of start positions commuting with $t \mapsto W_t(D)$;
 hence $\spec_L(\rho D)=\spec_L(D)$ for every rotation $\rho D$ and every $L$.
-A circular candidate therefore has (at least) $n$ spellings with identical
-spectra, and a conclusion that ignores cyclic shift can never be true for a
+A circular candidate therefore has $G$ position-indexed rotations with
+identical spectra, although a periodic candidate has fewer distinct spellings, and a conclusion that ignores cyclic shift can never be true for a
 non-rotation-fixed genome. This is a \mathfact, not a modeling preference.
 \end{remark}
 
@@ -61,7 +69,7 @@ The original 2016 read-string coverage is distinguished below.}
 \end{definition}
 
 We distinguish the project's maximal-repeat vocabulary, following
-Bresler, Bresler, and Tse \cite{bresler2013}, from the 2016 supplement's
+Bresler, Bresler, and Tse \parencite{bresler2013}, from the 2016 supplement's
 literal all-three-occurrence condition in Section~\ref{sec:finite:historical}.
 
 \begin{definition}[Repeat objects with maximality]
@@ -75,7 +83,7 @@ preceding symbols are not all equal and the following symbols are not all equal.
 Two repeat pairs are \emph{interleaved} if their four selected starts
 alternate in cyclic order; the relevant length of the pair is the
 shorter of the two constituent repeat lengths.
-\statusline{\srcfact{} \cite[repeat definitions]{bresler2013};
+\statusline{\srcfact{} \parencite[repeat definitions]{bresler2013};
 the cyclic-order normalization of interleaving is a \projchoice{} proved
 equivalent to the source's displayed linear orders on a circle.}
 \end{definition}
@@ -102,8 +110,7 @@ and bridging quantify matching observed read strings rather than latent starts.}
 
 \begin{remark}[Observed read strings versus sampled placements]
 \label{rem:historical-coverage}
-The original coverage condition of Shomorony et al.\
-\cite[Supplement, \S6.4, Definition~1]{shomorony2016} is stated in terms
+The original coverage condition of \textcite[Supplement, \S6.4, Definition~1]{shomorony2016} is stated in terms
 of observed \emph{read strings}, not their hidden sampled starts, and the
 original bridging condition (Definition~2) counts \emph{matching occurrences}
 of observed reads that strictly straddle selected repeat copies. We write
@@ -127,7 +134,7 @@ strictly inside the read. We use this repeatedly.
 
 \begin{remark}[The 2016 graph-uniqueness result is not the circulation rigidity theorem]
 \label{rem:2016-vs-rigidity}
-Shomorony et al.\ \cite{shomorony2016} prove that, under information-feasibility,
+\textcite{shomorony2016} prove that, under information-feasibility,
 a \emph{particular graph constructed from the observed reads} --- with edge
 multiplicities modified by the read counts --- has a unique Eulerian spelling,
 which equals the true genome. That is a statement about a graph built from the
@@ -139,7 +146,7 @@ truth's spectrum is the unique \emph{positive circulation} of total $G$ on that
 graph. The two results share the bridging hypothesis but differ in the graph,
 the candidate universe, and the conclusion. Neither is an automatic corollary of the other.
 \statusline{\srcfact{} for the 2016 graph-uniqueness statement
-\cite[Corollary~1]{shomorony2016}. The separately proved
+\parencite[Corollary~1]{shomorony2016}. The separately proved
 circulation-rigidity theorem is \kernelcheck{} under the
 explicit project-level support and realization hypotheses of
 Section~\ref{sec:finite}; those hypotheses are modeling choices,
@@ -147,6 +154,12 @@ not the theorem's proof status.}
 \end{remark}
 
 \subsection{Observation models and candidate classes}
+
+We use \emph{the MB09 flow model} for the bidirected read-overlap
+optimization of \textcite{medvedev2009}, \S6.2, not \S6.2 of this
+paper. Our oriented full-overlap support proxy is a separate,
+restricted candidate class. A project-level candidate need not
+be feasible in the historical physical molecule graph.
 
 The likelihood layer must consume only observable read multiplicities plus a
 candidate genome; it must not see the latent true placements. We keep the
@@ -178,7 +191,7 @@ a circular candidate.
   defined when $0 \le \spec_L(D)(w) \le N$ for all $w$.
 \end{enumerate}
 \statusline{(i) is the \srcfact{} exact global read-count likelihood
-\cite[\S6.1]{medvedev2009}; (ii) is the \srcfact{} separable approximation that
+\parencite[\S6.1]{medvedev2009}; (ii) is the \srcfact{} separable approximation that
 replaces the candidate length $N(D)$ by an external, known $N$, which Medvedev
 and Brudno explicitly adopt for their algorithm. The two are not
 definitionally equal.}
@@ -208,7 +221,7 @@ probable, since their probabilities are their spectrum multiplicities divided
 by $|D|$. Rotations have the same read law and likelihood, so inference about a
 circular genome is naturally over rotation classes when rotations are treated
 as equivalent. These are the iid, uniform-start, error-free conventions used
-for the exact likelihood \cite[\S2, \S6.1]{medvedev2009,shomorony2016}.
+for the exact likelihood \parencite[\S2, \S6.1]{medvedev2009,shomorony2016}.
 
 \paragraph{Uniform start sampling is not uniform read-type probability.}
 Two distinct uniformities must not be conflated. Start positions are sampled
@@ -224,7 +237,7 @@ a different read-type convention; each changes the objective
 uniform start sampling unless stated otherwise.
 
 \paragraph{Count dependence is not eliminated by larger samples.}
-In \cite[\S6.1]{medvedev2009}, the move from the exact multinomial
+In \parencite[\S6.1]{medvedev2009}, the move from the exact multinomial
 to the product of per-type binomial probabilities is motivated by the claim
 that ``[a]s the number of trials goes to infinity, the $X_i$ random variables
 become independent''.
@@ -239,7 +252,7 @@ require their own hypotheses (Appendix~\ref{app:modeling}).
 
 An \emph{admissible candidate class} specifies the objects over which an
 objective is optimized. For exact genome likelihood these are circular words;
-in Medvedev--Brudno's Section~6.2 they may instead be bidirected flows that
+in Medvedev--Brudno's MB09 they may instead be bidirected flows that
 are not single sequences. The following distinct classes occur below:
 \begin{itemize}[leftmargin=*]
   \item all nonempty circular words (where the exact objective is defined);
@@ -247,14 +260,14 @@ are not single sequences. The following distinct classes occur below:
   \item the project-level \emph{full-overlap support proxy}: circular words
         $D$ for which $\supp\spec_L(D)=\supp x$ with oriented length-$L$
         read types. This is a restricted model, not a definition of every
-        historical Section~6.2 flow;
-  \item the source's Section~6.2 \emph{bidirected DNA-molecule flows}:
+        historical MB09 flow;
+  \item the source's MB09 \emph{bidirected DNA-molecule flows}:
         each graph vertex is an observed read molecule (a strand together
         with its reverse complement), edges represent overlaps of length
         at least $o_{\min}$, and the transitively reduced graph has
         vertex-flow lower bound $1$. Such a feasible flow may decompose
         into multiple walks rather than spell one circular genome
-        \cite[\S6.2]{medvedev2009};
+        \parencite[\S6.2]{medvedev2009};
   \item the project-level classes P1 and P2 defined in
         Section~\ref{sec:population}.
 \end{itemize}

@@ -92,7 +92,7 @@ different ways of following its edges can spell different genomes.
 This is why a guarantee about repeats is a useful guarantee about
 reconstruction.
 
-Shomorony et al.~\cite{shomorony2016} developed an efficient
+\textcite{shomorony2016} developed an efficient
 \emph{Not-So-Greedy} assembly algorithm using overlaps between observed
 reads. Its graph is different from the teaching example above. Their
 theorem says, roughly, that sufficient read coverage together with
@@ -135,13 +135,13 @@ as the genome's full collection of possible reads.
 This small example illustrates sampling fluctuations, \emph{not} a
 reconstruction theorem: we have not claimed that those one or two reads
 determine $S$. Its exact arithmetic is reproduced by
-\path{scripts/verify_finite_read_arc_265.py}. Next we show that
+Appendix~\ref{app:reproduction}. Next we show that
 the mismatch can persist even with much stronger structural evidence.
 
 \subsection{Bridging can hold when likelihood prefers another genome}
 \label{sec:intro:two-questions}
 
-Shomorony et al.~\cite[Discussion]{shomorony2016} asked whether their
+\textcite[Discussion]{shomorony2016} asked whether their
 conditions guaranteeing reconstruction also guarantee that the
 maximum-likelihood genome is the true one. The question is striking
 because reconstructing a genome sounds as though it should make that
@@ -201,6 +201,19 @@ true genome: \emph{ambiguity in how reads fit together}, and
 sequencing can reduce the second obstacle, but cannot resolve two
 genomes that produce exactly the same read distribution.
 
+Our assembly-specific contributions include circulation rigidity under
+bridging (Theorem~\ref{thm:rigidity}), the primitive-genome
+identifiability boundary (Theorem~\ref{thm:identifiable-iff-nonbranching}),
+an exact same-length spectrum-fibre count (Theorem~\ref{thm:fibre-count};
+the full count is proved at paper level), the primitive-P2 spectrum
+normalization lemma (Lemma~\ref{lem:scaling}), and the
+primitive-P2 genome-length bound (Theorem~\ref{thm:p2-finite-class}).
+Our finite counterexamples and source-model distinctions also
+contribute to this picture. By contrast, MAP's average-case optimality,
+the Gibbs inequality, Hellinger/Chernoff bounds, and the strong
+law are standard statistical tools that we apply with stated hypotheses,
+not new statistical principles.
+
 \paragraph{A positive structural result.}
 In a restricted model with oriented reads, equal-length candidates,
 and explicit requirements on which reads the candidates contain,
@@ -228,14 +241,22 @@ If we knew the probability of \emph{every} possible read exactly,
 the truth would always maximize expected log-likelihood. The
 remaining question would be whether another genome generates
 the very same distribution, as in Example~\ref{ex:ABAB}.
-We prove uniqueness for primitive genomes satisfying a
-specific repeat condition, called P2
-(Theorem~\ref{thm:population}). For this class we also give an
+We prove uniqueness when the truth \emph{and all competitors}
+are primitive genomes satisfying the same repeat condition, called P2
+(Theorem~\ref{thm:population}). Without that restriction on the
+competitors, uniqueness among primitive genomes holds exactly
+when the read-overlap support graph is nonbranching
+(Theorem~\ref{thm:identifiable-iff-nonbranching}). For this class we also give an
 exponentially decreasing upper bound on the probability of a
 maximum-likelihood error as independent reads are collected
 (Theorem~\ref{thm:p2-uniform-rate}). This is a theoretical
 guarantee, not a claim that the explicit bound gives a
 practical sequencing depth.
+
+It does not establish how likelihood performs near the sequencing
+threshold where coverage and bridging first become likely.
+That high-probability threshold regime remains open (Question~8
+in Section~\ref{sec:open-questions-final}).
 
 \paragraph{Why maximum likelihood is still worth studying.}
 There is a general statistical reason to use it: if one assigns
@@ -247,9 +268,10 @@ decision rules (Theorem~\ref{thm:bayes-optimal}). But being optimal
 particular genome or sample. That difference is central here.
 
 \paragraph{General structural criteria.}
-We also prove mathematical criteria for when read-count
-assignments are rigid and when particular flow-based likelihood
-scores can be improved (Theorems~\ref{thm:graver-rigidity} and
+We also prove criteria for when integral read-count flows are
+rigid, and for score dominance under the
+\emph{fixed-size product-binomial approximation}
+(Theorems~\ref{thm:graver-rigidity} and
 \ref{thm:binomial-weights}). These apply to stated graph and
 likelihood models; they should not be confused with a universal
 solution for every physical read-overlap graph.
@@ -264,6 +286,8 @@ and the finite counterexamples. Section~\ref{sec:population}
 treats complete read distributions and error bounds, while
 Section~\ref{sec:discussion} summarizes the answers and lists
 what remains open.
+
+Proof levels and the exact Lean endpoints are indexed in \path{docs/verification.md}; individual results below state their mathematical hypotheses directly.
 
 The appendices record modeling choices
 (Appendix~\ref{app:modeling}), the proof-status ledger
