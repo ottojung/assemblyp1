@@ -27,3 +27,25 @@ one positive-prior, positive-likelihood truth and yields posterior one; zero
 prior and zero likelihood candidates contribute no posterior mass; an event
 with zero predictive mass has no defined posterior. This is computational
 evidence for these finite values, not a general theorem proof.
+
+## Follow-up handoff artifact verification (2026-10-27)
+
+The terminal checkpoint naming commit `82173746544f92267741bec1b1e2361cceac2d23`
+and branch `research/272-is-compare-VJ0Ttaxksx27FdwuEGIrya-inter` did not match
+the current origin branch head. `git ls-remote` reported that branch at
+`054fd2b7d8dbab7e06712101aa559ef4e8bcb7c0`; the branch history contains
+`82173746` followed by `054fd2b7`, whose title is `research(272): census ternary
+literal I_s fibres`. Both commits and the note/script were fetched and inspected.
+The updated note describes an exhaustive ternary census over `3 ≤ G ≤ 5`,
+`2 ≤ L < G`, all placement subsets, and the distinct-read-string adapter; it
+reports zero shared nonrotation fibres. The claimed branch artifact is therefore
+verified, while its census remains bounded computational evidence rather than a
+Lean theorem.
+
+The verifier `scripts/verify_272_aligned_is.py` and its note are **not present
+on this `main` checkout**, so the ternary census was not rerun here. Independent
+available checks did run: `python3 scripts/verify_272_posterior_support_corners.py`
+passed, and `lake build AssemblyP1.FiniteBreslerObstructionGapAudit` completed
+(8,935 jobs), printing only `[propext, Classical.choice, Quot.sound]` for its
+endpoints. The first Lean invocation timed out at 120 seconds during dependency
+build; retrying with a 600-second timeout passed.
