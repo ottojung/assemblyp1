@@ -532,16 +532,96 @@ $500000000/387420489\approx1.291$. At $n=100$ the necessary
 event $a=n/5$ has probability about $0.0993$; at $n=1600$
 it has probability about $0.0249$.
 
-The same construction shows how a likelihood optimization over
-\emph{balanced read distributions} may be analyzed using
-stationarity conditions. Extending its codimension calculation to
-arbitrary branching support graphs, however, requires a separate
-argument for realizable graph flows, boundary points, multiple
-constraints and candidate universes; no general
-$O(n^{-(E-V)/2})$ assertion is made here. In particular, the
-fixed-truth failure above does not by itself answer the
-large-genome, simultaneous-bridging-threshold question of
-Section~\ref{sec:open-questions-final}.
+\begin{theorem}[Branching support prevents unrestricted finite-read ML recovery]
+\label{thm:unrestricted-branching-rate}
+Let $S$ be a fixed circular genome, $L\ge2$, and let $E$ be the
+distinct oriented length-$L$ reads in its complete spectrum.
+Let $V$ be the corresponding length-$(L-1)$ overlap vertices.
+Put $d=|E|-|V|$. If $d>0$, then for $n$ independent
+uniform-start reads from $S$,
+\[
+  \Pr_S\{S\text{ maximizes unrestricted exact likelihood}\}
+      = O_{S,L}(n^{-d/2}).
+\]
+The condition $d>0$ is equivalent to branching of the connected
+read-support graph. Thus for any fixed branching truth, the
+probability that the truth is an unrestricted exact-ML maximizer
+tends to zero, even though its read distribution is learned
+arbitrarily accurately. The implicit constant depends on the
+fixed truth and read length.
+\end{theorem}
+\begin{proof}
+A circular genome gives a strictly positive, balanced
+normalized read-count circulation $p$ on its support graph:
+the outgoing and incoming masses at every vertex agree and
+$\sum_{e\in E}p_e=1$. The incidence matrix of the strongly
+connected support graph has rank $|V|-1$. Hence the real
+vector space
+\[
+ H=\left\{h\in\mathbb R^E:
+   \operatorname{div}h=0,\ \sum_e h_e=0\right\}
+\]
+has dimension $d=|E|-|V|$ and admits a basis of integer vectors
+$h^1,\ldots,h^d$.
+
+For any $h\in H$ and sufficiently small rational $\varepsilon$,
+$q=p+\varepsilon h$ is a positive rational balanced circulation
+of mass one. Clear its denominators to obtain positive integer
+edge multiplicities. Strong connectivity and Euler's theorem give
+a single circular spelling with this complete read spectrum;
+scaling all multiplicities if necessary makes its length at least
+$L$. Therefore \emph{every such rational perturbation} occurs
+as the read law of a genuine circular candidate. If $S$ maximizes
+the observed exact likelihood over all genome lengths, its
+positive probability vector $p$ must be stationary under both
+signs of each of these perturbations:
+\[
+ \sum_{e\in E} X_e\,\frac{h^j_e}{p_e}=0,
+       \qquad j=1,\ldots,d,
+\]
+where $X_e$ is the observed count of read type $e$.
+The multinomial coefficient is common to all candidates.
+
+For a sampled read $R$, let
+$Y(R)=(h^1_R/p_R,\ldots,h^d_R/p_R)$.
+It is a finitely supported rational random vector with mean
+zero. Its covariance is nonsingular: if a linear combination
+of the coordinates of $Y$ were constant, the corresponding
+$h\in H$ would satisfy $h_e=c p_e$ on every support edge;
+summing gives $c=0$, hence $h=0$. After multiplying by a
+common denominator we may regard $Y$ as integer-valued.
+The stationarity event is exactly
+$\sum_{i=1}^nY(R_i)=0$.
+
+For completeness, the usual lattice anti-concentration bound
+gives $\sup_z\Pr(\sum_{i=1}^nY(R_i)=z)=O(n^{-d/2})$
+for any finitely supported integer random vector with
+nonsingular covariance. By Fourier inversion this probability
+is bounded by a constant times
+$\int_{[-\pi,\pi]^d}|\mathbb E e^{it\cdot Y}|^n\,dt$.
+The modulus is strictly below one away from finitely many
+points of the torus, and decays quadratically near each such
+point because the covariance is nonsingular; each
+neighbourhood contributes $O(n^{-d/2})$. Applying the bound
+to the necessary stationarity event proves the result.
+Finally, for connected balanced support, $|E|>|V|$ exactly
+when some vertex has at least two outgoing edge types.
+\end{proof}
+
+The conclusion is for each \emph{fixed} genome and read length,
+with an unrestricted candidate-length universe. It does not
+provide a rate uniform over growing genomes, nor does it
+settle the high-probability ML-versus-bridging threshold for
+a growing sequence of genomes in
+Section~\ref{sec:open-questions-final}. It also does not apply
+as stated when candidates are restricted to the finite
+primitive-P2 class, where Theorem~\ref{thm:p2-uniform-rate}
+gives an opposite asymptotic conclusion.
+\statusline{\mathfact{} by the circulation and lattice
+anti-concentration argument above. The theorem is not
+independently Lean-formalized; it applies to genuine
+circular spellings, not arbitrary unspellable flows.}
+
 
 \begin{remark}[Sampling instability is the mechanism]
 \label{rem:amplification}

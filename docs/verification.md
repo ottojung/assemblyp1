@@ -175,3 +175,24 @@ binomial probabilities are in
 \`scripts/verify_aaatt_historical_kkt.py\` and run in CI.
 The source-correspondence and KKT generalization boundaries
 remain explicit.
+
+
+## Fixed-truth unrestricted ML obstruction on branching read-support graphs
+
+\`thm:unrestricted-branching-rate\` is a **paper-level** theorem.
+It uses the integer circulation realization lemma (positive rational
+balanced de Bruijn flows on the truth support are realized by genuine
+circular spellings), first-order stationarity of the exact
+log-likelihood, and an elementary multivariate lattice
+anti-concentration bound proved using Fourier inversion.
+For fixed truth and read length, if the support graph has
+\`d = |E|-|V| > 0\`, then
+\`P(truth is unrestricted exact-ML maximizer)=O(n^(-d/2))\`.
+
+The theorem is **not** a new Lean endpoint and does not imply a
+uniform bound when genome length or read length varies with sample
+size. It does not extend to the primitive-P2-restricted maximum
+likelihood candidate class or non-spellable physical flow
+optimizers. This is the rigorous fixed-truth version of the
+reviewer's stationarity/codimension proposal, not a resolution
+of the growing-genome threshold question.
