@@ -13,7 +13,7 @@ that the mathematically clean content lives in two distinct failure modes.
 \paragraph{Structural/model failure.}
 Without a repeat/read-length boundary the genome need not be identifiable at all
 (Example~\ref{ex:ABAB}). Bridging conditions repair the structural ambiguity, and
-Theorem~\ref{thm:rigidity} shows that on the same-length oriented Section~6.2
+Theorem~\ref{thm:rigidity} shows that on the same-length oriented MB09
 slice they are strong enough to make the truth's spectrum the only positive
 circulation --- an exact rigidity, not just a reconstruction claim. Requiring
 the candidate's length to equal the true length and requiring the truth
@@ -80,7 +80,7 @@ all coordinate slopes are $-1$, as expected from
 $AAABBB$ witness verifies this separation; the corresponding
 derivative and finite-vector endpoints are kernel-checked in
 \texttt{AssemblyP1.KKTRefutation263}.  This is neither a new
-necessary-and-sufficient characterization of the entire Section~6.2
+necessary-and-sufficient characterization of the entire MB09
 flow domain nor a replacement for discrete convex certification.
 
 The strict historical counterexamples
@@ -123,11 +123,7 @@ edge $e$. For every observed oriented read word $w$,
 The equality also holds when $G<L$, so that a read wraps around the
 circular genome more than once.
 \end{theorem}
-\statusline{\kernelcheck{} in
-\texttt{AssemblyP1.Section62GlobalSkippedBridge}
-(\texttt{observation7\_reduced\_signed\_circuit\_range\_count});
-the circular spelling, anchors, and no-skipped-observed-window property
-are constructed from the actual reduced walk, not postulated.}
+
 
 This is the oriented read-word occurrence statement corresponding to
 Observation~7 for \emph{our explicitly defined reduction}. It does not
@@ -225,7 +221,7 @@ spelled genomes, physical-edge-orbit flow vectors, visit-count vectors,
 and a transitive-reduced graph?  The proved objective-factorization
 results require specific hypotheses.  In particular, noninjectivity
 of a flow-to-visit map obstructs automatic transport of uniqueness;
-the full reverse-complement Section~6.2 optimizer correspondence
+the full reverse-complement MB09 optimizer correspondence
 remains open.
 
 \item \textbf{Sharp finite-read recovery rates.}
@@ -253,6 +249,17 @@ posterior-support criterion and the conditional MAP results are
 proved, but neither identifies a minimal historical decoder
 certificate nor makes ordinary unrestricted ML inherit the
 conditional guarantee.
+\item \textbf{Recovery at the bridging threshold.}
+In a specified source-faithful candidate universe, consider a sequence
+of genomes and read lengths for which the number of reads is only large
+enough to make coverage and bridging hold with high probability. Does
+unrestricted maximum likelihood then recover the truth with high
+probability as genome size grows? More sharply, what sampling
+threshold or additional hypotheses relate successful bridging to
+correct ML selection? The finite counterexamples concern individual
+samples, whereas our finite-read bounds apply to an identifiable
+restricted class and may require far more reads than bridging itself.
+Neither result settles this joint high-probability regime.
 \end{enumerate}
 
 A separate \emph{source-interpretation question} is which precise
@@ -267,13 +274,12 @@ must not be attributed to the other without a separate argument.
 
 The classical spectrum-reconstruction foundations are Ukkonen's repeat
 condition and Pevzner's analysis of equivalent cyclic traversals
-\cite{ukkonen1992,pevzner1995}, subsequently adapted to modern
-assembly by Bresler, Bresler and Tse \cite{bresler2013}.
-Myers \cite{myers2005} developed the string-graph formulation for
-overlap-based assembly. Motahari, Bresler and Tse
-\cite{motahari2013} studied information-theoretic sequencing thresholds
+\parencite{ukkonen1992,pevzner1995}, subsequently adapted to modern
+assembly by \textcite{bresler2013}.
+\textcite{myers2005} developed the string-graph formulation for
+overlap-based assembly. \textcite{motahari2013} studied information-theoretic sequencing thresholds
 under stochastic genome models, and the variable-length overlap
-results of Hui et al.\ \cite{hui2016} are another adjacent
+results of \textcite{hui2016} are another adjacent
 contribution. These do not answer the finite-sample likelihood
 question here.
 
@@ -285,7 +291,7 @@ same-length genome has the same read likelihood. Shomorony et al.\ strengthen
 the hypothesis to sufficient conditions for exact reconstruction and then ask
 whether those conditions also imply ML optimality. A 2025 correctness-guarantee
 paper still presents the information/correctness line and the
-maximum-likelihood line as separate \cite{salmela2025}, which is meaningful
+maximum-likelihood line as separate \parencite{salmela2025}, which is meaningful
 evidence that the 2016 question had not become a standard solved result. Our
 negative witnesses are consistent with that picture: the implication is not
 merely unproved but false under several precise readings, while the positive

@@ -25,7 +25,7 @@ candidate universe, and the conclusion.
 
 We work under the strict oriented single-strand convention: read types are the
 oriented length-$L$ windows of $S$ with no reverse-complement collapse, and a
-same-length Section~6.2 spelled candidate is a circular word $D$ of length
+same-length MB09 spelled candidate is a circular word $D$ of length
 $G=|S|$ with $\supp\spec_L(D)=\supp\spec_L(S)$. These restrictions ---
 oriented reads, equal candidate length, and the full-overlap support proxy ---
 are \projchoice{} additions of this paper; they are not supplied by the
@@ -50,7 +50,7 @@ $t\mapsto W_t(S)$.
 
 \begin{lemma}[Same-length spelled candidates are positive circulations]
 \label{lem:reduction}
-Same-length Section~6.2 spelled candidates with observed support $V$ are exactly
+Same-length MB09 spelled candidates with observed support $V$ are exactly
 the positive circulations of total $G$ on $X_S$.
 \end{lemma}
 
@@ -146,10 +146,10 @@ $A(w)=k$ on every edge. A positive circulation on a directed cycle is constant
 by balance, and total $G=kp$ forces the value $k$, so $B=A$.
 \end{proof}
 
-\begin{corollary}[No strict same-length Section~6.2 counterexample]
+\begin{corollary}[No strict same-length MB09 counterexample]
 \label{cor:same-length-zero}
-Suppose $R\in\Is$ and the truth is Section~6.2-admissible, so
-$\supp x=\supp\spec_L(S)$. Then every same-length Section~6.2 spelled candidate
+Suppose $R\in\Is$ and the truth is MB09-admissible, so
+$\supp x=\supp\spec_L(S)$. Then every same-length MB09 spelled candidate
 $D$ satisfies $\spec_L(D)=\spec_L(S)$, and for every objective that is a function
 of $(\spec_L(D),x)$,
 \[
@@ -175,15 +175,15 @@ Section~\ref{sec:population}, whose hypothesis is Ukkonen's full condition.
 
 The rigidity theorem proves spectrum equality, which forces a tie for
 every spectrum-based objective. The maximizer theorem below explicitly
-\emph{assumes} Section~6.2 candidacy of the truth and competitor:
+\emph{assumes} MB09 candidacy of the truth and competitor:
 it does not derive truth candidacy from bridging.
 
 \begin{theorem}[Same-length maximizer, oriented read types, full $\Is$]
 \label{thm:maximizer}
 Let $S$ be a circular word of length $G$, and let the realized read placement
 set $R$ (the set of starts at which reads were actually drawn) be information
-feasible, $R\in\Is$. Suppose the truth is a genuine §6.2 candidate for the
-observed read set, and let $D$ be any same-length genuine §6.2 candidate for the
+feasible, $R\in\Is$. Suppose the truth is a genuine MB09 candidate for the
+observed read set, and let $D$ be any same-length genuine MB09 candidate for the
 same observation. Then, for both the exact
 Medvedev--Brudno multinomial and the §6.1 binomial approximation at $N=G$,
 \[
@@ -208,15 +208,15 @@ BBT obstruction premise (Corollary~\ref{cor:same-length-rotation}).
 
 \kernelcheck{}
 
-\subsubsection{The §6.2 acceptance boundary is a separate question}
+\subsubsection{The MB09 acceptance boundary is a separate question}
 
 Theorem~\ref{thm:maximizer} requires \emph{both} the truth and the competitor to
-be genuine §6.2 candidates. Dropping the conjunct on the truth is a different
+be genuine MB09 candidates. Dropping the conjunct on the truth is a different
 statement, and it is false at equal length: with $S=AABB$ ($G=4$, $L=2$) and the
 realized reads $AB,BA$ at starts $1,3$, full $\Is$ holds, while the same-length
-genome $ABAB$ is a literal §6.2 \texttt{SpelledFeasible62} candidate whose exact
+genome $ABAB$ is a literal MB09 \texttt{SpelledFeasible62} candidate whose exact
 likelihood is $1/2$ against the truth's $1/8$ (both include the
-multinomial coefficient $\binom{2}{1,1}=2$). So the §6.2 candidate
+multinomial coefficient $\binom{2}{1,1}=2$). So the MB09 candidate
 restriction does not rescue the maximum-likelihood claim unless the truth is
 itself admissible, which is precisely what distinguishes the molecule-class
 witnesses below from this positive row.
@@ -226,22 +226,28 @@ witnesses below from this positive row.
 \begin{corollary}[Uniqueness up to rotation on the truth-admissible same-length row]
 \label{cor:same-length-rotation}
 Under the hypotheses of Corollary~\ref{cor:same-length-zero}, every same-length
-Section~6.2 spelled candidate $D$ is a cyclic rotation of $S$. Consequently the
+MB09 spelled candidate $D$ is a cyclic rotation of $S$. Consequently the
 truth is not merely a maximizer on this row: it is the unique maximizer up to
 cyclic rotation.
 \end{corollary}
 
 \begin{proof}
-Since $R\in\Is$, every copy of a triple repeat is bridged and every interleaved
-maximal-repeat pair is bridged; a length-$L$ read bridges a copy of a repeat of
-length $\ell$ only if $\ell\le L-2$. Hence $S$ satisfies Ukkonen's condition at
-$K=L-1$. By Corollary~\ref{cor:same-length-zero},
-$\spec_L(D)=\spec_L(S)$, so $D$ is an Eulerian circuit of the same $K$-mer graph
-built from that complete $L$-spectrum. Theorem~\ref{thm:BBT} at $K=L-1$ gives a
-unique Eulerian cycle for this graph, spelling $S$ up to cyclic rotation; hence
-$D$ is a cyclic rotation of $S$. Since every candidate in the class has
-likelihood ratio $1$ by Corollary~\ref{cor:same-length-zero}, the maximizer set is
-exactly the rotation class of $S$.
+The bridging condition excludes triple repeats of length at least $L-1$
+and interleaved repeat pairs violating Ukkonen's condition at $K=L-1$.
+By Corollary~\ref{cor:same-length-zero}, every candidate has the
+truth's complete length-$L$ spectrum.
+
+For a primitive truth, complete-spectrum uniqueness follows from
+the internally verified primitive-P2 support-descent argument.
+For a periodic truth $S=P^k$ with minimal period $p<G$, the
+periodic-extension argument in Theorem~\ref{thm:rigidity} shows
+that its support graph is a single directed $p$-cycle; traversal
+spells only rotations of $S$. Thus in either case every candidate
+with the same complete spectrum is a rotation of $S$.
+The classical Theorem~\ref{thm:BBT} records the corresponding
+complete-spectrum principle, but the Lean endpoint in
+\texttt{AssemblyP1.SameLength62Uniqueness} does not postulate
+it as an unproved axiom.
 \end{proof}
 
 \kernelcheck{}
@@ -360,7 +366,7 @@ $(0,0,0,1,2,5,6)$ and observed $x=\{AAA:3,AAB:1,ABC:1,BCA:1,CAA:1\}$, for which
 $\Lik_{\mathrm{ex}}(D;x)/\Lik_{\mathrm{ex}}(S;x)=27$ and $\Is$ holds
 non-vacuously (coverage, the all-bridged maximal length-$1$ triple repeat at
 $(0,1,2)$, and no interleaved pair).
-\statusline{\kernelcheck{} for the $AAABB\to AAAAB$ witness; \computed{} for the $AAABCBC\to AAAAABC$ instance (Appendix~\ref{app:ledger}).}
+
 
 \begin{theorem}[Fixed-length binomial counterexample]
 \label{thm:cex-binomial}
@@ -386,19 +392,19 @@ zero-multiplicity types changes the ratio from $2$ to $1125/512$:
 \kernelcheck{}
 \end{proof}
 
-We now turn to the reverse-complement molecular reading of the Section~6.2 flow.
+We now turn to the reverse-complement molecular reading of the MB09 flow.
 Here read types are molecule classes, the truth and competitor must both be
 admissible bidirected circuits, and the objective is the literal Section~6.1
 product with external $N$. The mechanism is different from the sequence-level
 witnesses: reverse complementarity \emph{creates} multiplicity that the
 observation does not force, and support equality then permits reallocation.
 
-\begin{theorem}[Section~6.2 variable-length molecule counterexample]
+\begin{theorem}[MB09 variable-length molecule counterexample]
 \label{thm:cex-molecule}
 Let $\Alphabet=\{A,T\}$ with involution $A\leftrightarrow T$, $L=3$, truth
 $S=AAATT$ ($G=5$) with realized starts $0,1,4$, and competitor
 $D=AAAATT$ ($|D|=6$). Then $R\in\Is$ holds; both $S$ and $D$ induce admissible
-Section~6.2 bidirected circuits; and with external $N=5$,
+MB09 bidirected circuits; and with external $N=5$,
 \[
   \frac{\Lik_{6.1}(D)}{\Lik_{6.1}(S)} = \frac{9}{8} > 1 .
 \]
@@ -413,22 +419,22 @@ $[(2/5)(3/5)^2]/[(1/5)(4/5)^2]=9/8$, and the other two classes have equal
 multiplicities, so they contribute factor $1$. Bidirected-circuit feasibility and
 the $\Is$ certificate are checked by exact computation and by an explicit
 bidirected graph.
-\statusline{\kernelcheck{} for the finite certificate; \computed{} for the bidirected graph certificate (Appendix~\ref{app:ledger}).}
+
 \end{proof}
 
-Allowing the lengths to be equal does not save the Section~6.2 reading. The
+Allowing the lengths to be equal does not save the MB09 reading. The
 smallest same-length witness is $S=AAATAT$, $D=AAAAAT$ ($G=6$), for which the
 exact ratio is $3$ and the binomial ratio is $5$, with both genomes
-Section~6.2-feasible under the source's per-vertex lower bound.
+MB09-feasible under the source's per-vertex lower bound.
 
-\begin{theorem}[Section~6.2 same-length counterexample under the per-occurrence
+\begin{theorem}[MB09 same-length counterexample under the per-occurrence
 strengthening]
 \label{thm:cex-peroccurrence}
 Let $\Alphabet=\{A,C,G,T\}$ with the DNA involution $A\leftrightarrow T$,
 $C\leftrightarrow G$ (no self-complementary base), $L=3$, truth
 $S=ATATACAC$ ($G=8$) with realized starts $1,3,4,5,6,7$, and competitor
 $D=ATACACAC$ ($|D|=|S|=8$), external $N=8$. Then $R\in\Is$ holds; both $S$ and
-$D$ induce admissible Section~6.2 bidirected circuits; both spectra have the same
+$D$ induce admissible MB09 bidirected circuits; both spectra have the same
 support as the observation $x$; \emph{and} both are per-occurrence feasible,
 $x(w)\le d_S(w)$ and $x(w)\le d_D(w)$ for every observed molecule class $w$ (the
 tight coordinate is $ACA/TGT$, where $x=d_S=2$, while $x_{ATA/TAT}=1<3=d_S$, so
@@ -466,146 +472,20 @@ repository-added surface, so this refutation settles a determinate mathematical
 question rather than a reading of the 2016 sentence; it is reported because the
 matrix commits to resolving determinate rows one way or the other.
 
-\begin{remark}[Which assumption surfaces are still open, and which are not the
-source's]
-\label{rem:surfaces}
-The molecule witnesses above use the source's per-vertex lower bound, i.e.\
-support equality. Medvedev--Brudno §6.2 states only ``Each vertex has a lower
-bound of $1$ since it represents a read that must be present in the genome at
-least once''; the strictly stronger per-occurrence requirement $d_D(w)\ge x(w)$
-for every observed type is a \emph{repository-added} assumption surface, not a
-source definition. That distinction matters for what may be reported as
-settled:
+\paragraph{Model boundary.} The acceptance and observation-model boundaries behind the
+finite counterexamples are itemized in
+Appendix~\ref{app:modeling}, Remark~\ref{rem:surfaces}.
 
-\begin{itemize}
-  \item \textbf{Refuted.} Same-length §6.2 candidate class, molecule read types,
-    per-occurrence strengthening. The witness is $S=ATATACAC$, $D=ATACACAC$
-    ($G=8$, $L=3$, realized starts $(1,3,4,5,6,7)$, $n=6<N=8$): exact ratio
-    $3/2$, binomial ratio $9/5$, with both genomes literal §6.2 bidirected
-    circuits and both per-occurrence feasible. The mechanism needs the real
-    four-letter DNA alphabet: with a self-complementary base the searched scope
-    contains no same-length instance at all
-    (Thm.~\ref{thm:cex-peroccurrence}). This is a \emph{determinate} row, so it
-    is reported as settled; it is not a reading of the 2016 sentence, because the
-    strengthening is a repository-added surface.
-  \item \textbf{Open in both directions, and not a determinate reading of the
-    2016 sentence at all.} The doubled-strand $2G$ \emph{concatenation}
-    convention of \cite{bresler2013}, i.e.\ one length-$2G$ circle
-    $S\cdot\rc(S)$. No bounded search is used as evidence in either direction:
-    the absence of a known beat in the searched scopes is recorded as
-    \emph{absence of a known witness}, not as evidence of openness, and two of
-    those scopes are vacuous because the remapped $\Is$ is unsatisfiable there.
-    The known $AAATAT\to AAAAAT$ witness is \emph{inadmissible} under this
-    remap: the doubled circle carries a length-$4$ triple repeat that no
-    length-$3$ read can bridge, for \emph{every} read set
-     (\texttt{doubled\_\allowbreak{}not\_\allowbreak{}information\_\allowbreak{}feasible}). The row is therefore open in
-     both directions rather than refuted. The \emph{compatibility} of this
-     convention with the oriented one is now kernel-checked in both directions:
-     the remap is exactly compatible with the oriented reading iff read-seat
-     preservation, seam--wrap agreement, and doubled-circle feasibility all hold,
-     and off that locus the two models are incomparable --- $GGGA$ satisfies the
-     remapped $\Is$ while failing the oriented $\Is$ (spurious wrapping-read
-     seats), and $AAATAT$ is the reverse
-     (\texttt{Bresler\allowbreak{}Remap\allowbreak{}Compatibility.\allowbreak{}remap\_\allowbreak{}natural\_\allowbreak{}seat\_\allowbreak{}not\_\allowbreak{}sound},
-     \texttt{remap\_\allowbreak{}not\_\allowbreak{}complete}). The physical duplex is better
-     represented as \emph{two disjoint} cyclic strands $S$ and $\rc(S)$
-     (Remark~\ref{rem:duplex}).
-  \item \textbf{Not a determinate proposition.} The reading of the sentence as an
-    unspecified general ML principle: the 2016 text fixes no objective, so no
-    finite witness settles it as stated. Its three source-nameable members (the
-    exact multinomial, the fixed-$N$ binomial, and the §6.2 flow with §6.1
-    costs) are each refuted above.
-\end{itemize}
-No determinate row of the matrix remains open. What lies outside the resolved set
-is (i) the doubled-strand $2G$ concatenation convention, which is a different
-paper's convention (a project-level convention, not a source fact), is
-\emph{not a determinate source row}, and is open in \emph{both} directions with
-no bounded search used as evidence because the known witness is inadmissible
-there, and (ii) the unspecified-principle reading, which is not a determinate
-proposition and cannot be settled from source. Neither is a determinate
-source-supported reading of the 2016 sentence. We flag these because they are
-exactly the kind of assumption-surface change that separates a refuted
-statement from an open one, so any claim that ``all source-supported interpretations are resolved''
-requires those qualifications.
-\end{remark}
 
-\begin{remark}[The general §6.2 flow domain, and two optima and an overlap
-floor with distinct meanings]
-\label{rem:flow-domain}
-The §6.2 refutations above are stated for \emph{spelled} bidirected circuits.
-The failure persists over the \emph{whole} §6.2 flow domain, at two values of
-the explicit overlap floor $o_{\min}$:
-\begin{itemize}
-  \item at $o_{\min}=1$ ($L=3$) the truth is still not a maximizer, and the flow
-        optimum $d^*=(AAA{:}2,AAT{:}1,TAA{:}1)$ (with
-        $d^*_3=(AAA{:}3,AAT{:}1,TAA{:}1)$) spells no circular molecule of any
-        length, so the maximum-likelihood \emph{object} of the flow domain is a
-        non-sequence and the maximum-likelihood \emph{sequence} does not exist
-        there;
-  \item at the full overlap $o_{\min}=L-1=2$ ($L=3$) the truth $AAATAT$ is
-        likewise not a maximizer, but here the unique integer optimum
-        $d^*=(AAA{:}2,AAT{:}1,ATA{:}1,TAA{:}1)$ has \emph{disconnected positive
-        support} (a doubled $AAA$ self-overlap together with the circuit
-        $AAT\to ATA\to TAA\to AAT$), so positive-support connectedness of all
-        optima is false, and it strictly beats the truth
-        ($\Lik(d^*)/\Lik(d_S)=1280/243$). Its throughput, however, \emph{is}
-        spellable: it is the spectrum of $AAAAT$ and also has a connected
-        realization. This is disconnectedness of the \emph{flow}, not
-        non-spellability of the \emph{throughput}; ``positive-support
-        connectedness of all optima'' is a project-level strengthening, not a
-        Medvedev--Brudno notion, and the flow-to-sequence gap is untouched by
-        it.
-\end{itemize}
-Two optima, one parameter, and one distinction must be kept separate:
-\begin{itemize}
-  \item the \textbf{integer flow optimum} --- the argmax of the §6.1 objective
-        over integer throughput vectors $1\le d\le N$ that are genuine §6.2 flows
-        (the $d^*$, $d^*_3$ above); this is the §6.2 object the source
-        defines;
-  \item the \textbf{half-integral relaxation} --- the argmax when $d$ ranges over
-        half-integers (the per-coordinate maximizer of
-        $(d/N)^x((N-d)/N)^{n-x}$ is $d=xN/n$, e.g.\ $5/2$ for the $AAA$ coordinate
-        here, which is neither an integer nor a §6.2 flow throughput);
-  \item the \textbf{overlap floor} $o_{\min}$ --- the $o_{\min}=1$ and the
-        $o_{\min}=L-1$ witnesses live on different graphs (the shorter overlaps
-        exist only when $o_{\min}\le L-2$), so neither may be read as the other;
-        the spelled witnesses (Thm.~\ref{thm:cex-molecule} and the rows
-        below it) are stated at $o_{\min}=L-1=2$;
-  \item the \textbf{throughput versus the flow realization} --- the
-        $o_{\min}=L-1$ optimum's throughput is spellable ($AAAAT$) while its
-        flow support is disconnected, whereas the $o_{\min}=1$ optimum's
-        throughput is not spellable at all. ``Non-spellable spectrum'' and
-        ``disconnected flow'' are \emph{different} properties.
-\end{itemize}
-The relaxation is a different, larger upper bound; substituting it for the
-integer flow optimum would overstate what the §6.2 domain refutes.
-\kernelcheck{}
-\end{remark}
+\paragraph{Model boundary.} The integer-flow, half-integral, overlap-floor, and
+flow-versus-spelling distinctions are recorded in
+Appendix~\ref{app:modeling}, Remark~\ref{rem:flow-domain}.
 
-\begin{remark}[The physical duplex is two disjoint circles, not a concatenation]
-\label{rem:duplex}
-There are two mathematically different doubled-strand models. The
-$2G$ \emph{concatenation} of \cite{bresler2013} glues $S$ and $\rc(S)$ into one
-circle; the alternative --- the one matching the physical double-stranded
-circle --- is \emph{two disjoint} cyclic strands $S$ and $\rc(S)$. The
-distinction is material rather than cosmetic. The reverse-complement map
-$\rho(i)=(G-1-i)\bmod G$ reverses order and preserves strict bridging, so
-\emph{circle-by-circle} $\Is$ on the disjoint duplex is exactly equivalent to
-$\Is(S)$, and the $AAATAT\to AAAAAT$ witness survives (ratios $3$ and $5$). The
-\emph{duplex-as-a-whole} reading is ill-defined (there is no cyclic order on two
-disjoint circles) and strictly stronger: six mixed cross-strand triple repeats
-of length $\ge L-1$ are unbridgeable for every read set. The concatenation and
-the disjoint duplex are genuinely inequivalent: their candidate spectra differ
-exactly when the seam words are not matched by wrapping words, which happens for
-half of the binary words in the searched scope. Finally, when strand orientation
-is \emph{unobserved}, the disjoint-duplex molecule-class distribution
-$2\,m_S(C)/(2G)=m_S(C)/G$ is identical to the Medvedev--Brudno molecule
-distribution (self-reverse-complementary palindromes counted once), so it is not
-a distinct likelihood objective there; only \emph{oriented} reads differ. All of
-this is a disclosed modelling decision, not a reading of the 2016 sentence, and
-it settles neither the concatenation row nor the referent.
-\kernelcheck{}
-\end{remark}
+
+\paragraph{Model boundary.} The distinction between a physical two-circle duplex and a
+single concatenated circle, and its effect on likelihood, is recorded in
+Appendix~\ref{app:modeling}, Remark~\ref{rem:duplex}.
+
 
 \subsection{The source-faithful historical predicate, and two same-length witnesses}
 \label{sec:finite:historical}
@@ -616,7 +496,7 @@ evaluated at the latent sampled starts. Shomorony et al.'s own coverage and
 bridging conditions are instead stated on the observed read \emph{strings},
 matched at any genomic position, precisely because repeats let one read string
 occur at many positions
-\cite[Supplement, \S6.4, Definitions~1--2]{shomorony2016}. The two predicates are
+\parencite[Supplement, \S6.4, Definitions~1--2]{shomorony2016}. The two predicates are
 not the same, and the source's is the one the published question inherits from
 the reconstruction theory. We record the source predicate, then show that the
 same-length molecule failure survives under it. The compact form of the two
@@ -636,7 +516,7 @@ alternatives, and a result stated for one is not silently a result for the
 other.
 \statusline{\srcfact{} for the historical matching-string definitions
 (Definition~\ref{def:historical-match})
-\cite[Supplement, \S6.4, Definitions~1--2]{shomorony2016}; the two
+\parencite[Supplement, \S6.4, Definitions~1--2]{shomorony2016}; the two
 incomparability instances are \kernelcheck{} (Appendix~\ref{app:ledger}).}
 \end{proposition}
 
@@ -650,7 +530,7 @@ $D=AAAAAT$ ($|D|=|S|=6$). Then
         $S\in\Is^{\mathrm{match}}$: historical coverage, every literal
         three-occurrence triple repeat all-bridged, and every interleaved pair
         bridged;
-  \item $S$ and $D$ are genuine Section~6.2 bidirected DNA-molecule
+  \item $S$ and $D$ are genuine MB09 bidirected DNA-molecule
         \emph{full-overlap} flows of the same length; and
   \item the competitor strictly wins under both source-named objectives, with
         external $N=6$ and the zero-count factors retained:
@@ -676,7 +556,7 @@ Let $\Alphabet=\{A,C,G,T\}$ with $A\leftrightarrow T$, $C\leftrightarrow G$
 (no self-complementary base), $L=3$, truth $S=ATATACAC$ ($G=8$) sampled at the
 starts $(1,3,4,5,6,7)$, and competitor $D=ATACACAC$ ($|D|=|S|=8$). Then
 $S\in\Is^{\mathrm{match}}$ at full strength; both $S$ and $D$ are genuine
-Section~6.2 bidirected full-overlap flows of the same length; \emph{and} both
+MB09 bidirected full-overlap flows of the same length; \emph{and} both
 satisfy the repository-added per-occurrence strengthening
 $x(w)\le d_S(w)$, $x(w)\le d_D(w)$ for every observed molecule class $w$. With
 external $N=8$,
@@ -700,7 +580,7 @@ likelihood comparisons are composed in
 \path{AssemblyP1/HistoricalCoverageSameLengthWitnesses.lean}
 and \path{AssemblyP1/HistoricalCovers.lean};
 the exact-arithmetic cross-check is
-\path{scripts/verify_247c_historical_witnesses.py}.
+Appendix~\ref{app:reproduction}.
 
 \begin{remark}[Five distinctions the historical witnesses turn on]
 \label{rem:historical-distinctions}
@@ -716,8 +596,8 @@ the witnesses keep apart.
         neither replaces the other.
   \item \textbf{Reverse-complement molecules versus oriented strings.} MB09
         reads are unordered reverse-complement \emph{molecule} classes
-        \cite[\S3.1,\S4.1]{medvedev2009}; Shomorony's windows are oriented
-        \cite[\S2]{shomorony2016}. The historical witnesses are molecular; the
+        \parencite[\S3.1,\S4.1]{medvedev2009}; Shomorony's windows are oriented
+        \parencite[\S2]{shomorony2016}. The historical witnesses are molecular; the
         positive rigidity theorem is oriented, and the two read-type spaces must
         not be exchanged.
   \item \textbf{Full-overlap proxy versus literal bidirected graph.} The
@@ -758,7 +638,7 @@ is \emph{refuted}: the truth need not be a maximizer and the maximizer is not
 unique. The positive rigidity theorem survives only on the oriented,
 true-admissible, same-length, full-overlap slice, where it asserts uniqueness up
 to rotation. What remains genuinely open is the referent of the 2016 sentence
-and the general-$o_{\min}$ Section~6.2 flow domain --- not the same-length
+and the general-$o_{\min}$ MB09 flow domain --- not the same-length
 molecule row.
 
 \subsection{The candidate-length boundary}
@@ -768,7 +648,7 @@ The same-length restriction in the positive theorem is not cosmetic. On the next
 slice, where $|D|>G$ is allowed, the truth need not be optimal even under $\Is$,
 and this is an infinite-family phenomenon rather than a bounded search.
 
-\begin{theorem}[Oriented variable-length Section~6.2 classification]
+\begin{theorem}[Oriented variable-length MB09 classification]
 \label{thm:cex-variable-length}
 Let $\Alphabet=\{A,T\}$, $L=3$, truth $S=AAATT$ ($G=5$), realized starts
 $R=\{0,1,2,3,4\}$, so $R\in\Is$ holds at full strength (coverage, the unique
@@ -783,7 +663,7 @@ $D_M=A^{3+M}TT$ ($|D_M|=5+M$),
 for the fixed competitor $D=AAAATT$ ($|D|=6$) the exact ratio is
 $(\tfrac{3125}{3888})(\tfrac53)^M>1$ and the fixed-$N$ binomial ratio
 ($N=5$) is $(\tfrac{81}{128})2^M>1$, for every $M\ge 1$. Every candidate is a
-genuine Section~6.2 candidate under the per-vertex, spelled-support and
+genuine MB09 candidate under the per-vertex, spelled-support and
 single-circuit readings. The truth wins exactly at $n=G$; a single extra
 observation of the over-represented $AAA$ type overturns it.
 \end{theorem}
@@ -856,11 +736,7 @@ the nonzero difference $B-A$ admits a sign-conformal Graver
 component $g$, and feasibility of $B$ ensures that $A+g$ is feasible.
 That decomposition, including its nontrivial existence proof, is
 formalized in Lean.
-\statusline{\kernelcheck{} in \texttt{AssemblyP1/GraverRigidity.lean},
-\texttt{rigid\_iff\_forall\_graver\_not\_inbox} and
-\texttt{exists\_graver\_conformal}. The theorem concerns positive
-\emph{integer flows}; it is not yet a theorem classifying every
-historical bidirected assembly candidate.}
+
 
 There is a parallel exact criterion on the statistical side for the
 fixed-external-$N$ independent-binomial \emph{surrogate}. This criterion
@@ -895,16 +771,7 @@ take the count vector consisting of one observation of type
 $i$ to recover the $i$th inequality.
 \end{proof}
 
-\statusline{\kernelcheck{} for the exact integer numerator identity
-and the if-and-only-if in
-\texttt{AssemblyP1/FixedNBinomialEffectiveWeights.lean},
-\texttt{effectiveProduct\_eq\_binomialNumerator} and
-\texttt{every\_observation\_effectiveProduct\_le\_iff}. The
-criterion ranges over \emph{all} nonnegative count vectors,
-not only those satisfying coverage, read support, or the
-source's historical feasibility conditions. The fixed
-read-type universe, candidate-independent $N$, and the
-probabilistic domain $0\le B_i\le N$ is part of the statement.}
+
 
 These two theorems provide complementary structural and
 statistical certificates. Neither replaces the source-faithful
@@ -932,11 +799,7 @@ $2$ but spells $\texttt{AAATTAAA}$. Thus the repository's
 spelling-preserving reduction keeps it.
 \end{proposition}
 
-\statusline{\kernelcheck{} for the full finite claim in
-\texttt{AssemblyP1/Section62ReductionMismatch.lean},
-\texttt{longer\_is\_not\_spelling\_preserving}. This refutes
-the \emph{repository's broader predicate}, not Myers's published
-string-graph reduction, which requires an equivalent spelling.}
+
 
 There is also a positive, global result rather than merely this
 counterexample.
@@ -951,12 +814,7 @@ the same endpoints and the same spelled sequence. The expansion
 respects the required opposing incidences at successive signed edges.
 \end{theorem}
 
-\statusline{\kernelcheck{} for the actual theorem's hypotheses in
-\texttt{AssemblyP1/Section62GlobalSpellingPreservation.lean},
-\texttt{global\_walk\_signed\_expansion}. Equivalence of this
-candidate reduction with the full published Myers/Medvedev--Brudno
-implementation, and equality between graph-flow counts and genomic
-window counts, remain separate obligations.}
+
 
 The combinatorial reason for this requirement is precise: a
 length-$L$ read-overlap step with shared overlap $\ell$ advances
@@ -993,17 +851,17 @@ Statement & objective & candidate class & result \\
 \endfoot
 \bottomrule
 \endlastfoot
-same-length oriented Section~6.2, $R\in\Is$, truth §6.2-admissible
+same-length oriented MB09, $R\in\Is$, truth MB09-admissible
   & exact / binomial
   & same-length spelled
   & \textbf{true}, unique up to rotation (Thm.~\ref{thm:rigidity}, Cor.~\ref{cor:same-length-rotation}) \\
 \addlinespace
-same-length oriented, $R\in\Is$ at the realized placements, truth a genuine §6.2 candidate
+same-length oriented, $R\in\Is$ at the realized placements, truth a genuine MB09 candidate
   & exact / binomial
-  & same-length genuine §6.2
+  & same-length genuine MB09
   & \textbf{true}, maximizer (Thm.~\ref{thm:maximizer}) \\
 \addlinespace
-same-length, truth not §6.2-admissible; competitor is admissible
+same-length, truth not MB09-admissible; competitor is admissible
   & exact
   & all circular of length $G$
   & \textbf{false} ($AABB\to ABAB$, ratio $4$) \\
@@ -1016,45 +874,45 @@ binomial ML maximizer
   & fixed-$N$ binomial
   & all circular (on its domain)
   & \textbf{false} (Thm.~\ref{thm:cex-binomial}) \\
-Section~6.2 flow, molecule reads, variable length
+MB09 flow, molecule reads, variable length
   & Section~6.1 product
-  & §6.2 circuits
+  & MB09 circuits
   & \textbf{false} (Thm.~\ref{thm:cex-molecule}); competitor the \emph{unique} optimizer over the whole §6.1 domain \\
 \addlinespace
-§6.2 flow, full overlap, all optima connected
+MB09 flow, full overlap, all optima connected
   & §6.1 product
-  & §6.2 integral flows
+  & MB09 integral flows
   & \textbf{false}: disconnected optimum $d^*$ for $AAATAT$ (ratio $1280/243$), yet $d^*$ is spellable as $AAAAT$ \\
 \addlinespace
-§6.2 flow, $o_{\min}=1$, optimum spellable
+MB09 flow, $o_{\min}=1$, optimum spellable
   & §6.1 product
-  & §6.2 integral flows
+  & MB09 integral flows
   & \textbf{false}: optimum $(2,1,1)$ for $AAATT$ is no circular molecule's spectrum \\
-Section~6.2 flow, molecule, same length, per-vertex
+MB09 flow, molecule, same length, per-vertex
   & exact / binomial
-  & §6.2 spelled
+  & MB09 spelled
   & \textbf{false} ($AAATAT\to AAAAAT$) \\
-Section~6.2 flow, molecule, variable length, per-occurrence strengthening
+MB09 flow, molecule, variable length, per-occurrence strengthening
   & exact / binomial
-  & §6.2 circuits
+  & MB09 circuits
   & \textbf{false} (the same $AAATT\to AAAATT$ witness satisfies it) \\
-Section~6.2, molecule, same length, per-occurrence strengthening
+MB09, molecule, same length, per-occurrence strengthening
   & exact / binomial
-  & §6.2 spelled
-  & \textbf{false} ($ATATACAC\to ATACACAC$, ratios $3/2$ and $9/5$; \emph{not} the source's §6.2 rule) \\
+  & MB09 spelled
+  & \textbf{false} ($ATATACAC\to ATACACAC$, ratios $3/2$ and $9/5$; \emph{not} the source's MB09 rule) \\
 same-length molecule, \emph{source historical} $I_s^{\mathrm{match}}$, per-vertex
   & exact / binomial
-  & §6.2 spelled
+  & MB09 spelled
   & \textbf{false} ($AAATAT\to AAAAAT$, ratios $3$ and $5$; Thm.~\ref{thm:cex-historical-W1}; kernel-checked) \\
 same-length molecule, \emph{source historical} $I_s^{\mathrm{match}}$, per-occurrence
   & exact / binomial
-  & §6.2 spelled
+  & MB09 spelled
   & \textbf{false} ($ATATACAC\to ATACACAC$, ratios $3/2$ and $9/5$; Thm.~\ref{thm:cex-historical-W2}; kernel-checked) \\
-oriented single-strand, Section~6.2, variable length
+oriented single-strand, MB09, variable length
   & exact / binomial
-  & §6.2 circuits
+  & MB09 circuits
   & \textbf{false} in infinite families (Thm.~\ref{thm:cex-variable-length}; amplification of an over-represented type, strict for every $M\ge1$) \\
-doubled-strand $2G$ \emph{concatenation} of \cite{bresler2013}
+doubled-strand $2G$ \emph{concatenation} of \parencite{bresler2013}
   & exact multinomial
   & $2G$-doubled candidates
   & \openstatus{} (open both ways; known witness inadmissible; compatibility with the oriented reading kernel-checked incomparable off the R1$\land$R2$\land$R3 locus) \\
@@ -1079,7 +937,7 @@ belongs to a different paper and is the only determinate-looking row left open
 repository modelling choice whose circle-by-circle reading is exactly $\Is(S)$.
 The
 per-occurrence strengthening in the row above them is likewise a repository-added
-assumption surface rather than Medvedev--Brudno's §6.2 rule; that row is a
+assumption surface rather than Medvedev--Brudno's MB09 rule; that row is a
 \emph{determinate} question and is now refuted rather than left open. The two
 \emph{source-historical} $I_s^{\mathrm{match}}$ rows use the source's own
 read-string predicate of supplement \S6.4 rather than the placement-based $\Is$;

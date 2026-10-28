@@ -1,35 +1,12 @@
 #!/usr/bin/env python3
-"""Independent check of the #265 Chernoff refinement and its finite-n gap.
+"""Check finite-read large-deviation rates, including asymmetric support.
 
-The paper's Proposition `prop:chernoff-refinement` replaces the Hellinger
-constant ``-ln rho`` of the kernel-checked union bound
-(`AssemblyP1.FiniteReadRecovery`) by the Chernoff information
-
-    C(p,q) = sup_{t in [0,1]} ( -ln sum_{w: p(w)>0} p(w)^(1-t) q(w)^t ),
-
-which is at least ``-ln rho(p,q)``.  The paper's Remark `rem:chernoff-sharp`
-records that the resulting exponent is the *exact* large-deviation exponent of
-the finite-family exact-ML error, while the bound is still loose at finite n
-because of its prefactor.  This script checks, with exact rational arithmetic
-where possible and high-precision floats for the transcendental step, that:
-
-1. on the worked two-symbol family p = (3/4,1/4),
-   Theta = {(1/4,3/4), (0,1)}, the exact-ML error enumerated for n = 1..16
-   obeys the Chernoff union bound and the Hellinger union bound, and the
-   Chernoff bound is termwise no larger than the Hellinger bound;
-2. the recorded finite-n gap: at n = 16 the bound is about 3.7 times the exact
-   error (and the ratio grows with n, since the exact error carries a
-   polynomial prefactor the union bound drops);
-3. C(p,q) >= -ln rho(p,q) on a grid, with equality for a two-symbol-swap
-   pair and strict inequality for a non-symmetric pair;
-4. the exact binary and family exponents converge to C(p,q) and C_* as n grows
-   (exact enumeration through n = 512);
-5. C_* > 0 whenever every competitor law differs from the truth.
-
-This checks the mathematics of the refinement and its recorded gap.  It does
-not check any genome-class affinity, and it does not promote the external
-Chernoff/large-deviation statements to kernel-checked facts.  Exit status is 0
-on success and 1 on any failure.
+The one-sided event Pr_p(L_q >= L_p) has exponent
+    E_+(p,q) = -log inf_{t>0} E_p[(q/p)^t],
+not in general the symmetric Chernoff information optimized on [0,1].
+The full-support two-symbol family happens to satisfy equality; the
+oriented AAB/AABB read-law pair is the regression for E_+=infinity.
+This independent verifier is not a Lean proof.
 """
 
 from __future__ import annotations
@@ -66,6 +43,40 @@ def chernoff(p: tuple[Fraction, ...], q: tuple[Fraction, ...]) -> float:
             lo = m1
     t = (lo + hi) / 2.0
     return -math.log(g(t))
+
+
+def one_sided_exponent(p: tuple[Fraction, ...],
+                       q: tuple[Fraction, ...]) -> float:
+    """One-sided log-moment rate, including infinite impossible-error rates."""
+    positive = [(float(a), math.log(float(b / a)))
+                for a, b in zip(p, q) if a > 0 and b > 0]
+    if not positive or max(lr for _, lr in positive) < 0:
+        return math.inf
+
+    def log_moment_and_slope(t: float) -> tuple[float, float]:
+        xs = [math.log(w) + t * lr for w, lr in positive]
+        hi = max(xs)
+        exp_xs = [math.exp(x - hi) for x in xs]
+        sm = sum(exp_xs)
+        return hi + math.log(sm), sum(v * lr for v, (_, lr) in zip(exp_xs, positive)) / sm
+
+    if max(lr for _, lr in positive) == 0:
+        eqmass = sum(w for w, lr in positive if lr == 0)
+        return -math.log(eqmass)
+    if log_moment_and_slope(0.0)[1] >= 0:
+        return -log_moment_and_slope(0.0)[0]
+    lo, hi = 0.0, 1.0
+    while log_moment_and_slope(hi)[1] < 0:
+        hi *= 2
+        if hi > 1e7:
+            raise RuntimeError("Unreasonably distant one-sided optimum")
+    for _ in range(110):
+        mid = (lo + hi) / 2
+        if log_moment_and_slope(mid)[1] < 0:
+            lo = mid
+        else:
+            hi = mid
+    return -log_moment_and_slope((lo + hi) / 2)[0]
 
 
 def affinity(p: tuple[Fraction, ...], q: tuple[Fraction, ...]) -> float:
@@ -191,6 +202,28 @@ exp_binary = -math.log(float(exact_binary_error(N_EXP, Pn, Qn))) / N_EXP
 check(abs(exp_binary - C_nonsym) < 1.5e-2,
       f"binary exponent {exp_binary} does not approach C = {C_nonsym}")
 
+# --- Support-mismatch regression: S=AAB, D=AABB, L=2 -----------------------
+# Truth has AA, AB, BA uniformly; competitor also has BB.
+P3 = (Fraction(1, 3), Fraction(1, 3), Fraction(1, 3), Fraction(0))
+Q4 = (Fraction(1, 4), Fraction(1, 4), Fraction(1, 4), Fraction(1, 4))
+assert sum(P3) == sum(Q4) == 1
+C_SYMMETRIC = chernoff(P3, Q4)
+ONE_SIDED = one_sided_exponent(P3, Q4)
+check(abs(C_SYMMETRIC - math.log(Fraction(4, 3))) < 1e-9,
+      "conventional Chernoff for AAB/AABB should be log(4/3)")
+check(ONE_SIDED == math.inf, "one-sided AAB/AABB rate must be infinite")
+for n in range(1, 11):
+    ratio = Fraction(3, 4) ** n
+    check(ratio < 1, f"AAB/AABB competitor unexpectedly ties at n={n}")
+check(abs(one_sided_exponent(P, Q1) - C_PQ1) < 1e-8,
+      "full-support symmetric rate differs")
+check(abs(one_sided_exponent(P, Q2) - C_PQ2) < 1e-8,
+      "competitor supported inside truth differs")
+P_EXTRA = (Fraction(3, 4), Fraction(1, 4), Fraction(0))
+Q_EXTRA = (Fraction(2, 5), Fraction(2, 5), Fraction(1, 5))
+check(one_sided_exponent(P_EXTRA, Q_EXTRA) > chernoff(P_EXTRA, Q_EXTRA) + 1e-5,
+      "asymmetric extra-support example should require t>1")
+
 # --- Report -------------------------------------------------------------------
 
 if FAILURES:
@@ -209,3 +242,5 @@ print(f"  non-symmetric pair: C = {C_nonsym:.6f} > -ln rho = "
       f"{-math.log(rho_nonsym):.6f}")
 print(f"  exact binary exponent at n = {N_EXP}: {exp_binary:.6f} "
       f"-> C = {C_nonsym:.6f}")
+
+print(f"  support-mismatch AAB/AABB: symmetric C={C_SYMMETRIC:.6f}; one-sided E_+=infinity; error=0")

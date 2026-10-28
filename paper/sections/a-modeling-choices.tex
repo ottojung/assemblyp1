@@ -13,8 +13,8 @@ better than we can inline, we cite it rather than reproduce background.
 \paragraph{Source origin.}
 Shomorony et al.\ work with a circular sequence ``for ease of exposition \dots
 [to] avoid edge effects,'' so that every start position has a length-$L$ window
-\cite[\S2]{shomorony2016}. Medvedev and Brudno's exact likelihood is likewise
-stated for a ``circular genome'' \cite[\S6.1]{medvedev2009}.
+\parencite[\S2]{shomorony2016}. Medvedev and Brudno's exact likelihood is likewise
+stated for a ``circular genome'' \parencite[\S6.1]{medvedev2009}.
 
 \paragraph{What it buys.}
 Circularity removes the two ends: the window map $t\mapsto W_t(D)$ is defined at
@@ -38,14 +38,14 @@ inconsistent.
 
 \paragraph{Source origin.}
 The 2016 exposition draws each of $N$ reads independently and uniformly from the
-$G$ circular length-$L$ substrings of $s$ \cite[\S2]{shomorony2016}. Bresler et
-al.\ use the same noiseless uniform model with bridging \cite{bresler2013}.
+$G$ circular length-$L$ substrings of $s$ \parencite[\S2]{shomorony2016}. Bresler et
+al.\ use the same noiseless uniform model with bridging \parencite{bresler2013}.
 
 \paragraph{Why errors can be abstracted away in the source theory.}
 Shomorony et al.\ deliberately separate an error-free information-theoretic phase
 from sequencing-error handling; their algorithm uses exact overlaps, and their
 double-strand implementation adds reverse-complement reads as preprocessing
-\cite[\S4.1]{shomorony2016}. In an information-feasibility analysis this is a
+\parencite[\S4.1]{shomorony2016}. In an information-feasibility analysis this is a
 modeling choice: it isolates the repeat-limited obstructions that determine the
 information boundary. What the abstraction omits is real: sequencing errors
 create spurious overlaps, turn unique repeats ambiguous, and interact with
@@ -59,14 +59,14 @@ would destroy that conjugacy and change the objective. Independence of the \emph
 ordered sample a product and produces the exact multinomial likelihood after
 aggregating read-type counts. It does \emph{not} make the read-type count
 variables independent; the separable product-binomial objective of
-\cite[\S6.1]{medvedev2009} is an additional modeling approximation.
+\parencite[\S6.1]{medvedev2009} is an additional modeling approximation.
 Uniformity and independent draws are mathematical assumptions, not biological
 laws; their consequences differ from independence of read-type counts.
 
 \paragraph{A limitation in the source's binomial justification.}
 Medvedev and Brudno motivate the approximation by saying that the multinomial
 category-count variables become independent as the number of trials increases
-\cite[\S6.1]{medvedev2009}. At fixed category probabilities this is false.
+\parencite[\S6.1]{medvedev2009}. At fixed category probabilities this is false.
 If the sample consists of $n$ independent categorical draws with
 $p_i,p_j\in(0,1)$ and $i\ne j$, then
 \[
@@ -111,10 +111,10 @@ likelihood estimator may not see them.
 
 \paragraph{Two genuinely different sources.}
 Shomorony's theory uses oriented length-$L$ substrings; reverse complement enters
-only as experimental preprocessing that \emph{adds} reads \cite[\S4.1]{shomorony2016}.
+only as experimental preprocessing that \emph{adds} reads \parencite[\S4.1]{shomorony2016}.
 Medvedev and Brudno instead model a read as a DNA \emph{molecule}, an unordered
 pair of reverse-complementary strands, represented once in the graph
-\cite[\S3.1,\S4.1]{medvedev2009}. This is not notation: the two models have
+\parencite[\S3.1,\S4.1]{medvedev2009}. This is not notation: the two models have
 different read-type spaces.
 
 \paragraph{Consequences.}
@@ -145,9 +145,9 @@ source-faithfulness error:
 \end{enumerate}
 (a) and (b) are different objectives; (b) does not imply (c). Medvedev and
 Brudno say ``we assume that the genome size is known''
-\cite[\S6.1]{medvedev2009}, and a contemporaneous formulation fixes the assembly
+\parencite[\S6.1]{medvedev2009}, and a contemporaneous formulation fixes the assembly
 length to the known genome length and justifies it by scale-degeneracy
-\cite{ghodsi2016}. But the 2016 sentence itself fixes neither, so a same-length
+\parencite{ghodsi2016}. But the 2016 sentence itself fixes neither, so a same-length
 theorem is a restricted result unless a source argument fixes the restriction.
 The fixed-length witnesses of Section~\ref{sec:finite} are same-length precisely
 to be robust: by Lemma~\ref{lem:negative-transfer} they refute the statement over
@@ -171,8 +171,156 @@ historical finite-data model, and it does not settle it.
 To keep the main narrative readable we excluded several directions that the
 repository has not studied in depth: linear genomes with genuine end effects;
 variable-length reads; noisy or adversarial reads beyond the source's
-abstraction; and the Section~6.2 flow's non-contiguous assemblies as
+abstraction; and the MB09 flow's non-contiguous assemblies as
 sequence-valued candidates. We list them here rather than silently omitting
 them, and we cite the adjacent literature on variable-length reads
-\cite{hui2016} and safe/complete assembly \cite{tomescu2016,rahman2022} for
+\parencite{hui2016} and safe/complete assembly \parencite{tomescu2016,rahman2022} for
 readers who want those directions.
+
+\subsection{Technical model boundaries for the finite witnesses}
+\label{app:finite-domain-boundaries}
+
+The following details establish precise relationships between the
+project-level candidate models and the historical physical model.
+They are kept here rather than in the sequence of main theorems.
+
+\begin{remark}[Which assumption surfaces are still open, and which are not the
+source's]
+\label{rem:surfaces}
+The molecule witnesses above use the source's per-vertex lower bound, i.e.\
+support equality. Medvedev--Brudno MB09 states only ``Each vertex has a lower
+bound of $1$ since it represents a read that must be present in the genome at
+least once''; the strictly stronger per-occurrence requirement $d_D(w)\ge x(w)$
+for every observed type is a \emph{repository-added} assumption surface, not a
+source definition. That distinction matters for what may be reported as
+settled:
+
+\begin{itemize}
+  \item \textbf{Refuted.} Same-length MB09 candidate class, molecule read types,
+    per-occurrence strengthening. The witness is $S=ATATACAC$, $D=ATACACAC$
+    ($G=8$, $L=3$, realized starts $(1,3,4,5,6,7)$, $n=6<N=8$): exact ratio
+    $3/2$, binomial ratio $9/5$, with both genomes literal MB09 bidirected
+    circuits and both per-occurrence feasible. The mechanism needs the real
+    four-letter DNA alphabet: with a self-complementary base the searched scope
+    contains no same-length instance at all
+    (Thm.~\ref{thm:cex-peroccurrence}). This is a \emph{determinate} row, so it
+    is reported as settled; it is not a reading of the 2016 sentence, because the
+    strengthening is a repository-added surface.
+  \item \textbf{Open in both directions, and not a determinate reading of the
+    2016 sentence at all.} The doubled-strand $2G$ \emph{concatenation}
+    convention of \parencite{bresler2013}, i.e.\ one length-$2G$ circle
+    $S\cdot\rc(S)$. No bounded search is used as evidence in either direction:
+    the absence of a known beat in the searched scopes is recorded as
+    \emph{absence of a known witness}, not as evidence of openness, and two of
+    those scopes are vacuous because the remapped $\Is$ is unsatisfiable there.
+    The known $AAATAT\to AAAAAT$ witness is \emph{inadmissible} under this
+    remap: the doubled circle carries a length-$4$ triple repeat that no
+    length-$3$ read can bridge, for \emph{every} read set
+     (\texttt{doubled\_\allowbreak{}not\_\allowbreak{}information\_\allowbreak{}feasible}). The row is therefore open in
+     both directions rather than refuted. The \emph{compatibility} of this
+     convention with the oriented one is now kernel-checked in both directions:
+     the remap is exactly compatible with the oriented reading iff read-seat
+     preservation, seam--wrap agreement, and doubled-circle feasibility all hold,
+     and off that locus the two models are incomparable --- $GGGA$ satisfies the
+     remapped $\Is$ while failing the oriented $\Is$ (spurious wrapping-read
+     seats), and $AAATAT$ is the reverse
+     (\texttt{Bresler\allowbreak{}Remap\allowbreak{}Compatibility.\allowbreak{}remap\_\allowbreak{}natural\_\allowbreak{}seat\_\allowbreak{}not\_\allowbreak{}sound},
+     \texttt{remap\_\allowbreak{}not\_\allowbreak{}complete}). The physical duplex is better
+     represented as \emph{two disjoint} cyclic strands $S$ and $\rc(S)$
+     (Remark~\ref{rem:duplex}).
+  \item \textbf{Not a determinate proposition.} The reading of the sentence as an
+    unspecified general ML principle: the 2016 text fixes no objective, so no
+    finite witness settles it as stated. Its three source-nameable members (the
+    exact multinomial, the fixed-$N$ binomial, and the MB09 flow with §6.1
+    costs) are each refuted above.
+\end{itemize}
+No determinate row of the matrix remains open. What lies outside the resolved set
+is (i) the doubled-strand $2G$ concatenation convention, which is a different
+paper's convention (a project-level convention, not a source fact), is
+\emph{not a determinate source row}, and is open in \emph{both} directions with
+no bounded search used as evidence because the known witness is inadmissible
+there, and (ii) the unspecified-principle reading, which is not a determinate
+proposition and cannot be settled from source. Neither is a determinate
+source-supported reading of the 2016 sentence. We flag these because they are
+exactly the kind of assumption-surface change that separates a refuted
+statement from an open one, so any claim that ``all source-supported interpretations are resolved''
+requires those qualifications.
+\end{remark}
+
+\begin{remark}[The general MB09 flow domain, and two optima and an overlap
+floor with distinct meanings]
+\label{rem:flow-domain}
+The MB09 refutations above are stated for \emph{spelled} bidirected circuits.
+The failure persists over the \emph{whole} MB09 flow domain, at two values of
+the explicit overlap floor $o_{\min}$:
+\begin{itemize}
+  \item at $o_{\min}=1$ ($L=3$) the truth is still not a maximizer, and the flow
+        optimum $d^*=(AAA{:}2,AAT{:}1,TAA{:}1)$ (with
+        $d^*_3=(AAA{:}3,AAT{:}1,TAA{:}1)$) spells no circular molecule of any
+        length, so the maximum-likelihood \emph{object} of the flow domain is a
+        non-sequence and the maximum-likelihood \emph{sequence} does not exist
+        there;
+  \item at the full overlap $o_{\min}=L-1=2$ ($L=3$) the truth $AAATAT$ is
+        likewise not a maximizer, but here the unique integer optimum
+        $d^*=(AAA{:}2,AAT{:}1,ATA{:}1,TAA{:}1)$ has \emph{disconnected positive
+        support} (a doubled $AAA$ self-overlap together with the circuit
+        $AAT\to ATA\to TAA\to AAT$), so positive-support connectedness of all
+        optima is false, and it strictly beats the truth
+        ($\Lik(d^*)/\Lik(d_S)=1280/243$). Its throughput, however, \emph{is}
+        spellable: it is the spectrum of $AAAAT$ and also has a connected
+        realization. This is disconnectedness of the \emph{flow}, not
+        non-spellability of the \emph{throughput}; ``positive-support
+        connectedness of all optima'' is a project-level strengthening, not a
+        Medvedev--Brudno notion, and the flow-to-sequence gap is untouched by
+        it.
+\end{itemize}
+Two optima, one parameter, and one distinction must be kept separate:
+\begin{itemize}
+  \item the \textbf{integer flow optimum} --- the argmax of the §6.1 objective
+        over integer throughput vectors $1\le d\le N$ that are genuine MB09 flows
+        (the $d^*$, $d^*_3$ above); this is the MB09 object the source
+        defines;
+  \item the \textbf{half-integral relaxation} --- the argmax when $d$ ranges over
+        half-integers (the per-coordinate maximizer of
+        $(d/N)^x((N-d)/N)^{n-x}$ is $d=xN/n$, e.g.\ $5/2$ for the $AAA$ coordinate
+        here, which is neither an integer nor a MB09 flow throughput);
+  \item the \textbf{overlap floor} $o_{\min}$ --- the $o_{\min}=1$ and the
+        $o_{\min}=L-1$ witnesses live on different graphs (the shorter overlaps
+        exist only when $o_{\min}\le L-2$), so neither may be read as the other;
+        the spelled witnesses (Thm.~\ref{thm:cex-molecule} and the rows
+        below it) are stated at $o_{\min}=L-1=2$;
+  \item the \textbf{throughput versus the flow realization} --- the
+        $o_{\min}=L-1$ optimum's throughput is spellable ($AAAAT$) while its
+        flow support is disconnected, whereas the $o_{\min}=1$ optimum's
+        throughput is not spellable at all. ``Non-spellable spectrum'' and
+        ``disconnected flow'' are \emph{different} properties.
+\end{itemize}
+The relaxation is a different, larger upper bound; substituting it for the
+integer flow optimum would overstate what the MB09 domain refutes.
+\kernelcheck{}
+\end{remark}
+
+\begin{remark}[The physical duplex is two disjoint circles, not a concatenation]
+\label{rem:duplex}
+There are two mathematically different doubled-strand models. The
+$2G$ \emph{concatenation} of \parencite{bresler2013} glues $S$ and $\rc(S)$ into one
+circle; the alternative --- the one matching the physical double-stranded
+circle --- is \emph{two disjoint} cyclic strands $S$ and $\rc(S)$. The
+distinction is material rather than cosmetic. The reverse-complement map
+$\rho(i)=(G-1-i)\bmod G$ reverses order and preserves strict bridging, so
+\emph{circle-by-circle} $\Is$ on the disjoint duplex is exactly equivalent to
+$\Is(S)$, and the $AAATAT\to AAAAAT$ witness survives (ratios $3$ and $5$). The
+\emph{duplex-as-a-whole} reading is ill-defined (there is no cyclic order on two
+disjoint circles) and strictly stronger: six mixed cross-strand triple repeats
+of length $\ge L-1$ are unbridgeable for every read set. The concatenation and
+the disjoint duplex are genuinely inequivalent: their candidate spectra differ
+exactly when the seam words are not matched by wrapping words, which happens for
+half of the binary words in the searched scope. Finally, when strand orientation
+is \emph{unobserved}, the disjoint-duplex molecule-class distribution
+$2\,m_S(C)/(2G)=m_S(C)/G$ is identical to the Medvedev--Brudno molecule
+distribution (self-reverse-complementary palindromes counted once), so it is not
+a distinct likelihood objective there; only \emph{oriented} reads differ. All of
+this is a disclosed modelling decision, not a reading of the 2016 sentence, and
+it settles neither the concatenation row nor the referent.
+\kernelcheck{}
+\end{remark}

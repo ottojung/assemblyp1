@@ -1,107 +1,77 @@
-# The Chernoff refinement of the finite-family recovery bound, and its finite-`n` gap (#265)
+# Finite-read likelihood-ratio exponents and the support boundary
 
-Status: 2026-10-18. Owner: agent `df84a657ae4a`. Base: `main` @ `c52be5a`.
+This note documents the paper's Proposition~\`prop:chernoff-refinement\`
+and Remark~\`rem:chernoff-sharp\`. Its original symmetric Chernoff
+sharpness claim was **incorrect** for asymmetric read-law supports.
+The corrected one-sided exponent is classical large-deviation theory,
+not a Lean theorem. The Hellinger finite-family result remains
+kernel-checked independently.
 
-This note accompanies the paper's Proposition `prop:chernoff-refinement` and
-Remark `rem:chernoff-sharp` in `paper/sections/03-open-question.tex`. It records
+## Exact sampling model
 
-1. the exact statement and proof of the **Chernoff union bound** that replaces
-   the Hellinger constant `-ln rho_*` of the kernel-checked
-   `AssemblyP1.FiniteReadRecovery` bound by the Chernoff information `C_*`;
-2. the standard large-deviation fact that `C_*` is the **exact exponent** of the
-   finite-family exact-ML error, so the refinement genuinely improves the rate;
-3. the **precise finite-`n` gap**: the union bound stays loose because of its
-   prefactor, quantified by exact enumeration on a worked family.
+For a finite alphabet of read types \`W\`, let \`p\` be the truth's read
+distribution, \`q\` a competitor, and \`R_1,...,R_n\` iid from \`p\`.
+The observed-sample error for this competitor is the **one-sided event**
+\`L_q >= L_p\` (ties count as error).
 
-It does **not** claim a tight finite-`n` bound, a minimax sample size, any
-kernel-checked status for the external Chernoff/large-deviation facts, or any
-statement about the unrestricted genome universe. It is the quantitative
-companion to `docs/sample-complexity-265.md`.
+For \`t > 0\`, define
+\`\`\`
+M_{p,q}(t) = sum_{w:p(w)>0} p(w) (q(w)/p(w))^t,
+E_+(p,q) = -log inf_{t>0} M_{p,q}(t), with -log(0)=+infinity.
+\`\`\`
+Then for each integer \`n>=1\`,
+\`\`\`
+P_p(L_q>=L_p) <= exp(-n E_+(p,q)).
+\`\`\`
+A finite union over competitors gives
+\`P_p(any wrong q ties/beats p) <= sum_q exp(-n E_+(p,q))\`.
 
-## Model and assumptions (exact)
+The exponent \`E_+\` is the exact asymptotic rate of this one-sided
+event on a finite read alphabet (Cramér's theorem, with boundary
+cases interpreted as infinite rates); the minimum of these exponents
+is the exact asymptotic rate of a finite competitor-family union.
 
-Fix a finite read alphabet `W`; a true read law `p` on `W`; a finite competitor
-family `Θ` of read laws `q`, each `q ≠ p` (so `Θ` is a set of read laws /
-rotation classes, not literal spellings); and `R_1, …, R_n` i.i.d. `~ p`. The
-exact product likelihood is `L_q(R_1,…,R_n) = ∏_j q(R_j)`, with ties counted as
-errors. Write
+The conventional, symmetric Chernoff information instead uses
+\`0 <= t <= 1\`:
+\`\`\`
+C_Ch(p,q) = -log inf_{0<t<1} M_{p,q}(t)
+            (with appropriate limits at the endpoints).
+\`\`\`
+We always have \`E_+ >= C_Ch >= -log rho(p,q)\`, where
+\`rho(p,q)=sum sqrt(p(w)q(w))\`.
+If \`supp(q)\` is contained in \`supp(p)\`, the two exponents are equal:
+the derivative of \`log M(t)\` at \`t=1\` is
+\`KL(q||p)>=0\`, so convexity places a minimizer in \`(0,1]\`,
+possibly approached as \`t -> 0+\`. With extra support, no such
+restriction is valid; equality may still occur in particular pairs
+but is not automatic.
 
-```
-ρ(p,q) = Σ_{w∈W} √(p(w) q(w)),        ρ_* = max_{q∈Θ} ρ(p,q) < 1,
-C(p,q) = sup_{t∈[0,1]} ( -ln Σ_{w: p(w)>0} p(w)^{1-t} q(w)^t )  ≥ 0,
-C_*    = min_{q∈Θ} C(p,q) > 0.
-```
+## Regression: an impossible error missed by the original verifier
 
-The sum defining `C` is over the support of `p`; terms with `p(w)=0` are
-omitted, matching the `p`-almost-sure integrand `p(w)(q(w)/p(w))^t`. `C` is the
-Chernoff information; `C(p,q)>0` exactly when `p ≠ q`.
+Take circular \`S=AAB\`, \`D=AABB\`, oriented reads of length two.
+The truth generates \`AA\`, \`AB\`, \`BA\` each with probability \`1/3\`.
+The competitor generates each of those and \`BB\` with probability \`1/4\`.
+For every nonempty true sample, \`L_D/L_S=(3/4)^n<1\`:
+\`\`\`
+P_S(L_D>=L_S)=0 for every n>=1,
+E_+(p_S,p_D)=+infinity,
+C_Ch(p_S,p_D)=log(4/3).
+\`\`\`
+The usual symmetric Chernoff quantity gives a valid but
+**non-sharp** upper bound here. It does not describe the actual
+one-sided error exponent.
 
-## The Chernoff refinement
+\`scripts/verify_chernoff_finite_recovery_265.py\` now checks
+both this genome example and a law with extra support for which
+the optimal \`t\` is strictly larger than one. It still reproduces
+the exact finite arithmetic and exponent comparisons below.
 
-**Proposition (paper `prop:chernoff-refinement`).** In the model above, for every
-`t ∈ [0,1]` and every `q ∈ Θ`,
+## A full-support family: finite-n looseness remains
 
-```
-Pr_p{ L_q(R_1,…,R_n) ≥ L_p(R_1,…,R_n) }
-      ≤ ( Σ_{w: p(w)>0} p(w)^{1-t} q(w)^t )^n ,
-```
-
-and hence, taking the infimum over `t` and the union bound,
-
-```
-Pr_p{ ∃q∈Θ : L_q ≥ L_p }  ≤  Σ_{q∈Θ} exp(-n C(p,q))  ≤  |Θ| · exp(-n C_*) .
-```
-
-Moreover `C(p,q) ≥ -ln ρ(p,q)`, with equality **iff** the supremum is attained
-at `t = 1/2` (in particular when `q` is obtained from `p` by exchanging two
-symbols, so the sum is symmetric about `t = 1/2`); consequently
-`C_* ≥ ln(1/ρ_*) > 0`, and for every `δ ∈ (0,1]`,
-
-```
-n ≥ ⌈ ln(|Θ| / δ) / C_* ⌉     ⟹     Pr_p{ ∃q∈Θ : L_q ≥ L_p } ≤ δ .
-```
-
-**Proof.** For i.i.d. reads, `E_p[(L_q/L_p)^t] = ∏_j E_p[(q(R_j)/p(R_j))^t] =
-(Σ_{w: p(w)>0} p(w)^{1-t} q(w)^t)^n`. Under `p`, `L_p > 0` almost surely, so on
-`{L_q ≥ L_p}` the ratio `(L_q/L_p)^t ≥ 1` and it is nonnegative on the
-complement; Markov gives the pairwise bound. The infimum over `t` is
-`exp(-n C(p,q))`; the union bound gives the family bound. `t = 1/2` is
-admissible, so `C ≥ -ln ρ`, with equality forcing `t = 1/2`. ∎
-
-The Hellinger exponent is `ln(1/ρ_*) = min_q(-ln ρ(p,q))`, while the Chernoff
-exponent is `C_* = min_q C(p,q) ≥ ln(1/ρ_*)`. The refinement is therefore never
-weaker, and is **strictly stronger in rate** whenever some minimising competitor
-has its Chernoff optimum away from `t = 1/2`.
-
-## The exponent is sharp; the finite-`n` prefactor is not
-
-The exponent `C_*` is not an artefact of the union bound. For a finite alphabet
-and pairwise-distinct laws, the exact-ML error has the large-deviation exponent
-`C_*`:
-
-```
-lim_{n→∞} -(1/n) ln Pr_p{ ∃q∈Θ : L_q(R_1,…,R_n) ≥ L_p(R_1,…,R_n) } = C_* .
-```
-
-This is the classical Chernoff bound / Sanov theorem (Cover & Thomas 2006,
-§11.9; Tsybakov 2009, Ch. 2): the binary rate `-(1/n) ln Pr_p(L_q ≥ L_p) → C(p,q)`
-holds in both directions, the I-projection being the tilted law
-`r* ∝ p^{1-t*} q^{t*}` at the optimising `t*`. The family rate is the minimum
-over competitors, by `P(∃q error) ≥ P(q* error)` and
-`P(∃q error) ≤ Σ_q P(q error)` for a competitor `q*` attaining the minimum.
-
-Two consequences:
-
-- **Rate.** The Chernoff union bound has the exact exponent `C_*`; the Hellinger
-  union bound has exponent `ln(1/ρ_*) ≤ C_*`, which can be strictly smaller. So
-  the refinement can turn a suboptimal rate into the optimal one.
-- **Prefactor.** Even the Chernoff bound is not exact at finite `n`: the factor
-  `|Θ|` overcounts overlapping error events, and the `Θ(1/√n)` Gaussian
-  prefactor of the exact error is dropped, so the ratio
-  `bound / exact` grows polynomially (roughly like `√n`) rather than staying
-  bounded.
-
-## Worked family: exact data and the gap
+For the two-symbol family below, every competitor's support is
+contained in the truth's support, so its numerical \`C_Ch\` values
+equal \`E_+\`. In this special domain the old quantitative tables
+and comparisons remain valid.
 
 Take `W = {0,1}`, truth `p = (3/4, 1/4)`, and the two competitors
 `q₁ = (1/4, 3/4)` and `q₂ = (0, 1)`. Then
@@ -156,8 +126,8 @@ comparison through `n = 512`.
 
 - No claim that the Chernoff (or Hellinger) union bound is tight at finite `n`;
   the `n = 16` gap and its `√n` growth are the opposite.
-- No claim that `C_*`, `C(p,q)`, or the large-deviation exponent is
-  kernel-checked. These are external standard statistics, cited to textbooks.
+- No claim that `E_*`, `E_+(p,q)`, `C_Ch(p,q)`, or the
+  large-deviation exponent is kernel-checked. These are external standard statistics, cited to textbooks.
   The only kernel-checked constant in this circle is the Hellinger `ρ_*` of
   `AssemblyP1.FiniteReadRecovery` (with `il_confidence_99`).
 - No claim of a minimax-optimal or necessary sample size, and no finite `n`
