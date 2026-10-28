@@ -1,5 +1,32 @@
 # White-paper verification index
 
+## Reader entry points: shared read models and headline contracts
+
+- [Headlines.lean](../AssemblyP1/Headlines.lean) provides a kernel-checked
+  navigational index of the principal finite counterexamples, MAP optimality,
+  primitive-P2 population uniqueness, restricted same-length uniqueness, and
+  finite-read recovery results. Its aliases preserve all hypotheses of the
+  existing proof endpoints. Inspect the inferred full types with the Lean
+  #check command. Historical source interpretations and computational-only
+  claims are NOT turned into Lean theorems.
+- [ExactReadLikelihood.lean](../AssemblyP1/ExactReadLikelihood.lean) defines
+  uniform-start oriented circular read probabilities, an exact multinomial
+  score, and a SEPARATE fixed-reference-length binomial surrogate.
+- [ExactReadLikelihoodAdapters.lean](../AssemblyP1/ExactReadLikelihoodAdapters.lean)
+  proves pointwise equality of the old exact and binomial witness scores to
+  their matching shared objectives for every candidate. It also proves
+  correspondences for the Issue209EAudit score and both oriented rigidity
+  and variable-length witness windows.
+- [Legacy/reachability audit](likelihood-model-and-archive-audit.md) records
+  the observational model boundary and intentionally preserved historical
+  root-level artifacts excluded from the Lean library glob.
+
+Neither the exact nor the binomial definition asserts equivalence to the
+reverse-complement molecule law or the historical bidirected physical flow
+domain, whose admissible candidates and objectives are distinct.
+
+
+
 This is the **claim → exact formal endpoint → independent check** index for
 [*The Most Likely Genome*](../paper/main.tex). Its role is to keep the research
 paper readable while preserving verifiable proof provenance in the repository.
