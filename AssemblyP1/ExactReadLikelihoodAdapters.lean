@@ -140,7 +140,7 @@ end Issue209
 namespace Rigidity
 open AssemblyP1.OrientedRigidity
 
-variable {α : Type} [DecidableEq α] [Fintype α]
+variable {α : Type} [DecidableEq α]
   {G L : ℕ} (hG : 0 < G) (S : Fin G → α)
 
 abbrev embed : SourceFaithfulIs.Genome α :=
