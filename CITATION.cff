@@ -1,0 +1,18 @@
+cff-version: 1.2.0
+message: "Please cite the mathematical manuscript when using its results; cite the repository when using its code."
+type: software
+title: "AssemblyP1: Lean-verified genome-assembly mathematics"
+authors:
+  - family-names: Mysak
+    given-names: Vitaliy
+repository-code: "https://github.com/ottojung/assemblyp1"
+url: "https://github.com/ottojung/assemblyp1"
+license: GPL-3.0-or-later
+preferred-citation:
+  type: article
+  title: "The Most Likely Genome: Structural reconstruction, statistical identifiability, and finite-sample likelihood reliability"
+  authors:
+    - family-names: Mysak
+      given-names: Vitaliy
+  year: 2026
+  url: "https://github.com/ottojung/assemblyp1/releases/download/paper-v1.0.0/assemblyp1-white-paper.pdf"

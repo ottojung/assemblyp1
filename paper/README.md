@@ -28,6 +28,20 @@ whitepaper-latest GitHub Release; pull requests only build and validate
 without publishing. Previous CI workflow artifacts are also available for
 individual revisions.
 
+## Citation and archival revisions
+
+The paper is licensed [CC BY 4.0](../LICENSE.paper); code and build scripts
+are [GPL-3.0-or-later](../LICENSE). Metadata for citation is in
+[CITATION.cff](../CITATION.cff). The moving whitepaper-latest release is
+not an immutable citation. Each signed paper-vX.Y.Z tag builds and
+publishes its own versioned PDF with the complete corresponding source
+available from that Git tag.
+
+The main manuscript keeps the proofs and principal theorem statements.
+Lengthy provenance notes are preserved under paper/technical-notes/
+and in the source-level [verification index](../docs/verification.md).
+These notes are not substitute premises for any theorem.
+
 ## Build
 
 The build is reproducible and uses a pinned, minimal TeX dependency set. With
@@ -69,7 +83,9 @@ paper/
     a-modeling-choices.tex deliberate explanations of modeling decisions
     b-epistemic-ledger.tex compact claim-status summary
     c-reproduction.tex     build and verification-index pointer
-    d-referents-audit.tex      source-referent audit behind Section 3
+    d-referents-audit.tex      condensed source-referent audit
+    e-decision-bounds.tex      auxiliary decision-theory estimates
+  technical-notes/            full preserved modeling and evidence audits
   manifest.scm             pinned Guix TeX dependencies
   build.sh                 reproducible PDF build
 ```
