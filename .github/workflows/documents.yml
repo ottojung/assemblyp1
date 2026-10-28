@@ -88,4 +88,5 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          gh release create "$GITHUB_REF_NAME"             "downloaded-paper/main.pdf#assemblyp1-white-paper.pdf"             --verify-tag             --title "The Most Likely Genome ($GITHUB_REF_NAME)"             --notes "Versioned, source-linked scientific manuscript. The signed Git tag contains the exact source and proof verification artifacts used for this PDF. For assumptions and theorem evidence, see docs/verification.md."
+          cp downloaded-paper/main.pdf downloaded-paper/assemblyp1-white-paper.pdf
+          gh release create "$GITHUB_REF_NAME"             "downloaded-paper/assemblyp1-white-paper.pdf"             --verify-tag             --title "The Most Likely Genome ($GITHUB_REF_NAME)"             --notes "Versioned, source-linked scientific manuscript. The signed Git tag contains the exact source and proof verification artifacts used for this PDF. For assumptions and theorem evidence, see docs/verification.md."
