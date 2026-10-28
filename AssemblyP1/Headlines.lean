@@ -69,4 +69,12 @@ abbrev primitiveP2_exponential_error_bound :=
 abbrev primitiveP2_ML_confidence :=
   @PrimitiveP2FiniteClass.all_primitiveP2_ML_confidence
 
+/-- The exact witness is wrong-scoring under the common exact model. -/
+abbrev canonical_exact_counterexample :=
+  @ExactReadLikelihoodAdapters.Exact.shared_counterexample
+
+/-- The product-binomial witness is wrong-scoring under the common surrogate. -/
+abbrev canonical_binomial_counterexample :=
+  @ExactReadLikelihoodAdapters.Binomial.shared_counterexample
+
 end AssemblyP1.Headlines

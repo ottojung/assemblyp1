@@ -60,6 +60,22 @@ theorem likelihood_shared (g : Genome) :
   simp [iidLikelihood, Fin.prod_univ_succ, readMass, ← occ_shared,
     observed, likelihood]
   ring
+/-- Exact-ML witness against the canonical candidate-intrinsic score. -/
+theorem shared_counterexample :
+    SourceFaithfulIs.InformationFeasible truthGenome 3 readStarts ∧
+    ¬ (∀ candidate : Genome,
+      exactMultinomialLikelihood (embed candidate) 3 3 observed ≤
+        exactMultinomialLikelihood (embed truth) 3 3 observed) := by
+  refine ⟨truth_information_feasible, ?_⟩
+  intro h
+  apply truth_not_maximum_likelihood
+  intro c
+  calc
+    likelihood c = exactMultinomialLikelihood (embed c) 3 3 observed :=
+      likelihood_shared c
+    _ ≤ exactMultinomialLikelihood (embed truth) 3 3 observed := h c
+    _ = likelihood truth := (likelihood_shared truth).symm
+
 end Exact
 
 namespace Binomial
@@ -99,6 +115,22 @@ theorem marginal_shared (g : Genome) (w : Fin 3 → Base) :
 theorem likelihood_shared (g : Genome) :
     likelihood g = productBinomialLikelihood (embed g) 3 3 5 observed := by
   simp [likelihood, productBinomialLikelihood, ← marginal_shared]
+/-- Fixed-N binomial witness against the canonical binomial surrogate. -/
+theorem shared_counterexample :
+    SourceFaithfulIs.InformationFeasible truthGenome 3 readStarts ∧
+    ¬ (∀ candidate : Genome,
+      productBinomialLikelihood (embed candidate) 3 3 5 observed ≤
+        productBinomialLikelihood (embed truth) 3 3 5 observed) := by
+  refine ⟨truth_information_feasible, ?_⟩
+  intro h
+  apply truth_not_maximum_likelihood
+  intro c
+  calc
+    likelihood c = productBinomialLikelihood (embed c) 3 3 5 observed :=
+      likelihood_shared c
+    _ ≤ productBinomialLikelihood (embed truth) 3 3 5 observed := h c
+    _ = likelihood truth := (likelihood_shared truth).symm
+
 end Binomial
 
 

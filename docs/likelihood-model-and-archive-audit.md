@@ -37,7 +37,7 @@ provides two model-specific adapters:
 | [FixedLengthExactCounterexample](../AssemblyP1/FixedLengthExactCounterexample.lean) | exact multinomial coefficient times three read probabilities | `exactMultinomialLikelihood` at L=3 and n=3, using candidate-intrinsic length | `Exact.likelihood_shared` proves pointwise equality for **every** candidate |
 | [FixedLengthBinomialCounterexample](../AssemblyP1/FixedLengthBinomialCounterexample.lean) | full product-of-binomial marginals, including unseen read types | `productBinomialLikelihood` at L=3, n=3, external N=5 | `Binomial.likelihood_shared` proves pointwise equality for **every** candidate |
 
-Each adapter additionally proves literal equality of its bespoke `window`
+For the two headline finite witnesses, Exact.shared_counterexample and Binomial.shared_counterexample go further: they restate the actual failure of maximum likelihood over all fixed-length candidates **using the shared exact and binomial scoring functions directly**. They are derived from the old checked witnesses through the universal equality lemmas, so the result is a verified model translation, not a new unproved numerical example. The corresponding canonical endpoints are exported by Headlines.lean.\n\nEach adapter additionally proves literal equality of its bespoke `window`
 and `occ` definitions to `Genome.window` and `readCount`. Thus both the
 original `I_s` hypothesis and the scored reads genuinely refer to the same
 underlying circular windows; we need not rewrite already verified proofs or
