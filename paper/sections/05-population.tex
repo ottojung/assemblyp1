@@ -108,13 +108,24 @@ complete-spectrum uniqueness theorem at $K=L-1$ below.}
 
 \begin{lemma}[Primitive P2 spectra have gcd one]
 \label{lem:scaling}
-Let $S$ be a primitive P2-admissible circular word and $L\ge2$ with
-$L\le|S|$. Let $c=\spec_L(S)$ viewed as an integer vector and let
-$g=\gcd\{c(w):c(w)>0\}$. Then $g=1$.
+Let $S$ be a primitive P2-admissible circular word and $L\ge2$.
+For every positive genome length $G=|S|$, including $G<L$, let
+$c=\spec_L(S)$ and $g=\gcd\{c(w):c(w)>0\}$. Then $g=1$.
 \end{lemma}
 
 \begin{proof}[Proof sketch]
-Suppose $g>1$. Work in the order-$(L-1)$ de Bruijn graph: vertices are
+First suppose $G<L$. Every length-$L$ circular window contains at
+least one full revolution of the genome. If two windows starting at
+distinct positions were equal, comparing their first $G$ letters
+would make that nonzero cyclic shift a period of $S$, contradicting
+primitivity. Hence every length-$L$ window occurs at exactly one
+start; all positive spectrum entries are $1$, and $g=1$.
+This also explains why the theorem does not need a hidden $L\le G$
+hypothesis. The Lean library handles the short-window/long-window
+boundary in the end-to-end population theorem rather than by
+extending the auxiliary gcd-one lemma beyond its stated range.
+
+Now suppose $L\le G$. If $g>1$, work in the order-$(L-1)$ de Bruijn graph: vertices are
 $(L-1)$-mers and each occurrence of a length-$L$ word is a directed edge
 with multiplicity $c(w)$. Because $S$ spells a closed trail using every
 edge exactly once, this edge multiset is balanced (in-degree equals

@@ -1,0 +1,300 @@
+\section{Verification and claim scope}
+\label{app:ledger}
+
+The mathematical assertions in this paper have different kinds of support.
+Published reconstruction and combinatorial results are attributed to their
+sources; original project-level conclusions are stated with their hypotheses;
+Lean-checked results are distinguished from exact scripts and modeling
+choices. The claim-to-proof index in \path{docs/verification.md} records
+exact Lean namespaces, theorem hypotheses and independent check scripts,
+without embedding development history in the manuscript.
+
+\paragraph{Proof-to-claim support classes.}
+Every headline below is labelled by the kind of support it has, so that a
+conditional derivation never inherits a stronger label from a neighbouring
+result:
+\begin{enumerate}[label=\textbf{(\roman*)},leftmargin=2.2em,itemsep=1pt,topsep=2pt]
+\item a kernel-checked exact Lean theorem, with its source path;
+\item a proof given in this paper that is not (yet) kernel-checked;
+\item a textbook or classical external theorem, with a precise citation;
+\item the published 2016 reconstruction result, used as an external premise;
+\item open.
+\end{enumerate}
+A conditional Lean theorem whose key historical premise is imported is listed
+under both that premise and its own conditional statement; it is \emph{never}
+labelled kernel-checked for the imported step. Table~\ref{tab:ledger} is the
+resulting theorem/assumption matrix.
+
+\begingroup
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\begin{longtable}{@{}>{\raggedright\arraybackslash}p{0.29\textwidth}>{\raggedright\arraybackslash}p{0.07\textwidth}>{\raggedright\arraybackslash}p{0.56\textwidth}@{}}
+\caption{Proof-to-claim support matrix. ``Class'' is the strongest honest
+support of the headline \emph{as stated}, using classes (i)--(v) above.
+Endpoints are module and declaration names; the complete index is
+\texttt{docs/verification.md}.}
+\label{tab:ledger}\\
+\toprule
+Headline (with its stated scope) & Class & Evidence and qualification\\
+\midrule
+\endfirsthead
+\toprule
+Headline (with its stated scope) & Class & Evidence and qualification\\
+\midrule
+\endhead
+\bottomrule
+\endlastfoot
+Bayes/MAP prior-average optimality
+(\ref{thm:bayes-optimal}; finite classes, correct model, uniform prior on
+rotation classes, zero-one loss)
+& (i),(iii)
+& \path{FiniteBayesDecision.chooseMAP_optimal},
+\path{chooseMAP_optimal_randomized}, \path{finite_iid_MAP_optimal};
+classical \parencite{berger1985}. Not per-truth ML optimality.\\
+\addlinespace
+Uniform rotation-class prior makes ML and MAP coincide
+& (i)
+& \path{GenomeOrbitAdapter.uniform_orbit_prior_ML}; circular model and
+uniform start sampling are external modeling inputs.\\
+\addlinespace
+Not-So-Greedy reconstruction
+(\ref{thm:notso-greedy}; matched-string coverage and bridging)
+& (iv)
+& Published theorem \parencite{shomorony2016}, for the source's matched-string
+predicate.\\
+\addlinespace
+Certificate singleton / strong guarantee
+(\ref{prop:strong-guarantee-singleton}; at most one rotation class satisfies
+the strong guarantee for the same observations)
+& (ii)
+& Paper-level corollary of the (iv) reconstruction premise; not
+kernel-checked, and it does not claim that only one genome can
+\emph{generate} the reads.\\
+\addlinespace
+Conditional posterior and constrained MAP (Question~A)
+& (i) conditional on (iv)
+& \path{ConditionalIdentifiability.ReadModel.conditional_posterior_eq_one},
+\path{constrained_MAP_mem_orbit}; assumes the external
+decoder-correctness interface, which it does not prove.\\
+\addlinespace
+Same-length oriented circulation rigidity (\ref{thm:rigidity})
+& (i)
+& \path{OrientedFinalRigidity.oriented_same_length_spectrum_rigidity};
+\path{OrientedRigidity.rigidity_same_spectrum}.\\
+\addlinespace
+No strict same-length counterexample; spectrum-based objectives tie
+(\ref{cor:same-length-zero}; $R\in\Is$, truth §6.2-admissible)
+& (i)
+& \path{OrientedFinalRigidity.spectrum_objective_tie}; equal spectra give
+equal objective values for every spectrum-factored objective, not maximizer
+uniqueness.\\
+\addlinespace
+Same-length maximizer and rotation uniqueness
+(\ref{cor:same-length-rotation}; realized placements, truth and competitor
+candidacy)
+& (i)
+& \path{SameLength62Maximizer.informationFeasible_62_maximizer_of_exact_R};
+\path{SameLength62Uniqueness.unique_62_maximizer_up_to_rotation}.\\
+\addlinespace
+Robust same-length oriented ML iff (\ref{rem:robust-iff-criteria})
+& (i)
+& \path{RobustSameLengthIff.robust_iff_unique_spectrum}; the paper states
+only the beatability direction.\\
+\addlinespace
+Full-overlap molecule ML maximality iff (\ref{rem:robust-iff-criteria})
+& (i)
+& \path{FullOverlapMoleculeML.robust_maximality_iff_unique}; a distinct
+molecule domain, not interchangeable with the oriented one.\\
+\addlinespace
+Graver-basis rigidity criterion (\ref{thm:graver-rigidity})
+& (i)
+& \path{GraverRigidity.GraverBasis.rigid_iff_forall_graver_not_inbox},
+for the specified finite positive-circulation domain.\\
+\addlinespace
+Unconstrained KKT gradient need not vanish at a discrete
+multinomial optimum (positive copy counts; fixed total)
+& (i)
+& \path{KKTRefutation263.mlCost_slope_ne_zero},
+\path{mlCost_slope_at_truth},
+\path{truth_gradient_ne_zero};
+\path{SeparableConvexKKTRefutation263Audit.lean}.
+The constrained simplex multiplier is not a certificate
+for the general bidirected-flow ML domain.\\
+\addlinespace
+Fixed-$N$ binomial effective-weight criterion
+(\ref{thm:binomial-weights}; surrogate objective)
+& (i)
+& \path{FixedNBinomialEffectiveWeights.every_observation_effectiveProduct_le_iff};
+this is the product-binomial surrogate, not exact iid ML.\\
+\addlinespace
+Historical matched-string and placement predicates are incomparable
+(\ref{prop:historical-source})
+& (i),(iv)
+& Published \S6.4 matched-string coverage/bridging definitions
+\parencite{shomorony2016}; the two incomparability instances are kernel-checked in
+\path{HistoricalCoverageSameLengthWitnesses.regA_historicalCovers},
+\path{regB_not_historicalCovers} (with \path{regA_not_covers},
+\path{regB_covers}).\\
+\addlinespace
+Historical strict counterexamples $W_1,W_2$
+(\ref{thm:cex-historical-W1}--\ref{thm:cex-historical-W2})
+& (i)
+& \path{HistoricalCoverageSameLengthWitnesses.W1.w1_historical_literal_se62_flow_counterexample},
+\path{W2.w2_historical_literal_se62_flow_counterexample}.\\
+\addlinespace
+Reverse-complement molecule variable-length counterexample
+$AAATT\to AAAATT$ (\ref{thm:cex-molecule}; molecule read types, external $N=5$)
+& (i)
+& \path{Section62BridgingCounterexample.se62_bridging_bidirected_flow_counterexample};
+literal §6.2 bidirected flows, ratio $9/8$; molecule types are not the
+oriented types.\\
+\addlinespace
+Exact finite counterexamples $AABB\to ABAB$, $AAATT\to AAAATT$,
+$AAABB\to AAAAB$, $AAACC\to AAAAC$, $AABBC\to AABC$
+& (i)
+& \path{SameLengthExactMLCounterexample.same_length_exact_ML_refutation_62},
+\path{OrientedVariableLengthSe62.oriented_variable_length_se62_counterexample},
+\path{FixedLengthExactCounterexample.fixed_length_exact_counterexample},
+\path{FixedLengthBinomialCounterexample.fixed_length_binomial_counterexample},
+\path{FiniteSamplingCounterexample.finite_sampling_counterexample}.\\
+\addlinespace
+Read-tiled counterexample $AAABCBC\to AAAAABC$
+& (ii)
+& Exact independent computation
+\path{scripts/verify_readtiled_exact_counterexample.py}; not stated as a Lean
+theorem.\\
+\addlinespace
+Gibbs/KL population maximality (\ref{lem:gibbs})
+& (i)
+& \path{PopulationGibbs.truth_is_population_maximizer};
+\path{PopulationMaximizerUnrestricted.population_maximizer_unrestricted}.
+Maximality alone does not give uniqueness.\\
+\addlinespace
+Primitive-P2 population uniqueness (\ref{thm:population})
+& (i)
+& \path{AssemblyP1.Issue94Complete.population_unique_ML}; no separate
+Eulerian-obstruction premise; long-window obligation discharged internally.\\
+\addlinespace
+Primitive-P2 class finiteness and length bound (\ref{thm:p2-finite-class})
+& (i)
+& \path{PrimitiveP2FiniteClass.primitive_P2_len_le},
+\path{primitiveP2Class_finite}; bound $2q^{L-1}$.\\
+\addlinespace
+Finite-sample ML recovery over the entire primitive-P2 class
+(\ref{cor:p2-finite-recovery-all}; no finite-family premise)
+& (i)
+& \path{PrimitiveP2FiniteClass.all_primitiveP2_ML_confidence} (via
+\path{FiniteReadRecoveryP2Complete.finite_primitiveP2_ML_confidence});
+competitor family constructed from the length bound $2q^{L-1}$.\\
+\addlinespace
+Finite-family Hellinger error bound (\ref{thm:finite-recovery})
+& (i)
+& \path{FiniteReadRecovery.eventProb_wrong_le_sum}; iid exact read laws,
+finite distinguishable family, ties counted as errors.\\
+\addlinespace
+No-decay boundary for indistinguishable competitors
+(Remark~\ref{rem:sample-complexity})
+& (i)
+& \path{HellingerNoDecay.eventProb_wrong_eq_one_of_mem}; if the family
+contains the truth, every tuple ties and the exact error probability is
+$1$ at every $n$.\\
+\addlinespace
+Explicit sufficient sample size from the union bound
+(\ref{cor:explicit-sample-size})
+& (ii)
+& Paper-level inversion of the kernel-checked Hellinger union bound;
+kernel-checked constant endpoint
+\path{FiniteReadRecovery.eventProb_wrong_le_sum} (via
+Remark~\ref{rem:sample-complexity} from \ref{thm:finite-recovery}) with
+concrete $99\%$ instance \path{FiniteReadRecovery.il_confidence_99};
+the explicit-$n$ ceiling itself is not separately kernel-checked.\\
+\addlinespace
+Explicit uniform exponential exact-ML rate (\ref{thm:p2-uniform-rate})
+& (i)
+& \path{PrimitiveP2UniformSeparation.primitiveP2_exponential_error_bound},
+\path{primitiveP2_ML_confidence_explicit}; constants deliberately loose
+(exponential in $L$; exact enumeration shows a $\Theta(B^3)$ gap at
+$B\le16$, Remark~\ref{rem:rate-sharpness}), exact oriented iid only;
+no uniform rate over the unrestricted universe.\\
+\addlinespace
+No uniform exponential exact-ML rate over the length-unrestricted universe;
+the $1/(8B^4)$ exponent is valid but loose (extremal one-symbol insertions
+suggest sharp $\Theta(1/B)$)
+& (ii)
+& Exact computation \path{scripts/verify_exponent_265.py} for note
+\path{docs/restricted-vs-unrestricted-exponent-265.md}; \emph{not}
+kernel-checked. $AB$ vs.\ $ABAB$ read-law collision gives error probability
+$1$ for every $n$; the sharp $c_1/B$ lower bound is a named missing lemma,
+not proved.\\
+\addlinespace
+Per-truth non-monotonicity (\ref{prop:nonmonotone})
+& (i)
+& \path{NonmonotonicityWitness281.success_not_monotone}; the $n=1,2$ step
+is kernel-checked.\\
+\addlinespace
+Optimal prior-average success is nondecreasing in $n$
+($V_n\le V_{n+1}$, every finite $n$ including $n=0$)
+& (i)
+& \path{IidMapMonotonicity.iid_map_success_monotone},
+\path{BayesValueMonotonicity.bayesValue_succ_ge} (iterated
+\path{BayesValueMonotonicity.bayesValue_mono}),
+\path{GenomeOrbitAdapter.orbit_map_success_monotone}; the ignore-extra-observation
+argument. Prior-averaged only, in explicit contrast with the per-truth row
+above.\\
+\addlinespace
+Variable-length primitive identifiability iff nonbranching
+(\ref{thm:identifiable-iff-nonbranching})
+& (i)
+& \path{ScalarPrimitiveSpellings.identifiable_iff_nonbranching}; no
+external complete-spectrum uniqueness premise.\\
+\addlinespace
+Same-length fibre count (\ref{thm:fibre-count})
+& (ii),(iii)
+& Divisor-sum core kernel-checked
+(\path{FibreCountArithmetic.fibre_mobius_inversion},
+\path{fibre_totient}); full count proved in
+\path{docs/exact-fibre-count-theorem-219.md}, using the external BEST theorem
+(van Aardenne-Ehrenfest--de~Bruijn 1951; Tutte 1975).\\
+\addlinespace
+Reduced signed-circuit occurrence count
+(\ref{thm:reduced-circuit-occurrences})
+& (i)
+& \path{Section62GlobalSkippedBridge.observation7_reduced_signed_circuit_range_count},
+for the paper's explicitly defined reduction.\\
+\addlinespace
+Bridging-conditioned error bound (\ref{cor:conditional-bridging-error})
+& (ii)
+& Paper-level corollary of the Hellinger union bound; no dedicated Lean
+formalization claimed.\\
+\addlinespace
+Strong consistency on a finite family (\ref{prop:strong-consistency})
+& (ii),(iii)
+& Paper-level strong law and KL argument; classical
+\parencite{durrett2019,cover2006}. No finite $n$ supplied.\\
+\addlinespace
+One-sided likelihood-ratio exponent (\ref{prop:chernoff-refinement})
+& (ii),(iii)
+& Paper-level Cram\'er/Sanov rate, one-sided $t>0$; classical \parencite{cover2006,tsybakov2009}.
+Kernel-checked constant remains the Hellinger $\rho_*$.\\
+\addlinespace
+Exact finite-$n$ $99\%$ minimax sizes (\ref{rem:minimax-sample-size})
+& (ii),(iii)
+& Exact computation
+\path{scripts/verify_minimax_finite_recovery_265.py}; classical decision
+theory \parencite{berger1985,lehmann1998}. One explicit family only.\\
+\addlinespace
+Referent of the 2016 sentence (MB09 object, read-type convention, candidate
+length, maximizer versus uniqueness); exactness of the MB09 \S6.1
+product-binomial objective
+& (v)
+& Open; see Appendix~\ref{app:referents}. The product-binomial objective is
+not asserted to be exact Bayes ML.\\
+\end{longtable}
+\endgroup
+
+The source's historical matched-string predicate and the manuscript's
+sampled-placement predicate are not interchangeable. Likewise, oriented
+reads, reverse-complement molecule classes, genuine bidirected flows and
+full-overlap support proxies belong to distinct model domains.
+These distinctions are mathematical assumptions rather than stages of
+repository development.

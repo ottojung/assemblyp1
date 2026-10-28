@@ -1,0 +1,220 @@
+\section{Auxiliary decision-theoretic bounds}
+\label{app:decision-bounds}
+
+This appendix collects finite-sample decision bounds and illustrative
+optimization examples. They support the interpretation of the assembly
+results but are not additional structural hypotheses.
+
+\begin{remark}[Finite-sample consistency and the scope of an error bound]
+\label{rem:sample-complexity}
+For a truth $S$ and finite competitor family $\mathcal C_S$ with iid
+read laws $p_D$ distinct from $p_S$, let
+$\rho(p,q)=\sum_w\sqrt{p(w)q(w)}$. The Hellinger union bound gives
+\[
+ \Pr_S\{\exists D\in\mathcal C_S:L_D(R_1,\ldots,R_n)
+                                  \ge L_S(R_1,\ldots,R_n)\}
+ \le \sum_{D\in\mathcal C_S}\rho(p_S,p_D)^n
+ \le |\mathcal C_S|\,\rho_*^{\,n}.
+\]
+Here $\rho_*<1$ when the competitor family is nonempty and identifiable.
+It proves an exponential \emph{rate}, not necessarily a practical sample
+size: the class may be enormous and $\rho_*$ close to one.
+
+For arbitrary same-length circular genomes the uniform strict-separation
+assumption fails: at $L=2$, $AAABAB$ and $AABAAB$ have identical read laws
+(Example~\ref{ex:ABAB}), giving $\rho=1$ for a family containing both.
+The boundary is sharp and kernel-checked: when the competitor family
+contains the truth itself, every read tuple ties for the exact-ML lead, so
+the exact wrong-selection probability is $1$ at every sample size $n$
+(\path{HellingerNoDecay.eventProb_wrong_eq_one_of_mem}); no decay rate is
+possible without identifiability.
+In contrast, Theorem~\ref{thm:p2-finite-class} proves that the entire
+primitive-P2 candidate class is finite for fixed alphabet and read length,
+and Theorem~\ref{thm:population} proves separation modulo rotation.
+Consequently Corollary~\ref{cor:p2-finite-recovery-all} applies the bound
+to that complete class, not merely to an arbitrarily truncated shortlist.
+Numerical values of its worst-case affinity are not computed here.
+See Theorem~\ref{thm:finite-recovery} for the kernel-checked proof.
+\end{remark}
+
+\begin{corollary}[Explicit sufficient sample size]
+\label{cor:explicit-sample-size}
+In the setting of Remark~\ref{rem:sample-complexity}, suppose
+$\mathcal C_S$ is finite and nonempty with uniform affinity
+$\rho_*=\max_{D\in\mathcal C_S}\rho(p_S,p_D)<1$. Then for every
+$\delta\in(0,1]$,
+\[
+  n\;\ge\;
+  \left\lceil\frac{\ln(|\mathcal C_S|/\delta)}{\ln(1/\rho_*)}\right\rceil
+  \quad\Longrightarrow\quad
+  \Pr_S\!\left\{\exists D\in\mathcal C_S:
+      L_D(R_1,\dots,R_n)\ge L_S(R_1,\dots,R_n)\right\}
+  \;\le\;\delta .
+\]
+For ML selection over $\{S\}\cup\mathcal C_S$, the truth's rotation class is
+then the strict maximizer with probability at least $1-\delta$.
+\end{corollary}
+\begin{proof}
+The choice of $n$ gives
+$|\mathcal C_S|\,\rho_*^{\,n}
+=|\mathcal C_S|\,e^{-n\ln(1/\rho_*)}\le\delta$, which inserted into the union
+bound of Remark~\ref{rem:sample-complexity} proves the display.
+\end{proof}
+The threshold is a \emph{sufficient}, conservative sample size: it inverts a
+union bound, is not necessary or minimax-optimal, and inherits the
+finite-family and uniform-separation hypotheses. The Hellinger constant is the
+one kernel-checked in \texttt{AssemblyP1.FiniteReadRecovery}, whose concrete
+instance \texttt{il\_confidence\_99} is kernel-checked there. The next
+proposition sharpens the rate from the Hellinger constant to the Chernoff
+exponent, and the remark after it records how far the resulting bound remains
+from the exact finite-sample error.
+
+\begin{proposition}[One-sided likelihood-ratio refinement]
+\label{prop:chernoff-refinement}
+In the setting of Remark~\ref{rem:sample-complexity}, let
+$\mathcal C_S$ be a finite nonempty family of competitors whose read laws
+$d=p_D$ differ from $p=p_S$. For any distributions $p,q$ on the
+finite read alphabet $W$, put
+\[
+ M_{p,q}(t)=\sum_{w:\,p(w)>0}
+     p(w)\left(\frac{q(w)}{p(w)}\right)^t,\qquad t>0,
+ \qquad
+ E_+(p,q)=-\ln\inf_{t>0}M_{p,q}(t),
+\]
+where $-\ln 0=+\infty$ and $0^t=0$ for $t>0$.
+Set $E_*=\min_{D\in\mathcal C_S}E_+(p_S,p_D)$.
+Then $E_+(p,q)\ge-\ln\rho(p,q)$, so
+$E_*\ge\ln(1/\rho_*)>0$; and, for every integer $n\ge1$,
+\[
+ \Pr_S\{\exists D\in\mathcal C_S:
+          L_D(R_1,\ldots,R_n)\ge L_S(R_1,\ldots,R_n)\}
+ \;\le\;\sum_{D\in\mathcal C_S}e^{-nE_+(p_S,p_D)}
+ \;\le\;|\mathcal C_S|e^{-nE_*}.
+\]
+For $E_*<\infty$ it therefore suffices to take
+$n\ge\max\{1,\lceil\ln(|\mathcal C_S|/\delta)/E_*\rceil\}$
+to obtain error at most $\delta\in(0,1]$.
+If $E_*=\infty$, every competitor has zero chance of tying or
+beating the truth for every $n\ge1$.
+
+The exponent $E_+$ is \emph{one-sided}: the minimization ranges over
+$t>0$, not just $t\in[0,1]$ as in the conventional symmetric
+Chernoff information $C_{\rm Ch}(p,q)$.
+If $\supp q\subseteq\supp p$, the minimizer may be taken in
+$[0,1]$ (with boundary limits), so
+$E_+(p,q)=C_{\rm Ch}(p,q)$. Without that support condition, the
+two exponents can differ, possibly with $E_+=\infty$.
+\end{proposition}
+\begin{proof}
+Under $p_S$, $L_S>0$ almost surely. For any $t>0$, independence gives
+$\mathbb E_S[(L_D/L_S)^t]=M_{p_S,p_D}(t)^n$.
+On the event $L_D\ge L_S$, the likelihood ratio raised to $t$ is at
+least one. Markov's inequality, the infimum over $t>0$, and the union
+bound give the display. The choice $t=1/2$ gives
+$E_+(p,q)\ge-\ln\rho(p,q)$; hence $E_*>0$ by the strict
+identifiability hypothesis. If $E_*=\infty$ every term in the
+bound vanishes for $n\ge1$.
+
+When $\supp q\subseteq\supp p$, the log moment function
+$\ln M_{p,q}(t)$ is convex on $(0,\infty)$ and
+its left derivative at $t=1$ equals
+$\sum_{w:q(w)>0}q(w)\ln(q(w)/p(w))
+=\KL(q\,\|\,p)\ge0$. Therefore its infimum over $t>0$
+is achieved or approached with $t\le1$, giving the usual Chernoff
+expression on this support-restricted domain.
+\end{proof}
+\statusline{Paper-level application of the classical one-sided
+large-deviation (Cram\'er) bound \parencite{cover2006,tsybakov2009}.
+The Hellinger-based theorem in
+\texttt{AssemblyP1.FiniteReadRecovery} remains kernel-checked;
+this refinement and the large-deviation sharpness assertion below
+are not Lean theorems.}
+
+\begin{remark}[The sharp one-sided exponent and a support-mismatch example]
+\label{rem:chernoff-sharp}
+For a finite read alphabet and the event that a \emph{wrong} candidate
+ties or beats the truth, the exact pairwise large-deviation exponent is
+\[
+ \lim_{n\to\infty}-\frac1n\ln
+   \Pr_p\{L_q(R_1,\ldots,R_n)\ge L_p(R_1,\ldots,R_n)\}
+ = E_+(p,q),
+\]
+using $-\ln0=\infty$. This is the one-sided Cram\'er/Sanov rate
+for the log-likelihood ratio, including the boundary cases where
+the event is impossible. For a finite competitor family, the exponent
+of its union event is $E_*=\min_D E_+(p_S,p_D)$:
+the probability is between its largest pairwise probability and the
+sum of those probabilities. The finite-$n$ union bound is generally
+loose because the events overlap and polynomial factors are omitted.
+
+The restriction $t\in[0,1]$ in the \emph{symmetric} Chernoff
+information cannot in general be used for this one-sided claim.
+Consider the circular genomes
+$S=\texttt{AAB}$ and $D=\texttt{AABB}$ at read length $L=2$.
+The possible oriented reads of $S$ are
+$\texttt{AA},\texttt{AB},\texttt{BA}$, each with probability $1/3$.
+Under $D$ those three reads each have probability $1/4$, and
+the additional read $\texttt{BB}$ also has probability $1/4$.
+For \emph{every} sample of $n\ge1$ reads from $S$,
+\[
+ \frac{L_D}{L_S}=(3/4)^n<1.
+\]
+Thus the exact wrong-candidate event has probability zero and exponent
+$E_+(p_S,p_D)=\infty$, because $M_{p_S,p_D}(t)=(3/4)^t$ tends
+to zero as $t\to\infty$. In contrast,
+$C_{\rm Ch}(p_S,p_D)=\ln(4/3)$.
+The source of the discrepancy is the read $\texttt{BB}$, which
+$D$ can generate but $S$ cannot.
+
+On pairs with $\supp q\subseteq\supp p$, the one-sided and
+conventional Chernoff exponents agree. For example, in the
+two-symbol worked family of
+Appendix~\ref{app:reproduction}, the exact error
+at $n=16$ is about $3.7$ times smaller than the union bound,
+even though their exponential rates agree. The script
+Appendix~\ref{app:reproduction}
+also checks the support-mismatch witness above.
+\end{remark}
+
+\begin{remark}[Exact finite-$n$ sample size for one explicit family]
+\label{rem:minimax-sample-size}
+The union bounds above are sufficient, not tight. For the single explicit
+family $A=(\tfrac12,\tfrac12)$, $B=(\tfrac34,\tfrac14)$, $C=(\tfrac14,\tfrac34)$
+on the binary read alphabet, the exact finite-$n$ optima can be computed in
+closed form. Under the uniform prior the Bayes-optimal (prior-averaged) success
+$V_n=\sum_k\max_t\tfrac13 P_t(k)$ is non-decreasing and reaches $99\%$ exactly
+at $n=85$ ($V_{84}<0.99\le V_{85}$); the minimax-over-truths error
+$\min_d\max_t P_t(d\text{ wrong})$, equal to the maximum Bayes error over
+priors, falls to $1\%$ exactly at $n=87$. Both are tight: the Bayes risk is the
+minimum possible prior-averaged error, and the minimax value is certified by
+the least favourable symmetric prior together with the optimally tie-split
+Bayes rule. The per-truth success at $n=85$ is $0.98349\ldots$ for the middle
+truth $A$ and $0.99336\ldots$ for $B,C$, so the $99\%$ figure is prior-averaged,
+not per-truth. The kernel-checked Hellinger union bound instead gives the
+sufficient size $153$, about $1.8\times$ the exact optimum. These numbers are
+exact finite arithmetic for this one family, not a Lean result and not a
+uniform sample size over the genome universe; the decision-theoretic
+ingredients are standard \parencite{berger1985,lehmann1998}. See
+Appendix~\ref{app:reproduction}, checked by
+Appendix~\ref{app:reproduction}.
+\end{remark}
+
+\begin{corollary}[Conditional error while bridging holds]
+\label{cor:conditional-bridging-error}
+Let $B_n$ be the event that the true genome satisfies a specified bridging
+predicate on $n$ iid reads, with $\Pr_S(B_n)>0$. For any finite candidate
+family $\mathcal C_S$ as in Remark~\ref{rem:sample-complexity},
+\[
+ \Pr_S(\text{a wrong candidate ties or beats }S\mid B_n)
+ \le
+ \frac{\sum_{D\in\mathcal C_S}\rho(p_S,p_D)^n}
+      {\Pr_S(B_n)}.
+\]
+\end{corollary}
+\begin{proof}
+For any event $E$, $\Pr(E\mid B_n)\le\Pr(E)/\Pr(B_n)$.
+Apply this to the wrong-candidate event and use the preceding union bound.
+\end{proof}
+The conditioning here is on the \emph{truth's} bridging event. It is not
+a switch to Question~A's restricted posterior, and it becomes informative
+only after bounding the denominator and the pairwise affinities.

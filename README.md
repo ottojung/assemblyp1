@@ -37,6 +37,20 @@ Substantial research work is organized as a durable graph of narrow questions. T
 
 Start broad agentic work with [`docs/skills/research-orchestrator.md`](docs/skills/research-orchestrator.md).
 
+## Licensing and citation
+
+The Lean source, scripts and build automation are free software under
+[GNU GPL version 3 or later](LICENSE). Original manuscript prose and
+presentation content are available under
+[Creative Commons Attribution 4.0](LICENSE.paper), with third-party material
+retaining its original rights.
+
+For references, use [CITATION.cff](CITATION.cff). Stable signed publication
+tags of the form paper-vX.Y.Z trigger a versioned GitHub Release
+containing a PDF of that exact source revision. The whitepaper-latest
+download continues to follow the tested main branch. The source and
+verification index are bundled with the versioned Git tag.
+
 ## Build
 
 ```sh

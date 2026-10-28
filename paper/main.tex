@@ -3,6 +3,12 @@
 \documentclass[11pt,a4paper]{article}
 
 \input{preamble}
+\hypersetup{
+  pdftitle={The Most Likely Genome},
+  pdfauthor={Vitaliy Mysak},
+  pdfsubject={Genome assembly, maximum likelihood and identifiability},
+  pdfkeywords={genome assembly, maximum likelihood, read spectra, identifiability, formal verification}
+}
 
 \addbibresource{references.bib}
 
@@ -12,7 +18,7 @@ and finite-sample likelihood reliability}
 
 \author{Vitaliy Mysak\\\href{mailto:assemblyp1@vau.place}{\texttt{assemblyp1@vau.place}}}
 
-\date{\today}
+\date{October 2026}
 
 \begin{document}
 
@@ -40,12 +46,6 @@ For this class, we also obtain an explicit upper bound on the probability
 of a maximum-likelihood error that decreases exponentially with the number
 of sampled reads.
 
-Beyond these results, we establish when maximum likelihood is optimal for
-average reconstruction accuracy under a uniform prior on a finite candidate
-set, give criteria for uniqueness of read-count assignments in overlap graphs
-and for comparing likelihoods under a binomial approximation, and show that
-an additional read need not improve reconstruction success for a particular
-genome.
 \end{abstract}
 
 \clearpage
@@ -63,6 +63,7 @@ genome.
 \input{sections/b-epistemic-ledger}
 \input{sections/c-reproduction}
 \input{sections/d-referents-audit}
+\input{sections/e-decision-bounds}
 
 \clearpage
 \printbibliography
