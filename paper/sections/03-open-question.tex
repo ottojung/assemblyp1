@@ -15,14 +15,20 @@ Let $S$ be a circular genome of length $G$, let $2\le L\le G$, and let
 $\mathcal W$ be the set of distinct observed read strings. The historical
 predicate $I_s^{\mathrm{match}}(S,\mathcal W)$ requires:
 \begin{enumerate}[label=(H\arabic*),leftmargin=*]
-  \item for every start $t$, some $w\in\mathcal W$ matches
-  $W_{(t+\delta)\bmod G}(S)$ for $\delta\in\{0,\ldots,L-2\}$;
+  \item for every start $t$, \emph{there exists}
+  $\delta\in\{0,\ldots,L-2\}$ and $w\in\mathcal W$
+  such that $w=W_{(t+\delta)\bmod G}(S)$;
   \item every copy of each triple repeat is strictly straddled by a matched
   observed read string, and of any two interleaved repeats at least one is
   bridged, as in the source's Definition~2.
 \end{enumerate}
 The source quantifies over \emph{matching read strings}, not hidden sampled
 start positions \parencite[Supplement, \S6.4, Definitions~1--2]{shomorony2016}.
+Clause (H1) is overlap-style coverage: it requires a matching
+observed read start inside every length-$(L-1)$ start window, whereas
+the placement-based coverage clause (C1) only requires sampled
+read intervals to cover genome bases. In particular, (C1) alone
+does not imply (H1).
 The sampled-placement predicate $\Is$ in Definition~\ref{def:Is} is different;
 the two are incomparable (Proposition~\ref{prop:historical-source}).
 \end{definition}
@@ -385,7 +391,21 @@ Then $S$ is identifiable among primitive candidates of arbitrary length from
 its normalized complete $L$-spectrum if and only if its spectrum-support
 graph has no vertex with two distinct outgoing edge types.
 \end{theorem}
-
+\begin{proof}[Proof sketch]
+A primitive genome spells an Eulerian circuit in its read-support
+multigraph. If every support vertex has one outgoing edge type,
+strong connectivity forces a directed cycle; every primitive
+genome having that normalized spectrum traverses that cycle once
+and is the same word up to rotation. Conversely, on branching
+support, the primitive-spelling construction for a balanced
+multigraph produces a primitive Eulerian spelling of twice
+the truth's edge multiplicities. It has twice the truth's length,
+the same \emph{normalized} spectrum, and cannot be a rotation
+of the original genome. This direction uses the nontrivial
+primitive-spelling lemma, proved in
+\texttt{AssemblyP1.ScalarPrimitiveSpellings}, not merely balance
+of the circulation.
+\end{proof}
 
 \begin{theorem}[Same-length complete-spectrum fibre count and singleton criterion]
 \label{thm:fibre-count}
@@ -397,15 +417,56 @@ with spectrum $c$ is
   N(c)=\sum_{h\mid g}P_h,\qquad
   P_h=\sum_{d\mid h}\frac{\mu(d)}{d}\,B_{h/d},
 \]
-where $B_h=\tau_r(c_h)\prod_u(d_u(h)-1)!/\prod_e c_h(e)!$ is the weighted
-BEST quantity at level $h$ ($\tau_r$ the weighted in-arborescence count and
-$d_u$ the out-degree for the gcd-one capacity $c_0=c/g$), and $\mu$ is the
-M\"obius function. Equivalently $N(c)=\sum_{k\mid g}\varphi(g/k)/(g/k)\cdot B_k$.
+where $c_0=c/g$, $c_h=h c_0$,
+$d_u(h)=\sum_{e:\operatorname{tail}(e)=u}c_h(e)$,
+and $\tau_r(c_h)$ is the weighted directed in-arborescence count
+rooted at any support vertex $r$. The quantity
+$B_h=\tau_r(c_h)\prod_u(d_u(h)-1)!/\prod_e c_h(e)!$
+does \emph{not} depend on $r$ (by the balanced directed
+Matrix--Tree/BEST identity). The function $\mu$ is the M\"obius
+function. Equivalently $N(c)=\sum_{k\mid g}\varphi(g/k)/(g/k)\cdot B_k$.
 The fibre is a singleton modulo rotation iff the support is nonbranching,
 or it branches with $g=1$ and $B_1=1$; if it branches and $g>1$ then
-$N(c)\ge2$. The precise statement, conventions, and proof are in
-Appendix~\ref{app:reproduction}.
+$N(c)\ge2$. The independent arithmetic verifier and expanded convention audit
+are linked from Appendix~\ref{app:reproduction}.
 \end{theorem}
+\begin{proof}
+Temporarily label the $c_h(e)$ indistinguishable copies of each
+edge type. By the directed BEST theorem, the number of linear,
+labelled Euler tours beginning at vertex $r$ is
+$d_r(h)\,\tau_r(c_h)\prod_u(d_u(h)-1)!$.
+An unlabelled cyclic spelling with rotational stabilizer size
+$s$ has $d_r(h)/s$ distinct linearizations starting at $r$,
+each with $\prod_e c_h(e)!$ labellings. Cancelling these
+factors shows
+\[
+ B_h=\sum_{[W]\,:\,\spec(W)=c_h}\frac{1}{s(W)}.
+\]
+The root independence of $\tau_r(c_h)$ follows because the
+balanced graph's Laplacian has both row and column sums zero:
+its principal cofactors, which count in-arborescences, coincide.
+Self-loops enter the out-degree factorials but not an
+arborescence.
+
+Every cyclic spelling is a power of a unique primitive cyclic
+spelling. If $P_j$ counts primitive orbits at level $j\mid h$,
+then $B_h=\sum_{j\mid h}(j/h)P_j$. M\"obius inversion gives
+the displayed $P_h$, and summing over $h\mid g$ yields $N(c)$.
+Reordering the divisor sums and using
+$\sum_{d\mid m}\mu(d)/d=\varphi(m)/m$ gives the totient form.
+
+On nonbranching support every spelling follows a single directed
+cycle, so the fibre has one orbit. If the support branches and
+$g=1$, then $N(c)=B_1$ gives the criterion.
+If it branches and $g>1$, take the repeated spelling $W_0^g$
+of $g c_0$ and the primitive spelling of the same capacity
+supplied by the branching primitive-spelling construction.
+One is a proper power and the other is primitive, so they are
+not rotations; hence $N(c)\ge2$.
+The underlying weighted BEST theorem is classical; the
+divisor identities and primitive-spelling lemmas are
+separately kernel-checked as stated in the proof index.
+\end{proof}
 \statusline{Lean status: partial. \kernelcheck{} for the
 divisor-sum core in \texttt{AssemblyP1.FibreCountArithmetic}
 (\texttt{fibre\_mobius\_inversion}, \texttt{fibre\_totient}); the full count

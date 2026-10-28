@@ -42,9 +42,9 @@ reducing uniqueness to complete-spectrum identifiability.
 \subsection{What the proved results contribute}
 \label{sec:discussion:proofs}
 
-The results form a collection of distinct mathematical advances,
-not a ranking in which a general theorem about ML eclipses the
-assembly work.
+The results have different scopes. The finite counterexamples
+and the structural uniqueness theorems should not be
+conflated with standard decision-theoretic optimality.
 
 The Bayes/MAP optimality theorem
 (Theorem~\ref{thm:bayes-optimal}) is the \emph{reason to enter} the
@@ -66,27 +66,11 @@ candidate and strand assumptions. The Graver certificate
 if-and-only-if criterion for rigidity, and the effective-weight
 theorem (Theorem~\ref{thm:binomial-weights}) does the analogous
 job for score dominance in the fixed-$N$ surrogate's all-count
-domain. These deserve attention for their own results, not
-merely because they support ML.
-
-An additional kernel-checked analytic boundary is worth keeping distinct
-from the discrete Graver certificate.  For a positive observation count
-$x$ and a positive candidate copy count $d$, the one-coordinate
-negative-log multinomial term $f(d)=-x\log(d/G)$ has
-$f'(d)=-x/d<0$: its \emph{unconstrained} gradient need not vanish
-at the integer maximizer.  At the positive count vector $d=x$,
-all coordinate slopes are $-1$, as expected from
-\emph{constrained} fixed-total stationarity.  The explicit four-class
-$AAABBB$ witness verifies this separation; the corresponding
-derivative and finite-vector endpoints are kernel-checked in
-\texttt{AssemblyP1.KKTRefutation263}.  This is neither a new
-necessary-and-sufficient characterization of the entire MB09
-flow domain nor a replacement for discrete convex certification.
+domain. They characterize two different feasible-set and objective questions.
 
 The strict historical counterexamples
 (Theorems~\ref{thm:cex-historical-W1} and
-\ref{thm:cex-historical-W2}) are equally decisive in a different
-direction: they establish exactly where a tempting universal
+\ref{thm:cex-historical-W2}) establish, under specified candidate classes, they establish exactly where a tempting universal
 implication fails, even under the source's own read-string
 bridging notion. The variable-length families
 (Theorem~\ref{thm:cex-variable-length}) establish a general
@@ -96,8 +80,7 @@ The population uniqueness theorem
 (Theorem~\ref{thm:population}) is not just the elementary
 Gibbs inequality. The nontrivial proof removes possible scaling
 of normalized spectra and establishes complete-spectrum
-identifiability for primitive P2 genomes; the once-external
-uniqueness step has been discharged in Lean. Finally,
+identifiability for primitive P2 genomes; the full uniqueness step is proved in Lean. Finally,
 Proposition~\ref{prop:reduction-mismatch} and
 Theorem~\ref{thm:global-spelling} distinguish unsound
 overlap deletion from a genuinely spelling-preserving graph
@@ -123,7 +106,23 @@ edge $e$. For every observed oriented read word $w$,
 The equality also holds when $G<L$, so that a read wraps around the
 circular genome more than once.
 \end{theorem}
-
+\begin{proof}[Proof sketch]
+A signed overlap step of length $\ell_e$ advances
+$L-\ell_e$ positions along the circular spelling. Its
+interior positions may generate additional length-$L$
+windows, but the spelling-preserving reduction ensures
+that no \emph{observed} read type is first produced at
+one of those skipped positions. Thus each occurrence
+of an observed read in the spelled circle corresponds
+to exactly one departure from a visited read vertex,
+and vice versa. Summing the bijection over the edges
+of the closed walk proves the count identity.
+The argument indexes positions modulo $G$, so it
+does not require $G\ge L$; repeated wraparound is
+counted at each of the $G$ distinct starts.
+The precise skipped-window invariant is
+kernel-checked for this reduction.
+\end{proof}
 
 This is the oriented read-word occurrence statement corresponding to
 Observation~7 for \emph{our explicitly defined reduction}. It does not

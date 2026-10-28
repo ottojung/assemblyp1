@@ -241,13 +241,18 @@ In \parencite[\S6.1]{medvedev2009}, the move from the exact multinomial
 to the product of per-type binomial probabilities is motivated by the claim
 that ``[a]s the number of trials goes to infinity, the $X_i$ random variables
 become independent''.
-This does \emph{not} hold at fixed read-type probabilities:
+The approximation can be useful in an appropriate rare-category
+or Poissonized regime, where counts can be asymptotically
+independent under additional assumptions. It does
+\emph{not} hold merely by increasing the number of trials at
+fixed read-type probabilities:
 for two equiprobable read types, $X_1+X_2=n$ almost surely and
 $\operatorname{Corr}(X_1,X_2)=-1$ for every $n\ge1$.
-Thus the independent-binomial objective above is an explicitly \emph{surrogate}
-likelihood, not the exact multinomial and not a large-$n$ limit justified by
-the number of trials alone.  Rare-category or Poissonized sampling regimes
-require their own hypotheses (Appendix~\ref{app:modeling}).
+Thus the independent-binomial objective is a
+\emph{surrogate} rather than the exact multinomial.
+The example rebuts only an unconditional large-$n$
+independence claim; it does not rule out a justified
+Poisson approximation in a different scaling regime.
 
 
 An \emph{admissible candidate class} specifies the objects over which an
@@ -272,8 +277,7 @@ are not single sequences. The following distinct classes occur below:
         Section~\ref{sec:population}.
 \end{itemize}
 
-Following the repository's formalization contract, we never silently identify
-these classes. A theorem proved over a restricted class is a restricted result;
+These candidate classes must not be identified without a proof. A theorem proved over a restricted class is a restricted result;
 but a \emph{negative} result over a subclass transfers to every superclass
 (Lemma~\ref{lem:negative-transfer}).
 

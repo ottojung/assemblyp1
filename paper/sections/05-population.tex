@@ -534,8 +534,9 @@ surrogate, whose candidate classes and read laws differ.
 
 Corollary~\ref{cor:p2-finite-recovery-all} proves that a uniform
 $\rho_*<1$ exists but leaves it abstract.  For the primitive-P2 class the gap
-can be quantified from first principles, without invoking population
-uniqueness.
+can be quantified by elementary rational arithmetic \emph{once}
+population uniqueness guarantees that nonrotational admissible
+competitors have distinct read laws.
 
 \begin{theorem}[Explicit uniform separation and exponential error decay]
 \label{thm:p2-uniform-rate}
@@ -559,8 +560,10 @@ $n\ge 8B^4\log(N_C/\delta)$ suffices for error at most $\delta$.
 \end{theorem}
 
 \begin{proof}[Argument]
-The read law of a genome of length $G$ is $p(w)=c_w/G$ with $c_w$ the number
-of circular starts spelling $w$, so a nonzero difference of two such laws has
+By Theorem~\ref{thm:population}, every nonrotational primitive-P2
+admissible competitor $D$ has $p_D\ne p_S$.
+For a genome of length $G$, $p(w)=c_w/G$ where $c_w$ counts circular
+starts spelling $w$. Thus some nonzero difference of these laws has
 the form $(c_w G_D-c'_w G_S)/(G_S G_D)$ with a nonzero integer numerator, hence
 absolute value at least $1/(G_SG_D)$.  The squared-distance identity
 $\sum_w(\sqrt{p(w)}-\sqrt{q(w)})^2=2(1-\rho)$ and the coordinate inequality
@@ -573,8 +576,9 @@ bound.
 
 
 
-Unlike Corollary~\ref{cor:p2-finite-recovery-all}, this bound does not use the
-population uniqueness theorem: it is a direct finite-sample separation.  It is
+Theorem~\ref{thm:population} supplies \emph{distinctness} of
+nonrotational read laws; the numerical separation bound conditional
+on distinctness is elementary. This theorem combines both facts.  It is
 also compatible with the non-monotonicity of Section~\ref{sec:finite}: the
 exponential statement concerns the eventual rate, not a pointwise monotone
 success curve.  The competitor class here is restricted to primitive-P2
@@ -585,16 +589,19 @@ over all genomes and not the MB09 product-binomial approximation.
 \label{rem:rate-sharpness}
 The separation bound $1/(8B^4)$ of Theorem~\ref{thm:p2-uniform-rate} is valid
 but not tight.  Complete exact enumeration of the primitive-P2 class at
-$B=4,6,8,16$ gives exact worst-case separations $1-\rho$ larger than the
+$(q,L)=(2,2),(3,2),(2,3),(2,4)$, with
+$B=4,6,8,16$ respectively, gives exact worst-case separations $1-\rho$ larger than the
 proved bound by factors $274$, $903$, $2116$, and $16648$; the observed extremal pairs
-are one-symbol insertions, suggesting separation of order $1/B$; the sharp
-exponent is conjecturally $1$ rather than $4$.  The finite-class
+are one-symbol insertions, suggesting separation of order $1/B$:
+in these four cases $(1-
+ho_*)B$ is approximately $0.51$--$0.54$.
+The sharp exponent is conjecturally $1$ rather than $4$. The finite-class
 non-tightness is an exact finite computation and the asymptotic statement is a
 conjecture whose missing ingredient is a separation lower bound
 $1-\rho\ge c_1/B$, not yet proved in any form; nothing in this remark is
 kernel-checked.  The exact arithmetic
-is reproducible with Appendix~\ref{app:reproduction}, and the record
-is Appendix~\ref{app:reproduction}.  Over the
+is reproduced by the scripts and arithmetic records listed in
+Appendix~\ref{app:reproduction}.  Over the
 \emph{unrestricted} candidate universe no uniform positive separation exists
 at all: the circular genomes $AB$ and $ABAB$ induce the identical oriented
 read law at every read length, so once such a competitor is admissible the
@@ -604,7 +611,7 @@ theorem, not conveniences.
 \end{remark}
 
 \statusline{\computed{} for the finite-class enumeration and the read-law
-collision (exact verifier Appendix~\ref{app:reproduction}); the sharp
+collision (the independent verifier listed in Appendix~\ref{app:reproduction}); the sharp
 exponent is an \openstatus{} asymptotic conjecture; no new claim in this
 remark is \kernelcheck{}.}
 

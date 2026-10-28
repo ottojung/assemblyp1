@@ -151,3 +151,27 @@ internally. The two propositions are **not interchangeable**.
 - **Historical filenames:** Some files retain issue-numbered names for
   repository traceability. The paper instead uses theorem names and this
   index preserves the exact paths needed to reproduce them.
+
+
+## Oriented AAATT historical witness and unrestricted finite-sample bound
+
+The revised paper's introductory example and
+\`thm:aaatt-unrestricted\` use the exact oriented, uniform-start
+read law. On \`S=AAATT\` at \`L=3\` all five truth read types
+appear in the example; the historical matched-string coverage and
+triple-bridging conditions are proved directly in the paper.
+The exact likelihood ratio against \`D=AAAATT\` is
+\`15625/11664\`.
+
+The unconditional finite-sample statement is a **paper-level theorem**,
+not a new Lean declaration. Its elementary proof optimizes along
+explicit genome spellings
+\`D(j,k)=A^(j+2)TT(AATT)^(k-1)\`, whose normalized
+3-spectra have counts \`(j,k,k,k,k)/(j+4k)\`.
+It proves only the necessary event \`5*x_AAA=n\` for unrestricted ML,
+not a general \`E-V\`-codimension theorem. Independent exact rational
+regressions, source-model window checks and the numerical
+binomial probabilities are in
+\`scripts/verify_aaatt_historical_kkt.py\` and run in CI.
+The source-correspondence and KKT generalization boundaries
+remain explicit.

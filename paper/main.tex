@@ -23,6 +23,18 @@ and finite-sample likelihood reliability}
 \begin{document}
 
 \maketitle
+\InputIfFileExists{build-identity.tex}{}{%
+\def\AssemblyCommit{source-not-pinned}%
+\def\AssemblyPaperTag{untagged}%
+\def\AssemblyLeanToolchain{see-lean-toolchain}%
+\def\AssemblyMathlibRevision{see-lake-manifest}%
+}
+\begin{center}
+{\small Version: \texttt{\AssemblyPaperTag}\quad
+Source commit: \texttt{\AssemblyCommit}}\\[-0.15em]
+{\small \url{https://github.com/ottojung/assemblyp1}}
+\end{center}
+
 
 \begin{abstract}
 \noindent
@@ -33,8 +45,11 @@ guarantee that the true genome is the one most likely to produce the particular
 collection of sequences we observed? We investigate when this is the case
 and when it fails.
 
-We exhibit finite collections of reads that satisfy strong coverage and
-repeat-bridging conditions but are more probable under an incorrect genome.
+We give an oriented, error-free counterexample in which every distinct
+read of the true genome is observed and the original matched-string
+coverage-and-bridging condition holds, yet a longer incorrect genome has
+strictly higher exact likelihood. Same-length molecular counterexamples
+show that the failure is not solely an artefact of varying genome length.
 We also prove a positive result: for oriented reads and a restricted class of
 same-length genomes with the required overlap support, the true genome is
 the unique maximum-likelihood reconstruction, up to rotation.
@@ -64,6 +79,7 @@ of sampled reads.
 \input{sections/c-reproduction}
 \input{sections/d-referents-audit}
 \input{sections/e-decision-bounds}
+\input{sections/f-molecular-flow}
 
 \clearpage
 \printbibliography
