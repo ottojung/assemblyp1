@@ -170,8 +170,14 @@ and the likelihood of the \emph{realized} reads.
 \subsection{Length penalties and an always-defined MAP estimator}
 \label{sec:map-length}
 
-Theorem~\ref{thm:unattained-ML} shows that an
-unrestricted exact-ML \emph{argmax} can be empty. This
+Theorem~\ref{thm:flow-supremum-attainment}
+characterizes the unrestricted likelihood supremum
+as a compact balanced-flow optimization, with a
+precise attainment criterion. The optimizing flow
+can be irrational (Theorem~\ref{thm:unattained-ML})
+or rational but disconnected
+(Example~\ref{ex:unattained-disconnected}).
+Thus the unrestricted exact-ML \emph{argmax} can be empty. This
 does not invalidate likelihood comparisons, but it prevents
 unrestricted ML from always defining an estimator. Penalizing
 genome length or using a summable prior resolves existence.

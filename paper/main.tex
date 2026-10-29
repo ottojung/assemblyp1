@@ -29,12 +29,6 @@ and finite-sample likelihood reliability}
 \def\AssemblyLeanToolchain{see-lean-toolchain}%
 \def\AssemblyMathlibRevision{see-lake-manifest}%
 }
-\begin{center}
-{\small Version: \texttt{\AssemblyPaperTag}\quad
-Source commit: \texttt{\AssemblyCommit}}\\[-0.15em]
-{\small \url{https://github.com/ottojung/assemblyp1}}
-\end{center}
-
 
 \begin{abstract}
 \noindent
@@ -56,7 +50,10 @@ that the truth maximizes unrestricted exact likelihood is
 $O(n^{-(E-V)/2})$. More starkly, we exhibit a primitive,
 repeat-restricted genome and a finite read sample for which
 the unrestricted likelihood supremum is \emph{not attained
-by any genome}. Unrestricted ML may therefore fail even
+by any genome}. We show that its supremum always equals an
+optimization over balanced read frequencies and is attained
+by a finite genome exactly when some optimal flow is rational
+and connected. Unrestricted ML may therefore fail even
 to define an estimator.
 
 On the positive side, repeat bridging collapses a
@@ -76,6 +73,12 @@ population identifiability and finite-read guarantees
 for fully P2-restricted classes.
 
 \end{abstract}
+
+\vfill
+\begin{center}
+\footnotesize
+\href{https://github.com/ottojung/assemblyp1/commit/\AssemblyCommit}{\textit{Source commit}}
+\end{center}
 
 \clearpage
 \tableofcontents

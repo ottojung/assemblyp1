@@ -54,6 +54,20 @@ jobs:
           export PATH="/usr/local/bin:/var/guix/profiles/per-user/root/current-guix/bin:${PATH}"
           bash ./paper/build.sh
 
+      # The link is generated from the commit checked out by this CI job,
+      # never a manually pinned SHA in the LaTeX source.
+      - name: Install PDF-link verifier
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Verify CI-generated first-page source permalink
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install "pypdf>=5,<8"
+          python scripts/verify_paper_source_link.py paper/main.pdf "$(git rev-parse HEAD)"
+
       - name: Upload white paper
         uses: actions/upload-artifact@v4
         with:
