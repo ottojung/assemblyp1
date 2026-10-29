@@ -86,7 +86,7 @@ paper/
     d-referents-audit.tex      condensed source-referent audit
     e-decision-bounds.tex      auxiliary decision-theory estimates
     f-molecular-flow.tex      source-faithful reverse-complement and flow variants
-  technical-notes/            full preserved modeling and evidence audits
+  technical-notes/            full preserved modeling, source and flow audits
   manifest.scm             pinned Guix TeX dependencies
   build.sh                 reproducible PDF build
 ```

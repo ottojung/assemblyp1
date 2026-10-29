@@ -196,3 +196,51 @@ likelihood candidate class or non-spellable physical flow
 optimizers. This is the rigorous fixed-truth version of the
 reviewer's stationarity/codimension proposal, not a resolution
 of the growing-genome threshold question.
+
+
+## paper-v1.2.0: Unattained ML, one-sided length bounds, MAP priors
+
+Theorem \`thm:unattained-ML\` is a **paper-level proof**, not a Lean
+endpoint. For primitive P2 truth \`AAACAC\` at \`L=3\` and a
+seven-read sample with an extra \`AAC\`, an irrational law
+with coefficients in \`Q(sqrt(73))\` uniquely maximizes the
+likelihood on the **complete four-letter de Bruijn flow
+polytope**. Every finite circular genome has a rational
+read law, but positive rational Eulerian circulations
+converge to that unique optimum, so the maximum is not
+attained. \`scripts/verify_irrational_ml_nonattainment.py\`
+certifies exact KKT equalities on the five observed edges,
+strict dual inequalities on all 59 unobserved edges,
+rational balance, and explicit circular Eulerian
+approximations. This test does not formalize the
+concavity/Eulerian/density proof in Lean.
+
+Theorem \`thm:one-sided-length-window\` derives from
+the primitive-P2 gcd-one theorem and complete-spectrum
+uniqueness. If the truth has length G, no non-rotation
+genome of length less than 2G can have the same oriented
+read law, even without competitor P2 or primitivity.
+The finite-family Hellinger bound gives a paper-level
+corollary of exponential exact-ML recovery over any
+supplied length ceiling B with G <= B < 2G.
+\`scripts/verify_one_sided_length_window.py\` exhaustively
+compares AAATT and AAACAC against 40,956 candidate
+binary circular genomes of lengths through 2G+2.
+The double-length boundary is sharp because S squared
+is a read-law twin.
+
+Proposition \`prop:length-prior-map\` is also a
+**paper-level** result: the proper rotation-class prior
+pi([D]) proportional to beta^|D|, 0 < beta < 1/|Sigma|,
+ensures that every nonzero-marginal sample has an
+attained posterior mode, and eventually selects
+the true rotation class almost surely for each fixed
+primitive P2 truth. Its proof uses countable-mixture
+posterior concentration on the observational-equivalence
+fibre; a summable prior without a favourable preference
+within that fibre does not guarantee truth recovery.
+
+None of these three general statements is claimed as
+a kernel-checked Lean theorem. In particular, the
+fixed-genome and bounded-length rates are not uniform
+over a growing-genome bridging threshold.

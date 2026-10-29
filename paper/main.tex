@@ -51,20 +51,29 @@ coverage-and-bridging condition holds, yet a longer incorrect genome has
 strictly higher exact likelihood. Same-length molecular counterexamples
 show that the failure is not solely an artefact of varying genome length.
 
-More generally, for a fixed truth whose oriented read-support graph
-branches, the probability that unrestricted exact maximum likelihood
-selects the truth as a maximizer tends to zero polynomially with the
-number of reads. This contrasts with restricted candidate classes.
-We also prove a positive result: for oriented reads and a restricted class of
-same-length genomes with the required overlap support, the true genome is
-the unique maximum-likelihood reconstruction, up to rotation.
+For a fixed truth with branching read support, the probability
+that the truth maximizes unrestricted exact likelihood is
+$O(n^{-(E-V)/2})$. More starkly, we exhibit a primitive,
+repeat-restricted genome and a finite read sample for which
+the unrestricted likelihood supremum is \emph{not attained
+by any genome}. Unrestricted ML may therefore fail even
+to define an estimator.
 
-We then consider an idealized experiment in which the probabilities of all
-possible reads are known exactly. We prove that these probabilities identify the truth uniquely up to rotation
-among primitive genomes satisfying the same explicit repeat restriction.
-For this class, we also obtain an explicit upper bound on the probability
-of a maximum-likelihood error that decreases exponentially with the number
-of sampled reads.
+On the positive side, repeat bridging collapses a
+same-length, complete-support candidate class to the
+truth's rotations: likelihood ties are a consequence of
+structural uniqueness, not an extra optimization result.
+For primitive truths satisfying the explicit P2 repeat
+restriction, \emph{every} candidate shorter than twice
+the true length has a different read law unless it is
+a rotation of the truth, with no repeat restriction on
+competitors. Exact ML over this finite length window
+then succeeds with exponentially high probability.
+We also give an always-attained, fixed-truth-consistent
+MAP estimator under a summable geometric length prior,
+and distinguish these results from the stronger
+population identifiability and finite-read guarantees
+for fully P2-restricted classes.
 
 \end{abstract}
 
