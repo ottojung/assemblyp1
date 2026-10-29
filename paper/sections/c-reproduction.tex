@@ -21,6 +21,37 @@ explicitly indexed in \path{docs/verification.md}.
 That file also distinguishes finite computations from kernel-checked
 results and historical source premises.
 
+\subsection{Reproducible source revision and proof checks}
+
+This PDF is built from a specific signed source revision.
+\begin{quote}
+\noindent\textbf{Source commit:}\\
+\texttt{\AssemblyCommit}
+
+\noindent\textbf{Release tag:} \texttt{\AssemblyPaperTag}
+
+\noindent\textbf{Lean:} \texttt{\AssemblyLeanToolchain}
+
+\noindent\textbf{Mathlib commit:}\\
+\texttt{\AssemblyMathlibRevision}
+\end{quote}
+The source repository is
+\url{https://github.com/ottojung/assemblyp1};
+the dependency pin is in \texttt{lake-manifest.json}.
+The matching \texttt{docs/verification.md} and the complete
+Lean source are included in the tagged repository tree, rather than
+living only behind a moving PDF link.
+
+GitHub's CI builds every theorem module with
+\texttt{lake build --wfail}, replays the entire library through the
+Lean kernel (using \texttt{leanchecker}), and performs an axiom audit.
+The accepted logical dependencies are Lean's usual
+\texttt{propext}, \texttt{Classical.choice}, and \texttt{Quot.sound};
+the audit checks that no additional axioms are introduced.
+A verified Lean theorem is evidence for its \emph{stated type};
+historical source-to-model correspondence and the paper-level
+BEST double-counting argument are not promoted to Lean theorems.
+
 \subsection{Supporting finite calculations and notes}
 
 For reproducibility, the source paths referenced by the historical
@@ -30,6 +61,7 @@ being repeated inside the mathematical exposition:
 \begin{itemize}[leftmargin=*]
 \item \path{docs/chernoff-exponent-finite-recovery-265.md}
 \item \path{docs/exact-fibre-count-theorem-219.md}
+\item \path{scripts/verify_aaatt_historical_kkt.py}
 \item \path{docs/minimax-finite-recovery-265.md}
 \item \path{docs/restricted-vs-unrestricted-exponent-265.md}
 \item \path{scripts/verify\_exponent\_265.py}

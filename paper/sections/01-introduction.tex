@@ -14,10 +14,7 @@ uniformly chosen position; different starts are sampled independently, and
 the letters are read without errors. Unless specified otherwise, we keep
 track of which direction each read was read in. These assumptions isolate
 the mathematical question; they are not a model of every complication of
-real sequencing. For small mathematical examples we sometimes use
-the toy alphabet $\{A,B\}$; $B$ is only a stand-in for a second
-distinct DNA letter, not an additional nucleotide.
-
+real sequencing.
 For example, the circular genome $\texttt{ACGTA}$ has five possible
 length-three reads:
 \[
@@ -53,23 +50,19 @@ Without enough such context, the difficulty is not merely that a
 particular algorithm is weak. Different genomes can produce exactly
 the same reads with exactly the same probabilities.
 
-\begin{example}[Two genomes that no amount of these reads can distinguish]
+\begin{example}[Two primitive genomes with the same read law]
 \label{ex:ABAB}
-Consider the circular genomes
+Consider the circular DNA genomes
 \[
-  S=\texttt{AAABAB},\qquad D=\texttt{AABAAB},
+  S=\texttt{AACAG},\qquad D=\texttt{AAGAC},
 \]
-with read length $L=2$. They are not rotations of one another, but each
-has two occurrences of $\texttt{AA}$, two of $\texttt{AB}$, and two of
-$\texttt{BA}$. Thus each produces the same read distribution:
-\[
- P(\texttt{AA})=P(\texttt{AB})=P(\texttt{BA})=\tfrac13.
-\]
-Even infinitely many such reads could not tell us whether $S$ or $D$
-generated them. This is \emph{structural ambiguity}, not a sampling
-accident.
-\statusline{\computed{} for the explicit spectra and nonrotation;
-\mathfact{} for the resulting equal read distributions.}
+with read length $L=2$. Neither genome is a rotation of the other and
+both are primitive (their length is prime and neither is constant).
+Both have precisely the five possible reads
+$\texttt{AA},\texttt{AC},\texttt{CA},\texttt{AG},\texttt{GA}$,
+each with probability $1/5$. Thus even infinitely many independent
+length-two reads cannot distinguish the two. Structural ambiguity
+does \emph{not} require a periodic competitor.
 \end{example}
 
 \subsection{From reads to a graph algorithm}
@@ -134,8 +127,8 @@ as the genome's full collection of possible reads.
 
 This small example illustrates sampling fluctuations, \emph{not} a
 reconstruction theorem: we have not claimed that those one or two reads
-determine $S$. Its exact arithmetic is reproduced by
-Appendix~\ref{app:reproduction}. Next we show that
+determine $S$. Its exact arithmetic is reproduced by the verifier
+listed in Appendix~\ref{app:reproduction}. Next we show that
 the mismatch can persist even with much stronger structural evidence.
 
 \subsection{Bridging can hold when likelihood prefers another genome}
@@ -149,40 +142,52 @@ genome the best explanation of the reads. But reconstruction uses
 their \emph{overlaps}, while likelihood also depends on \emph{how
 often} each kind of read was sampled.
 
-Consider a concrete counterexample from
-Theorem~\ref{thm:cex-exact}. The true circular genome is
-$S=\texttt{AAABB}$, and the three observed length-three reads are
+Consider the circular truth $S=\texttt{AAATT}$, with read length
+$L=3$. Suppose all five of its circular windows are observed,
+together with one extra occurrence of $\texttt{AAA}$:
 \[
-  \texttt{AAA},\quad\texttt{AAB},\quad\texttt{BAA}.
+  r=(\texttt{AAA},\texttt{AAA},\texttt{AAT},
+     \texttt{ATT},\texttt{TTA},\texttt{TAA}).
 \]
-They are drawn from start positions $0,1,4$ of $S$. These reads
-cover the entire five-letter genome and bridge each occurrence
-of its troublesome triple repeat of $\texttt{A}$, satisfying our
-precise placement-based coverage-and-bridging conditions.
+The reads include \emph{every} length-three substring of the truth.
+In particular, they satisfy the original matched-read-string coverage
+condition: a read matches at every genome start. The only triple
+repeat has three single-letter $\texttt{A}$ copies; these are
+straddled respectively by $\texttt{TAA}$, $\texttt{AAA}$ and
+$\texttt{AAT}$. No interleaved pair violates the historical bridging
+clause. Thus the historical reconstruction hypothesis
+$I_s^{\mathrm{match}}$ holds, not merely our weaker
+sampled-placement predicate. The overlap reconstruction guarantee
+identifies the truth up to rotation.
 
-Now compare $S$ with $D=\texttt{AAAAB}$, another five-letter genome.
-In $S$, each of the three observed read types occurs once. In $D$,
-$\texttt{AAA}$ occurs twice, while $\texttt{AAB}$ and $\texttt{BAA}$
-still occur once. Thus, for the ordered sample $r$ displayed above, the likelihood ratio is
+Nevertheless, the longer genome $D=\texttt{AAAATT}$ is more likely to
+produce the six reads. Every read type occurs once per turn of $S$,
+but $\texttt{AAA}$ occurs twice per turn of $D$ while the other
+four types occur once. Under the \emph{exact} independently sampled,
+uniform-start model,
 \[
   \frac{\Pr(r\mid D)}{\Pr(r\mid S)}
-    = \frac{(2/5)(1/5)^2}{(1/5)^3}=2.
+   = \left(\frac{5}{6}\right)^6\,2^2
+   =\frac{15625}{11664}>1.
 \]
-The \emph{wrong genome is twice as likely} under the exact sampling
-model, despite the coverage and bridging evidence for the truth.
-The unordered-read likelihood has an extra combinatorial factor
-common to both candidates, so the comparison is unchanged.
+The multinomial coefficient for unordered reads cancels from this
+ratio. The same effect holds for an infinite family of read samples
+(Theorem~\ref{thm:cex-variable-length}).
 
-There is no contradiction with the positive same-length result
-proved later. That theorem restricts the candidate class further:
-among other things, the true genome must itself be admissible
-when candidates are required to have exactly the observed read types.
-Here the truth also contains $\texttt{ABB}$ and $\texttt{BBA}$,
-which the sample missed. Nor should our sampled-placement bridging
-predicate be silently identified with the original 2016
-\emph{matched-read-string} predicate. We treat the original
-predicate separately and give verified counterexamples for it too
-(Theorems~\ref{thm:cex-historical-W1} and
+In fact, for any fixed genome whose read-support graph branches,
+Theorem~\ref{thm:unrestricted-branching-rate} shows that the
+probability of being an exact-ML maximizer over \emph{all}
+candidate lengths is at most $O(n^{-(E-V)/2})$, where $E$ and
+$V$ count distinct read edges and overlap vertices. This is a
+fixed-genome, unrestricted-length result; it does not contradict
+positive ML recovery on the restricted primitive-P2 class.
+
+There is no contradiction with the positive same-length theorem below:
+that theorem only compares candidates of the \emph{same} genome length
+and with the \emph{same complete read support}. Here $|D|=6$ and
+$|S|=5$. Same-length failures under the historical matched-string
+condition also exist, but require distinguishing reverse-complement
+molecule observations (Theorems~\ref{thm:cex-historical-W1} and
 \ref{thm:cex-historical-W2}).
 
 One could first discard all candidate genomes failing a
@@ -225,6 +230,13 @@ maximum-likelihood candidate up to rotation
 Corollary~\ref{cor:same-length-rotation}).
 Those extra assumptions matter; they are not supplied automatically
 by reconstruction alone.
+
+In plain terms: if every distinct length-$L$ read of $S$ was
+observed, and $S$ has no triple repeat of length at least $L-1$,
+then no same-length genome with the same complete read support can
+change the length-$L$ read counts. Their likelihoods consequently
+\emph{tie}; full repeat-bridging hypotheses are additionally used
+to prove uniqueness of the circular spelling, up to rotation.
 
 \paragraph{Finite-sample counterexamples.}
 Over larger candidate classes, the wrong genome may receive a

@@ -14,3 +14,5 @@
 .guix-profile
 .guix-profile*
 *.bbl-SAVE-ERROR
+
+build-identity.tex

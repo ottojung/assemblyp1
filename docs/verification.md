@@ -151,3 +151,48 @@ internally. The two propositions are **not interchangeable**.
 - **Historical filenames:** Some files retain issue-numbered names for
   repository traceability. The paper instead uses theorem names and this
   index preserves the exact paths needed to reproduce them.
+
+
+## Oriented AAATT historical witness and unrestricted finite-sample bound
+
+The revised paper's introductory example and
+\`thm:aaatt-unrestricted\` use the exact oriented, uniform-start
+read law. On \`S=AAATT\` at \`L=3\` all five truth read types
+appear in the example; the historical matched-string coverage and
+triple-bridging conditions are proved directly in the paper.
+The exact likelihood ratio against \`D=AAAATT\` is
+\`15625/11664\`.
+
+The unconditional finite-sample statement is a **paper-level theorem**,
+not a new Lean declaration. Its elementary proof optimizes along
+explicit genome spellings
+\`D(j,k)=A^(j+2)TT(AATT)^(k-1)\`, whose normalized
+3-spectra have counts \`(j,k,k,k,k)/(j+4k)\`.
+It proves only the necessary event \`5*x_AAA=n\` for unrestricted ML,
+not a general \`E-V\`-codimension theorem. Independent exact rational
+regressions, source-model window checks and the numerical
+binomial probabilities are in
+\`scripts/verify_aaatt_historical_kkt.py\` and run in CI.
+The source-correspondence and KKT generalization boundaries
+remain explicit.
+
+
+## Fixed-truth unrestricted ML obstruction on branching read-support graphs
+
+\`thm:unrestricted-branching-rate\` is a **paper-level** theorem.
+It uses the integer circulation realization lemma (positive rational
+balanced de Bruijn flows on the truth support are realized by genuine
+circular spellings), first-order stationarity of the exact
+log-likelihood, and an elementary multivariate lattice
+anti-concentration bound proved using Fourier inversion.
+For fixed truth and read length, if the support graph has
+\`d = |E|-|V| > 0\`, then
+\`P(truth is unrestricted exact-ML maximizer)=O(n^(-d/2))\`.
+
+The theorem is **not** a new Lean endpoint and does not imply a
+uniform bound when genome length or read length varies with sample
+size. It does not extend to the primitive-P2-restricted maximum
+likelihood candidate class or non-spellable physical flow
+optimizers. This is the rigorous fixed-truth version of the
+reviewer's stationarity/codimension proposal, not a resolution
+of the growing-genome threshold question.
