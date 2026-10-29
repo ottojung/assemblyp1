@@ -294,3 +294,45 @@ used to build it through
 \`scripts/verify_paper_source_link.py\`.
 Neither the source SHA nor the release tag is
 hard-coded into the title-page link.
+
+
+## Exact finite-sample unrestricted maximality via rational potentials
+
+\`thm:unrestricted-kkt-certificate\` is an exact
+**paper-level**, necessary-and-sufficient condition
+for whether a specified circular genome S maximizes
+the oriented exact multinomial likelihood against
+genomes of **arbitrary length**, for a fixed finite
+read sample x.
+
+If any observed read has zero probability under S,
+S cannot maximize likelihood. Otherwise let
+p_e=c_S(e)/|S| and n=sum(x). Then S is an unrestricted
+maximizer if and only if rational vertex potentials
+h_v solve
+
+- h_head(e) - h_tail(e) = n - x_e/p_e, for p_e>0;
+- h_head(e) - h_tail(e) <= n, for p_e=0.
+
+These conditions are the KKT equations for the
+balanced-read-flow polytope and follow from density
+of finite-genome distributions. Since p is rational,
+they reduce to rational difference constraints:
+each equality is represented by two inequalities;
+Bellman--Ford finds rational potentials or a
+negative-cycle obstruction. Runtime is polynomial
+in the explicitly represented q^L de Bruijn graph
+(therefore exponential in the read length in general).
+This decides **maximality of a given candidate**, not
+discovery of the unknown genome.
+
+\`scripts/verify_unrestricted_KKT_potentials.py\`
+uses only the Python standard library and exact
+\`fractions.Fraction\` arithmetic. It verifies the
+AAATT failure, the irrational AAACAC failure,
+positive and negative boundary samples, and
+independently checks 732 small truth/sample pairs,
+including 76 valid certificates, against direct
+likelihood comparisons over all distinct binary
+circular read laws to length eight.
+The theorem is not claimed as a new Lean declaration.

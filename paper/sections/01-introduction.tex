@@ -179,12 +179,20 @@ $S=\texttt{AAACAC}$ and seven carefully specified reads,
 Theorem~\ref{thm:unattained-ML} proves that no circular
 genome at all maximizes unrestricted exact likelihood,
 even though finite genomes approach its supremum.
-The general criterion (Theorem~ef{thm:flow-supremum-attainment})
+The general criterion (Theorem~
+ef{thm:flow-supremum-attainment})
 is exact: the likelihood has a finite optimizing genome if
 and only if some maximum-likelihood balanced read law is
 rational and supported on a connected overlap graph.
 A rational \emph{disconnected} optimum can also cause
-non-attainment (Example~ef{ex:unattained-disconnected}).
+non-attainment (Example~
+ef{ex:unattained-disconnected}).
+For a particular candidate genome, finite-sample
+unrestricted maximality is nevertheless exactly decidable
+by a \emph{rational potential feasibility certificate}
+(Theorem~ef{thm:unrestricted-kkt-certificate}).
+Its difference constraints are checked without listing
+the infinitely many possible candidate lengths.
 Thus a length restriction or a prior is needed before
 unrestricted scoring always defines an estimator.
 
