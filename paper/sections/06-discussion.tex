@@ -70,11 +70,12 @@ domain. They characterize two different feasible-set and objective questions.
 
 The strict historical counterexamples
 (Theorems~\ref{thm:cex-historical-W1} and
-\ref{thm:cex-historical-W2}) establish, under specified candidate classes, they establish exactly where a tempting universal
-implication fails, even under the source's own read-string
+\ref{thm:cex-historical-W2}) show, under specified candidate classes, that the proposed implication fails, even under the source's own read-string
 bridging notion. The variable-length families
-(Theorem~\ref{thm:cex-variable-length}) establish a general
-sampling-reweighting mechanism rather than an isolated anomaly.
+(Theorem~\ref{thm:cex-variable-length}) exhibit
+a sampling-reweighting mechanism. More sharply,
+Theorem~\ref{thm:unattained-ML} proves that unrestricted
+exact likelihood need not attain a maximum at all.
 
 The population uniqueness theorem
 (Theorem~\ref{thm:population}) is not just the elementary
@@ -165,6 +166,85 @@ and consequence. The central investigation remains the
 relationship between read information, feasible assembly,
 and the likelihood of the \emph{realized} reads.
 
+
+\subsection{Length penalties and an always-defined MAP estimator}
+\label{sec:map-length}
+
+Theorem~\ref{thm:unattained-ML} shows that an
+unrestricted exact-ML \emph{argmax} can be empty. This
+does not invalidate likelihood comparisons, but it prevents
+unrestricted ML from always defining an estimator. Penalizing
+genome length or using a summable prior resolves existence.
+It can also make statistical recovery consistent in the
+one-sided-P2 setting.
+
+\begin{proposition}[Existence and fixed-truth consistency of length-prior MAP]
+\label{prop:length-prior-map}
+Let the alphabet have size $q\ge2$, and place the
+following prior on \emph{rotation classes} of all nonempty
+circular genomes:
+\[
+  \pi([D])=Z^{-1}\beta^{|D|},
+  \qquad 0<\beta<1/q,\qquad
+  Z=\sum_{[D]}\beta^{|D|}<\infty.
+\]
+For every finite read sample of positive marginal
+probability, the exact posterior has an attained MAP
+maximum. Moreover, if the fixed truth $S$ is primitive
+and satisfies P2 at the oriented read length $L\ge2$,
+then with iid uniform-start reads the MAP estimate is
+eventually the rotation class of $S$, almost surely.
+The latter claim is \emph{not} uniform in $S$ or $L$.
+\end{proposition}
+\begin{proof}
+At length $G$ there are at most $q^G$ rotation classes,
+so $Z\le\sum_{G\ge1}(q\beta)^G<\infty$.
+At any sample with positive marginal, the nonnegative
+posterior masses are summable and at least one is
+positive. Such a sequence attains its positive
+supremum: only finitely many masses can exceed
+half the supremum. This proves MAP existence.
+
+Fix $S$ and let $\Gamma=\{[D]:p_D=p_S\}$. All
+models in $\Gamma$ have the same likelihood for
+every sample. The strong law identifies the infinite
+iid read distribution: under any class outside $\Gamma$,
+its limiting empirical frequency vector differs
+from $p_S$ almost surely. Since the model space is
+countable, the mixture over those other classes
+is singular to the iid law $p_S$. Equivalently, in
+the Bayesian mixture the event
+that empirical frequencies tend to $p_S$ agrees
+almost surely with the event that the latent class
+belongs to $\Gamma$. Martingale convergence of
+conditional probabilities therefore gives
+$\Pi_n(\Gamma)\to1$ under $p_S$, almost surely.
+Within $\Gamma$, posterior masses stay in their
+original prior ratios.
+
+By Theorem~\ref{thm:one-sided-length-window}, every
+class in $\Gamma$ other than $[S]$ has length at
+least $2G$, where $G=|S|$. Hence
+$\pi([D])<\pi([S])$ for all these classes,
+and indeed their individual ratios are at most
+$\beta^G<1$. The posterior mass of $[S]$
+converges to $\pi([S])/\pi(\Gamma)>0$, while
+the total posterior mass outside $\Gamma$ tends
+to zero. Thus eventually no other class, inside
+or outside $\Gamma$, ties or beats $[S]$.
+\end{proof}
+
+This is an explicit \emph{prior-dependent} solution,
+not a repair of the unrestricted ML principle.
+A summable prior by itself guarantees existence
+but need not recover the shortest law-equivalent
+genome: for example, one could assign its doubled
+word a larger prior mass. The geometric prior
+above gives every \emph{individual} longer candidate
+a strict penalty; it does not assert that all
+posterior mass on longer genomes vanishes.
+Other likelihood models require separately specified priors.
+
 \subsection{Open questions after the proved results}
 \label{sec:open-questions-final}
 
@@ -251,11 +331,15 @@ conditional guarantee.
 \item \textbf{Recovery at the bridging threshold.}
 In a specified source-faithful candidate universe, consider a sequence
 of genomes and read lengths for which the number of reads is only large
-enough to make coverage and bridging hold with high probability. Does
-unrestricted maximum likelihood then recover the truth with high
-probability as genome size grows? More sharply, what sampling
-threshold or additional hypotheses relate successful bridging to
-correct ML selection? The finite counterexamples concern individual
+enough to make coverage and bridging hold with high probability. For a \emph{specified estimator}, such as
+exact ML under a supplied length bound $G\le B<2G$,
+MAP under a stated length prior, or a measurable
+$\varepsilon_n$-maximizer of unrestricted likelihood,
+what sampling threshold or additional hypotheses
+relate successful bridging to correct selection?
+Unrestricted exact ML alone is not an estimator
+on every sample, by Theorem~
+ef{thm:unattained-ML}. The finite counterexamples concern individual
 samples, whereas our finite-read bounds apply to an identifiable
 restricted class and may require far more reads than bridging itself.
 Neither result settles this joint high-probability regime.
@@ -281,6 +365,20 @@ under stochastic genome models, and the variable-length overlap
 results of \textcite{hui2016} are another adjacent
 contribution. These do not answer the finite-sample likelihood
 question here.
+
+Related likelihood formulations and probabilistic
+\emph{assembly scores} include the bidirected-flow
+complexity study of \textcite{medvedev2007},
+the length-range convex formulation of \textcite{varma2011},
+and the assembly evaluation tools CGAL, ALE and LAP
+\parencite{cgal2013,ale2013,ghodsi2013}.
+These approaches use different experimental assumptions,
+read-placement models, candidate representations or
+normalizations; none is identified here with our exact
+uniform-start circular-genome likelihood. In particular,
+incorporating a length range or a prior is a substantive
+modeling choice, not a contradiction of the
+unrestricted-domain non-attainment theorem.
 
 The closest published result directly relating bridge
 conditions to reconstruction predates the 2016 question:

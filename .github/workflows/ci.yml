@@ -24,6 +24,10 @@ jobs:
         run: python3 scripts/check-research-docs.py
       - name: Verify #263 exact support-restricted Graver certificate
         run: python3 scripts/verify_issue263_exact_support_restricted_graver.py
+      - name: Verify irrational unrestricted ML non-attainment on the full DNA graph
+        run: python3 scripts/verify_irrational_ml_nonattainment.py
+      - name: Verify one-sided P2 law identifiability in a genome-size window
+        run: python3 scripts/verify_one_sided_length_window.py
       - name: Verify complete-read historical AAATT witness and unrestricted sampling bound
         run: python3 scripts/verify_aaatt_historical_kkt.py
       - name: Verify historical coverage and finite likelihood witnesses

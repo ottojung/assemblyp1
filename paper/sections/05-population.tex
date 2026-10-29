@@ -109,7 +109,7 @@ complete-spectrum uniqueness theorem at $K=L-1$ below.}
 \begin{lemma}[Primitive P2 spectra have gcd one]
 \label{lem:scaling}
 Let $S$ be a primitive P2-admissible circular word and $L\ge2$.
-For every positive genome length $G=|S|$, including $G<L$, let
+Write $G=|S|>0$ (allowing $G<L$), and let
 $c=\spec_L(S)$ and $g=\gcd\{c(w):c(w)>0\}$. Then $g=1$.
 \end{lemma}
 
@@ -172,7 +172,11 @@ uses P2 essentially, via the complete-spectrum uniqueness step.
 
 \subsection{The complete-spectrum uniqueness step}
 
-The remaining step is a complete-spectrum uniqueness statement. The classical spectrum-reconstruction analysis has roots in Ukkonen's
+The remaining step is a complete-spectrum uniqueness statement.
+Early reconstruction from hybridization reads and the
+probability of unique solutions were studied by
+\textcite{pevzner1989} and \textcite{dyer1994}.
+The classical spectrum-reconstruction analysis has roots in Ukkonen's
 condition and Pevzner's proof of the associated word-transformation
 conjecture \parencite{ukkonen1992,pevzner1995}, with an assembly-oriented
 formulation in \parencite{bresler2013}. The specialized Lean proof now
@@ -233,6 +237,48 @@ Thus the P2 restriction on \emph{competitors} is substantive.
 
 
 
+
+
+\subsection{A genome-size window: only the truth must satisfy P2}
+\label{sec:population:length-window}
+
+\begin{theorem}[One-sided P2 identifiability below twice the true length]
+\label{thm:one-sided-length-window}
+Let $S$ be a primitive, P2-admissible oriented circular genome
+of length $G>0$ at read length $L\ge2$. For \emph{any} circular
+genome $D$, with no repeat or primitivity restriction on $D$,
+\[
+  p_D=p_S,\qquad 0<|D|<2G
+  \quad\Longrightarrow\quad D\sim S .
+\]
+In particular, a supplied genome-length upper bound $B$ with
+$G\le B<2G$ makes the truth identifiable among \emph{all}
+circular candidates of lengths at most $B$.
+The cutoff is sharp for this unrestricted candidate class:
+the doubled word $S^2$ has length $2G$ and the same read law.
+\end{theorem}
+\begin{proof}
+Write $c_S=\spec_L(S)$ and $c_D=\spec_L(D)$. Equality of
+read laws gives $G\,c_D=|D|\,c_S$ coordinatewise. By
+Lemma~\ref{lem:scaling}, $\gcd\{c_S(w):c_S(w)>0\}=1$.
+Therefore $G$ divides $|D|$: a positive integer combination
+of the nonzero entries of $c_S$ is $1$, and multiplying it
+by $|D|/G$ yields an integer. Since $0<|D|<2G$,
+we must have $|D|=G$, hence $c_D=c_S$.
+The Ukkonen/complete-spectrum uniqueness theorem
+(Theorem~\ref{thm:BBT}) applies because \emph{$S$} satisfies
+P2. It states that every circular spelling of this complete
+spectrum is a rotation of $S$; it does not require $D$ to
+satisfy P2. Finally, repeating $S$ twice duplicates every
+circular window and its length, preserving normalized
+read frequencies.
+\end{proof}
+
+The restriction $B<2G$ is not a restriction to
+a class of bridgeable competitors. It is a size estimate
+alone, which is often more natural when genome size is
+approximately known. It does require the truth itself to
+satisfy P2, and a fixed read length and oriented exact read law.
 
 \subsection{Finite-read reliability: an exponential recovery theorem}
 \label{sec:finite-recovery}
@@ -300,11 +346,42 @@ admissible candidates, as formalized in
 Section~\ref{sec:p2-finite-recovery}.  The general finite-PMF recovery
 theorem still requires a finite competitor family, but for the complete
 primitive-P2 admissible class Theorem~\ref{thm:p2-finite-class} proves that
-this family is finite, without imposing an arbitrary shortlist.  The reverse-
-complement-collapsed and product-binomial models require their own read-law
+this family is finite, without imposing an arbitrary shortlist.  The reverse-complement-collapsed and product-binomial models require their own read-law
 interfaces.  Neither the theorem nor its proof conditions on the
 truth-dependent information-feasibility event, and neither contradicts the
 strict finite-sample counterexamples of Section~\ref{sec:finite}.
+
+
+\begin{corollary}[Exponential exact-ML recovery with only a length bound]
+\label{cor:length-window-ML}
+Under Theorem~\ref{thm:one-sided-length-window}, fix an integer
+$B$ with $G\le B<2G$ and let $\mathcal C_B$ be
+all circular genomes over the finite alphabet of lengths
+$1,\ldots,B$, considered modulo rotation. Then the exact
+maximum-likelihood estimator over $\mathcal C_B$ exists for
+every observed sample, and for iid reads from $S$,
+\[
+ \Pr_S\{\text{a nonrotation ties or beats }S\}
+ \ \le\!
+ \sum_{\substack{[D]\in\mathcal C_B\\D\not\sim S}}
+        \rho(p_S,p_D)^n
+ \ \le\ (|\mathcal C_B|-1)\rho_B^n ,
+ \qquad \rho_B<1,
+\]
+where $\rho$ is the Hellinger affinity of
+Theorem~\ref{thm:finite-recovery}, and the final bound is
+understood as zero if there are no competitors. Consequently
+ML selects precisely the rotations of $S$ eventually almost
+surely, without imposing P2 on the competitors.
+\end{corollary}
+\begin{proof}
+The candidate set is finite, and Theorem~
+\ref{thm:one-sided-length-window} makes its nonrotational
+read laws different from $p_S$. Apply the finite-family
+Hellinger union bound, Theorem~\ref{thm:finite-recovery}.
+Summability of the exponential error probabilities and
+Borel--Cantelli give eventual almost-sure correctness.
+\end{proof}
 
 \subsection{Strong consistency: eventual correctness almost surely}
 \label{sec:strong-consistency}
@@ -593,8 +670,7 @@ $(q,L)=(2,2),(3,2),(2,3),(2,4)$, with
 $B=4,6,8,16$ respectively, gives exact worst-case separations $1-\rho$ larger than the
 proved bound by factors $274$, $903$, $2116$, and $16648$; the observed extremal pairs
 are one-symbol insertions, suggesting separation of order $1/B$:
-in these four cases $(1-
-ho_*)B$ is approximately $0.51$--$0.54$.
+in these four cases $(1-\rho_*)B$ is approximately $0.51$--$0.54$.
 The sharp exponent is conjecturally $1$ rather than $4$. The finite-class
 non-tightness is an exact finite computation and the asymptotic statement is a
 conjecture whose missing ingredient is a separation lower bound

@@ -85,7 +85,7 @@ $v$ has a single incoming edge $e$ with $A(e)=2$, $\delta(e)=-1$, i.e.\ $e\in N$
 The symmetric argument at the head of $w$ shows every edge incident to a node
 touched by $N$ lies in $N$; thus $N$ is a union of connected components of $X_S$
 with no edge to $V\setminus N$. Strong connectivity forces $N=\emptyset$ or
-$N$ to contain all edges; the latter gives $\sum_w\delta(w)=-|V|<0$, contradicting
+$N$ to contain all edges; the latter gives $\sum_w\delta(w)=-|E|<0$, contradicting
 $\sum_w\delta(w)=0$. Hence $\delta\ge0$, and a nonnegative circulation with
 $\sum_w\delta(w)=0$ is zero.
 \end{proof}
@@ -622,6 +622,107 @@ anti-concentration argument above. The theorem is not
 independently Lean-formalized; it applies to genuine
 circular spellings, not arbitrary unspellable flows.}
 
+
+
+\begin{theorem}[The unrestricted likelihood supremum need not be attained]
+\label{thm:unattained-ML}
+Let the primitive circular truth be $S=\texttt{AAACAC}$, with
+oriented read length $L=3$, over the DNA alphabet. Observe every
+circular read of $S$ plus one additional $\texttt{AAC}$:
+\[
+ x_{\texttt{AAA}}=x_{\texttt{CAA}}=x_{\texttt{CAC}}=1,\qquad
+ x_{\texttt{AAC}}=x_{\texttt{ACA}}=2.
+\]
+Over \emph{all} circular genomes of all positive lengths,
+the exact multinomial likelihood has a finite supremum
+but \emph{no maximizing genome}.
+The unique optimal balanced read law on the full de Bruijn
+graph, in the order
+$(\texttt{AAA},\texttt{AAC},\texttt{ACA},
+\texttt{CAA},\texttt{CAC})$, is
+\[
+ q^*=\left(\frac17,\frac{17-\sqrt{73}}{42},
+           \frac{19+\sqrt{73}}{84},
+           \frac{17-\sqrt{73}}{42},
+           \frac{\sqrt{73}-5}{28}\right),
+\]
+with zero mass on every other read type.
+\end{theorem}
+\begin{proof}
+Any circular genome defines a rational, nonnegative balanced
+3-mer distribution of total mass one. The five observed reads
+form a connected support graph on vertices
+$\texttt{AA},\texttt{AC},\texttt{CA}$, and the displayed
+$q^*$ is a positive balanced circulation on this graph.
+For every balanced distribution $p$ on the \emph{entire}
+four-letter de Bruijn graph, write
+$F(p)=\sum_w x_w\log p(w)$, with $F(p)=-\infty$ when
+an observed coordinate vanishes.
+Define vertex potentials
+\[
+ \psi_{\texttt{AA}}=0,\quad
+ \psi_{\texttt{AC}}=7-\frac2{q^*_{\texttt{AAC}}},\quad
+ \psi_{\texttt{CA}}=\frac1{q^*_{\texttt{CAA}}}-7,
+ \qquad \psi_u=0\text{ for all remaining vertices}.
+\]
+Direct algebra with $\sqrt{73}$ verifies that for
+each observed edge $e$,
+\[
+   \frac{x_e}{q^*_e}=7+\psi_{\operatorname{tail}(e)}
+                        -\psi_{\operatorname{head}(e)}.
+\]
+Both nonzero potentials lie strictly between $-3$ and $0$.
+Consequently, for every \emph{unobserved} edge $e$,
+\[
+   0<7+\psi_{\operatorname{tail}(e)}
+           -\psi_{\operatorname{head}(e)}.
+\]
+These inequalities hold for all 64 possible DNA 3-mers,
+not merely the truth's support. Concavity and the balance
+constraints give, for any feasible $p$,
+\[
+ F(p)-F(q^*)\le
+   \sum_{e:x_e>0}\frac{x_e}{q^*_e}(p_e-q^*_e)
+ \le \sum_e (7+\psi_{\mathrm{tail}(e)}
+                     -\psi_{\mathrm{head}(e)})(p_e-q^*_e)=0 .
+\]
+Strict concavity on the observed coordinates and strict
+dual slack on the others make $q^*$ the \emph{unique}
+optimal balanced law.
+
+Nonetheless, $q^*_{\texttt{AAC}}$ is irrational, while
+every finite genome has rational frequencies. To see that
+the supremum really is approachable by genomes, choose
+positive integers $a,b,c$ with
+\[
+ (a,b,c)/(a+3b+2c)\longrightarrow
+ (q^*_{\texttt{AAA}},q^*_{\texttt{AAC}},
+  q^*_{\texttt{CAC}}).
+\]
+The integer edge counts
+$\texttt{AAA}:a$,
+$\texttt{AAC}:\!b$,
+$\texttt{CAA}:\!b$,
+$\texttt{ACA}:\!b+c$,
+$\texttt{CAC}:\!c$
+are balanced and strongly connected, hence admit a
+single circular Eulerian spelling. Their read laws tend
+to $q^*$, so the likelihood tends to its supremum.
+No finite genome attains that value.
+\end{proof}
+
+The truth $S$ satisfies P2: no length-two read occurs
+three times, and its long repeat pairs do not interleave.
+Thus structural repeat restrictions on the \emph{truth}
+alone do not make unrestricted maximum likelihood
+well-defined. The statement applies to the exact oriented
+read law; it neither asserts that non-attainment occurs
+for all samples nor extends automatically to the MB09
+surrogate. The displayed dual equations, all 64 strict
+inequalities and explicit approximate circular spellings
+are independently checked by
+\path{scripts/verify_irrational_ml_nonattainment.py}.
+This is a paper-level proof, not a Lean theorem.
 
 \begin{remark}[Sampling instability is the mechanism]
 \label{rem:amplification}
