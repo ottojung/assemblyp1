@@ -624,6 +624,155 @@ circular spellings, not arbitrary unspellable flows.}
 
 
 
+
+\subsection{A flow characterization of unrestricted likelihood}
+\label{sec:finite:flow-supremum}
+
+Over unrestricted genome lengths, maximum likelihood is best
+understood through the compact space of balanced read laws,
+rather than by presupposing that an optimal \emph{genome} exists.
+
+\begin{theorem}[The unrestricted supremum and its attainment]
+\label{thm:flow-supremum-attainment}
+Fix a finite alphabet $\Alphabet$ of size at least two,
+an oriented read length $L\ge2$, and a nonempty sample
+with read counts $x_e$, $e\in E=\Alphabet^L$.
+Let $V=\Alphabet^{L-1}$ and define the compact
+normalized circulation polytope
+\[
+ \mathcal P_L=\left\{p\in\mathbb R_{\ge0}^E:
+    \sum_e p_e=1,\quad
+    \sum_{e:\operatorname{tail}(e)=v}p_e
+    =\sum_{e:\operatorname{head}(e)=v}p_e
+    \text{ for every }v\in V
+ \right\}.
+\]
+Set $F_x(p)=\sum_{e:x_e>0}x_e\log p_e$,
+taking the value $-\infty$ if any observed coordinate
+has zero mass. Then
+\[
+ \sup_{\text{circular genomes }D}\log\mathcal L(D;x)
+   = C_x+\max_{p\in\mathcal P_L}F_x(p),
+\]
+where $C_x$ is independent of $D$ and accounts
+for the multinomial coefficient (zero for ordered reads).
+The maximum on the right is always attained and finite.
+
+There is a finite circular genome attaining the likelihood
+supremum \emph{if and only if} at least one maximizing
+circulation $p^*$ is \emph{rational} and its positive
+edge-support graph is connected on nonisolated vertices.
+\end{theorem}
+\begin{proof}
+Every finite circular genome induces a unit-mass,
+rational balanced circulation whose positive support
+is connected, since its consecutive windows traverse
+a closed walk. This establishes the upper bound
+and necessity.
+
+Conversely, multiply a rational optimizer with connected
+positive support by a common positive denominator to
+obtain integer positive edge multiplicities. Its support
+is directed Eulerian: each vertex has equal in-degree
+and out-degree, and the nonisolated support is connected.
+An Euler circuit spells a single circular word realizing
+those counts. If the circuit has fewer than $L$ edges,
+repeat it enough times; the resulting genome realizes
+the same normalized read law. Thus the supremum is
+attained whenever a maximizing rational, connected
+circulation exists.
+
+To prove equality of suprema even without such an optimizer,
+take any $p\in\mathcal P_L$ with finite score.
+A balanced nonnegative circulation is a nonnegative
+linear combination of directed cycle flows. Every such
+cycle is integral; approximating its coefficients by
+positive rational numbers yields rational balanced
+unit-mass circulations converging to $p$.
+Mix each approximation with a vanishing rational
+positive uniform read law on all of $E$.
+The result is rational, balanced, and has full
+strongly connected de Bruijn support, so a single
+circular genome realizes it. Its log likelihood
+converges to $F_x(p)$ because all observed coordinates
+of $p$ are strictly positive. Finally $\mathcal P_L$
+is compact and $F_x$ is upper semicontinuous, while
+the uniform law has finite score; hence a finite
+maximizing flow exists.
+\end{proof}
+
+The criterion separates three phenomena: the objective
+always has an optimal \emph{real} balanced read law;
+its maximizing law may contain irrational frequencies;
+and an optimizer with disconnected positive support
+may not be spellable by a single circle. An irrational
+or disconnected optimizer does not, by itself, prove
+non-attainment if \emph{another} maximizing flow is
+rational and connected. The theorem therefore uses
+the existence of at least one suitable optimizer,
+not a condition on an arbitrarily chosen one.
+The proof is mathematical rather than Lean-formalized.
+
+
+\begin{proposition}[A complete criterion for balanced samples]
+\label{prop:balanced-sample-attainment}
+Under Theorem~\ref{thm:flow-supremum-attainment}, suppose
+the \emph{observed count vector itself} is balanced:
+for every overlap vertex $v$,
+\[
+ \sum_{e:\operatorname{tail}(e)=v}x_e
+ =\sum_{e:\operatorname{head}(e)=v}x_e.
+\]
+Then the unique likelihood-maximizing balanced law is
+the rational empirical distribution $p^*=x/n$, where
+$n=\sum_e x_e>0$. A finite circular maximum-likelihood
+genome exists \emph{if and only if} the observed
+positive-edge support is connected.
+\end{proposition}
+\begin{proof}
+For any probability vector $p$ (balanced or not),
+Gibbs' inequality gives
+\[
+ \sum_{e:x_e>0}x_e\log p_e
+ \le\sum_{e:x_e>0}x_e\log(x_e/n),
+\]
+with equality only at $p=x/n$. The equality case
+is feasible because $x$ is balanced, and it is
+therefore the unique maximizing law on
+$\mathcal P_L$. It is rational. Theorem~
+\ref{thm:flow-supremum-attainment} now proves
+the equivalence with connected positive support.
+\end{proof}
+
+\begin{example}[Non-attainment with a rational optimizer]
+\label{ex:unattained-disconnected}
+Let $L=3$ and observe just the two oriented DNA
+reads $\texttt{AAA}$ and $\texttt{CCC}$, once each.
+This sample occurs with positive probability,
+for example under the primitive circular truth
+$\texttt{AAACCC}$. Its observed count vector is
+balanced, but its two loop edges lie in
+\emph{disconnected} support components. The unique
+optimal real read law is rational:
+$p^*_{\texttt{AAA}}=p^*_{\texttt{CCC}}=1/2$.
+No finite circular genome has this read law:
+a circle containing both types must also contain
+transitional read types. Consequently the exact
+likelihood has supremum $1/4$ for ordered reads,
+but no maximizer. The concrete genomes
+$\texttt{A}^m\texttt{C}^m$ ($m\ge3$)
+approach it, with likelihood
+\[
+ \mathcal L(\texttt{A}^m\texttt{C}^m;x)
+       =\left(\frac{m-2}{2m}\right)^2
+       \longrightarrow\frac14.
+\]
+(The candidate-independent multinomial coefficient
+is $2$ if the two reads are treated as an
+unordered multiset.) Thus irrational frequencies
+are \emph{not} the only cause of non-attainment.
+\end{example}
+
 \begin{theorem}[The unrestricted likelihood supremum need not be attained]
 \label{thm:unattained-ML}
 Let the primitive circular truth be $S=\texttt{AAACAC}$, with

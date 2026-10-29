@@ -244,3 +244,53 @@ None of these three general statements is claimed as
 a kernel-checked Lean theorem. In particular, the
 fixed-genome and bounded-length rates are not uniform
 over a growing-genome bridging threshold.
+
+
+## Balanced-flow supremum and exact attainability
+
+\`thm:flow-supremum-attainment\` gives a paper-level
+characterization of unrestricted exact multinomial likelihood.
+The supremum over all finite circular genomes equals the
+attained maximum of the concave log-likelihood over the compact
+polytope of nonnegative unit-mass balanced read circulations.
+A maximizing \`genome\` exists if and only if at least one
+optimal flow has rational masses and connected positive-edge
+support. Connected rational flows are realized by Eulerian
+spelling; positive uniform perturbations of rational cycle
+decompositions make realizable genome laws dense in the
+balanced polytope.
+
+\`prop:balanced-sample-attainment\` is a more operational
+special case: for a balanced observed count vector, the
+unique optimal real law is exactly the empirical read
+distribution. The unrestricted maximum is attained
+iff the observed support graph is connected. Even rational
+optimizers can fail to correspond to any one circular genome:
+a sample consisting of \`AAA, CCC\` at read length three has
+supremum \`1/4\` for ordered reads, approached by
+\`A^m C^m\`, but no maximizing genome.
+
+\`scripts/verify_unrestricted_flow_attainment.py\` checks
+every binary read-count vector with entries 0--2 for the
+eight 3-mers, enumerates connected and disconnected balanced
+flows, spells all 114 connected cases, verifies finite
+non-attainment for the disconnected two-loop witness,
+and constructs connected, full-support rational
+approximants. The criterion and density proof are
+mathematical arguments, **not new Lean declarations**.
+
+## CI-generated title-page source link
+
+\`paper/build.sh\` computes the exact checked-out
+commit via \`git rev-parse HEAD\` and generates
+\`paper/build-identity.tex\` on every build. The
+first page contains only a compact, clickable
+\`Source commit\` label at the bottom, pointing to
+\`https://github.com/ottojung/assemblyp1/commit/<SHA>\`.
+The previously visible version and long commit block
+is absent. The Documents CI workflow verifies the
+compiled PDF annotation against the exact Git commit
+used to build it through
+\`scripts/verify_paper_source_link.py\`.
+Neither the source SHA nor the release tag is
+hard-coded into the title-page link.
