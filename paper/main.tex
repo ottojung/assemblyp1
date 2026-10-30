@@ -32,12 +32,12 @@ and finite-sample likelihood reliability}
 
 \begin{abstract}
 \noindent
-Genome sequencing produces many short pieces of DNA whose positions in
-the original genome are unknown. One way to reconstruct the genome is to
-fit the pieces together using their overlaps. Another is to ask which
-candidate genome would have been most likely to produce the particular
-pieces observed. These questions seem closely related, but they need not
-have the same answer.
+Genome assembly aims to reconstruct a genome from the short DNA sequences
+produced by sequencing. Under suitable conditions, the overlaps between these
+sequences allow us to recover the original genome uniquely. But does this also
+guarantee that the true genome is the one most likely to produce the particular
+collection of sequences we observed? We investigate when this is the case
+and when it fails.
 
 We show that even when the observed pieces meet established conditions
 for reconstructing the true genome, an incorrect genome can assign a
@@ -67,12 +67,6 @@ from unlimited data, and being able to recover it reliably from a
 finite sample.
 
 \end{abstract}
-
-\vfill
-\begin{center}
-\footnotesize
-\href{https://github.com/ottojung/assemblyp1/commit/\AssemblyCommit}{\textit{Source commit}}
-\end{center}
 
 \clearpage
 \tableofcontents

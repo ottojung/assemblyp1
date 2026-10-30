@@ -23,11 +23,18 @@ results and historical source premises.
 
 \subsection{Reproducible source revision and proof checks}
 
-This PDF is built from a specific signed source revision.
-\begin{quote}
-\noindent\textbf{Source commit:}\\
-\texttt{\AssemblyCommit}
+The exact source revision used to build this PDF is available at
+the following permanent URL:
+\par\smallskip
+\begingroup
+\small
+\edef\AssemblySourceRevisionURL{https://github.com/ottojung/assemblyp1/commit/\AssemblyCommit}%
+\noindent\expandafter\url\expandafter{\AssemblySourceRevisionURL}\par
+\endgroup
+\smallskip
 
+The corresponding toolchain and source revisions are:
+\begin{quote}
 \noindent\textbf{Release tag:} \texttt{\AssemblyPaperTag}
 
 \noindent\textbf{Lean:} \texttt{\AssemblyLeanToolchain}

@@ -64,7 +64,7 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Verify CI-generated first-page source permalink
+      - name: Verify revision-exact URL in reproducibility appendix
         shell: bash
         run: |
           set -euo pipefail
