@@ -1,5 +1,7 @@
 # assemblyp1
 
+**Finalized 2026-10-30:** [Paper v1.6.0](https://github.com/ottojung/assemblyp1/releases/tag/paper-v1.6.0) is the final versioned publication. All AssemblyP1 agents have been stopped and all related Antonina board issues closed. New sharp primitive-P2 separation and reverse-complement-class results are **paper-level mathematical theorems, not yet Lean-formalized**; historical physical-molecule transfer and bridging-threshold questions remain open. See [verification status](docs/verification.md).
+
 AssemblyP1 studies a mathematical question about genome assembly:
 **when does the true circular genome maximize the likelihood of the reads?**
 
@@ -31,11 +33,11 @@ See:
 - [`docs/bbt-eulerian-cycle-89.md`](docs/bbt-eulerian-cycle-89.md) — the external `thm:BBT` input (issue #89) in its source shape: uniqueness of the Eulerian cycle of the condensed `K`-mer graph;
 - [`docs/intent-records/`](docs/intent-records/) — durable project intent.
 
-## Research workflow
+## Historical research workflow (inactive)
 
-Substantial research work is organized as a durable graph of narrow questions. The orchestrator may distribute source research, model auditing, positive proof search, counterexample search, and Lean formalization to independent workers, then reconciles their exact propositions and evidence before integration. Source facts, conjectures, computational evidence, paper proofs, and kernel-checked Lean results remain explicitly distinct.
+Substantial research work is organized as a durable graph of narrow questions. The orchestrator distributed source research, model auditing, positive proof search, counterexample search, and Lean formalization to independent workers, and reconciled their exact propositions and evidence before integration. Source facts, conjectures, computational evidence, paper proofs, and kernel-checked Lean results remain explicitly distinct.
 
-Start broad agentic work with [`docs/skills/research-orchestrator.md`](docs/skills/research-orchestrator.md).
+Historical process documentation: [`docs/skills/research-orchestrator.md`](docs/skills/research-orchestrator.md).
 
 ## Licensing and citation
 
