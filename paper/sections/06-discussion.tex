@@ -154,9 +154,14 @@ length bound (Theorem~\ref{thm:p2-finite-class}), it gives
 finite-read recovery for the \emph{entire} oriented primitive-P2
 class (Corollary~\ref{cor:p2-finite-recovery-all}), not merely
 an arbitrary finite shortlist. For this class the affinity is not merely
-existential: Theorem~\ref{thm:p2-uniform-rate} makes the rate explicit,
-bounding the exact-ML error probability by $N_C\,e^{-n/(8B^4)}$ with
-$B=2q^{L-1}$ and a matching sample-size threshold $n\ge8B^4\log(N_C/\delta)$.
+existential: the Lean-checked Theorem~\ref{thm:p2-uniform-rate}
+gives a quartic separation bound, and the mathematical
+Propositions~\ref{prop:p2-linear-rate} and
+\ref{prop:p2-linear-sharpness} establish its sharp
+$\Theta(1/B)$ exponent. In particular, the exact-ML
+error probability is at most $N_C\,e^{-n/(64B)}$
+with $B=2q^{L-1}$, and
+$n\ge64B\log(N_C/\delta)$ suffices for error at most $\delta$.
 The candidate class may be enormous
 and the constants are exponential in the read length, so this is not a practical
 read-depth guarantee.
@@ -383,10 +388,15 @@ the full reverse-complement MB09 optimizer correspondence
 remains open.
 
 \item \textbf{Sharp finite-read recovery rates.}
-For the oriented primitive-P2 class, can the explicit
-$1/(8B^4)$ exponent in Theorem~\ref{thm:p2-uniform-rate} be improved
-to the conjectural sharp order $1/B$, with matching asymptotic bounds?
-The finite enumerations motivating that conjecture are not a proof.
+For the oriented primitive-P2 class,
+Propositions~\ref{prop:p2-linear-rate}
+and~\ref{prop:p2-linear-sharpness} now give matching
+$\Theta(1/B)$ separation bounds even for fixed $q$.
+What is the best universal leading constant, and
+which primitive-P2 genome pairs are exact or
+asymptotic minimizers for their given $(q,L)$?
+The original finite enumerations do not resolve
+these optimal-constant questions.
 An unrestricted-universe uniform rate is \emph{not} an open
 possibility: distinct genomes such as $AB$ and $ABAB$ have identical
 read laws, preventing uniform recovery.
@@ -492,11 +502,13 @@ several observation conventions. With the population distribution instead,
 the truth always maximizes expected likelihood; for primitive P2 genomes,
 complete-spectrum uniqueness makes that maximum unique up to rotation. On the entire finite oriented primitive-P2 class, the exact-ML
 error admits an exponential bound in the number of independent
-reads --- with an explicit, deliberately loose rate
-$N_C\,e^{-n/(8B^4)}$ (Theorem~\ref{thm:p2-uniform-rate}) --- even though its
-finite-sample success curve need not be monotone
+reads --- with an explicit paper-proved rate
+$N_C\,e^{-n/(64B)}$ (Proposition~\ref{prop:p2-linear-rate}) ---
+even though its finite-sample success curve need not be monotone
 (Proposition~\ref{prop:nonmonotone}).
-The proofs and finite certificates are formalized in Lean. Together,
+The principal structural and earlier quartic-rate results
+are formalized in Lean; the sharper linear-rate theorem
+and matching construction remain paper-level proofs. Together,
 these results explain what graph structure can determine, what read
 frequencies contribute, and how the two interact. Throughout, the
 reconstruction guarantee and the likelihood comparison are kept apart:
