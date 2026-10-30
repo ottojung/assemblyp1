@@ -338,16 +338,19 @@ circular read laws to length eight.
 The theorem is not claimed as a new Lean declaration.
 
 
-## Improved cubic primitive-P2 Hellinger separation (#423)
+## Uniform linear primitive-P2 Hellinger separation (#423)
 
-Paper Proposition prop:p2-cubic-rate upgrades the primitive-P2
-**oriented** finite-iid candidate class from the existing
-Lean-checked 1/(8 B^4) gap to the mathematically proved
-1/(16 B^3) gap. It reuses the established kernel-checked
-P2 (L-1)-mer multiplicity cap and finite-family likelihood
-bound, with a separate paper proof for the scalar
-Cauchy/square-root step and for the case L > genome length.
-The resulting error bound is N_C * exp(-n/(16 B^3)).
-This improvement **is not yet a standalone Lean theorem**.
-See [proof and scope](primitive-p2-cubic-rate.md) and the
-[independent exact arithmetic regression](../scripts/verify_p2_cubic_rate.py).
+Paper Proposition prop:p2-linear-rate improves the uniform
+primitive-P2 **oriented** finite-iid Hellinger separation
+from the existing Lean-checked 1/(8 B^4) to the mathematically
+proved 1/(64 B). The resulting exact ML error bound is
+N_C * exp(-n/(64B)). The proof uses the already Lean-checked
+P2 (L-1)-mer multiplicity cap, the L>G case handled by
+primitivity, and a finite angular gap among the three
+positive multiplicity ratios {1/2, 1, 2}.
+
+**Proof status:** this improved linear estimate is mathematical,
+not yet a standalone Lean theorem. Its optimal constant and
+the matching worst-case asymptotic upper bound remain open.
+See [proof and scope](primitive-p2-linear-rate.md) and
+[independent small-profile regression](../scripts/verify_p2_linear_rate.py).

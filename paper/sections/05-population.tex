@@ -662,82 +662,107 @@ success curve.  The competitor class here is restricted to primitive-P2
 admissible, oriented exact iid reads; it is not universal maximum likelihood
 over all genomes and not the MB09 product-binomial approximation.
 
-\begin{proposition}[Improved cubic separation for primitive P2]
-\label{prop:p2-cubic-rate}
-Under the hypotheses and the same admissible competitor
-class as Theorem~\ref{thm:p2-uniform-rate},
+\begin{proposition}[Uniform linear separation for primitive P2]
+\label{prop:p2-linear-rate}
+Under the hypotheses and over the same admissible oriented
+competitor class as Theorem~\ref{thm:p2-uniform-rate},
 \[
-  1-\rho(p_S,p_D)\;\ge\;
-  \frac{1}{8G_SG_D(G_S+G_D)}
-  \;\ge\;\frac{1}{16B^3}.
+  1-\rho(p_S,p_D)\;\ge\;\frac{1}{64B}.
 \]
-Consequently the same exact-ML wrong-competitor event has
+Consequently the exact-ML wrong-competitor event has
 probability at most
 \[
-  N_C\exp\!\Bigl(-\frac{n}{16B^3}\Bigr),
+  N_C\exp\!\Bigl(-\frac{n}{64B}\Bigr),
 \]
-and $n\ge16B^3\log(N_C/\delta)$ suffices for error
+and $n\ge64B\log(N_C/\delta)$ suffices for error
 at most $\delta$.
 \end{proposition}
 \begin{proof}
-The primitive-P2 $(L-1)$-window multiplicity cap
-gives $c_w\le2$ for each length-$L$ read type
-when $L\le G$, since every $L$-read occurrence
-also counts as an occurrence of its prefix.
-When $L>G$, primitivity gives the stronger bound
-$c_w\le1$: two equal length-$L$ windows at
-distinct starts would have equal length-$G$
-prefixes and therefore make the entire circle
-invariant under a nonzero cyclic shift.
-Thus for either genome and every $w$,
-$p_S(w)\le2/G_S$ and $p_D(w)\le2/G_D$.
+Write $G=|S|$ and $H=|D|$, with $G,H\le B$.
+For each oriented length-$L$ read type $w$, let $c_w,d_w$
+be its circular occurrence counts, so that
+$p_S(w)=c_w/G$ and $p_D(w)=d_w/H$.
+Both count vectors have entries only in $\{0,1,2\}$.
+Indeed, if $L\le G$, the primitive-P2 multiplicity
+cap for $(L-1)$-mers bounds every $L$-mer count by two.
+If $L>G$, two distinct starts spelling the same length-$L$
+word would already spell the same length-$G$ word,
+yielding a nontrivial rotational period and contradicting
+primitivity. Apply the same argument to $D$.
 
-By the same integer-denominator argument as
-Theorem~\ref{thm:p2-uniform-rate}, some $w$ has
-$d=|p_S(w)-p_D(w)|\ge1/(G_SG_D)>0$.
-For $a=p_S(w)$ and $b=p_D(w)$,
+By Theorem~\ref{thm:population}, $p_S\ne p_D$ for
+a nonrotational admissible $D$.
+If some $w$ has $c_w=0<d_w$ or $d_w=0<c_w$,
+the Hellinger identity
 \[
- (\sqrt a-\sqrt b)^2
- =\frac{(a-b)^2}{(\sqrt a+\sqrt b)^2}
- \ge\frac{d^2}{2(a+b)}
- \ge\frac{1}{4G_SG_D(G_S+G_D)},
+  1-\rho=\frac12\sum_w
+       \bigl(\sqrt{p_S(w)}-\sqrt{p_D(w)}\bigr)^2
 \]
-using $(\sqrt a+\sqrt b)^2\le2(a+b)$
-and $a+b\le2/G_S+2/G_D$.
-Half the sum of squared square-root differences
-equals $1-\rho$, so it is at least
-$1/(8G_SG_D(G_S+G_D))$.
-The bound $G_S,G_D\le B$ gives the uniform gap;
-the same finite-family Hellinger union bound as
-before yields the claimed error probability.
+immediately yields $1-\rho\ge1/(2B)$.
+
+Otherwise the count vectors have identical positive
+support. On this support put $r_w=d_w/c_w$, so every
+$r_w$ belongs to $\{1/2,1,2\}$.
+There must be two indices $i,j$ with $r_i\ne r_j$:
+if $r_w=r$ for all positive coordinates, then
+$H=\sum d_w=r\sum c_w=rG$, hence
+$p_D=p_S$, a contradiction.
+Set
+\[
+ a=\sqrt{H/G},\qquad
+ u_i=\sqrt{r_i},\qquad u_j=\sqrt{r_j}.
+\]
+The three possible values for $u$ are
+$1/\sqrt2,1,\sqrt2$; distinct values differ
+by more than $1/4$.
+Using $c_i,c_j\ge1$ and
+$x^2+y^2\ge(x-y)^2/2$, we obtain
+\[
+\begin{aligned}
+1-\rho
+ &= \frac{1}{2H}\sum_w c_w
+       \bigl(a-\sqrt{r_w}\bigr)^2 \\
+ &\ge\frac{(a-u_i)^2+(a-u_j)^2}{2H}\\
+ &\ge\frac{(u_i-u_j)^2}{4H}
+  >\frac{1}{64H}\ge\frac{1}{64B}.
+\end{aligned}
+\]
+Here the sum is over positive support; zero-supported
+coordinates contribute zero. The Hellinger
+likelihood-ratio inequality and finite union bound
+used in Theorem~\ref{thm:p2-uniform-rate}
+now give the claimed probability estimate.
 \end{proof}
 
-The $(L-1)$-multiplicity cap and the original
-quartic rate are Lean-checked. This improved
-cubic estimate is a \emph{mathematical proof},
-not yet a separate kernel-checked theorem;
-the exact arithmetic regression is
-\path{scripts/verify_p2_cubic_rate.py}.
-It is not a statement about unrestricted
-genomes or strand-collapsed observations.
+The previous quartic rate and the primitive-P2
+multiplicity cap are Lean-checked.
+The new uniform linear estimate is a
+\emph{paper-level mathematical proof},
+not yet a separately kernel-checked theorem.
+The algebraic finite regression is
+\path{scripts/verify_p2_linear_rate.py}.
+The estimator and competitor class remain
+\emph{oriented} and primitive-P2 restricted;
+the result does not transfer to unrestricted genomes
+or strand-collapsed physical observations.
 
 \begin{remark}[Sharpness of the rate, and the unrestricted universe]
 \label{rem:rate-sharpness}
-The separation bound $1/(8B^4)$ of Theorem~\ref{thm:p2-uniform-rate} is valid
-but not tight.  Complete exact enumeration of the primitive-P2 class at
+The original kernel-checked $1/(8B^4)$ bound is valid
+but not tight; Proposition~\ref{prop:p2-linear-rate} proves
+the stronger $1/(64B)$ lower bound.  Complete exact enumeration of the primitive-P2 class at
 $(q,L)=(2,2),(3,2),(2,3),(2,4)$, with
 $B=4,6,8,16$ respectively, gives exact worst-case separations $1-\rho$ larger than the
 proved bound by factors $274$, $903$, $2116$, and $16648$; the observed extremal pairs
 are one-symbol insertions, suggesting separation of order $1/B$:
 in these four cases $(1-\rho_*)B$ is approximately $0.51$--$0.54$.
-The sharp exponent is conjecturally $1$ rather than
-the proved cubic exponent $3$ (Proposition~\ref{prop:p2-cubic-rate}). The finite-class
-non-tightness is an exact finite computation and the asymptotic statement is a
-conjecture whose missing ingredient is a separation lower bound
-$1-\rho\ge c_1/B$, not yet proved; the weaker cubic
-estimate is established in Proposition~\ref{prop:p2-cubic-rate},
-at paper-proof rather than kernel-proof level. Nothing in the
-finite-class enumeration of this remark is kernel-checked.  The exact arithmetic
+The exponent $1$ in the previously conjectured
+\emph{lower} separation bound is now proved.
+The best universal constant and a matching worst-case
+upper construction across general alphabet sizes and
+read lengths remain open. The four enumerations
+are finite computations, not such an asymptotic proof.
+The exact arithmetic
 is reproduced by the scripts and arithmetic records listed in
 Appendix~\ref{app:reproduction}.  Over the
 \emph{unrestricted} candidate universe no uniform positive separation exists
