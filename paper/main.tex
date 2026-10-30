@@ -32,43 +32,39 @@ and finite-sample likelihood reliability}
 
 \begin{abstract}
 \noindent
-Genome assembly aims to reconstruct a genome from the short DNA sequences
-produced by sequencing. Under suitable conditions, the overlaps between these
-sequences allow us to recover the original genome uniquely. But does this also
-guarantee that the true genome is the one most likely to produce the particular
-collection of sequences we observed? We investigate when this is the case
-and when it fails.
+Genome sequencing produces many short pieces of DNA whose positions in
+the original genome are unknown. One way to reconstruct the genome is to
+fit the pieces together using their overlaps. Another is to ask which
+candidate genome would have been most likely to produce the particular
+pieces observed. These questions seem closely related, but they need not
+have the same answer.
 
-We give an oriented, error-free counterexample in which every distinct
-read of the true genome is observed and the original matched-string
-coverage-and-bridging condition holds, yet a longer incorrect genome has
-strictly higher exact likelihood. Same-length molecular counterexamples
-show that the failure is not solely an artefact of varying genome length.
+We show that even when the observed pieces meet established conditions
+for reconstructing the true genome, an incorrect genome can assign a
+higher probability to the data. The reason is that reconstruction uses
+how the pieces fit together, whereas likelihood also depends on how
+often each kind of piece appears. We establish failures under exact
+sequencing models, including comparisons between genomes of equal
+length when observations from both DNA strands are taken into account.
 
-For a fixed truth with branching read support, the probability
-that the truth maximizes unrestricted exact likelihood is
-$O(n^{-(E-V)/2})$. We characterize unrestricted
-likelihood through a compact optimization over balanced
-read frequencies and give an exact rational-potential
-certificate deciding whether a specified genome maximizes
-finite-sample likelihood over all genome lengths, without
-enumerating competitors.
+We also study what happens when the genome's length is not known in
+advance. We characterize how likely the observations can be under
+genomes of arbitrary length and give an exact way to check whether a
+proposed genome is a most likely explanation without searching through
+every alternative. For some true genomes, collecting more reads does
+not make unrestricted likelihood increasingly favor the truth.
 
-On the positive side, repeat bridging collapses a
-same-length, complete-support candidate class to the
-truth's rotations: likelihood ties are a consequence of
-structural uniqueness, not an extra optimization result.
-For primitive truths satisfying the explicit P2 repeat
-restriction, \emph{every} candidate shorter than twice
-the true length has a different read law unless it is
-a rotation of the truth, with no repeat restriction on
-competitors. Exact ML over this finite length window
-then succeeds with exponentially high probability.
-We also give an always-attained, fixed-truth-consistent
-MAP estimator under a summable geometric length prior,
-and distinguish these results from the stronger
-population identifiability and finite-read guarantees
-for fully P2-restricted classes.
+On the positive side, we prove that additional information about
+genome length or restrictions on repeated regions can make the true
+genome distinguishable from its competitors. Under suitable conditions,
+the probability that an incorrect genome ties or beats the truth
+decreases exponentially as more independent reads are collected.
+We also give a method that assigns a preference to shorter genomes,
+always has a best candidate, and eventually recovers the true genome
+under stated assumptions. These results clarify the difference
+between being able to reconstruct a genome, being able to identify it
+from unlimited data, and being able to recover it reliably from a
+finite sample.
 
 \end{abstract}
 
