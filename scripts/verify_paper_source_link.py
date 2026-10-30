@@ -1,14 +1,27 @@
 #!/usr/bin/env python3
-"""Verify that the first-page permalink targets the CI checkout commit.
+"""Verify the exact, readable source URL in the PDF reproduction appendix.
 
 Usage: verify_paper_source_link.py PDF [EXPECTED_COMMIT]
-The link is created by paper/build.sh (git rev-parse HEAD) at build time.
+paper/build.sh derives EXPECTED_COMMIT from the actual checkout at build time.
+The URL must be visible in full, clickable, and absent from the cover page.
 """
 from pathlib import Path
 import subprocess
 import sys
 
 from pypdf import PdfReader
+
+
+def uri_annotations(page):
+    for ref in page.get("/Annots", []):
+        annotation = ref.get_object()
+        action = annotation.get("/A")
+        if not action:
+            continue
+        action = action.get_object()
+        if action.get("/S") != "/URI":
+            continue
+        yield str(action["/URI"])
 
 
 def main():
@@ -21,33 +34,36 @@ def main():
     expected = f"https://github.com/ottojung/assemblyp1/commit/{sha}"
 
     pdf = PdfReader(str(path))
-    first = pdf.pages[0]
-    text = first.extract_text()
-    assert "Version: untagged" not in text
-    assert "Source commit:" not in text
-    assert "Source commit" in text
+    assert len(pdf.pages) > 1
+    cover = pdf.pages[0]
+    assert "Source commit" not in (cover.extract_text() or "")
+    assert expected not in list(uri_annotations(cover)), (
+        "The source link must not appear on the first page"
+    )
 
-    urls = []
-    bottom_urls = []
-    height = float(first.mediabox.height)
-    for ref in first.get("/Annots", []):
-        annotation = ref.get_object()
-        action = annotation.get("/A")
-        if not action:
+    matches = []
+    for index, page in enumerate(pdf.pages):
+        links = list(uri_annotations(page))
+        if expected not in links:
             continue
-        action = action.get_object()
-        if action.get("/S") != "/URI":
-            continue
-        uri = str(action["/URI"])
-        urls.append(uri)
-        rect = annotation.get("/Rect")
-        if rect is not None and float(rect[1]) < height * .25:
-            bottom_urls.append(uri)
+        text = page.extract_text() or ""
+        visible_text = "".join(text.split())
+        assert expected in visible_text, (
+            "Full URL must be printed as text, not hidden under a label",
+            index + 1,
+        )
+        assert ("Reproducible source revision and proof checks" in text
+                or "Reproducing the results" in text), (
+            "The URL belongs in the reproduction appendix", index + 1
+        )
+        matches.append(index + 1)
 
-    assert expected in urls, (expected, urls)
-    assert expected in bottom_urls, ("link must be on bottom quarter", urls)
-    print(f"First-page bottom permalink targets CI checkout: {expected}")
-    print(f"PDF pages: {len(pdf.pages)}; source link validated")
+    assert len(matches) == 1 and matches[0] > 1, (
+        "Expected one visible, clickable revision URL in the appendix",
+        expected, matches,
+    )
+    print(f"Reproducibility appendix page {matches[0]} displays and links: {expected}")
+    print(f"PDF pages: {len(pdf.pages)}; cover is free of source links")
 
 
 if __name__ == "__main__":
