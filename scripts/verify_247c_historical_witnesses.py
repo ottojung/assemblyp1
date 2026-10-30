@@ -144,6 +144,23 @@ print("  historical (strand):", "PASS" if all(
 print("  old Covers:", "PASS" if all(any((p - r) % 4 < 2 for r in [0, 2])
                                     for p in range(4)) else "FAIL")
 
+# Appendix F.1: independently recompute the variable-length molecule case.
+from collections import Counter
+S, D, starts, L = "AAATT", "AAAATT", [0, 1, 4], 3
+x = Counter(min(window(S, len(S), L, i), rc(window(S, len(S), L, i))) for i in starts)
+cS = Counter(min(window(S, len(S), L, i), rc(window(S, len(S), L, i))) for i in range(len(S)))
+cD = Counter(min(window(D, len(D), L, i), rc(window(D, len(D), L, i))) for i in range(len(D)))
+assert sorted(x.values()) == [1, 1, 1]
+exact_F = Fraction(1)
+bin_F = Fraction(1)
+for w, k in x.items():
+    exact_F *= (Fraction(cD[w], len(D)) / Fraction(cS[w], len(S))) ** k
+    bin_F *= (Fraction(cD[w], 5) / Fraction(cS[w], 5)) ** k
+    bin_F *= ((1-Fraction(cD[w], 5)) / (1-Fraction(cS[w], 5))) ** (len(starts)-k)
+assert exact_F == Fraction(125, 108), exact_F
+assert bin_F == Fraction(9, 8), bin_F
+print("Appendix F.1 length-varying molecule ratios:", exact_F, bin_F, "PASS")
+
 print()
 print(f"W1 fully validated: {ok1}")
 print(f"W2 fully validated: {ok2}")

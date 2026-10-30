@@ -3,41 +3,39 @@
 
 \subsection{The shape of the answer}
 
-The finite picture in Table~\ref{tab:finite} is neither a proof nor a refutation
-of a single sentence. It is a map of an interface. Bridging conditions are a
-\emph{structural} hypothesis; maximum likelihood is an \emph{optimization}
-objective; the published sentence asks whether the first implies the second. Our
-study shows that the answer depends on choices the sentence does not make, and
-that the mathematically clean content lives in two distinct failure modes.
+The most consequential distinction is between a genome
+being \emph{reconstructible} from the overlaps in its reads
+and being \emph{most likely} under the observed read
+frequencies. Two obstacles separate them.
 
-\paragraph{Structural/model failure.}
-Without a repeat/read-length boundary the genome need not be identifiable at all
-(Example~\ref{ex:ABAB}). Bridging conditions repair the structural ambiguity, and
-Theorem~\ref{thm:rigidity} shows that on the same-length oriented MB09
-slice they are strong enough to make the truth's spectrum the only positive
-circulation --- an exact rigidity, not just a reconstruction claim. Requiring
-the candidate's length to equal the true length and requiring the truth
-to be a genuine candidate are two independent extra assumptions, neither
-supplied by bridging alone. The same-length $AABB\to ABAB$ witness
-shows that truth candidacy matters, and
-Theorem~\ref{thm:cex-variable-length} shows that even truth-admissible
-full-support samples need the length restriction.
+\paragraph{Structure.}
+Distinct genomes can produce the same distribution of
+reads, so they cannot be distinguished even with unlimited
+data (Example~\ref{ex:ABAB}). Repeat bridging can remove
+this ambiguity. For oriented reads and equal-length,
+full-support candidates, it also forces the true genome's
+complete read counts and its circular spelling
+(Theorem~\ref{thm:rigidity},
+Corollary~\ref{cor:historical-oriented-same-length}).
+The historical reverse-complement molecule observations
+belong to a different candidate and observation model.
 
-\paragraph{Finite-sampling failure.}
-Even structurally admissible genomes can lose to the truth's competitors because
-empirical read frequencies fluctuate (Example~\ref{ex:frequencies}). This is a
-different mechanism and needs a different repair. Population maximum likelihood
-removes it at the maximizer level by construction
-(Lemma~\ref{lem:gibbs}), and for the oriented primitive P2 class it also yields
-uniqueness (Theorem~\ref{thm:population}).
-
-The combined picture is mathematically direct: repeat structure determines
-which circular spellings are distinguishable from reads; a graph algorithm
-recovers the source when the reads are sufficiently informative; and a
-likelihood objective additionally depends on sampled frequencies.
-Positive spectrum rigidity identifies one finite regime where structure
-controls the ranking. Population likelihood removes frequency fluctuations,
-reducing uniqueness to complete-spectrum identifiability.
+\paragraph{Sampling and model flexibility.}
+Even distinguishable genomes can be ranked incorrectly
+by a finite sample. More strikingly, for every fixed truth
+with branching oriented read overlaps, its probability
+of winning exact likelihood against \emph{all} genome
+lengths tends to zero (Theorem~
+\ref{thm:unrestricted-branching-rate}).
+The flow characterization explains this: arbitrarily long
+circular genomes approximate balanced read-frequency
+assignments densely, so the unrestricted optimizer
+overfits sampling fluctuations. If the candidate class
+is instead identifiable and suitably restricted,
+finite-sample likelihood errors become exponentially
+rare (Theorem~\ref{thm:finite-recovery}).
+This does not contradict the unrestricted failure,
+because the sets of competing genomes differ.
 
 \subsection{What the proved results contribute}
 \label{sec:discussion:proofs}
@@ -135,13 +133,13 @@ identity also yields a kernel-checked class-count equality: add the two
 distinct strand-word counts, or count only once when the read word is its
 own reverse complement. This is independent of the strand chosen to
 represent the class
-(\texttt{Section62ObservedMoleculeCount.observation7\_observed\_rc\_class\_count}).
+(see the exact Lean declaration in \path{docs/verification.md}).
 This biological interpretation assumes the strand involution supplied to
 the model really acts as DNA reverse complement on read words; the abstract
 count identity itself only needs an involution. It does not supply the
 counts of unobserved molecule classes in the full Section~6.1 likelihood.
 
-The finite-read recovery theorem (Theorem~\ref{thm:finite-recovery}) is a
+The finite-read recovery theorem (Theorem~\ref{thm:finite-recovery}) is an
 \emph{error-exponent} result rather than a structural
 classification: it converts population identifiability of a finite candidate
 family into an explicit exponential bound on the probability of an exact-ML
@@ -486,37 +484,40 @@ same-length and population results show where the intuition does survive.
 
 \subsection{Conclusion}
 
-A collection of short reads has two complementary mathematical structures.
-Their overlaps define a graph that can reconstruct a circular genome;
-their observed type counts define a statistical objective for comparing
-candidate genomes. The repeat-bridging theorem of Shomorony et al.\
-explains when graph reconstruction is information-feasible and efficient.
-Our positive rigidity theorem shows that these structural conditions can
-also force a unique complete-spectrum circulation on an explicitly defined
-same-length oriented slice.
+Reconstructing a circular genome from overlaps and asking which
+genome best explains observed read counts are different problems.
+The reconstruction theorem of Shomorony et al.\ gives conditions
+under which the overlaps determine the truth. In the oriented,
+same-length, complete-support setting, those conditions also
+force the read counts and a unique circular spelling
+(Corollary~\ref{cor:historical-oriented-same-length}).
+With other candidate or observation models,
+the exact likelihood can favor a different genome even when
+the original reconstruction conditions hold.
 
-Finite likelihood introduces a new phenomenon: sampling can over-represent
-some read types, and a competitor can score higher even when the source is
-reconstructible. Exact counterexamples establish that boundary under
-several observation conventions. With the population distribution instead,
-the truth always maximizes expected likelihood; for primitive P2 genomes,
-complete-spectrum uniqueness makes that maximum unique up to rotation. On the entire finite oriented primitive-P2 class, the exact-ML
-error admits an exponential bound in the number of independent
-reads --- with an explicit paper-proved rate
-$N_C\,e^{-n/(64B)}$ (Proposition~\ref{prop:p2-linear-rate}) ---
-even though its finite-sample success curve need not be monotone
-(Proposition~\ref{prop:nonmonotone}).
-The principal structural and earlier quartic-rate results
-are formalized in Lean; the sharper linear-rate theorem
-and matching construction remain paper-level proofs. Together,
-these results explain what graph structure can determine, what read
-frequencies contribute, and how the two interact. Throughout, the
-reconstruction guarantee and the likelihood comparison are kept apart:
-conditioning on the feasible fiber is a corollary of reconstruction, while
-maximizing the unrestricted likelihood over the original candidate universe is
-the genuinely nontrivial question, and the finite counterexamples show where the
-two diverge. The support matrix of Appendix~\ref{app:ledger}
-(Table~\ref{tab:ledger}) records, headline by headline, which of these claims
-is kernel-checked, which is a paper-level proof, which rests on a classical or
-2016 external premise, and which remains open, so that no conditional
-derivation is mistaken for an unconditional maximum-likelihood result.
+The principal negative theorem goes beyond finite
+counterexamples. For \emph{every} fixed truth whose oriented
+read-overlap graph branches, unrestricted exact likelihood
+selects the truth with probability at most
+$O(n^{-(E-V)/2})$, tending to \emph{zero} as the number of reads
+increases (Theorem~\ref{thm:unrestricted-branching-rate}).
+Arbitrarily long candidate genomes can closely fit
+sampling fluctuations through their balanced read frequencies.
+More data alone does not cure this freedom to overfit.
+
+Positive guarantees come from making the candidate universe
+informative. For suitable truths, knowing an upper bound on
+genome length excludes all nonrotational competitors below twice
+the true length. Restricting both truth and competitors by P2
+gives exponential finite-sample recovery, with a sharp
+paper-proved separation order $\Theta(1/B)$
+(Propositions~\ref{prop:p2-linear-rate}
+and~\ref{prop:p2-linear-sharpness}).
+A geometric length prior also produces an
+always-attained, eventually correct MAP estimate
+under the stated fixed-truth assumptions.
+These conclusions do not settle the near-bridging
+sampling threshold or the general physical molecule-flow
+model. Appendix~\ref{app:ledger} and
+\path{docs/verification.md} distinguish their
+Lean-checked proofs, paper-only arguments, and open questions.
