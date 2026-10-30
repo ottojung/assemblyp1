@@ -270,9 +270,14 @@ when the read-overlap support graph is nonbranching
 (Theorem~\ref{thm:identifiable-iff-nonbranching}). For this class we also give an
 exponentially decreasing upper bound on the probability of a
 maximum-likelihood error as independent reads are collected
-(Theorem~\ref{thm:p2-uniform-rate}). This is a theoretical
-guarantee, not a claim that the explicit bound gives a
-practical sequencing depth.
+(Theorem~\ref{thm:p2-uniform-rate}).
+A separate mathematical argument sharpens the uniform
+separation exponent to $\Theta(1/B)$, with
+$B=2q^{L-1}$ (Propositions~\ref{prop:p2-linear-rate}
+and~\ref{prop:p2-linear-sharpness}).
+These are theoretical guarantees, not claims of a
+practical sequencing depth; the sharper result is not
+yet separately Lean-checked.
 
 It does not establish how likelihood performs near the sequencing
 threshold where coverage and bridging first become likely.

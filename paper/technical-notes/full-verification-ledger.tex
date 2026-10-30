@@ -213,19 +213,28 @@ Explicit uniform exponential exact-ML rate (\ref{thm:p2-uniform-rate})
 & (i)
 & \path{PrimitiveP2UniformSeparation.primitiveP2_exponential_error_bound},
 \path{primitiveP2_ML_confidence_explicit}; constants deliberately loose
-(exponential in $L$; exact enumeration shows a $\Theta(B^3)$ gap at
-$B\le16$, Remark~\ref{rem:rate-sharpness}), exact oriented iid only;
+(exponential in $L$; the sharper paper-level
+Propositions~\ref{prop:p2-linear-rate} and
+\ref{prop:p2-linear-sharpness} show the exponent is not sharp),
+exact oriented iid only;
 no uniform rate over the unrestricted universe.\\
 \addlinespace
-No uniform exponential exact-ML rate over the length-unrestricted universe;
-the $1/(8B^4)$ exponent is valid but loose (extremal one-symbol insertions
-suggest sharp $\Theta(1/B)$)
+Sharp primitive-P2 Hellinger separation
+(Propositions~\ref{prop:p2-linear-rate},
+\ref{prop:p2-linear-sharpness})
 & (ii)
-& Exact computation \path{scripts/verify_exponent_265.py} for note
-\path{docs/restricted-vs-unrestricted-exponent-265.md}; \emph{not}
-kernel-checked. $AB$ vs.\ $ABAB$ read-law collision gives error probability
-$1$ for every $n$; the sharp $c_1/B$ lower bound is a named missing lemma,
-not proved.\\
+& Complete mathematical lower bound $1/(64B)$, and
+a matching de Bruijn one-symbol-insertion family with
+gap at most $1/B$. The exponent is sharp for every fixed
+alphabet size as $L\to\infty$; optimal constant remains open.
+These results are paper-proved, not separately Lean-checked.\\
+\addlinespace
+No uniform exponential exact-ML rate over the length-unrestricted universe
+& (ii)
+& Exact computation \path{scripts/verify_exponent_265.py} for
+\path{docs/restricted-vs-unrestricted-exponent-265.md};
+\emph{not} kernel-checked. $AB$ vs.\ $ABAB$ read-law
+collision prevents any unrestricted uniform error rate.\\
 \addlinespace
 Per-truth non-monotonicity (\ref{prop:nonmonotone})
 & (i)
