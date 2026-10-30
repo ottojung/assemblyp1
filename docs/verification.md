@@ -344,8 +344,10 @@ The paper-level Proposition
 for each read length L>=2 the two primitive, maximal-repeat-P2
 circles A^L C T^(L-1) and A^L G T^(L-1) are not dihedrally
 equivalent but have the same length-L reverse-complement-class
-law. See [precise model and general proof](rc-p2-molecule-ambiguity.md)
+law. See [precise model and general proof](rc-p2-molecule-ambiguity.md),
+[physical-RC likelihood source audit](physical-rc-likelihood-source-audit-422.md),
 and [exact small-size regression](../scripts/verify_rc_p2_ambiguity.py)
 for L=2..12. This is **a mathematical proof, not a new Lean
 theorem**. It does not assert correspondence with the historical
-bidirected MB09 molecule likelihood; that source bridge is open.
+bidirected MB09 molecule likelihood; that source bridge is open. No
+oriented=physical equivalence is assumed.
