@@ -225,7 +225,7 @@ are developed in Appendix~\ref{app:decision-bounds}. They sharpen
 bounds without changing the central distinction between a
 truth-dependent reconstruction certificate and unrestricted ML.
 
-\subsection{A worked example, and five claims that must not be conflated}
+\subsection{A worked example, and six claims that must not be conflated}
 \label{sec:five-claims}
 
 The statements above are logically independent, and a small example makes the
@@ -250,14 +250,14 @@ The assembly analogues of the two directions are: Example~\ref{ex:ABAB}
 realizes the stronger failure in which two candidates have \emph{identical}
 read laws, so no rule can beat chance (a failure of identifiability), whereas
 the historical witnesses $W_1,W_2$ realize strict pointwise failure while the
-population laws remain identifiable. The five notions are collected below with
+population laws remain identifiable. The six notions are collected below with
 their exact quantifiers, hypotheses, and evidence.
 
 \begin{table}[!htbp]
 \centering
 \small
 \setlength{\tabcolsep}{4pt}
-\caption{Five notions that the phrase ``the maximum-likelihood sequence is the
+\caption{Six notions that the phrase ``the maximum-likelihood sequence is the
 true sequence'' can denote.}
 \label{tab:claims}
 \begin{tabular}{@{}>{\raggedright\arraybackslash}p{0.14\textwidth}>{\raggedright\arraybackslash}p{0.19\textwidth}>{\raggedright\arraybackslash}p{0.17\textwidth}>{\raggedright\arraybackslash}p{0.23\textwidth}>{\raggedright\arraybackslash}p{0.14\textwidth}@{}}
@@ -296,6 +296,12 @@ Limiting consistency
   & finite, pairwise-distinguishable candidate family
   & exact-ML error $\le\sum_{D}\rho(p_S,p_D)^n\to0$
   & kernel-checked; explicit size Cor.~\ref{cor:explicit-sample-size}\\
+\addlinespace
+Unrestricted ML failure
+  & for each fixed branching truth, as $n\to\infty$
+  & oriented exact iid reads; candidate length unrestricted
+  & Winning probability is $O(n^{-d/2})$
+  & paper-level Thm.~\ref{thm:unrestricted-branching-rate}\\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -314,7 +320,9 @@ nor follows from a reconstruction guarantee (row~1); and limiting consistency
 the population theorem's distribution-level maximizer claim. Row~5 does use
 identifiability (row~4) as a hypothesis, so it is not independent of that row;
 what it adds is the finite- and infinite-sample link that neither row~4 nor
-row~2 supplies.
+row~2 supplies. Row~6 is the contrasting failure for the
+unrestricted-length candidate universe: a branching truth is
+eventually \emph{less} likely to maximize unrestricted likelihood.
 
 \paragraph{Proof-to-claim support matrix.}
 Every headline of this paper is labelled in Appendix~\ref{app:ledger} by the

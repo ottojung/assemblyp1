@@ -18,16 +18,24 @@ and the longer competitor $D=\texttt{AAAATT}$ both induce
 MB09-admissible bidirected circuits. With the fixed external
 reference $N=5$, the original Section~6.1 surrogate gives
 $\Lik_{6.1}(D)/\Lik_{6.1}(S)=9/8>1$.
+The candidate-intrinsic exact multinomial likelihood also
+favors $D$, with ratio $125/108>1$.
 \end{theorem}
 \begin{proof}
 The observed molecule counts are $(1,1,1)$ on
 $(\texttt{AAA},\texttt{AAT},\texttt{TAA})$; the candidate
 counts are $(1,2,2)$ for $S$ and $(2,2,2)$ for $D$.
-Only the first source factor changes:
+Only the first fixed-$N$ binomial factor changes:
 \[
 \frac{(2/5)(3/5)^2}{(1/5)(4/5)^2}=\frac98.
 \]
-The physical circuit feasibility is verified by the exact
+For exact likelihood, the observed molecule-class probabilities
+are $(1/5,2/5,2/5)$ under $S$ and
+$(2/6,2/6,2/6)$ under $D$, giving
+\[
+\frac{(2/6)^3}{(1/5)(2/5)^2}=\frac{125}{108}>1.
+\]
+The multinomial coefficient cancels. The physical circuit feasibility is verified by the exact
 source-model certificate indexed in Appendix~\ref{app:reproduction}.
 \end{proof}
 
@@ -146,6 +154,9 @@ Oriented, realized placement bridging, same length and complete support
 & circular spellings
 & Rotation uniqueness by structural rigidity
 (Thm.~\ref{thm:rigidity})\\
+Oriented, historical matched-string bridging, same length and complete support
+& circular spellings
+& Rotation uniqueness (Cor.~\ref{cor:historical-oriented-same-length})\\
 Oriented, exact iid reads, free length
 & all circular genomes
 & Strict failures (Thm.~\ref{thm:cex-variable-length});
@@ -160,7 +171,7 @@ MB09 molecules, historical matched-string bridging, same length
 (Thms.~\ref{thm:cex-historical-W1}--\ref{thm:cex-historical-W2})\\
 MB09 variable-length molecules
 & spelled bidirected circuits
-& Strict surrogate failure (Thm.~\ref{thm:cex-molecule})\\
+& Strict exact and surrogate failures (Thm.~\ref{thm:cex-molecule})\\
 MB09 general $o_{\min}$ flow optimization
 & integral / relaxed bidirected flows
 & General optimizer-to-spelling correspondence remains open\\

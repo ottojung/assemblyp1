@@ -1,16 +1,21 @@
 \section{Finite results: rigidity, reweighting, and the source predicate}
 \label{sec:finite}
 
-We first prove rigidity of the truth's complete window-spectrum
-circulation under the placement-based bridging hypothesis. The
-same-length rotation consequence also requires that the truth and
-competitors be genuine candidates with the observed full-overlap support.
-We then give strict finite-sample counterexamples showing three distinct
-ways the conclusion can fail: dropping truth candidacy, allowing different
-candidate lengths, or changing to reverse-complement molecule types.
-The last failures persist under the source's matched-string bridging
-predicate (Section~\ref{sec:finite:historical}). Strict likelihood
-inequalities are unaffected by equivalence or tie-breaking conventions.
+The strongest negative conclusion of this section is
+Theorem~\ref{thm:unrestricted-branching-rate}: for every fixed
+truth with branching oriented read overlaps, unrestricted
+exact maximum likelihood selects the truth with probability
+tending to \emph{zero}, rather than one, as the sample grows.
+The culprit is the freedom to adjust a candidate's read
+frequencies by increasing its length.
+
+First we identify the same-length setting where this freedom
+vanishes. We prove rigidity of complete read counts under
+repeat-bridging conditions, and then distinguish three sources
+of counterexamples: a truth excluded from the candidate set,
+unrestricted genome length, and reverse-complement molecule
+observations. The latter satisfy the historical matched-string
+bridging predicate (Appendix~\ref{app:molecular-flow}).
 
 \subsection{Same-length oriented circulation rigidity}
 
@@ -226,7 +231,7 @@ Theorem~\ref{thm:maximizer} requires \emph{both} the truth and the competitor to
 be genuine MB09 candidates. Dropping the conjunct on the truth is a different
 statement, and it is false at equal length: with $S=AABB$ ($G=4$, $L=2$) and the
 realized reads $AB,BA$ at starts $1,3$, full $\Is$ holds, while the same-length
-genome $ABAB$ is a literal MB09 \texttt{SpelledFeasible62} candidate whose exact
+genome $ABAB$ is a genuine MB09 spelled-circuit candidate whose exact
 likelihood is $1/2$ against the truth's $1/8$ (both include the
 multinomial coefficient $\binom{2}{1,1}=2$). So the MB09 candidate
 restriction does not rescue the maximum-likelihood claim unless the truth is
@@ -263,6 +268,46 @@ it as an unproved axiom.
 \end{proof}
 
 \kernelcheck{}
+
+\begin{corollary}[Historical matched-string, oriented same-length uniqueness]
+\label{cor:historical-oriented-same-length}
+Suppose $2\le L\le G=|S|$ and the observed read strings
+$\mathcal W$ satisfy the historical
+$I_s^{\mathrm{match}}(S,\mathcal W)$
+(Definition~\ref{def:historical-match}).
+Suppose also that $S$ and a same-length oriented candidate $D$
+are both genuine complete-support candidates:
+$\mathcal W=\supp\spec_L(S)=\supp\spec_L(D)$ and $|D|=G$.
+Then $\spec_L(D)=\spec_L(S)$, so their spectrum-based
+likelihoods tie. Moreover $D$ is a rotation of $S$.
+\end{corollary}
+\begin{proof}
+Every copy of each maximal triple repeat must be strictly
+straddled by a matched length-$L$ read. Such a read needs
+one letter on each side of the repeat. Therefore no maximal
+triple repeat of length at least $L-1$ can exist.
+The proof of Theorem~\ref{thm:rigidity} uses only this
+no-long-triple consequence: its primitive- and
+periodic-extension cases give a unique positive
+circulation of total $G$ on the truth's full-overlap graph.
+Shared complete oriented support and equal length
+force $\spec_L(D)=\spec_L(S)$.
+
+The historical interleaved-repeat clause, together with
+the absence of long triple repeats, gives the full
+complete-spectrum spelling condition used in
+Corollary~\ref{cor:same-length-rotation}.
+It makes a primitive truth's spelling unique up to
+rotation; the periodic case has a single directed-cycle
+support graph. Hence $D\sim S$.
+\end{proof}
+
+This paper-level adapter does \emph{not} assert the false
+implication $I_s^{\mathrm{match}}\Rightarrow\Is$.
+The equal-length, oriented-read and complete-support
+requirements remain additional. The historical molecule
+counterexamples use different read types and a bidirected
+candidate model (Appendix~\ref{app:molecular-flow}).
 
 Equal length is also an independent, essential restriction; see
 Section~\ref{sec:finite:length}.
@@ -365,9 +410,8 @@ For $\Is$: the starts cover all five positions; the three $A$'s at positions
 $0,1,2$ form a maximal length-$1$ triple repeat, bridged respectively by the
 reads at starts $4,0,1$; and no two maximal repeat pairs have four alternating
 starts, so the interleaved clause is vacuous. The all-bridged triple-repeat
-clause is therefore genuinely exercised. The transfers to all circular
-candidates by Lemma~\ref{lem:negative-transfer} because the witness is
-same-length. \kernelcheck{}
+clause is therefore genuinely exercised. The strict inequality transfers to all circular candidate lengths
+by Lemma~\ref{lem:negative-transfer}; that lemma does not require equal lengths. \kernelcheck{}
 \end{proof}
 
 Repeating the start-$0$ read $k$ times gives the observed multiset
@@ -424,7 +468,7 @@ The same-length restriction in the positive theorem is not cosmetic. On the next
 slice, where $|D|>G$ is allowed, the truth need not be optimal even under $\Is$,
 and this is an infinite-family phenomenon rather than a bounded search.
 
-\begin{theorem}[Oriented variable-length MB09 classification]
+\begin{theorem}[Oriented variable-length counterexample family]
 \label{thm:cex-variable-length}
 Let $\Alphabet=\{A,T\}$, $L=3$, truth $S=AAATT$ ($G=5$), realized starts
 $R=\{0,1,2,3,4\}$, so $R\in\Is$ holds at full strength (coverage, the unique
@@ -608,19 +652,24 @@ Finally, for connected balanced support, $|E|>|V|$ exactly
 when some vertex has at least two outgoing edge types.
 \end{proof}
 
-The conclusion is for each \emph{fixed} genome and read length,
-with an unrestricted candidate-length universe. It does not
-provide a rate uniform over growing genomes, nor does it
-settle the high-probability ML-versus-bridging threshold for
-a growing sequence of genomes in
-Section~\ref{sec:open-questions-final}. It also does not apply
-as stated when candidates are restricted to the finite
-primitive-P2 class, where Theorem~\ref{thm:p2-uniform-rate}
-gives an opposite asymptotic conclusion.
-\statusline{\mathfact{} by the circulation and lattice
-anti-concentration argument above. The theorem is not
-independently Lean-formalized; it applies to genuine
-circular spellings, not arbitrary unspellable flows.}
+This is a fixed-truth, unrestricted-length result. Its mechanism
+is statistical overfitting, not a failure of the law of large
+numbers: read laws of actual circular genomes are dense among
+balanced read frequencies, and the unrestricted likelihood
+optimizer can respond to the sample's random fluctuations.
+At a truth whose overlap graph has $d>0$ independent circulation
+directions, optimality requires the empirical counts to satisfy
+$d$ exact stationarity equations. The probability of all of
+them holding simultaneously is $O(n^{-d/2})$.
+
+The theorem does not give a rate uniform over growing
+genomes or settle the joint sequencing/bridging threshold
+of Section~\ref{sec:open-questions-final}. The finite,
+repeat-restricted universe of
+Theorem~\ref{thm:p2-uniform-rate} instead admits consistent
+likelihood recovery.
+\statusline{\mathfact{}; the proof is mathematical, not
+independently Lean-formalized.}
 
 
 

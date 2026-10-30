@@ -39,32 +39,30 @@ guarantee that the true genome is the one most likely to produce the particular
 collection of sequences we observed? We investigate when this is the case
 and when it fails.
 
-We show that even when the observed pieces meet established conditions
-for reconstructing the true genome, an incorrect genome can assign a
-higher probability to the data. The reason is that reconstruction uses
-how the pieces fit together, whereas likelihood also depends on how
-often each kind of piece appears. We establish failures under exact
-sequencing models, including comparisons between genomes of equal
-length when observations from both DNA strands are taken into account.
+In a simple model of error-free, independently sampled reads, a strong
+failure occurs when candidate genomes may have arbitrary lengths:
+for every fixed genome with branching read overlaps, the probability
+that the true genome maximizes exact likelihood tends to zero as
+more reads are collected. Allowing unrestricted candidates lets
+likelihood fit random variations in the observed frequencies, even
+while those frequencies approach their true values. We quantify
+this effect and give an exact test for whether a proposed genome is
+most likely among genomes of every length.
 
-We also study what happens when the genome's length is not known in
-advance. We characterize how likely the observations can be under
-genomes of arbitrary length and give an exact way to check whether a
-proposed genome is a most likely explanation without searching through
-every alternative. For some true genomes, collecting more reads does
-not make unrestricted likelihood increasingly favor the truth.
+We also show that a wrong genome can be more likely even when
+the observed overlaps satisfy established conditions for reconstructing
+the truth. Such failures occur for equal-length competitors as well
+when the observations group together reads from opposite DNA strands.
 
-On the positive side, we prove that additional information about
-genome length or restrictions on repeated regions can make the true
-genome distinguishable from its competitors. Under suitable conditions,
-the probability that an incorrect genome ties or beats the truth
-decreases exponentially as more independent reads are collected.
-We also give a method that assigns a preference to shorter genomes,
-always has a best candidate, and eventually recovers the true genome
-under stated assumptions. These results clarify the difference
-between being able to reconstruct a genome, being able to identify it
-from unlimited data, and being able to recover it reliably from a
-finite sample.
+There are positive results too. With suitable restrictions on repeats,
+a bound on genome length can distinguish the truth even from competitors
+that obey no repeat restriction; stronger shared restrictions give
+exponentially decreasing error probabilities as more reads arrive.
+We establish the sharp order of one such rate and give a
+length-penalized estimator that always has a best candidate and
+eventually recovers a suitable fixed truth. The results distinguish
+reconstructing a genome, identifying it from its full read
+distribution, and finding it reliably from finitely many reads.
 
 \end{abstract}
 

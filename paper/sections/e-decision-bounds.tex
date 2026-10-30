@@ -34,7 +34,7 @@ Consequently Corollary~\ref{cor:p2-finite-recovery-all} applies the bound
 to that complete class, not merely to an arbitrarily truncated shortlist.
 Exact worst-case affinities for four enumerated finite
 primitive-P2 classes are reported in Remark~\ref{rem:rate-sharpness};
-a sharp uniform asymptotic bound remains open.
+the sharp asymptotic order $\Theta(1/B)$ is proved in Propositions~\ref{prop:p2-linear-rate} and~\ref{prop:p2-linear-sharpness}; the best leading constant and exact extremizers remain open.
 See Theorem~\ref{thm:finite-recovery} for the kernel-checked proof.
 \end{remark}
 
@@ -190,7 +190,7 @@ the least favourable symmetric prior together with the optimally tie-split
 Bayes rule. The per-truth success at $n=85$ is $0.98349\ldots$ for the middle
 truth $A$ and $0.99336\ldots$ for $B,C$, so the $99\%$ figure is prior-averaged,
 not per-truth. The kernel-checked Hellinger union bound instead gives the
-sufficient size $153$, about $1.8\times$ the exact optimum. These numbers are
+sufficient size $153$, about $153/87\approx1.76$ times the exact minimax size $87$ for the worst-case per-truth target, not the prior-averaged Bayes size $85$. These numbers are
 exact finite arithmetic for this one family, not a Lean result and not a
 uniform sample size over the genome universe; the decision-theoretic
 ingredients are standard \parencite{berger1985,lehmann1998}. The finite arithmetic is checked by the minimax verifier

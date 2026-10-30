@@ -104,6 +104,15 @@ equals $w$ with probability $c/|D|$. For independent reads we multiply
 those probabilities. Uniform \emph{start positions} therefore do not
 mean uniform \emph{read strings}.
 
+The main negative result is stronger than the existence of a misleading
+sample. Whenever the possible reads of a fixed truth form a branching
+overlap graph, the probability that the truth wins exact likelihood
+over \emph{all} candidate lengths tends to zero as more independent
+reads arrive (Theorem~\ref{thm:unrestricted-branching-rate}).
+More observations reveal the read frequencies ever more accurately,
+yet the unrestricted optimizer can fit the remaining sampling noise.
+To understand how, begin with a small finite-sample effect.
+
 Here is a minimal example. Let $S=\texttt{AAC}$ be the true circular
 genome and $D=\texttt{AAAC}$ a competing genome, with $L=2$:
 
@@ -174,22 +183,21 @@ The multinomial coefficient for unordered reads cancels from this
 ratio. The same effect holds for an infinite family of read samples
 (Theorem~\ref{thm:cex-variable-length}).
 
-Beyond these witnesses, we characterize unrestricted
-likelihood via balanced read flows
-(Theorem~\ref{thm:flow-supremum-attainment})
-and give an exact rational-potential certificate for
-testing whether a specified candidate is globally optimal
+Why can the failure persist as the sample grows? Candidate genomes
+of arbitrary lengths can approximate any balanced assignment of
+frequencies to the possible reads (Theorem~
+\ref{thm:flow-supremum-attainment}). Maximizing likelihood can
+therefore adjust those frequencies to the sample rather than keep
+them fixed at the truth's values: it is a form of \emph{overfitting}.
+If the truth's overlap graph has $E$ distinct read edges and
+$V$ vertices, Theorem~\ref{thm:unrestricted-branching-rate}
+bounds the probability of unrestricted exact-ML success by
+$O(n^{-(E-V)/2})$ whenever $E>V$.
+An exact rational-potential test decides whether a given genome
+nevertheless maximizes likelihood on a particular sample
 (Theorem~\ref{thm:unrestricted-kkt-certificate}).
-A small curiosity about non-attainment is treated later
-in Section~\ref{sec:finite:flow-supremum}.
-
-In fact, for any fixed genome whose read-support graph branches,
-Theorem~\ref{thm:unrestricted-branching-rate} shows that the
-probability of being an exact-ML maximizer over \emph{all}
-candidate lengths is at most $O(n^{-(E-V)/2})$, where $E$ and
-$V$ count distinct read edges and overlap vertices. This is a
-fixed-genome, unrestricted-length result; it does not contradict
-positive ML recovery on the restricted primitive-P2 class.
+The separate question of whether any maximizing genome exists
+is addressed in Section~\ref{sec:finite:flow-supremum}.
 
 There is no contradiction with the positive same-length theorem below:
 that theorem only compares candidates of the \emph{same} genome length
@@ -332,4 +340,7 @@ The appendices record modeling choices
 (Appendix~\ref{app:modeling}), the proof-status ledger
 (Appendix~\ref{app:ledger}), reproduction instructions
 (Appendix~\ref{app:reproduction}), and unresolved historical
-source interpretations (Appendix~\ref{app:referents}).
+source interpretations (Appendix~\ref{app:referents}),
+decision-theoretic bounds (Appendix~\ref{app:decision-bounds}),
+and physical molecule and bidirected-flow models
+(Appendix~\ref{app:molecular-flow}).

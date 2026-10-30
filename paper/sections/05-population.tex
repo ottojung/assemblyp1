@@ -261,7 +261,7 @@ the doubled word $S^2$ has length $2G$ and the same read law.
 Write $c_S=\spec_L(S)$ and $c_D=\spec_L(D)$. Equality of
 read laws gives $G\,c_D=|D|\,c_S$ coordinatewise. By
 Lemma~\ref{lem:scaling}, $\gcd\{c_S(w):c_S(w)>0\}=1$.
-Therefore $G$ divides $|D|$: a positive integer combination
+Therefore $G$ divides $|D|$: an integer linear combination (with possibly negative coefficients)
 of the nonzero entries of $c_S$ is $1$, and multiplying it
 by $|D|/G$ yields an integer. Since $0<|D|<2G$,
 we must have $|D|=G$, hence $c_D=c_S$.
@@ -370,16 +370,32 @@ every observed sample, and for iid reads from $S$,
 \]
 where $\rho$ is the Hellinger affinity of
 Theorem~\ref{thm:finite-recovery}, and the final bound is
-understood as zero if there are no competitors. Consequently
+understood as zero if there are no competitors.
+In particular, the same error event is bounded by
+$(|\mathcal C_B|-1)\exp(-n/(8G^2B^2))$. Consequently
 ML selects precisely the rotations of $S$ eventually almost
 surely, without imposing P2 on the competitors.
 \end{corollary}
 \begin{proof}
 The candidate set is finite, and Theorem~
 \ref{thm:one-sided-length-window} makes its nonrotational
-read laws different from $p_S$. Apply the finite-family
-Hellinger union bound, Theorem~\ref{thm:finite-recovery}.
-Summability of the exponential error probabilities and
+read laws different from $p_S$. For a candidate $D$ of
+length $H\le B$, distinct read laws imply that some
+read type $w$ satisfies
+\[
+|p_S(w)-p_D(w)| =
+\frac{|H\,\spec_L(S)(w)-G\,\spec_L(D)(w)|}{GH}
+\ge\frac1{GH}\ge\frac1{GB},
+\]
+because the nonzero numerator is an integer.
+The Hellinger identity and
+$|\sqrt a-\sqrt b|\ge|a-b|/2$ for $a,b\in[0,1]$
+give $1-\rho(p_S,p_D)\ge1/(8G^2B^2)$.
+Apply the finite-family bound of
+Theorem~\ref{thm:finite-recovery}.
+In particular, the error is at most
+$(|\mathcal C_B|-1)\exp(-n/(8G^2B^2))$.
+Summability of these probabilities and
 Borel--Cantelli give eventual almost-sure correctness.
 \end{proof}
 
@@ -821,7 +837,7 @@ Lean-formalized; its finite independent regression is
 
 \begin{remark}[Sharpness of the rate, and the unrestricted universe]
 \label{rem:rate-sharpness}
-The original kernel-checked $1/(8B^4)$ bound is valid
+The Lean-checked $1/(8B^4)$ bound is valid
 but not tight; Proposition~\ref{prop:p2-linear-rate} proves
 the stronger $1/(64B)$ lower bound.  Complete exact enumeration of the primitive-P2 class at
 $(q,L)=(2,2),(3,2),(2,3),(2,4)$, with
@@ -829,13 +845,8 @@ $B=4,6,8,16$ respectively, gives exact worst-case separations $1-\rho$ larger th
 proved bound by factors $274$, $903$, $2116$, and $16648$; the observed extremal pairs
 are one-symbol insertions, suggesting separation of order $1/B$:
 in these four cases $(1-\rho_*)B$ is approximately $0.51$--$0.54$.
-The previously conjectured exponent $1$ is now
-proved on both sides: the uniform lower bound is
-Proposition~\ref{prop:p2-linear-rate} and the matching
-de Bruijn family is Proposition~\ref{prop:p2-linear-sharpness}.
-The best universal leading constant remains open.
-The original four finite enumerations alone were
-not an asymptotic proof.
+Propositions~\ref{prop:p2-linear-rate} and~\ref{prop:p2-linear-sharpness} prove the sharp asymptotic order $\Theta(1/B)$.
+The optimal leading constant and complete extremizer classification remain open.
 The exact arithmetic
 is reproduced by the scripts and arithmetic records listed in
 Appendix~\ref{app:reproduction}.  Over the
