@@ -32,37 +32,13 @@ and finite-sample likelihood reliability}
 
 \begin{abstract}
 \noindent
-Genome assembly aims to reconstruct a genome from the short DNA sequences
-produced by sequencing. Under suitable conditions, the overlaps between these
-sequences allow us to recover the original genome uniquely. But does this also
-guarantee that the true genome is the one most likely to produce the particular
-collection of sequences we observed? We investigate when this is the case
-and when it fails.
+In genome assembly, we observe short DNA sequences sampled from an unknown genome. A sequencing model tells us the probability of obtaining these observations from any proposed genome. We investigate these probabilities, in particular how they depend on genome structure.
 
-In a simple model of error-free, independently sampled reads, a strong
-failure occurs when candidate genomes may have arbitrary lengths:
-for every fixed genome with branching read overlaps, the probability
-that the true genome maximizes exact likelihood tends to zero as
-more reads are collected. Allowing unrestricted candidates lets
-likelihood fit random variations in the observed frequencies, even
-while those frequencies approach their true values. We quantify
-this effect and give an exact test for whether a proposed genome is
-most likely among genomes of every length.
+We find that the behavior of maximum likelihood depends strongly on assumptions about the observations and the genomes being considered. Conditions that guarantee reconstruction do not necessarily make the true genome the most likely explanation of a finite sample. Allowing genomes of arbitrary length can lead to overfitting of random fluctuations in read counts, and in some cases the greatest possible likelihood is not attained by any genome. On the other hand, suitable restrictions on genome structure and length can guarantee that the true genome is distinguishable from alternatives, with quantitative bounds on the probability of selecting an incorrect genome.
 
-We also show that a wrong genome can be more likely even when
-the observed overlaps satisfy established conditions for reconstructing
-the truth. Such failures occur for equal-length competitors as well
-when the observations group together reads from opposite DNA strands.
+An important factor is repetition: the same short sequence may occur at several positions in a genome, affecting its likelihood even when the set of possible reads remains unchanged. We study these relationships using read-overlap graphs and their flows, which provide a way to describe possible read frequencies and analyze likelihood optimization.
 
-There are positive results too. With suitable restrictions on repeats,
-a bound on genome length can distinguish the truth even from competitors
-that obey no repeat restriction; stronger shared restrictions give
-exponentially decreasing error probabilities as more reads arrive.
-We establish the sharp order of one such rate and give a
-length-penalized estimator that always has a best candidate and
-eventually recovers a suitable fixed truth. The results distinguish
-reconstructing a genome, identifying it from its full read
-distribution, and finding it reliably from finitely many reads.
+These findings connect the combinatorial structure of genomes with the statistical properties of their sequencing data, and clarify when likelihood optimization can reliably identify the underlying genome.
 
 \end{abstract}
 
