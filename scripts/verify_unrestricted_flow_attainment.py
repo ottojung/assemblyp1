@@ -93,6 +93,7 @@ print(f"All {checked} small balanced 3-mer multisets classified: "
 counts = Counter({"AAA": 1, "CCC": 1})
 assert balanced(counts) and not connected(counts)
 
+previous_likelihood = Fraction(-1)
 for n in [3, 4, 8, 20, 100, 1000]:
     word = "A"*n + "C"*n
     spec = spectrum(word)
@@ -101,6 +102,8 @@ for n in [3, 4, 8, 20, 100, 1000]:
                             "AAC": 1, "ACC": 1, "CCA": 1, "CAA": 1})
     likelihood = Fraction(n-2, 2*n) ** 2
     assert likelihood < Fraction(1, 4)
+    assert likelihood > previous_likelihood
+    previous_likelihood = likelihood
 assert Fraction(1000-2, 2*1000)**2 > Fraction(249, 1000)
 
 # Every small circular candidate is strictly below the rational disconnected
