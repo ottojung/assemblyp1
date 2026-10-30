@@ -217,13 +217,23 @@ is included in a Bayesian model.
 
 \subsection{What this paper establishes}
 
-The central lesson is that there are two obstacles to inferring the
-true genome: \emph{ambiguity in how reads fit together}, and
-\emph{random variation in the observed read counts}. More
-sequencing can reduce the second obstacle, but cannot resolve two
-genomes that produce exactly the same read distribution.
+The behavior of likelihood depends on both genome structure and
+which candidate genomes are admitted. Read-overlap constraints
+determine which read frequencies a genome can generate, while
+finite sampling introduces fluctuations in the frequencies actually
+observed. Reconstruction, identifiability from the complete read law,
+and finite-sample maximum likelihood are distinct questions.
 
-Our assembly-specific contributions include circulation rigidity under
+A central contribution is the unrestricted exact-likelihood theorem:
+for every fixed truth with branching oriented read-overlap support,
+the probability that it maximizes likelihood over candidates of
+arbitrary length tends to zero at a quantified rate
+(Theorem~\ref{thm:unrestricted-branching-rate}). We also connect
+the historical matched-string bridging hypothesis to
+same-length oriented likelihood and rotation uniqueness, under
+explicit full-support candidacy assumptions
+(Corollary~\ref{cor:historical-oriented-same-length}).
+Other assembly-specific contributions include circulation rigidity under
 bridging (Theorem~\ref{thm:rigidity}), the primitive-genome
 identifiability boundary (Theorem~\ref{thm:identifiable-iff-nonbranching}),
 an exact same-length spectrum-fibre count (Theorem~\ref{thm:fibre-count};
@@ -231,9 +241,9 @@ the full count is proved at paper level), the primitive-P2 spectrum
 normalization lemma (Lemma~\ref{lem:scaling}), and the
 primitive-P2 genome-length bound (Theorem~\ref{thm:p2-finite-class}).
 Our finite counterexamples and source-model distinctions also
-contribute to this picture. By contrast, MAP's average-case optimality,
+contribute to this picture. MAP's prior-average optimality,
 the Gibbs inequality, Hellinger/Chernoff bounds, and the strong
-law are standard statistical tools that we apply with stated hypotheses,
+law are standard statistical tools applied with explicit hypotheses,
 not new statistical principles.
 
 \paragraph{A positive structural result.}
@@ -245,8 +255,13 @@ Under these assumptions, the true genome is the unique
 maximum-likelihood candidate up to rotation
 (Theorem~\ref{thm:rigidity} and
 Corollary~\ref{cor:same-length-rotation}).
-Those extra assumptions matter; they are not supplied automatically
-by reconstruction alone.
+The historical matched-string bridging condition likewise yields
+this conclusion for same-length \emph{oriented} candidates
+when truth and competitors share the observed complete support
+(Corollary~\ref{cor:historical-oriented-same-length}).
+These restrictions are additional to reconstruction alone;
+in particular, the statement does not extend to arbitrary
+candidate lengths or bidirected molecule likelihoods.
 
 In plain terms: if every distinct length-$L$ read of $S$ was
 observed, and $S$ has no triple repeat of length at least $L-1$,

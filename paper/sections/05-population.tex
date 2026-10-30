@@ -179,10 +179,7 @@ probability of unique solutions were studied by
 The classical spectrum-reconstruction analysis has roots in Ukkonen's
 condition and Pevzner's proof of the associated word-transformation
 conjecture \parencite{ukkonen1992,pevzner1995}, with an assembly-oriented
-formulation in \parencite{bresler2013}. The specialized Lean proof now
-discharges the needed step internally, so the theorem below is
-not an external premise of
-Theorem~\ref{thm:population}.
+formulation in \parencite{bresler2013}.
 
 \begin{theorem}[Complete-spectrum uniqueness under Ukkonen's condition]
 \label{thm:BBT}
@@ -338,15 +335,15 @@ $\rho_*<1$, and its failure bound decays exponentially.
 
 For circular genomes with uniformly sampled start positions and oriented
 error-free length-$L$ reads, the intended distributions are
-$p_D(w)=\spec_L(D)(w)/|D|$.  The concrete read-law adapter and its finite-genome-family
-bound are now kernel checked, under an explicit Hellinger separation
-hypothesis. The completed primitive-P2 theorem above now supplies a fully proved
-read-law distinguishability criterion for nonrotational, primitive-P2
-admissible candidates, as formalized in
-Section~\ref{sec:p2-finite-recovery}.  The general finite-PMF recovery
-theorem still requires a finite competitor family, but for the complete
-primitive-P2 admissible class Theorem~\ref{thm:p2-finite-class} proves that
-this family is finite, without imposing an arbitrary shortlist.  The reverse-complement-collapsed and product-binomial models require their own read-law
+$p_D(w)=\spec_L(D)(w)/|D|$. The concrete read-law adapter and
+finite-genome-family bound are kernel-checked under an explicit
+Hellinger separation hypothesis. The primitive-P2 theorem above
+establishes read-law distinguishability for nonrotational,
+primitive-P2-admissible candidates, as formalized in
+Section~\ref{sec:p2-finite-recovery}. The general finite-PMF recovery
+theorem requires a finite competitor family, and for the complete
+primitive-P2-admissible class Theorem~\ref{thm:p2-finite-class}
+establishes this finiteness without an arbitrary shortlist.  The reverse-complement-collapsed and product-binomial models require their own read-law
 interfaces.  Neither the theorem nor its proof conditions on the
 truth-dependent information-feasibility event, and neither contradicts the
 strict finite-sample counterexamples of Section~\ref{sec:finite}.
