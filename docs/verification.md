@@ -358,3 +358,18 @@ upper family (paper Proposition prop:p2-linear-sharpness) shows
 that the exponent 1 is sharp even for fixed alphabet size.
 See [proof and scope](primitive-p2-linear-rate.md) and
 [independent small-profile regression](../scripts/verify_p2_linear_rate.py).
+
+## Primitive-P2 strand-collapsed molecule-class ambiguity (GitHub #422)
+
+The paper-level Proposition
+[rc-p2-ambiguity](../paper/sections/06-discussion.tex) proves that
+for each read length L>=2 the two primitive, maximal-repeat-P2
+circles A^L C T^(L-1) and A^L G T^(L-1) are not dihedrally
+equivalent but have the same length-L reverse-complement-class
+law. See [precise model and general proof](rc-p2-molecule-ambiguity.md),
+[physical-RC likelihood source audit](physical-rc-likelihood-source-audit-422.md),
+and [exact small-size regression](../scripts/verify_rc_p2_ambiguity.py)
+for L=2..12. This is **a mathematical proof, not a new Lean
+theorem**. It does not assert correspondence with the historical
+bidirected MB09 molecule likelihood; that source bridge is open. No
+oriented=physical equivalence is assumed.
