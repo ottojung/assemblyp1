@@ -174,19 +174,14 @@ The multinomial coefficient for unordered reads cancels from this
 ratio. The same effect holds for an infinite family of read samples
 (Theorem~\ref{thm:cex-variable-length}).
 
-A more fundamental issue is \emph{existence}: for
-$S=\texttt{AAACAC}$ and seven carefully specified reads,
-Theorem~\ref{thm:unattained-ML} proves that no circular
-genome at all maximizes unrestricted exact likelihood,
-even though finite genomes approach its supremum.
-The general criterion (Theorem~ef{thm:flow-supremum-attainment})
-is exact: the likelihood has a finite optimizing genome if
-and only if some maximum-likelihood balanced read law is
-rational and supported on a connected overlap graph.
-A rational \emph{disconnected} optimum can also cause
-non-attainment (Example~ef{ex:unattained-disconnected}).
-Thus a length restriction or a prior is needed before
-unrestricted scoring always defines an estimator.
+Beyond these witnesses, we characterize unrestricted
+likelihood via balanced read flows
+(Theorem~\ref{thm:flow-supremum-attainment})
+and give an exact rational-potential certificate for
+testing whether a specified candidate is globally optimal
+(Theorem~\ref{thm:unrestricted-kkt-certificate}).
+A small curiosity about non-attainment is treated later
+in Section~\ref{sec:finite:flow-supremum}.
 
 In fact, for any fixed genome whose read-support graph branches,
 Theorem~\ref{thm:unrestricted-branching-rate} shows that the

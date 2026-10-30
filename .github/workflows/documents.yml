@@ -26,6 +26,9 @@ jobs:
       # The version and checksum below are independently pinned; the matching
       # installer is fetched from a specific Git commit, not a moving branch.
       # See https://github.com/monero-project/monero/blob/master/.github/workflows/guix.yml
+      - name: Check LaTeX reference tokens
+        run: python3 scripts/verify_tex_reference_tokens.py
+
       - name: Install verified GNU Guix binary
         shell: bash
         run: |
