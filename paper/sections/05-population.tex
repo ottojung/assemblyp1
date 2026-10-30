@@ -746,6 +746,79 @@ The estimator and competitor class remain
 the result does not transfer to unrestricted genomes
 or strand-collapsed physical observations.
 
+\begin{proposition}[A matching primitive-P2 family]
+\label{prop:p2-linear-sharpness}
+For every fixed alphabet of size $q\ge2$ and every
+$L\ge2$, put $G=q^{L-1}$ and $B=2G$.
+There are two primitive-P2 circular genomes
+$S$ and $D$, of lengths $G$ and $G+1$,
+whose oriented length-$L$ read laws are distinct and satisfy
+\[
+ \rho(p_S,p_D)=\sqrt{\frac{G}{G+1}},
+ \qquad
+ 1-\rho(p_S,p_D)\le\frac1B.
+\]
+Together with Proposition~\ref{prop:p2-linear-rate},
+this proves that the worst-case Hellinger separation
+over the primitive-P2 class has sharp asymptotic
+order $\Theta(1/B)$, even for fixed $q$ as $L$
+increases.
+\end{proposition}
+\begin{proof}
+Set $k=L-1$ and take a cyclic de Bruijn word $S$
+of order $k$, so each $k$-mer appears at exactly
+one circular start. Such words exist: the directed
+graph with $(k-1)$-mer vertices and $k$-mer edges
+is strongly connected and has indegree and outdegree
+$q$ at each vertex; an Euler circuit spells a cycle
+of all $q^k$ distinct $k$-mers.
+
+Choose a symbol $\texttt{A}$ and rotate $S$
+to start at its unique $\texttt{A}^k$ window.
+The initial run of $\texttt{A}$ has length exactly
+$k$, since a longer run would repeat this $k$-mer.
+Construct $D$ by inserting another $\texttt{A}$
+at the beginning of that run. Its cyclic sequence
+of $k$-mer windows equals that of $S$ except for
+one consecutive additional visit to $\texttt{A}^k$.
+Consequently the cyclic length-$(k+1)$
+windows, which correspond to transitions between
+successive $k$-mers, are unchanged except for
+one new self-loop $\texttt{A}^k\to\texttt{A}^k$
+spelling $\texttt{A}^{k+1}$.
+All $G$ original $L$-mers are distinct by their
+distinct $k$-prefixes, and the new $L$-mer was absent.
+
+Both genomes are primitive: a nontrivial power
+would make every $k$-mer count divisible by
+its repetition factor, whereas each spectrum
+has a count equal to one.
+Both satisfy P2: $S$ has no repeated $k$-mer;
+$D$ has precisely one repeated $k$-mer,
+at two adjacent starts, and every $L$-mer
+is unique. Therefore there are neither maximal
+triple repeats of length at least $k$ nor two
+interleaved maximal repeat pairs of length
+at least $k$. The two genomes have different
+lengths and hence are not rotations.
+
+The read laws are uniform on $G$ and $G+1$
+distinct $L$-mers, with the former support
+contained in the latter. Hence their Hellinger
+affinity is $G/\sqrt{G(G+1)}$.
+Finally,
+\[
+ 1-\sqrt{\frac{G}{G+1}}
+ =\frac{1}
+ {\sqrt{G+1}(\sqrt{G+1}+\sqrt G)}
+ \le\frac{1}{2G}=\frac1B.
+\]
+\end{proof}
+
+The matching construction is mathematical, not yet
+Lean-formalized; its finite independent regression is
+\path{scripts/verify_p2_debruijn_sharpness.py}.
+
 \begin{remark}[Sharpness of the rate, and the unrestricted universe]
 \label{rem:rate-sharpness}
 The original kernel-checked $1/(8B^4)$ bound is valid
@@ -756,12 +829,13 @@ $B=4,6,8,16$ respectively, gives exact worst-case separations $1-\rho$ larger th
 proved bound by factors $274$, $903$, $2116$, and $16648$; the observed extremal pairs
 are one-symbol insertions, suggesting separation of order $1/B$:
 in these four cases $(1-\rho_*)B$ is approximately $0.51$--$0.54$.
-The exponent $1$ in the previously conjectured
-\emph{lower} separation bound is now proved.
-The best universal constant and a matching worst-case
-upper construction across general alphabet sizes and
-read lengths remain open. The four enumerations
-are finite computations, not such an asymptotic proof.
+The previously conjectured exponent $1$ is now
+proved on both sides: the uniform lower bound is
+Proposition~\ref{prop:p2-linear-rate} and the matching
+de Bruijn family is Proposition~\ref{prop:p2-linear-sharpness}.
+The best universal leading constant remains open.
+The original four finite enumerations alone were
+not an asymptotic proof.
 The exact arithmetic
 is reproduced by the scripts and arithmetic records listed in
 Appendix~\ref{app:reproduction}.  Over the

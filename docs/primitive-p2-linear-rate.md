@@ -21,10 +21,11 @@ where N_C is the same number of competing read laws as in the existing
 Lean theorem; N_C <= sum_{g=1}^B q^g. Read count
 n >= 64 B log(N_C/epsilon) suffices for error <= epsilon.
 
-This **proves the order-1/B lower bound conjectured** in the existing
-paper's sharpness discussion. The precise best constant remains open;
-the previous 1/(8B^4) bound was kernel-checked, while this new estimate
-is currently paper-proved.
+This establishes the conjectured uniform lower-bound exponent.
+A matching de Bruijn upper family below proves that the worst-case
+separation exponent is exactly 1, even for each fixed q>=2 as L
+grows. The best leading constant remains open. These results are
+paper-proved, not yet separately Lean formalized.
 
 ## Proof
 
@@ -74,6 +75,52 @@ The existing Hellinger likelihood-ratio inequality
 P_S(L_D>=L_S) <= rho(p,r)^n, the inequality
 (1-t)^n <= exp(-nt), and the finite-family union bound
 give the claimed error rate.
+
+## Matching de Bruijn family: optimal exponent 1
+
+Fix any alphabet size q>=2 and put k=L-1, G=q^k, B=2G.
+Let S be a cyclic de Bruijn word of order k: every k-mer occurs
+at exactly one circular start. Such words exist by taking an
+Euler circuit in the strongly connected q-regular directed graph
+of (k-1)-mer vertices and k-mer edges.
+
+Rotate S to start with its unique k-mer A^k. Its maximal A run
+has exactly k symbols (otherwise A^k would occur twice).
+Let D insert one extra A at the start of that run.
+
+Viewed as a cyclic sequence of k-mer vertices, D visits A^k
+twice consecutively and all other k-mers once. This inserts
+exactly one new (k+1)-mer, A^(k+1), and preserves all existing
+length-L read multiplicities. Every L-mer in S is distinct,
+since all its k-prefixes are distinct; A^L was absent.
+Thus D has the G old L-mers and one new L-mer, each exactly once.
+
+Both circles are primitive, since their k-mer spectra contain
+a count of one (in a nontrivial power all such counts are
+divisible by the repetition factor). Both satisfy the exact
+P2 clauses: S has no repeated k-mer, and D has only one
+repeated k-mer at two adjacent starts; no long triple repeat
+or two interleaved long repeat pairs are possible. All L-mers
+of D are unique, so there are no longer repeats either.
+Their lengths G,G+1 differ, so they are nonrotational.
+
+The laws are uniform on G and G+1 distinct read types,
+respectively, with the shorter support contained in the longer.
+Therefore
+
+    rho(p_S,p_D)=sqrt(G/(G+1)),
+    1-rho=1-sqrt(G/(G+1)) <= 1/(2G) = 1/B.
+
+The inequality follows by rationalizing the difference:
+1-rho=1/[sqrt(G+1)*(sqrt(G+1)+sqrt(G))].
+Together with the general lower bound 1/(64B), this
+proves that the worst-case Hellinger gap is Theta(1/B),
+even for each fixed alphabet q as read length L grows.
+The best constant is still unknown.
+
+Run scripts/verify_p2_debruijn_sharpness.py for independent
+finite construction checks (q=2,3,4; several k values);
+the general existence proof is the Eulerian argument above.
 
 ## Proof boundaries and reproduction
 

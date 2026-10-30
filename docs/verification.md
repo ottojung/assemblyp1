@@ -350,7 +350,8 @@ primitivity, and a finite angular gap among the three
 positive multiplicity ratios {1/2, 1, 2}.
 
 **Proof status:** this improved linear estimate is mathematical,
-not yet a standalone Lean theorem. Its optimal constant and
-the matching worst-case asymptotic upper bound remain open.
+not yet a standalone Lean theorem. Its optimal constant remains open; a matching de Bruijn
+upper family (paper Proposition prop:p2-linear-sharpness) shows
+that the exponent 1 is sharp even for fixed alphabet size.
 See [proof and scope](primitive-p2-linear-rate.md) and
 [independent small-profile regression](../scripts/verify_p2_linear_rate.py).
