@@ -1,6 +1,6 @@
 # assemblyp1
 
-**Finalized 2026-10-30:** [Paper v1.6.0](https://github.com/ottojung/assemblyp1/releases/tag/paper-v1.6.3) is the final versioned publication. All AssemblyP1 agents have been stopped and all related Antonina board issues closed. New sharp primitive-P2 separation and reverse-complement-class results are **paper-level mathematical theorems, not yet Lean-formalized**; historical physical-molecule transfer and bridging-threshold questions remain open. See [verification status](docs/verification.md).
+**Finalized 2026-10-30:** [Paper v1.6.4](https://github.com/ottojung/assemblyp1/releases/tag/paper-v1.6.4) is the final versioned publication. All AssemblyP1 agents have been stopped and all related Antonina board issues closed. New sharp primitive-P2 separation and reverse-complement-class results are **paper-level mathematical theorems, not yet Lean-formalized**; historical physical-molecule transfer and bridging-threshold questions remain open. See [verification status](docs/verification.md).
 
 AssemblyP1 studies a mathematical question about genome assembly:
 **when does the true circular genome maximize the likelihood of the reads?**
