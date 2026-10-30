@@ -24,8 +24,12 @@ jobs:
         run: python3 scripts/check-research-docs.py
       - name: Verify #263 exact support-restricted Graver certificate
         run: python3 scripts/verify_issue263_exact_support_restricted_graver.py
+      - name: Verify exact finite-sample unrestricted ML potential certificates
+        run: python3 scripts/verify_unrestricted_KKT_potentials.py
       - name: Verify rational circulation spelling and connected-support attainment
         run: python3 scripts/verify_unrestricted_flow_attainment.py
+      - name: Verify primitive-P2 reverse-complement molecule-class ambiguity
+        run: python3 scripts/verify_rc_p2_ambiguity.py
       - name: Verify irrational unrestricted ML non-attainment on the full DNA graph
         run: python3 scripts/verify_irrational_ml_nonattainment.py
       - name: Verify one-sided P2 law identifiability in a genome-size window
@@ -54,6 +58,10 @@ jobs:
         run: python3 scripts/verify_covered_binomial_weights_259.py
       - name: Verify #259 circular-genome exact-iid vs §6.1 ranking inversion
         run: python3 scripts/verify_real_genome_inversion_259.py
+      - name: Verify sharp-order linear P2 Hellinger-gap arithmetic
+        run: python3 scripts/verify_p2_linear_rate.py
+      - name: Verify de Bruijn primitive-P2 matching sharpness family
+        run: python3 scripts/verify_p2_debruijn_sharpness.py
       - name: Verify #281 primitive-P2 (L-1)-window multiplicity cap
         run: python3 scripts/verify_281_window_cap.py 3 11 4
       - name: Verify #281 Hellinger-affinity exponential ML error decay

@@ -99,7 +99,7 @@ Click the source to inspect the exact hypotheses.
 | Finite-family Hellinger union bound | [FiniteReadRecovery.lean](../AssemblyP1/FiniteReadRecovery.lean): **eventProb_pairwise**, **eventProb_wrong_le_sum**, **eventProb_wrong_tendsto_zero** | [FiniteReadRecoveryAudit.lean](../AssemblyP1/FiniteReadRecoveryAudit.lean); iid read laws, finite distinguishable family |
 | Complete primitive-P2 finite-read confidence | [PrimitiveP2FiniteClass.lean](../AssemblyP1/PrimitiveP2FiniteClass.lean): **all_primitiveP2_ML_confidence** | [FiniteReadRecoveryP2Complete.lean](../AssemblyP1/FiniteReadRecoveryP2Complete.lean): **finite_primitiveP2_ML_confidence**; no finite-family input for the **entire** class |
 | Explicit uniform exponential exact-ML error rate | [PrimitiveP2UniformSeparation.lean](../AssemblyP1/PrimitiveP2UniformSeparation.lean): **readLaw_separation**, **one_sub_hellinger_ge_of_gap**, **primitiveP2_exponential_error_bound**, **primitiveP2_ML_confidence_explicit**, **readLawFamily_card_le** | [PrimitiveP2UniformSeparationAudit.lean](../AssemblyP1/PrimitiveP2UniformSeparationAudit.lean); bound `N_C exp(-n/(8 B^4))`, `B = 2 q^(L-1)`, threshold `n >= 8 B^4 log(N_C/delta)`. Constants deliberately loose (exponential in `L`); exact oriented iid only; not universal ML and not the MB09 product-binomial surrogate |
-| No uniform exponential exact-ML rate over the length-unrestricted universe; kernel-checked `1/(8 B^4)` exponent is valid but loose (extremal one-symbol insertions suggest sharp `Θ(1/B)`) | Research note [restricted-vs-unrestricted-exponent-265.md](restricted-vs-unrestricted-exponent-265.md) | **Paper-level exact computation, NOT kernel-checked**: `AB` vs `ABAB` read-law collision gives error probability 1 for every `n`; exact check [verify_exponent_265.py](../scripts/verify_exponent_265.py). The sharp-exponent `c_1/B` lower bound is a named missing lemma, not proved |
+| No uniform exponential exact-ML rate over unrestricted genome lengths | Research note [restricted-vs-unrestricted-exponent-265.md](restricted-vs-unrestricted-exponent-265.md) | **Paper-level exact computation**, not kernel-checked: AB and ABAB have identical read laws, so unrestricted uniform recovery is impossible. In contrast, paper Propositions prop:p2-linear-rate and prop:p2-linear-sharpness now prove matching Theta(1/B) separation over primitive-P2 oriented candidates, with the best constant still open. |
 | Bridging-conditioned ML error bound | [Section 3 corollary](../paper/sections/03-open-question.tex) and **eventProb_wrong_le_sum** above | **Paper-level corollary**: P(error given B) ≤ P(error)/P(B), P(B)>0. No dedicated Lean formalization claimed |
 | Per-truth finite-sample ML non-monotonicity | [NonmonotonicityWitness281.lean](../AssemblyP1/NonmonotonicityWitness281.lean): **succ_one**, **succ_two**, **success_not_monotone** | [Exact enumeration script](../scripts/verify_nonmonotonicity_witness_281.py). The n=1,2 result is kernel-checked; later tabulated values are independently computed |
 | Strong consistency on a finite identifiable family (eventual a.s. exact-ML selection; P(correct at n) -> 1; no finite n supplied) | [Section 5.6 proposition](../paper/sections/05-population.tex): **prop:strong-consistency** (Section **sec:strong-consistency**) | **Paper-level, classical (EXTERNAL)**: strong law + KL nonnegativity, Durrett 2019; Cover & Thomas 2006; NOT kernel-checked. Exact mechanism check: [verify_strong_consistency_265.py](../scripts/verify_strong_consistency_265.py) |
@@ -148,6 +148,9 @@ internally. The two propositions are **not interchangeable**.
   so this is a positive rate, not a practical sample-depth estimate. The bound
   is on the probability of exact-ML error, not on the likelihood, and it does
   not make per-truth finite-sample success monotone.
+  A sharper paper-level theorem and matching de Bruijn family now
+  prove Theta(1/B) worst-case separation; the best constant
+  and Lean formalization remain open.
 - **Historical filenames:** Some files retain issue-numbered names for
   repository traceability. The paper instead uses theorem names and this
   index preserves the exact paths needed to reproduce them.
@@ -294,3 +297,79 @@ used to build it through
 \`scripts/verify_paper_source_link.py\`.
 Neither the source SHA nor the release tag is
 hard-coded into the title-page link.
+
+
+## Exact finite-sample unrestricted maximality via rational potentials
+
+\`thm:unrestricted-kkt-certificate\` is an exact
+**paper-level**, necessary-and-sufficient condition
+for whether a specified circular genome S maximizes
+the oriented exact multinomial likelihood against
+genomes of **arbitrary length**, for a fixed finite
+read sample x.
+
+If any observed read has zero probability under S,
+S cannot maximize likelihood. Otherwise let
+p_e=c_S(e)/|S| and n=sum(x). Then S is an unrestricted
+maximizer if and only if rational vertex potentials
+h_v solve
+
+- h_head(e) - h_tail(e) = n - x_e/p_e, for p_e>0;
+- h_head(e) - h_tail(e) <= n, for p_e=0.
+
+These conditions are the KKT equations for the
+balanced-read-flow polytope and follow from density
+of finite-genome distributions. Since p is rational,
+they reduce to rational difference constraints:
+each equality is represented by two inequalities;
+Bellman--Ford finds rational potentials or a
+negative-cycle obstruction. Runtime is polynomial
+in the explicitly represented q^L de Bruijn graph
+(therefore exponential in the read length in general).
+This decides **maximality of a given candidate**, not
+discovery of the unknown genome.
+
+\`scripts/verify_unrestricted_KKT_potentials.py\`
+uses only the Python standard library and exact
+\`fractions.Fraction\` arithmetic. It verifies the
+AAATT failure, the irrational AAACAC failure,
+positive and negative boundary samples, and
+independently checks 732 small truth/sample pairs,
+including 76 valid certificates, against direct
+likelihood comparisons over all distinct binary
+circular read laws to length eight.
+The theorem is not claimed as a new Lean declaration.
+
+
+## Uniform linear primitive-P2 Hellinger separation (#423)
+
+Paper Proposition prop:p2-linear-rate improves the uniform
+primitive-P2 **oriented** finite-iid Hellinger separation
+from the existing Lean-checked 1/(8 B^4) to the mathematically
+proved 1/(64 B). The resulting exact ML error bound is
+N_C * exp(-n/(64B)). The proof uses the already Lean-checked
+P2 (L-1)-mer multiplicity cap, the L>G case handled by
+primitivity, and a finite angular gap among the three
+positive multiplicity ratios {1/2, 1, 2}.
+
+**Proof status:** this improved linear estimate is mathematical,
+not yet a standalone Lean theorem. Its optimal constant remains open; a matching de Bruijn
+upper family (paper Proposition prop:p2-linear-sharpness) shows
+that the exponent 1 is sharp even for fixed alphabet size.
+See [proof and scope](primitive-p2-linear-rate.md) and
+[independent small-profile regression](../scripts/verify_p2_linear_rate.py).
+
+## Primitive-P2 strand-collapsed molecule-class ambiguity (GitHub #422)
+
+The paper-level Proposition
+[rc-p2-ambiguity](../paper/sections/06-discussion.tex) proves that
+for each read length L>=2 the two primitive, maximal-repeat-P2
+circles A^L C T^(L-1) and A^L G T^(L-1) are not dihedrally
+equivalent but have the same length-L reverse-complement-class
+law. See [precise model and general proof](rc-p2-molecule-ambiguity.md),
+[physical-RC likelihood source audit](physical-rc-likelihood-source-audit-422.md),
+and [exact small-size regression](../scripts/verify_rc_p2_ambiguity.py)
+for L=2..12. This is **a mathematical proof, not a new Lean
+theorem**. It does not assert correspondence with the historical
+bidirected MB09 molecule likelihood; that source bridge is open. No
+oriented=physical equivalence is assumed.

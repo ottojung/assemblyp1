@@ -714,6 +714,126 @@ not a condition on an arbitrarily chosen one.
 The proof is mathematical rather than Lean-formalized.
 
 
+
+\begin{theorem}[An exact finite-sample unrestricted-ML certificate]
+\label{thm:unrestricted-kkt-certificate}
+Let $S$ be \emph{any} finite circular genome,
+let $L\ge2$, and let $x=(x_e)_{e\in E}$
+be a nonempty oriented read sample on the
+complete de Bruijn graph $E=\Alphabet^L$,
+$V=\Alphabet^{L-1}$. Put $p=p_S$,
+$n=\sum_e x_e$.
+Then the following are equivalent:
+\begin{enumerate}
+\item The truth $S$ is an exact maximum-likelihood
+genome among \emph{all} finite circular genomes
+of arbitrary length.
+\item Every observed edge has positive truth
+probability ($x_e>0\Rightarrow p_e>0$), and
+there are vertex potentials $\phi_v\in\mathbb Q$
+satisfying the finite system
+\[
+ \begin{array}{ll}
+ \displaystyle
+ \phi_{\operatorname{head}(e)}
+       -\phi_{\operatorname{tail}(e)}
+       = n-\frac{x_e}{p_e},
+   &p_e>0,\\[0.8ex]
+ \displaystyle
+ \phi_{\operatorname{head}(e)}
+       -\phi_{\operatorname{tail}(e)}\le n,
+   &p_e=0.
+ \end{array}
+\]
+\end{enumerate}
+Thus exact unrestricted maximality of a \emph{specified}
+candidate genome can be decided by rational
+difference-constraint feasibility. On the explicit
+de Bruijn graph this requires $O(|V||E|)$
+rational relaxation operations after the read counts
+are computed; no search over candidate genomes
+or genome-length bound is required.
+\end{theorem}
+\begin{proof}
+If an observed read has $p_e=0$, the truth has
+zero likelihood, while a circular genome obtained
+by concatenating all observed read strings has
+positive likelihood. Hence maximality requires
+positive truth probability for every observed read.
+
+Assume this holds. Theorem~
+\ref{thm:flow-supremum-attainment} and density of
+finite genome laws show that $S$ is an unrestricted
+maximizer exactly when its read law $p$ maximizes
+$F_x$ over the compact balanced-flow polytope.
+Since the uniform positive read law is feasible,
+the usual constraint qualification holds. The
+Karush--Kuhn--Tucker optimality conditions
+for the concave function $F_x$ are therefore
+necessary and sufficient.
+
+Write the Lagrange multiplier of the unit-mass
+constraint as $\lambda$ and that of flow balance
+as $\phi_v$. The stationary-coordinate equality on
+every $p_e>0$ and the boundary inequality on
+$p_e=0$ read
+\[
+  \frac{x_e}{p_e}
+    =\lambda+\phi_{\mathrm{tail}(e)}
+                     -\phi_{\mathrm{head}(e)}
+       \quad(p_e>0),
+ \qquad
+ 0\le\lambda+\phi_{\mathrm{tail}(e)}
+                     -\phi_{\mathrm{head}(e)}
+       \quad(p_e=0).
+\]
+Multiplying the first equation by $p_e$ and
+summing over edges cancels the potential terms
+by balance, yielding $\lambda=n$. This is
+precisely the displayed difference-constraint
+system.
+
+All its constants are rational because $p$ is
+a finite genome law and $x$ is integral.
+Each equality is represented by two opposite
+difference inequalities and each absent-edge
+condition by one difference inequality.
+A feasible system of rational difference
+constraints has a rational solution (for example
+the shortest-path potentials from a new zero-cost
+source in the associated weighted graph).
+Bellman--Ford detects negative cycles and
+constructs a solution using $O(|V||E|)$
+rational additions and comparisons.
+
+Sufficiency also follows directly: the displayed
+constraints provide an upper bound
+$x_e/p_e\le n+\phi_{\rm tail(e)}-\phi_{\rm head(e)}$
+for every edge, with equality where $p_e>0$.
+For every balanced $q$, concavity gives
+\[
+ F_x(q)-F_x(p)
+ \le \sum_{e:x_e>0}\frac{x_e}{p_e}(q_e-p_e)
+ \le \sum_e(n+\phi_{\rm tail(e)}
+                 -\phi_{\rm head(e)})(q_e-p_e)=0.
+\]
+Thus no circular genome has higher likelihood.
+\end{proof}
+
+This is a truth-dependent \emph{decision criterion}
+for finite samples, not an algorithm for identifying
+the unknown truth from reads alone. Its cost is
+polynomial in the explicitly represented $q^L$
+read-type graph, which is generally exponential
+in the read length $L$. The theorem does not
+require a maximum to exist \emph{for arbitrary
+samples}; it decides whether the specified
+genome itself attains one.
+The rational certificate is paper-level and is
+independently tested by
+\path{scripts/verify_unrestricted_KKT_potentials.py};
+it is not a new Lean theorem.
+
 \begin{proposition}[A complete criterion for balanced samples]
 \label{prop:balanced-sample-attainment}
 Under Theorem~\ref{thm:flow-supremum-attainment}, suppose
@@ -767,6 +887,13 @@ approach it, with likelihood
        =\left(\frac{m-2}{2m}\right)^2
        \longrightarrow\frac14.
 \]
+The displayed likelihood is \emph{strictly increasing} for
+each integer $m\ge3$: every candidate in this sequence
+has a longer, more likely successor, yet none reaches
+$1/4$. For this sample there is no single most likely
+genome, only progressively likelier finite genomes.
+This is an existence curiosity, not a claim that such
+samples are typical.
 (The candidate-independent multinomial coefficient
 is $2$ if the two reads are treated as an
 unordered multiset.) Thus irrational frequencies

@@ -73,7 +73,7 @@ The strict historical counterexamples
 \ref{thm:cex-historical-W2}) show, under specified candidate classes, that the proposed implication fails, even under the source's own read-string
 bridging notion. The variable-length families
 (Theorem~\ref{thm:cex-variable-length}) exhibit
-a sampling-reweighting mechanism. More sharply,
+a sampling-reweighting mechanism. As a separate curiosity,
 Theorem~\ref{thm:unattained-ML} proves that unrestricted
 exact likelihood need not attain a maximum at all.
 
@@ -154,9 +154,14 @@ length bound (Theorem~\ref{thm:p2-finite-class}), it gives
 finite-read recovery for the \emph{entire} oriented primitive-P2
 class (Corollary~\ref{cor:p2-finite-recovery-all}), not merely
 an arbitrary finite shortlist. For this class the affinity is not merely
-existential: Theorem~\ref{thm:p2-uniform-rate} makes the rate explicit,
-bounding the exact-ML error probability by $N_C\,e^{-n/(8B^4)}$ with
-$B=2q^{L-1}$ and a matching sample-size threshold $n\ge8B^4\log(N_C/\delta)$.
+existential: the Lean-checked Theorem~\ref{thm:p2-uniform-rate}
+gives a quartic separation bound, and the mathematical
+Propositions~\ref{prop:p2-linear-rate} and
+\ref{prop:p2-linear-sharpness} establish its sharp
+$\Theta(1/B)$ exponent. In particular, the exact-ML
+error probability is at most $N_C\,e^{-n/(64B)}$
+with $B=2q^{L-1}$, and
+$n\ge64B\log(N_C/\delta)$ suffices for error at most $\delta$.
 The candidate class may be enormous
 and the constants are exponential in the read length, so this is not a practical
 read-depth guarantee.
@@ -251,6 +256,79 @@ a strict penalty; it does not assert that all
 posterior mass on longer genomes vanishes.
 Other likelihood models require separately specified priors.
 
+\subsection{An ambiguity caused solely by discarding strand orientation}
+\label{sec:rc-class-ambiguity}
+
+Population uniqueness can fail even for primitive P2 genomes if
+the observation law discards the orientation of every read.
+Here the \emph{strand-collapsed read law} samples an oriented
+length-$L$ read uniformly by circular start, then records only
+its reverse-complement class
+$[w]=\{w,\operatorname{rc}(w)\}$, counting each distinct
+oriented read word once in that class.
+This is a separately defined experiment; no equivalence with
+the historical MB09 bidirected-flow model is asserted.
+
+\begin{proposition}[Primitive P2 does not ensure strand-collapsed identifiability]
+\label{prop:rc-p2-ambiguity}
+For every $L\ge2$, the primitive length-$2L$ DNA circles
+\[
+ S_L=\texttt{A}^L\texttt{C}\texttt{T}^{L-1},
+ \qquad
+ D_L=\texttt{A}^L\texttt{G}\texttt{T}^{L-1}
+\]
+both satisfy the oriented maximal-repeat condition P2 at read
+length $L$. They are neither rotations nor reverse-complement
+rotations of one another, but their length-$L$ strand-collapsed
+read laws agree.
+\end{proposition}
+\begin{proof}
+Every length-$L$ window not containing the single
+$\texttt{C}$ or $\texttt{G}$ is unchanged between
+the circles. The windows containing the unique special
+base in $S_L$ are exactly
+$\texttt{A}^j\texttt{C}\texttt{T}^{L-1-j}$
+for $0\le j<L$. Their reverse complements are
+$\texttt{A}^{L-1-j}\texttt{G}\texttt{T}^j$,
+which are precisely the corresponding windows of $D_L$,
+in reverse order. Thus the read-class multiplicities agree.
+
+The sole $\texttt{C}$ or $\texttt{G}$ ensures
+primitivity and rules out rotational equivalence.
+The reverse complement of $S_L$ has an
+$\texttt{A}$ run of length $L-1$, whereas $D_L$
+has a run of length $L$, ruling out the remaining
+dihedral equivalence.
+
+For P2, consider any repeated circular window of length
+$k\ge L-1$ with $k<2L$. A window containing the unique
+special base occurs only once. Every other window is
+a substring of the single special-base-free run
+$\texttt{T}^{L-1}\texttt{A}^L$; a mixed window
+crossing its unique $\texttt{T}$-to-$\texttt{A}$
+boundary occurs once. For such $k$, a pure
+$\texttt{T}$ window occurs at most once, and a pure
+$\texttt{A}$ window occurs twice only when $k=L-1$.
+Hence the only repeated long window is
+$\texttt{A}^{L-1}$ at starts $0$ and $1$.
+There is no long maximal triple repeat and no
+interleaving of two long maximal repeat pairs:
+these are exactly the P2 requirements.
+\end{proof}
+
+For the small instance $L=3$, the distinct circles are
+$\texttt{AAACTT}$ and $\texttt{AAAGTT}$.
+An independent finite verifier computes the exact
+P2 predicates and read-class multiplicities for
+$2\le L\le12$; see
+\texttt{scripts/verify\_rc\_p2\_ambiguity.py}.
+The proposition and its proof are mathematical, not
+separately kernel-checked in Lean. It rules out
+a naive transfer of \emph{oriented} P2 uniqueness
+to strand-collapsed reads, but leaves the actual
+source-faithful physical molecule model to be specified
+and studied.
+
 \subsection{Open questions after the proved results}
 \label{sec:open-questions-final}
 
@@ -310,10 +388,15 @@ the full reverse-complement MB09 optimizer correspondence
 remains open.
 
 \item \textbf{Sharp finite-read recovery rates.}
-For the oriented primitive-P2 class, can the explicit
-$1/(8B^4)$ exponent in Theorem~\ref{thm:p2-uniform-rate} be improved
-to the conjectural sharp order $1/B$, with matching asymptotic bounds?
-The finite enumerations motivating that conjecture are not a proof.
+For the oriented primitive-P2 class,
+Propositions~\ref{prop:p2-linear-rate}
+and~\ref{prop:p2-linear-sharpness} now give matching
+$\Theta(1/B)$ separation bounds even for fixed $q$.
+What is the best universal leading constant, and
+which primitive-P2 genome pairs are exact or
+asymptotic minimizers for their given $(q,L)$?
+The original finite enumerations do not resolve
+these optimal-constant questions.
 An unrestricted-universe uniform rate is \emph{not} an open
 possibility: distinct genomes such as $AB$ and $ABAB$ have identical
 read laws, preventing uniform recovery.
@@ -322,8 +405,10 @@ read laws, preventing uniform recovery.
 Which structural restrictions make population maximum likelihood
 unique, up to the appropriate rotational or dihedral equivalence,
 when each observation is a reverse-complement \emph{molecule class}
-rather than an oriented word?  The unconditional primitive-P2 theorem
-in this paper concerns the \emph{oriented} read law.
+rather than an oriented word?  Proposition~\ref{prop:rc-p2-ambiguity}
+shows that primitive P2 alone is insufficient for the explicitly
+strand-collapsed law; its correspondence to the historical
+physical molecule experiment remains to be established.
 
 \item \textbf{Minimal sufficient side information.}
 For a finite collection of candidate genomes and a specified
@@ -344,8 +429,7 @@ $\varepsilon_n$-maximizer of unrestricted likelihood,
 what sampling threshold or additional hypotheses
 relate successful bridging to correct selection?
 Unrestricted exact ML alone is not an estimator
-on every sample, by Theorem~
-ef{thm:unattained-ML}. The finite counterexamples concern individual
+on every sample, by Theorem~\ref{thm:unattained-ML}. The finite counterexamples concern individual
 samples, whereas our finite-read bounds apply to an identifiable
 restricted class and may require far more reads than bridging itself.
 Neither result settles this joint high-probability regime.
@@ -418,11 +502,13 @@ several observation conventions. With the population distribution instead,
 the truth always maximizes expected likelihood; for primitive P2 genomes,
 complete-spectrum uniqueness makes that maximum unique up to rotation. On the entire finite oriented primitive-P2 class, the exact-ML
 error admits an exponential bound in the number of independent
-reads --- with an explicit, deliberately loose rate
-$N_C\,e^{-n/(8B^4)}$ (Theorem~\ref{thm:p2-uniform-rate}) --- even though its
-finite-sample success curve need not be monotone
+reads --- with an explicit paper-proved rate
+$N_C\,e^{-n/(64B)}$ (Proposition~\ref{prop:p2-linear-rate}) ---
+even though its finite-sample success curve need not be monotone
 (Proposition~\ref{prop:nonmonotone}).
-The proofs and finite certificates are formalized in Lean. Together,
+The principal structural and earlier quartic-rate results
+are formalized in Lean; the sharper linear-rate theorem
+and matching construction remain paper-level proofs. Together,
 these results explain what graph structure can determine, what read
 frequencies contribute, and how the two interact. Throughout, the
 reconstruction guarantee and the likelihood comparison are kept apart:
