@@ -662,6 +662,65 @@ success curve.  The competitor class here is restricted to primitive-P2
 admissible, oriented exact iid reads; it is not universal maximum likelihood
 over all genomes and not the MB09 product-binomial approximation.
 
+\begin{proposition}[Improved cubic separation for primitive P2]
+\label{prop:p2-cubic-rate}
+Under the hypotheses and the same admissible competitor
+class as Theorem~\ref{thm:p2-uniform-rate},
+\[
+  1-\rho(p_S,p_D)\;\ge\;
+  \frac{1}{8G_SG_D(G_S+G_D)}
+  \;\ge\;\frac{1}{16B^3}.
+\]
+Consequently the same exact-ML wrong-competitor event has
+probability at most
+\[
+  N_C\exp\!\Bigl(-\frac{n}{16B^3}\Bigr),
+\]
+and $n\ge16B^3\log(N_C/\delta)$ suffices for error
+at most $\delta$.
+\end{proposition}
+\begin{proof}
+The primitive-P2 $(L-1)$-window multiplicity cap
+gives $c_w\le2$ for each length-$L$ read type
+when $L\le G$, since every $L$-read occurrence
+also counts as an occurrence of its prefix.
+When $L>G$, primitivity gives the stronger bound
+$c_w\le1$: two equal length-$L$ windows at
+distinct starts would have equal length-$G$
+prefixes and therefore make the entire circle
+invariant under a nonzero cyclic shift.
+Thus for either genome and every $w$,
+$p_S(w)\le2/G_S$ and $p_D(w)\le2/G_D$.
+
+By the same integer-denominator argument as
+Theorem~\ref{thm:p2-uniform-rate}, some $w$ has
+$d=|p_S(w)-p_D(w)|\ge1/(G_SG_D)>0$.
+For $a=p_S(w)$ and $b=p_D(w)$,
+\[
+ (\sqrt a-\sqrt b)^2
+ =\frac{(a-b)^2}{(\sqrt a+\sqrt b)^2}
+ \ge\frac{d^2}{2(a+b)}
+ \ge\frac{1}{4G_SG_D(G_S+G_D)},
+\]
+using $(\sqrt a+\sqrt b)^2\le2(a+b)$
+and $a+b\le2/G_S+2/G_D$.
+Half the sum of squared square-root differences
+equals $1-\rho$, so it is at least
+$1/(8G_SG_D(G_S+G_D))$.
+The bound $G_S,G_D\le B$ gives the uniform gap;
+the same finite-family Hellinger union bound as
+before yields the claimed error probability.
+\end{proof}
+
+The $(L-1)$-multiplicity cap and the original
+quartic rate are Lean-checked. This improved
+cubic estimate is a \emph{mathematical proof},
+not yet a separate kernel-checked theorem;
+the exact arithmetic regression is
+\path{scripts/verify_p2_cubic_rate.py}.
+It is not a statement about unrestricted
+genomes or strand-collapsed observations.
+
 \begin{remark}[Sharpness of the rate, and the unrestricted universe]
 \label{rem:rate-sharpness}
 The separation bound $1/(8B^4)$ of Theorem~\ref{thm:p2-uniform-rate} is valid
@@ -671,11 +730,14 @@ $B=4,6,8,16$ respectively, gives exact worst-case separations $1-\rho$ larger th
 proved bound by factors $274$, $903$, $2116$, and $16648$; the observed extremal pairs
 are one-symbol insertions, suggesting separation of order $1/B$:
 in these four cases $(1-\rho_*)B$ is approximately $0.51$--$0.54$.
-The sharp exponent is conjecturally $1$ rather than $4$. The finite-class
+The sharp exponent is conjecturally $1$ rather than
+the proved cubic exponent $3$ (Proposition~\ref{prop:p2-cubic-rate}). The finite-class
 non-tightness is an exact finite computation and the asymptotic statement is a
 conjecture whose missing ingredient is a separation lower bound
-$1-\rho\ge c_1/B$, not yet proved in any form; nothing in this remark is
-kernel-checked.  The exact arithmetic
+$1-\rho\ge c_1/B$, not yet proved; the weaker cubic
+estimate is established in Proposition~\ref{prop:p2-cubic-rate},
+at paper-proof rather than kernel-proof level. Nothing in the
+finite-class enumeration of this remark is kernel-checked.  The exact arithmetic
 is reproduced by the scripts and arithmetic records listed in
 Appendix~\ref{app:reproduction}.  Over the
 \emph{unrestricted} candidate universe no uniform positive separation exists
