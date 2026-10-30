@@ -75,11 +75,10 @@ conclusion is a paper-level corollary of that premise, not a kernel-checked
 theorem, and it constrains certificate multiplicity only --- it does not claim
 that only one genome can \emph{generate} the reads. Once that reconstruction
 interface is assumed, the downstream conditional-posterior and constrained-MAP
-conclusions are \kernelcheck{} in
-\texttt{AssemblyP1.ConditionalIdentifiability}
-(\texttt{ReadModel.conditional\_posterior\_eq\_one},
-\texttt{ReadModel.constrained\_MAP\_mem\_orbit}); that module assumes the
-external decoder-correctness premise, it does not prove it.}
+conclusions are \kernelcheck{}, conditional on the
+external decoder-correctness premise; they do not prove
+the published reconstruction interface. The exact
+declarations are indexed in \path{docs/verification.md}.}
 
 \subsection{Two different statistical questions}
 \label{sec:two-questions}
@@ -179,10 +178,9 @@ smaller for a word with a shorter period; that asymmetry is an artifact of the
 representation, not of the data (Remark~\ref{rem:cyclic}). We therefore take the
 uniform prior over rotation classes, the symmetric choice under which ML is the
 prior-average optimum. That MAP and ML coincide for the exact iid read
-likelihood under the uniform prior on rotation classes is kernel-checked
-(\texttt{AssemblyP1.GenomeOrbitAdapter.uniform\_orbit\_prior\_ML}); the
-circular oriented read model and the uniform start sampling are external
-modeling inputs. This is a modeling choice, not a theorem: with a
+likelihood under the uniform prior on rotation classes is kernel-checked;
+the circular oriented read model and uniform start sampling are external
+modeling inputs (formal endpoint in \path{docs/verification.md}). This is a modeling choice, not a theorem: with a
 nonuniform prior or a different loss the prior-average optimum is MAP for that
 prior and loss, and the ML rule is no longer claimed optimal. The theorem says
 nothing about a \emph{fixed} truth, where the relevant question is instead
@@ -200,10 +198,8 @@ $S$ on $b$ --- succeeds with probability $\tfrac34$. Being infallible on $E$ is
 a conditional guarantee, not a prior-average one, and an $R$-only rule need not
 know that $E=F(S,R)$. This is precisely how the finite counterexamples coexist
 with Theorem~\ref{thm:bayes-optimal}. The two accuracies $\tfrac14$ and
-$\tfrac34$, and the strict inequality between them, are kernel-checked in
-\texttt{AssemblyP1.FiniteMapOptimality}
-(\texttt{accuracy\_deltaE}, \texttt{accuracy\_deltaMap},
-\texttt{map\_beats\_infallible\_on\_E}).
+$\tfrac34$, and the strict inequality between them, are kernel-checked;
+see \path{docs/verification.md} for the declarations.
 \end{remark}
 
 The theorem concerns the \emph{prior average}, not optimality for every
@@ -409,10 +405,9 @@ support, the primitive-spelling construction for a balanced
 multigraph produces a primitive Eulerian spelling of twice
 the truth's edge multiplicities. It has twice the truth's length,
 the same \emph{normalized} spectrum, and cannot be a rotation
-of the original genome. This direction uses the nontrivial
-primitive-spelling lemma, proved in
-\texttt{AssemblyP1.ScalarPrimitiveSpellings}, not merely balance
-of the circulation.
+of the original genome. This direction uses a kernel-checked
+primitive-spelling lemma; balance of the circulation
+alone would not suffice.
 \end{proof}
 
 \begin{theorem}[Same-length complete-spectrum fibre count and singleton criterion]
@@ -485,25 +480,24 @@ The Möbius/totient correction here counts primitive
 are related antecedents, not citations for this
 specific primitive-orbit formula.
 \end{proof}
-\statusline{Lean status: partial. \kernelcheck{} for the
-divisor-sum core in \texttt{AssemblyP1.FibreCountArithmetic}
-(\texttt{fibre\_mobius\_inversion}, \texttt{fibre\_totient}); the full count
-is a \mathfact{} whose weighted BEST double-counting rests on the external
-BEST theorem (van Aardenne-Ehrenfest--de~Bruijn 1951; Tutte 1975), with the
-branching construction kernel-checked in
-\texttt{AssemblyP1.ScalarPrimitiveSpellings}.}
+\statusline{Lean status: partial. The divisor-sum core and
+primitive-spelling construction are \kernelcheck{}; the
+full count is a \mathfact{} whose weighted BEST
+double-counting uses the external BEST theorem
+(van Aardenne-Ehrenfest--de~Bruijn 1951; Tutte 1975).
+The exact declarations appear in \path{docs/verification.md}.}
 
 \begin{remark}[Robust same-length and molecule full-overlap iff criteria]
 \label{rem:robust-iff-criteria}
 The paper states the beatability direction of the robust same-length
 criterion (Proposition~\ref{prop:beatability}) and the negative molecule
-witnesses (Theorem~\ref{thm:cex-molecule}). The complete iff statements are
-kernel-checked: \texttt{AssemblyP1.RobustSameLengthIff.robust\_iff\_unique\_spectrum}
-characterizes exact multinomial robustness over all positive samples by
-uniqueness of the truth spectrum among positive balanced circulations, and
-\path{AssemblyP1/FullOverlapMoleculeML.lean}
-characterizes robust maximality in the full-overlap molecule domain by
-uniqueness of the normalized count vector. Both are conditional on their
-respective model domains and do not transfer across the oriented/molecule
-boundary.
+witnesses (Theorem~\ref{thm:cex-molecule}). The complete iff statements are kernel-checked. In the
+oriented exact multinomial model, robustness over all
+positive samples is equivalent to uniqueness of the truth
+spectrum among positive balanced circulations. In the
+full-overlap molecule model, robust maximality is equivalent
+to uniqueness of the normalized count vector. These are
+conditional on their respective model domains and do not
+transfer across the oriented/molecule boundary. Exact Lean
+declarations are indexed in \path{docs/verification.md}.
 \end{remark}

@@ -262,9 +262,9 @@ that its support graph is a single directed $p$-cycle; traversal
 spells only rotations of $S$. Thus in either case every candidate
 with the same complete spectrum is a rotation of $S$.
 The classical Theorem~\ref{thm:BBT} records the corresponding
-complete-spectrum principle, but the Lean endpoint in
-\texttt{AssemblyP1.SameLength62Uniqueness} does not postulate
-it as an unproved axiom.
+complete-spectrum principle, but the uniqueness argument
+used here is independently kernel-checked without assuming
+that classical theorem as an axiom.
 \end{proof}
 
 \kernelcheck{}
@@ -282,24 +282,35 @@ Then $\spec_L(D)=\spec_L(S)$, so their spectrum-based
 likelihoods tie. Moreover $D$ is a rotation of $S$.
 \end{corollary}
 \begin{proof}
-Every copy of each maximal triple repeat must be strictly
-straddled by a matched length-$L$ read. Such a read needs
-one letter on each side of the repeat. Therefore no maximal
-triple repeat of length at least $L-1$ can exist.
-The proof of Theorem~\ref{thm:rigidity} uses only this
-no-long-triple consequence: its primitive- and
-periodic-extension cases give a unique positive
-circulation of total $G$ on the truth's full-overlap graph.
-Shared complete oriented support and equal length
-force $\spec_L(D)=\spec_L(S)$.
+We use the \emph{literal all-occurrences} clause (H2) of
+Definition~\ref{def:historical-match}: every copy of
+\emph{each} triple repeat must be strictly straddled by a
+matched observed read. A length-$L$ read can strictly
+straddle a repeat of length $\ell$ only if $\ell\le L-2$.
+Thus no triple repeat of length at least $L-1$ exists.
+In particular, a length-$(L-1)$ window cannot occur three
+times, since its three copies would themselves be a
+triple repeat too long to bridge. For a primitive $S$ this
+is exactly the short-repeat condition of
+Theorem~\ref{thm:short-repeat}, which gives a unique
+positive circulation of total $G$. For a periodic $S$,
+Lemma~\ref{lem:periodic-extension} gives the single-cycle
+support case of Theorem~\ref{thm:rigidity}, with the same
+rigidity conclusion. Shared complete oriented support
+and equal length therefore force
+$\spec_L(D)=\spec_L(S)$.
 
-The historical interleaved-repeat clause, together with
-the absence of long triple repeats, gives the full
-complete-spectrum spelling condition used in
-Corollary~\ref{cor:same-length-rotation}.
-It makes a primitive truth's spelling unique up to
-rotation; the periodic case has a single directed-cycle
-support graph. Hence $D\sim S$.
+Clause (H2) also covers \emph{every} interleaved repeat
+pair, hence in particular every maximal such pair.
+Since no repeat of length at least $L-1$ can be bridged,
+at least one constituent of each maximal interleaved
+pair has length at most $L-2$. Together with the triple
+condition, this is the full complete-spectrum uniqueness
+condition at $K=L-1$ used in
+Corollary~\ref{cor:same-length-rotation}. Thus the
+primitive truth has a unique spelling up to rotation;
+the periodic case follows from its directed-cycle
+support graph. Consequently $D\sim S$.
 \end{proof}
 
 This paper-level adapter does \emph{not} assert the false
@@ -1172,9 +1183,9 @@ counterexample.
 
 \begin{theorem}[Whole-walk spelling preservation in the candidate reduction]
 \label{thm:global-spelling}
-For the repository's explicitly specified
-\texttt{transitivelyReducedSpelling} graph of equal-length oriented
-overlap strands, every nonempty signed walk in the complete overlap
+For the explicitly specified spelling-preserving reduced graph
+of equal-length oriented overlap strands, every nonempty signed
+walk in the complete overlap
 graph can be expanded to a signed walk of reduced-graph edges with
 the same endpoints and the same spelled sequence. The expansion
 respects the required opposing incidences at successive signed edges.
