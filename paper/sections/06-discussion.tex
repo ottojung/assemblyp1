@@ -123,8 +123,9 @@ The precise skipped-window invariant is
 kernel-checked for this reduction.
 \end{proof}
 
-This is the oriented read-word occurrence statement corresponding to
-Observation~7 for \emph{our explicitly defined reduction}. It does not
+The identity accounts for each observed read occurrence,
+rather than merely preserving path connectivity. Here it
+is proved only for \emph{our explicitly defined reduction}. It does not
 identify that reduction with every step of Myers's approximate-overlap
 algorithm, equate reverse-complement molecule-class counts, or assert
 that every feasible balanced flow is realizable by one closed signed walk.
@@ -160,9 +161,16 @@ $\Theta(1/B)$ exponent. In particular, the exact-ML
 error probability is at most $N_C\,e^{-n/(64B)}$
 with $B=2q^{L-1}$, and
 $n\ge64B\log(N_C/\delta)$ suffices for error at most $\delta$.
-The candidate class may be enormous
-and the constants are exponential in the read length, so this is not a practical
-read-depth guarantee.
+The competitor set has $N_C<q^{B+1}$ possible read laws.
+A fully explicit conservative sufficient bound is therefore
+$n\ge64B((B+1)\log q+\log(1/\delta))$.
+For fixed alphabet size, its leading order is
+$64B^2\log q$, \emph{quadratic} in $B$ rather than linear.
+The sharp $\Theta(1/B)$ result concerns separation of
+individual laws; searching across a class of up to
+$q^B$ genomes incurs a further $\log N_C$ factor.
+The bound need not be optimal and is not a practical
+read-depth recommendation.
 
 Each proof therefore has its own mathematical claim, scope,
 and consequence. The central investigation remains the
@@ -227,7 +235,11 @@ that empirical frequencies tend to $p_S$ agrees
 almost surely with the event that the latent class
 belongs to $\Gamma$. Martingale convergence of
 conditional probabilities therefore gives
-$\Pi_n(\Gamma)\to1$ under $p_S$, almost surely.
+$\Pi_n(\Gamma)\to1$ almost surely under the Bayesian
+mixture. The mixture assigns positive weight $\pi([S])>0$
+to the fixed infinite-read law $P_S$, so $P_S$ is
+absolutely continuous with respect to that mixture.
+Therefore the same almost-sure conclusion holds under $P_S$.
 Within $\Gamma$, posterior masses stay in their
 original prior ratios.
 
@@ -253,6 +265,19 @@ above gives every \emph{individual} longer candidate
 a strict penalty; it does not assert that all
 posterior mass on longer genomes vanishes.
 Other likelihood models require separately specified priors.
+
+\paragraph{Implications for assembly practice.}
+In the error-free, uniform-start oriented model, an assembler with
+credible side information about genome length can restrict
+exact likelihood to a length range $G\le B<2G$; under a primitive-P2
+truth this excludes law-equivalent nonrotational competitors and
+gives finite-sample error bounds (Corollary~\ref{cor:length-window-ML}).
+When such a length bound cannot be justified, a geometric prior
+on rotation classes instead ensures an attained MAP estimate and
+fixed-truth consistency under the stated P2 hypothesis
+(Proposition~\ref{prop:length-prior-map}). These are mathematical
+model-design options, not claims about performance with sequencing
+errors, biased coverage, uncertain repeat structure, or multiple genomes.
 
 \subsection{An ambiguity caused solely by discarding strand orientation}
 \label{sec:rc-class-ambiguity}
@@ -431,6 +456,16 @@ on every sample, by Theorem~\ref{thm:unattained-ML}. The finite counterexamples 
 samples, whereas our finite-read bounds apply to an identifiable
 restricted class and may require far more reads than bridging itself.
 Neither result settles this joint high-probability regime.
+
+\item \textbf{Sharpness of unrestricted branching rates.}
+For a fixed branching oriented truth, the upper bound of
+Theorem~\ref{thm:unrestricted-branching-rate} is
+$O(n^{-d/2})$ with $d=|E|-|V|$. The one-direction example
+achieves this order along an infinite subsequence
+(Remark~\ref{rem:branching-one-direction-sharpness}), but
+for $d\ge2$ we do not establish a universal matching lower
+bound. Which support structures and absent-edge inequalities
+allow the upper exponent to be attained?
 \end{enumerate}
 
 A separate \emph{source-interpretation question} is which precise
@@ -453,6 +488,15 @@ under stochastic genome models, and the variable-length overlap
 results of \textcite{hui2016} are another adjacent
 contribution. These do not answer the finite-sample likelihood
 question here.
+
+An early probabilistic formulation by \textcite{myers1995}
+uses a two-sided Kolmogorov--Smirnov statistic to score fragment
+layouts against read-arrival statistics and illustrates how
+statistical objectives can differ from shortest-superstring
+assembly. \textcite{nagarajan2009} study the parametric
+computational complexity of sequence assembly. Both are
+relevant precedents, but neither analyzes the exact
+uniform-start circular read-count likelihood optimized here.
 
 Related likelihood formulations and probabilistic
 \emph{assembly scores} include the bidirected-flow

@@ -180,7 +180,7 @@ uniform prior over rotation classes, the symmetric choice under which ML is the
 prior-average optimum. That MAP and ML coincide for the exact iid read
 likelihood under the uniform prior on rotation classes is kernel-checked;
 the circular oriented read model and uniform start sampling are external
-modeling inputs (formal endpoint in \path{docs/verification.md}). This is a modeling choice, not a theorem: with a
+modeling inputs (formal proof in \path{docs/verification.md}). This is a modeling choice, not a theorem: with a
 nonuniform prior or a different loss the prior-average optimum is MAP for that
 prior and loss, and the ML rule is no longer claimed optimal. The theorem says
 nothing about a \emph{fixed} truth, where the relevant question is instead
@@ -284,8 +284,8 @@ Identifiability
   & law level; $n\to\infty$
   & primitive-P2, rigidity, or nonbranching hypotheses
   & read laws distinct modulo rotation; spectrum unique
-  & kernel-checked (Thm.~\ref{thm:population}, Thm.~\ref{thm:rigidity},
-    Thm.~\ref{thm:identifiable-iff-nonbranching}, Thm.~\ref{thm:fibre-count})\\
+  & kernel-checked for population, rigidity and nonbranching;
+    the full fibre count (Thm.~\ref{thm:fibre-count}) is paper-level\\
 \addlinespace
 Limiting consistency
   & as $n\to\infty$ over $n$ iid reads
@@ -349,13 +349,11 @@ The certificates and exact observations are in
 Theorems~\ref{thm:cex-historical-W1}--\ref{thm:cex-historical-W2}.
 \end{counterexample}
 
-\begin{theorem}[Conditional same-length structural rigidity]
-\label{thm:open-rigidity}
+\paragraph{Conditional same-length structural rigidity (preview).}
 Under the project's placement-based $\Is$, oriented read types, equal
 candidate length, and genuine MB09 candidacy of the truth and
 competitor, every candidate has the truth's complete spectrum and is
 a cyclic rotation of it. Every spectrum-based score therefore ties.
-\end{theorem}
 This is a rigidity and identifiability theorem
 (Theorem~\ref{thm:rigidity}, Corollary~\ref{cor:same-length-rotation}),
 not a likelihood-specific inequality. Truth candidacy is necessary:
@@ -364,13 +362,11 @@ Equal length is independently necessary: $AAATT\to AAAATT$ is a
 variable-length counterexample even with full observed support
 (Theorem~\ref{thm:cex-variable-length}).
 
-\begin{theorem}[Population uniqueness]
-\label{thm:open-population}
+\paragraph{Population uniqueness (preview).}
 The true genome maximizes population expected log-likelihood over
 every class containing it. Within the primitive-P2 oriented class
 the maximizer is unique up to rotation
 (Lemma~\ref{lem:gibbs}, Theorem~\ref{thm:population}).
-\end{theorem}
 
 The population theorem does not assert that every finite sample favours
 the truth. Conversely, the finite counterexamples do not contradict

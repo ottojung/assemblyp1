@@ -202,10 +202,14 @@ is addressed in Section~\ref{sec:finite:flow-supremum}.
 There is no contradiction with the positive same-length theorem below:
 that theorem only compares candidates of the \emph{same} genome length
 and with the \emph{same complete read support}. Here $|D|=6$ and
-$|S|=5$. Same-length failures under the historical matched-string
-condition also exist, but require distinguishing reverse-complement
-molecule observations (Theorems~\ref{thm:cex-historical-W1} and
-\ref{thm:cex-historical-W2}).
+$|S|=5$. Known same-length counterexamples under the historical matched-string
+condition use reverse-complement molecule observations
+(Theorems~\ref{thm:cex-historical-W1} and
+\ref{thm:cex-historical-W2}). Corollary~\ref{cor:historical-oriented-same-length}
+rules out oriented same-length reversals only when both candidates
+share the truth's \emph{complete} read support. Historical coverage
+alone does not imply this equality, so oriented same-length failures
+with partial observed support remain an open possibility.
 
 One could first discard all candidate genomes failing a
 reconstruction condition and then maximize likelihood only among
@@ -349,7 +353,7 @@ treats complete read distributions and error bounds, while
 Section~\ref{sec:discussion} summarizes the answers and lists
 what remains open.
 
-Proof levels and the exact Lean endpoints are indexed in \path{docs/verification.md}; individual results below state their mathematical hypotheses directly.
+Proof levels and the exact Lean theorem declarations are indexed in \path{docs/verification.md}; individual results below state their mathematical hypotheses directly.
 
 The appendices record modeling choices
 (Appendix~\ref{app:modeling}), the proof-status ledger

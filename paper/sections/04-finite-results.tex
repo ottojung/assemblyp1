@@ -1,8 +1,10 @@
 \section{Finite results: rigidity, reweighting, and the source predicate}
 \label{sec:finite}
 
-The strongest negative conclusion of this section is
-Theorem~\ref{thm:unrestricted-branching-rate}: for every fixed
+The central quantitative result is
+Theorem~\ref{thm:unrestricted-branching-rate}: the exponent
+$(|E|-|V|)/2$ comes from the dimension of the balanced-flow
+space of the truth's observed-support graph. For every fixed
 truth with branching oriented read overlaps, unrestricted
 exact maximum likelihood selects the truth with probability
 tending to \emph{zero}, rather than one, as the sample grows.
@@ -30,8 +32,12 @@ candidate universe, and the conclusion.
 
 We work under the strict oriented single-strand convention: read types are the
 oriented length-$L$ windows of $S$ with no reverse-complement collapse, and a
-same-length MB09 spelled candidate is a circular word $D$ of length
-$G=|S|$ with $\supp\spec_L(D)=\supp\spec_L(S)$. These restrictions ---
+genuine same-length \emph{spelled candidate} in our oriented
+full-overlap MB09 proxy is a single circular word $D$ of length
+$G=|S|$ with $\supp\spec_L(D)=\supp\spec_L(S)$.
+Calling the candidate \emph{genuine} excludes disconnected
+flows that do not spell a single genome; this oriented proxy
+is not identified with the full physical bidirected MB09 model. These restrictions ---
 oriented reads, equal candidate length, and the full-overlap support proxy ---
 are \projchoice{} additions of this paper; they are not supplied by the
 published sentence, and the counterexamples of
@@ -174,9 +180,12 @@ Only the triple-repeat clause of $\Is$ feeds the spectrum-rigidity and
 no-strict-counterexample conclusions; the interleaved-repeat and coverage clauses
 are not needed there. Corollary~\ref{cor:same-length-rotation} below does use the
 interleaved clause, since it invokes the complete-spectrum uniqueness input of
-Section~\ref{sec:population}, whose hypothesis is Ukkonen's full condition.
+Section~\ref{sec:population}. Here Ukkonen's full condition at
+$K=L-1$ means no triple repeat of length at least $L-1$ and
+no interleaved repeat pair with both constituents that long
+(Definition~\ref{def:P1P2} and Theorem~\ref{thm:BBT}).
 
-\subsubsection{The maximizer theorem on this slice}
+\subsubsection{The maximizer theorem in this setting}
 
 The rigidity theorem proves spectrum equality, which forces a tie for
 every spectrum-based objective. The maximizer theorem below explicitly
@@ -220,8 +229,8 @@ of $\Is$ is a ``some $r \in R$ does \dots'' or a coverage condition, a start set
 $R \supseteq \range\rho$ that contains starts at which no read was drawn is a
 strictly weaker hypothesis, and the theorem is stated using only the actually realized starts.
 For genuine same-length candidates with truth candidacy, cyclic-rotation
-uniqueness is proved in the Lean kernel, without an external
-BBT obstruction premise (Corollary~\ref{cor:same-length-rotation}).
+uniqueness is proved in the Lean kernel, without assuming an external complete-spectrum uniqueness
+theorem as an axiom (Corollary~\ref{cor:same-length-rotation}).
 
 \kernelcheck{}
 
@@ -475,8 +484,8 @@ oriented counterexample of Section~\ref{sec:finite:length}.
 \subsection{The candidate-length boundary}
 \label{sec:finite:length}
 
-The same-length restriction in the positive theorem is not cosmetic. On the next
-slice, where $|D|>G$ is allowed, the truth need not be optimal even under $\Is$,
+The same-length restriction in the positive theorem is not cosmetic. In the next
+setting, where $|D|>G$ is allowed, the truth need not be optimal even under $\Is$,
 and this is an infinite-family phenomenon rather than a bounded search.
 
 \begin{theorem}[Oriented variable-length counterexample family]
@@ -493,10 +502,13 @@ $D_M=A^{3+M}TT$ ($|D_M|=5+M$),
 \]
 for the fixed competitor $D=AAAATT$ ($|D|=6$) the exact ratio is
 $(\tfrac{3125}{3888})(\tfrac53)^M>1$ and the fixed-$N$ binomial ratio
-($N=5$) is $(\tfrac{81}{128})2^M>1$, for every $M\ge 1$. Every candidate is a
-genuine MB09 candidate under the per-vertex, spelled-support and
-single-circuit readings. The truth wins exactly at $n=G$; a single extra
-observation of the over-represented $AAA$ type overturns it.
+($N=5$) is $(\tfrac{81}{128})2^M>1$, for every $M\ge 1$. The candidates meet the source's per-vertex lower bound,
+contain every observed read type in their spelled support,
+and each form a single circular circuit; these are distinct
+feasibility requirements (Remark~\ref{rem:surfaces}). At $M=0$ (that is, $n=G$) the truth is a \emph{non-unique}
+unrestricted maximizer: the repeated genome $S^2$ has exactly
+the same read law. One extra observation of the over-represented
+$AAA$ type overturns this tie.
 \end{theorem}
 
 \begin{proof}[Sketch]
@@ -648,17 +660,37 @@ common denominator we may regard $Y$ as integer-valued.
 The stationarity event is exactly
 $\sum_{i=1}^nY(R_i)=0$.
 
-For completeness, the usual lattice anti-concentration bound
-gives $\sup_z\Pr(\sum_{i=1}^nY(R_i)=z)=O(n^{-d/2})$
-for any finitely supported integer random vector with
-nonsingular covariance. By Fourier inversion this probability
-is bounded by a constant times
-$\int_{[-\pi,\pi]^d}|\mathbb E e^{it\cdot Y}|^n\,dt$.
-The modulus is strictly below one away from finitely many
-points of the torus, and decays quadratically near each such
-point because the covariance is nonsingular; each
-neighbourhood contributes $O(n^{-d/2})$. Applying the bound
-to the necessary stationarity event proves the result.
+For clarity, here is the lattice anti-concentration argument in
+full. Rescale $Y$ to an integer vector without changing the
+zero-sum event, and write
+$\varphi(t)=\mathbb E\exp(i t\cdot Y)$ on the torus
+$[-\pi,\pi]^d$. Fourier inversion gives, for any
+$z\in\mathbb Z^d$,
+\[
+ \Pr\!\left\{\sum_{i=1}^n Y(R_i)=z\right\}
+ \le (2\pi)^{-d}\int_{[-\pi,\pi]^d}|\varphi(t)|^n\,dt.
+\]
+The equality $|\varphi(t)|=1$ holds precisely when all
+phases $\exp(i t\cdot y)$ for support values $y$ are equal.
+Since the covariance of $Y$ is positive definite, the
+differences between its support values span $\mathbb R^d$.
+Choose $d$ linearly independent such differences. Their
+phase-equality equations give a discrete set of solutions
+modulo $2\pi$, hence only finitely many on the torus.
+Near each such point $t_0$, the modulus obeys
+$|\varphi(t_0+u)|=|\varphi(u)|$ and
+\[
+ |\varphi(u)|^2=1-u^{\mathsf T}\operatorname{Cov}(Y)u
+                 +O(\|u\|^4).
+\]
+Positive-definiteness therefore gives
+$|\varphi(t_0+u)|\le\exp(-c\|u\|^2)$ locally, for
+some $c>0$. On the compact complement of these
+neighbourhoods, $|\varphi|\le1-\eta$ for some $\eta>0$.
+The integral is thus bounded by finitely many Gaussian
+integrals of order $n^{-d/2}$ plus $O((1-\eta)^n)$.
+This proves the claimed anti-concentration bound without
+an unproved appeal to a local limit theorem.
 Finally, for connected balanced support, $|E|>|V|$ exactly
 when some vertex has at least two outgoing edge types.
 \end{proof}
@@ -673,6 +705,15 @@ directions, optimality requires the empirical counts to satisfy
 $d$ exact stationarity equations. The probability of all of
 them holding simultaneously is $O(n^{-d/2})$.
 
+The stationarity equations are \emph{necessary}, not sufficient:
+Theorem~\ref{thm:unrestricted-kkt-certificate} also imposes
+inequalities on edges absent from the truth's read support.
+The exponent $d/2$ reflects the number of independent
+flow directions; density of the unrestricted genome laws
+explains why the stationarity test applies. A matching
+lower bound is not established for arbitrary branching
+truths with $d\ge2$.
+
 The theorem does not give a rate uniform over growing
 genomes or settle the joint sequencing/bridging threshold
 of Section~\ref{sec:open-questions-final}. The finite,
@@ -684,6 +725,31 @@ independently Lean-formalized.}
 
 
 
+
+\begin{remark}[Sharpness in one flow direction]
+\label{rem:branching-one-direction-sharpness}
+The exponent in Theorem~\ref{thm:unrestricted-branching-rate}
+is attained in the example $S=\texttt{AAATT}$, $L=3$,
+along sample sizes divisible by $5$. Its support graph has
+$|E|=5$, $|V|=4$, so $d=1$. On $5\mid n$,
+the necessary equality $5X_{\texttt{AAA}}=n$ has probability
+$\Theta(n^{-1/2})$ by the binomial local estimate.
+With probability $1-O(e^{-cn})$ conditional on this equality,
+the other four counts each differ from $n/5$ by at most
+$n/25$. The four nonloop support edges form a directed
+cycle; their potential differences
+$n-5X_e$ then have magnitude at most $n/5$.
+Set one vertex potential to zero and extend around this cycle.
+All resulting potential differences have magnitude at most
+$3n/5$. Assign zero potential to vertices outside the support.
+Every absent-edge inequality of
+Theorem~\ref{thm:unrestricted-kkt-certificate} is therefore
+satisfied, so the truth is an unrestricted maximizer on
+this event. Consequently its actual maximizer probability is
+$\Theta(n^{-1/2})$ along $5\mid n$.
+This example proves sharpness for $d=1$, not for all
+branching graphs with $d\ge2$.
+\end{remark}
 
 \subsection{A flow characterization of unrestricted likelihood}
 \label{sec:finite:flow-supremum}
@@ -1213,7 +1279,7 @@ each read type equals its visited-vertex count \emph{plus} its
 skipped internal-window count. Thus flow counts and complete-genome
 spectra need not coincide without an additional proof that the
 skipped windows include no observed read type. The general oriented
-counting identity and a finite exhaustive regression are recorded in
+counting identity and an exhaustive finite check are recorded in
 \texttt{docs/section62-observation7-skipped-windows.md}; its
 bidirected source-faithful Lean generalization is \emph{not} claimed
 here. This is a substantive boundary of the optimization model, not a
