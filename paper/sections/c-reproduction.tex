@@ -35,7 +35,7 @@ the following permanent URL:
 
 The corresponding toolchain and source revisions are:
 \begin{quote}
-\noindent\textbf{Release tag:} \texttt{\AssemblyPaperTag}
+\noindent\textbf{Tag at this build revision:} \texttt{\AssemblyPaperTag}
 
 \noindent\textbf{Lean:} \texttt{\AssemblyLeanToolchain}
 
@@ -45,9 +45,15 @@ The corresponding toolchain and source revisions are:
 The source repository is
 \url{https://github.com/ottojung/assemblyp1};
 the dependency pin is in \texttt{lake-manifest.json}.
-The matching \texttt{docs/verification.md} and the complete
-Lean source are included in the tagged repository tree, rather than
-living only behind a moving PDF link.
+A moving \texttt{whitepaper-latest} PDF is built from a main-branch
+commit, which generally has no version tag; in that case
+\texttt{untagged} above is expected and \emph{does not} mean the
+source revision is unknown. The full commit URL printed above
+identifies the exact reproducible tree. Versioned
+\texttt{paper-vX.Y.Z} release PDFs instead resolve to their
+tagged revision. The matching \texttt{docs/verification.md} and
+complete Lean source are available at that identified commit,
+not only behind the moving PDF link.
 
 GitHub's CI builds every theorem module with
 \texttt{lake build --wfail}, replays the entire library through the

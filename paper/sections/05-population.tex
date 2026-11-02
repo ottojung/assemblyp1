@@ -759,11 +759,10 @@ used in Theorem~\ref{thm:p2-uniform-rate}
 now give the claimed probability estimate.
 \end{proof}
 
-The previous quartic rate and the primitive-P2
-multiplicity cap are Lean-checked.
-The new uniform linear estimate is a
-\emph{paper-level mathematical proof},
-not yet a separately kernel-checked theorem.
+The primitive-P2 multiplicity cap and the weaker
+$1/(8B^4)$ rate are Lean-checked. The sharper
+$1/(64B)$ estimate has a \emph{paper-level mathematical
+proof}, but is not yet separately kernel-checked.
 The independent finite calculation is
 \path{scripts/verify_p2_linear_rate.py}.
 The estimator and competitor class remain
@@ -846,17 +845,15 @@ Lean-formalized; its independent finite check is
 
 \begin{remark}[Sharpness of the rate, and the unrestricted universe]
 \label{rem:rate-sharpness}
-The Lean-checked $1/(8B^4)$ bound is valid
-but not tight; Proposition~\ref{prop:p2-linear-rate} proves
-the stronger $1/(64B)$ lower bound.  Complete exact enumeration of the primitive-P2 class at
+The Lean-checked $1/(8B^4)$ bound is valid but
+weaker than the paper-proved $1/(64B)$ bound.  Complete exact enumeration of the primitive-P2 class at
 $(q,L)=(2,2),(3,2),(2,3),(2,4)$, with
 $B=4,6,8,16$ respectively, gives exact worst-case separations $1-\rho$ larger than the
 \emph{quartic} bound $1/(8B^4)$ by factors $274$, $903$, $2116$,
 and $16648$; these factors are \emph{not} relative to the
-sharper linear bound $1/(64B)$. The observed extremal pairs
-are one-symbol insertions, suggesting separation of order $1/B$:
-in these four cases $(1-\rho_*)B$ is approximately $0.51$--$0.54$.
-Propositions~\ref{prop:p2-linear-rate} and~\ref{prop:p2-linear-sharpness} prove the sharp asymptotic order $\Theta(1/B)$.
+sharper linear bound $1/(64B)$. The observed extremal pairs are one-symbol insertions;
+in these four cases $(1-\rho_*)B$ is approximately $0.51$--$0.54$,
+consistent with the established $\Theta(1/B)$ order.
 The optimal leading constant and complete extremizer classification remain open.
 The exact arithmetic
 is reproduced by the scripts and arithmetic records listed in

@@ -4,12 +4,15 @@
 The central quantitative result is
 Theorem~\ref{thm:unrestricted-branching-rate}: the exponent
 $(|E|-|V|)/2$ comes from the dimension of the balanced-flow
-space of the truth's observed-support graph. For every fixed
-truth with branching oriented read overlaps, unrestricted
-exact maximum likelihood selects the truth with probability
-tending to \emph{zero}, rather than one, as the sample grows.
-The culprit is the freedom to adjust a candidate's read
-frequencies by increasing its length.
+space of the truth's observed-support graph. For every fixed truth with branching oriented read overlaps,
+the probability that the truth is an unrestricted exact-ML
+maximizer tends to \emph{zero}. Conversely, with nonbranching
+support it tends to one exponentially fast
+(Proposition~\ref{prop:unrestricted-nonbranching-converse}).
+The culprit in the branching case is the freedom to adjust
+a candidate's read frequencies by increasing its length.
+These statements concern whether the truth is \emph{a}
+maximizer, not uniqueness among genomes of different lengths.
 
 First we identify the same-length setting where this freedom
 vanishes. We prove rigidity of complete read counts under
@@ -81,22 +84,23 @@ $A=\spec_L(S)$ is the unique positive circulation of total $G$ on $X_S$.
 \end{theorem}
 
 \begin{proof}
-Let $B$ be a positive circulation of total $G$ and $\delta=B-A$, a circulation
-with $\sum_w\delta(w)=0$. Since $A(w)\le$ (occurrences of
-$\operatorname{prefix}_{L-1}(w))\le 2$ and $B(w)\ge 1$, we have
+Let $F$ be a positive circulation of total $G$ and $\delta=F-A$, a circulation
+with $\sum_w\delta(w)=0$. Let $E(X_S)$ denote the edge set of the
+support graph. Since $A(w)\le$ (occurrences of
+$\operatorname{prefix}_{L-1}(w))\le 2$ and $F(w)\ge 1$, we have
 $\delta(w)\ge-1$ on every edge.
 
 Suppose $\delta\ne 0$. Then $N=\{w:\delta(w)<0\}$ is nonempty, and on $N$ we
-have $\delta(w)=-1$, $A(w)=2$, $B(w)=1$. Take $w\in N$ with tail $v$. As
+have $\delta(w)=-1$, $A(w)=2$, $F(w)=1$. Take $w\in N$ with tail $v$. As
 $A(w)=2$ and $\mathrm{out}_A(v)\le 2$, $w$ is the only outgoing edge at $v$, so
 $\mathrm{out}_\delta(v)=-1$ and balance gives $\mathrm{in}_\delta(v)=-1$. Each
 incoming edge has $\delta\ge-1$; if $v$ had two incoming edges they would each
 have $A=1$ and hence $\delta\ge0$, contradicting $\mathrm{in}_\delta(v)=-1$. So
 $v$ has a single incoming edge $e$ with $A(e)=2$, $\delta(e)=-1$, i.e.\ $e\in N$.
 The symmetric argument at the head of $w$ shows every edge incident to a node
-touched by $N$ lies in $N$; thus $N$ is a union of connected components of $X_S$
-with no edge to $V\setminus N$. Strong connectivity forces $N=\emptyset$ or
-$N$ to contain all edges; the latter gives $\sum_w\delta(w)=-|E|<0$, contradicting
+touched by $N$ lies in $N$; thus no edge in $E(X_S)\setminus N$ is incident to any
+vertex touched by $N$. Strong connectivity forces $N=\emptyset$ or
+$N$ to contain all edges; the latter gives $\sum_w\delta(w)=-|E(X_S)|<0$, contradicting
 $\sum_w\delta(w)=0$. Hence $\delta\ge0$, and a nonnegative circulation with
 $\sum_w\delta(w)=0$ is zero.
 \end{proof}
@@ -201,7 +205,7 @@ observed read set, and let $D$ be any same-length genuine MB09 candidate for the
 same observation. Then, for both the exact
 Medvedev--Brudno multinomial and the §6.1 binomial approximation at $N=G$,
 \[
-  \Lik(D;x) \le \Lik(S;x).
+  \Lik(D;x) = \Lik(S;x).
 \]
 \end{theorem}
 \begin{proof}[Proof sketch]
@@ -336,15 +340,15 @@ Section~\ref{sec:finite:length}.
 \label{prop:beatability}
 Fix $S,L$ and an observation $x$ with $\supp x=\supp\spec_L(S)$, and write
 $A=\spec_L(S)$. If $A$ is the unique positive circulation of total $G$ on
-$X_S$, the truth ties every same-length spelled candidate. If $B\ne A$ is
-another positive circulation of total $G$, choose $w_0$ with $B(w_0)>A(w_0)$ and
+$X_S$, the truth ties every same-length spelled candidate. If $F\ne A$ is
+another positive circulation of total $G$, choose $w_0$ with $F(w_0)>A(w_0)$ and
 put $x_M=x+M e_{w_0}$. Then the \emph{exact multinomial} likelihood ratio is
-$\mathrm{ratio}_0\cdot(B(w_0)/A(w_0))^M$, which exceeds $1$ for
+$\mathrm{ratio}_0\cdot(F(w_0)/A(w_0))^M$, which exceeds $1$ for
 all sufficiently large $M$. In the fixed-$N$ binomial surrogate the
 multiplier is instead
 \[
-Q_{w_0}=\frac{B(w_0)}{A(w_0)}
-\prod_{v\ne w_0}\frac{N-B(v)}{N-A(v)}.
+Q_{w_0}=\frac{F(w_0)}{A(w_0)}
+\prod_{v\ne w_0}\frac{N-F(v)}{N-A(v)}.
 \]
 Its amplification requires $Q_{w_0}>1$ and a valid binomial domain;
 the exact multiplier alone does not prove the binomial conclusion.
@@ -459,8 +463,11 @@ of binomial marginals with $N=5$, the zero-count factors retained,
 \begin{proof}[Sketch]
 The instance is Theorem~\ref{thm:cex-exact} with $B$ relabeled to $C$, so the
 same $\Is$ certificate transfers. The spectra are $S=(AAA:1,AAC:1,CAA:1)$ and
-$D=(AAA:2,AAC:1,CAA:1)$ on the observed types. Carrying the factors for the
-zero-multiplicity types changes the ratio from $2$ to $1125/512$:
+$D=(AAA:2,AAC:1,CAA:1)$ on the observed types. The exact multinomial ratio for these genomes is $2$,
+as in Theorem~\ref{thm:cex-exact}. For the \emph{different}
+fixed-$N$ binomial objective, omitting the zero-count read
+types would give a ratio of $9/8$; retaining their
+$(1-p_w)^{N-x_w}$ factors instead gives $1125/512$:
 \[
   \Lik_{\mathrm{bin}}(S;x)=\frac{452984832}{30517578125},\qquad
   \Lik_{\mathrm{bin}}(D;x)=\frac{7962624}{244140625}.
@@ -576,9 +583,11 @@ of the observed sample is therefore
 For $0<a<n$ this strictly concave function is uniquely maximized
 at $t=a/n$, whereas the truth has $t=1/5$. The maximizing law
 is \emph{realized by a finite circular genome}: take
-$j=4a$ and $k=n-a$. Thus $5a\ne n$ gives a strict
-competitor. When $a=0$, $j=0$ gives a strict improvement;
-when $a=n$, take $j=4n$ and $k=1$.
+$j=4a$ and $k=n-a$, for $a<n$. These competitors have
+length $4n$, growing linearly with the sample size.
+Thus $5a\ne n$ gives a strict competitor. When $a=0$,
+$j=0$ is allowed; when $a=n$, take $j=4n$ and $k=1$
+(length $4n+4$).
 Finally $a\sim\mathrm{Binomial}(n,1/5)$, giving the stated
 upper bound and its $n^{-1/2}$ order by Stirling's formula.
 With fixed $S$ each of the five reads has probability $1/5$,
@@ -723,8 +732,78 @@ likelihood recovery.
 \statusline{\mathfact{}; the proof is mathematical, not
 independently Lean-formalized.}
 
+\begin{proposition}[Nonbranching support succeeds in unrestricted exact ML]
+\label{prop:unrestricted-nonbranching-converse}
+Let $S$ be a fixed circular genome with oriented read length $L\ge2$,
+and let its complete read-support graph be nonbranching.
+Write $m$ for its number of distinct length-$L$ edges. For
+$n\ge1$ independent uniform-start reads,
+\[
+ \Pr_S\{S\text{ maximizes unrestricted exact likelihood}\}
+ \ge 1-2m\exp\!\left(-\frac{n}{2m^4}\right).
+\]
+Consequently, together with
+Theorem~\ref{thm:unrestricted-branching-rate}, for every
+fixed truth $S$ the probability that $S$ is \emph{an}
+unrestricted exact-ML maximizer tends to one if and only if
+its complete support graph is nonbranching; it tends to zero
+otherwise.
+\end{proposition}
+\begin{proof}
+The support graph is strongly connected because $S$ spells
+a closed walk traversing all its edges. If it is
+nonbranching, it is a single directed $m$-cycle.
+Balance makes the truth's normalized read law
+$p_e=1/m$ on each support edge. Let $X_e$ denote its
+sample counts; then $\sum_eX_e=n$. Around this cycle
+the potential equalities from
+Theorem~\ref{thm:unrestricted-kkt-certificate} become
+\[
+  \phi_{\operatorname{head}(e)}
+  -\phi_{\operatorname{tail}(e)}=n-mX_e.
+\]
+Their right-hand sides sum to $mn-mn=0$, so a potential
+exists on the support vertices, uniquely up to translation.
+Choose a root potential equal to zero and follow the cycle.
 
+Consider the event
+\[
+ \max_{e\text{ in the support}}
+  |X_e-n/m| < \frac{n}{2m^2}.
+\]
+On this event each potential increment has magnitude
+less than $n/(2m)$, so every support potential is
+strictly between $-n/2$ and $n/2$.
+Set the potentials of all vertices outside the support to
+zero. For every absent edge, the potential difference is
+then strictly less than $n$; hence the inequality part
+of the KKT certificate holds. All observed edges are in
+the truth's support, and thus the certificate implies
+that $S$ is an unrestricted exact-ML maximizer.
 
+Each $X_e$ has marginal distribution
+$\mathrm{Binomial}(n,1/m)$. Hoeffding's inequality
+and the union bound give
+\[
+ \Pr_S\!\left\{\max_e|X_e-n/m|
+          \ge\frac{n}{2m^2}\right\}
+ \le 2m\exp\!\left(-2n\Bigl(\frac1{2m^2}\Bigr)^2\right)
+ =2m\exp\!\left(-\frac n{2m^4}\right),
+\]
+as claimed.
+\end{proof}
+
+The dichotomy concerns the \emph{maximizer property of
+the specified truth}, not unique identification of its
+length or spelling. In the unrestricted candidate class,
+$S,S^2,S^3,\ldots$ always generate the same read law;
+these genomes tie on every sample. Thus the proposition
+does not assert a uniquely correct unrestricted ML
+estimator. For primitive competitors alone,
+Theorem~\ref{thm:identifiable-iff-nonbranching}
+gives the distinct population-identifiability criterion.
+\statusline{\mathfact{}; the Hoeffding/KKT argument is
+paper-level and is not separately Lean-formalized.}
 
 \begin{remark}[Sharpness in one flow direction]
 \label{rem:branching-one-direction-sharpness}
