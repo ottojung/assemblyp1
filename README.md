@@ -1,6 +1,6 @@
 # assemblyp1
 
-**Current paper:** [Paper v1.6.6](https://github.com/ottojung/assemblyp1/releases/tag/paper-v1.6.6) is the current versioned publication. All AssemblyP1 agents have been stopped and all related Antonina board issues closed. New sharp primitive-P2 separation and reverse-complement-class results are **paper-level mathematical theorems, not yet Lean-formalized**; historical physical-molecule transfer and bridging-threshold questions remain open. See [verification status](docs/verification.md).
+**Current paper:** [Paper v1.6.6](https://github.com/ottojung/assemblyp1/releases/tag/paper-v1.6.6) is the current versioned publication. All AssemblyP1 agents have been stopped and all related Antonina board issues closed. New sharp primitive-P2 separation and reverse-complement-class results are **paper-level mathematical theorems, not yet Lean-formalized**; historical physical-molecule transfer and bridging-threshold questions remain open. See [verification status](docs/verification.md) and [research closeout / deferred next steps](docs/research-closeout-2026-11-02.md).
 
 AssemblyP1 studies the mathematical properties of genome likelihood: how
 repetition, genome length, observed read frequencies, and the candidate universe
