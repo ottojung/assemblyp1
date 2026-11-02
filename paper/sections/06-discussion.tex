@@ -144,37 +144,24 @@ the model really acts as DNA reverse complement on read words; the abstract
 count identity itself only needs an involution. It does not supply the
 counts of unobserved molecule classes in the full Section~6.1 likelihood.
 
-The finite-read recovery theorem (Theorem~\ref{thm:finite-recovery}) is an
-\emph{error-exponent} result rather than a structural
-classification: it converts population identifiability of a finite candidate
-family into an explicit exponential bound on the probability of an exact-ML
-error. Its hypotheses are deliberately minimal --- a finite, pairwise
-distinguishable family --- and its conclusion is about the error rate, not the
-likelihood, so it neither contradicts the finite counterexamples of
-Section~\ref{sec:finite} nor claims monotonicity of finite-sample success
-(Proposition~\ref{prop:nonmonotone}). Together with the population uniqueness theorem and the primitive-P2
-length bound (Theorem~\ref{thm:p2-finite-class}), it gives
-finite-read recovery for the \emph{entire} oriented primitive-P2
-class (Corollary~\ref{cor:p2-finite-recovery-all}), not merely
-an arbitrary finite shortlist. For this class the affinity is not merely
-existential: the Lean-checked Theorem~\ref{thm:p2-uniform-rate}
-gives a quartic separation bound, and the mathematical
+The finite-read recovery theorem
+(Theorem~\ref{thm:finite-recovery}) converts identifiability
+within a finite candidate family into an exponential
+likelihood-error bound. Together with primitive-P2
+population uniqueness and the length bound, it applies
+to the \emph{entire} oriented primitive-P2 class
+(Corollary~\ref{cor:p2-finite-recovery-all}).
+The sharp paper-level separation rate is proved in
 Propositions~\ref{prop:p2-linear-rate} and
-\ref{prop:p2-linear-sharpness} establish its sharp
-$\Theta(1/B)$ exponent. In particular, the exact-ML
-error probability is at most $N_C\,e^{-n/(64B)}$
-with $B=2q^{L-1}$, and
-$n\ge64B\log(N_C/\delta)$ suffices for error at most $\delta$.
-The competitor set has $N_C<q^{B+1}$ possible read laws.
-A fully explicit conservative sufficient bound is therefore
-$n\ge64B((B+1)\log q+\log(1/\delta))$.
-For fixed alphabet size, its leading order is
-$64B^2\log q$, \emph{quadratic} in $B$ rather than linear.
-The sharp $\Theta(1/B)$ result concerns separation of
-individual laws; searching across a class of up to
-$q^B$ genomes incurs a further $\log N_C$ factor.
-The bound need not be optimal and is not a practical
-read-depth recommendation.
+\ref{prop:p2-linear-sharpness}; the weaker bound is
+Lean-checked (Table~\ref{tab:ledger}).
+The resulting explicit sample bound is quadratic in
+$B=2q^{L-1}$ for fixed alphabet size, because the
+finite-class union bound must cover exponentially many
+candidate laws. It is sufficient, not an optimal
+or practical read-depth requirement. It also does not
+imply that finite-sample success is monotone
+(Proposition~\ref{prop:nonmonotone}).
 
 Each proof therefore has its own mathematical claim, scope,
 and consequence. The central investigation remains the
@@ -417,13 +404,11 @@ remains open.
 \item \textbf{Sharp finite-read recovery rates.}
 For the oriented primitive-P2 class,
 Propositions~\ref{prop:p2-linear-rate}
-and~\ref{prop:p2-linear-sharpness} now give matching
-$\Theta(1/B)$ separation bounds even for fixed $q$.
+and~\ref{prop:p2-linear-sharpness} prove the sharp
+$\Theta(1/B)$ order, even for fixed $q$.
 What is the best universal leading constant, and
-which primitive-P2 genome pairs are exact or
-asymptotic minimizers for their given $(q,L)$?
-The original finite enumerations do not resolve
-these optimal-constant questions.
+which primitive-P2 genome pairs minimize separation
+for their given $(q,L)$?
 An unrestricted-universe uniform rate is \emph{not} an open
 possibility: distinct genomes such as $AB$ and $ABAB$ have identical
 read laws, preventing uniform recovery.
@@ -588,8 +573,8 @@ Positive guarantees come from making the candidate universe
 informative. For suitable truths, knowing an upper bound on
 genome length excludes all nonrotational competitors below twice
 the true length. Restricting both truth and competitors by P2
-gives exponential finite-sample recovery, with a sharp
-paper-proved separation order $\Theta(1/B)$
+gives exponential finite-sample recovery, with
+sharper paper-proved separation bounds
 (Propositions~\ref{prop:p2-linear-rate}
 and~\ref{prop:p2-linear-sharpness}).
 A geometric length prior also produces an

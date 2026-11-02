@@ -333,13 +333,11 @@ when the read-overlap support graph is nonbranching
 exponentially decreasing upper bound on the probability of a
 maximum-likelihood error as independent reads are collected
 (Theorem~\ref{thm:p2-uniform-rate}).
-A separate mathematical argument sharpens the uniform
-separation exponent to $\Theta(1/B)$, with
-$B=2q^{L-1}$ (Propositions~\ref{prop:p2-linear-rate}
-and~\ref{prop:p2-linear-sharpness}).
-These are theoretical guarantees, not claims of a
-practical sequencing depth; the sharper result is not
-yet separately Lean-checked.
+Propositions~\ref{prop:p2-linear-rate} and
+\ref{prop:p2-linear-sharpness} sharpen the separation bound
+at paper level; the earlier bound is Lean-checked
+(Table~\ref{tab:ledger}). These theoretical results do
+not prescribe a practical sequencing depth.
 
 It does not establish how likelihood performs near the sequencing
 threshold where coverage and bridging first become likely.
