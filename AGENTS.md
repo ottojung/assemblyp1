@@ -2,6 +2,20 @@
 
 This repository is a mathematical research project with a Lean verification boundary. Its purpose is to state the genome-assembly open problem documented in `docs/open-problem.md` faithfully, explore it aggressively, and, if a plausible proof or counterexample is found, formally verify the final result.
 
+## Current research state (November 2026)
+
+The published v1.6.6 manuscript is a completed first research publication.
+Its remaining problems are preserved as future work in
+`paper/sections/06-discussion.tex` and
+`docs/research-closeout-2026-11-02.md`.
+Do not infer an active research mandate from open questions, old GitHub
+issues, dormant agent branches, or the historical orchestration instructions
+below. Do not spawn/replenish AssemblyP1 research agents or start a new proof
+campaign unless the repository owner explicitly reopens research.
+The five-agent guidance below is **conditional on such a reopening**, not
+a standing instruction for the frozen project. Small publication-integrity
+and correctness fixes are still permitted when specifically requested.
+
 ## Lean
 
 Lean is **not** the default medium for proof discovery. The intended cadence is:
