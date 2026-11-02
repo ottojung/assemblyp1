@@ -64,13 +64,14 @@ $t\mapsto W_t(S)$.
 
 \begin{lemma}[Same-length spelled candidates are positive circulations]
 \label{lem:reduction}
-Same-length MB09 spelled candidates with observed support $V$ are exactly
-the positive circulations of total $G$ on $X_S$.
+The spectra of same-length circular candidates $D$ satisfying
+$\supp\spec_L(D)=\supp\spec_L(S)$ are exactly
+the positive integral circulations of total $G$ on $X_S$.
 \end{lemma}
 
 \begin{proof}[Sketch]
 A circular word $D$ of length $G$ has a balanced positive spectrum of total $G$;
-if $\supp\spec_L(D)=V$ it is such a circulation. Conversely a positive
+under the stated complete-support equality it is such a circulation. Conversely a positive
 circulation on a strongly connected balanced multigraph makes it Eulerian, so an
 Eulerian circuit spells a circular word $D$ of length $G$ with
 $\spec_L(D)=f$. The rigidity theorem below proves uniqueness on the larger
@@ -467,7 +468,7 @@ $D=(AAA:2,AAC:1,CAA:1)$ on the observed types. The exact multinomial ratio for t
 as in Theorem~\ref{thm:cex-exact}. For the \emph{different}
 fixed-$N$ binomial objective, omitting the zero-count read
 types would give a ratio of $9/8$; retaining their
-$(1-p_w)^{N-x_w}$ factors instead gives $1125/512$:
+$(1-p_w)^{n-x_w}$ factors, with $n=3$ sampled reads, instead gives $1125/512$:
 \[
   \Lik_{\mathrm{bin}}(S;x)=\frac{452984832}{30517578125},\qquad
   \Lik_{\mathrm{bin}}(D;x)=\frac{7962624}{244140625}.
@@ -740,7 +741,7 @@ Write $m$ for its number of distinct length-$L$ edges. For
 $n\ge1$ independent uniform-start reads,
 \[
  \Pr_S\{S\text{ maximizes unrestricted exact likelihood}\}
- \ge 1-2m\exp\!\left(-\frac{n}{2m^4}\right).
+ \ge 1-m(m-1)\exp\!\left(-\frac{2n}{m^2}\right).
 \]
 Consequently, together with
 Theorem~\ref{thm:unrestricted-branching-rate}, for every
@@ -755,7 +756,7 @@ a closed walk traversing all its edges. If it is
 nonbranching, it is a single directed $m$-cycle.
 Balance makes the truth's normalized read law
 $p_e=1/m$ on each support edge. Let $X_e$ denote its
-sample counts; then $\sum_eX_e=n$. Around this cycle
+sample counts; then $\sum_e X_e=n$. Around this cycle
 the potential equalities from
 Theorem~\ref{thm:unrestricted-kkt-certificate} become
 \[
@@ -764,33 +765,41 @@ Theorem~\ref{thm:unrestricted-kkt-certificate} become
 \]
 Their right-hand sides sum to $mn-mn=0$, so a potential
 exists on the support vertices, uniquely up to translation.
-Choose a root potential equal to zero and follow the cycle.
 
-Consider the event
+For $m=1$ the single support potential may be set to zero,
+as may all off-support potentials; the certificate holds
+for every sample, and the displayed lower bound equals one.
+Suppose $m\ge2$. For each unordered pair of distinct support
+vertices, choose the forward directed arc from one vertex
+to the other, consisting of $k$ edges with $1\le k<m$.
+The potential difference between those endpoints is
 \[
- \max_{e\text{ in the support}}
-  |X_e-n/m| < \frac{n}{2m^2}.
+  kn-mY,\qquad
+  Y=\sum_{e\text{ on the arc}} X_e
+      \sim\mathrm{Binomial}(n,k/m).
 \]
-On this event each potential increment has magnitude
-less than $n/(2m)$, so every support potential is
-strictly between $-n/2$ and $n/2$.
-Set the potentials of all vertices outside the support to
-zero. For every absent edge, the potential difference is
-then strictly less than $n$; hence the inequality part
-of the KKT certificate holds. All observed edges are in
-the truth's support, and thus the certificate implies
-that $S$ is an unrestricted exact-ML maximizer.
-
-Each $X_e$ has marginal distribution
-$\mathrm{Binomial}(n,1/m)$. Hoeffding's inequality
-and the union bound give
+Hoeffding's inequality therefore gives
 \[
- \Pr_S\!\left\{\max_e|X_e-n/m|
-          \ge\frac{n}{2m^2}\right\}
- \le 2m\exp\!\left(-2n\Bigl(\frac1{2m^2}\Bigr)^2\right)
- =2m\exp\!\left(-\frac n{2m^4}\right),
+ \Pr_S\{|kn-mY|\ge n\}
+ =\Pr_S\{|Y-nk/m|\ge n/m\}
+ \le 2\exp\!\left(-\frac{2n}{m^2}\right).
 \]
-as claimed.
+A union bound over the $\binom m2$ unordered vertex pairs
+shows that except with probability at most
+$m(m-1)\exp(-2n/m^2)$, \emph{all} support-vertex
+potential differences have absolute value less than $n$.
+On this event their maximum and minimum differ by less
+than $n$. Translating all support potentials by the same
+constant puts each in the interval $(-n/2,n/2)$.
+Set the potential at each vertex outside the support to
+zero. Every absent-edge potential difference is then
+less than $n$, satisfying the inequality part of the
+rational KKT certificate; the equalities on support
+edges hold by construction, and all observed edges
+have positive truth probability. Theorem~
+\ref{thm:unrestricted-kkt-certificate} implies that
+$S$ is an unrestricted exact-ML maximizer, proving
+the bound.
 \end{proof}
 
 The dichotomy concerns the \emph{maximizer property of
@@ -804,6 +813,7 @@ Theorem~\ref{thm:identifiable-iff-nonbranching}
 gives the distinct population-identifiability criterion.
 \statusline{\mathfact{}; the Hoeffding/KKT argument is
 paper-level and is not separately Lean-formalized.}
+
 
 \begin{remark}[Sharpness in one flow direction]
 \label{rem:branching-one-direction-sharpness}
@@ -1267,27 +1277,27 @@ is separate from the exact likelihood of the actual iid read sample.
 \begin{theorem}[Effective weights classify all-count surrogate dominance]
 \label{thm:binomial-weights}
 Fix a finite read-type universe $E$ and external size $N$. For a
-candidate spectrum $B$ put
+candidate spectrum $C$ put
 \[
- q_i(B)=B_i\prod_{\substack{j\in E\\j\ne i}}(N-B_j).
+ q_i(C)=C_i\prod_{\substack{j\in E\\j\ne i}}(N-C_j).
 \]
 After removing factors independent of the candidate, the
 product-binomial score for any nonnegative count vector
 $x=(x_i)_{i\in E}$ is proportional to
-$\prod_{i\in E}q_i(B)^{x_i}$. Furthermore, for any two candidate
-spectra $A,B$, candidate $A$ has at least as large a surrogate
-score as $B$ for \emph{every} nonnegative count vector $x$ if and
+$\prod_{i\in E}q_i(C)^{x_i}$. Furthermore, for any two candidate
+spectra $A,C$, candidate $A$ has at least as large a surrogate
+score as $C$ for \emph{every} nonnegative count vector $x$ if and
 only if
 \[
-  \forall i\in E,\qquad q_i(B)\le q_i(A).
+  \forall i\in E,\qquad q_i(C)\le q_i(A).
 \]
 \end{theorem}
 
 \begin{proof}
 Rearrange the numerator
-$\prod_i B_i^{x_i}(N-B_i)^{n-x_i}$ using
+$\prod_i C_i^{x_i}(N-C_i)^{n-x_i}$ using
 $n=\sum_i x_i$. The factor multiplying each $x_i$ is exactly
-$q_i(B)$. Coordinatewise weight domination implies domination
+$q_i(C)$. Coordinatewise weight domination implies domination
 of every product of nonnegative integer powers. Conversely,
 take the count vector consisting of one observation of type
 $i$ to recover the $i$th inequality.
