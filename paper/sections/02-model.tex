@@ -9,12 +9,15 @@ traversal, as in the classical de Bruijn approach
 that score candidate genomes. Precise source conventions and alternative
 normalizations are collected in Appendix~\ref{app:modeling}.
 
-Throughout the paper, $G=|D|$ denotes a circular candidate's length
-(and $|S|$ the true length), $L$ the read length, $n$ the
-\emph{number of independently sampled reads}, and $q$ the alphabet
-size. The symbol $N$ below is an \emph{external} reference genome
-size in the fixed-$N$ binomial approximation; it need not equal the
-candidate-intrinsic $|D|$. These are distinct inputs.
+Unless a local result explicitly resets it, $G=|S|$ denotes
+the true genome's length and $|D|$ denotes the length of a
+candidate $D$; local definitions sometimes write $G=|D|$
+when discussing a generic circular word. We write $L$ for
+read length, $n$ for the \emph{number of independently sampled reads},
+and $q$ for alphabet size. The symbol $N$ below denotes
+an \emph{external} reference genome size in the fixed-$N$
+binomial approximation; it need not equal the candidate-intrinsic
+$|D|$. These are distinct inputs.
 
 \paragraph{Notation at a glance.}
 The same letters can denote different local objects; subscripts and
@@ -31,6 +34,8 @@ $B_h$ & A separate weighted Euler-tour count in the fibre formula (Section~\ref{
 $\rho(p,r)$ & Hellinger affinity between two read laws; rotations of a genome are written explicitly instead \\
 $N,\,N(c)$ & External reference length in the binomial surrogate, versus the number of spectrum spellings in the fibre formula \\
 $f,h$ & Local edge flows or perturbations; their meanings are fixed where introduced \\
+$E,V$ & Edge and vertex sets of an overlap graph, except where an explicit local definition uses them for an event or support set \\
+$S,D$ & The true genome and a competing genome; $G=|S|$ unless locally defined otherwise \\
 \bottomrule
 \end{tabular}
 \end{center}

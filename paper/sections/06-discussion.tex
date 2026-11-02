@@ -24,9 +24,13 @@ belong to a different candidate and observation model.
 Even distinguishable genomes can be ranked incorrectly
 by a finite sample. More strikingly, for every fixed truth
 with branching oriented read overlaps, its probability
-of winning exact likelihood against \emph{all} genome
+of being an exact-likelihood maximizer against \emph{all} genome
 lengths tends to zero (Theorem~
-\ref{thm:unrestricted-branching-rate}).
+\ref{thm:unrestricted-branching-rate}). With nonbranching
+support, that probability instead tends to one exponentially
+fast (Proposition~\ref{prop:unrestricted-nonbranching-converse}),
+although the maximizing genome is never unique across all
+lengths because repeated copies tie.
 The flow characterization explains this: arbitrarily long
 circular genomes approximate balanced read-frequency
 assignments densely, so the unrestricted optimizer
@@ -545,12 +549,12 @@ problematic interleaved pair or triple repeat has all copies unbridged, another
 same-length genome has the same read likelihood. Shomorony et al.\ strengthen
 the hypothesis to sufficient conditions for exact reconstruction and then ask
 whether those conditions also imply ML optimality. A 2025 correctness-guarantee
-paper still presents the information/correctness line and the
-maximum-likelihood line as separate \parencite{salmela2025}, which is meaningful
-evidence that the 2016 question had not become a standard solved result. Our
-negative witnesses are consistent with that picture: the implication is not
-merely unproved but false under several precise readings, while the positive
-same-length and population results show where the intuition does survive.
+paper discusses correctness-guarantee assembly
+\parencite{salmela2025}; it does not by itself resolve or establish
+the historical status of the 2016 ML question. Our negative
+witnesses show that the implication is false under several
+precisely defined readings, while the positive same-length and
+population results show where the intuition does survive.
 
 \subsection{Conclusion}
 
@@ -568,11 +572,16 @@ the original reconstruction conditions hold.
 The principal negative theorem goes beyond finite
 counterexamples. For \emph{every} fixed truth whose oriented
 read-overlap graph branches, unrestricted exact likelihood
-selects the truth with probability at most
+has the truth as an ML maximizer with probability at most
 $O(n^{-(E-V)/2})$, tending to \emph{zero} as the number of reads
 increases (Theorem~\ref{thm:unrestricted-branching-rate}).
-Arbitrarily long candidate genomes can closely fit
-sampling fluctuations through their balanced read frequencies.
+For a nonbranching truth the probability instead approaches one
+exponentially fast (Proposition~\ref{prop:unrestricted-nonbranching-converse}).
+This is an exact dichotomy for \emph{maximality of the truth},
+not an unrestricted identification theorem: the truth and its
+powers tie identically. Arbitrarily long candidate genomes
+can closely fit sampling fluctuations through their balanced
+read frequencies when the support branches.
 More data alone does not cure this freedom to overfit.
 
 Positive guarantees come from making the candidate universe

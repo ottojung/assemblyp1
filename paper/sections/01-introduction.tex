@@ -106,11 +106,18 @@ mean uniform \emph{read strings}.
 
 The main negative result is stronger than the existence of a misleading
 sample. Whenever the possible reads of a fixed truth form a branching
-overlap graph, the probability that the truth wins exact likelihood
-over \emph{all} candidate lengths tends to zero as more independent
-reads arrive (Theorem~\ref{thm:unrestricted-branching-rate}).
+overlap graph, the probability that the truth is \emph{an}
+exact-likelihood maximizer over \emph{all} candidate lengths tends
+to zero as more independent reads arrive
+(Theorem~\ref{thm:unrestricted-branching-rate}).
+For nonbranching support, the converse holds with exponentially high
+probability (Proposition~\ref{prop:unrestricted-nonbranching-converse}).
 More observations reveal the read frequencies ever more accurately,
-yet the unrestricted optimizer can fit the remaining sampling noise.
+yet unrestricted candidates can fit the remaining sampling noise
+by growing in length; the explicit construction below uses
+competitors of length proportional to the number of reads.
+Neither conclusion guarantees a \emph{unique} maximizing genome,
+since powers of a circular genome always share its read law.
 To understand how, begin with a small finite-sample effect.
 
 Here is a minimal example. Let $S=\texttt{AAC}$ be the true circular
@@ -183,7 +190,10 @@ The multinomial coefficient for unordered reads cancels from this
 ratio. The same effect holds for an infinite family of read samples
 (Theorem~\ref{thm:cex-variable-length}).
 
-Why can the failure persist as the sample grows? Candidate genomes
+Why can the failure persist as the sample grows? The explicit
+family in Theorem~\ref{thm:aaatt-unrestricted} uses competitors
+of length $4n$ (or $4n+4$ at one boundary sample), where
+$n$ is the number of reads. More generally, candidate genomes
 of arbitrary lengths can approximate any balanced assignment of
 frequencies to the possible reads (Theorem~
 \ref{thm:flow-supremum-attainment}). Maximizing likelihood can
@@ -191,8 +201,10 @@ therefore adjust those frequencies to the sample rather than keep
 them fixed at the truth's values: it is a form of \emph{overfitting}.
 If the truth's overlap graph has $E$ distinct read edges and
 $V$ vertices, Theorem~\ref{thm:unrestricted-branching-rate}
-bounds the probability of unrestricted exact-ML success by
-$O(n^{-(E-V)/2})$ whenever $E>V$.
+bounds the probability that the truth is an unrestricted
+exact-ML maximizer by $O(n^{-(E-V)/2})$ whenever $E>V$.
+For $E=V$, Proposition~\ref{prop:unrestricted-nonbranching-converse}
+gives the complementary exponential success bound.
 An exact rational-potential test decides whether a given genome
 nevertheless maximizes likelihood on a particular sample
 (Theorem~\ref{thm:unrestricted-kkt-certificate}).
@@ -228,11 +240,14 @@ finite sampling introduces fluctuations in the frequencies actually
 observed. Reconstruction, identifiability from the complete read law,
 and finite-sample maximum likelihood are distinct questions.
 
-A central contribution is the unrestricted exact-likelihood theorem:
-for every fixed truth with branching oriented read-overlap support,
-the probability that it maximizes likelihood over candidates of
-arbitrary length tends to zero at a quantified rate
-(Theorem~\ref{thm:unrestricted-branching-rate}). We also connect
+A central contribution is a dichotomy for unrestricted exact
+likelihood: for a fixed truth, the probability that it is
+\emph{a} maximizer tends to zero under branching read support
+and to one exponentially fast under nonbranching support
+(Theorem~\ref{thm:unrestricted-branching-rate} and
+Proposition~\ref{prop:unrestricted-nonbranching-converse}).
+This is not unrestricted unique genome identification:
+$S$ and $S^k$ have identical read laws for every $k\ge2$. We also connect
 the historical matched-string bridging hypothesis to
 same-length oriented likelihood and rotation uniqueness, under
 explicit full-support candidacy assumptions
@@ -280,9 +295,29 @@ higher likelihood even when the read set covers and bridges
 the truth. We give exact examples for different sampling objectives,
 including the original matched-read formulation
 (Section~\ref{sec:finite}). Some failures occur even when the
-competing genome has the same length as the truth. The example above
-shows why: a competitor can assign more probability to a read type
+competing genome has the same length as the truth:
+Theorem~\ref{thm:cex-exact} gives such an oriented example,
+with $S=\texttt{AAABB}$ and $D=\texttt{AAAAB}$.
+In both the same-length and longer-genome examples,
+a competitor can assign more probability to a read type
 that happened to be sampled.
+
+\paragraph{Identifiability and the candidate universe.}
+For a fixed \emph{finite} candidate family, exact ML identifies
+the true rotation class with probability tending to one
+precisely when no other class in the family has the same
+read law: distinct laws give an exponential error bound
+(Theorem~\ref{thm:finite-recovery}), while identical laws
+tie on every sample. A genome-length restriction or a
+structural restriction such as primitive P2 makes some
+candidate families finite and can restore identifiability.
+The unrestricted problem is different: arbitrarily long
+genomes supply ever finer balanced read frequencies, so
+a branching truth need not even remain a maximizer.
+Conversely, nonbranching support makes the truth a maximizer
+with high probability, but not the unique genome.
+These are statements about \emph{different candidate sets},
+not conflicting notions of correctness.
 
 \paragraph{What the full read distribution reveals.}
 If we knew the probability of \emph{every} possible read exactly,
