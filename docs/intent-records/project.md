@@ -154,3 +154,15 @@ source: @ottojung
 kind: preference
 
 AssemblyP1 should prefer `lubko://marceline-dev` over `lubko://phoebe-dev` as its normal execution target for repository work, delegated work, and Lean evaluation. Existing Phoebe state may still be inspected or recovered during the migration, and a specifically justified fallback is allowed when Marceline lacks a required capability, but the project should surface and provision missing Marceline capabilities rather than silently making Phoebe primary again.
+
+---
+
+$id-4054245939885368
+title: Keep the source-commit permalink in the reproducibility appendix
+date: 2026/11/02
+source: @ottojung
+kind: requirement
+
+The white-paper PDF must include a full, visible, clickable URL to the exact source commit used to build it, generated dynamically from the checked-out Git revision by the build/CI process rather than hardcoded to a particular commit.
+
+The correct and intended placement is in the reproducibility appendix, not on the title page or elsewhere on the first page. Preserve the current appendix placement. In particular, do not move the source-commit link to the first page in response to an earlier request for that placement: this record supersedes that earlier instruction.
