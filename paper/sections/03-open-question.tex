@@ -293,11 +293,13 @@ Limiting consistency
   & exact-ML error $\le\sum_{D}\rho(p_S,p_D)^n\to0$
   & kernel-checked; explicit size Cor.~\ref{cor:explicit-sample-size}\\
 \addlinespace
-Unrestricted ML failure
-  & for each fixed branching truth, as $n\to\infty$
+Unrestricted ML maximality dichotomy
+  & each fixed truth, as $n\to\infty$
   & oriented exact iid reads; candidate length unrestricted
-  & Winning probability is $O(n^{-d/2})$
-  & paper-level Thm.~\ref{thm:unrestricted-branching-rate}\\
+  & Truth is a maximizer with probability tending to zero if branching,
+    and to one exponentially if nonbranching; not unique across lengths
+  & paper-level Thm.~\ref{thm:unrestricted-branching-rate} and
+    Prop.~\ref{prop:unrestricted-nonbranching-converse}\\
 \bottomrule
 \end{tabular}
 \end{table}
