@@ -846,33 +846,26 @@ Lean-formalized; its independent finite check is
 
 \begin{remark}[Sharpness of the rate, and the unrestricted universe]
 \label{rem:rate-sharpness}
-The Lean-checked $1/(8B^4)$ bound is valid but
-weaker than the paper-proved $1/(64B)$ bound.  Complete exact enumeration of the primitive-P2 class at
-$(q,L)=(2,2),(3,2),(2,3),(2,4)$, with
-$B=4,6,8,16$ respectively, gives exact worst-case separations $1-\rho$ larger than the
-\emph{quartic} bound $1/(8B^4)$ by factors $274$, $903$, $2116$,
-and $16648$; these factors are \emph{not} relative to the
-sharper linear bound $1/(64B)$. The observed extremal pairs are one-symbol insertions;
-in these four cases $(1-\rho_*)B$ is approximately $0.51$--$0.54$,
-consistent with the established $\Theta(1/B)$ order.
-The optimal leading constant and complete extremizer classification remain open.
-The exact arithmetic
-is reproduced by the scripts and arithmetic records listed in
-Appendix~\ref{app:reproduction}.  Over the
-\emph{unrestricted} candidate universe no uniform positive separation exists
-at all: the circular genomes $AB$ and $ABAB$ induce the identical oriented
-read law at every read length, so once such a competitor is admissible the
-exact-ML error probability is $1$ for every $n$.  The length bound and the
-exclusion of read-law duplicates are therefore necessary hypotheses of the
-theorem, not conveniences.
+Exact enumeration of primitive-P2 classes at
+$(q,L)=(2,2),(3,2),(2,3),(2,4)$, where $B=4,6,8,16$,
+gives worst-case separations larger than the
+\emph{Lean-checked} $1/(8B^4)$ bound by factors
+$274$, $903$, $2116$, and $16648$ (not relative to the
+sharper paper-level bound $1/(64B)$).
+The extremal pairs in these cases are one-symbol insertions,
+with $(1-\rho_*)B$ approximately $0.51$--$0.54$.
+The optimal leading constant and the complete extremizer
+classification remain open; the exact arithmetic is indexed in
+Appendix~\ref{app:reproduction}.
+
+No uniform positive separation is possible over \emph{all}
+circular genomes: $AB$ and $ABAB$ have identical oriented read
+laws at every read length and therefore tie on every sample.
+Excluding duplicate read laws is essential to the restricted
+recovery result.
 \end{remark}
 
-\statusline{\computed{} for the finite-class enumeration and the read-law
-collision (independent verifiers in Appendix~\ref{app:reproduction});
-the sharp exponent is proved mathematically by
-Propositions~\ref{prop:p2-linear-rate} and
-\ref{prop:p2-linear-sharpness}, but not yet
-\kernelcheck{}; the optimal constant remains open.}
+
 
 
 \subsection{Scope of the population theorem}
