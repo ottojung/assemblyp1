@@ -22,11 +22,13 @@ verification scope, and historical source reconciliation. A full
 
 ## Download
 
-The current white paper is available as a [PDF download](https://github.com/ottojung/assemblyp1/releases/download/whitepaper-latest/assemblyp1-white-paper.pdf).
-After each successful main build, the Documents workflow updates the
-whitepaper-latest GitHub Release; pull requests only build and validate
-without publishing. Previous CI workflow artifacts are also available for
-individual revisions.
+The current white paper is available as a
+[PDF download](https://github.com/ottojung/assemblyp1/releases/download/whitepaper-latest/assemblyp1-white-paper.pdf).
+The corresponding [arXiv-ready LaTeX source ZIP](https://github.com/ottojung/assemblyp1/releases/download/whitepaper-latest/assemblyp1-arxiv-source.zip)
+contains only manuscript inputs, with main.tex at the archive root.
+After each successful main build, the Documents workflow updates both
+assets in the whitepaper-latest GitHub Release. Pull requests build and
+validate without publishing.
 
 ## Citation and archival revisions
 
@@ -44,10 +46,24 @@ Lengthy provenance notes are preserved under paper/technical-notes/
 and in the source-level [verification index](../docs/verification.md).
 These notes are not substitute premises for any theorem.
 
-## Build
+## arXiv submission
 
-The build is reproducible and uses a pinned, minimal TeX dependency set. With
-Guix available:
+The upload does not require Git, Guix, Lean, Mathlib, or any generated
+build-identity file. From the repository root, prepare the ZIP with:
+
+    python3 paper/package-arxiv.py
+
+Upload paper/assemblyp1-arxiv-source.zip to arXiv and select pdfLaTeX.
+arXiv handles the bibliography with Biber directly from references.bib;
+do not upload a generated PDF, auxiliary files, or a local Biber .bbl.
+The first page declares CC BY-SA 4.0.
+
+To compile a downloaded ZIP locally, extract it into a directory and run
+latexmk -pdf main.tex there (with pdfLaTeX and Biber installed).
+
+## Local repository build
+
+The repository build uses a small TeX dependency set with Guix:
 
 ```sh
 sh paper/build.sh
@@ -89,8 +105,9 @@ paper/
     e-decision-bounds.tex      auxiliary decision-theory estimates
     f-molecular-flow.tex      source-faithful reverse-complement and flow variants
   technical-notes/            full preserved modeling, source and flow audits
-  manifest.scm             pinned Guix TeX dependencies
-  build.sh                 reproducible PDF build
+  manifest.scm             Guix TeX dependencies for local builds
+  build.sh                 local PDF build
+  package-arxiv.py         assemble and validate standalone arXiv source ZIP
 ```
 
 ## Relationship to repository research

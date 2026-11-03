@@ -16,3 +16,5 @@
 *.bbl-SAVE-ERROR
 
 build-identity.tex
+assemblyp1-arxiv-source.zip
+__pycache__/
