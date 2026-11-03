@@ -20,8 +20,8 @@ examples where a competitor has higher likelihood. It includes Lean proofs,
 an explanatory whitepaper, and two audience-specific presentations.
 
 **Download the [latest white paper (PDF)](https://github.com/ottojung/assemblyp1/releases/download/whitepaper-latest/assemblyp1-white-paper.pdf)** for the full mathematical study,
-or read its [LaTeX source](paper/main.tex). The PDF is automatically updated
-from successful CI builds on main.
+or the [standalone arXiv-ready LaTeX archive](https://github.com/ottojung/assemblyp1/releases/download/whitepaper-latest/assemblyp1-arxiv-source.zip).
+Both are automatically updated from successful document builds on main.
 
 **Start with the [programmers' presentation](slides/programmers.md)** for a
 worked graph construction and Not-So-Greedy.

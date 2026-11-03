@@ -1,43 +1,13 @@
 #!/usr/bin/env sh
-# Reproducible PDF build for the AssemblyP1 white paper.
+# PDF build for the AssemblyP1 white paper.
 #
-# Uses a pinned Guix manifest and a local profile (kept inside this directory
+# Uses a Guix manifest and a local profile (kept inside this directory
 # and ignored by git, so no writable per-user Guix profile is required).
 # Runs latexmk with pdflatex + biber.
 set -eu
 
 here=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
 cd "$here"
-
-# Keep PDF creation timestamps reproducible from the checked-out source.
-# Honor an explicitly supplied SOURCE_DATE_EPOCH (e.g. by reproducible builders).
-if [ -z "${SOURCE_DATE_EPOCH:-}" ] && git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
-  SOURCE_DATE_EPOCH=$(git log -1 --format=%ct)
-  export SOURCE_DATE_EPOCH
-fi
-
-
-# Generate a build-local, revision-exact citation and proof environment.
-# A tagged build resolves to its exact commit; PR builds identify their HEAD.
-commit=unavailable
-paper_tag=untagged
-lean_version=unavailable
-mathlib_rev=unavailable
-if git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
-  commit=$(git rev-parse HEAD)
-  paper_tag=$(git tag --points-at HEAD | grep '^paper-v' | head -n 1 || :)
-  [ -n "$paper_tag" ] || paper_tag=untagged
-  lean_version=$(cat ../lean-toolchain)
-  if command -v python3 >/dev/null 2>&1; then
-    mathlib_rev=$(python3 -c 'import json; d=json.load(open("../lake-manifest.json")); print(next(x["rev"] for x in d["packages"] if x["name"] == "mathlib"))')
-  fi
-fi
-{
-  printf '\\def\\AssemblyCommit{%s}\n' "$commit"
-  printf '\\def\\AssemblyPaperTag{%s}\n' "$paper_tag"
-  printf '\\def\\AssemblyLeanToolchain{%s}\n' "$lean_version"
-  printf '\\def\\AssemblyMathlibRevision{%s}\n' "$mathlib_rev"
-} > build-identity.tex
 
 profile="$here/.guix-profile"
 if [ ! -x "$profile/bin/latexmk" ]; then

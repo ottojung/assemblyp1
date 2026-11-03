@@ -21,39 +21,19 @@ explicitly indexed in \path{docs/verification.md}.
 That file also distinguishes finite computations from kernel-checked
 results and historical source premises.
 
-\subsection{Reproducible source revision and proof checks}
+\subsection{Source files and proof checks}
 
-The exact source revision used to build this PDF is available at
-the following permanent URL:
-\par\smallskip
-\begingroup
-\small
-\edef\AssemblySourceRevisionURL{https://github.com/ottojung/assemblyp1/commit/\AssemblyCommit}%
-\noindent\expandafter\url\expandafter{\AssemblySourceRevisionURL}\par
-\endgroup
-\smallskip
-
-The corresponding toolchain and source revisions are:
-\begin{quote}
-\noindent\textbf{Tag at this build revision:} \texttt{\AssemblyPaperTag}
-
-\noindent\textbf{Lean:} \texttt{\AssemblyLeanToolchain}
-
-\noindent\textbf{Mathlib commit:}\\
-\texttt{\AssemblyMathlibRevision}
-\end{quote}
-The source repository is
-\url{https://github.com/ottojung/assemblyp1};
-the dependency pin is in \texttt{lake-manifest.json}.
-A moving \texttt{whitepaper-latest} PDF is built from a main-branch
-commit, which generally has no version tag; in that case
-\texttt{untagged} above is expected and \emph{does not} mean the
-source revision is unknown. The full commit URL printed above
-identifies the exact reproducible tree. Versioned
-\texttt{paper-vX.Y.Z} release PDFs instead resolve to their
-tagged revision. The matching \texttt{docs/verification.md} and
-complete Lean source are available at that identified commit,
-not only behind the moving PDF link.
+The standalone LaTeX source accompanying this preprint can be built
+with pdfLaTeX and Biber from \texttt{main.tex}; it does not require
+a Git checkout, generated build-identity files, or any proof assistant.
+The source repository, including the Lean development and independent
+verification scripts, is available at
+\url{https://github.com/ottojung/assemblyp1}.
+The proof index at \path{docs/verification.md} distinguishes
+kernel-checked results, paper-level arguments, and published premises.
+The Lean toolchain is specified in \texttt{lean-toolchain},
+and the dependency versions are recorded in
+\texttt{lake-manifest.json}, both in the repository.
 
 GitHub's CI builds every theorem module with
 \texttt{lake build --wfail}, replays the entire library through the
