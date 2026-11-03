@@ -45,9 +45,11 @@ Historical process documentation: [`docs/skills/research-orchestrator.md`](docs/
 ## Licensing and citation
 
 The Lean source, scripts and build automation are free software under
-[GNU GPL version 3 or later](LICENSE). Current original manuscript prose and presentation content are offered under
-[Creative Commons Attribution 3.0 Canada](LICENSE.paper), with prior CC BY 4.0
-grants remaining valid. Third-party material retains its original rights.
+[GNU GPL version 3 or later](LICENSE). Current original manuscript prose
+and presentation content are offered under
+[Creative Commons Attribution-ShareAlike 4.0 International](LICENSE.paper).
+Previous CC BY grants remain valid for material already released under them;
+third-party material retains its original rights.
 
 For references, use [CITATION.cff](CITATION.cff). Stable signed publication
 tags of the form paper-vX.Y.Z trigger a versioned GitHub Release
