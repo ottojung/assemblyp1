@@ -30,8 +30,10 @@ individual revisions.
 
 ## Citation and archival revisions
 
-The paper is licensed [CC BY 4.0](../LICENSE.paper); code and build scripts
-are [GPL-3.0-or-later](../LICENSE). Metadata for citation is in
+Current manuscript and presentation revisions are offered under
+[CC BY 3.0 Canada](../LICENSE.paper). Earlier CC BY 4.0 grants remain
+irrevocable; see the license history in LICENSE.paper. Code and build
+scripts remain [GPL-3.0-or-later](../LICENSE). Metadata for citation is in
 [CITATION.cff](../CITATION.cff). The moving whitepaper-latest release is
 not an immutable citation. Each signed paper-vX.Y.Z tag builds and
 publishes its own versioned PDF with the complete corresponding source
